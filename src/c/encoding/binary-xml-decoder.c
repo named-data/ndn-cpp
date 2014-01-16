@@ -5,7 +5,6 @@
  * See COPYING for copyright and distribution information.
  */
 
-#include "binary-xml.h"
 #include "binary-xml-decoder.h"
 
 /**

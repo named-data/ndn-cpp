@@ -10,6 +10,7 @@
 #include <ndn-cpp/c/common.h>
 #include "../errors.h"
 #include "../util/blob.h"
+#include "binary-xml.h"
 
 #ifdef __cplusplus
 extern "C" {
