@@ -25,7 +25,7 @@ struct ndn_BinaryXmlEncoder {
 };
 
 /**
- * Initialize an ndn_BinaryXmlEncoder_initialize struct with the arguments for initializing the ndn_DynamicUInt8Array.
+ * Initialize an ndn_BinaryXmlEncoder struct with the arguments for initializing the ndn_DynamicUInt8Array.
  * @param self pointer to the ndn_BinaryXmlEncoder struct
  * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the encoded output.  The struct must
  * remain valid during the entire life of this ndn_BinaryXmlEncoder. If the output->realloc
