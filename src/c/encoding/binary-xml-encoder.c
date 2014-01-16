@@ -7,7 +7,6 @@
 
 #include <math.h>
 #include "../util/ndn_memory.h"
-#include "binary-xml.h"
 #include "binary-xml-encoder.h"
 
 enum {
