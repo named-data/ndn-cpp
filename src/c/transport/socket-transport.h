@@ -50,7 +50,7 @@ ndn_Error ndn_SocketTransport_connect(struct ndn_SocketTransport *self, ndn_Sock
  * @param dataLength The number of bytes in data.
  * @return 0 for success, else an error code.
  */
-ndn_Error ndn_SocketTransport_send(struct ndn_SocketTransport *self, uint8_t *data, size_t dataLength);
+ndn_Error ndn_SocketTransport_send(struct ndn_SocketTransport *self, const uint8_t *data, size_t dataLength);
 
 /**
  * Check if there is data ready on the socket to be received with ndn_SocketTransport_receive.

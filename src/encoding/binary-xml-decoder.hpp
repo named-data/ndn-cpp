@@ -26,7 +26,7 @@ public:
    */
   BinaryXmlDecoder(const uint8_t *input, size_t inputLength) 
   {
-    ndn_BinaryXmlDecoder_initialize(this, (uint8_t *)input, inputLength);
+    ndn_BinaryXmlDecoder_initialize(this, input, inputLength);
   }
   
   /**

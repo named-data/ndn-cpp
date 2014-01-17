@@ -185,7 +185,7 @@ Name::Component::compare(const Name::Component& other) const
     return 1;
 
   // The components are equal length.  Just do a byte compare.  
-  return ndn_memcmp((uint8_t*)value_.buf(), (uint8_t*)other.value_.buf(), value_.size());
+  return ndn_memcmp(value_.buf(), other.value_.buf(), value_.size());
 }
 
 void 

@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 struct ndn_BinaryXmlDecoder {
-  uint8_t *input;
+  const uint8_t *input;
   size_t inputLength;
   size_t offset;
   // peekDTag sets and checks these, and readElementStartDTag uses them to avoid reading again.
@@ -26,7 +26,7 @@ struct ndn_BinaryXmlDecoder {
   unsigned int previouslyPeekedDTag;
 };
 
-static inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, uint8_t *input, size_t inputLength) 
+static inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, const uint8_t *input, size_t inputLength) 
 {
   self->input = input;
   self->inputLength = inputLength;
@@ -177,7 +177,7 @@ ndn_Error ndn_BinaryXmlDecoder_readOptionalTimeMillisecondsDTagElement
  * @param bytesLength the length of bytes
  * @return the result
  */
-double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(uint8_t *bytes, size_t bytesLength); 
+double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(const uint8_t *bytes, size_t bytesLength); 
 
 /**
  * Set the offset into the input, used for the next read.

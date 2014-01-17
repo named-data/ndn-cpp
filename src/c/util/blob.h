@@ -17,8 +17,8 @@ extern "C" {
  * An ndn_Blob holds a pointer to a read-only pre-allocated buffer and its length.
  */
 struct ndn_Blob {
-  uint8_t *value; /**< pointer to the pre-allocated buffer for the value. Must be treated as read only. */
-  size_t length;  /**< the number of bytes in value. */
+  const uint8_t *value; /**< pointer to the pre-allocated buffer for the value. Must be treated as read only. */
+  size_t length;        /**< the number of bytes in value. */
 };
 
 /**
@@ -27,7 +27,7 @@ struct ndn_Blob {
  * @param value The pre-allocated buffer for the value, or 0 for none.
  * @param length The number of bytes in value.
  */
-static inline void ndn_Blob_initialize(struct ndn_Blob *self, uint8_t *value, size_t length) 
+static inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length) 
 {
   self->value = value;
   self->length = length;

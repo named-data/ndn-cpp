@@ -45,7 +45,7 @@ static inline ndn_Error ndn_TcpTransport_connect(struct ndn_TcpTransport *self, 
  * @param dataLength The number of bytes in data.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_send(struct ndn_TcpTransport *self, uint8_t *data, size_t dataLength)
+static inline ndn_Error ndn_TcpTransport_send(struct ndn_TcpTransport *self, const uint8_t *data, size_t dataLength)
 {
   return ndn_SocketTransport_send(&self->base, data, dataLength);
 }

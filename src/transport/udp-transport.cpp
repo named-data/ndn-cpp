@@ -50,7 +50,7 @@ void
 UdpTransport::send(const uint8_t *data, size_t dataLength)
 {
   ndn_Error error;
-  if ((error = ndn_UdpTransport_send(transport_.get(), (uint8_t *)data, dataLength)))
+  if ((error = ndn_UdpTransport_send(transport_.get(), data, dataLength)))
     throw runtime_error(ndn_getErrorString(error));  
 }
 

@@ -23,7 +23,7 @@ enum {
  * @param arrayLength the length of the array
  * @return 0 for success, else an error code
  */
-static ndn_Error writeArray(struct ndn_BinaryXmlEncoder *self, uint8_t *array, size_t arrayLength)
+static ndn_Error writeArray(struct ndn_BinaryXmlEncoder *self, const uint8_t *array, size_t arrayLength)
 {
   ndn_Error error;
   if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + arrayLength)))

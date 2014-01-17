@@ -56,7 +56,7 @@ int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
   return 1;
 }
 
-ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, uint8_t* value, size_t valueLength)
+ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t *value, size_t valueLength)
 {
   if (self->nComponents >= self->maxComponents)
       return NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name;
@@ -66,7 +66,7 @@ ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, uint8_t* value, size_t
   return NDN_ERROR_success;
 }
 
-ndn_Error ndn_Name_appendString(struct ndn_Name *self, char* value)
+ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char *value)
 {
-  return ndn_Name_appendComponent(self, (uint8_t*)value, strlen(value));
+  return ndn_Name_appendComponent(self, (const uint8_t *)value, strlen(value));
 }

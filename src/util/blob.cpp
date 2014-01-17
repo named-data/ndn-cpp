@@ -22,7 +22,7 @@ Blob::get(struct ndn_Blob& blobStruct) const
 {
   blobStruct.length = size(); 
   if (size() > 0)
-    blobStruct.value = (uint8_t*)buf();
+    blobStruct.value = buf();
   else
     blobStruct.value = 0;
 }

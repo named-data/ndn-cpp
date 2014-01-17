@@ -28,7 +28,7 @@ struct ndn_NameComponent {
  * @param value the pre-allocated buffer for the component value
  * @param valueLength the number of bytes in value
  */
-static inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, uint8_t *value, size_t valueLength) 
+static inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength) 
 {
   ndn_Blob_initialize(&self->value, value, valueLength);
 }
@@ -86,7 +86,7 @@ int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name);
  * @param valueLength The number of bytes in value.
  * @return 0 for success, or an error code if there is no more room in the components array (nComponents is already maxComponents).
  */
-ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, uint8_t* value, size_t valueLength);
+ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t* value, size_t valueLength);
 
 /**
  * Append a component to this name with the bytes in the given blob.
@@ -105,7 +105,7 @@ static inline ndn_Error ndn_Name_appendBlob(struct ndn_Name *self, struct ndn_Bl
  * @param value The null-terminated string, treated as a byte array.  This does not copy the bytes.
  * @return 0 for success, or an error code if there is no more room in the components array (nComponents is already maxComponents).
  */
-ndn_Error ndn_Name_appendString(struct ndn_Name *self, char* value);
+ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char * value);
 
 #ifdef __cplusplus
 }

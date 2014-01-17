@@ -47,7 +47,7 @@ public:
     /**
      * Create an Exclude::Entry of type ndn_Exclude_COMPONENT.
      */
-    Entry(uint8_t *component, size_t componentLen) 
+    Entry(const uint8_t *component, size_t componentLen) 
     : type_(ndn_Exclude_COMPONENT), component_(component, componentLen)
     {
     }
@@ -139,7 +139,7 @@ public:
    * @return This Exclude so that you can chain calls to append.
    */
   Exclude& 
-  appendComponent(uint8_t *component, size_t componentLength) 
+  appendComponent(const uint8_t *component, size_t componentLength) 
   {
     entries_.push_back(Entry(component, componentLength));
     return *this;

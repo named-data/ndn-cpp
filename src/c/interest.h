@@ -30,7 +30,7 @@ struct ndn_ExcludeEntry {
  * @param component the pre-allocated buffer for the component value, only used if type is ndn_Exclude_COMPONENT
  * @param componentLength the number of bytes in value, only used if type is ndn_Exclude_COMPONENT
  */
-static inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, uint8_t *component, size_t componentLength) 
+static inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, const uint8_t *component, size_t componentLength) 
 {
   self->type = type;
   ndn_NameComponent_initialize(&self->component, component, componentLength);

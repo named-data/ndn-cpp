@@ -33,7 +33,7 @@ static inline unsigned int unsafeGetOctet(struct ndn_BinaryXmlDecoder *self)
  * @param resultOut output the parsed integer.
  * @return 0 for success, else an error code, including if an element of value is not a decimal digit.
  */
-static ndn_Error parseUnsignedDecimalInt(uint8_t *value, size_t valueLength, unsigned int *resultOut)
+static ndn_Error parseUnsignedDecimalInt(const uint8_t *value, size_t valueLength, unsigned int *resultOut)
 {
   unsigned int result = 0;
   
@@ -322,7 +322,7 @@ ndn_Error ndn_BinaryXmlDecoder_readOptionalTimeMillisecondsDTagElement
   return NDN_ERROR_success;
 }
 
-double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(uint8_t *bytes, size_t bytesLength) 
+double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(const uint8_t *bytes, size_t bytesLength) 
 {
   double result = 0.0;
   size_t i;

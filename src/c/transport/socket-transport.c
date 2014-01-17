@@ -67,7 +67,7 @@ ndn_Error ndn_SocketTransport_connect(struct ndn_SocketTransport *self, ndn_Sock
   return NDN_ERROR_success;
 }
 
-ndn_Error ndn_SocketTransport_send(struct ndn_SocketTransport *self, uint8_t *data, size_t dataLength)
+ndn_Error ndn_SocketTransport_send(struct ndn_SocketTransport *self, const uint8_t *data, size_t dataLength)
 {
   if (self->socketDescriptor < 0)
     return NDN_ERROR_SocketTransport_socket_is_not_open;
