@@ -79,6 +79,8 @@ char *ndn_getErrorString(int error)
     return      "Time functions are not supported by the standard library";
   case NDN_ERROR_Calendar_time_value_out_of_range:
     return      "Calendar time value out of range";
+  case NDN_ERROR_Invalid_length_for_nonNegativeInteger:
+    return      "Invalid length for nonNegativeInteger";
   default:
     return "unrecognized ndn_Error code";  
   }
