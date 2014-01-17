@@ -5,8 +5,6 @@
  * See COPYING for copyright and distribution information.
  */
 
-#include "binary-xml-encoder.h"
-#include "binary-xml-decoder.h"
 #include "binary-xml-name.h"
 
 ndn_Error ndn_encodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlEncoder *encoder)
