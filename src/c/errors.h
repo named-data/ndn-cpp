@@ -49,7 +49,8 @@ typedef enum {
   NDN_ERROR_Time_functions_are_not_supported_by_the_standard_library,
   NDN_ERROR_Calendar_time_value_out_of_range,
   NDN_ERROR_Invalid_length_for_nonNegativeInteger,
-  NDN_ERROR_did_not_get_the_expected_TLV_type
+  NDN_ERROR_did_not_get_the_expected_TLV_type,
+  NDN_ERROR_TLV_length_exceeds_buffer_length
 } ndn_Error;
   
 /**
