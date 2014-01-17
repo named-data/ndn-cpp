@@ -13,7 +13,7 @@
  */
 static inline unsigned int unsafeReadOctet(struct ndn_BinaryXmlDecoder *self) 
 {
-  return (unsigned int)(self->input[self->offset++] & 0xff);  
+  return (unsigned int)self->input[self->offset++];  
 }
 
 /**
@@ -22,7 +22,7 @@ static inline unsigned int unsafeReadOctet(struct ndn_BinaryXmlDecoder *self)
  */
 static inline unsigned int unsafeGetOctet(struct ndn_BinaryXmlDecoder *self) 
 {
-  return (unsigned int)(self->input[self->offset] & 0xff);  
+  return (unsigned int)self->input[self->offset];  
 }
 
 /**
