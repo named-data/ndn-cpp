@@ -81,6 +81,8 @@ char *ndn_getErrorString(int error)
     return      "Calendar time value out of range";
   case NDN_ERROR_Invalid_length_for_nonNegativeInteger:
     return      "Invalid length for nonNegativeInteger";
+  case NDN_ERROR_did_not_get_the_expected_TLV_type:
+    return      "Did not get the expected TLV type";
   default:
     return "unrecognized ndn_Error code";  
   }
