@@ -18,8 +18,12 @@ Changes
 * Moved class ExcludeEntry to inner class Exclude::Entry.
 * In BinaryXmlDecoder, cache the result of peekDTag for a speedup when decoding optional elements.
 * Moved validation-request.hpp to public API security/policy, and moved OnVerified and OnVerifyFailed in there.
+* In Interest, added get/setMustBeFresh.
+* In MetaInfo, added get/setFreshnessPeriod.
 
 Deprecated
+* Interest: Deprecated getAnswerOriginKind.  Use getMustBeFresh.
+* Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
 * MetaInfo: Deprecated getFreshnessSeconds.  Use Milliseconds getFreshnessPeriod().
 * MetaInfo: Deprecated setFreshnessSeconds.  Use setFreshnessPeriod(Milliseconds).
 

@@ -345,11 +345,14 @@ public:
   int 
   getChildSelector() const { return childSelector_; }
 
+  /**
+   * @deprecated Use getMustBeFresh.
+   */
   int 
   getAnswerOriginKind() const { return answerOriginKind_; }
   
   /**
-   * Return true if answerOriginKind indicates that the content must be fresh.
+   * Return true if the content must be fresh.
    * @return true if must be fresh, otherwise false.
    */
   bool
@@ -386,9 +389,16 @@ public:
   void 
   setChildSelector(int childSelector) { childSelector_ = childSelector; }
 
+  /**
+   * @deprecated Use setMustBeFresh.
+   */
   void 
   setAnswerOriginKind(int answerOriginKind) { answerOriginKind_ = answerOriginKind; }
 
+  /**
+   * Set the MustBeFresh flag.
+   * @param mustBeFresh True if the content must be fresh, otherwise false.
+   */
   void setMustBeFresh(bool mustBeFresh)
   {
     if (answerOriginKind_ < 0) {
