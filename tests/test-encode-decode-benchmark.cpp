@@ -36,8 +36,8 @@ getNowSeconds()
 
 static bool
 verifyRsaSignature
-  (uint8_t* signedPortion, size_t signedPortionLength, uint8_t* signatureBits, size_t signatureBitsLength, 
-   uint8_t* publicKeyDer, size_t publicKeyDerLength)
+  (const uint8_t* signedPortion, size_t signedPortionLength, const uint8_t* signatureBits, size_t signatureBitsLength, 
+   const uint8_t* publicKeyDer, size_t publicKeyDerLength)
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
@@ -321,7 +321,7 @@ benchmarkEncodeDataSecondsC
     data.content = content;
     if (useComplex) {
       data.metaInfo.timestampMilliseconds = 1.3e+12;
-      data.metaInfo.freshnessSeconds = 1000;
+      data.metaInfo.freshnessPeriod = 1000;
       ndn_NameComponent_initialize(&data.metaInfo.finalBlockID, finalBlockId.value, finalBlockId.length);
     }
 

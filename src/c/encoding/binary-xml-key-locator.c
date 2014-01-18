@@ -7,8 +7,8 @@
 
 #include "binary-xml.h"
 #include "binary-xml-structure-decoder.h"
-#include "binary-xml-key.h"
 #include "binary-xml-name.h"
+#include "binary-xml-key-locator.h"
 
 static ndn_Error decodeKeyNameData(struct ndn_KeyLocator *keyLocator, struct ndn_BinaryXmlDecoder *decoder)
 {

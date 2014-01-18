@@ -90,7 +90,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/binary-xml-encoder.c src/c/encoding/binary-xml-encoder.h \
   src/c/encoding/binary-xml-forwarding-entry.c src/c/encoding/binary-xml-forwarding-entry.h \
   src/c/encoding/binary-xml-interest.c src/c/encoding/binary-xml-interest.h \
-  src/c/encoding/binary-xml-key.c src/c/encoding/binary-xml-key.h \
+  src/c/encoding/binary-xml-key-locator.c src/c/encoding/binary-xml-key-locator.h \
   src/c/encoding/binary-xml-name.c src/c/encoding/binary-xml-name.h \
   src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
   src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \

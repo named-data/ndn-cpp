@@ -8,7 +8,7 @@
 #include "binary-xml-name.h"
 #include "binary-xml-publisher-public-key-digest.h"
 #include "binary-xml-data.h"
-#include "binary-xml-key.h"
+#include "binary-xml-key-locator.h"
 
 static ndn_Error encodeSignature(struct ndn_Signature *signature, struct ndn_BinaryXmlEncoder *encoder)
 {

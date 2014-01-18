@@ -4,8 +4,8 @@
  * See COPYING for copyright and distribution information.
  */
 
-#ifndef NDN_BINARYXMLKEY_H
-#define NDN_BINARYXMLKEY_H
+#ifndef NDN_BINARY_XML_KEY_LOCATOR_H
+#define NDN_BINARY_XML_KEY_LOCATOR_H
 
 #include "../key-locator.h"
 #include "../errors.h"
