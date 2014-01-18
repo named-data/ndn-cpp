@@ -73,29 +73,29 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
 }
 
 ndn_Error
-ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint64_t integer)
+ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint64_t value)
 {
   ndn_Error error;
   
-  if (integer < 253) {
+  if (value < 253) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 1)))
       return error;
-    self->output->array[self->offset] = (uint8_t)integer;
+    self->output->array[self->offset] = (uint8_t)value;
     self->offset += 1;  
   }
-  else if (integer <= 0xffff) {
+  else if (value <= 0xffff) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 2)))
       return error;
 
-    uint16_t value = htobe16((uint16_t)integer);
+    uint16_t value = htobe16((uint16_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 2);
     self->offset += 2;  
   }
-  else if (integer <= 0xffffffff) {
+  else if (value <= 0xffffffff) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 4)))
       return error;
 
-    uint32_t value = htobe32((uint32_t)integer);
+    uint32_t value = htobe32((uint32_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 4);
     self->offset += 4;  
   }
@@ -103,7 +103,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 8)))
       return error;
 
-    uint64_t value = htobe64(integer);
+    uint64_t value = htobe64(value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 8);
     self->offset += 8;  
   }
