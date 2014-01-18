@@ -84,9 +84,9 @@ struct ndn_Interest {
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
-  int answerOriginKind;     /**< -1 for none */
+  int answerOriginKind;     /**< -1 for none. If -1 or the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
   int scope;                /**< -1 for none */
-  ndn_Milliseconds interestLifetimeMilliseconds; /**< milliseconds. -1.0 for none */
+  ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
   struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
 };
 
@@ -123,6 +123,19 @@ static inline void ndn_Interest_initialize
  * @return 1 if the name and interest selectors match, 0 otherwise.
  */
 int ndn_Interest_matchesName(struct ndn_Interest *self, struct ndn_Name *name);
+
+/**
+ * Return true if answerOriginKind indicates that the content must be fresh.
+ * @param self A pointer to the ndn_Interest struct.
+ * @return 1 if must be fresh, otherwise 0.
+ */
+static inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
+{
+  if (self->answerOriginKind < 0 || (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0)
+    return 1;
+  else
+    return 0;
+}
 
 #ifdef __cplusplus
 }

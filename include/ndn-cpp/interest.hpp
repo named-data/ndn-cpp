@@ -347,6 +347,16 @@ public:
 
   int 
   getAnswerOriginKind() const { return answerOriginKind_; }
+  
+  /**
+   * Return true if answerOriginKind indicates that the content must be fresh.
+   * @return true if must be fresh, otherwise false.
+   */
+  bool
+  getMustBeFresh() const
+  {
+    return answerOriginKind_ < 0 || (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
+  }
 
   int 
   getScope() const { return scope_; }
@@ -379,6 +389,23 @@ public:
   void 
   setAnswerOriginKind(int answerOriginKind) { answerOriginKind_ = answerOriginKind; }
 
+  void setMustBeFresh(bool mustBeFresh)
+  {
+    if (answerOriginKind_ < 0) {
+      // It is is already the default of MustBeFresh.
+      if (!mustBeFresh)
+        answerOriginKind_ = ndn_Interest_ANSWER_STALE;
+    }
+    else {
+      if (mustBeFresh)
+        // Clear the stale bit.
+        answerOriginKind_ &= ~ndn_Interest_ANSWER_STALE;
+      else
+        // Set the stale bit.
+        answerOriginKind_ |= ndn_Interest_ANSWER_STALE;
+    }
+  }
+  
   void 
   setScope(int scope) { scope_ = scope; }
 
@@ -401,14 +428,14 @@ private:
   }
   
   Name name_;
-  int minSuffixComponents_;
-  int maxSuffixComponents_;  
+  int minSuffixComponents_; /**< -1 for none */
+  int maxSuffixComponents_; /**< -1 for none */
   PublisherPublicKeyDigest publisherPublicKeyDigest_;
   Exclude exclude_;
-  int childSelector_;
-  int answerOriginKind_;
-  int scope_;
-  Milliseconds interestLifetimeMilliseconds_;
+  int childSelector_;       /**< -1 for none */
+  int answerOriginKind_;    /**< -1 for none. If -1 or the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
+  int scope_;               /**< -1 for none */
+  Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
 };
   
