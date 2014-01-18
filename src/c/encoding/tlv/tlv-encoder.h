@@ -235,19 +235,20 @@ ndn_TlvEncoder_writeNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, int type,
  * Make a first pass to call writeValue with self->enableOutput = 0 to determine the length of the TLV. Then set
  * self->enableOutput = 1 and write the type and length to self->output and call writeValue again to write the 
  * TLVs in the body of the value.  This is to solve the problem of finding the length when the value of a TLV has
- * nested TLVs.  However, if self->enableOutput is already 0 when this is called, then just call writeValue once
- * to advance self->offset without writing to output.
+ * nested TLVs.  However, if self->enableOutput is already 0 when this is called, then just advance self->offset without 
+ * writing to output.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param writeValue A pointer to a function that writes the TLVs in the body of the value.  This calls
  * writeValue(context, self).
  * @param context A pointer to memory which is passed to writeValue.
+ * @param omitZeroLength If 1 and the TLV length is zero, then don't write anything.
  * @return 0 for success, else an error code.
  */
 ndn_Error 
 ndn_TlvEncoder_writeNestedTlv
   (struct ndn_TlvEncoder *self, int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
-   void *context);
+   void *context, int omitZeroLength);
 
 #ifdef  __cplusplus
 }

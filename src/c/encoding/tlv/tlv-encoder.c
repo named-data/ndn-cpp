@@ -126,16 +126,25 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct
 ndn_Error 
 ndn_TlvEncoder_writeNestedTlv
   (struct ndn_TlvEncoder *self, int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
-   void *context)
+   void *context, int omitZeroLength)
 {
-  if (self->enableOutput) {
-    // Make a first pass to get the value length by setting enableOutput = 0.
-    size_t saveOffset = self->offset;
-    ndn_Error error;
-    self->enableOutput = 0;
-    if ((error = writeValue(context, self)))
-      return error;
-    size_t valueLength = self->offset - saveOffset;
+  int originalEnableOutput = self->enableOutput;
+  
+  // Make a first pass to get the value length by setting enableOutput = 0.
+  size_t saveOffset = self->offset;
+  self->enableOutput = 0;
+  ndn_Error error;
+  if ((error = writeValue(context, self)))
+    return error;
+  size_t valueLength = self->offset - saveOffset;
+  
+  if (omitZeroLength && valueLength == 0) {
+    // Omit the optional TLV.
+    self->enableOutput = originalEnableOutput;
+    return NDN_ERROR_success;
+  }
+  
+  if (originalEnableOutput) {
     // Restore the offset and enableOutput.
     self->offset = saveOffset;
     self->enableOutput = 1;
@@ -145,9 +154,10 @@ ndn_TlvEncoder_writeNestedTlv
       return error;
     if ((error = writeValue(context, self)))
       return error;
-    return NDN_ERROR_success;    
   }
   else
-    // Just advance offset.
-    return writeValue(context, self);
+    // The output was originally disabled. Just advance offset further by the type and length.
+    ndn_TlvEncoder_writeTypeAndLength(self, type, valueLength);
+  
+  return NDN_ERROR_success;
 }
