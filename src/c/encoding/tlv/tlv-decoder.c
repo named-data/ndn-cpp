@@ -17,8 +17,8 @@ ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int f
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint16_t value = *(uint16_t *)(self->input + self->offset);
-    *varNumber = (uint64_t)be16toh(value);
+    uint16_t beValue = *(uint16_t *)(self->input + self->offset);
+    *varNumber = (uint64_t)be16toh(beValue);
     self->offset += 2;
   }
   else if (firstOctet == 254) {
@@ -26,8 +26,8 @@ ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int f
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint32_t value = *(uint32_t *)(self->input + self->offset);
-    *varNumber = (uint64_t)be32toh(value);
+    uint32_t beValue = *(uint32_t *)(self->input + self->offset);
+    *varNumber = (uint64_t)be32toh(beValue);
     self->offset += 4;
   }
   else {
@@ -36,8 +36,8 @@ ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int f
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint64_t value = *(uint64_t *)(self->input + self->offset);
-    *varNumber = be64toh(value);
+    uint64_t beValue = *(uint64_t *)(self->input + self->offset);
+    *varNumber = be64toh(beValue);
     self->offset += 8;
   }
 
@@ -68,7 +68,7 @@ ndn_TlvDecoder_readTypeAndLength(struct ndn_TlvDecoder *self, unsigned int expec
 }
 
 ndn_Error 
-ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length, uint64_t *integer)
+ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length, uint64_t *value)
 {
   // This is a private function so we know length != 1.
   switch (length) {
@@ -78,8 +78,8 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
       
       {
         // kind of dangerous... but should be efficient.
-        uint16_t value = *(uint16_t *)(self->input + self->offset);
-        *integer = (uint64_t)be16toh(value);
+        uint16_t beValue = *(uint16_t *)(self->input + self->offset);
+        *value = (uint64_t)be16toh(beValue);
       }
       self->offset += 2;
       return NDN_ERROR_success;
@@ -89,8 +89,8 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
       
       {
         // kind of dangerous... but should be efficient.
-        uint32_t value = *(uint32_t *)(self->input + self->offset);
-        *integer = (uint64_t)be32toh(value);
+        uint32_t beValue = *(uint32_t *)(self->input + self->offset);
+        *value = (uint64_t)be32toh(beValue);
       }
       self->offset += 4;
       return NDN_ERROR_success;
@@ -100,12 +100,56 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
       
       {
         // kind of dangerous... but should be efficient.
-        uint64_t value = *(uint64_t *)(self->input + self->offset);
-        *integer = be64toh(value);
+        uint64_t beValue = *(uint64_t *)(self->input + self->offset);
+        *value = be64toh(beValue);
       }
       self->offset += 8;
       return NDN_ERROR_success;
   }
   
   return NDN_ERROR_Invalid_length_for_nonNegativeInteger;
+}
+
+ndn_Error 
+ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, int *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType(self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    *value = -1;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv(self, expectedType, &unsignedValue)))
+    return error;
+  
+  *value = (int)unsignedValue;
+  return NDN_ERROR_success;
+}
+
+ndn_Error 
+ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, double *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType(self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    *value = -1;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv(self, expectedType, &unsignedValue)))
+    return error;
+  
+  *value = (double)unsignedValue;
+  return NDN_ERROR_success;
 }

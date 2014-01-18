@@ -46,8 +46,8 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
       return error;
     self->output->array[self->offset] = 253;
 
-    uint16_t value = htobe16((uint16_t)varNumber);
-    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&value, 2);
+    uint16_t beValue = htobe16((uint16_t)varNumber);
+    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 2);
     self->offset += 3;  
   }
   else if (varNumber <= 0xffffffff) {
@@ -55,8 +55,8 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
       return error;
     self->output->array[self->offset] = 254;
 
-    uint32_t value = htobe32((uint32_t)varNumber);
-    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&value, 4);
+    uint32_t beValue = htobe32((uint32_t)varNumber);
+    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 4);
     self->offset += 5;  
   }
   else {
@@ -64,8 +64,8 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
       return error;
     self->output->array[self->offset] = 255;
 
-    uint64_t value = htobe64(varNumber);
-    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&value, 8);
+    uint64_t beValue = htobe64(varNumber);
+    ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 8);
     self->offset += 9;  
   }
 
@@ -87,24 +87,24 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 2)))
       return error;
 
-    uint16_t value = htobe16((uint16_t)value);
-    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 2);
+    uint16_t beValue = htobe16((uint16_t)value);
+    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 2);
     self->offset += 2;  
   }
   else if (value <= 0xffffffff) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 4)))
       return error;
 
-    uint32_t value = htobe32((uint32_t)value);
-    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 4);
+    uint32_t beValue = htobe32((uint32_t)value);
+    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 4);
     self->offset += 4;  
   }
   else {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 8)))
       return error;
 
-    uint64_t value = htobe64(value);
-    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&value, 8);
+    uint64_t beValue = htobe64(value);
+    ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 8);
     self->offset += 8;  
   }
 
