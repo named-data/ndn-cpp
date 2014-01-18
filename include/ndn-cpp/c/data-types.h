@@ -13,10 +13,10 @@ extern "C" {
 
 typedef enum {
   ndn_ContentType_DATA = 0,
-  ndn_ContentType_ENCR = 1,
-  ndn_ContentType_GONE = 2,
-  ndn_ContentType_KEY =  3,
-  ndn_ContentType_LINK = 4,
+  ndn_ContentType_LINK = 1,
+  ndn_ContentType_KEY =  2,
+  ndn_ContentType_ENCR = 3,
+  ndn_ContentType_GONE = 4,
   ndn_ContentType_NACK = 5
 } ndn_ContentType;
 

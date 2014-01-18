@@ -20,6 +20,7 @@ Changes
 * Moved validation-request.hpp to public API security/policy, and moved OnVerified and OnVerifyFailed in there.
 * In Interest, added get/setMustBeFresh.
 * In MetaInfo, added get/setFreshnessPeriod.
+* Changed ndn_ContentType_LINK and ndn_ContentType_KEY to the correct value for NDN-TLV.
 
 Deprecated
 * Interest: Deprecated getAnswerOriginKind.  Use getMustBeFresh.
