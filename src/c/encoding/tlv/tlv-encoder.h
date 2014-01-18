@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 /** An ndn_TlvEncoder struct is used by all the TLV encoding functions.  You should initialize it with
- * ndn_TlvEncoder_initialize.  You can set enableOutput to 0 to only advance offset without writing to output
+ * ndn_TlvEncoder_initialize.  You can set enableOutput to 0 to only advance self->offset without writing to output
  * as a way to pre-compute the length of child elements.
  */
 struct ndn_TlvEncoder {
@@ -72,7 +72,7 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
 
 /**
  * Encode varNumber as a VAR-NUMBER in NDN-TLV and write it to self->output.  If self->enableOutput is 0, 
- * then just advance offset without writing to output.
+ * then just advance self->offset without writing to output.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param varNumber The number to encode.
  * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
@@ -90,7 +90,7 @@ ndn_TlvEncoder_writeVarNumber(struct ndn_TlvEncoder *self, uint64_t varNumber)
 }
 
 /**
- * Write the type and length to self->output.  If self->enableOutput is 0, then just advance offset without writing 
+ * Write the type and length to self->output.  If self->enableOutput is 0, then just advance self->offset without writing 
  * to output.  
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
@@ -144,7 +144,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 
 /**
  * Encode integer as a non-negative integer in NDN-TLV and write it to self->output.  If self->enableOutput is 0, 
- * then just advance offset without writing to output.  This does not write a type or length for the integer.
+ * then just advance self->offset without writing to output.  This does not write a type or length for the integer.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param integer The integer to encode.
  * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
@@ -185,7 +185,7 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct
 
 /**
  * Write the type, then the length of the blob then the blob value to self->output.  If self->enableOutput is 0, 
- * then just advance offset without writing to output.
+ * then just advance self->offset without writing to output.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value A Blob with the array of bytes for the value.
@@ -205,7 +205,7 @@ ndn_TlvEncoder_writeBlobTlv(struct ndn_TlvEncoder *self, int type, struct ndn_Bl
 
 /**
  * Write the type, then the length of the encoded integer then encode integer as a non-negative integer 
- * and write it to self->output.  If self->enableOutput is 0, then just advance offset without writing to output.  
+ * and write it to self->output.  If self->enableOutput is 0, then just advance self->offset without writing to output.  
  * (If you want to just write the non-negative integer, use ndn_TlvEncoder_writeNonNegativeInteger.)
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
@@ -230,6 +230,24 @@ ndn_TlvEncoder_writeNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, int type,
   
   return NDN_ERROR_success;
 }
+
+/**
+ * Make a first pass to call writeValue with self->enableOutput = 0 to determine the length of the TLV. Then set
+ * self->enableOutput = 1 and write the type and length to self->output and call writeValue again to write the 
+ * TLVs in the body of the value.  This is to solve the problem of finding the length when the value of a TLV has
+ * nested TLVs.  However, if self->enableOutput is already 0 when this is called, then just call writeValue once
+ * to advance self->offset without writing to output.
+ * @param self A pointer to the ndn_TlvEncoder struct.
+ * @param type the type of the TLV.
+ * @param writeValue A pointer to a function that writes the TLVs in the body of the value.  This calls
+ * writeValue(context, self).
+ * @param context A pointer to memory which is passed to writeValue.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error 
+ndn_TlvEncoder_writeNestedTlv
+  (struct ndn_TlvEncoder *self, int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
+   void *context);
 
 #ifdef  __cplusplus
 }

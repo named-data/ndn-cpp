@@ -122,3 +122,32 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct
   
   return NDN_ERROR_success;  
 }
+
+ndn_Error 
+ndn_TlvEncoder_writeNestedTlv
+  (struct ndn_TlvEncoder *self, int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
+   void *context)
+{
+  if (self->enableOutput) {
+    // Make a first pass to get the value length by setting enableOutput = 0.
+    size_t saveOffset = self->offset;
+    ndn_Error error;
+    self->enableOutput = 0;
+    if ((error = writeValue(context, self)))
+      return error;
+    size_t valueLength = self->offset - saveOffset;
+    // Restore the offset and enableOutput.
+    self->offset = saveOffset;
+    self->enableOutput = 1;
+
+    // Now, write the output.
+    if ((error = ndn_TlvEncoder_writeTypeAndLength(self, type, valueLength)))
+      return error;
+    if ((error = writeValue(context, self)))
+      return error;
+    return NDN_ERROR_success;    
+  }
+  else
+    // Just advance offset.
+    return writeValue(context, self);
+}
