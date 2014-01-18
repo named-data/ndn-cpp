@@ -65,6 +65,7 @@ class MetaInfo {
 public:
   MetaInfo() 
   {   
+    timestampMilliseconds_ = -1;
     type_ = ndn_ContentType_DATA;
     freshnessPeriod_ = -1;
   }
