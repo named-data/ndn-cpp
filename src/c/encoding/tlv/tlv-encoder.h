@@ -8,6 +8,7 @@
 #ifndef NDN_TLV_ENCODER_H
 #define NDN_TLV_ENCODER_H
 
+#include <math.h>
 #include "../../errors.h"
 #include "../../util/dynamic-uint8-array.h"
 #include "../../util/blob.h"
@@ -243,6 +244,22 @@ ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, i
 {
   if (value >= 0)
     return ndn_TlvEncoder_writeNonNegativeIntegerTlv(self, type, (uint64_t)value);
+  else
+    return NDN_ERROR_success;  
+}
+
+/**
+ * If value is negative then do nothing, otherwise round value to uint64_t and call ndn_TlvEncoder_writeNonNegativeIntegerTlv.
+ * @param self A pointer to the ndn_TlvEncoder struct.
+ * @param type the type of the TLV.
+ * @param value Negative for none, otherwise use (uint64_t)round(value).
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ */
+static inline ndn_Error 
+ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble(struct ndn_TlvEncoder *self, int type, double value)
+{
+  if (value >= 0.0)
+    return ndn_TlvEncoder_writeNonNegativeIntegerTlv(self, type, (uint64_t)round(value));
   else
     return NDN_ERROR_success;  
 }

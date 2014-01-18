@@ -8,6 +8,12 @@
 #include "tlv-name.h"
 #include "tlv-interest.h"
 
+/**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
+ * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
 static ndn_Error 
 encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
 {
@@ -36,8 +42,14 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;  
 }
 
-ndn_Error 
-ndn_encodeTlvInterestValue(void *context, struct ndn_TlvEncoder *encoder)
+/**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Interest value.
+ * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error 
+encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
   
@@ -66,13 +78,17 @@ ndn_encodeTlvInterestValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_Scope, interest->scope)))
     return error;  
-  if (interest->interestLifetimeMilliseconds >= 0.0) {
-    if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
-        (encoder, ndn_Tlv_InterestLifetime, (uint64_t)round(interest->interestLifetimeMilliseconds))))
-      return error;  
-  }
+  if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
+      (encoder, ndn_Tlv_InterestLifetime, interest->interestLifetimeMilliseconds)))
+    return error;  
   
   return NDN_ERROR_success;  
+}
+
+ndn_Error 
+ndn_encodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvEncoder *encoder)
+{
+  return ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Interest, encodeInterestValue, interest, 0);
 }
 
 static ndn_Error
