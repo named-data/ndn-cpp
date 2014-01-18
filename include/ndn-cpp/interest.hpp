@@ -355,7 +355,7 @@ public:
   bool
   getMustBeFresh() const
   {
-    return answerOriginKind_ < 0 || (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
+    return answerOriginKind_ >= 0 && (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
   }
 
   int 
@@ -392,9 +392,9 @@ public:
   void setMustBeFresh(bool mustBeFresh)
   {
     if (answerOriginKind_ < 0) {
-      // It is is already the default of MustBeFresh.
-      if (!mustBeFresh)
-        answerOriginKind_ = ndn_Interest_ANSWER_STALE;
+      // It is is already the default where MustBeFresh is false.
+      if (mustBeFresh)
+        answerOriginKind_ = 0;
     }
     else {
       if (mustBeFresh)
@@ -433,7 +433,7 @@ private:
   PublisherPublicKeyDigest publisherPublicKeyDigest_;
   Exclude exclude_;
   int childSelector_;       /**< -1 for none */
-  int answerOriginKind_;    /**< -1 for none. If -1 or the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
+  int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
   int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
