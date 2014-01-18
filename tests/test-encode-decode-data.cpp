@@ -149,9 +149,9 @@ static void dumpData(const Data& data)
     else if (data.getMetaInfo().getType() == ndn_ContentType_NACK)
       cout << "NACK" << endl;
   }
-  cout << "metaInfo.freshnessSeconds: ";
-  if (data.getMetaInfo().getFreshnessSeconds() >= 0)
-    cout << data.getMetaInfo().getFreshnessSeconds() << endl;
+  cout << "metaInfo.freshnessPeriod (milliseconds): ";
+  if (data.getMetaInfo().getFreshnessPeriod() >= 0)
+    cout << data.getMetaInfo().getFreshnessPeriod() << endl;
   else
     cout << "<none>" << endl;
   cout << "metaInfo.finalBlockID: "
