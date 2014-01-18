@@ -7,6 +7,7 @@
 #ifndef NDN_DATA_H
 #define NDN_DATA_H
 
+#include <math.h>
 #include <ndn-cpp/c/data-types.h>
 #include "name.h"
 #include "publisher-public-key-digest.h"
@@ -48,7 +49,7 @@ static inline void ndn_Signature_initialize(struct ndn_Signature *self, struct n
 struct ndn_MetaInfo {
   ndn_MillisecondsSince1970 timestampMilliseconds; /**< milliseconds since 1/1/1970. -1 for none */
   ndn_ContentType type;                  /**< default is ndn_ContentType_DATA. -1 for none */
-  int freshnessSeconds;                  /**< -1 for none */
+  ndn_Milliseconds freshnessPeriod;      /**< -1 for none */
   struct ndn_NameComponent finalBlockID; /**< has a pointer to a pre-allocated buffer.  0 for none */
 };
 
@@ -56,11 +57,27 @@ struct ndn_MetaInfo {
  * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_DATA.
  * @param self A pointer to the ndn_MetaInfo struct.
  */
-static inline void ndn_MetaInfo_initialize
-  (struct ndn_MetaInfo *self) {
+static inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self) 
+{
   self->type = ndn_ContentType_DATA;
-  self->freshnessSeconds = -1;
+  self->freshnessPeriod = -1;
   ndn_NameComponent_initialize(&self->finalBlockID, 0, 0);
+}
+
+/**
+ * @deprecated Use freshnessPeriod.
+ */
+static inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self) 
+{
+  return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
+}
+
+/**
+ * @deprecated Use freshnessPeriod.
+ */
+static inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds) 
+{ 
+  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 
 }
 
 struct ndn_Data {

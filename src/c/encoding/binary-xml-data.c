@@ -93,7 +93,7 @@ static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
   }
   
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement
-      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds, metaInfo->freshnessSeconds)))
+      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds, ndn_MetaInfo_getFreshnessSeconds(metaInfo))))
     return error;
   
   if ((error = ndn_BinaryXmlEncoder_writeOptionalBlobDTagElement
@@ -150,9 +150,11 @@ static ndn_Error decodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
   else
     return NDN_ERROR_unrecognized_ndn_ContentType;
  
+  int freshnessSeconds;
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
-      (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &metaInfo->freshnessSeconds)))
+      (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &freshnessSeconds)))
     return error;
+  ndn_MetaInfo_setFreshnessSeconds(metaInfo, freshnessSeconds);
 
   if ((error = ndn_BinaryXmlDecoder_readOptionalBinaryDTagElement
       (decoder, ndn_BinaryXml_DTag_FinalBlockID, 0, &metaInfo->finalBlockID.value)))

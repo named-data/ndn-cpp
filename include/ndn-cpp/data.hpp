@@ -8,6 +8,7 @@
 #ifndef NDN_DATA_HPP
 #define NDN_DATA_HPP
 
+#include <math.h>
 #include "common.hpp"
 #include "name.hpp"
 #include "util/signed-blob.hpp"
@@ -65,7 +66,7 @@ public:
   MetaInfo() 
   {   
     type_ = ndn_ContentType_DATA;
-    freshnessSeconds_ = -1;
+    freshnessPeriod_ = -1;
   }
 
   /**
@@ -89,8 +90,14 @@ public:
   ndn_ContentType 
   getType() const { return type_; }
   
+  Milliseconds 
+  getFreshnessPeriod() const { return freshnessPeriod_; }
+
+  /**
+   * @deprecated Use getFreshnessPeriod.
+   */
   int 
-  getFreshnessSeconds() const { return freshnessSeconds_; }
+  getFreshnessSeconds() const { return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); }
   
   const Name::Component& 
   getFinalBlockID() const { return finalBlockID_; }
@@ -100,9 +107,15 @@ public:
   
   void 
   setType(ndn_ContentType type) { type_ = type; }
-  
+
   void 
-  setFreshnessSeconds(int freshnessSeconds) { freshnessSeconds_ = freshnessSeconds; }
+  setFreshnessPeriod(Milliseconds freshnessPeriod) { freshnessPeriod_ = freshnessPeriod; }
+  
+  /**
+   * @deprecated Use setFreshnessPeriod.
+   */
+  void 
+  setFreshnessSeconds(int freshnessSeconds) { freshnessPeriod_ = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; }
 
   void 
   setFinalBlockID(const Name::Component& finalBlockID) { finalBlockID_ = finalBlockID; }
@@ -110,7 +123,7 @@ public:
 private:
   MillisecondsSince1970 timestampMilliseconds_; /**< milliseconds since 1/1/1970. -1 for none */
   ndn_ContentType type_;         /**< default is ndn_ContentType_DATA. -1 for none */
-  int freshnessSeconds_;         /**< -1 for none */
+  Milliseconds freshnessPeriod_; /**< -1 for none */
   Name::Component finalBlockID_; /** size 0 for none */
 };
   
