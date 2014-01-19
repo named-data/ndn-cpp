@@ -46,6 +46,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/element-listener.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -94,6 +95,12 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/binary-xml-name.c src/c/encoding/binary-xml-name.h \
   src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
   src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \
+  src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
+  src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
+  src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
+  src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
+  src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
+  src/c/encoding/tlv/tlv.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -122,6 +129,9 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp \
   src/encoding/oid.cpp \
+  src/encoding/tlv-decoder.hpp \
+  src/encoding/tlv-encoder.hpp \
+  src/encoding/tlv-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der.cpp src/encoding/der/der.hpp \

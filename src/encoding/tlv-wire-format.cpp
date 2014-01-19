@@ -10,9 +10,9 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-entry.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
+#include "../c/encoding/tlv/tlv-data.h"
 #if 0
-#include "../c/encoding/tlv-data.h"
-#include "../c/encoding/tlv-forwarding-entry.h"
+#include "../c/encoding/tlv/tlv-forwarding-entry.h"
 #endif
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
@@ -59,7 +59,6 @@ TlvWireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t i
   interest.set(interestStruct);
 }
 
-#if 0
 Blob 
 TlvWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
 {
@@ -98,6 +97,7 @@ TlvWireFormat::decodeData
   data.set(dataStruct);
 }
 
+#if 0
 Blob 
 TlvWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
 {

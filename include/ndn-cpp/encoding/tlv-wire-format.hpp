@@ -20,7 +20,7 @@ namespace ndn {
 class TlvWireFormat : public WireFormat {
 public:
   /**
-   * Encode interest in binary XML and return the encoding.
+   * Encode interest in NDN-TLV and return the encoding.
    * @param interest The Interest object to encode.
    * @return A Blob containing the encoding.
    */  
@@ -28,7 +28,7 @@ public:
   encodeInterest(const Interest& interest);
     
   /**
-   * Decode input as an interest in binary XML and set the fields of the interest object.
+   * Decode input as an interest in NDN-TLV and set the fields of the interest object.
    * @param interest The Interest object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
@@ -36,9 +36,8 @@ public:
   virtual void 
   decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength);
 
-#if 0
   /**
-   * Encode data with binary XML and return the encoding.
+   * Encode data with NDN-TLV and return the encoding.
    * @param data The Data object to encode.
    * @param signedPortionBeginOffset Return the offset in the encoding of the beginning of the signed portion.
    * If you are not encoding in order to sign, you can call encodeData(const Data& data) to ignore this returned value.
@@ -51,7 +50,7 @@ public:
     (const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
   
   /**
-   * Decode input as a data packet in binary XML and set the fields in the data object.
+   * Decode input as a data packet in NDN-TLV and set the fields in the data object.
    * @param data The Data object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
@@ -66,8 +65,9 @@ public:
   decodeData
     (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
 
+#if 0
   /**
-   * Encode forwardingEntry in binary XML and return the encoding. 
+   * Encode forwardingEntry in NDN-TLV and return the encoding. 
    * @param forwardingEntry The ForwardingEntry object to encode.
    * @return A Blob containing the encoding.
    */
@@ -75,7 +75,7 @@ public:
   encodeForwardingEntry(const ForwardingEntry& forwardingEntry);
   
   /**
-   * Decode input as a forwarding entry in binary XML and set the fields of the forwardingEntry object. 
+   * Decode input as a forwarding entry in NDN-TLV and set the fields of the forwardingEntry object. 
    * @param forwardingEntry The ForwardingEntry object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
