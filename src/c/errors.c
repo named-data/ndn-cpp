@@ -55,8 +55,8 @@ char *ndn_getErrorString(int error)
     return      "Unrecognized ndn_KeyLocatorType";
   case NDN_ERROR_unrecognized_ndn_KeyNameType:
     return      "Unrecognized ndn_KeyNameType";
-  case NDN_ERROR_decodeBinaryXmlKeyLocator_unrecognized_key_locator_type:
-    return      "decodeBinaryXmlKeyLocator unrecognized key locator type";
+  case NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type:
+    return      "decodeKeyLocator unrecognized key locator type";
   case NDN_ERROR_unrecognized_ndn_SocketTransport:
     return      "Unrecognized ndn_SocketTransport";
   case NDN_ERROR_SocketTransport_error_in_getaddrinfo:
@@ -85,6 +85,8 @@ char *ndn_getErrorString(int error)
     return      "Did not get the expected TLV type";
   case NDN_ERROR_TLV_length_exceeds_buffer_length:
     return      "TLV length exceeds buffer length";
+  case NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type:
+    return      "decodeSignatureInfo unrecognized SignatureInfo type";
   default:
     return "unrecognized ndn_Error code";  
   }

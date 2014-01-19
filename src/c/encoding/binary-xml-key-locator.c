@@ -162,7 +162,7 @@ ndn_Error ndn_decodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
           return error;
       }
       else
-        return NDN_ERROR_decodeBinaryXmlKeyLocator_unrecognized_key_locator_type;
+        return NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type;
     }
   }
 

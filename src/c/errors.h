@@ -36,7 +36,7 @@ typedef enum {
   NDN_ERROR_unrecognized_ndn_ContentType,
   NDN_ERROR_unrecognized_ndn_KeyLocatorType,
   NDN_ERROR_unrecognized_ndn_KeyNameType,
-  NDN_ERROR_decodeBinaryXmlKeyLocator_unrecognized_key_locator_type,
+  NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type,
   NDN_ERROR_unrecognized_ndn_SocketTransport,
   NDN_ERROR_SocketTransport_error_in_getaddrinfo,
   NDN_ERROR_SocketTransport_cannot_connect_to_socket,
@@ -50,7 +50,8 @@ typedef enum {
   NDN_ERROR_Calendar_time_value_out_of_range,
   NDN_ERROR_Invalid_length_for_nonNegativeInteger,
   NDN_ERROR_did_not_get_the_expected_TLV_type,
-  NDN_ERROR_TLV_length_exceeds_buffer_length
+  NDN_ERROR_TLV_length_exceeds_buffer_length,
+  NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type
 } ndn_Error;
   
 /**
