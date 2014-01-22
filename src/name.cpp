@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <string.h>
+#include <stdexcept>
 #include <ndn-cpp/name.hpp>
 #include "c/name.h"
 #include "c/util/ndn_memory.h"
@@ -419,6 +420,24 @@ Name::toEscapedString(const vector<uint8_t>& value)
   ostringstream result;
   toEscapedString(value, result);
   return result.str();
+}
+
+const Name::Component& 
+Name::get(int i) const
+{ 
+  if (i >= 0) {
+    if (i >= components_.size())
+      throw runtime_error("Name.get: Index is out of bounds");
+
+    return components_[i];
+  }
+  else {
+    // Negative index.
+    if (i < -components_.size())
+      throw runtime_error("Name.get: Index is out of bounds");
+
+    return components_[components_.size() - (-i)];
+  }
 }
 
 int

@@ -578,11 +578,13 @@ public:
 
   /**
    * Get the component at the given index.
-   * @param i The index of the component, starting from 0.
+   * @param i The index of the component, starting from 0.  However, if i is negative, return the component
+   * at size() - (-i).
    * @return The name component at the index.
+   * @throw runtime_error If index is out of range.
    */
   const Component& 
-  get(size_t i) const { return components_[i]; }
+  get(int i) const;
     
   /**
    * Compare this to the other Name using NDN canonical ordering.  If the first components of each name are not equal, 
