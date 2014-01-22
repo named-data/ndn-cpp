@@ -16,14 +16,14 @@
 #endif
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
-#include <ndn-cpp/encoding/tlv-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp>
 
 using namespace std;
 
 namespace ndn {
 
 Blob 
-TlvWireFormat::encodeInterest(const Interest& interest) 
+Tlv1_0a2WireFormat::encodeInterest(const Interest& interest) 
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -42,7 +42,7 @@ TlvWireFormat::encodeInterest(const Interest& interest)
 }
 
 void 
-TlvWireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+Tlv1_0a2WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -60,7 +60,7 @@ TlvWireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t i
 }
 
 Blob 
-TlvWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+Tlv1_0a2WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
@@ -79,7 +79,7 @@ TlvWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, si
 }
 
 void 
-TlvWireFormat::decodeData
+Tlv1_0a2WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -99,7 +99,7 @@ TlvWireFormat::decodeData
 
 #if 0
 Blob 
-TlvWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
+Tlv1_0a2WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
 {
   struct ndn_NameComponent prefixNameComponents[100];
   struct ndn_ForwardingEntry forwardingEntryStruct;
@@ -116,7 +116,7 @@ TlvWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
 }
 
 void 
-TlvWireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
+Tlv1_0a2WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent prefixNameComponents[100];
   struct ndn_ForwardingEntry forwardingEntryStruct;

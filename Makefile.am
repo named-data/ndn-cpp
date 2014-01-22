@@ -46,6 +46,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/element-listener.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
@@ -131,7 +132,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/encoding/oid.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
-  src/encoding/tlv-wire-format.cpp \
+  src/encoding/tlv-0_1a2-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der.cpp src/encoding/der/der.hpp \
