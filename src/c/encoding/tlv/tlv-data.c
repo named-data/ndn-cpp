@@ -141,7 +141,7 @@ ndn_encodeTlvData
   dataValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   dataValueContext.signedPortionEndOffset = signedPortionEndOffset;
   
-  return ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Interest, encodeDataValue, &dataValueContext, 0);
+  return ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Data, encodeDataValue, &dataValueContext, 0);
 }
 
 static ndn_Error
@@ -259,7 +259,7 @@ ndn_decodeTlvData
 {
   ndn_Error error;
   size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Interest, &length)))
+  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Data, &length)))
     return error;
   size_t endOffset = decoder->offset + length;
     
