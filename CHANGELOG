@@ -28,6 +28,7 @@ Deprecated
 * Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
 * MetaInfo: Deprecated getFreshnessSeconds.  Use Milliseconds getFreshnessPeriod().
 * MetaInfo: Deprecated setFreshnessSeconds.  Use setFreshnessPeriod(Milliseconds).
+* Sha256WithRsaSignature: Deprecated get/setWitness.  Witness is deprecated.
 
 Documentation
 * Move instructions for running ./autogen.sh from configure.ac to the Development section of INSTALL.

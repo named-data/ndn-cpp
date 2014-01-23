@@ -44,6 +44,9 @@ public:
   const Blob& 
   getDigestAlgorithm() const { return digestAlgorithm_; }
 
+  /**
+   * @deprecated Witness is deprecated. 
+   */
   const Blob& 
   getWitness() const { return witness_; }
 
@@ -65,6 +68,9 @@ public:
   void 
   setDigestAlgorithm(const Blob& digestAlgorithm) { digestAlgorithm_ = digestAlgorithm; }
 
+  /**
+   * @deprecated Witness is deprecated. 
+   */
   void 
   setWitness(const Blob& witness) { witness_ = witness; }
 
