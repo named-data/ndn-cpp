@@ -12,6 +12,8 @@ extern "C" {
 #endif
 
 typedef enum {
+  ndn_ContentType_BLOB = 0,
+  // ndn_ContentType_DATA is deprecated.  Use ndn_ContentType_BLOB.
   ndn_ContentType_DATA = 0,
   ndn_ContentType_LINK = 1,
   ndn_ContentType_KEY =  2,

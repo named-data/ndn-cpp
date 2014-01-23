@@ -66,7 +66,7 @@ public:
   MetaInfo() 
   {   
     timestampMilliseconds_ = -1;
-    type_ = ndn_ContentType_DATA;
+    type_ = ndn_ContentType_BLOB;
     freshnessPeriod_ = -1;
   }
 
@@ -123,7 +123,7 @@ public:
     
 private:
   MillisecondsSince1970 timestampMilliseconds_; /**< milliseconds since 1/1/1970. -1 for none */
-  ndn_ContentType type_;         /**< default is ndn_ContentType_DATA. -1 for none */
+  ndn_ContentType type_;         /**< default is ndn_ContentType_BLOB. -1 for none */
   Milliseconds freshnessPeriod_; /**< -1 for none */
   Name::Component finalBlockID_; /** size 0 for none */
 };

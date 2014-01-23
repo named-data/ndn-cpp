@@ -20,7 +20,7 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
   
   ndn_Error error;
 
-  if (!((int)metaInfo->type < 0 || metaInfo->type == ndn_ContentType_DATA)) {
+  if (!((int)metaInfo->type < 0 || metaInfo->type == ndn_ContentType_BLOB)) {
     // Not the default, so we need to encode the type.
     if (metaInfo->type == ndn_ContentType_LINK || metaInfo->type == ndn_ContentType_KEY) {
       // The ContentType enum is set up with the correct integer for each NDN-TLV ContentType.
@@ -159,7 +159,7 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
     return error;
   if ((int)metaInfo->type < 0)
     // Set to the actual value for the default.
-    metaInfo->type = ndn_ContentType_DATA;
+    metaInfo->type = ndn_ContentType_BLOB;
   
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))

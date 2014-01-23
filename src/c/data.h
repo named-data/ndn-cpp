@@ -54,13 +54,13 @@ struct ndn_MetaInfo {
 };
 
 /**
- * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_DATA.
+ * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_BLOB.
  * @param self A pointer to the ndn_MetaInfo struct.
  */
 static inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self) 
 {
   self->timestampMilliseconds = -1;
-  self->type = ndn_ContentType_DATA;
+  self->type = ndn_ContentType_BLOB;
   self->freshnessPeriod = -1;
   ndn_NameComponent_initialize(&self->finalBlockID, 0, 0);
 }

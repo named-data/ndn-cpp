@@ -136,7 +136,8 @@ static void dumpData(const Data& data)
   }
   else
     cout << "<none>" << endl;
-  if (!(data.getMetaInfo().getType() < 0 || data.getMetaInfo().getType() == ndn_ContentType_DATA)) {
+  if (!(data.getMetaInfo().getType() < 0 || data.getMetaInfo().getType() == ndn_ContentType_BLOB || 
+        data.getMetaInfo().getType() == ndn_ContentType_DATA)) {
     cout << "metaInfo.type: ";
     if (data.getMetaInfo().getType() == ndn_ContentType_ENCR)
       cout << "ENCR" << endl;
