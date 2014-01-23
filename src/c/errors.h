@@ -51,7 +51,8 @@ typedef enum {
   NDN_ERROR_Invalid_length_for_nonNegativeInteger,
   NDN_ERROR_did_not_get_the_expected_TLV_type,
   NDN_ERROR_TLV_length_exceeds_buffer_length,
-  NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type
+  NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type,
+  NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh
 } ndn_Error;
   
 /**

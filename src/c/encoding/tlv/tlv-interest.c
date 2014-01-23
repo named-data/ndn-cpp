@@ -34,10 +34,19 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_ChildSelector, interest->childSelector)))
     return error;  
   
-  if (ndn_Interest_getMustBeFresh(interest)) {
+  // Instead of using ndn_Interest_getMustBeFresh, check answerOriginKind directly so that we can
+  //   return an error if unsupported bits are set.
+  if (interest->answerOriginKind == 0) {
+    // MustBeFresh == true.
     if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_MustBeFresh, 0)))
       return error;  
   }
+  else if (interest->answerOriginKind < 0 || (interest->answerOriginKind & ndn_Interest_ANSWER_STALE) != 0) {
+    // The default where MustBeFresh == false.
+  }
+  else
+    // This error will be irrelevant when we drop support for binary XML answerOriginKind.
+    return NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh;
   
   return NDN_ERROR_success;  
 }
