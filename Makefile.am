@@ -130,9 +130,10 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp \
   src/encoding/oid.cpp \
+  src/encoding/tlv-0_1a2-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
-  src/encoding/tlv-0_1a2-wire-format.cpp \
+  src/encoding/tlv-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der.cpp src/encoding/der/der.hpp \

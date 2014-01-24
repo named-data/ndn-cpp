@@ -17,7 +17,26 @@ namespace ndn {
  * using the preferred implementation of NDN-TLV.
  */
 class TlvWireFormat : public Tlv1_0a2WireFormat {
+public:
+  /**
+   * Get a singleton instance of a TlvWireFormat.  Assuming that the default wire format was set with
+   * WireFormat::setDefaultWireFormat(TlvWireFormat::get()), you can check if this is the default wire encoding with
+   * if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get()).
+   * @return A pointer to the singleton instance.
+   */
+  static TlvWireFormat* 
+  get()
+  {
+    if (!instance_)
+      instance_ = new TlvWireFormat();
+    
+    return instance_;
+  }
+
   // Inherit encodeInterest, etc. from the base class.
+  
+private:
+  static TlvWireFormat* instance_;
 };
 
 }

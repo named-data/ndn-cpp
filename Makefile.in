@@ -195,8 +195,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
 	src/encoding/tlv-0_1a2-wire-format.lo \
-	src/encoding/wire-format.lo src/encoding/der/der-exception.lo \
-	src/encoding/der/der.lo \
+	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
+	src/encoding/der/der-exception.lo src/encoding/der/der.lo \
 	src/encoding/der/visitor/certificate-data-visitor.lo \
 	src/encoding/der/visitor/no-arguments-visitor.lo \
 	src/encoding/der/visitor/print-visitor.lo \
@@ -701,9 +701,10 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp \
   src/encoding/oid.cpp \
+  src/encoding/tlv-0_1a2-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
-  src/encoding/tlv-0_1a2-wire-format.cpp \
+  src/encoding/tlv-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der.cpp src/encoding/der/der.hpp \
@@ -946,6 +947,8 @@ src/encoding/element-listener.lo: src/encoding/$(am__dirstamp) \
 src/encoding/oid.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/tlv-0_1a2-wire-format.lo: src/encoding/$(am__dirstamp) \
+	src/encoding/$(DEPDIR)/$(am__dirstamp)
+src/encoding/tlv-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
@@ -1221,6 +1224,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/element-listener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/oid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-0_1a2-wire-format.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der.Plo@am__quote@
