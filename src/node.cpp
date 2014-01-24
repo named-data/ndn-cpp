@@ -161,11 +161,7 @@ Node::registerPrefix
       (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
         (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags)));
     // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-#if 0
-    expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
-#else
     expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, *BinaryXmlWireFormat::get());
-#endif
   }
   else
     registerPrefixHelper(registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags);
@@ -211,7 +207,9 @@ Node::registerPrefixHelper
    const ForwardingFlags& flags)
 {
   // Create a ForwardingEntry.
-  ForwardingEntry forwardingEntry("selfreg", *prefix, PublisherPublicKeyDigest(), -1, flags, 2147483647);
+  // Note: ndnd ignores any freshness that is larger than 3600 seconds and sets 300 seconds instead.  To register "forever",
+  //   (=2000000000 sec), the freshness period must be omitted.
+  ForwardingEntry forwardingEntry("selfreg", *prefix, PublisherPublicKeyDigest(), -1, flags, -1);
   // Always encode as BinaryXml since the internals of ndnd expect it.
   Blob content = forwardingEntry.wireEncode(*BinaryXmlWireFormat::get());
 
