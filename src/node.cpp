@@ -274,7 +274,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   // A TLV Interest starts with 0x01, but need to distinguish from a NDNb Interest which starts with 0x01 0xD2 0xF2.
   // (If a TLV Interest had a length of 0xD2, it would always start with 0x01 0xD2 0x03.)
   // A TLV Data packet starts with 0x02.
-  if ((element[0] == 0x01 && element[1] != 0xD2 && element[2] != 0xF2) || element[0] == 0x02) {
+  if ((element[0] == 0x01 && !(element[1] == 0xD2 && element[2] == 0xF2)) || element[0] == 0x02) {
     TlvDecoder decoder(element, elementLength);  
     if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
       interest.reset(new Interest());
