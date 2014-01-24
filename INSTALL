@@ -94,3 +94,4 @@ Follow Development Prerequisites above for your platform.
 Now you can add source code files and update Makefile.am.  
 After updating, change directory to the NDN-CPP root and enter the following to build the Makefile:
 ./autogen.sh
+To build again, follow the instructions above (./configure, make, etc.)

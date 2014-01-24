@@ -22,6 +22,7 @@ Changes
 * In Interest, added get/setMustBeFresh.
 * In MetaInfo, added get/setFreshnessPeriod.
 * Changed ndn_ContentType_LINK and ndn_ContentType_KEY to the correct value for NDN-TLV.
+* In autogen.sh, don't run ./configure since the user may want to run ./configure with options.
 
 Deprecated
 * Interest: Deprecated getAnswerOriginKind.  Use getMustBeFresh.
