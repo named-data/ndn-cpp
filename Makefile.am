@@ -126,7 +126,6 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
-  src/encoding/binary-xml-structure-decoder.hpp \
   src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp \
   src/encoding/oid.cpp \
