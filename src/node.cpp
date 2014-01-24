@@ -10,6 +10,10 @@
 #include "c/interest.h"
 #include "c/util/crypto.h"
 #include "c/util/time.h"
+#include <ndn-cpp/encoding/tlv-wire-format.hpp>
+#include "c/encoding/tlv/tlv.h"
+#include "encoding/tlv-decoder.hpp"
+#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include "c/encoding/binary-xml.h"
 #include "encoding/binary-xml-decoder.hpp"
 #include <ndn-cpp/forwarding-entry.hpp>
@@ -146,7 +150,7 @@ Node::removePendingInterest(uint64_t pendingInterestId)
 
 uint64_t 
 Node::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat)
+  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags)
 {
   // Get the registeredPrefixId now so we can return it to the caller.
   uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
@@ -155,12 +159,16 @@ Node::registerPrefix
     // First fetch the ndndId of the connected hub.
     NdndIdFetcher fetcher
       (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-        (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat)));
+        (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags)));
     // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
+#if 0
     expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
+#else
+    expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, *BinaryXmlWireFormat::get());
+#endif
   }
   else
-    registerPrefixHelper(registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags, wireFormat);
+    registerPrefixHelper(registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags);
   
   return registeredPrefixId;
 }
@@ -185,7 +193,7 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
     // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
     info_->node_.ndndId_ = signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest();
     info_->node_.registerPrefixHelper
-      (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_, info_->wireFormat_);
+      (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_);
   }
   else
     info_->onRegisterFailed_(info_->prefix_);
@@ -200,19 +208,21 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timed
 void 
 Node::registerPrefixHelper
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
-   const ForwardingFlags& flags, WireFormat& wireFormat)
+   const ForwardingFlags& flags)
 {
   // Create a ForwardingEntry.
   ForwardingEntry forwardingEntry("selfreg", *prefix, PublisherPublicKeyDigest(), -1, flags, 2147483647);
-  Blob content = forwardingEntry.wireEncode();
+  // Always encode as BinaryXml since the internals of ndnd expect it.
+  Blob content = forwardingEntry.wireEncode(*BinaryXmlWireFormat::get());
 
   // Set the ForwardingEntry as the content of a Data packet and sign.
   Data data;
   data.setContent(content);
   data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0);
   // For now, self sign with an arbirary key.  In the future, we may not require a signature to register.
-  selfregSign(data, wireFormat);
-  Blob encodedData = data.wireEncode();
+  // Always encode as BinaryXml since the internals of ndnd expect it.
+  selfregSign(data, *BinaryXmlWireFormat::get());
+  Blob encodedData = data.wireEncode(*BinaryXmlWireFormat::get());
   
   // Create an interest where the name has the encoded Data packet.
   Name interestName;
@@ -225,7 +235,8 @@ Node::registerPrefixHelper
   
   Interest interest(interestName);
   interest.setScope(1);
-  Blob encodedInterest = interest.wireEncode();
+  // Always encode as BinaryXml since the internals of ndnd expect it.
+  Blob encodedInterest = interest.wireEncode(*BinaryXmlWireFormat::get());
   
   // Save the onInterest callback and send the registration interest.
   registeredPrefixTable_.push_back(ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
@@ -256,20 +267,44 @@ Node::processEvents()
 void 
 Node::onReceivedElement(const uint8_t *element, size_t elementLength)
 {
-  BinaryXmlDecoder decoder(element, elementLength);
+  // First, decode as Interest or Data.
+  ptr_lib::shared_ptr<Interest> interest;
+  ptr_lib::shared_ptr<Data> data;
+  // Imitate code from the ndnd.c translator in project ndnd-tlv to determine if this is a TLV packet.
+  // A TLV Interest starts with 0x01, but need to distinguish from a NDNb Interest which starts with 0x01 0xD2 0xF2.
+  // (If a TLV Interest had a length of 0xD2, it would always start with 0x01 0xD2 0x03.)
+  // A TLV Data packet starts with 0x02.
+  if ((element[0] == 0x01 && element[1] != 0xD2 && element[2] != 0xF2) || element[0] == 0x02) {
+    TlvDecoder decoder(element, elementLength);  
+    if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
+      interest.reset(new Interest());
+      interest->wireDecode(element, elementLength, *TlvWireFormat::get());
+    }
+    else if (decoder.peekType(ndn_Tlv_Data, elementLength)) {
+      data.reset(new Data());
+      data->wireDecode(element, elementLength, *TlvWireFormat::get());
+    }
+  }
+  else {
+    // Binary XML.
+    BinaryXmlDecoder decoder(element, elementLength);
+    if (decoder.peekDTag(ndn_BinaryXml_DTag_Interest)) {
+      interest.reset(new Interest());
+      interest->wireDecode(element, elementLength, *BinaryXmlWireFormat::get());
+    }
+    else if (decoder.peekDTag(ndn_BinaryXml_DTag_ContentObject)) {
+      data.reset(new Data());
+      data->wireDecode(element, elementLength, *BinaryXmlWireFormat::get());
+    }
+  }
   
-  if (decoder.peekDTag(ndn_BinaryXml_DTag_Interest)) {
-    ptr_lib::shared_ptr<Interest> interest(new Interest());
-    interest->wireDecode(element, elementLength);
-    
+  // Now process as Interest or Data.
+  if (interest) {
     RegisteredPrefix *entry = getEntryForRegisteredPrefix(interest->getName());
     if (entry)
       entry->getOnInterest()(entry->getPrefix(), interest, *transport_, entry->getRegisteredPrefixId());
   }
-  else if (decoder.peekDTag(ndn_BinaryXml_DTag_ContentObject)) {
-    ptr_lib::shared_ptr<Data> data(new Data());
-    data->wireDecode(element, elementLength);
-    
+  else if (data) {
     int iPitEntry = getEntryIndexForExpressedInterest(data->getName());
     if (iPitEntry >= 0) {
       // Copy pointers to the needed objects and remove the PIT entry before the calling the callback.
