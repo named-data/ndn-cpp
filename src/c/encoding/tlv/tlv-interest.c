@@ -104,10 +104,9 @@ static ndn_Error
 decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Selectors, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Selectors, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
 
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
        (decoder, ndn_Tlv_MinSuffixComponents, endOffset, &interest->minSuffixComponents)))
@@ -129,8 +128,8 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
   // 0 means the ndn_Interest_ANSWER_STALE bit is not set. -1 is the default where mustBeFresh is false.
   interest->answerOriginKind = (mustBeFresh ? 0 : -1);
 
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
   return NDN_ERROR_success;  
 }
@@ -139,10 +138,9 @@ ndn_Error
 ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Interest, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Interest, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
     
   if ((error = ndn_decodeTlvName(&interest->name, decoder)))
     return error;

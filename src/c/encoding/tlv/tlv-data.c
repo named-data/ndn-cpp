@@ -148,10 +148,9 @@ static ndn_Error
 decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_MetaInfo, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_MetaInfo, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
 
   // The ContentType enum is set up with the correct integer for each NDN-TLV ContentType.
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
@@ -169,8 +168,8 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   metaInfo->timestampMilliseconds = -1;
   ndn_NameComponent_initialize(&metaInfo->finalBlockID, 0, 0);  
   
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
   return NDN_ERROR_success;    
 }
@@ -179,10 +178,9 @@ static ndn_Error
 decodeKeyLocator(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_KeyLocator, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_KeyLocator, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
 
   int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
@@ -226,10 +224,9 @@ static ndn_Error
 decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_SignatureInfo, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_SignatureInfo, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
 
   uint64_t signatureType;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv(decoder, ndn_Tlv_SignatureType, &signatureType)))
@@ -247,8 +244,8 @@ decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *
   ndn_Blob_initialize(&signatureInfo->digestAlgorithm, 0, 0);
   ndn_Blob_initialize(&signatureInfo->witness, 0, 0);
   
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
   return NDN_ERROR_success;    
 }
@@ -258,10 +255,9 @@ ndn_decodeTlvData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t length;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Data, &length)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Data, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + length;
     
   *signedPortionBeginOffset = decoder->offset;
 
@@ -279,8 +275,8 @@ ndn_decodeTlvData
   if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_SignatureValue, &data->signature.signature)))
     return error;  
       
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
   return NDN_ERROR_success;
 }

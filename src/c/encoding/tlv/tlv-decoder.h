@@ -83,6 +83,45 @@ ndn_Error
 ndn_TlvDecoder_readTypeAndLength(struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *length);
 
 /**
+ * Decode the type and length from self's input starting at offset, expecting the type to be expectedType.
+ * Update offset.  Also make sure the decoded length does not exceed the number of bytes remaining in the input.
+ * Set endOffset to the offset of the end of this parent TLV, which is used in decoding optional nested TLVs.
+ * After reading all nested TLVs, call ndn_TlvDecoder_finishNestedTlvs.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param expectedType The expected type.
+ * @param endOffset Return the offset of the end of the parent TLV.
+ * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
+ * exceeds the number of bytes remaining.
+ */
+static inline ndn_Error 
+ndn_TlvDecoder_readNestedTlvsStart(struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *endOffset)
+{
+  ndn_Error error;
+  size_t length;
+  if ((error = ndn_TlvDecoder_readTypeAndLength(self, expectedType, &length)))
+    return error;
+  *endOffset = self->offset + length;
+  
+  return NDN_ERROR_success;
+}
+
+/**
+ * Call this after reading all nested TLVs to check if the current offset matches the endOffset returned by
+ * ndn_TlvDecoder_readNestedTlvsStart.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param endOffset The offset of the end of the parent TLV, returned by ndn_TlvDecoder_readNestedTlvsStart.
+ * @return 0 for success, else an error code if the TLV length does not equal the total length of nested TLVs
+ */
+static inline ndn_Error
+ndn_TlvDecoder_finishNestedTlvs(struct ndn_TlvDecoder *self, size_t endOffset)
+{
+  if (self->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+
+  return NDN_ERROR_success;  
+}
+
+/**
  * Decode the type from self's input starting at offset, and if it is the expectedType,
  * then set gotExpectedType to 1, else 0.  However, if self->offset is greater than or equal to endOffset,
  * then set gotExpectedType to 0 and don't try to read the type.

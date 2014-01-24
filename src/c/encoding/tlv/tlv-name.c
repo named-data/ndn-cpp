@@ -31,10 +31,9 @@ ndn_Error
 ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
-  size_t nameValueLength;
-  if ((error = ndn_TlvDecoder_readTypeAndLength(decoder, ndn_Tlv_Name, &nameValueLength)))
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Name, &endOffset)))
     return error;
-  size_t endOffset = decoder->offset + nameValueLength;
     
   name->nComponents = 0;
   while (decoder->offset < endOffset) {
@@ -45,8 +44,8 @@ ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
       return error;
   }
    
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
   
   return NDN_ERROR_success;
 }
