@@ -35,6 +35,7 @@ public:
    * then return false and don't try to read the type.
    * Do not update offset, including if throwing an exception.
    * @param expectedType The expected type.
+   * @param endOffset The offset of the end of the parent TLV.
    * @return True if got the expected type, else false.
    */
   bool 

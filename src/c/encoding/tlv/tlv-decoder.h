@@ -89,7 +89,7 @@ ndn_TlvDecoder_readTypeAndLength(struct ndn_TlvDecoder *self, unsigned int expec
  * Do not update offset, including if returning an error.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param expectedType the expected type.
- * @param endOffset The offset of the end of the TLV.
+ * @param endOffset The offset of the end of the parent TLV.
  * @param gotExpectedType Return a 1 if got the expected type, else 0
  * @return 0 for success, else an error code for read past the end of the input.
  */
@@ -174,7 +174,7 @@ ndn_TlvDecoder_readNonNegativeIntegerTlv(struct ndn_TlvDecoder *self, unsigned i
  * then set value to -1 and don't try to read the type.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param expectedType The expected type.
- * @param endOffset The offset of the end of the TLV.
+ * @param endOffset The offset of the end of the parent TLV.
  * @param value Return the integer (converted to int) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
@@ -188,7 +188,7 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
  * However, if self->offset is greater than or equal to endOffset, then set value to -1 and don't try to read the type.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param expectedType The expected type.
- * @param endOffset The offset of the end of the TLV.
+ * @param endOffset The offset of the end of the parent TLV.
  * @param value Return the integer (converted to double) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
@@ -226,7 +226,7 @@ ndn_TlvDecoder_readBlobTlv
  * then set value to 0 and don't try to read the type.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param expectedType The expected type.
- * @param endOffset The offset of the end of the TLV.
+ * @param endOffset The offset of the end of the parent TLV.
  * @param value Return 1 or 0 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
