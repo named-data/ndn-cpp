@@ -9,22 +9,24 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-entry.hpp>
-#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include "../c/encoding/binary-xml-interest.h"
 #include "../c/encoding/binary-xml-data.h"
 #include "../c/encoding/binary-xml-forwarding-entry.h"
 #include "binary-xml-encoder.hpp"
 #include "binary-xml-decoder.hpp"
+#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 
 using namespace std;
 
 namespace ndn {
 
+BinaryXmlWireFormat* BinaryXmlWireFormat::instance_ = 0;
+
 // This is declared in the WireFormat class.
 WireFormat*
 WireFormat::newInitialDefaultWireFormat() 
 {
-  return new BinaryXmlWireFormat();
+  return BinaryXmlWireFormat::get();
 }
   
 Blob 

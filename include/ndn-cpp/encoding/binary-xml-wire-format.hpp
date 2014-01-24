@@ -19,6 +19,21 @@ namespace ndn {
 class BinaryXmlWireFormat : public WireFormat {
 public:
   /**
+   * Get a singleton instance of a BinaryXmlWireFormat.  Assuming that the default wire format was set with
+   * WireFormat::setDefaultWireFormat(BinaryXmlWireFormat::get()), you can check if this is the default wire encoding with
+   * if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()).
+   * @return A pointer to the singleton instance.
+   */
+  static BinaryXmlWireFormat* 
+  get()
+  {
+    if (!instance_)
+      instance_ = new BinaryXmlWireFormat();
+    
+    return instance_;
+  }
+  
+  /**
    * Encode interest in binary XML and return the encoding.
    * @param interest The Interest object to encode.
    * @return A Blob containing the encoding.
@@ -80,6 +95,9 @@ public:
    */
   virtual void 
   decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
+  
+private:
+  static BinaryXmlWireFormat* instance_;
 };
   
 }
