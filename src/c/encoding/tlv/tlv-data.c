@@ -169,8 +169,8 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   metaInfo->timestampMilliseconds = -1;
   ndn_NameComponent_initialize(&metaInfo->finalBlockID, 0, 0);  
   
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;    
 }
@@ -216,8 +216,8 @@ decodeKeyLocator(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *dec
       return NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type;
   }
   
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;    
 }
@@ -247,8 +247,8 @@ decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *
   ndn_Blob_initialize(&signatureInfo->digestAlgorithm, 0, 0);
   ndn_Blob_initialize(&signatureInfo->witness, 0, 0);
   
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;    
 }
@@ -279,8 +279,8 @@ ndn_decodeTlvData
   if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_SignatureValue, &data->signature.signature)))
     return error;  
       
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;
 }

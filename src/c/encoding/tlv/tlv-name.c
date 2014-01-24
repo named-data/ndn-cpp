@@ -45,8 +45,8 @@ ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
       return error;
   }
    
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
   
   return NDN_ERROR_success;
 }

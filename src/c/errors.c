@@ -85,6 +85,8 @@ char *ndn_getErrorString(int error)
     return      "Did not get the expected TLV type";
   case NDN_ERROR_TLV_length_exceeds_buffer_length:
     return      "TLV length exceeds buffer length";
+  case NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs:
+    return      "TLV length does not equal total length of nested TLVs";
   case NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type:
     return      "decodeSignatureInfo unrecognized SignatureInfo type";
   case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:

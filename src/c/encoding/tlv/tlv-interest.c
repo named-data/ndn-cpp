@@ -129,8 +129,8 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
   // 0 means the ndn_Interest_ANSWER_STALE bit is not set. -1 is the default where mustBeFresh is false.
   interest->answerOriginKind = (mustBeFresh ? 0 : -1);
 
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;  
 }
@@ -175,8 +175,8 @@ ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *deco
        (decoder, ndn_Tlv_InterestLifetime, endOffset, &interest->interestLifetimeMilliseconds)))
     return error;
   
-  // Set the offset to the expected value in case the last sub TLV was not aligned.
-  decoder->offset = endOffset;
+  if (decoder->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
   return NDN_ERROR_success;
 }
