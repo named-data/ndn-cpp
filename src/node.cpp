@@ -160,6 +160,7 @@ Node::registerPrefix
     NdndIdFetcher fetcher
       (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
         (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags)));
+    // Always encode as BinaryXml since the internals of ndnd expect it.
     // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
     expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, *BinaryXmlWireFormat::get());
   }
