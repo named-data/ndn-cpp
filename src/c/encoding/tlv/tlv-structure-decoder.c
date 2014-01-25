@@ -1,0 +1,184 @@
+/**
+ * Copyright (C) 2014 Regents of the University of California.
+ * @author: Jeff Thompson <jefft0@remap.ucla.edu>
+ * See COPYING for copyright and distribution information.
+ */
+
+#include "../../util/ndn_memory.h"
+#include "tlv.h"
+#include "tlv-decoder.h"
+#include "tlv-structure-decoder.h"
+
+void 
+ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self) 
+{
+  self->gotElementEnd = 0;
+  self->offset = 0;
+  self->state = ndn_TlvStructureDecoder_READ_TYPE;
+  self->headerLength = 0;
+  self->useHeaderBuffer = 0;
+  self->nBytesToRead = 0;
+}
+
+ndn_Error 
+ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength) 
+{
+  if (self->gotElementEnd)
+    // Someone is calling when we already got the end.
+    return NDN_ERROR_success;
+  
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  
+  while (1) {
+    if (self->offset >= inputLength)
+      // All the cases assume we have some input. Return and wait for more.
+      return NDN_ERROR_success;
+    
+    switch (self->state) {
+      case ndn_TlvStructureDecoder_READ_TYPE:
+      {
+        unsigned int firstOctet = (unsigned int)input[self->offset++];
+        if (firstOctet < 253)
+          // The value is simple, so we can skip straight to reading the length.
+          self->state = ndn_TlvStructureDecoder_READ_LENGTH;
+        else {
+          // Set up to skip the type bytes.
+          if (firstOctet == 253)
+            self->nBytesToRead = 2;
+          else if (firstOctet == 254)
+            self->nBytesToRead = 4;
+          else
+            // value == 255.
+            self->nBytesToRead = 8;
+
+          self->state = ndn_TlvStructureDecoder_READ_TYPE_BYTES;
+        }
+        break;
+      }
+      case ndn_TlvStructureDecoder_READ_TYPE_BYTES:
+      {
+        size_t nRemainingBytes = inputLength - self->offset;
+        if (nRemainingBytes < self->nBytesToRead) {
+          // Need more.
+          self->offset += nRemainingBytes;
+          self->nBytesToRead -= nRemainingBytes;
+          return NDN_ERROR_success;
+        }
+        // Got the type bytes.  Move on to read the length.
+        self->offset += self->nBytesToRead;
+        self->state = ndn_TlvStructureDecoder_READ_LENGTH;
+        break;
+      }
+      case ndn_TlvStructureDecoder_READ_LENGTH:
+      {
+        unsigned int firstOctet = (unsigned int)input[self->offset++];
+        if (firstOctet < 253) {
+          // The value is simple, so we can skip straight to reading the value bytes.
+          self->nBytesToRead = (size_t)firstOctet;
+          if (self->nBytesToRead == 0) {
+            // No value bytes to read.  We're finished.
+            self->gotElementEnd = 1;
+            return NDN_ERROR_success;
+          }
+
+          self->state = ndn_TlvStructureDecoder_READ_VALUE_BYTES;
+        }
+        else {
+          // We need to read the bytes in the extended encoding of the length.
+          if (firstOctet == 253)
+            self->nBytesToRead = 2;
+          else if (firstOctet == 254)
+            self->nBytesToRead = 4;
+          else
+            // value == 255.
+            self->nBytesToRead = 8;
+
+          // We need to use firstOctet in the next state.
+          self->firstOctet = firstOctet;
+          self->state = ndn_TlvStructureDecoder_READ_LENGTH_BYTES;
+        }
+        break;
+      }
+      case ndn_TlvStructureDecoder_READ_LENGTH_BYTES:
+      {
+        size_t startingHeaderLength = self->headerLength;
+        while (1) {
+          if (self->offset >= inputLength) {
+            // We can't get all of the header bytes from this input. Save in headerBuffer.
+            if (self->headerLength > sizeof(self->headerBuffer))
+              return NDN_ERROR_cannot_store_more_header_bytes_than_the_size_of_headerBuffer;
+            self->useHeaderBuffer = 1;
+            size_t nNewBytes = self->headerLength - startingHeaderLength;
+            ndn_memcpy(self->headerBuffer + startingHeaderLength, input + (self->offset - nNewBytes), nNewBytes);
+
+            return NDN_ERROR_success;
+          }
+          ++self->offset;
+          ++self->headerLength;
+          if (self->headerLength >= self->nBytesToRead)
+            // Break and read the header.
+            break;
+        }
+
+        // Read the length and set nBytesToRead.
+        if (self->useHeaderBuffer) {
+          // Copy the remaining bytes into headerBuffer.
+          if (self->headerLength > sizeof(self->headerBuffer))
+            return NDN_ERROR_cannot_store_more_header_bytes_than_the_size_of_headerBuffer;
+          size_t nNewBytes = self->headerLength - startingHeaderLength;
+          ndn_memcpy(self->headerBuffer + startingHeaderLength, input + (self->offset - nNewBytes), nNewBytes);
+
+          // Use a local decoder just for the headerBuffer.
+          struct ndn_TlvDecoder bufferDecoder;
+          ndn_TlvDecoder_initialize(&bufferDecoder, self->headerBuffer, sizeof(self->headerBuffer));
+          uint64_t lengthVarNumber;
+          ndn_Error error;
+          if ((error = ndn_TlvDecoder_readExtendedVarNumber(&bufferDecoder, self->firstOctet, &lengthVarNumber)))
+            return error;
+          // Replace nBytesToRead with the length of the value.
+          // Silently ignore if the length is larger than size_t.
+          self->nBytesToRead = (size_t)lengthVarNumber;
+        }
+        else {
+          // We didn't have to use the headerBuffer.
+          ndn_TlvDecoder_seek(&decoder, self->offset - self->headerLength);
+
+          uint64_t lengthVarNumber;
+          ndn_Error error;
+          if ((error = ndn_TlvDecoder_readExtendedVarNumber(&decoder, self->firstOctet, &lengthVarNumber)))
+            return error;
+          // Silently ignore if the length is larger than size_t.
+          self->nBytesToRead = (size_t)lengthVarNumber;
+        }
+
+        if (self->nBytesToRead == 0) {
+          // No value bytes to read.  We're finished.
+          self->gotElementEnd = 1;
+          return NDN_ERROR_success;
+        }
+        
+        // Get ready to read the value bytes.
+        self->state = ndn_TlvStructureDecoder_READ_VALUE_BYTES;
+        break;
+      }
+      case ndn_TlvStructureDecoder_READ_VALUE_BYTES:
+      {
+        size_t nRemainingBytes = inputLength - self->offset;
+        if (nRemainingBytes < self->nBytesToRead) {
+          // Need more.
+          self->offset += nRemainingBytes;
+          self->nBytesToRead -= nRemainingBytes;
+          return NDN_ERROR_success;
+        }
+        // Got the bytes. We're finished.
+        self->offset += self->nBytesToRead;
+        self->gotElementEnd = 1;
+        return NDN_ERROR_success;
+      }
+      default:
+        // We don't expect this to happen.
+        return NDN_ERROR_findElementEnd_unrecognized_state;
+    }
+  }
+}

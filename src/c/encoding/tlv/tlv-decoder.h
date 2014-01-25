@@ -291,6 +291,16 @@ ndn_TlvDecoder_readBooleanTlv
   return NDN_ERROR_success;
 }
 
+/**
+ * Set the offset into the input, used for the next read.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param offset The new offset.
+ */
+static inline void ndn_TlvDecoder_seek(struct ndn_TlvDecoder *self, size_t offset) 
+{
+  self->offset = offset;
+}
+
 #ifdef  __cplusplus
 }
 #endif

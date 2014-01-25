@@ -158,6 +158,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-name.lo \
+	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/transport/socket-transport.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
@@ -184,6 +185,7 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-name.lo \
+	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/transport/socket-transport.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
@@ -671,6 +673,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
+  src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport.h \
@@ -886,6 +889,9 @@ src/c/encoding/tlv/tlv-interest.lo:  \
 	src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/tlv-name.lo: src/c/encoding/tlv/$(am__dirstamp) \
+	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
+src/c/encoding/tlv/tlv-structure-decoder.lo:  \
+	src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/c/transport
@@ -1213,6 +1219,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-encoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-name.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/socket-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/crypto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/dynamic-uint8-array.Plo@am__quote@
