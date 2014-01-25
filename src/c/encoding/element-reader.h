@@ -10,6 +10,7 @@
 #include <ndn-cpp/c/encoding/element-listener.h>
 #include "../errors.h"
 #include "binary-xml-structure-decoder.h"
+#include "tlv/tlv-structure-decoder.h"
 #include "../util/dynamic-uint8-array.h"
 
 #ifdef __cplusplus
@@ -24,10 +25,12 @@ extern "C" {
  */
 struct ndn_ElementReader {
   struct ndn_ElementListener *elementListener;
-  struct ndn_BinaryXmlStructureDecoder structureDecoder;
+  struct ndn_BinaryXmlStructureDecoder binaryXmlStructureDecoder;
+  struct ndn_TlvStructureDecoder tlvStructureDecoder;
   int usePartialData;
   struct ndn_DynamicUInt8Array partialData;
   size_t partialDataLength;
+  int useTlv; /**< boolean */
 };
 
 /**
@@ -43,7 +46,8 @@ static inline void ndn_ElementReader_initialize
    uint8_t *buffer, size_t bufferLength, uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t))
 {
   self->elementListener = elementListener;
-  ndn_BinaryXmlStructureDecoder_initialize(&self->structureDecoder);
+  ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+  ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
   self->usePartialData = 0;
   ndn_DynamicUInt8Array_initialize(&self->partialData, buffer, bufferLength, reallocFunction);
 }
