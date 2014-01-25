@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <ndn-cpp/face.hpp>
 #include "../c/transport/udp-transport.h"
-#include "../c/encoding/binary-xml-element-reader.h"
+#include "../c/encoding/element-reader.h"
 #include "../c/util/ndn_realloc.h"
 #include <ndn-cpp/transport/udp-transport.hpp>
 
@@ -22,7 +22,7 @@ UdpTransport::ConnectionInfo::~ConnectionInfo()
 }
 
 UdpTransport::UdpTransport() 
-  : isConnected_(false), transport_(new struct ndn_UdpTransport), elementReader_(new struct ndn_BinaryXmlElementReader)
+  : isConnected_(false), transport_(new struct ndn_UdpTransport), elementReader_(new struct ndn_ElementReader)
 {
   ndn_UdpTransport_initialize(transport_.get());
   elementReader_->partialData.array = 0;
@@ -40,7 +40,7 @@ UdpTransport::connect(const Transport::ConnectionInfo& connectionInfo, ElementLi
   // TODO: This belongs in the socket listener.
   const size_t initialLength = 1000;
   // Automatically cast elementReader_ to (struct ndn_ElementListener *)
-  ndn_BinaryXmlElementReader_initialize
+  ndn_ElementReader_initialize
     (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), initialLength, ndn_realloc);
   
   isConnected_ = true;
@@ -69,7 +69,7 @@ UdpTransport::processEvents()
   if ((error = ndn_UdpTransport_receive(transport_.get(), buffer, sizeof(buffer), &nBytes)))
     throw runtime_error(ndn_getErrorString(error));  
 
-  ndn_BinaryXmlElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
+  ndn_ElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
 }
 
 bool 

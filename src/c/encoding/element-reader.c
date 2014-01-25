@@ -4,10 +4,10 @@
  * See COPYING for copyright and distribution information.
  */
 
-#include "binary-xml-element-reader.h"
+#include "element-reader.h"
 
-ndn_Error ndn_BinaryXmlElementReader_onReceivedData
-  (struct ndn_BinaryXmlElementReader *self, uint8_t *data, size_t dataLength)
+ndn_Error ndn_ElementReader_onReceivedData
+  (struct ndn_ElementReader *self, uint8_t *data, size_t dataLength)
 {
   // Process multiple objects in the data.
   while(1) {

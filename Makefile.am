@@ -85,10 +85,8 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
   src/c/publisher-public-key-digest.h \
-  src/c/encoding/binary-xml.h \
   src/c/encoding/binary-xml-data.c src/c/encoding/binary-xml-data.h \
   src/c/encoding/binary-xml-decoder.c src/c/encoding/binary-xml-decoder.h \
-  src/c/encoding/binary-xml-element-reader.c src/c/encoding/binary-xml-element-reader.h \
   src/c/encoding/binary-xml-encoder.c src/c/encoding/binary-xml-encoder.h \
   src/c/encoding/binary-xml-forwarding-entry.c src/c/encoding/binary-xml-forwarding-entry.h \
   src/c/encoding/binary-xml-interest.c src/c/encoding/binary-xml-interest.h \
@@ -96,6 +94,8 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/binary-xml-name.c src/c/encoding/binary-xml-name.h \
   src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
   src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \
+  src/c/encoding/binary-xml.h \
+  src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \

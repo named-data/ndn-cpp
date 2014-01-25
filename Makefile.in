@@ -145,7 +145,6 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest.lo src/c/name.lo \
 	src/c/encoding/binary-xml-data.lo \
 	src/c/encoding/binary-xml-decoder.lo \
-	src/c/encoding/binary-xml-element-reader.lo \
 	src/c/encoding/binary-xml-encoder.lo \
 	src/c/encoding/binary-xml-forwarding-entry.lo \
 	src/c/encoding/binary-xml-interest.lo \
@@ -153,6 +152,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/binary-xml-name.lo \
 	src/c/encoding/binary-xml-publisher-public-key-digest.lo \
 	src/c/encoding/binary-xml-structure-decoder.lo \
+	src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv/tlv-data.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
@@ -172,7 +172,6 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest.lo src/c/name.lo \
 	src/c/encoding/binary-xml-data.lo \
 	src/c/encoding/binary-xml-decoder.lo \
-	src/c/encoding/binary-xml-element-reader.lo \
 	src/c/encoding/binary-xml-encoder.lo \
 	src/c/encoding/binary-xml-forwarding-entry.lo \
 	src/c/encoding/binary-xml-interest.lo \
@@ -180,6 +179,7 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/binary-xml-name.lo \
 	src/c/encoding/binary-xml-publisher-public-key-digest.lo \
 	src/c/encoding/binary-xml-structure-decoder.lo \
+	src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv/tlv-data.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
@@ -657,10 +657,8 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
   src/c/publisher-public-key-digest.h \
-  src/c/encoding/binary-xml.h \
   src/c/encoding/binary-xml-data.c src/c/encoding/binary-xml-data.h \
   src/c/encoding/binary-xml-decoder.c src/c/encoding/binary-xml-decoder.h \
-  src/c/encoding/binary-xml-element-reader.c src/c/encoding/binary-xml-element-reader.h \
   src/c/encoding/binary-xml-encoder.c src/c/encoding/binary-xml-encoder.h \
   src/c/encoding/binary-xml-forwarding-entry.c src/c/encoding/binary-xml-forwarding-entry.h \
   src/c/encoding/binary-xml-interest.c src/c/encoding/binary-xml-interest.h \
@@ -668,6 +666,8 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/binary-xml-name.c src/c/encoding/binary-xml-name.h \
   src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
   src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \
+  src/c/encoding/binary-xml.h \
+  src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
@@ -852,9 +852,6 @@ src/c/encoding/binary-xml-data.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/binary-xml-decoder.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
-src/c/encoding/binary-xml-element-reader.lo:  \
-	src/c/encoding/$(am__dirstamp) \
-	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/binary-xml-encoder.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/binary-xml-forwarding-entry.lo:  \
@@ -872,6 +869,8 @@ src/c/encoding/binary-xml-publisher-public-key-digest.lo:  \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/binary-xml-structure-decoder.lo:  \
 	src/c/encoding/$(am__dirstamp) \
+	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
+src/c/encoding/element-reader.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/$(am__dirstamp):
 	@$(MKDIR_P) src/c/encoding/tlv
@@ -1206,7 +1205,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-decoder.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-element-reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-encoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-forwarding-entry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-interest.Plo@am__quote@
@@ -1214,6 +1212,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-publisher-public-key-digest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-structure-decoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/element-reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-encoder.Plo@am__quote@
