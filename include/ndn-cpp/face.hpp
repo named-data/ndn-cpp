@@ -114,13 +114,15 @@ public:
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use 
    * the default flags defined by the default ForwardingFlags constructor.
+   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t 
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags = ForwardingFlags())
+    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+     const ForwardingFlags& flags = ForwardingFlags(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
-    return node_.registerPrefix(prefix, onInterest, onRegisterFailed, flags);
+    return node_.registerPrefix(prefix, onInterest, onRegisterFailed, flags, wireFormat);
   }
 
   /**

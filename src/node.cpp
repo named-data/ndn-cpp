@@ -150,7 +150,8 @@ Node::removePendingInterest(uint64_t pendingInterestId)
 
 uint64_t 
 Node::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags)
+  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+   WireFormat& wireFormat)
 {
   // Get the registeredPrefixId now so we can return it to the caller.
   uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
@@ -159,13 +160,14 @@ Node::registerPrefix
     // First fetch the ndndId of the connected hub.
     NdndIdFetcher fetcher
       (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-        (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags)));
-    // Always encode as BinaryXml since the internals of ndnd expect it.
+        (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat)));
+    // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
     // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-    expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, *BinaryXmlWireFormat::get());
+    expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
   }
   else
-    registerPrefixHelper(registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags);
+    registerPrefixHelper
+      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags, wireFormat);
   
   return registeredPrefixId;
 }
@@ -196,7 +198,8 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
   // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
   info_->node_.ndndId_ = Blob(digest, sizeof(digest));
   info_->node_.registerPrefixHelper
-    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_);
+    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_, 
+     info_->wireFormat_);
 }
 
 void 
@@ -208,7 +211,7 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timed
 void 
 Node::registerPrefixHelper
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
-   const ForwardingFlags& flags)
+   const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   // Create a ForwardingEntry.
   // Note: ndnd ignores any freshness that is larger than 3600 seconds and sets 300 seconds instead.  To register "forever",
@@ -237,8 +240,9 @@ Node::registerPrefixHelper
   
   Interest interest(interestName);
   interest.setScope(1);
-  // Always encode as BinaryXml since the internals of ndnd expect it.
-  Blob encodedInterest = interest.wireEncode(*BinaryXmlWireFormat::get());
+  // Even though the inner Data packet and ForwardingEntry are encoded as BinaryXml, we send the interest using the given
+  //   wire format so that the hub receives (and sends) in the application's desired wire format.
+  Blob encodedInterest = interest.wireEncode(wireFormat);
   
   // Save the onInterest callback and send the registration interest.
   registeredPrefixTable_.push_back(ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));

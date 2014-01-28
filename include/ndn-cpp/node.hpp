@@ -82,11 +82,13 @@ public:
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forward to the application.
+   * @param wireFormat A WireFormat object used to encode the message.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t 
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags);
+    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     WireFormat& wireFormat);
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the pending interest table.  
@@ -276,11 +278,12 @@ private:
        * @param onInterest
        * @param onRegisterFailed
        * @param flags
+       * @param wireFormat
        */
       Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, const OnInterest& onInterest, 
-           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags)
+           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat)
       : node_(*node), registeredPrefixId_(registeredPrefixId), prefix_(new Name(prefix)), onInterest_(onInterest), onRegisterFailed_(onRegisterFailed), 
-        flags_(flags)
+        flags_(flags), wireFormat_(wireFormat)
       {      
       }
       
@@ -290,6 +293,7 @@ private:
       const OnInterest onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
+      WireFormat& wireFormat_;
     };
     
   private:
@@ -320,11 +324,12 @@ private:
    * @param onInterest
    * @param onRegisterFailed
    * @param flags
+   * @param wireFormat
    */  
   void 
   registerPrefixHelper
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, 
-     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags);
+     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat);
   
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
