@@ -184,16 +184,19 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 void 
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& ndndIdData)
 {
-  const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(ndndIdData->getSignature());
-  if (signature && signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0) {
-    // Set the ndndId_ and continue.
-    // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
-    info_->node_.ndndId_ = signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest();
-    info_->node_.registerPrefixHelper
-      (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_);
-  }
-  else
+  // Assume that the content is a DER encoded public key of the ndnd.  Do a quick check that the first byte is for DER encoding.
+  if (ndndIdData->getContent().size() < 1 || ndndIdData->getContent().buf()[0] != 0x30)
     info_->onRegisterFailed_(info_->prefix_);
+  
+  // Get the digest of the public key.
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256(ndndIdData->getContent().buf(), ndndIdData->getContent().size(), digest);
+
+  // Set the ndndId_ and continue.
+  // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
+  info_->node_.ndndId_ = Blob(digest, sizeof(digest));
+  info_->node_.registerPrefixHelper
+    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_);
 }
 
 void 
