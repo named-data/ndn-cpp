@@ -49,6 +49,9 @@ static ndn_Error
 encodeKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signatureInfo = (struct ndn_Signature *)context;
+
+  if ((int)signatureInfo->keyLocator.type < 0)
+    return NDN_ERROR_success;
   
   ndn_Error error;
   // If the KeyName is present, use it instead of PublisherPublicKeyDigest.
@@ -182,6 +185,14 @@ decodeKeyLocator(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *dec
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_KeyLocator, &endOffset)))
     return error;
 
+  if (decoder->offset == endOffset) {
+    // KeyLocator is omitted, so initialize the fields to none.
+    ndn_KeyLocator_initialize
+      (&signatureInfo->keyLocator, signatureInfo->keyLocator.keyName.components, 
+       signatureInfo->keyLocator.keyName.maxComponents);
+    return NDN_ERROR_success;
+  }
+
   int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
     return error;
@@ -214,10 +225,10 @@ decodeKeyLocator(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *dec
       return NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type;
   }
   
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
-  return NDN_ERROR_success;    
+  return NDN_ERROR_success;
 }
 
 static ndn_Error

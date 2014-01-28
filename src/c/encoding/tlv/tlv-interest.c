@@ -173,8 +173,8 @@ ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *deco
        (decoder, ndn_Tlv_InterestLifetime, endOffset, &interest->interestLifetimeMilliseconds)))
     return error;
   
-  if (decoder->offset != endOffset)
-    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
 
   return NDN_ERROR_success;
 }
