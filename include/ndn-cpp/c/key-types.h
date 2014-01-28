@@ -12,11 +12,15 @@ extern "C" {
 #endif
 
 typedef enum {
-  ndn_KeyLocatorType_KEY = 1,
-  ndn_KeyLocatorType_CERTIFICATE = 2,
-  ndn_KeyLocatorType_KEYNAME = 3
+  ndn_KeyLocatorType_KEYNAME = 1,
+  ndn_KeyLocatorType_KEY_LOCATOR_DIGEST = 2,
+  ndn_KeyLocatorType_KEY = 3,
+  ndn_KeyLocatorType_CERTIFICATE = 4
 } ndn_KeyLocatorType;
 
+/**
+ * @deprecated The use of a digest attached to the KeyName is deprecated.
+ */
 typedef enum {
   ndn_KeyNameType_PUBLISHER_PUBLIC_KEY_DIGEST = 1,
   ndn_KeyNameType_PUBLISHER_CERTIFICATE_DIGEST = 2,

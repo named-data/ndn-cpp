@@ -27,6 +27,9 @@ Changes
 Deprecated
 * Interest: Deprecated getAnswerOriginKind.  Use getMustBeFresh.
 * Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
+* KeyLocator: Deprecated setKeyNameType.  If you need a publisher public key digest, set the keyLocatorType to 
+  ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and set the key data to the digest.
+* KeyLocator: Deprecated getKeyNameType.  KEY_LOCATOR_DIGEST is supported as a keyLocatorType.
 * MetaInfo: Deprecated getFreshnessSeconds.  Use Milliseconds getFreshnessPeriod().
 * MetaInfo: Deprecated setFreshnessSeconds.  Use setFreshnessPeriod(Milliseconds).
 * Sha256WithRsaSignature: Deprecated get/setWitness.  Witness is deprecated.
