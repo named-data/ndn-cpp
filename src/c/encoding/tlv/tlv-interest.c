@@ -9,6 +9,38 @@
 #include "tlv-interest.h"
 
 /**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Exclude value.
+ * @param context This is the ndn_Exclude struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error 
+encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
+{
+  struct ndn_Exclude *exclude = (struct ndn_Exclude *)context;
+  
+  // TODO: Do we want to order the components (except for ANY)?
+  ndn_Error error;
+  size_t i;
+  for (i = 0; i < exclude->nEntries; ++i) {
+    struct ndn_ExcludeEntry *entry = &exclude->entries[i];
+    
+    if (entry->type == ndn_Exclude_COMPONENT) {
+      if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_NameComponent, &entry->component.value)))
+        return error;
+    }
+    else if (entry->type == ndn_Exclude_ANY) {
+      if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_Any, 0)))
+        return error;  
+    }
+    else
+      return NDN_ERROR_unrecognized_ndn_ExcludeType;
+  }
+
+  return NDN_ERROR_success;  
+}
+
+/**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
  * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
@@ -28,7 +60,10 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
     return error;
   
   // TODO: Implement ndn_Tlv_PublisherPublicKeyLocator.
-  // TODO: Implement ndn_Tlv_Exclude.
+  
+  if (interest->exclude.nEntries > 0)
+    if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
+      return error;
   
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_ChildSelector, interest->childSelector)))
@@ -101,6 +136,58 @@ ndn_encodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvEncoder *enco
 }
 
 static ndn_Error
+decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
+{
+  ndn_Error error;
+  size_t endOffset;
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Exclude, &endOffset)))
+    return error;
+  
+  exclude->nEntries = 0;
+  while (1) {
+    int gotExpectedTag;
+    
+    if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_NameComponent, endOffset, &gotExpectedTag)))
+      return error;    
+    if (gotExpectedTag) {
+      // Component.
+      struct ndn_Blob component;
+      if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
+        return error;
+    
+      // Add the component entry.
+      if (exclude->nEntries >= exclude->maxEntries)
+        return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+      ndn_ExcludeEntry_initialize(exclude->entries + exclude->nEntries, ndn_Exclude_COMPONENT, component.value, component.length);
+      ++exclude->nEntries;
+
+      continue;
+    }
+    
+    int isAny;
+    if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_Any, endOffset, &isAny)))
+      return error;    
+    if (isAny) {
+      // Add the any entry.
+      if (exclude->nEntries >= exclude->maxEntries)
+        return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+      ndn_ExcludeEntry_initialize(exclude->entries + exclude->nEntries, ndn_Exclude_ANY, 0, 0);
+      ++exclude->nEntries;
+
+      continue;
+    }
+    
+    // Else no more entries.
+    break;
+  }
+  
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
+  
+  return NDN_ERROR_success;
+}
+
+static ndn_Error
 decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
@@ -116,7 +203,16 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
     return error;
 
   // TODO: Implement ndn_Tlv_PublisherPublicKeyLocator.
-  // TODO: Implement ndn_Tlv_Exclude.
+  
+  int gotExpectedType;
+  if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Exclude, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    if ((error = decodeExclude(&interest->exclude, decoder)))
+      return error;
+  }
+  else
+    interest->exclude.nEntries = 0;
   
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
        (decoder, ndn_Tlv_ChildSelector, endOffset, &interest->childSelector)))
