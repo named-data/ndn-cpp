@@ -105,12 +105,14 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
         size_t nRemainingBytes = inputLength - self->offset;
         if (!self->useHeaderBuffer && nRemainingBytes >= self->nBytesToRead) {
           // We don't have to use the headerBuffer.  Set nBytesToRead.
-          ndn_TlvDecoder_seek(&decoder, self->offset - self->headerLength);
+          ndn_TlvDecoder_seek(&decoder, self->offset);
 
           uint64_t lengthVarNumber;
           ndn_Error error;
           if ((error = ndn_TlvDecoder_readExtendedVarNumber(&decoder, self->firstOctet, &lengthVarNumber)))
             return error;
+          // Update self->offset to the decoder's offset after reading.
+          self->offset = decoder.offset;
           // Silently ignore if the length is larger than size_t.
           self->nBytesToRead = (size_t)lengthVarNumber;          
         }
