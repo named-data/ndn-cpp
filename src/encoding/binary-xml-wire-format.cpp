@@ -34,10 +34,12 @@ BinaryXmlWireFormat::encodeInterest(const Interest& interest)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
+  struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
     (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]));
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
   BinaryXmlEncoder encoder;
@@ -53,10 +55,12 @@ BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, si
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
+  struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
     (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]));
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
     
   BinaryXmlDecoder decoder(input, inputLength);  
   ndn_Error error;

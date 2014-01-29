@@ -27,10 +27,12 @@ Tlv1_0a2WireFormat::encodeInterest(const Interest& interest)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
+  struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
     (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]));
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
   TlvEncoder encoder;
@@ -46,10 +48,12 @@ Tlv1_0a2WireFormat::decodeInterest(Interest& interest, const uint8_t *input, siz
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
+  struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
     (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]));
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
     
   TlvDecoder decoder(input, inputLength);  
   ndn_Error error;

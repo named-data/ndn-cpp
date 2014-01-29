@@ -131,9 +131,17 @@ ndn_Error ndn_encodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_
       (encoder, ndn_BinaryXml_DTag_MaxSuffixComponents, interest->maxSuffixComponents)))
     return error;
     
-  // This will skip encoding if there is no publisherPublicKeyDigest.
-  if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&interest->publisherPublicKeyDigest, encoder)))
-    return error;
+  if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST && interest->keyLocator.keyData.length > 0) {
+    // There is a KEY_LOCATOR_DIGEST.  Use this instead of the publisherPublicKeyDigest.
+    if ((error = ndn_BinaryXmlEncoder_writeBlobDTagElement
+        (encoder, ndn_BinaryXml_DTag_PublisherPublicKeyDigest, &interest->keyLocator.keyData)))
+      return error;
+  }
+  else {
+    // This will skip encoding if there is no publisherPublicKeyDigest.
+    if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&interest->publisherPublicKeyDigest, encoder)))
+      return error;
+  }
   
   // This will skip encoding if there is no exclude.
   if ((error = encodeExclude(&interest->exclude, encoder)))
@@ -180,8 +188,15 @@ ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_
       (decoder, ndn_BinaryXml_DTag_MaxSuffixComponents, &interest->maxSuffixComponents)))
     return error;
   
+  // Initially clear the keyLocator.
+  ndn_KeyLocator_initialize(&interest->keyLocator, interest->keyLocator.keyName.components, interest->keyLocator.keyName.maxComponents);
   if ((error = ndn_decodeOptionalBinaryXmlPublisherPublicKeyDigest(&interest->publisherPublicKeyDigest, decoder)))
     return error;
+  if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
+    // We keep the deprecated publisherPublicKeyDigest for backwards compatibility.  Also set the key locator.
+    interest->keyLocator.type = ndn_KeyLocatorType_KEY_LOCATOR_DIGEST;
+    interest->keyLocator.keyData = interest->publisherPublicKeyDigest.publisherPublicKeyDigest;
+  }
   
   int gotExpectedTag;
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Exclude, &gotExpectedTag)))

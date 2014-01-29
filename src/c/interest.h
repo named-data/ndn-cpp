@@ -10,6 +10,7 @@
 #include <ndn-cpp/c/interest-types.h>
 #include "name.h"
 #include "publisher-public-key-digest.h"
+#include "key-locator.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,7 +82,10 @@ struct ndn_Interest {
   struct ndn_Name name;
   int minSuffixComponents;  /**< -1 for none */
   int maxSuffixComponents;  /**< -1 for none */
+  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
+  struct ndn_KeyLocator keyLocator;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
   int answerOriginKind;     /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
@@ -98,10 +102,13 @@ struct ndn_Interest {
  * @param maxNameComponents the number of elements in the allocated nameComponents array
  * @param excludeEntries the pre-allocated array of ndn_ExcludeEntry
  * @param maxExcludeEntries the number of elements in the allocated excludeEntries array
+ * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the keyLocator.
+ * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
 static inline void ndn_Interest_initialize
   (struct ndn_Interest *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents,
-   struct ndn_ExcludeEntry *excludeEntries, size_t maxExcludeEntries) 
+   struct ndn_ExcludeEntry *excludeEntries, size_t maxExcludeEntries, struct ndn_NameComponent *keyNameComponents, 
+   size_t maxKeyNameComponents) 
 {
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   self->minSuffixComponents = -1;
@@ -113,6 +120,7 @@ static inline void ndn_Interest_initialize
   self->scope = -1;
   self->interestLifetimeMilliseconds = -1.0;
   ndn_Blob_initialize(&self->nonce, 0, 0);
+  ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
 }
 
 /**

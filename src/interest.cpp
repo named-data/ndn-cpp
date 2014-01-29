@@ -77,6 +77,7 @@ Interest::set(const struct ndn_Interest& interestStruct)
   maxSuffixComponents_ = interestStruct.maxSuffixComponents;
   
   publisherPublicKeyDigest_.set(interestStruct.publisherPublicKeyDigest);
+  keyLocator_.set(interestStruct.keyLocator);
   
   exclude_.set(interestStruct.exclude);
   childSelector_ = interestStruct.childSelector;
@@ -93,6 +94,7 @@ Interest::get(struct ndn_Interest& interestStruct) const
   interestStruct.minSuffixComponents = minSuffixComponents_;
   interestStruct.maxSuffixComponents = maxSuffixComponents_;
   publisherPublicKeyDigest_.get(interestStruct.publisherPublicKeyDigest);
+  keyLocator_.get(interestStruct.keyLocator);
   exclude_.get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
   interestStruct.answerOriginKind = answerOriginKind_;

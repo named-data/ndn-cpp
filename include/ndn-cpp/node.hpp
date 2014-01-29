@@ -191,6 +191,7 @@ private:
     ptr_lib::shared_ptr<const Interest> interest_;
     std::vector<struct ndn_NameComponent> nameComponents_;
     std::vector<struct ndn_ExcludeEntry> excludeEntries_;
+    std::vector<struct ndn_NameComponent> keyNameComponents_;
     ptr_lib::shared_ptr<struct ndn_Interest> interestStruct_;
   
     static uint64_t lastPendingInterestId_; /**< A class variable used to get the next unique ID. */

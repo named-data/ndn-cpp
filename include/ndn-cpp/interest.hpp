@@ -10,6 +10,7 @@
 
 #include "name.hpp"
 #include "publisher-public-key-digest.hpp"
+#include "key-locator.hpp"
 #include "c/interest-types.h"
 #include "encoding/wire-format.hpp"
 
@@ -329,13 +330,27 @@ public:
   
   int 
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
-  
+ 
+  /**
+   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
+   */
   PublisherPublicKeyDigest& 
   getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_; }
   
+  /**
+   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
+   */
   const PublisherPublicKeyDigest& 
   getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
 
+  const KeyLocator& 
+  getKeyLocator() const { return keyLocator_; }
+  
+  KeyLocator& 
+  getKeyLocator() { return keyLocator_; }
+  
   Exclude& 
   getExclude() { return exclude_; }
   
@@ -425,6 +440,9 @@ public:
   void 
   setNonce(const Blob& nonce) { nonce_ = nonce; }
   
+  void 
+  setKeyLocator(const KeyLocator& keyLocator) { keyLocator_ = keyLocator; }
+
 private:
   void 
   construct() 
@@ -440,7 +458,10 @@ private:
   Name name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
+  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   PublisherPublicKeyDigest publisherPublicKeyDigest_;
+  KeyLocator keyLocator_;
   Exclude exclude_;
   int childSelector_;       /**< -1 for none */
   int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
