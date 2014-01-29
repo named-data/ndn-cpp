@@ -7,7 +7,7 @@
 #ifndef NDN_ELEMENT_LISTENER_H
 #define NDN_ELEMENT_LISTENER_H
 
-#include "../common.h"
+#include <ndn-cpp/c/common.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -7,8 +7,7 @@
 # Public C headers.
 ndn_cpp_c_headers = \
   $(wildcard ndn-cpp/*.h) \
-  $(wildcard ndn-cpp/c/*.*) \
-  $(wildcard ndn-cpp/c/encoding/*.*)
+  $(wildcard ndn-cpp/c/*.*)
 
 # Public C++ headers.
 # Use ndn-cpp/*.hpp instead of *.* to not overwrite *.h from above.

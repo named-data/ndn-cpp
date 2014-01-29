@@ -5,11 +5,35 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include "node.hpp"
 #include <ndn-cpp/face.hpp>
 
 using namespace std;
 
 namespace ndn {
+
+Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
+: node_(new Node(transport, connectionInfo))
+{
+}
+
+Face::Face(const char *host, unsigned short port)
+: node_(new Node(ptr_lib::shared_ptr<TcpTransport>(new TcpTransport()), 
+                 ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port)))
+{
+}
+
+Face::~Face()
+{
+  delete node_;
+}
+
+uint64_t 
+Face::expressInterest
+  (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
+{
+  return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+}
   
 uint64_t 
 Face::expressInterest
@@ -17,19 +41,46 @@ Face::expressInterest
    WireFormat& wireFormat)
 {
   if (interestTemplate)
-    return node_.expressInterest(Interest
+    return node_->expressInterest(Interest
       (name, interestTemplate->getMinSuffixComponents(), interestTemplate->getMaxSuffixComponents(),
        interestTemplate->getPublisherPublicKeyDigest(), interestTemplate->getExclude(),
        interestTemplate->getChildSelector(), interestTemplate->getAnswerOriginKind(),
        interestTemplate->getScope(), interestTemplate->getInterestLifetimeMilliseconds()), onData, onTimeout, wireFormat);
   else
-    return node_.expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);  
+    return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);  
+}
+
+void
+Face::removePendingInterest(uint64_t pendingInterestId)
+{
+  node_->removePendingInterest(pendingInterestId);
+}
+
+uint64_t 
+Face::registerPrefix
+  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+   const ForwardingFlags& flags, WireFormat& wireFormat)
+{
+  return node_->registerPrefix(prefix, onInterest, onRegisterFailed, flags, wireFormat);
+}
+
+void
+Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
+{
+  node_->removeRegisteredPrefix(registeredPrefixId);
+}
+
+void 
+Face::processEvents()
+{
+  // Just call Node's processEvents.
+  node_->processEvents();
 }
 
 void 
 Face::shutdown()
 {
-  node_.shutdown();
+  node_->shutdown();
 }
 
 }

@@ -25,8 +25,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/data-types.h \
   include/ndn-cpp/c/forwarding-flags.h \
   include/ndn-cpp/c/interest-types.h \
-  include/ndn-cpp/c/key-types.h \
-  include/ndn-cpp/c/encoding/element-listener.h
+  include/ndn-cpp/c/key-types.h
 
 # Public C++ headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_cpp_headers in include/Makefile.am.
@@ -39,11 +38,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
   include/ndn-cpp/name.hpp \
-  include/ndn-cpp/node.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
-  include/ndn-cpp/encoding/element-listener.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp \
@@ -95,6 +92,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
   src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \
   src/c/encoding/binary-xml.h \
+  src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
@@ -123,13 +121,13 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/interest.cpp \
   src/key-locator.cpp \
   src/name.cpp \
-  src/node.cpp \
+  src/node.cpp src/node.hpp \
   src/publisher-public-key-digest.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
   src/encoding/binary-xml-wire-format.cpp \
-  src/encoding/element-listener.cpp \
+  src/encoding/element-listener.cpp src/encoding/element-listener.hpp \
   src/encoding/oid.cpp \
   src/encoding/tlv-0_1a2-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \

@@ -5,7 +5,7 @@
  * See COPYING for copyright and distribution information.
  */
 
-#include <ndn-cpp/encoding/element-listener.hpp>
+#include "element-listener.hpp"
 
 namespace ndn {
 

@@ -7,9 +7,9 @@
 
 #include <stdexcept>
 #include <stdlib.h>
-#include <ndn-cpp/node.hpp>
 #include "../c/transport/tcp-transport.h"
 #include "../c/encoding/element-reader.h"
+#include "../encoding/element-listener.hpp"
 #include "../c/util/ndn_realloc.h"
 #include <ndn-cpp/transport/tcp-transport.hpp>
 

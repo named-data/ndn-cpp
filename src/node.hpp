@@ -8,39 +8,17 @@
 #ifndef NDN_NODE_HPP
 #define NDN_NODE_HPP
 
-#include "common.hpp"
-#include "interest.hpp"
-#include "data.hpp"
-#include "transport/tcp-transport.hpp"
-#include "forwarding-flags.hpp"
+#include <ndn-cpp/common.hpp>
+#include <ndn-cpp/interest.hpp>
+#include <ndn-cpp/data.hpp>
+#include <ndn-cpp/forwarding-flags.hpp>
+#include <ndn-cpp/face.hpp>
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
 
 namespace ndn {
 
-/**
- * An OnData function object is used to pass a callback to expressInterest.
- */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&, const ptr_lib::shared_ptr<Data>&)> OnData;
-
-/**
- * An OnTimeout function object is used to pass a callback to expressInterest.
- */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&)> OnTimeout;
-
-/**
- * An OnInterest function object is used to pass a callback to registerPrefix.
- */
-typedef func_lib::function<void
-  (const ptr_lib::shared_ptr<const Name>&, const ptr_lib::shared_ptr<const Interest>&, Transport&, uint64_t)> OnInterest;
-
-/**
- * An OnRegisterFailed function object is used to report when registerPrefix fails.
- */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&)> OnRegisterFailed;
-
-class Face;
 class KeyChain;
     
 class Node : public ElementListener {

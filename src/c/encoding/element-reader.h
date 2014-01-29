@@ -7,7 +7,7 @@
 #ifndef NDN_ELEMENT_READER_H
 #define NDN_ELEMENT_READER_H
 
-#include <ndn-cpp/c/encoding/element-listener.h>
+#include "element-listener.h"
 #include "../errors.h"
 #include "binary-xml-structure-decoder.h"
 #include "tlv/tlv-structure-decoder.h"

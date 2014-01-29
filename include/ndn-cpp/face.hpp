@@ -8,11 +8,37 @@
 #ifndef NDN_FACE_HPP
 #define NDN_FACE_HPP
 
-#include "node.hpp"
+#include "interest.hpp"
+#include "data.hpp"
+#include "forwarding-flags.hpp"
+#include "encoding/wire-format.hpp"
 #include "transport/tcp-transport.hpp"
 
 namespace ndn {
 
+/**
+ * An OnData function object is used to pass a callback to expressInterest.
+ */
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&, const ptr_lib::shared_ptr<Data>&)> OnData;
+
+/**
+ * An OnTimeout function object is used to pass a callback to expressInterest.
+ */
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&)> OnTimeout;
+
+/**
+ * An OnInterest function object is used to pass a callback to registerPrefix.
+ */
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Name>&, const ptr_lib::shared_ptr<const Interest>&, Transport&, uint64_t)> OnInterest;
+
+/**
+ * An OnRegisterFailed function object is used to report when registerPrefix fails.
+ */
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&)> OnRegisterFailed;
+  
+class Node;
+  
 /**
  * The Face class provides the main methods for NDN communication.
  */
@@ -23,22 +49,17 @@ public:
    * @param transport A shared_ptr to a Transport object used for communication.
    * @param transport A shared_ptr to a Transport::ConnectionInfo to be used to connect to the transport.
    */
-  Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
-  : node_(transport, connectionInfo)
-  {
-  }
+  Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo);
   
   /**
    * Create a new Face for communication with an NDN hub at host:port using the default TcpTransport.
    * @param host The host of the NDN hub.
    * @param port The port of the NDN hub. If omitted. use 6363.
    */
-  Face(const char *host, unsigned short port = 6363)
-  : node_(ptr_lib::shared_ptr<TcpTransport>(new TcpTransport()), 
-          ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port))
-  {
-  }
+  Face(const char *host, unsigned short port = 6363);
     
+  ~Face();
+  
   /**
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
    * @param interest A reference to the Interest.  This copies the Interest.
@@ -52,10 +73,7 @@ public:
   uint64_t 
   expressInterest
     (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
-     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-  {
-    return node_.expressInterest(interest, onData, onTimeout, wireFormat);
-  }
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Encode name as an Interest. If interestTemplate is not 0, use its interest selectors.
@@ -100,10 +118,7 @@ public:
    * @param pendingInterestId The ID returned from expressInterest.
    */
   void
-  removePendingInterest(uint64_t pendingInterestId)
-  {
-    node_.removePendingInterest(pendingInterestId);
-  }
+  removePendingInterest(uint64_t pendingInterestId);
   
   /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
@@ -120,10 +135,7 @@ public:
   uint64_t 
   registerPrefix
     (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
-     const ForwardingFlags& flags = ForwardingFlags(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-  {
-    return node_.registerPrefix(prefix, onInterest, onRegisterFailed, flags, wireFormat);
-  }
+     const ForwardingFlags& flags = ForwardingFlags(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the pending interest table.  
@@ -132,10 +144,7 @@ public:
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
-  removeRegisteredPrefix(uint64_t registeredPrefixId)
-  {
-    node_.removeRegisteredPrefix(registeredPrefixId);
-  }
+  removeRegisteredPrefix(uint64_t registeredPrefixId);
   
   /**
    * Process any data to receive or call timeout callbacks.
@@ -145,11 +154,7 @@ public:
    * call this from an main event loop, you may want to catch and log/disregard all exceptions.
    */
   void 
-  processEvents()
-  {
-    // Just call Node's processEvents.
-    node_.processEvents();
-  }
+  processEvents();
 
   /**
    * Shut down and disconnect this Face.
@@ -158,7 +163,7 @@ public:
   shutdown();
   
 private:
-  Node node_;
+  Node *node_;
 };
 
 }
