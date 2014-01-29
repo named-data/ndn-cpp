@@ -53,9 +53,17 @@ public:
   const Blob& 
   getSignature() const { return signature_; }
   
+  /**
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
+   */
   const PublisherPublicKeyDigest& 
   getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
   
+  /**
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
+   */
   PublisherPublicKeyDigest& 
   getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_; }
   
@@ -77,6 +85,10 @@ public:
   void 
   setSignature(const Blob& signature) { signature_ = signature; }
 
+  /**
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
+   */
   void 
   setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) { publisherPublicKeyDigest_ = publisherPublicKeyDigest; }
   
@@ -98,8 +110,11 @@ public:
 
 private:
   Blob digestAlgorithm_; /**< if empty, the default is 2.16.840.1.101.3.4.2.1 (sha-256) */
+  /** @deprecated Witness is deprecated. */
   Blob witness_;
   Blob signature_;
+  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   PublisherPublicKeyDigest publisherPublicKeyDigest_;
   KeyLocator keyLocator_;
 };

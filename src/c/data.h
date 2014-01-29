@@ -25,6 +25,8 @@ struct ndn_Signature {
                                     *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
   struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
   struct ndn_Blob signature;
+  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
 };

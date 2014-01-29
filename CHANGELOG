@@ -28,7 +28,9 @@ Changes
 Deprecated
 * Interest: Deprecated getAnswerOriginKind.  Use getMustBeFresh.
 * Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
-* Interest: Deprecated getPublicKeyLocator.  If the interest has a public key locator, the interest's keyLocator has
+* Interest: Deprecated getPublicKeyLocator.  If the interest has a public key locator, its keyLocator has
+  type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
+* Sha256WithRsaSignature: Deprecated getPublicKeyLocator.  If the signature has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
 * KeyLocator: Deprecated setKeyNameType.  If you need a publisher public key digest, set the keyLocatorType to 
   ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and set the key data to the digest.
