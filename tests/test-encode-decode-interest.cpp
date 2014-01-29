@@ -46,6 +46,22 @@ static void dumpInterest(const Interest& interest)
     cout << "<none>" << endl;
   cout << "publisherPublicKeyDigest: " 
        << (interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? toHex(*interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest()) : "<none>") << endl;
+  cout << "keyLocator: ";
+  if ((int)interest.getKeyLocator().getType() >= 0) {
+    if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
+      cout << "Key: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+    else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
+      cout << "Certificate: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+    else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+      cout << "KeyLocatorDigest: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+    else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
+      cout << "KeyName: " << interest.getKeyLocator().getKeyName().to_uri() << endl;
+    else
+      cout << "<unrecognized ndn_KeyLocatorType " << interest.getKeyLocator().getType() << ">" << endl;
+  }
+  else
+    cout << "<none>" << endl;
+
   cout << "exclude: " 
        << (interest.getExclude().getEntryCount() > 0 ? interest.getExclude().toUri() : "<none>") << endl;
   cout << "lifetimeMilliseconds: ";
