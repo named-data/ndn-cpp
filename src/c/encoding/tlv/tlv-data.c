@@ -204,8 +204,8 @@ decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *
       // For backwards compatibility, also set the publisherPublicKeyDigest.
       signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest = signatureInfo->keyLocator.keyData;
     else
-    // Set publisherPublicKeyDigest to none.
-    ndn_Blob_initialize(&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
+      // Set publisherPublicKeyDigest to none.
+      ndn_Blob_initialize(&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
   }
   else
     return NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type;
