@@ -167,7 +167,6 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/transport/udp-transport.cpp \
   src/util/blob-stream.hpp \
   src/util/blob.cpp \
-  src/util/changed-event.cpp src/util/changed-event.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp
 

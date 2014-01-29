@@ -224,8 +224,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/signature/sha256-with-rsa-handler.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
 	src/transport/udp-transport.lo src/util/blob.lo \
-	src/util/changed-event.lo src/util/dynamic-uint8-vector.lo \
-	src/util/logging.lo
+	src/util/dynamic-uint8-vector.lo src/util/logging.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_bin_test_encode_decode_benchmark_OBJECTS =  \
@@ -742,7 +741,6 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/transport/udp-transport.cpp \
   src/util/blob-stream.hpp \
   src/util/blob.cpp \
-  src/util/changed-event.cpp src/util/changed-event.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp
 
@@ -1092,8 +1090,6 @@ src/util/$(DEPDIR)/$(am__dirstamp):
 	@: > src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/blob.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
-src/util/changed-event.lo: src/util/$(am__dirstamp) \
-	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/dynamic-uint8-vector.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/logging.lo: src/util/$(am__dirstamp) \
@@ -1266,7 +1262,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/udp-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/blob.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/changed-event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/dynamic-uint8-vector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
