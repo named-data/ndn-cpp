@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include "tlv-name.h"
+#include "tlv-key-locator.h"
 #include "tlv-interest.h"
 
 /**
@@ -41,6 +42,26 @@ encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
 }
 
 /**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest 
+ * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
+ * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error 
+encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncoder *encoder)
+{
+  struct ndn_Interest *interest = (struct ndn_Interest *)context;
+
+  ndn_Error error;
+  if ((error = ndn_TlvEncoder_writeBlobTlv
+       (encoder, ndn_Tlv_KeyLocatorDigest, &interest->publisherPublicKeyDigest.publisherPublicKeyDigest)))
+    return error;  
+
+  return NDN_ERROR_success;  
+}
+
+/**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
  * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
@@ -59,7 +80,20 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_MaxSuffixComponents, interest->maxSuffixComponents)))
     return error;
   
-  // TODO: Implement ndn_Tlv_PublisherPublicKeyLocator.
+  // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted to see if we need to
+  //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call 
+  //   with omitZeroLength true.)
+  size_t saveOffset = encoder->offset;
+  if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue, &interest->keyLocator, 1)))
+    return error;
+  if (encoder->offset == saveOffset) {
+    // There is no keyLocator.  If there is a publisherPublicKeyDigest, the encode as KEY_LOCATOR_DIGEST.
+    if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
+      if ((error = ndn_TlvEncoder_writeNestedTlv
+           (encoder, ndn_Tlv_KeyLocator, encodeKeyLocatorPublisherPublicKeyDigestValue, interest, 0)))
+        return error;
+    }
+  }
   
   if (interest->exclude.nEntries > 0)
     if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
@@ -202,9 +236,23 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_MaxSuffixComponents, endOffset, &interest->maxSuffixComponents)))
     return error;
 
-  // TODO: Implement ndn_Tlv_PublisherPublicKeyLocator.
-  
+  // Initially set publisherPublicKeyDigest to none.
+  ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
   int gotExpectedType;
+  if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_KeyLocator, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    if ((error = ndn_decodeTlvKeyLocator(&interest->keyLocator, decoder)))
+      return error;
+    if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+      // For backwards compatibility, also set the publisherPublicKeyDigest.
+      interest->publisherPublicKeyDigest.publisherPublicKeyDigest = interest->keyLocator.keyData;
+  }
+  else
+    // Clear the key locator.
+    ndn_KeyLocator_initialize(&interest->keyLocator, interest->keyLocator.keyName.components, interest->keyLocator.keyName.maxComponents);
+
+  
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Exclude, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {
