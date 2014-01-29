@@ -5,7 +5,28 @@
  */
 
 #include "tlv-name.h"
+#include "tlv-key-locator.h"
 #include "tlv-data.h"
+
+/**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest 
+ * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
+ * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error 
+encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncoder *encoder)
+{
+  struct ndn_Signature *signatureInfo = (struct ndn_Signature *)context;
+
+  ndn_Error error;
+  if ((error = ndn_TlvEncoder_writeBlobTlv
+       (encoder, ndn_Tlv_KeyLocatorDigest, &signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest)))
+    return error;  
+
+  return NDN_ERROR_success;  
+}
 
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the MetaInfo value.
@@ -40,36 +61,6 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the KeyLocator value.
- * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
- * @param encoder the ndn_TlvEncoder which is calling this.
- * @return 0 for success, else an error code.
- */
-static ndn_Error 
-encodeKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
-{
-  struct ndn_Signature *signatureInfo = (struct ndn_Signature *)context;
-
-  if ((int)signatureInfo->keyLocator.type < 0)
-    return NDN_ERROR_success;
-  
-  ndn_Error error;
-  // If the KeyName is present, use it instead of PublisherPublicKeyDigest.
-  if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEYNAME) {
-    if ((error = ndn_encodeTlvName(&signatureInfo->keyLocator.keyName, encoder)))
-      return error;
-  }
-  else if (signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
-    if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_KeyLocatorDigest, &signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest)))
-      return error;  
-  }
-  else
-    return NDN_ERROR_unrecognized_ndn_KeyLocatorType;
-
-  return NDN_ERROR_success;  
-}
-
-/**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the SignatureSha256WithRsa value.
  * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
@@ -84,8 +75,24 @@ encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
   // SignatureType 1 is SignatureSha256WithRsa.
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv(encoder, ndn_Tlv_SignatureType, 1)))
     return error;
-  if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_KeyLocator, encodeKeyLocatorValue, signature, 0)))
-    return error;  
+  // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted.  (When we remove
+  //   the deprecated publisherPublicKeyDigest, we can call normally with omitZeroLength false.)
+  size_t saveOffset = encoder->offset;
+  if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue, &signature->keyLocator, 1)))
+    return error;
+  if (encoder->offset == saveOffset) {
+    // There is no keyLocator.  If there is a publisherPublicKeyDigest, the encode as KEY_LOCATOR_DIGEST.
+    if (signature->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
+      if ((error = ndn_TlvEncoder_writeNestedTlv
+           (encoder, ndn_Tlv_KeyLocator, encodeKeyLocatorPublisherPublicKeyDigestValue, signature, 0)))
+        return error;
+    }
+    else {
+      // Just encode an empty KeyLocator.
+      if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_KeyLocator, 0)))
+        return error;
+    }
+  }
 
   return NDN_ERROR_success;  
 }
@@ -178,60 +185,6 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
 }
 
 static ndn_Error
-decodeKeyLocator(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder)
-{
-  ndn_Error error;
-  size_t endOffset;
-  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_KeyLocator, &endOffset)))
-    return error;
-
-  if (decoder->offset == endOffset) {
-    // KeyLocator is omitted, so initialize the fields to none.
-    ndn_KeyLocator_initialize
-      (&signatureInfo->keyLocator, signatureInfo->keyLocator.keyName.components, 
-       signatureInfo->keyLocator.keyName.maxComponents);
-    return NDN_ERROR_success;
-  }
-
-  int gotExpectedType;
-  if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
-    return error;
-  if (gotExpectedType) {
-    // KeyLocator is a Name.
-    if ((error = ndn_decodeTlvName(&signatureInfo->keyLocator.keyName, decoder)))
-      return error;
-    signatureInfo->keyLocator.type = ndn_KeyLocatorType_KEYNAME;
-    signatureInfo->keyLocator.keyNameType = (ndn_KeyNameType)-1;
-    ndn_Blob_initialize(&signatureInfo->keyLocator.keyData, 0, 0);
-    
-    // Set publisherPublicKeyDigest to none.
-    ndn_Blob_initialize(&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
-  }
-  else {
-    if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_KeyLocatorDigest, endOffset, &gotExpectedType)))
-      return error;
-    if (gotExpectedType) {
-      // KeyLocator is a KeyLocatorDigest (a publisherPublicKeyDigest).
-      if ((error = ndn_TlvDecoder_readBlobTlv
-           (decoder, ndn_Tlv_KeyLocatorDigest, &signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest)))
-        return error;
-      
-      // Set the KeyLocator with its key name to none.
-      signatureInfo->keyLocator.type = (ndn_KeyLocatorType)-1;
-      signatureInfo->keyLocator.keyNameType = (ndn_KeyNameType)-1;      
-      ndn_Blob_initialize(&signatureInfo->keyLocator.keyData, 0, 0);
-    }
-    else
-      return NDN_ERROR_decodeKeyLocator_unrecognized_key_locator_type;
-  }
-  
-  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
-    return error;
-
-  return NDN_ERROR_success;
-}
-
-static ndn_Error
 decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
@@ -245,8 +198,14 @@ decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *
   // TODO: The library needs to handle other signature types than SignatureSha256WithRsa.
   if (signatureType == 1) {
     // SignatureType 1 is SignatureSha256WithRsa.
-    if ((error = decodeKeyLocator(signatureInfo, decoder)))
+    if ((error = ndn_decodeTlvKeyLocator(&signatureInfo->keyLocator, decoder)))
       return error;
+    if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+      // For backwards compatibility, also set the publisherPublicKeyDigest.
+      signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest = signatureInfo->keyLocator.keyData;
+    else
+    // Set publisherPublicKeyDigest to none.
+    ndn_Blob_initialize(&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
   }
   else
     return NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type;

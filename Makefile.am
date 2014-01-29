@@ -100,6 +100,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
+  src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
