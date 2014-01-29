@@ -4,6 +4,7 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include <openssl/rand.h>
 #include "crypto.h"
 
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
@@ -12,4 +13,9 @@ void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
   SHA256_Init(&sha256);
   SHA256_Update(&sha256, data, dataLength);
   SHA256_Final(digest, &sha256);
+}
+
+void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+{
+  RAND_bytes(buffer, (int)bufferLength);
 }

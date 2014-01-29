@@ -8,7 +8,6 @@
 #define NDN_CRYPTO_H
 
 #include <openssl/ssl.h>
-#include <openssl/rsa.h>
 #include <ndn-cpp/c/common.h>
 
 #ifdef __cplusplus
@@ -22,6 +21,13 @@ extern "C" {
  * @param digest A pointer to a buffer of size SHA256_DIGEST_LENGTH to receive the data.
  */
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
+
+/**
+ * Fill the buffer with random bytes.
+ * @param buffer Write the random bytes to this buffer.
+ * @param bufferLength The number of bytes to write to buffer.
+ */
+void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
 
 #ifdef __cplusplus
 }
