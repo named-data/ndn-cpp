@@ -7,6 +7,7 @@
 #include <math.h>
 #include "tlv-name.h"
 #include "tlv-key-locator.h"
+#include "../../util/crypto.h"
 #include "tlv-interest.h"
 
 /**
@@ -141,10 +142,16 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
   // Encode the Nonce as 4 bytes.
   uint8_t nonceBuffer[4];    
   struct ndn_Blob nonceBlob;
-  nonceBlob.length = 4;
-  if (interest->nonce.length < 4) {
-    // TLV encoding requires 4 bytes, so pad out to 4.
-    ndn_memcpy(nonceBuffer, interest->nonce.value, interest->nonce.length);    
+  nonceBlob.length = sizeof(nonceBuffer);
+  if (interest->nonce.length == 0) {
+    // Generate a random nonce.
+    ndn_generateRandomBytes(nonceBuffer, sizeof(nonceBuffer));
+    nonceBlob.value = nonceBuffer;
+  }
+  else if (interest->nonce.length < 4) {
+    // TLV encoding requires 4 bytes, so pad out to 4 using random bytes.
+    ndn_memcpy(nonceBuffer, interest->nonce.value, interest->nonce.length);
+    ndn_generateRandomBytes(nonceBuffer + interest->nonce.length, sizeof(nonceBuffer) - interest->nonce.length);
     nonceBlob.value = nonceBuffer;
   }
   else
