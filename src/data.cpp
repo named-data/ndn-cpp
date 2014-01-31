@@ -6,35 +6,13 @@
  */
 
 #include <ndn-cpp/common.hpp>
-#include <ndn-cpp/data.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "c/data.h"
+#include <ndn-cpp/data.hpp>
 
 using namespace std;
 
 namespace ndn {
-
-Signature::~Signature()
-{
-}
-  
-void 
-MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const 
-{
-  metaInfoStruct.timestampMilliseconds = timestampMilliseconds_;
-  metaInfoStruct.type = type_;
-  metaInfoStruct.freshnessPeriod = freshnessPeriod_;
-  finalBlockID_.get(metaInfoStruct.finalBlockID);
-}
-
-void 
-MetaInfo::set(const struct ndn_MetaInfo& metaInfoStruct)
-{
-  setTimestampMilliseconds(metaInfoStruct.timestampMilliseconds);
-  setType(metaInfoStruct.type);
-  setFreshnessPeriod(metaInfoStruct.freshnessPeriod);
-  setFinalBlockID(Name::Component(Blob(metaInfoStruct.finalBlockID.value)));
-}
 
 Data::Data()
 : signature_(new Sha256WithRsaSignature()), changeCount_(0), getDefaultWireEncodingChangeCount_(0)

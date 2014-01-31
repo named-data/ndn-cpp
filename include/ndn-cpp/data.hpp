@@ -8,158 +8,17 @@
 #ifndef NDN_DATA_HPP
 #define NDN_DATA_HPP
 
-#include <math.h>
-#include "common.hpp"
 #include "name.hpp"
+#include "signature.hpp"
+#include "meta-info.hpp"
 #include "util/signed-blob.hpp"
 #include "c/data-types.h"
 #include "encoding/wire-format.hpp"
 #include "util/change-counter.hpp"
 
-struct ndn_MetaInfo;
-struct ndn_Signature;
 struct ndn_Data;
 
 namespace ndn {
-
-/**
- * A Signature is an abstract base class providing methods to work with the signature information in a Data packet.
- * You must create an object of a subclass, for example Sha256WithRsaSignature.
- */
-class Signature {
-public:
-  /**
-   * Return a pointer to a new Signature which is a copy of this signature.
-   * This is pure virtual, the subclass must implement it.
-   */
-  virtual ptr_lib::shared_ptr<Signature> 
-  clone() const = 0;
-  
-  /**
-   * The virtual destructor.
-   */
-  virtual 
-  ~Signature();
-  
-    /**
-   * Set the signatureStruct to point to the values in this signature object, without copying any memory.
-   * WARNING: The resulting pointers in signatureStruct are invalid after a further use of this object which could reallocate memory.
-   * This is pure virtual, the subclass must implement it.
-   * @param signatureStruct a C ndn_Signature struct where the name components array is already allocated.
-   */
-  virtual void 
-  get(struct ndn_Signature& signatureStruct) const = 0;
-
-  /**
-   * Clear this signature, and set the values by copying from the ndn_Signature struct.
-   * This is pure virtual, the subclass must implement it.
-   * @param signatureStruct a C ndn_Signature struct
-   */
-  virtual void 
-  set(const struct ndn_Signature& signatureStruct) = 0;
-  
-  /**
-   * Get the change count, which is incremented each time this object (or a child object) is changed.
-   * @return The change count.
-   */
-  virtual uint64_t 
-  getChangeCount() const = 0;
-};
-
-/**
- * An MetaInfo holds the meta info which is signed inside the data packet.
- */
-class MetaInfo {
-public:
-  MetaInfo() 
-  : changeCount_(0)
-  {   
-    timestampMilliseconds_ = -1;
-    type_ = ndn_ContentType_BLOB;
-    freshnessPeriod_ = -1;
-  }
-
-  /**
-   * Set the metaInfoStruct to point to the values in this meta info object, without copying any memory.
-   * WARNING: The resulting pointers in metaInfoStruct are invalid after a further use of this object which could reallocate memory.
-   * @param metaInfoStruct a C ndn_MetaInfo struct where the name components array is already allocated.
-   */
-  void 
-  get(struct ndn_MetaInfo& metaInfoStruct) const;
-
-  /**
-   * Clear this meta info, and set the values by copying from the ndn_MetaInfo struct.
-   * @param metaInfoStruct a C ndn_MetaInfo struct
-   */
-  void 
-  set(const struct ndn_MetaInfo& metaInfoStruct);
-
-  MillisecondsSince1970 
-  getTimestampMilliseconds() const { return timestampMilliseconds_; }
-  
-  ndn_ContentType 
-  getType() const { return type_; }
-  
-  Milliseconds 
-  getFreshnessPeriod() const { return freshnessPeriod_; }
-
-  /**
-   * @deprecated Use getFreshnessPeriod.
-   */
-  int 
-  getFreshnessSeconds() const { return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); }
-  
-  const Name::Component& 
-  getFinalBlockID() const { return finalBlockID_; }
-  
-  void 
-  setTimestampMilliseconds(MillisecondsSince1970 timestampMilliseconds) 
-  { 
-    timestampMilliseconds_ = timestampMilliseconds; 
-    ++changeCount_;
-  }
-  
-  void 
-  setType(ndn_ContentType type) 
-  { 
-    type_ = type; 
-    ++changeCount_;
-  }
-
-  void 
-  setFreshnessPeriod(Milliseconds freshnessPeriod) 
-  { 
-    freshnessPeriod_ = freshnessPeriod; 
-    ++changeCount_;
-  }
-  
-  /**
-   * @deprecated Use setFreshnessPeriod.
-   */
-  void 
-  setFreshnessSeconds(int freshnessSeconds) { setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); }
-
-  void 
-  setFinalBlockID(const Name::Component& finalBlockID) 
-  { 
-    finalBlockID_ = finalBlockID; 
-    ++changeCount_;
-  }
-    
-  /**
-   * Get the change count, which is incremented each time this object is changed.
-   * @return The change count.
-   */
-  uint64_t 
-  getChangeCount() const { return changeCount_; }
-
-private:
-  MillisecondsSince1970 timestampMilliseconds_; /**< milliseconds since 1/1/1970. -1 for none */
-  ndn_ContentType type_;         /**< default is ndn_ContentType_BLOB. -1 for none */
-  Milliseconds freshnessPeriod_; /**< -1 for none */
-  Name::Component finalBlockID_; /** size 0 for none */
-  uint64_t changeCount_;
-};
   
 class Data {
 public:

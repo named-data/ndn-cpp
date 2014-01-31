@@ -32,13 +32,16 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/data.hpp \
+  include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
+  include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
+  include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
@@ -117,13 +120,16 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
 libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/common.cpp \
   src/data.cpp \
+  src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
+  src/meta-info.cpp \
   src/name.cpp \
   src/node.cpp src/node.hpp \
   src/publisher-public-key-digest.cpp \
+  src/signature.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \

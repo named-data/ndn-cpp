@@ -24,6 +24,7 @@ Changes
 * In Interest, if any field is changed, clear the nonce.
 * In MetaInfo, added get/setFreshnessPeriod.
 * Changed ndn_ContentType_LINK and ndn_ContentType_KEY to the correct value for NDN-TLV.
+* Moved definitions for classes Exclude, Signature and MetaInfo to their own source code files.
 * In autogen.sh, don't run ./configure since the user may want to run ./configure with options.
 
 Deprecated

@@ -8,9 +8,10 @@
 #ifndef NDN_SHA256_WITH_RSA_SIGNATURE_HPP
 #define NDN_SHA256_WITH_RSA_SIGNATURE_HPP
 
-#include "data.hpp"
+#include "signature.hpp"
 #include "key-locator.hpp"
 #include "publisher-public-key-digest.hpp"
+#include "signature.hpp"
 #include "util/change-counter.hpp"
 
 namespace ndn {

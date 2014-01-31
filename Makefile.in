@@ -192,9 +192,10 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
-	src/common.lo src/data.lo src/face.lo src/forwarding-entry.lo \
-	src/interest.lo src/key-locator.lo src/name.lo src/node.lo \
-	src/publisher-public-key-digest.lo \
+	src/common.lo src/data.lo src/exclude.lo src/face.lo \
+	src/forwarding-entry.lo src/interest.lo src/key-locator.lo \
+	src/meta-info.lo src/name.lo src/node.lo \
+	src/publisher-public-key-digest.lo src/signature.lo \
 	src/sha256-with-rsa-signature.lo \
 	src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
@@ -604,13 +605,16 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/data.hpp \
+  include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
+  include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
+  include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
@@ -691,13 +695,16 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
 libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/common.cpp \
   src/data.cpp \
+  src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
+  src/meta-info.cpp \
   src/name.cpp \
   src/node.cpp src/node.hpp \
   src/publisher-public-key-digest.cpp \
+  src/signature.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
@@ -930,15 +937,18 @@ src/$(DEPDIR)/$(am__dirstamp):
 	@: > src/$(DEPDIR)/$(am__dirstamp)
 src/common.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/data.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/forwarding-entry.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/key-locator.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/meta-info.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/name.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/node.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/publisher-public-key-digest.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/signature.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/sha256-with-rsa-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/encoding/$(am__dirstamp):
@@ -1192,14 +1202,17 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-entry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/meta-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/publisher-public-key-digest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-rsa-signature.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/errors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/forwarding-flags.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/interest.Plo@am__quote@
