@@ -11,6 +11,7 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -126,10 +127,11 @@ static void dumpInterestWithForwardingEntry(const Interest& interest)
   cout << "name[3] decoded as Data, showing content as ForwardingEntry: " << endl;
   
   Data data;
-  data.wireDecode(*interest.getName().getComponent(3).getValue());
+    // Note, until the registration protocol is defined for the new TLV forwarder, we use the old BinaryXml format.
+  data.wireDecode(*interest.getName().getComponent(3).getValue(), *BinaryXmlWireFormat::get());
   
   ForwardingEntry forwardingEntry;
-  forwardingEntry.wireDecode(*data.getContent());
+  forwardingEntry.wireDecode(*data.getContent(), *BinaryXmlWireFormat::get());
   dumpForwardingEntry(forwardingEntry);
 }
 
@@ -137,15 +139,16 @@ int main(int argc, char** argv)
 {
   try {
     Interest interest;
-    interest.wireDecode(Interest1, sizeof(Interest1));
+    // Note, until the registration protocol is defined for the new TLV forwarder, we use the old BinaryXml format.
+    interest.wireDecode(Interest1, sizeof(Interest1), *BinaryXmlWireFormat::get());
     cout << "Interest:" << endl;
     dumpInterestWithForwardingEntry(interest);
     
-    Blob encoding = interest.wireEncode();
+    Blob encoding = interest.wireEncode(*BinaryXmlWireFormat::get());
     cout << endl << "Re-encoded interest " << toHex(*encoding) << endl;
 
     Interest reDecodedInterest;
-    reDecodedInterest.wireDecode(*encoding);
+    reDecodedInterest.wireDecode(*encoding, *BinaryXmlWireFormat::get());
     cout << "Re-decoded Interest:" << endl;
     dumpInterestWithForwardingEntry(reDecodedInterest);
   } catch (exception& e) {
