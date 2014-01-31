@@ -21,6 +21,7 @@ Changes
 * In Interest, added get/setMustBeFresh.
 * In Interest, added keyLocator.  If the interest needs a publisher public key digest, the keyLocator type is 
   ndn_KeyLocatorType_KEY_LOCATOR_DIGEST.
+* In Interest, if any field is changed, clear the nonce.
 * In MetaInfo, added get/setFreshnessPeriod.
 * Changed ndn_ContentType_LINK and ndn_ContentType_KEY to the correct value for NDN-TLV.
 * In autogen.sh, don't run ./configure since the user may want to run ./configure with options.
@@ -30,6 +31,7 @@ Deprecated
 * Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
 * Interest: Deprecated getPublicKeyLocator.  If the interest has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
+* Interest: Deprecated setNonce.  You should let the wire encoder generate a random nonce internally.
 * Sha256WithRsaSignature: Deprecated getPublicKeyLocator.  If the signature has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
 * KeyLocator: Deprecated setKeyNameType.  If you need a publisher public key digest, set the keyLocatorType to 

@@ -84,6 +84,7 @@ Interest::set(const struct ndn_Interest& interestStruct)
   setAnswerOriginKind(interestStruct.answerOriginKind);
   setScope(interestStruct.scope);
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
+  // Set the nonce last so that getNonceChangeCount_ is set correctly.
   setNonce(Blob(interestStruct.nonce));
 }
 
@@ -100,7 +101,7 @@ Interest::get(struct ndn_Interest& interestStruct) const
   interestStruct.answerOriginKind = answerOriginKind_;
   interestStruct.scope = scope_;
   interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
-  nonce_.get(interestStruct.nonce);
+  getNonce().get(interestStruct.nonce);
 }
 
 string 
@@ -124,9 +125,9 @@ Interest::toUri() const
     selectors << "&ndn.PublisherPublicKeyDigest=";
     Name::toEscapedString(*publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest(), selectors);
   }
-  if (nonce_.size() > 0) {
+  if (getNonce().size() > 0) {
     selectors << "&ndn.Nonce=";
-    Name::toEscapedString(*nonce_, selectors);
+    Name::toEscapedString(*getNonce(), selectors);
   }
   if (exclude_.get().size() > 0)
     selectors << "&ndn.Exclude=" << exclude_.get().toUri();

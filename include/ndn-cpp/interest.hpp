@@ -228,7 +228,7 @@ public:
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    nonce_(nonce), changeCount_(0)
+    nonce_(nonce), getNonceChangeCount_(0), changeCount_(0)
   {
   }
 
@@ -250,7 +250,7 @@ public:
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    changeCount_(0)
+    getNonceChangeCount_(0), changeCount_(0)
   {
   }
 
@@ -260,7 +260,7 @@ public:
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
    */
   Interest(const Name& name, Milliseconds interestLifetimeMilliseconds) 
-  : name_(name), changeCount_(0)
+  : name_(name), getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
     interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
@@ -271,7 +271,7 @@ public:
    * @param name The name for the interest.
    */
   Interest(const Name& name) 
-  : name_(name), changeCount_(0)
+  : name_(name), getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
   }
@@ -280,7 +280,7 @@ public:
    * Create a new Interest with an empty name and "none" for all values.
    */
   Interest() 
-  : changeCount_(0)
+  : getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
   }
@@ -398,8 +398,23 @@ public:
   Milliseconds 
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds_; }
 
+  /**
+   * Return the nonce value from the incoming interest.  If you change any of the fields in this Interest object,
+   * then the nonce value is cleared.
+   * @return 
+   */
   const Blob& 
-  getNonce() const { return nonce_; }
+  getNonce() const 
+  { 
+    if (getNonceChangeCount_ != getChangeCount()) {
+      // The values have changed, so the existing nonce is invalidated.
+      // This method can be called on a const object, but we want to be able to update the default cached value.
+      const_cast<Interest*>(this)->nonce_ = Blob();
+      const_cast<Interest*>(this)->getNonceChangeCount_ = getChangeCount();
+    }
+    
+    return nonce_; 
+  }
   
   /**
    * Clear this interest, and set the values by copying from the interest struct.
@@ -482,11 +497,16 @@ public:
     ++changeCount_;
   }
 
+  /**
+   * @deprecated You should let the wire encoder generate a random nonce internally before sending the interest.
+   */
   void 
   setNonce(const Blob& nonce) 
   { 
     nonce_ = nonce; 
+    // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
     ++changeCount_;
+    getNonceChangeCount_ = getChangeCount();
   }
   
   void 
@@ -541,6 +561,7 @@ private:
   int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
+  uint64_t getNonceChangeCount_;
   uint64_t changeCount_;
 };
   
