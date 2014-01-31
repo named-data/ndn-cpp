@@ -13,6 +13,7 @@
 #include "key-locator.hpp"
 #include "c/interest-types.h"
 #include "encoding/wire-format.hpp"
+#include "util/change-counter.hpp"
 
 struct ndn_ExcludeEntry;
 struct ndn_Exclude;
@@ -29,6 +30,7 @@ public:
    * Create a new Exclude with no entries.
    */
   Exclude() 
+  : changeCount_(0)
   {
   }
 
@@ -130,6 +132,7 @@ public:
   appendAny()
   {    
     entries_.push_back(Entry());
+    ++changeCount_;
     return *this;
   }
   
@@ -143,6 +146,7 @@ public:
   appendComponent(const uint8_t *component, size_t componentLength) 
   {
     entries_.push_back(Entry(component, componentLength));
+    ++changeCount_;
     return *this;
   }
 
@@ -155,6 +159,7 @@ public:
   appendComponent(const Blob &component) 
   {
     entries_.push_back(Entry(component));
+    ++changeCount_;
     return *this;
   }
 
@@ -177,6 +182,7 @@ public:
   clear() 
   {
     entries_.clear();
+    ++changeCount_;
   }
   
   /**
@@ -185,9 +191,17 @@ public:
    */
   std::string 
   toUri() const;
+
+  /**
+   * Get the change count, which is incremented each time this object is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const { return changeCount_; }
   
 private:
   std::vector<Entry> entries_;
+  uint64_t changeCount_;
 };
 
 /**
@@ -212,9 +226,9 @@ public:
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
     int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce) 
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  nonce_(nonce)
+    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
+    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+    nonce_(nonce), changeCount_(0)
   {
   }
 
@@ -234,8 +248,9 @@ public:
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
     int scope, Milliseconds interestLifetimeMilliseconds) 
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds)
+    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
+    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+    changeCount_(0)
   {
   }
 
@@ -245,7 +260,7 @@ public:
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
    */
   Interest(const Name& name, Milliseconds interestLifetimeMilliseconds) 
-  : name_(name)
+  : name_(name), changeCount_(0)
   {
     construct();
     interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
@@ -256,7 +271,7 @@ public:
    * @param name The name for the interest.
    */
   Interest(const Name& name) 
-  : name_(name)
+  : name_(name), changeCount_(0)
   {
     construct();
   }
@@ -265,6 +280,7 @@ public:
    * Create a new Interest with an empty name and "none" for all values.
    */
   Interest() 
+  : changeCount_(0)
   {
     construct();
   }
@@ -320,10 +336,10 @@ public:
   get(struct ndn_Interest& interestStruct) const;
 
   Name& 
-  getName() { return name_; }
+  getName() { return name_.get(); }
   
   const Name& 
-  getName() const { return name_; }
+  getName() const { return name_.get(); }
   
   int 
   getMinSuffixComponents() const { return minSuffixComponents_; }
@@ -336,26 +352,26 @@ public:
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_; }
+  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
   
   /**
    * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   const PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
+  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
 
   const KeyLocator& 
-  getKeyLocator() const { return keyLocator_; }
+  getKeyLocator() const { return keyLocator_.get(); }
   
   KeyLocator& 
-  getKeyLocator() { return keyLocator_; }
+  getKeyLocator() { return keyLocator_.get(); }
   
   Exclude& 
-  getExclude() { return exclude_; }
+  getExclude() { return exclude_.get(); }
   
   const Exclude& 
-  getExclude() const { return exclude_; }
+  getExclude() const { return exclude_.get(); }
   
   int 
   getChildSelector() const { return childSelector_; }
@@ -393,22 +409,42 @@ public:
   set(const struct ndn_Interest& interestStruct);
   
   void
-  setName(const Name& name) { name_ = name; }
+  setName(const Name& name) 
+  { 
+    name_.set(name);
+    ++changeCount_;
+  }
   
   void 
-  setMinSuffixComponents(int minSuffixComponents) { minSuffixComponents_ = minSuffixComponents; }
+  setMinSuffixComponents(int minSuffixComponents) 
+  { 
+    minSuffixComponents_ = minSuffixComponents; 
+    ++changeCount_;
+  }
   
   void 
-  setMaxSuffixComponents(int maxSuffixComponents) { maxSuffixComponents_ = maxSuffixComponents; }
+  setMaxSuffixComponents(int maxSuffixComponents) 
+  { 
+    maxSuffixComponents_ = maxSuffixComponents; 
+    ++changeCount_;
+  }
   
   void 
-  setChildSelector(int childSelector) { childSelector_ = childSelector; }
+  setChildSelector(int childSelector) 
+  { 
+    childSelector_ = childSelector; 
+    ++changeCount_;
+  }
 
   /**
    * @deprecated Use setMustBeFresh.
    */
   void 
-  setAnswerOriginKind(int answerOriginKind) { answerOriginKind_ = answerOriginKind; }
+  setAnswerOriginKind(int answerOriginKind) 
+  { 
+    answerOriginKind_ = answerOriginKind; 
+    ++changeCount_;
+  }
 
   /**
    * Set the MustBeFresh flag.
@@ -419,7 +455,7 @@ public:
     if (answerOriginKind_ < 0) {
       // It is is already the default where MustBeFresh is false.
       if (mustBeFresh)
-        answerOriginKind_ = 0;
+        setAnswerOriginKind(0);
     }
     else {
       if (mustBeFresh)
@@ -428,20 +464,57 @@ public:
       else
         // Set the stale bit.
         answerOriginKind_ |= ndn_Interest_ANSWER_STALE;
+      ++changeCount_;
     }
   }
   
   void 
-  setScope(int scope) { scope_ = scope; }
+  setScope(int scope) 
+  { 
+    scope_ = scope; 
+    ++changeCount_;
+  }
 
   void 
-  setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds) { interestLifetimeMilliseconds_ = interestLifetimeMilliseconds; }
+  setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds) 
+  { 
+    interestLifetimeMilliseconds_ = interestLifetimeMilliseconds; 
+    ++changeCount_;
+  }
 
   void 
-  setNonce(const Blob& nonce) { nonce_ = nonce; }
+  setNonce(const Blob& nonce) 
+  { 
+    nonce_ = nonce; 
+    ++changeCount_;
+  }
   
   void 
-  setKeyLocator(const KeyLocator& keyLocator) { keyLocator_ = keyLocator; }
+  setKeyLocator(const KeyLocator& keyLocator) 
+  { 
+    keyLocator_ = keyLocator; 
+    ++changeCount_;
+  }
+
+  /**
+   * Get the change count, which is incremented each time this object (or a child object) is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const
+  {
+    // Make sure each of the checkChanged is called.
+    bool changed = name_.checkChanged();
+    changed = publisherPublicKeyDigest_.checkChanged() || changed;
+    changed = keyLocator_.checkChanged() || changed;
+    changed = exclude_.checkChanged() || changed;
+    if (changed)
+      // A child object has changed, so update the change count.
+      // This method can be called on a const object, but we want to be able to update the changeCount_.
+      ++const_cast<Interest*>(this)->changeCount_;
+    
+    return changeCount_;    
+  }
 
 private:
   void 
@@ -455,19 +528,20 @@ private:
     interestLifetimeMilliseconds_ = -1.0;
   }
   
-  Name name_;
+  ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
   /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  PublisherPublicKeyDigest publisherPublicKeyDigest_;
-  KeyLocator keyLocator_;
-  Exclude exclude_;
+  ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
+  ChangeCounter<KeyLocator> keyLocator_;
+  ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
   int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
   int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
+  uint64_t changeCount_;
 };
   
 }

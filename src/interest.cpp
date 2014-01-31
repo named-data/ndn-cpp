@@ -36,7 +36,7 @@ Exclude::get(struct ndn_Exclude& excludeStruct) const
 void 
 Exclude::set(const struct ndn_Exclude& excludeStruct)
 {
-  entries_.clear();
+  clear();
   for (size_t i = 0; i < excludeStruct.nEntries; ++i) {
     ndn_ExcludeEntry *entry = &excludeStruct.entries[i];
     
@@ -72,30 +72,30 @@ Exclude::toUri() const
 void 
 Interest::set(const struct ndn_Interest& interestStruct) 
 {
-  name_.set(interestStruct.name);
-  minSuffixComponents_ = interestStruct.minSuffixComponents;
-  maxSuffixComponents_ = interestStruct.maxSuffixComponents;
+  name_.get().set(interestStruct.name);
+  setMinSuffixComponents(interestStruct.minSuffixComponents);
+  setMaxSuffixComponents(interestStruct.maxSuffixComponents);
   
-  publisherPublicKeyDigest_.set(interestStruct.publisherPublicKeyDigest);
-  keyLocator_.set(interestStruct.keyLocator);
+  publisherPublicKeyDigest_.get().set(interestStruct.publisherPublicKeyDigest);
+  keyLocator_.get().set(interestStruct.keyLocator);
   
-  exclude_.set(interestStruct.exclude);
-  childSelector_ = interestStruct.childSelector;
-  answerOriginKind_ = interestStruct.answerOriginKind;
-  scope_ = interestStruct.scope;
-  interestLifetimeMilliseconds_ = interestStruct.interestLifetimeMilliseconds;
-  nonce_ = Blob(interestStruct.nonce);
+  exclude_.get().set(interestStruct.exclude);
+  setChildSelector(interestStruct.childSelector);
+  setAnswerOriginKind(interestStruct.answerOriginKind);
+  setScope(interestStruct.scope);
+  setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
+  setNonce(Blob(interestStruct.nonce));
 }
 
 void 
 Interest::get(struct ndn_Interest& interestStruct) const 
 {
-  name_.get(interestStruct.name);
+  name_.get().get(interestStruct.name);
   interestStruct.minSuffixComponents = minSuffixComponents_;
   interestStruct.maxSuffixComponents = maxSuffixComponents_;
-  publisherPublicKeyDigest_.get(interestStruct.publisherPublicKeyDigest);
-  keyLocator_.get(interestStruct.keyLocator);
-  exclude_.get(interestStruct.exclude);
+  publisherPublicKeyDigest_.get().get(interestStruct.publisherPublicKeyDigest);
+  keyLocator_.get().get(interestStruct.keyLocator);
+  exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
   interestStruct.answerOriginKind = answerOriginKind_;
   interestStruct.scope = scope_;
@@ -120,20 +120,20 @@ Interest::toUri() const
     selectors << "&ndn.Scope=" << scope_;
   if (interestLifetimeMilliseconds_ >= 0)
     selectors << "&ndn.InterestLifetime=" << interestLifetimeMilliseconds_;
-  if (publisherPublicKeyDigest_.getPublisherPublicKeyDigest().size() > 0) {
+  if (publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest().size() > 0) {
     selectors << "&ndn.PublisherPublicKeyDigest=";
-    Name::toEscapedString(*publisherPublicKeyDigest_.getPublisherPublicKeyDigest(), selectors);
+    Name::toEscapedString(*publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest(), selectors);
   }
   if (nonce_.size() > 0) {
     selectors << "&ndn.Nonce=";
     Name::toEscapedString(*nonce_, selectors);
   }
-  if (exclude_.size() > 0)
-    selectors << "&ndn.Exclude=" << exclude_.toUri();
+  if (exclude_.get().size() > 0)
+    selectors << "&ndn.Exclude=" << exclude_.get().toUri();
 
   ostringstream result;
 
-  result << name_.toUri();
+  result << name_.get().toUri();
   string selectorsString(selectors.str());
   if (selectorsString.size() > 0) {
     // Replace the first & with ?.
