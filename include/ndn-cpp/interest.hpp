@@ -27,16 +27,8 @@ class Interest {
 public:    
   /**
    * Create a new Interest for the given name and values.
-   * @param name
-   * @param minSuffixComponents
-   * @param maxSuffixComponents
-   * @param publisherPublicKeyDigest
-   * @param exclude
-   * @param childSelector
-   * @param answerOriginKind
-   * @param scope
-   * @param interestLifetimeMilliseconds
-   * @param nonce
+   * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder 
+   * generate a random nonce internally before sending the interest.
    */
   Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
@@ -49,22 +41,27 @@ public:
   }
 
   /**
-   * Create a new Interest with the given name and values, and "none" for the nonce.
-   * @param name
-   * @param minSuffixComponents
-   * @param maxSuffixComponents
-   * @param publisherPublicKeyDigest
-   * @param exclude
-   * @param childSelector
-   * @param answerOriginKind
-   * @param scope
-   * @param interestLifetimeMilliseconds
+   * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
+   * @deprecated You should use the constructor which has KeyLocator instead of the deprecated PublisherPublicKeyDigest.
    */
   Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
     int scope, Milliseconds interestLifetimeMilliseconds) 
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
+    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+    getNonceChangeCount_(0), changeCount_(0)
+  {
+  }
+
+  /**
+   * Create a new Interest with the given name and values, and "none" for the nonce.
+   */
+  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
+    const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind, 
+    int scope, Milliseconds interestLifetimeMilliseconds) 
+  : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
+    keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector), 
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
     getNonceChangeCount_(0), changeCount_(0)
   {

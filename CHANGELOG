@@ -32,6 +32,8 @@ Deprecated
 * Interest: Deprecated setAnswerOriginKind.  Use setMustBeFresh.
 * Interest: Deprecated getPublicKeyLocator.  If the interest has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
+* Interest: Deprecated constructors which take nonce and PublisherPublicKeyDigest.  If needed, use the constructor
+  which takes a KeyLocator instead of the deprecated PublisherPublicKeyDigest.
 * Interest: Deprecated setNonce.  You should let the wire encoder generate a random nonce internally.
 * Sha256WithRsaSignature: Deprecated getPublicKeyLocator.  If the signature has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
