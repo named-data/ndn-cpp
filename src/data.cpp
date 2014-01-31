@@ -30,27 +30,30 @@ MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const
 void 
 MetaInfo::set(const struct ndn_MetaInfo& metaInfoStruct)
 {
-  timestampMilliseconds_ = metaInfoStruct.timestampMilliseconds;
-  type_ = metaInfoStruct.type;
-  freshnessPeriod_ = metaInfoStruct.freshnessPeriod;
-  finalBlockID_ = Name::Component(Blob(metaInfoStruct.finalBlockID.value));
+  setTimestampMilliseconds(metaInfoStruct.timestampMilliseconds);
+  setType(metaInfoStruct.type);
+  setFreshnessPeriod(metaInfoStruct.freshnessPeriod);
+  setFinalBlockID(Name::Component(Blob(metaInfoStruct.finalBlockID.value)));
 }
 
 Data::Data()
-: signature_(new Sha256WithRsaSignature())
+: signature_(new Sha256WithRsaSignature()), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
 {
 }
   
 Data::Data(const Name& name)
-: name_(name), signature_(new Sha256WithRsaSignature())
+: name_(name), signature_(new Sha256WithRsaSignature()), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
 {
 }
 
 Data::Data(const Data& data)
-: name_(data.name_), metaInfo_(data.metaInfo_), content_(data.content_), defaultWireEncoding_(data.defaultWireEncoding_)
+: name_(data.name_), metaInfo_(data.metaInfo_), content_(data.content_), changeCount_(0)
 {
-  if (data.signature_)
-    signature_ = data.signature_->clone();
+  if (data.signature_.get()) {
+    signature_.set(data.signature_.get()->clone());
+    ++changeCount_;
+  }
+  setDefaultWireEncoding(data.defaultWireEncoding_);
 }
 
 Data::~Data()
@@ -59,44 +62,42 @@ Data::~Data()
 
 Data& Data::operator=(const Data& data)
 {
-  if (data.signature_)
-    signature_ = data.signature_->clone();
+  if (data.signature_.get())
+    signature_.set(data.signature_.get()->clone());
   else
-    signature_ = ptr_lib::shared_ptr<Signature>();
+    signature_.set(ptr_lib::shared_ptr<Signature>());
   
-  name_ = data.name_;
-  metaInfo_ = data.metaInfo_;
-  content_ = data.content_;
-  defaultWireEncoding_ = data.defaultWireEncoding_;
-
+  setName(data.name_.get());
+  setMetaInfo(data.metaInfo_.get());
+  setContent(data.content_);
+  setDefaultWireEncoding(data.defaultWireEncoding_);
+  
   return *this;
 }
 
 void 
 Data::get(struct ndn_Data& dataStruct) const 
 {
-  signature_->get(dataStruct.signature);
-  name_.get(dataStruct.name);
-  metaInfo_.get(dataStruct.metaInfo);
+  signature_.get()->get(dataStruct.signature);
+  name_.get().get(dataStruct.name);
+  metaInfo_.get().get(dataStruct.metaInfo);
   content_.get(dataStruct.content);
 }
 
 void 
 Data::set(const struct ndn_Data& dataStruct)
 {
-  signature_->set(dataStruct.signature);
-  name_.set(dataStruct.name);
-  metaInfo_.set(dataStruct.metaInfo);
-  content_ = Blob(dataStruct.content);
-
-  onChanged();
+  signature_.get()->set(dataStruct.signature);
+  name_.get().set(dataStruct.name);
+  metaInfo_.get().set(dataStruct.metaInfo);
+  setContent(Blob(dataStruct.content));
 }
 
 Data& 
 Data::setName(const Name& name) 
 { 
-  name_ = name; 
-  onChanged();
+  name_.set(name); 
+  ++changeCount_;
   return *this;
 }
 
@@ -109,7 +110,7 @@ Data::wireEncode(WireFormat& wireFormat) const
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
-    const_cast<Data*>(this)->defaultWireEncoding_ = wireEncoding;
+    const_cast<Data*>(this)->setDefaultWireEncoding(wireEncoding);
   
   return wireEncoding;
 }
@@ -122,16 +123,9 @@ Data::wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireForma
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
-    defaultWireEncoding_ = SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset);
+    setDefaultWireEncoding(SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset));
   else
-    defaultWireEncoding_ = SignedBlob();
-}
-
-void 
-Data::onChanged()
-{
-  // The values have changed, so the default wire encoding is invalidated.
-  defaultWireEncoding_ = SignedBlob();
+    setDefaultWireEncoding(SignedBlob());
 }
 
 }

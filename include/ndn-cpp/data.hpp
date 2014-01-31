@@ -14,6 +14,7 @@
 #include "util/signed-blob.hpp"
 #include "c/data-types.h"
 #include "encoding/wire-format.hpp"
+#include "util/change-counter.hpp"
 
 struct ndn_MetaInfo;
 struct ndn_Signature;
@@ -56,6 +57,13 @@ public:
    */
   virtual void 
   set(const struct ndn_Signature& signatureStruct) = 0;
+  
+  /**
+   * Get the change count, which is incremented each time this object (or a child object) is changed.
+   * @return The change count.
+   */
+  virtual uint64_t 
+  getChangeCount() const = 0;
 };
 
 /**
@@ -64,6 +72,7 @@ public:
 class MetaInfo {
 public:
   MetaInfo() 
+  : changeCount_(0)
   {   
     timestampMilliseconds_ = -1;
     type_ = ndn_ContentType_BLOB;
@@ -104,28 +113,52 @@ public:
   getFinalBlockID() const { return finalBlockID_; }
   
   void 
-  setTimestampMilliseconds(MillisecondsSince1970 timestampMilliseconds) { timestampMilliseconds_ = timestampMilliseconds; }
+  setTimestampMilliseconds(MillisecondsSince1970 timestampMilliseconds) 
+  { 
+    timestampMilliseconds_ = timestampMilliseconds; 
+    ++changeCount_;
+  }
   
   void 
-  setType(ndn_ContentType type) { type_ = type; }
+  setType(ndn_ContentType type) 
+  { 
+    type_ = type; 
+    ++changeCount_;
+  }
 
   void 
-  setFreshnessPeriod(Milliseconds freshnessPeriod) { freshnessPeriod_ = freshnessPeriod; }
+  setFreshnessPeriod(Milliseconds freshnessPeriod) 
+  { 
+    freshnessPeriod_ = freshnessPeriod; 
+    ++changeCount_;
+  }
   
   /**
    * @deprecated Use setFreshnessPeriod.
    */
   void 
-  setFreshnessSeconds(int freshnessSeconds) { freshnessPeriod_ = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; }
+  setFreshnessSeconds(int freshnessSeconds) { setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); }
 
   void 
-  setFinalBlockID(const Name::Component& finalBlockID) { finalBlockID_ = finalBlockID; }
+  setFinalBlockID(const Name::Component& finalBlockID) 
+  { 
+    finalBlockID_ = finalBlockID; 
+    ++changeCount_;
+  }
     
+  /**
+   * Get the change count, which is incremented each time this object is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const { return changeCount_; }
+
 private:
   MillisecondsSince1970 timestampMilliseconds_; /**< milliseconds since 1/1/1970. -1 for none */
   ndn_ContentType type_;         /**< default is ndn_ContentType_BLOB. -1 for none */
   Milliseconds freshnessPeriod_; /**< -1 for none */
   Name::Component finalBlockID_; /** size 0 for none */
+  uint64_t changeCount_;
 };
   
 class Data {
@@ -210,34 +243,18 @@ public:
   getSignature() const { return signature_.get(); }
   
   Signature* 
-  getSignature() 
-  { 
-    // TODO: Should add an OnChanged listener instead of always calling onChanged.
-    onChanged();
-    return signature_.get(); 
-  }
+  getSignature() { return signature_.get(); }
   
   const Name& 
-  getName() const { return name_; }
+  getName() const { return name_.get(); }
   
-  Name& 
-  getName() 
-  { 
-    // TODO: Should add an OnChanged listener instead of always calling onChanged.
-    onChanged();
-    return name_; 
-  }
+  Name&   
+  getName() { return name_.get(); }
   
   const MetaInfo& 
-  getMetaInfo() const { return metaInfo_; }
+  getMetaInfo() const { return metaInfo_.get(); }
   
-  MetaInfo& 
-  getMetaInfo() 
-  { 
-    // TODO: Should add an OnChanged listener instead of always calling onChanged.
-    onChanged();
-    return metaInfo_; 
-  }
+  MetaInfo& getMetaInfo() { return metaInfo_.get(); }
   
   const Blob& 
   getContent() const { return content_; }
@@ -246,7 +263,17 @@ public:
    * Return a pointer to the defaultWireEncoding.  It may be null.
    */
   const SignedBlob&
-  getDefaultWireEncoding() const { return defaultWireEncoding_; }
+  getDefaultWireEncoding() const 
+  { 
+    if (getDefaultWireEncodingChangeCount_ != getChangeCount()) {
+      // The values have changed, so the default wire encoding is invalidated.
+      // This method can be called on a const object, but we want to be able to update the default cached value.
+      const_cast<Data*>(this)->defaultWireEncoding_ = SignedBlob();
+      const_cast<Data*>(this)->getDefaultWireEncodingChangeCount_ = getChangeCount();
+    }
+    
+    return defaultWireEncoding_; 
+  }
   
   /**
    * Set the signature to a copy of the given signature.
@@ -256,8 +283,8 @@ public:
   Data& 
   setSignature(const Signature& signature) 
   { 
-    signature_ = signature.clone(); 
-    onChanged();
+    signature_.set(signature.clone()); 
+    ++changeCount_;
     return *this;
   }
   
@@ -277,8 +304,8 @@ public:
   Data& 
   setMetaInfo(const MetaInfo& metaInfo) 
   { 
-    metaInfo_ = metaInfo; 
-    onChanged();
+    metaInfo_.set(metaInfo); 
+    ++changeCount_;
     return *this;
   }
 
@@ -290,39 +317,58 @@ public:
   Data& 
   setContent(const std::vector<uint8_t>& content) 
   { 
-    content_ = content; 
-    onChanged();
-    return *this;
+    return setContent(Blob(content));
   }
   
   Data& 
   setContent(const uint8_t* content, size_t contentLength) 
   { 
-    content_ = Blob(content, contentLength); 
-    onChanged();
-    return *this;
+    return setContent(Blob(content, contentLength));
   }
       
   Data& 
   setContent(const Blob& content) 
   { 
     content_ = content;
-    onChanged();
+    ++changeCount_;
     return *this;
   }
 
-private:
   /**
-   * Clear the wire encoding.
+   * Get the change count, which is incremented each time this object (or a child object) is changed.
+   * @return The change count.
    */
-  void 
-  onChanged();
+  uint64_t 
+  getChangeCount() const
+  {
+    // Make sure each of the checkChanged is called.
+    bool changed = signature_.checkChanged();
+    changed = name_.checkChanged() || changed;
+    changed = metaInfo_.checkChanged() || changed;
+    if (changed)
+      // A child object has changed, so update the change count.
+      // This method can be called on a const object, but we want to be able to update the changeCount_.
+      ++const_cast<Data*>(this)->changeCount_;
+    
+    return changeCount_;    
+  }
+
+private:
+  void
+  setDefaultWireEncoding(const SignedBlob& defaultWireEncoding)
+  {
+    defaultWireEncoding_ = defaultWireEncoding;
+    // Set getDefaultWireEncodingChangeCount_ so that the next call to getDefaultWireEncoding() won't clear defaultWireEncoding_.
+    getDefaultWireEncodingChangeCount_ = getChangeCount();
+  }
   
-  ptr_lib::shared_ptr<Signature> signature_;
-  Name name_;
-  MetaInfo metaInfo_;
+  SharedPointerChangeCounter<Signature> signature_;
+  ChangeCounter<Name> name_;
+  ChangeCounter<MetaInfo> metaInfo_;
   Blob content_;
   SignedBlob defaultWireEncoding_;
+  uint64_t getDefaultWireEncodingChangeCount_;
+  uint64_t changeCount_;
 };
   
 }
