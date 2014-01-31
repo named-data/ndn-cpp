@@ -34,7 +34,7 @@ public:
     /**
      * Create a new Name::Component with a null value.
      */
-    Component() 
+    Component()
     {    
     }
   
@@ -249,7 +249,9 @@ public:
   /**
    * Create a new Name with no components.
    */
-  Name() {
+  Name()
+  : changeCount_(0)
+  {
   }
   
   /**
@@ -257,7 +259,7 @@ public:
    * @param components A vector of Component
    */
   Name(const std::vector<Component>& components)
-  : components_(components)
+  : components_(components), changeCount_(0)
   {
   }
   
@@ -266,6 +268,7 @@ public:
    * @param uri The URI string.
    */
   Name(const char* uri)
+  : changeCount_(0)
   {
     set(uri);
   }
@@ -275,6 +278,7 @@ public:
    * @param uri The URI string.
    */
   Name(const std::string& uri)
+  : changeCount_(0)
   {
     set(uri.c_str());
   }
@@ -315,8 +319,7 @@ public:
   Name& 
   append(const uint8_t *value, size_t valueLength) 
   {
-    components_.push_back(Component(value, valueLength));
-    return *this;
+    return append(Component(value, valueLength));
   }
 
   /**
@@ -326,21 +329,20 @@ public:
   Name& 
   append(const std::vector<uint8_t>& value) 
   {
-    components_.push_back(value);
-    return *this;
+    return append(value);
   }
   
   Name& 
   append(const Blob &value)
   {
-    components_.push_back(value);
-    return *this;
+    return append(value);
   }
   
   Name& 
   append(const Component &value)
   {
     components_.push_back(value);
+    ++changeCount_;
     return *this;
   }
   
@@ -412,6 +414,7 @@ public:
   void 
   clear() {
     components_.clear();
+    ++changeCount_;
   }
   
   /**
@@ -482,8 +485,7 @@ public:
   Name& 
   appendSegment(uint64_t segment)
   {
-    components_.push_back(Component::fromNumberWithMarker(segment, 0x00));
-    return *this;
+    return append(Component::fromNumberWithMarker(segment, 0x00));
   }
 
   /**
@@ -495,8 +497,7 @@ public:
   Name& 
   appendVersion(uint64_t version)
   {
-    components_.push_back(Component::fromNumberWithMarker(version, 0xFD));
-    return *this;
+    return append(Component::fromNumberWithMarker(version, 0xFD));
   }
   
   /**
@@ -586,6 +587,13 @@ public:
   const Component& 
   get(int i) const;
     
+  /**
+   * Get the change count, which is incremented each time this object is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const { return changeCount_; }
+  
   /**
    * Compare this to the other Name using NDN canonical ordering.  If the first components of each name are not equal, 
    * this returns -1 if the first comes before the second using the NDN canonical ordering for name components, or 1 if it comes after.
@@ -687,12 +695,8 @@ public:
   //
   // Iterator interface to name components.
   //
-  typedef std::vector<Component>::iterator iterator;
   typedef std::vector<Component>::const_iterator const_iterator;
-  typedef std::vector<Component>::reverse_iterator reverse_iterator;
   typedef std::vector<Component>::const_reverse_iterator const_reverse_iterator;
-  typedef std::vector<Component>::reference reference;
-  typedef std::vector<Component>::const_reference const_reference;
 
   typedef Component partial_type;
 
@@ -703,22 +707,10 @@ public:
   begin() const { return components_.begin(); }
 
   /**
-   * Begin iterator.
-   */
-  iterator
-  begin() { return components_.begin(); }
-
-  /**
    * End iterator (const).
    */
   const_iterator
   end() const { return components_.end(); }
-
-  /**
-   * End iterator.
-   */
-  iterator
-  end() { return components_.end(); }
 
   /**
    * Reverse begin iterator (const).
@@ -727,25 +719,14 @@ public:
   rbegin() const { return components_.rbegin(); }
 
   /**
-   * Reverse begin iterator.
-   */
-  reverse_iterator
-  rbegin() { return components_.rbegin(); }
-
-  /**
    * Reverse end iterator (const).
    */
   const_reverse_iterator
   rend() const { return components_.rend(); }
 
-  /**
-   * Reverse end iterator.
-   */
-  reverse_iterator
-  rend() { return components_.rend(); }
-
 private:
   std::vector<Component> components_;
+  uint64_t changeCount_;
 };  
 
 inline std::ostream&

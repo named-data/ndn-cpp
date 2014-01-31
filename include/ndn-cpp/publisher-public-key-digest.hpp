@@ -22,7 +22,9 @@ namespace ndn {
  */
 class PublisherPublicKeyDigest {
 public:    
-  PublisherPublicKeyDigest() {
+  PublisherPublicKeyDigest() 
+  : changeCount_(0)
+  {
   }
   
   /**
@@ -44,7 +46,11 @@ public:
   getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
 
   void 
-  setPublisherPublicKeyDigest(const Blob& publisherPublicKeyDigest) { publisherPublicKeyDigest_ = publisherPublicKeyDigest; }
+  setPublisherPublicKeyDigest(const Blob& publisherPublicKeyDigest) 
+  { 
+    publisherPublicKeyDigest_ = publisherPublicKeyDigest; 
+    ++changeCount_;
+  }
   
   /**
    * Clear the publisherPublicKeyDigest.
@@ -53,10 +59,19 @@ public:
   clear()
   {
     publisherPublicKeyDigest_.reset();
+    ++changeCount_;
   }
+
+  /**
+   * Get the change count, which is incremented each time this object is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const { return changeCount_; }
 
 private:
   Blob publisherPublicKeyDigest_;
+  uint64_t changeCount_;
 };
   
 }

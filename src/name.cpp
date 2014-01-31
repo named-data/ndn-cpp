@@ -114,7 +114,8 @@ unescape(const string& str)
   return result.str();
 }
 
-uint64_t Name::Component::toNumberWithMarker(uint8_t marker) const
+uint64_t 
+Name::Component::toNumberWithMarker(uint8_t marker) const
 {
   struct ndn_NameComponent componentStruct;
   get(componentStruct);
@@ -192,7 +193,7 @@ Name::Component::compare(const Name::Component& other) const
 void 
 Name::set(const char *uri_cstr) 
 {
-  components_.clear();
+  clear();
   
   string uri = uri_cstr;
   trim(uri);
@@ -240,7 +241,7 @@ Name::set(const char *uri_cstr)
     Component component(fromEscapedString(&uri[0], iComponentStart, iComponentEnd));
     // Ignore illegal components.  This also gets rid of a trailing '/'.
     if (component.getValue())
-      components_.push_back(Component(component));
+      append(component);
     
     iComponentStart = iComponentEnd + 1;
   }
@@ -273,7 +274,7 @@ Name::append(const Name& name)
     return append(Name(name));
 
   for (size_t i = 0; i < name.components_.size(); ++i)
-    components_.push_back(name.components_[i]);
+    append(name.components_[i]);
   
   return *this;
 }

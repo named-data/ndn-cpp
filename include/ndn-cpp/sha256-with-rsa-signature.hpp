@@ -11,6 +11,7 @@
 #include "data.hpp"
 #include "key-locator.hpp"
 #include "publisher-public-key-digest.hpp"
+#include "util/change-counter.hpp"
 
 namespace ndn {
 
@@ -20,6 +21,11 @@ namespace ndn {
  */
 class Sha256WithRsaSignature : public Signature {
 public:
+  Sha256WithRsaSignature()
+  : changeCount_(0)
+  {
+  }
+  
   /**
    * Return a pointer to a new Sha256WithRsaSignature which is a copy of this signature.
    */
@@ -58,42 +64,62 @@ public:
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   const PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
+  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
   
   /**
    * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_; }
+  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
   
   const KeyLocator& 
-  getKeyLocator() const { return keyLocator_; }
+  getKeyLocator() const { return keyLocator_.get(); }
   
   KeyLocator& 
-  getKeyLocator() { return keyLocator_; }
+  getKeyLocator() { return keyLocator_.get(); }
 
   void 
-  setDigestAlgorithm(const Blob& digestAlgorithm) { digestAlgorithm_ = digestAlgorithm; }
+  setDigestAlgorithm(const Blob& digestAlgorithm) 
+  { 
+    digestAlgorithm_ = digestAlgorithm; 
+    ++changeCount_;
+  }
 
   /**
    * @deprecated Witness is deprecated. 
    */
   void 
-  setWitness(const Blob& witness) { witness_ = witness; }
+  setWitness(const Blob& witness) 
+  { 
+    witness_ = witness; 
+    ++changeCount_;
+  }
 
   void 
-  setSignature(const Blob& signature) { signature_ = signature; }
+  setSignature(const Blob& signature) 
+  { 
+    signature_ = signature; 
+    ++changeCount_;
+  }
 
   /**
    * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   void 
-  setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) { publisherPublicKeyDigest_ = publisherPublicKeyDigest; }
+  setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) 
+  { 
+    publisherPublicKeyDigest_.set(publisherPublicKeyDigest); 
+    ++changeCount_;
+  }
   
   void 
-  setKeyLocator(const KeyLocator& keyLocator) { keyLocator_ = keyLocator; }
+  setKeyLocator(const KeyLocator& keyLocator) 
+  { 
+    keyLocator_.set(keyLocator); 
+    ++changeCount_;
+  }
   
   /**
    * Clear all the fields.
@@ -104,8 +130,27 @@ public:
     digestAlgorithm_.reset();
     witness_.reset();
     signature_.reset();
-    publisherPublicKeyDigest_.clear();
-    keyLocator_.clear();
+    publisherPublicKeyDigest_.get().clear();
+    keyLocator_.get().clear();
+    ++changeCount_;
+  }
+
+  /**
+   * Get the change count, which is incremented each time this object (or a child object) is changed.
+   * @return The change count.
+   */
+  virtual uint64_t 
+  getChangeCount() const
+  {
+    // Make sure each of the checkChanged is called.
+    bool changed = publisherPublicKeyDigest_.checkChanged();
+    changed = keyLocator_.checkChanged() || changed;
+    if (changed)
+      // A child object has changed, so update the change count.
+      // This method can be called on a const object, but we want to be able to update the changeCount_.
+      ++const_cast<Sha256WithRsaSignature*>(this)->changeCount_;
+    
+    return changeCount_;    
   }
 
 private:
@@ -115,8 +160,9 @@ private:
   Blob signature_;
   /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  PublisherPublicKeyDigest publisherPublicKeyDigest_;
-  KeyLocator keyLocator_;
+  ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
+  ChangeCounter<KeyLocator> keyLocator_;
+  uint64_t changeCount_;
 };
 
 }

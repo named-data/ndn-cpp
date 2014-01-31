@@ -11,6 +11,7 @@
 #include <vector>
 #include "c/key-types.h"
 #include "name.hpp"
+#include "util/change-counter.hpp"
 
 struct ndn_KeyLocator;
 
@@ -19,7 +20,7 @@ namespace ndn {
 class KeyLocator {
 public:
   KeyLocator()
-  : type_((ndn_KeyLocatorType)-1), keyNameType_((ndn_KeyNameType)-1)
+  : type_((ndn_KeyLocatorType)-1), keyNameType_((ndn_KeyNameType)-1), changeCount_(0)
   {
   }
   
@@ -32,6 +33,8 @@ public:
     type_ = (ndn_KeyLocatorType)-1;
     keyNameType_ = (ndn_KeyNameType)-1;
     keyData_.reset();
+    setKeyName(Name());
+    ++changeCount_;
   }
   
   /**
@@ -56,10 +59,10 @@ public:
   getKeyData() const { return keyData_; }
 
   const Name& 
-  getKeyName() const { return keyName_; }
+  getKeyName() const { return keyName_.get(); }
   
   Name& 
-  getKeyName() { return keyName_; }
+  getKeyName() { return keyName_.get(); }
 
   /**
    * @deprecated The use of a digest attached to the KeyName is deprecated.  KEY_LOCATOR_DIGEST is supported
@@ -69,13 +72,25 @@ public:
   getKeyNameType() const { return keyNameType_; }
 
   void 
-  setType(ndn_KeyLocatorType type) { type_ = type; }
+  setType(ndn_KeyLocatorType type) 
+  { 
+    type_ = type; 
+    ++changeCount_;
+  }
     
   void 
-  setKeyData(const Blob& keyData) { keyData_ = keyData; }
+  setKeyData(const Blob& keyData) 
+  { 
+    keyData_ = keyData; 
+    ++changeCount_;
+  }
 
   void
-  setKeyName(const Name &keyName) { keyName_ = keyName; }
+  setKeyName(const Name &keyName) 
+  { 
+    keyName_.set(keyName); 
+    ++changeCount_;
+  }
   
   /**
    * @deprecated The use of a digest attached to the KeyName is deprecated.  
@@ -83,7 +98,26 @@ public:
    * to the digest.
    */
   void 
-  setKeyNameType(ndn_KeyNameType keyNameType) { keyNameType_ = keyNameType; }
+  setKeyNameType(ndn_KeyNameType keyNameType) 
+  { 
+    keyNameType_ = keyNameType; 
+    ++changeCount_;
+  }
+
+  /**
+   * Get the change count, which is incremented each time this object (or a child object) is changed.
+   * @return The change count.
+   */
+  uint64_t 
+  getChangeCount() const
+  {
+    if (keyName_.checkChanged())
+      // A child object has changed, so update the change count.
+      // This method can be called on a const object, but we want to be able to update the changeCount_.
+      ++const_cast<KeyLocator*>(this)->changeCount_;
+    
+    return changeCount_;    
+  }
 
 private:
   ndn_KeyLocatorType type_; /**< -1 for none */
@@ -96,9 +130,10 @@ private:
     *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_ISSUER_KEY_DIGEST, the publisher issuer key digest. 
     *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_ISSUER_CERTIFICATE_DIGEST, the publisher issuer certificate digest. 
                                 */
-  Name keyName_;                /**< The key name (only used if type_ is ndn_KeyLocatorType_KEYNAME.) */
+  ChangeCounter<Name> keyName_; /**< The key name (only used if type_ is ndn_KeyLocatorType_KEYNAME.) */
   /** @deprecated The use of a digest attached to the KeyName is deprecated. */
   ndn_KeyNameType keyNameType_; /**< The type of data for keyName_, -1 for none. (only used if type_ is ndn_KeyLocatorType_KEYNAME.) */
+  uint64_t changeCount_;
 };
   
 }

@@ -21,7 +21,7 @@ PublisherPublicKeyDigest::get(struct ndn_PublisherPublicKeyDigest& publisherPubl
 void 
 PublisherPublicKeyDigest::set(const struct ndn_PublisherPublicKeyDigest& publisherPublicKeyDigestStruct) 
 {
-  publisherPublicKeyDigest_ = Blob(publisherPublicKeyDigestStruct.publisherPublicKeyDigest);
+  setPublisherPublicKeyDigest(Blob(publisherPublicKeyDigestStruct.publisherPublicKeyDigest));
 }
 
 }
