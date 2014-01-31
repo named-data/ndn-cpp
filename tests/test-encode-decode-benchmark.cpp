@@ -53,7 +53,7 @@ verifyRsaSignature
     return 0;
   }
   int success = RSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), signatureBits, signatureBitsLength, rsaPublicKey);
+    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), (uint8_t*)signatureBits, signatureBitsLength, rsaPublicKey);
   // Free the public key before checking for success.
   RSA_free(rsaPublicKey);
   
