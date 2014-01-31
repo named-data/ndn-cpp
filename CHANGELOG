@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.2(2014-01-15)
+NDN-CPP v0.3 (2014-01-31)
 
 Changes
 * Added option for "./configure --enable-tlv=yes" to build with NDN-TLV as the default wire format.
