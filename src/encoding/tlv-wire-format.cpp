@@ -9,6 +9,15 @@
 
 namespace ndn {
 
+#ifdef NDN_CPP_USE_DEFAULT_TLV
+// This is declared in the WireFormat class.
+WireFormat*
+WireFormat::newInitialDefaultWireFormat() 
+{
+  return TlvWireFormat::get();
+}
+#endif
+  
 TlvWireFormat* TlvWireFormat::instance_ = 0;
 
 }

@@ -22,12 +22,14 @@ namespace ndn {
 
 BinaryXmlWireFormat* BinaryXmlWireFormat::instance_ = 0;
 
+#ifndef NDN_CPP_USE_DEFAULT_TLV
 // This is declared in the WireFormat class.
 WireFormat*
 WireFormat::newInitialDefaultWireFormat() 
 {
   return BinaryXmlWireFormat::get();
 }
+#endif
   
 Blob 
 BinaryXmlWireFormat::encodeInterest(const Interest& interest) 

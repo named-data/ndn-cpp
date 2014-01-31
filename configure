@@ -828,6 +828,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 with_sqlite3
+enable_tlv
 enable_doxygen_doc
 enable_doxygen_dot
 enable_doxygen_man
@@ -1487,6 +1488,8 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-tlv            enable NDN-TLV as the default wire format [default:
+                          no]
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -17015,6 +17018,19 @@ _ACEOF
 
 if test "$HAVE_OSX_SECURITY" == "1" ; then
   LIBS="$LIBS -framework Security"
+fi
+
+# Check whether --enable-tlv was given.
+if test "${enable_tlv+set}" = set; then :
+  enableval=$enable_tlv; default_tlv=${enableval}
+else
+  default_tlv=no
+fi
+
+if test "x${default_tlv}" = xyes; then
+
+$as_echo "#define USE_DEFAULT_TLV 1" >>confdefs.h
+
 fi
 
 
