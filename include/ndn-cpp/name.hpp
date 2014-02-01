@@ -114,7 +114,26 @@ public:
      */
     uint64_t
     toNumberWithMarker(uint8_t marker) const;
+
+    /**
+     * Interpret this name component as a network-ordered number with a prefix and return an integer.
+     * @param prefix The required prefix of the component.
+     * @param prefixLength The length of prefix.
+     * @return The integer number.
+     * @throw runtime_error If the first bytes of the component do not equal the prefix.
+     */
+    uint64_t
+    toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) const;
     
+    /**
+     * Check if this name component begins with the given prefix.
+     * @param prefix The required prefix of the component.
+     * @param prefixLength The length of prefix.
+     * @return true if this component begins with the prefix.
+     */
+    bool
+    hasPrefix(const uint8_t* prefix, size_t prefixLength) const;
+
     /**
      * Interpret this name component as a segment number according to NDN name conventions (a network-ordered number 
      * where the first byte is the marker 0x00).
@@ -135,7 +154,26 @@ public:
     {
       return toSegment();
     }
-        
+
+    /**
+     * Check if this name component is a final segment number so that toFinalSegment would be able to return the value.
+     * @return true if this is a final segment number.
+     */
+    bool
+    isFinalSegment() const { return hasPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength()); }
+    
+    /**
+     * Interpret this name component as a final segment number which has the bytes of getFinalSegmentPrefix() followed
+     * by a standard segment number as would be returned by toSegment.
+     * @return The integer final segment number.
+     * @throw runtime_error If the first bytes of the component is not the expected prefix for a final segment.
+     */
+    uint64_t
+    toFinalSegment() const
+    {
+      return toNumberWithPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength());
+    }
+
     /**
      * Interpret this name component as a version number according to NDN name conventions (a network-ordered number 
      * where the first byte is the marker 0xFD).  Note that this returns the exact number from the component
@@ -148,7 +186,7 @@ public:
     {
       return toNumberWithMarker(0xFD);
     }
-    
+        
     /**
      * Create a component whose value is the network-ordered encoding of the number.
      * Note: if the number is zero, the result is empty.
@@ -167,7 +205,30 @@ public:
      */
     static Component 
     fromNumberWithMarker(uint64_t number, uint8_t marker);
+    
+    /**
+     * Create a component whose value is the prefix appended with the network-ordered encoding of the number.
+     * Note: if the number is zero, no bytes are used for the number - the result will have only the prefix.
+     * @param number The number to be encoded.  
+     * @param prefix The prefix to use as the first bytes of the component.
+     * @param prefixLength The length of prefix.
+     * @return The component value.
+     */
+    static Component 
+    fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, size_t prefixLength);
 
+    /**
+     * Get the FINAL_SEGMENT_PREFIX which has the bytes of the component prefix used by toFinalSegment, etc.
+     * @return A pointer to the buffer. 
+     */
+    static const uint8_t*getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
+    
+    /**
+     * Get the length of getFinalSegmentPrefix().
+     * @return The length of getFinalSegmentPrefix().
+     */
+    static size_t getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
+    
     /**
      * Check if this is the same component as other.
      * @param other The other Component to compare with.
@@ -243,6 +304,12 @@ public:
     operator > (const Component& other) const { return compare(other) > 0; }
 
   private:
+    /**
+     * FINAL_SEGMENT_PREFIX has the bytes of the component prefix used by toFinalSegment, etc.
+     */
+    static const uint8_t FINAL_SEGMENT_PREFIX[];
+    static size_t FINAL_SEGMENT_PREFIX_LENGTH;
+
     Blob value_;
   }; 
   
@@ -488,6 +555,18 @@ public:
     return append(Component::fromNumberWithMarker(segment, 0x00));
   }
 
+  /**
+   * Append a component with the encoded final segment number.
+   * @param segment The segment number to be encoded as the final segment.
+   * @return This name so that you can chain calls to append.
+   */  
+  Name& 
+  appendFinalSegment(uint64_t segment)
+  {
+    return append(Component::fromNumberWithPrefix
+      (segment, Component::getFinalSegmentPrefix(), Component::getFinalSegmentPrefixLength()));
+  }
+  
   /**
    * Append a component with the encoded version number.
    * Note that this encodes the exact value of version without converting from a time representation.

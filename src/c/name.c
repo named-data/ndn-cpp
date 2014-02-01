@@ -36,6 +36,23 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
   return NDN_ERROR_success;
 }
 
+ndn_Error ndn_NameComponent_toNumberWithPrefix
+  (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result)
+{
+  if (self->value.length < prefixLength || ndn_memcmp(self->value.value, prefix, prefixLength) != 0)
+    return NDN_ERROR_Name_component_does_not_begin_with_the_expected_marker;
+  
+  uint64_t localResult = 0;
+  size_t i;
+  for (i = prefixLength; i < self->value.length; ++i) {
+    localResult *= 256;
+    localResult += (uint64_t)self->value.value[i];
+  }
+  
+  *result = localResult;
+  return NDN_ERROR_success;
+}
+
 int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
 {
   // This name is longer than the name we are checking it against.

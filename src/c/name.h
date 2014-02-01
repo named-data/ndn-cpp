@@ -50,6 +50,17 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self);
 ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, uint8_t marker, uint64_t *result);
 
 /**
+ * Interpret the name component as a network-ordered number with a prefix and return an integer.
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param prefix The required prefix of the component.
+ * @param prefixLength The length of prefix.
+ * @param result Return the integer number.
+ * @return 0 for success, or an error code if the first bytes of the component do not equal the prefix.
+ */
+ndn_Error ndn_NameComponent_toNumberWithPrefix
+  (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result);
+
+/**
  * An ndn_Name holds an array of ndn_NameComponent.
  */
 struct ndn_Name {

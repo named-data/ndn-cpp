@@ -114,6 +114,9 @@ unescape(const string& str)
   return result.str();
 }
 
+const uint8_t Name::Component::FINAL_SEGMENT_PREFIX[] = { 0xC1, '.', 'M', '.', 'F', 'I', 'N', 'A', 'L', 0x00 };
+size_t Name::Component::FINAL_SEGMENT_PREFIX_LENGTH = sizeof(Name::Component::FINAL_SEGMENT_PREFIX);
+
 uint64_t 
 Name::Component::toNumberWithMarker(uint8_t marker) const
 {
@@ -123,6 +126,20 @@ Name::Component::toNumberWithMarker(uint8_t marker) const
   
   ndn_Error error;
   if ((error = ndn_NameComponent_toNumberWithMarker(&componentStruct, marker, &result)))
+    throw runtime_error(ndn_getErrorString(error));
+    
+  return result;
+}
+
+uint64_t 
+Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) const
+{
+  struct ndn_NameComponent componentStruct;
+  get(componentStruct);
+  uint64_t result;
+  
+  ndn_Error error;
+  if ((error = ndn_NameComponent_toNumberWithPrefix(&componentStruct, prefix, prefixLength, &result)))
     throw runtime_error(ndn_getErrorString(error));
     
   return result;
@@ -163,6 +180,23 @@ Name::Component::fromNumberWithMarker(uint64_t number, uint8_t marker)
   return Blob(value);
 }
 
+Name::Component 
+Name::Component::fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, size_t prefixLength)
+{
+  // Initialize with the prefix
+  ptr_lib::shared_ptr<vector<uint8_t> > value(new vector<uint8_t>(prefix, prefix + prefixLength));
+  
+  // First encode in little endian.
+  while (number != 0) {
+    value->push_back(number & 0xff);
+    number >>= 8;
+  }
+  
+  // Make it big endian.
+  reverse(value->begin() + prefixLength, value->end());
+  return Blob(value);
+}
+
 void 
 Name::Component::get(struct ndn_NameComponent& componentStruct) const 
 {
@@ -177,6 +211,12 @@ Name::Component::toNumber() const
   return ndn_NameComponent_toNumber(&componentStruct);
 }
 
+bool
+Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
+{
+  return value_.size() >= prefixLength && ndn_memcmp(value_.buf(), prefix, prefixLength) == 0;
+}
+
 int
 Name::Component::compare(const Name::Component& other) const
 {
@@ -189,6 +229,7 @@ Name::Component::compare(const Name::Component& other) const
   // The components are equal length.  Just do a byte compare.  
   return ndn_memcmp(value_.buf(), other.value_.buf(), value_.size());
 }
+
 
 void 
 Name::set(const char *uri_cstr) 
