@@ -157,6 +157,7 @@ public:
 
     /**
      * Check if this name component is a final segment number so that toFinalSegment would be able to return the value.
+     * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
      * @return true if this is a final segment number.
      */
     bool
@@ -165,6 +166,7 @@ public:
     /**
      * Interpret this name component as a final segment number which has the bytes of getFinalSegmentPrefix() followed
      * by a standard segment number as would be returned by toSegment.
+     * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
      * @return The integer final segment number.
      * @throw runtime_error If the first bytes of the component is not the expected prefix for a final segment.
      */
@@ -219,12 +221,14 @@ public:
 
     /**
      * Get the FINAL_SEGMENT_PREFIX which has the bytes of the component prefix used by toFinalSegment, etc.
+     * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
      * @return A pointer to the buffer. 
      */
     static const uint8_t*getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
     
     /**
      * Get the length of getFinalSegmentPrefix().
+     * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
      * @return The length of getFinalSegmentPrefix().
      */
     static size_t getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
@@ -557,6 +561,7 @@ public:
 
   /**
    * Append a component with the encoded final segment number.
+   * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
    * @param segment The segment number to be encoded as the final segment.
    * @return This name so that you can chain calls to append.
    */  
