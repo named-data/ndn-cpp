@@ -17,10 +17,11 @@
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
+#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-wire-format.hpp>
 // Hack: Hook directly into non-API functions.
-#include "../src/c/encoding/binary-xml-decoder.h"
-#include "../src/c/data.h"
 #include "../src/c/encoding/binary-xml-data.h"
+#include "../src/c/encoding/tlv/tlv-data.h"
 #include "../src/c/util/crypto.h"
 
 using namespace std;
@@ -326,7 +327,8 @@ benchmarkEncodeDataSecondsC
     }
 
     struct ndn_DynamicUInt8Array output;
-    struct ndn_BinaryXmlEncoder encoder;
+    struct ndn_BinaryXmlEncoder binaryXmlEncoder;
+    struct ndn_TlvEncoder tlvEncoder;
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
 
@@ -337,10 +339,19 @@ benchmarkEncodeDataSecondsC
     if (useCrypto) {
       // Encode once to get the signed portion.
       ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
-      ndn_BinaryXmlEncoder_initialize(&encoder, &output);    
-      if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &encoder))) {
-        cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-        return 0;
+      if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
+        ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);    
+        if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
+          cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
+          return 0;
+        }
+      }
+      else {
+        ndn_TlvEncoder_initialize(&tlvEncoder, &output);    
+        if ((error = ndn_encodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+          cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
+          return 0;
+        }
       }
       
       // Imitate MemoryPrivateKeyStorage::sign.
@@ -361,12 +372,22 @@ benchmarkEncodeDataSecondsC
 
     // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
     ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
-    ndn_BinaryXmlEncoder_initialize(&encoder, &output);    
-    if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &encoder))) {
-      cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-      return 0;
-    }    
-    *encodingLength = encoder.offset;
+    if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
+      ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);    
+      if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
+        cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
+        return 0;
+      }    
+      *encodingLength = binaryXmlEncoder.offset;
+    }
+    else {
+      ndn_TlvEncoder_initialize(&tlvEncoder, &output);    
+      if ((error = ndn_encodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+        cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
+        return 0;
+      }    
+      *encodingLength = tlvEncoder.offset;
+    }
   }
   double finish = getNowSeconds();
   
@@ -396,13 +417,23 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
       (&data, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
        keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
-    ndn_BinaryXmlDecoder decoder;
-    ndn_BinaryXmlDecoder_initialize(&decoder, encoding, encodingLength);  
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
-    if ((error = ndn_decodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
-      cout << "Error in ndn_decodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-      return 0;
+    if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
+      ndn_BinaryXmlDecoder decoder;
+      ndn_BinaryXmlDecoder_initialize(&decoder, encoding, encodingLength);  
+      if ((error = ndn_decodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
+        cout << "Error in ndn_decodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
+        return 0;
+      }
+    } 
+    else {
+      ndn_TlvDecoder decoder;
+      ndn_TlvDecoder_initialize(&decoder, encoding, encodingLength);  
+      if ((error = ndn_decodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
+        cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
+        return 0;
+      }
     }
     
     if (useCrypto) {
@@ -427,17 +458,18 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
 static void
 benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
 {
+  const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
   Blob encoding;
   {
     int nIterations = useCrypto ? 20000 : 2000000;
     double duration = benchmarkEncodeDataSecondsCpp(nIterations, useComplex, useCrypto, encoding);
-    cout << "Encode " << (useComplex ? "complex" : "simple ") << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
     int nIterations = useCrypto ? 100000 : 2000000;
     double duration = benchmarkDecodeDataSecondsCpp(nIterations, useCrypto, encoding);
-    cout << "Decode " << (useComplex ? "complex" : "simple ") << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
 }
@@ -451,18 +483,19 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
 static void
 benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
 {
+  const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
   uint8_t encoding[1500];
   size_t encodingLength;
   {
     int nIterations = useCrypto ? 20000 : 10000000;
     double duration = benchmarkEncodeDataSecondsC(nIterations, useComplex, useCrypto, encoding, sizeof(encoding), &encodingLength);
-    cout << "Encode " << (useComplex ? "complex" : "simple ") << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
     int nIterations = useCrypto ? 150000 : 15000000;
     double duration = benchmarkDecodeDataSecondsC(nIterations, useCrypto, encoding, encodingLength);
-    cout << "Decode " << (useComplex ? "complex" : "simple ") << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
 }
@@ -471,15 +504,23 @@ int
 main(int argc, char** argv)
 {
   try {
-    benchmarkEncodeDecodeDataCpp(false, false);
-    benchmarkEncodeDecodeDataCpp(true, false);
-    benchmarkEncodeDecodeDataCpp(false, true);
-    benchmarkEncodeDecodeDataCpp(true, true);
-    
-    benchmarkEncodeDecodeDataC(false, false);
-    benchmarkEncodeDecodeDataC(true, false);
-    benchmarkEncodeDecodeDataC(false, true);
-    benchmarkEncodeDecodeDataC(true, true);
+    // Make two passes, one for each wire format.
+    for (int i = 1; i <= 2; ++i) {
+      if (i == 1)
+        WireFormat::setDefaultWireFormat(BinaryXmlWireFormat::get());
+      else
+        WireFormat::setDefaultWireFormat(TlvWireFormat::get());
+
+      benchmarkEncodeDecodeDataCpp(false, false);
+      benchmarkEncodeDecodeDataCpp(true, false);
+      benchmarkEncodeDecodeDataCpp(false, true);
+      benchmarkEncodeDecodeDataCpp(true, true);
+
+      benchmarkEncodeDecodeDataC(false, false);
+      benchmarkEncodeDecodeDataC(true, false);
+      benchmarkEncodeDecodeDataC(false, true);
+      benchmarkEncodeDecodeDataC(true, true);
+    }
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
