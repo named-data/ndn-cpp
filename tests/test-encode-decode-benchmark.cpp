@@ -227,7 +227,7 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
     ptr_lib::shared_ptr<Data> data(new Data());
-    data->wireDecode(*encoding);
+    data->wireDecode(encoding);
     
     if (useCrypto)
       keyChain.verifyData(data, onVerified, onVerifyFailed);

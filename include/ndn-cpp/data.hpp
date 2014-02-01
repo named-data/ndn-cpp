@@ -63,7 +63,16 @@ public:
   
   /**
    * Decode the input using a particular wire format and update this Data. If wireFormat is the default wire format, also 
-   * set the defaultWireEncoding field to the input.
+   * set the defaultWireEncoding to another pointer to the input Blob.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void 
+  wireDecode(const Blob& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+  
+  /**
+   * Decode the input using a particular wire format and update this Data. If wireFormat is the default wire format, also 
+   * set the defaultWireEncoding field to a copy of the input. (To not copy the input, see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
    * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat getDefaultWireFormat().
@@ -73,7 +82,7 @@ public:
   
   /**
    * Decode the input using a particular wire format and update this Data. If wireFormat is the default wire format, also 
-   * set the defaultWireEncoding field to the input.
+   * set the defaultWireEncoding field to a copy of the input. (To not copy the input, see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
