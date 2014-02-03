@@ -400,13 +400,13 @@ public:
   Name& 
   append(const std::vector<uint8_t>& value) 
   {
-    return append(value);
+    return append(Component(value));
   }
   
   Name& 
   append(const Blob &value)
   {
-    return append(value);
+    return append(Component(value));
   }
   
   Name& 
