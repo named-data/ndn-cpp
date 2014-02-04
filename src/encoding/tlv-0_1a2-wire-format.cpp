@@ -35,7 +35,7 @@ Tlv1_0a2WireFormat::encodeInterest(const Interest& interest)
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
-  TlvEncoder encoder;
+  TlvEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeTlvInterest(&interestStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));

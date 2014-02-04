@@ -44,7 +44,7 @@ BinaryXmlWireFormat::encodeInterest(const Interest& interest)
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
-  BinaryXmlEncoder encoder;
+  BinaryXmlEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeBinaryXmlInterest(&interestStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
