@@ -47,12 +47,12 @@ int main(int argc, char** argv)
 {
   try {
     // Connect to port 9695 until the testbed hubs use NDNx and are connected to the test repo.
-    Face face("borges.metwi.ucla.edu", 9695);
+    Face face("ndn-remap-p02.it.ucla.edu", 9695);
     
     // Counter holds data used by the callbacks.
     Counter counter;
     
-    Name name1("/ndn/ucla.edu/apps/ndn-js-test/hello.txt/level2/%FD%05%0B%16%7D%95%0E");    
+    Name name1("/ndn/ucla.edu/apps/ndn-js-test/hello.txt/level2/%FD%05%0B%16%7D%95%0E/%00");    
     cout << "Express name " << name1.toUri() << endl;
     // Use bind to pass the counter object to the callbacks.
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
