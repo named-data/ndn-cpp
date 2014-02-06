@@ -100,7 +100,8 @@ public:
   
   /**
    * Encode this Interest for a particular wire format.
-   * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat::getDefaultWireFormat().
+   * @param wireFormat (optional) A WireFormat object used to encode this 
+   * Interest. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
    */
   Blob 
@@ -113,7 +114,8 @@ public:
    * Decode the input using a particular wire format and update this Interest.
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
-   * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat::getDefaultWireFormat().
+   * @param wireFormat (optional) A WireFormat object used to decode the input. 
+   * If omitted, use WireFormat::getDefaultWireFormat().
    */
   void 
   wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
@@ -124,7 +126,8 @@ public:
   /**
    * Decode the input using a particular wire format and update this Interest.
    * @param input The input byte array to be decoded.
-   * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat::getDefaultWireFormat().
+   * @param wireFormat (optional) A WireFormat object used to decode the input. 
+   * If omitted, use WireFormat::getDefaultWireFormat().
    */
   void 
   wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
