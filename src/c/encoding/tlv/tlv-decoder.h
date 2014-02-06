@@ -281,9 +281,11 @@ ndn_TlvDecoder_readBooleanTlv
   if (!gotExpectedType)
     *value = 0;
   else {
-    size_t dummyLength;
-    if ((error = ndn_TlvDecoder_readTypeAndLength(self, expectedType, &dummyLength)))
+    size_t length;
+    if ((error = ndn_TlvDecoder_readTypeAndLength(self, expectedType, &length)))
       return error;
+    // We expect the length to be 0, but update offset anyway.
+    self->offset += length;
 
     *value = 1;
   }
