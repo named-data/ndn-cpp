@@ -72,8 +72,9 @@ encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
   
   ndn_Error error;
-  // SignatureType 1 is SignatureSha256WithRsa.
-  if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv(encoder, ndn_Tlv_SignatureType, 1)))
+  if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
+       (encoder, ndn_Tlv_SignatureType, 
+        ndn_Tlv_SignatureType_SignatureSha256WithRsa)))
     return error;
   // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted.  (When we remove
   //   the deprecated publisherPublicKeyDigest, we can call normally with omitZeroLength false.)
@@ -195,9 +196,9 @@ decodeSignatureInfo(struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *
   uint64_t signatureType;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv(decoder, ndn_Tlv_SignatureType, &signatureType)))
     return error;
-  // TODO: The library needs to handle other signature types than SignatureSha256WithRsa.
-  if (signatureType == 1) {
-    // SignatureType 1 is SignatureSha256WithRsa.
+  // TODO: The library needs to handle other signature types than 
+  //   SignatureSha256WithRsa.
+  if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa) {
     if ((error = ndn_decodeTlvKeyLocator(&signatureInfo->keyLocator, decoder)))
       return error;
     if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)

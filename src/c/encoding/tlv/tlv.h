@@ -43,8 +43,8 @@ enum {
 };
 
 enum {
-  ndn_Tlv_DigestSha256 = 0,
-  ndn_Tlv_SignatureSha256WithRsa = 1
+  ndn_Tlv_SignatureType_DigestSha256 = 0,
+  ndn_Tlv_SignatureType_SignatureSha256WithRsa = 1
 };
 
 enum {
