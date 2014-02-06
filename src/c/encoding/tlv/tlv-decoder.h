@@ -187,7 +187,7 @@ ndn_TlvDecoder_readNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length
 
 /**
  * Decode the type and length from self's input starting at offset, expecting the type to be expectedType.
- * Then non-negative integer in NDN-TLV and set value.  Update offset.
+ * Then decode a non-negative integer in NDN-TLV and set value.  Update offset.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param expectedType The expected type.
  * @param value Return the integer.
