@@ -57,19 +57,24 @@ TcpTransport::send(const uint8_t *data, size_t dataLength)
 void 
 TcpTransport::processEvents()
 {
-  int receiveIsReady;
-  ndn_Error error;
-  if ((error = ndn_TcpTransport_receiveIsReady(transport_.get(), &receiveIsReady)))
-    throw runtime_error(ndn_getErrorString(error));  
-  if (!receiveIsReady)
-    return;
+  // Loop until there is no more data in the receive buffer.
+  while(true) {
+    int receiveIsReady;
+    ndn_Error error;
+    if ((error = ndn_TcpTransport_receiveIsReady
+         (transport_.get(), &receiveIsReady)))
+      throw runtime_error(ndn_getErrorString(error));  
+    if (!receiveIsReady)
+      return;
 
-  uint8_t buffer[8000];
-  size_t nBytes;
-  if ((error = ndn_TcpTransport_receive(transport_.get(), buffer, sizeof(buffer), &nBytes)))
-    throw runtime_error(ndn_getErrorString(error));  
+    uint8_t buffer[8000];
+    size_t nBytes;
+    if ((error = ndn_TcpTransport_receive
+         (transport_.get(), buffer, sizeof(buffer), &nBytes)))
+      throw runtime_error(ndn_getErrorString(error));  
 
-  ndn_ElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
+    ndn_ElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
+  }
 }
 
 bool 
