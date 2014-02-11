@@ -31,7 +31,8 @@ Data::Data(const Data& data)
     signature_.set(data.signature_.get()->clone());
     ++changeCount_;
   }
-  setDefaultWireEncoding(data.defaultWireEncoding_);
+  setDefaultWireEncoding
+    (data.defaultWireEncoding_, data.defaultWireEncodingFormat_);
 }
 
 Data::~Data()
@@ -48,7 +49,8 @@ Data& Data::operator=(const Data& data)
   setName(data.name_.get());
   setMetaInfo(data.metaInfo_.get());
   setContent(data.content_);
-  setDefaultWireEncoding(data.defaultWireEncoding_);
+  setDefaultWireEncoding
+    (data.defaultWireEncoding_, data.defaultWireEncodingFormat_);
   
   return *this;
 }
@@ -82,13 +84,18 @@ Data::setName(const Name& name)
 SignedBlob 
 Data::wireEncode(WireFormat& wireFormat) const
 {
+  if (getDefaultWireEncoding() && getDefaultWireEncodingFormat() == &wireFormat)
+    // We already have an encoding in the desired format.
+    return getDefaultWireEncoding();
+  
   size_t signedPortionBeginOffset, signedPortionEndOffset;
   Blob encoding = wireFormat.encodeData(*this, &signedPortionBeginOffset, &signedPortionEndOffset);
   SignedBlob wireEncoding = SignedBlob(encoding, signedPortionBeginOffset, signedPortionEndOffset);
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
-    const_cast<Data*>(this)->setDefaultWireEncoding(wireEncoding);
+    const_cast<Data*>(this)->setDefaultWireEncoding
+      (wireEncoding, WireFormat::getDefaultWireFormat());
   
   return wireEncoding;
 }
@@ -101,9 +108,11 @@ Data::wireDecode(const Blob& input, WireFormat& wireFormat)
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
-    setDefaultWireEncoding(SignedBlob(input, signedPortionBeginOffset, signedPortionEndOffset));
+    setDefaultWireEncoding
+      (SignedBlob(input, signedPortionBeginOffset, signedPortionEndOffset),
+       WireFormat::getDefaultWireFormat());
   else
-    setDefaultWireEncoding(SignedBlob());
+    setDefaultWireEncoding(SignedBlob(), 0);
 }
 
 void 
@@ -114,9 +123,11 @@ Data::wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireForma
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
-    setDefaultWireEncoding(SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset));
+    setDefaultWireEncoding
+      (SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset),
+       WireFormat::getDefaultWireFormat());
   else
-    setDefaultWireEncoding(SignedBlob());
+    setDefaultWireEncoding(SignedBlob(), 0);
 }
 
 }

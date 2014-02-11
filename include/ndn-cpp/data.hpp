@@ -128,7 +128,8 @@ public:
   getContent() const { return content_; }
 
   /**
-   * Return a pointer to the defaultWireEncoding.  It may be null.
+   * Return a reference to the defaultWireEncoding, which was encoded with
+   * getDefaultWireEncodingFormat().  The SignedBlob may have a null pointer.
    */
   const SignedBlob&
   getDefaultWireEncoding() const 
@@ -137,11 +138,20 @@ public:
       // The values have changed, so the default wire encoding is invalidated.
       // This method can be called on a const object, but we want to be able to update the default cached value.
       const_cast<Data*>(this)->defaultWireEncoding_ = SignedBlob();
+      const_cast<Data*>(this)->defaultWireEncodingFormat_ = 0;
       const_cast<Data*>(this)->getDefaultWireEncodingChangeCount_ = getChangeCount();
     }
     
     return defaultWireEncoding_; 
   }
+  
+  /**
+   * Get the WireFormat which is used by getDefaultWireEncoding().
+   * @return The WireFormat, which is only meaningful if the 
+   * getDefaultWireEncoding() does not have a null pointer.
+   */
+  WireFormat*
+  getDefaultWireEncodingFormat() const { return defaultWireEncodingFormat_; }
   
   /**
    * Set the signature to a copy of the given signature.
@@ -223,10 +233,14 @@ public:
 
 private:
   void
-  setDefaultWireEncoding(const SignedBlob& defaultWireEncoding)
+  setDefaultWireEncoding
+    (const SignedBlob& defaultWireEncoding, 
+     WireFormat *defaultWireEncodingFormat)
   {
     defaultWireEncoding_ = defaultWireEncoding;
-    // Set getDefaultWireEncodingChangeCount_ so that the next call to getDefaultWireEncoding() won't clear defaultWireEncoding_.
+    defaultWireEncodingFormat_ = defaultWireEncodingFormat;
+    // Set getDefaultWireEncodingChangeCount_ so that the next call to 
+    //   getDefaultWireEncoding() won't clear defaultWireEncoding_.
     getDefaultWireEncodingChangeCount_ = getChangeCount();
   }
   
@@ -235,6 +249,7 @@ private:
   ChangeCounter<MetaInfo> metaInfo_;
   Blob content_;
   SignedBlob defaultWireEncoding_;
+  WireFormat *defaultWireEncodingFormat_;
   uint64_t getDefaultWireEncodingChangeCount_;
   uint64_t changeCount_;
 };
