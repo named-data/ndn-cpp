@@ -82,6 +82,23 @@ public:
   virtual void 
   decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
 #endif
+
+  /**
+   * Get a singleton instance of a Tlv1_0a2WireFormat.  To always use the 
+   * preferred version NDN-TLV, you should use TlvWireFormat::get().
+   * @return A pointer to the singleton instance.
+   */
+  static Tlv1_0a2WireFormat* 
+  get()
+  {
+    if (!instance_)
+      instance_ = new Tlv1_0a2WireFormat();
+    
+    return instance_;
+  }
+  
+private:
+  static Tlv1_0a2WireFormat* instance_;
 };
 
 }
