@@ -99,6 +99,14 @@ public:
   }
   
   /**
+   * Return the hex representation of the bytes in array.
+   * @return The hex bytes as a string, or an empty string if the pointer is 
+   * null.
+   */
+  std::string 
+  toHex() const { return (*this) ? ndn::toHex(**this) : std::string(); }
+  
+  /**
    * Set the blobStruct to point to this Blob's byte array, without copying any memory.
    * WARNING: The resulting pointer in blobStruct is invalid after a further use of this object which could reallocate memory.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.

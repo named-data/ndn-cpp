@@ -145,13 +145,13 @@ uint8_t TlvData[] = {
 
 static void dumpData(const Data& data)
 {
-  cout << "name: " << data.getName().to_uri() << endl;
+  cout << "name: " << data.getName().toUri() << endl;
   if (data.getContent().size() > 0) {
     cout << "content (raw): ";
     for (size_t i = 0; i < data.getContent().size(); ++i)
       cout << (*data.getContent())[i];
     cout<< endl;
-    cout << "content (hex): " << toHex(*data.getContent()) << endl;
+    cout << "content (hex): " << data.getContent().toHex() << endl;
   }
   else
     cout << "content: <empty>" << endl;
@@ -184,29 +184,29 @@ static void dumpData(const Data& data)
     cout << "<none>" << endl;
   cout << "metaInfo.finalBlockID: "
        << (data.getMetaInfo().getFinalBlockID().getValue().size() > 0 ? 
-           toHex(*data.getMetaInfo().getFinalBlockID().getValue()).c_str() : "<none>") << endl;
+           data.getMetaInfo().getFinalBlockID().getValue().toHex().c_str() : "<none>") << endl;
     
   const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
   if (signature) {
     cout << "signature.digestAlgorithm: "
-         << (signature->getDigestAlgorithm().size() > 0 ? toHex(*signature->getDigestAlgorithm()).c_str() : "default (sha-256)") << endl;
+         << (signature->getDigestAlgorithm().size() > 0 ? signature->getDigestAlgorithm().toHex().c_str() : "default (sha-256)") << endl;
     cout << "signature.witness: "
-         << (signature->getWitness().size() > 0 ? toHex(*signature->getWitness()).c_str() : "<none>") << endl;
+         << (signature->getWitness().size() > 0 ? signature->getWitness().toHex().c_str() : "<none>") << endl;
     cout << "signature.signature: "
-         << (signature->getSignature().size() > 0 ? toHex(*signature->getSignature()).c_str() : "<none>") << endl;
+         << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
     cout << "signature.publisherPublicKeyDigest: "
          << (signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
-           toHex(*signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest()).c_str() : "<none>") << endl;
+           signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex().c_str() : "<none>") << endl;
     cout << "signature.keyLocator: ";
     if ((int)signature->getKeyLocator().getType() >= 0) {
       if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-        cout << "Key: " << toHex(*signature->getKeyLocator().getKeyData()) << endl;
+        cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
       else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-        cout << "Certificate: " << toHex(*signature->getKeyLocator().getKeyData()) << endl;
+        cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
       else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-        cout << "KeyLocatorDigest: " << toHex(*signature->getKeyLocator().getKeyData()) << endl;
+        cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
       else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME) {
-        cout << "KeyName: " << signature->getKeyLocator().getKeyName().to_uri() << endl;
+        cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
         cout << "signature.keyLocator: ";
         if ((int)signature->getKeyLocator().getKeyNameType() >= 0) {
           bool showKeyNameData = true;
@@ -224,7 +224,7 @@ static void dumpData(const Data& data)
           }
           if (showKeyNameData)
             cout << (signature->getKeyLocator().getKeyData().size() > 0 ?
-                     toHex(*signature->getKeyLocator().getKeyData()).c_str() : "<none>") << endl;
+                     signature->getKeyLocator().getKeyData().toHex().c_str() : "<none>") << endl;
         }
         else
           cout << "<no key digest>" << endl;

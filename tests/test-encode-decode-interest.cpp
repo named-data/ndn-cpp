@@ -51,7 +51,7 @@ uint8_t TlvInterest[] = {
 
 static void dumpInterest(const Interest& interest)
 {
-  cout << "name: " << interest.getName().to_uri() << endl;
+  cout << "name: " << interest.getName().toUri() << endl;
   cout << "minSuffixComponents: ";
   if (interest.getMinSuffixComponents() >= 0)
     cout << interest.getMinSuffixComponents() << endl;
@@ -63,17 +63,18 @@ static void dumpInterest(const Interest& interest)
   else
     cout << "<none>" << endl;
   cout << "publisherPublicKeyDigest: " 
-       << (interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? toHex(*interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest()) : "<none>") << endl;
+       << (interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
+           interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex() : "<none>") << endl;
   cout << "keyLocator: ";
   if ((int)interest.getKeyLocator().getType() >= 0) {
     if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-      cout << "Key: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+      cout << "Key: " << interest.getKeyLocator().getKeyData().toHex() << endl;
     else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-      cout << "Certificate: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+      cout << "Certificate: " << interest.getKeyLocator().getKeyData().toHex() << endl;
     else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-      cout << "KeyLocatorDigest: " << toHex(*interest.getKeyLocator().getKeyData()) << endl;
+      cout << "KeyLocatorDigest: " << interest.getKeyLocator().getKeyData().toHex() << endl;
     else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
-      cout << "KeyName: " << interest.getKeyLocator().getKeyName().to_uri() << endl;
+      cout << "KeyName: " << interest.getKeyLocator().getKeyName().toUri() << endl;
     else
       cout << "<unrecognized ndn_KeyLocatorType " << interest.getKeyLocator().getType() << ">" << endl;
   }
@@ -103,7 +104,7 @@ static void dumpInterest(const Interest& interest)
   else
     cout << "<none>" << endl;
   cout << "nonce: " 
-       << (interest.getNonce().size() > 0 ? toHex(*interest.getNonce()) : "<none>") << endl;
+       << (interest.getNonce().size() > 0 ? interest.getNonce().toHex() : "<none>") << endl;
 }
 
 int main(int argc, char** argv)
@@ -119,7 +120,7 @@ int main(int argc, char** argv)
     dumpInterest(interest);
     
     Blob encoding = interest.wireEncode();
-    cout << endl << "Re-encoded interest " << toHex(*encoding) << endl;
+    cout << endl << "Re-encoded interest " << encoding.toHex() << endl;
 
     Interest reDecodedInterest;
     reDecodedInterest.wireDecode(*encoding);

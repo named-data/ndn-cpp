@@ -70,9 +70,10 @@ static inline string toString(const vector<uint8_t>& v)
 static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry) 
 {
   cout << "action: " << forwardingEntry.getAction() << endl;
-  cout << "prefix: " << forwardingEntry.getPrefix().to_uri() << endl;
+  cout << "prefix: " << forwardingEntry.getPrefix().toUri() << endl;
   cout << "publisherPublicKeyDigest: " 
-       << (forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? toHex(*forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest()) : "<none>") << endl;
+       << (forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
+           forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex() : "<none>") << endl;
   cout << "faceId: ";
   if (forwardingEntry.getFaceId() >= 0)
     cout << forwardingEntry.getFaceId() << endl;
@@ -112,7 +113,7 @@ static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
 static void dumpInterestWithForwardingEntry(const Interest& interest)
 {
   if (interest.getName().getComponentCount() != 4) {
-    cout << "Error: expected the interest name to have 4 components.  Got: " << interest.getName().to_uri() << endl;
+    cout << "Error: expected the interest name to have 4 components.  Got: " << interest.getName().toUri() << endl;
     return;
   }
 
@@ -122,7 +123,7 @@ static void dumpInterestWithForwardingEntry(const Interest& interest)
   else
     cout << "<none>" << endl;
   cout << "name[0]: " << toString(*interest.getName().getComponent(0).getValue()) << endl;
-  cout << "name[1]: " << toHex(*interest.getName().getComponent(1).getValue()) << endl;
+  cout << "name[1]: " << interest.getName().getComponent(1).getValue().toHex() << endl;
   cout << "name[2]: " << toString(*interest.getName().getComponent(2).getValue()) << endl;
   cout << "name[3] decoded as Data, showing content as ForwardingEntry: " << endl;
   
@@ -145,7 +146,7 @@ int main(int argc, char** argv)
     dumpInterestWithForwardingEntry(interest);
     
     Blob encoding = interest.wireEncode(*BinaryXmlWireFormat::get());
-    cout << endl << "Re-encoded interest " << toHex(*encoding) << endl;
+    cout << endl << "Re-encoded interest " << encoding.toHex() << endl;
 
     Interest reDecodedInterest;
     reDecodedInterest.wireDecode(*encoding, *BinaryXmlWireFormat::get());
