@@ -48,6 +48,9 @@ public:
   virtual void 
   set(const struct ndn_Signature& signatureStruct);
 
+  /**
+   * @deprecated digestAlgorithm is deprecated.
+   */
   const Blob& 
   getDigestAlgorithm() const { return digestAlgorithm_; }
 
@@ -80,6 +83,9 @@ public:
   KeyLocator& 
   getKeyLocator() { return keyLocator_.get(); }
 
+  /**
+   * @deprecated digestAlgorithm is deprecated.
+   */
   void 
   setDigestAlgorithm(const Blob& digestAlgorithm) 
   { 

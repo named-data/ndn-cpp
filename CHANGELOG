@@ -1,4 +1,8 @@
-Changes since NDN-CPP v0.3 (2014-02-03)
+Changes since NDN-CPP v0.3 (2014-02-12)
+Deprecated
+* Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
+  implicit in the class Sha256WithRsaSignature.)
+
 Bug fixes
 * Name: Fix bug in append to explicitly make a Component to call append(Component).
 
