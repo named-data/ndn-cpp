@@ -67,6 +67,31 @@ ndn_TlvDecoder_readTypeAndLength(struct ndn_TlvDecoder *self, unsigned int expec
   return NDN_ERROR_success;  
 }
 
+ndn_Error
+ndn_TlvDecoder_skipRemainingNestedTlvs
+  (struct ndn_TlvDecoder *self, size_t endOffset)
+{
+  while(self->offset < endOffset) {
+    ndn_Error error;
+    uint64_t dummyType;
+    if ((error = ndn_TlvDecoder_readVarNumber(self, &dummyType)))
+      return error;
+    
+    uint64_t lengthVarNumber;
+    if ((error = ndn_TlvDecoder_readVarNumber(self, &lengthVarNumber)))
+      return error;
+    // Silently ignore if the length is larger than size_t.
+    self->offset += (size_t)lengthVarNumber;
+    if (self->offset > self->inputLength)
+      return NDN_ERROR_TLV_length_exceeds_buffer_length;
+  }
+  
+  if (self->offset != endOffset)
+    return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
+
+  return NDN_ERROR_success;  
+}
+
 ndn_Error 
 ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length, uint64_t *value)
 {
