@@ -9,6 +9,7 @@
 #define NDN_COMMON_HPP
 
 #include <vector>
+#include <string>
 // common.h include ndn-cpp-config.h.
 #include "c/common.h"
 
