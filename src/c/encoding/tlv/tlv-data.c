@@ -56,6 +56,9 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_FreshnessPeriod, metaInfo->freshnessPeriod)))
     return error;
+  if ((error = ndn_TlvEncoder_writeOptionalBlobTlv
+      (encoder, ndn_Tlv_FinalBlockId, &metaInfo->finalBlockID.value)))
+    return error;                                                                                             
     
   return NDN_ERROR_success;  
 }
@@ -174,10 +177,13 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))
     return error;
+  if ((error = ndn_TlvDecoder_readOptionalBlobTlv
+       (decoder, ndn_Tlv_FinalBlockId, endOffset, 
+        &metaInfo->finalBlockID.value)))
+    return error;
 
   // Set fields not used by NDN-TLV to none.
   metaInfo->timestampMilliseconds = -1;
-  ndn_NameComponent_initialize(&metaInfo->finalBlockID, 0, 0);  
   
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
