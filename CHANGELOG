@@ -1,10 +1,13 @@
-Changes since NDN-CPP v0.3 (2014-02-12)
+Changes since NDN-CPP v0.3 (2014-02-13)
 Deprecated
 * Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
   implicit in the class Sha256WithRsaSignature.)
 
 Bug fixes
 * Name: Fix bug in append to explicitly make a Component to call append(Component).
+* http://redmine.named-data.net/issues/1247 Use new TLV type codes to not
+  conflict with binary XML. Note:  Using this new code must be done at the same
+  time as using the updated ndnd-tlv which uses the new type codes. 
 
 NDN-CPP v0.3 (2014-01-31)
 
