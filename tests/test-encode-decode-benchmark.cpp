@@ -166,7 +166,7 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
     data.setContent(content);
     if (useComplex) {
       data.getMetaInfo().setTimestampMilliseconds(1.3e+12);
-      data.getMetaInfo().setFreshnessSeconds(1000);
+      data.getMetaInfo().setFreshnessPeriod(1000);
       data.getMetaInfo().setFinalBlockID(finalBlockId);
     }
 
@@ -223,7 +223,6 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
   Name keyName("/testname/DSK-123");
   identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER)));
 
-  size_t nameSize = 0;
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
     ptr_lib::shared_ptr<Data> data(new Data());
