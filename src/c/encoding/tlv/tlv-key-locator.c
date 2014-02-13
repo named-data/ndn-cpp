@@ -37,12 +37,12 @@ ndn_decodeTlvKeyLocator(struct ndn_KeyLocator *keyLocator, struct ndn_TlvDecoder
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_KeyLocator, &endOffset)))
     return error;
 
-  if (decoder->offset == endOffset) {
-    // KeyLocator is omitted, so initialize the fields to none.
-    ndn_KeyLocator_initialize
-      (keyLocator, keyLocator->keyName.components, keyLocator->keyName.maxComponents);
+  ndn_KeyLocator_initialize
+    (keyLocator, keyLocator->keyName.components, keyLocator->keyName.maxComponents);
+
+  if (decoder->offset == endOffset)
+    // The KeyLocator is omitted, so leave the fields as none.
     return NDN_ERROR_success;
-  }
 
   int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
@@ -52,8 +52,6 @@ ndn_decodeTlvKeyLocator(struct ndn_KeyLocator *keyLocator, struct ndn_TlvDecoder
     if ((error = ndn_decodeTlvName(&keyLocator->keyName, decoder)))
       return error;
     keyLocator->type = ndn_KeyLocatorType_KEYNAME;
-    keyLocator->keyNameType = (ndn_KeyNameType)-1;
-    ndn_Blob_initialize(&keyLocator->keyData, 0, 0);
   }
   else {
     if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_KeyLocatorDigest, endOffset, &gotExpectedType)))
