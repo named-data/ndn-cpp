@@ -76,7 +76,7 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
  * then just advance self->offset without writing to output.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param varNumber The number to encode.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeVarNumber(struct ndn_TlvEncoder *self, uint64_t varNumber)
@@ -96,7 +96,7 @@ ndn_TlvEncoder_writeVarNumber(struct ndn_TlvEncoder *self, uint64_t varNumber)
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param length The length of the TLV.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeTypeAndLength(struct ndn_TlvEncoder *self, unsigned int type, size_t length)
@@ -148,7 +148,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
  * then just advance self->offset without writing to output.  This does not write a type or length for the value.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param value The integer to encode.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeNonNegativeInteger(struct ndn_TlvEncoder *self, uint64_t value)
@@ -190,7 +190,7 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value A Blob with the array of bytes for the value.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeBlobTlv(struct ndn_TlvEncoder *self, int type, struct ndn_Blob *value)
@@ -205,13 +205,31 @@ ndn_TlvEncoder_writeBlobTlv(struct ndn_TlvEncoder *self, int type, struct ndn_Bl
 }
 
 /**
+ * If value or valueLen is 0 then do nothing, otherwise call 
+ * ndn_TlvEncoder_writeOptionalBlobTlv.
+ * @param self A pointer to the ndn_TlvEncoder struct.
+ * @param type the type of the TLV.
+ * @param value A Blob with the array of bytes for the value.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
+ */
+static inline ndn_Error 
+ndn_TlvEncoder_writeOptionalBlobTlv
+  (struct ndn_TlvEncoder *self, int type, struct ndn_Blob *value)
+{
+  if (value->value && value->length > 0)
+    return ndn_TlvEncoder_writeBlobTlv(self, type, value);
+  else
+    return NDN_ERROR_success;
+}
+
+/**
  * Write the type, then the length of the encoded value then encode value as a non-negative integer 
  * and write it to self->output.  If self->enableOutput is 0, then just advance self->offset without writing to output.  
  * (If you want to just write the non-negative integer, use ndn_TlvEncoder_writeNonNegativeInteger.)
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value The integer to encode.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, int type, uint64_t value)
@@ -237,7 +255,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, int type,
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value Negative for none, otherwise use (uint64_t)value.
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, int type, int value)
@@ -253,7 +271,7 @@ ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv(struct ndn_TlvEncoder *self, i
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value Negative for none, otherwise use (uint64_t)round(value).
- * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns 0.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static inline ndn_Error 
 ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble(struct ndn_TlvEncoder *self, int type, double value)
