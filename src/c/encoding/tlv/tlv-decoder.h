@@ -79,8 +79,29 @@ ndn_TlvDecoder_readVarNumber(struct ndn_TlvDecoder *self, uint64_t *varNumber)
  * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
  * exceeds the number of bytes remaining.
  */
-ndn_Error 
-ndn_TlvDecoder_readTypeAndLength(struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *length);
+static inline ndn_Error 
+ndn_TlvDecoder_readTypeAndLength
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *length)
+{
+  ndn_Error error;
+  uint64_t type;
+  if ((error = ndn_TlvDecoder_readVarNumber(self, &type)))
+    return error;
+
+  if (type != (uint64_t)expectedType)
+    return NDN_ERROR_did_not_get_the_expected_TLV_type;
+  
+  uint64_t lengthVarNumber;
+  if ((error = ndn_TlvDecoder_readVarNumber(self, &lengthVarNumber)))
+    return error;
+  
+  // Silently ignore if the length is larger than size_t.
+  *length = (size_t)lengthVarNumber;
+  if (self->offset + *length > self->inputLength)
+    return NDN_ERROR_TLV_length_exceeds_buffer_length;
+  
+  return NDN_ERROR_success;  
+}
 
 /**
  * Decode the type and length from self's input starting at offset, expecting the type to be expectedType.
@@ -232,9 +253,30 @@ ndn_TlvDecoder_readNonNegativeIntegerTlv(struct ndn_TlvDecoder *self, unsigned i
  * @param value Return the integer (converted to int) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
-ndn_Error 
+static inline ndn_Error 
 ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
-  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, int *value);
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, 
+   int *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType
+       (self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    *value = -1;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+       (self, expectedType, &unsignedValue)))
+    return error;
+  
+  *value = (int)unsignedValue;
+  return NDN_ERROR_success;
+}
 
 /**
  * Peek at the next TLV, and if it has the expectedType then call ndn_TlvDecoder_readNonNegativeIntegerTlv
@@ -246,9 +288,30 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
  * @param value Return the integer (converted to double) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
-ndn_Error 
+static inline ndn_Error 
 ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
-  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, double *value);
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, 
+   double *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType
+       (self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    *value = -1;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+       (self, expectedType, &unsignedValue)))
+    return error;
+  
+  *value = (double)unsignedValue;
+  return NDN_ERROR_success;
+}
 
 /**
  * Decode the type and length from self's input starting at offset, expecting the type to be expectedType.
@@ -287,10 +350,29 @@ ndn_TlvDecoder_readBlobTlv
  * @return 0 for success, else an error code, including if the decoded length
  * exceeds the number of bytes remaining.
  */
-ndn_Error 
+static inline ndn_Error 
 ndn_TlvDecoder_readOptionalBlobTlv
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset,
-   struct ndn_Blob *value);
+   struct ndn_Blob *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType
+       (self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    value->value = 0;
+    value->length = 0;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readBlobTlv(self, expectedType, value)))
+    return error;
+  
+  return NDN_ERROR_success;
+}
 
 /**
  * Peek at the next TLV, and if it has the expectedType then set value to 1 and read a type and value, 
