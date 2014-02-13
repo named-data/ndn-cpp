@@ -1,4 +1,7 @@
 Changes since NDN-CPP v0.3 (2014-02-13)
+Changes
+* http://redmine.named-data.net/issues/1249. Support TLV FinalBlockId.
+
 Deprecated
 * Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
   implicit in the class Sha256WithRsaSignature.)

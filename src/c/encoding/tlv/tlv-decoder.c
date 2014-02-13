@@ -178,3 +178,27 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
   *value = (double)unsignedValue;
   return NDN_ERROR_success;
 }
+
+ndn_Error 
+ndn_TlvDecoder_readOptionalBlobTlv
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset,
+   struct ndn_Blob *value)
+{
+  int gotExpectedType;
+  ndn_Error error;
+  if ((error = ndn_TlvDecoder_peekType
+       (self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+    
+  if (!gotExpectedType) {
+    value->value = 0;
+    value->length = 0;
+    return NDN_ERROR_success;
+  }
+
+  uint64_t unsignedValue;
+  if ((error = ndn_TlvDecoder_readBlobTlv(self, expectedType, value)))
+    return error;
+  
+  return NDN_ERROR_success;
+}

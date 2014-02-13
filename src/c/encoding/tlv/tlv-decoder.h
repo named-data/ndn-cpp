@@ -275,6 +275,24 @@ ndn_TlvDecoder_readBlobTlv
 }
 
 /**
+ * Peek at the next TLV, and if it has the expectedType then call 
+ * ndn_TlvDecoder_readBlobTlv.  Otherwise, set value and valueLength to 0.  
+ * However, if self->offset is greater than or equal to endOffset,
+ * then set value and valueLength to 0 and don't try to read the type.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param expectedType The expected type.
+ * @param endOffset The offset of the end of the parent TLV.
+ * @param value Set value.value to a pointer to the binary data inside self's 
+ * input buffer and set value.length to the length.
+ * @return 0 for success, else an error code, including if the decoded length
+ * exceeds the number of bytes remaining.
+ */
+ndn_Error 
+ndn_TlvDecoder_readOptionalBlobTlv
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset,
+   struct ndn_Blob *value);
+
+/**
  * Peek at the next TLV, and if it has the expectedType then set value to 1 and read a type and value, 
  * ignoring the value. Otherwise, set value to 0.  However, if self->offset is greater than or equal to endOffset,
  * then set value to 0 and don't try to read the type.
