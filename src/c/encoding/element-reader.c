@@ -4,6 +4,7 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include "tlv/tlv.h"
 #include "element-reader.h"
 
 ndn_Error ndn_ElementReader_onReceivedData
@@ -17,12 +18,10 @@ ndn_Error ndn_ElementReader_onReceivedData
         // Wait for more data.
         return NDN_ERROR_success;
       
-      // A TLV Data packet starts with 0x02.
-      // A TLV Interest starts with 0x01, but need to distinguish from a NDNb Interest which starts with 0x01 0xD2 0xF2.
-      // (If a TLV Interest had a length of 0xD2, it would always start with 0x01 0xD2 0x03.)
-      // If the first byte is 0x01, we have to make sure dataLength is large enough to check further bytes.
-      if (data[0] == 0x02 ||
-          (data[0] == 0x01 && !(dataLength >= 2 && data[1] == 0xD2 && dataLength >= 3 && data[2] == 0xF2)))
+      // The type codes for TLV Interest and Data packets are chosen to not
+      //   conflict with the first byte of a binary XML packet, so we can
+      //   just look at the first byte.
+      if (data[0] == ndn_Tlv_Interest || data[0] == ndn_Tlv_Data)
         self->useTlv = 1;
       else
         // Binary XML.
