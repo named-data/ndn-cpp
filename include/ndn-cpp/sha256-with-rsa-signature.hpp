@@ -52,13 +52,13 @@ public:
    * @deprecated digestAlgorithm is deprecated.
    */
   const Blob& 
-  getDigestAlgorithm() const { return digestAlgorithm_; }
+  DEPRECATED_IN_NDN_CPP getDigestAlgorithm() const { return digestAlgorithm_; }
 
   /**
    * @deprecated Witness is deprecated. 
    */
   const Blob& 
-  getWitness() const { return witness_; }
+  DEPRECATED_IN_NDN_CPP getWitness() const { return witness_; }
 
   const Blob& 
   getSignature() const { return signature_; }
@@ -68,14 +68,14 @@ public:
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   const PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
+  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
   
   /**
    * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
+  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
   
   const KeyLocator& 
   getKeyLocator() const { return keyLocator_.get(); }
@@ -87,7 +87,7 @@ public:
    * @deprecated digestAlgorithm is deprecated.
    */
   void 
-  setDigestAlgorithm(const Blob& digestAlgorithm) 
+  DEPRECATED_IN_NDN_CPP setDigestAlgorithm(const Blob& digestAlgorithm) 
   { 
     digestAlgorithm_ = digestAlgorithm; 
     ++changeCount_;
@@ -97,7 +97,7 @@ public:
    * @deprecated Witness is deprecated. 
    */
   void 
-  setWitness(const Blob& witness) 
+  DEPRECATED_IN_NDN_CPP setWitness(const Blob& witness) 
   { 
     witness_ = witness; 
     ++changeCount_;
@@ -115,7 +115,7 @@ public:
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   void 
-  setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) 
+  DEPRECATED_IN_NDN_CPP setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) 
   { 
     publisherPublicKeyDigest_.set(publisherPublicKeyDigest); 
     ++changeCount_;

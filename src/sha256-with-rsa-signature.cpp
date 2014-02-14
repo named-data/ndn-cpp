@@ -31,8 +31,8 @@ Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 void 
 Sha256WithRsaSignature::set(const struct ndn_Signature& signatureStruct)
 {
-  setDigestAlgorithm(Blob(signatureStruct.digestAlgorithm));
-  setWitness(Blob(signatureStruct.witness));
+  digestAlgorithm_ = Blob(signatureStruct.digestAlgorithm);
+  witness_ = Blob(signatureStruct.witness);
   setSignature(Blob(signatureStruct.signature));
   publisherPublicKeyDigest_.get().set(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(signatureStruct.keyLocator);

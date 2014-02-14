@@ -95,14 +95,14 @@ public:
   /**
    * @deprecated Use size().
    */  
-  size_t 
-  getEntryCount() const { return entries_.size(); }
+  size_t
+  DEPRECATED_IN_NDN_CPP getEntryCount() const { return entries_.size(); }
   
   /**
    * @deprecated Use get(i).
    */  
-  const Exclude::Entry& 
-  getEntry(size_t i) const { return entries_[i]; }
+  const Exclude::Entry&
+  DEPRECATED_IN_NDN_CPP getEntry(size_t i) const { return entries_[i]; }
   
   /**
    * Set the excludeStruct to point to the entries in this Exclude, without copying any memory.
@@ -162,13 +162,16 @@ public:
    * @deprecated Use appendAny.
    */
   Exclude& 
-  addAny() { return appendAny(); }
+  DEPRECATED_IN_NDN_CPP addAny() { return appendAny(); }
 
   /**
    * @deprecated Use appendComponent.
    */
   Exclude& 
-  addComponent(uint8_t *component, size_t componentLength) { return appendComponent(component, componentLength); }
+  DEPRECATED_IN_NDN_CPP addComponent(uint8_t *component, size_t componentLength)
+  { 
+    return appendComponent(component, componentLength); 
+  }
   
   /**
    * Clear all the entries.

@@ -69,7 +69,7 @@ public:
    * as a keyLocatorType.
    */
   ndn_KeyNameType 
-  getKeyNameType() const { return keyNameType_; }
+  DEPRECATED_IN_NDN_CPP getKeyNameType() const { return keyNameType_; }
 
   void 
   setType(ndn_KeyLocatorType type) 
@@ -98,7 +98,7 @@ public:
    * to the digest.
    */
   void 
-  setKeyNameType(ndn_KeyNameType keyNameType) 
+  DEPRECATED_IN_NDN_CPP setKeyNameType(ndn_KeyNameType keyNameType) 
   { 
     keyNameType_ = keyNameType; 
     ++changeCount_;

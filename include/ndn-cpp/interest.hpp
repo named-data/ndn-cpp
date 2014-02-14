@@ -30,9 +30,9 @@ public:
    * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder 
    * generate a random nonce internally before sending the interest.
    */
-  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
+  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
-    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce) 
+    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
@@ -44,7 +44,7 @@ public:
    * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
    * @deprecated You should use the constructor which has KeyLocator instead of the deprecated PublisherPublicKeyDigest.
    */
-  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
+  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
     int scope, Milliseconds interestLifetimeMilliseconds) 
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
@@ -169,14 +169,14 @@ public:
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
+  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
   
   /**
    * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
   const PublisherPublicKeyDigest& 
-  getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
+  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
 
   const KeyLocator& 
   getKeyLocator() const { return keyLocator_.get(); }
@@ -197,7 +197,7 @@ public:
    * @deprecated Use getMustBeFresh.
    */
   int 
-  getAnswerOriginKind() const { return answerOriginKind_; }
+  DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const { return answerOriginKind_; }
   
   /**
    * Return true if the content must be fresh.
@@ -272,7 +272,7 @@ public:
    * @deprecated Use setMustBeFresh.
    */
   void 
-  setAnswerOriginKind(int answerOriginKind) 
+  DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind)
   { 
     answerOriginKind_ = answerOriginKind; 
     ++changeCount_;
@@ -286,8 +286,10 @@ public:
   {
     if (answerOriginKind_ < 0) {
       // It is is already the default where MustBeFresh is false.
-      if (mustBeFresh)
-        setAnswerOriginKind(0);
+      if (mustBeFresh) {
+        answerOriginKind_ = 0; 
+        ++changeCount_;
+      }
     }
     else {
       if (mustBeFresh)
@@ -318,7 +320,7 @@ public:
    * @deprecated You should let the wire encoder generate a random nonce internally before sending the interest.
    */
   void 
-  setNonce(const Blob& nonce) 
+  DEPRECATED_IN_NDN_CPP setNonce(const Blob& nonce)
   { 
     nonce_ = nonce; 
     // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.

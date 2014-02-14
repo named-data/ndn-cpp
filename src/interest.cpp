@@ -26,11 +26,13 @@ Interest::set(const struct ndn_Interest& interestStruct)
   
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
-  setAnswerOriginKind(interestStruct.answerOriginKind);
+  answerOriginKind_ = interestStruct.answerOriginKind; 
   setScope(interestStruct.scope);
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
-  setNonce(Blob(interestStruct.nonce));
+  nonce_ = Blob(interestStruct.nonce);
+  // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
+  getNonceChangeCount_ = getChangeCount();
 }
 
 void 

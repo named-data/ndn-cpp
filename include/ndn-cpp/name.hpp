@@ -150,7 +150,7 @@ public:
      * @deprecated Use toSegment.
      */
     uint64_t
-    toSeqNum() const
+    DEPRECATED_IN_NDN_CPP toSeqNum() const
     {
       return toSegment();
     }
@@ -159,13 +159,13 @@ public:
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
     bool
-    isFinalSegment() const { return hasPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength()); }
+    DEPRECATED_IN_NDN_CPP isFinalSegment() const { return hasPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength()); }
     
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
     uint64_t
-    toFinalSegment() const
+    DEPRECATED_IN_NDN_CPP toFinalSegment() const
     {
       return toNumberWithPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength());
     }
@@ -216,12 +216,14 @@ public:
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
-    static const uint8_t*getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
+    static const uint8_t*
+    DEPRECATED_IN_NDN_CPP getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
     
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
-    static size_t getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
+    static size_t
+    DEPRECATED_IN_NDN_CPP getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
     
     /**
      * Check if this is the same component as other.
@@ -419,7 +421,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  appendComponent(const uint8_t *value, size_t valueLength) 
+  DEPRECATED_IN_NDN_CPP appendComponent(const uint8_t *value, size_t valueLength) 
   {
     return append(value, valueLength);
   }
@@ -428,7 +430,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  appendComponent(const std::vector<uint8_t>& value) 
+  DEPRECATED_IN_NDN_CPP appendComponent(const std::vector<uint8_t>& value) 
   {
     return append(value);
   }
@@ -437,7 +439,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  appendComponent(const Blob &value)
+  DEPRECATED_IN_NDN_CPP appendComponent(const Blob &value)
   {
     return append(value);
   }
@@ -446,7 +448,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  addComponent(const uint8_t *value, size_t valueLength) 
+  DEPRECATED_IN_NDN_CPP addComponent(const uint8_t *value, size_t valueLength) 
   {
     return append(value, valueLength);
   }
@@ -455,7 +457,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  addComponent(const std::vector<uint8_t>& value) 
+  DEPRECATED_IN_NDN_CPP addComponent(const std::vector<uint8_t>& value) 
   {
     return append(value);
   }
@@ -464,7 +466,7 @@ public:
    * @deprecated Use append.
    */
   Name& 
-  addComponent(const Blob &value)
+  DEPRECATED_IN_NDN_CPP addComponent(const Blob &value)
   {
     return append(value);
   }
@@ -482,13 +484,13 @@ public:
    * @deprecated use size().
    */
   size_t 
-  getComponentCount() const { return size(); }
+  DEPRECATED_IN_NDN_CPP getComponentCount() const { return size(); }
   
   /**
    * @deprecated Use get(i).
    */
   const Component& 
-  getComponent(size_t i) const { return get(i); }
+  DEPRECATED_IN_NDN_CPP getComponent(size_t i) const { return get(i); }
   
   /**
    * Get a new name, constructed as a subset of components.
@@ -533,7 +535,7 @@ public:
    * @deprecated Use toUri().
    */
   std::string 
-  to_uri() const 
+  DEPRECATED_IN_NDN_CPP to_uri() const 
   {
     return toUri();
   }
@@ -553,7 +555,7 @@ public:
    * @deprecated. Use MetaInfo.setFinalBlockID.
    */
   Name& 
-  appendFinalSegment(uint64_t segment)
+  DEPRECATED_IN_NDN_CPP appendFinalSegment(uint64_t segment)
   {
     return append(Component::fromNumberWithPrefix
       (segment, Component::getFinalSegmentPrefix(), Component::getFinalSegmentPrefixLength()));
@@ -754,7 +756,7 @@ public:
    * @deprecated Use operator < .
    */
   static bool
-  breadthFirstLess(const Name& name1, const Name& name2) { return name1 < name2; }
+  DEPRECATED_IN_NDN_CPP breadthFirstLess(const Name& name1, const Name& name2) { return name1 < name2; }
   
   /**
    * @deprecated Not needed since Name defines operator < .

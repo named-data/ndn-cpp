@@ -57,7 +57,10 @@ public:
    * @deprecated Use getFreshnessPeriod.
    */
   int 
-  getFreshnessSeconds() const { return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); }
+  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const 
+  { 
+    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); 
+  }
   
   /**
    * Get the final block ID.
@@ -92,7 +95,10 @@ public:
    * @deprecated Use setFreshnessPeriod.
    */
   void 
-  setFreshnessSeconds(int freshnessSeconds) { setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); }
+  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds) 
+  { 
+    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); 
+  }
 
   /**
    * Set the final block ID.

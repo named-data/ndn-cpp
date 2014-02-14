@@ -29,11 +29,11 @@ KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
   setKeyData(Blob(keyLocatorStruct.keyData));
   if (keyLocatorStruct.type == ndn_KeyLocatorType_KEYNAME) {
     keyName_.get().set(keyLocatorStruct.keyName);
-    setKeyNameType(keyLocatorStruct.keyNameType);
+    keyNameType_ = keyLocatorStruct.keyNameType;
   }
   else {
     keyName_.get().clear();
-    setKeyNameType((ndn_KeyNameType)-1);
+    keyNameType_ = (ndn_KeyNameType)-1;
   }
 }
 
