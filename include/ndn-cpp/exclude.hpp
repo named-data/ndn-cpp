@@ -53,7 +53,7 @@ public:
     /**
      * Create an Exclude::Entry of type ndn_Exclude_COMPONENT.
      */
-    Entry(const Blob& component) 
+    Entry(const Name::Component& component) 
     : type_(ndn_Exclude_COMPONENT), component_(component)
     {
     }
@@ -147,11 +147,11 @@ public:
 
   /**
    * Append a new entry of type ndn_Exclude_COMPONENT, taking another pointer to the Blob value.
-   * @param component A blob with a pointer to an immutable array.  The pointer is copied.
+   * @param component A Name.Component for the exclude value.
    * @return This Exclude so that you can chain calls to append.
    */
   Exclude& 
-  appendComponent(const Blob &component) 
+  appendComponent(const Name::Component &component) 
   {
     entries_.push_back(Entry(component));
     ++changeCount_;
