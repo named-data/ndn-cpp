@@ -189,15 +189,8 @@ static void dumpData(const Data& data)
     
   const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
   if (signature) {
-    cout << "signature.digestAlgorithm: "
-         << (signature->getDigestAlgorithm().size() > 0 ? signature->getDigestAlgorithm().toHex().c_str() : "default (sha-256)") << endl;
-    cout << "signature.witness: "
-         << (signature->getWitness().size() > 0 ? signature->getWitness().toHex().c_str() : "<none>") << endl;
     cout << "signature.signature: "
          << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
-    cout << "signature.publisherPublicKeyDigest: "
-         << (signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
-           signature->getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex().c_str() : "<none>") << endl;
     cout << "signature.keyLocator: ";
     if ((int)signature->getKeyLocator().getType() >= 0) {
       if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
@@ -206,30 +199,8 @@ static void dumpData(const Data& data)
         cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
       else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
         cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-      else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME) {
+      else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
         cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
-        cout << "signature.keyLocator: ";
-        if ((int)signature->getKeyLocator().getKeyNameType() >= 0) {
-          bool showKeyNameData = true;
-          if (signature->getKeyLocator().getKeyNameType() == ndn_KeyNameType_PUBLISHER_PUBLIC_KEY_DIGEST)
-            cout << "PublisherPublicKeyDigest: ";
-          else if (signature->getKeyLocator().getKeyNameType() == ndn_KeyNameType_PUBLISHER_CERTIFICATE_DIGEST)
-            cout << "PublisherCertificateDigest: ";
-          else if (signature->getKeyLocator().getKeyNameType() == ndn_KeyNameType_PUBLISHER_ISSUER_KEY_DIGEST)
-            cout << "PublisherIssuerKeyDigest: ";
-          else if (signature->getKeyLocator().getKeyNameType() == ndn_KeyNameType_PUBLISHER_ISSUER_CERTIFICATE_DIGEST)
-            cout << "PublisherIssuerCertificateDigest: ";
-          else {
-            cout << "<unrecognized ndn_KeyNameType " << signature->getKeyLocator().getKeyNameType() << ">" << endl;
-            showKeyNameData = false;
-          }
-          if (showKeyNameData)
-            cout << (signature->getKeyLocator().getKeyData().size() > 0 ?
-                     signature->getKeyLocator().getKeyData().toHex().c_str() : "<none>") << endl;
-        }
-        else
-          cout << "<no key digest>" << endl;
-      }
       else
         cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
     }
