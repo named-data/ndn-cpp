@@ -12,6 +12,12 @@
 // TODO: Is stddef.h portable?
 #include <stddef.h>
 
+#if NDN_CPP_HAVE_ATTRIBUTE_DEPRECATED
+  #define DEPRECATED_IN_NDN_CPP __attribute__((deprecated))
+#else
+  #define DEPRECATED_IN_NDN_CPP
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

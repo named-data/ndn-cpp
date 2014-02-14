@@ -148,6 +148,17 @@ if test "$HAVE_OSX_SECURITY" == "1" ; then
   LIBS="$LIBS -framework Security"
 fi
 
+AC_MSG_CHECKING([for __attribute__((deprecated))])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[void func(int); __attribute__((deprecated))]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_ATTRIBUTE_DEPRECATED], 1, [1 if have `__attribute__((deprecated))'.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_ATTRIBUTE_DEPRECATED], 0, [1 if have `__attribute__((deprecated))'.])
+])
+
 AC_ARG_ENABLE([tlv],
   [AS_HELP_STRING([--enable-tlv], [enable NDN-TLV as the default wire format @<:@default: no@:>@])],
   [default_tlv=${enableval}], [default_tlv=no])

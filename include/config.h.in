@@ -1,5 +1,8 @@
 /* include/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* 1 if have `__attribute__((deprecated))'. */
+#undef HAVE_ATTRIBUTE_DEPRECATED
+
 /* 1 if have the `boost::function' class. */
 #undef HAVE_BOOST_FUNCTION
 
