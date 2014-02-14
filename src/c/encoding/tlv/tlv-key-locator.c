@@ -4,6 +4,7 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include "tlv-name.h"
 #include "tlv-key-locator.h"
 
 ndn_Error 
