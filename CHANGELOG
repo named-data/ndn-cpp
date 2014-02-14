@@ -3,6 +3,8 @@ Changes
 * http://redmine.named-data.net/issues/1249. Support TLV FinalBlockId.
 
 Deprecated
+* Name: Deprecated appendFinalSegment. Use MetaInfo.setFinalBlockID.
+* Name::Component: Deprecated toFinalSegment. Use MetaInfo.getFinalBlockID.
 * Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
   implicit in the class Sha256WithRsaSignature.)
 

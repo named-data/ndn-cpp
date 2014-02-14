@@ -59,6 +59,11 @@ public:
   int 
   getFreshnessSeconds() const { return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); }
   
+  /**
+   * Get the final block ID.
+   * @return The final block ID as a Name::Component.  If the name component
+   * getValue().size() is 0, then the final block ID is not specified.
+   */
   const Name::Component& 
   getFinalBlockID() const { return finalBlockID_; }
   
@@ -89,6 +94,11 @@ public:
   void 
   setFreshnessSeconds(int freshnessSeconds) { setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); }
 
+  /**
+   * Set the final block ID.
+   * @param finalBlockID The final block ID as a Name::Component.  If the name 
+   * component getValue().size() is 0, then the final block ID is not specified.
+   */
   void 
   setFinalBlockID(const Name::Component& finalBlockID) 
   { 
