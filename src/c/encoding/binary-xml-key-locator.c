@@ -66,6 +66,11 @@ ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
   if ((int)keyLocator->type < 0)
     return NDN_ERROR_success;
 
+  if (keyLocator->type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+    // encodeSignedInfo already encoded this as the publisherPublicKeyDigest,
+    //   so do nothing here.
+    return NDN_ERROR_success;
+
   ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_KeyLocator)))
     return error;

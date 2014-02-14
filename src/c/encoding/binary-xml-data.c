@@ -63,10 +63,24 @@ static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_SignedInfo)))
     return error;
 
-  // This will skip encoding if there is no publisherPublicKeyDigest.
-  if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&signature->publisherPublicKeyDigest, encoder)))
-    return error;
-  
+  if (signature->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0 &&
+      signature->publisherPublicKeyDigest.publisherPublicKeyDigest.value) {
+    // We have a publisherPublicKeyDigest, so use it.
+    if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&signature->publisherPublicKeyDigest, encoder)))
+      return error;
+  }
+  else {
+    if (signature->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST && 
+        signature->keyLocator.keyData.length > 0) {
+      // We have a TLV-style KEY_LOCATOR_DIGEST, so encode as the
+      //   publisherPublicKeyDigest.
+      if ((error = ndn_BinaryXmlEncoder_writeBlobDTagElement
+          (encoder, ndn_BinaryXml_DTag_PublisherPublicKeyDigest, 
+           &signature->keyLocator.keyData)))
+        return error;
+    }    
+  }
+
   if ((error = ndn_BinaryXmlEncoder_writeOptionalTimeMillisecondsDTagElement
       (encoder, ndn_BinaryXml_DTag_Timestamp, metaInfo->timestampMilliseconds)))
     return error;
