@@ -33,11 +33,11 @@ uint8_t BinaryXmlInterest[] = {
 };
 
 uint8_t TlvInterest[] = {
-0x05, 0x51, // Interest
+0x05, 0x53, // Interest
   0x07, 0x0A, 0x08, 0x03, 0x6E, 0x64, 0x6E, 0x08, 0x03, 0x61, 0x62, 0x63, // Name
-  0x09, 0x36, // Selectors
-    0x0D, 0x01, 0x7B, // MinSuffixComponents
-    0x0E, 0x01, 0x04, // MaxSuffixComponents
+  0x09, 0x38, // Selectors
+    0x0D, 0x01, 0x04, // MinSuffixComponents
+    0x0E, 0x01, 0x06, // MaxSuffixComponents
     0x1C, 0x22, // KeyLocator
       0x1D, 0x20, // KeyLocatorDigest
                   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -46,9 +46,10 @@ uint8_t TlvInterest[] = {
       0x08, 0x03, 0x61, 0x62, 0x63, // NameComponent
       0x13, 0x00, // Any
     0x11, 0x01, 0x01, // ChildSelector
-    0x0A, 0x04, 0x61, 0x62, 0x61, 0x62,	// Nonce
-    0x0B, 0x01, 0x02, // Scope
-    0x0C, 0x02, 0x75, 0x30, // InterestLifetime
+    0x12, 0x00, // MustBeFesh
+  0x0A, 0x04, 0x61, 0x62, 0x61, 0x62,	// Nonce
+  0x0B, 0x01, 0x02, // Scope
+  0x0C, 0x02, 0x75, 0x30, // InterestLifetime
 1
 };
 
@@ -65,9 +66,6 @@ static void dumpInterest(const Interest& interest)
     cout << interest.getMaxSuffixComponents() << endl;
   else
     cout << "<none>" << endl;
-  cout << "publisherPublicKeyDigest: " 
-       << (interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
-           interest.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex() : "<none>") << endl;
   cout << "keyLocator: ";
   if ((int)interest.getKeyLocator().getType() >= 0) {
     if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
@@ -85,7 +83,7 @@ static void dumpInterest(const Interest& interest)
     cout << "<none>" << endl;
 
   cout << "exclude: " 
-       << (interest.getExclude().getEntryCount() > 0 ? interest.getExclude().toUri() : "<none>") << endl;
+       << (interest.getExclude().size() > 0 ? interest.getExclude().toUri() : "<none>") << endl;
   cout << "lifetimeMilliseconds: ";
   if (interest.getInterestLifetimeMilliseconds() >= 0)
     cout << interest.getInterestLifetimeMilliseconds() << endl;
@@ -96,11 +94,7 @@ static void dumpInterest(const Interest& interest)
     cout << interest.getChildSelector() << endl;
   else
     cout << "<none>" << endl;
-  cout << "answerOriginKind: ";
-  if (interest.getAnswerOriginKind() >= 0)
-    cout << interest.getAnswerOriginKind() << endl;
-  else
-    cout << "<none>" << endl;
+  cout << "mustBeFresh: " << (interest.getMustBeFresh() ? "true" : "false") << endl;
   cout << "scope: ";
   if (interest.getScope() >= 0)
     cout << interest.getScope() << endl;
@@ -129,6 +123,25 @@ int main(int argc, char** argv)
     reDecodedInterest.wireDecode(*encoding);
     cout << "Re-decoded Interest:" << endl;
     dumpInterest(reDecodedInterest);
+    
+    Interest freshInterest(Name("/ndn/abc"));
+    freshInterest.setMinSuffixComponents(4);
+    freshInterest.setMaxSuffixComponents(6);
+    freshInterest.getKeyLocator().setType(ndn_KeyLocatorType_KEY_LOCATOR_DIGEST);
+    uint8_t digest[] = {
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 
+      0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F };
+    freshInterest.getKeyLocator().setKeyData(Blob(digest, sizeof(digest)));
+    freshInterest.getExclude().appendComponent(Name("abc")[0].getValue()).appendAny();
+    freshInterest.setInterestLifetimeMilliseconds(30000);
+    freshInterest.setChildSelector(1);
+    freshInterest.setMustBeFresh(true);
+    freshInterest.setScope(2);
+
+    Interest reDecodedFreshInterest; 
+    reDecodedFreshInterest.wireDecode(*freshInterest.wireEncode());    
+    cout << endl << "Re-decoded fresh Interest:" << endl;
+    dumpInterest(reDecodedFreshInterest);
   } catch (exception& e) {
     cout << "exception: " << e.what() << endl;
   }
