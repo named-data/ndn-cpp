@@ -90,9 +90,10 @@ selfregSign(Data& data, WireFormat& wireFormat)
   // Set the public key.
   uint8_t publicKeyDigest[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(SELFREG_PUBLIC_KEY_DER, sizeof(SELFREG_PUBLIC_KEY_DER), publicKeyDigest);
-  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(Blob(publicKeyDigest, sizeof(publicKeyDigest)));
-  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEY);
-  signature->getKeyLocator().setKeyData(Blob(SELFREG_PUBLIC_KEY_DER, sizeof(SELFREG_PUBLIC_KEY_DER)));
+  // Set the KEY_LOCATOR_DIGEST, which will be encoded as a 
+  //   publisherPublicKeyDigest if needed.
+  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEY_LOCATOR_DIGEST);
+  signature->getKeyLocator().setKeyData(Blob(publicKeyDigest, sizeof(publicKeyDigest)));
 
   // Sign the fields.
   SignedBlob encoding = data.wireEncode(wireFormat);
