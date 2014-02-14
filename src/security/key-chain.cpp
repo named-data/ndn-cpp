@@ -42,9 +42,9 @@ KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireF
 {
   Name signingCertificateName;
   
-  if (identityName.getComponentCount() == 0) {
+  if (identityName.size() == 0) {
     Name inferredIdentity = policyManager_->inferSigningIdentity(data.getName());
-    if (inferredIdentity.getComponentCount() == 0)
+    if (inferredIdentity.size() == 0)
       signingCertificateName = identityManager_->getDefaultCertificateName();
     else
       signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(inferredIdentity);    
@@ -52,7 +52,7 @@ KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireF
   else
     signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(identityName);
 
-  if (signingCertificateName.getComponentCount() == 0)
+  if (signingCertificateName.size() == 0)
     throw SecurityException("No qualified certificate name found!");
 
   if (!policyManager_->checkSigningPolicy(data.getName(), signingCertificateName))
