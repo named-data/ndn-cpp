@@ -22,9 +22,6 @@ Sha256WithRsaHandler::verifySignature(const Data& data, const PublicKey& publicK
     throw SecurityException("signature is not Sha256WithRsaSignature.");
   
   // Set the data packet's default wire encoding if it is not already there.
-  if (signature->getDigestAlgorithm().size() != 0)
-    // TODO: Allow a non-default digest algorithm.
-    throw UnrecognizedDigestAlgorithmException("Cannot verify a data packet with a non-default digest algorithm.");
   if (!data.getDefaultWireEncoding())
     data.wireEncode();
   
