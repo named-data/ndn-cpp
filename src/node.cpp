@@ -277,11 +277,10 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   // First, decode as Interest or Data.
   ptr_lib::shared_ptr<Interest> interest;
   ptr_lib::shared_ptr<Data> data;
-  // Imitate code from the ndnd.c translator in project ndnd-tlv to determine if this is a TLV packet.
-  // A TLV Interest starts with 0x01, but need to distinguish from a NDNb Interest which starts with 0x01 0xD2 0xF2.
-  // (If a TLV Interest had a length of 0xD2, it would always start with 0x01 0xD2 0x03.)
-  // A TLV Data packet starts with 0x02.
-  if ((element[0] == 0x01 && !(element[1] == 0xD2 && element[2] == 0xF2)) || element[0] == 0x02) {
+  // The type codes for TLV Interest and Data packets are chosen to not
+  //   conflict with the first byte of a binary XML packet, so we can
+  //   just look at the first byte.
+  if (element[0] == ndn_Tlv_Interest || element[0] == ndn_Tlv_Data) {
     TlvDecoder decoder(element, elementLength);  
     if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
       interest.reset(new Interest());
