@@ -217,13 +217,13 @@ public:
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
     static const uint8_t*
-    DEPRECATED_IN_NDN_CPP getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
+    getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
     
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
     static size_t
-    DEPRECATED_IN_NDN_CPP getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
+    getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
     
     /**
      * Check if this is the same component as other.
