@@ -224,6 +224,7 @@ Node::registerPrefixHelper
   // Set the ForwardingEntry as the content of a Data packet and sign.
   Data data;
   data.setContent(content);
+  // Use the deprecated setTimestampMilliseconds because ndnd requires it.
   data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0);
   // For now, self sign with an arbirary key.  In the future, we may not require a signature to register.
   // Always encode as BinaryXml since the internals of ndnd expect it.

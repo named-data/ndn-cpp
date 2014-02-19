@@ -7,6 +7,8 @@ Deprecated
 * Name::Component: Deprecated toFinalSegment. Use MetaInfo.getFinalBlockID.
 * Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
   implicit in the class Sha256WithRsaSignature.)
+* MetaInfo: Deprecated get/setTimestampMilliseconds: Use the 
+  application-specific content to store a timestamp.
 
 Bug fixes
 * Name: Fix bug in append to explicitly make a Component to call append(Component).

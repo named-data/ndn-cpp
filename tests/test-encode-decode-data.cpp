@@ -157,13 +157,6 @@ static void dumpData(const Data& data)
   else
     cout << "content: <empty>" << endl;
   
-  cout << "metaInfo.timestamp: ";
-  if (data.getMetaInfo().getTimestampMilliseconds() >= 0) {
-    time_t seconds = data.getMetaInfo().getTimestampMilliseconds() / 1000.0;
-    cout << data.getMetaInfo().getTimestampMilliseconds() << " milliseconds, UTC time: " << asctime(gmtime(&seconds));
-  }
-  else
-    cout << "<none>" << endl;
   if (!(data.getMetaInfo().getType() < 0 || data.getMetaInfo().getType() == ndn_ContentType_BLOB || 
         data.getMetaInfo().getType() == ndn_ContentType_DATA)) {
     cout << "metaInfo.type: ";
@@ -241,7 +234,6 @@ int main(int argc, char** argv)
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
-    freshData->getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0);
     freshData->getMetaInfo().setFreshnessPeriod(5000);
     freshData->getMetaInfo().setFinalBlockID(Name("/%00%09")[0]);
     
@@ -254,7 +246,7 @@ int main(int argc, char** argv)
     // Initialize the storage.
     Name keyName("/testname/DSK-123");
     Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
-           (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
+           (keyName[-1]).append("ID-CERT").append("0");
     identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER)));
     privateKeyStorage->setKeyPairForKeyName
       (keyName, DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER), DEFAULT_PRIVATE_KEY_DER, sizeof(DEFAULT_PRIVATE_KEY_DER));

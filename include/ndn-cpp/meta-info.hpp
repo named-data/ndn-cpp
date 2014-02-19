@@ -44,8 +44,14 @@ public:
   void 
   set(const struct ndn_MetaInfo& metaInfoStruct);
 
+  /**
+   * @deprecated Use the application-specific content to store a timestamp.
+   */
   MillisecondsSince1970 
-  getTimestampMilliseconds() const { return timestampMilliseconds_; }
+  DEPRECATED_IN_NDN_CPP getTimestampMilliseconds() const 
+  { 
+    return timestampMilliseconds_; 
+  }
   
   ndn_ContentType 
   getType() const { return type_; }
@@ -70,8 +76,12 @@ public:
   const Name::Component& 
   getFinalBlockID() const { return finalBlockID_; }
   
+  /**
+   * @deprecated Use the application-specific content to store a timestamp.
+   */
   void 
-  setTimestampMilliseconds(MillisecondsSince1970 timestampMilliseconds) 
+  DEPRECATED_IN_NDN_CPP setTimestampMilliseconds
+    (MillisecondsSince1970 timestampMilliseconds) 
   { 
     timestampMilliseconds_ = timestampMilliseconds; 
     ++changeCount_;

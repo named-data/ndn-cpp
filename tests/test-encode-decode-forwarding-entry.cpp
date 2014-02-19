@@ -112,7 +112,7 @@ static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
  */
 static void dumpInterestWithForwardingEntry(const Interest& interest)
 {
-  if (interest.getName().getComponentCount() != 4) {
+  if (interest.getName().size() != 4) {
     cout << "Error: expected the interest name to have 4 components.  Got: " << interest.getName().toUri() << endl;
     return;
   }
@@ -122,14 +122,14 @@ static void dumpInterestWithForwardingEntry(const Interest& interest)
     cout << interest.getScope() << endl;
   else
     cout << "<none>" << endl;
-  cout << "name[0]: " << toString(*interest.getName().getComponent(0).getValue()) << endl;
-  cout << "name[1]: " << interest.getName().getComponent(1).getValue().toHex() << endl;
-  cout << "name[2]: " << toString(*interest.getName().getComponent(2).getValue()) << endl;
+  cout << "name[0]: " << toString(*interest.getName()[0].getValue()) << endl;
+  cout << "name[1]: " << interest.getName()[1].getValue().toHex() << endl;
+  cout << "name[2]: " << toString(*interest.getName()[2].getValue()) << endl;
   cout << "name[3] decoded as Data, showing content as ForwardingEntry: " << endl;
   
   Data data;
     // Note, until the registration protocol is defined for the new TLV forwarder, we use the old BinaryXml format.
-  data.wireDecode(*interest.getName().getComponent(3).getValue(), *BinaryXmlWireFormat::get());
+  data.wireDecode(*interest.getName()[3].getValue(), *BinaryXmlWireFormat::get());
   
   ForwardingEntry forwardingEntry;
   forwardingEntry.wireDecode(*data.getContent(), *BinaryXmlWireFormat::get());
