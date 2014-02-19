@@ -5,7 +5,6 @@
  */
 
 #include <cstdlib>
-#include <sstream>
 #include <iostream>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>

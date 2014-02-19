@@ -5,7 +5,6 @@
  */
 
 #include <cstdlib>
-#include <sstream>
 #include <iostream>
 #include <unistd.h>
 #include <ndn-cpp/face.hpp>

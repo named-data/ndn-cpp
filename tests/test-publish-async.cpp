@@ -5,7 +5,6 @@
  */
 
 #include <cstdlib>
-#include <sstream>
 #include <iostream>
 #include <time.h>
 #include <unistd.h>

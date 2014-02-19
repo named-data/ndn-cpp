@@ -8,7 +8,6 @@
 #include <iostream>
 #include <time.h>
 #include <sys/time.h>
-#include <sstream>
 #include <stdexcept>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
@@ -165,7 +164,6 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
     Data data(name);
     data.setContent(content);
     if (useComplex) {
-      data.getMetaInfo().setTimestampMilliseconds(1.3e+12);
       data.getMetaInfo().setFreshnessPeriod(1000);
       data.getMetaInfo().setFinalBlockID(finalBlockId);
     }
@@ -178,7 +176,6 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
       KeyLocator keyLocator;    
       keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
       keyLocator.setKeyName(certificateName);
-      keyLocator.setKeyNameType((ndn_KeyNameType)-1);
       Sha256WithRsaSignature* sha256Signature = (Sha256WithRsaSignature*)data.getSignature();
       sha256Signature->setKeyLocator(keyLocator);
       sha256Signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publisherPublicKeyDigest);

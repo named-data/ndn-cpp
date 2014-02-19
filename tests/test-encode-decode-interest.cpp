@@ -5,7 +5,6 @@
  */
 
 #include <cstdlib>
-#include <sstream>
 #include <iostream>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
