@@ -136,9 +136,11 @@ public:
   }
   
   /**
-   * Encode the name according to the "NDN URI Scheme".  If there are interest selectors, append "?" and
-   * added the selectors as a query string.  For example "/test/name?ndn.ChildSelector=1".
-   * @note This is an experimental feature.  See the API docs for more detail at http://named-data.net/doc/ndn-ccl-api .
+   * Encode the name according to the "NDN URI Scheme".  If there are interest 
+   * selectors, append "?" and add the selectors as a query string.  For example
+   * "/test/name?ndn.ChildSelector=1".
+   * @note This is an experimental feature.  See the API docs for more detail at
+   * http://named-data.net/doc/ndn-ccl-api .
    * @return The URI string.
    */
   std::string
