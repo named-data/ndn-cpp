@@ -103,7 +103,7 @@ private:
   class PendingInterest {
   public:
     /**
-     * Create a new PitEntry and set the timeoutTime_ based on the current time and the interest lifetime.
+     * Create a new PendingInterest and set the timeoutTime_ based on the current time and the interest lifetime.
      * @param pendingInterestId A unique ID for this entry, which you should get with getNextPendingInteresId().
      * @param interest A shared_ptr for the interest.
      * @param onData A function object to call when a matching data packet is received.
@@ -136,7 +136,7 @@ private:
     
     /**
      * Get the struct ndn_Interest for the interest_.
-     * WARNING: Assume that this PitEntry was created with new, so that no copy constructor is invoked between calls.
+     * WARNING: Assume that this PendingInterest was created with new, so that no copy constructor is invoked between calls.
      * This class is private to Node and only used by its methods, so this should be OK.
      * TODO: Doesn't this functionality belong in the Interest class?
      * @return A reference to the ndn_Interest struct.

@@ -312,12 +312,12 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
       entry->getOnInterest()(entry->getPrefix(), interest, *transport_, entry->getRegisteredPrefixId());
   }
   else if (data) {
-    int iPitEntry = getEntryIndexForExpressedInterest(data->getName());
-    if (iPitEntry >= 0) {
+    int iPendingInterest = getEntryIndexForExpressedInterest(data->getName());
+    if (iPendingInterest >= 0) {
       // Copy pointers to the needed objects and remove the PIT entry before the calling the callback.
-      const OnData onData = pendingInterestTable_[iPitEntry]->getOnData();
-      const ptr_lib::shared_ptr<const Interest> interest = pendingInterestTable_[iPitEntry]->getInterest();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + iPitEntry);
+      const OnData onData = pendingInterestTable_[iPendingInterest]->getOnData();
+      const ptr_lib::shared_ptr<const Interest> interest = pendingInterestTable_[iPendingInterest]->getInterest();
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + iPendingInterest);
       onData(interest, data);
     }
   }
