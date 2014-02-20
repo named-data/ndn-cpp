@@ -44,7 +44,7 @@ ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self);
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check
  *   self->gotElementEnd: If the end of the element which started at offset 0 is found, 
- *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-forElementEnd is 0 
+ *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-gotElementEnd is 0 
  *   which means you should read more into input and call again.
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  * @param input The input buffer. You have to pass in input each time because the buffer could be reallocated.
