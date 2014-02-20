@@ -182,7 +182,7 @@ private:
   class RegisteredPrefix {
   public:
     /**
-     * Create a new PrefixEntry.
+     * Create a new RegisteredPrefix.
      * @param registeredPrefixId A unique ID for this entry, which you should get with getNextRegisteredPrefixId().
      * @param prefix A shared_ptr for the prefix.
      * @param onInterest A function object to call when a matching data packet is received.
@@ -252,7 +252,7 @@ private:
       /**
        * 
        * @param node
-       * @param registeredPrefixId The PrefixEntry::getNextRegisteredPrefixId() which registerPrefix got so it could return it to the caller.
+       * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId() which registerPrefix got so it could return it to the caller.
        * @param prefix
        * @param onInterest
        * @param onRegisterFailed
@@ -290,7 +290,7 @@ private:
   
   /**
    * Find the first entry from the registeredPrefixTable_ where the entry prefix is the longest that matches name.
-   * @param name The name to find the PrefixEntry for (from the incoming interest packet).
+   * @param name The name to find the RegisteredPrefix for (from the incoming interest packet).
    * @return A pointer to the entry, or 0 if not found.
    */
   RegisteredPrefix*
@@ -298,7 +298,8 @@ private:
 
   /**
    * Do the work of registerPrefix once we know we are connected with an ndndId_.
-   * @param registeredPrefixId The PrefixEntry::getNextRegisteredPrefixId() which registerPrefix got so it could return it to the caller.
+   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
+   *   which registerPrefix got so it could return it to the caller.
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
