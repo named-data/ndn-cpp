@@ -223,6 +223,8 @@ int main(int argc, char** argv)
     cout << "Decoded Data:" << endl;
     dumpData(*data);
     
+    // Set the content again to clear the cached encoding so we encode again.
+    data->setContent(data->getContent());
     Blob encoding = data->wireEncode();
     
     ptr_lib::shared_ptr<Data> reDecodedData(new Data());
