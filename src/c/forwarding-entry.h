@@ -7,6 +7,7 @@
 #ifndef NDN_FORWARDING_ENTRY_H
 #define NDN_FORWARDING_ENTRY_H
 
+#include <math.h>
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/forwarding-flags.h>
 #include "name.h"
@@ -36,7 +37,7 @@ struct ndn_ForwardingEntry {
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   int faceId;               /**< -1 for none. */
   struct ndn_ForwardingFlags forwardingFlags;
-  int freshnessSeconds;     /**< -1 for none. */
+  ndn_Milliseconds freshnessPeriod; /**< -1 for none. */
 };
 
 /**
@@ -54,7 +55,25 @@ static inline void ndn_ForwardingEntry_initialize
   ndn_PublisherPublicKeyDigest_initialize(&self->publisherPublicKeyDigest);
   self->faceId = -1;
   ndn_ForwardingFlags_initialize(&self->forwardingFlags);
-  self->freshnessSeconds = -1;
+  self->freshnessPeriod = -1.0;
+}
+
+/**
+ * @deprecated Use freshnessPeriod.
+ */
+static inline int ndn_ForwardingEntry_getFreshnessSeconds
+  (struct ndn_ForwardingEntry *self) 
+{
+  return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
+}
+
+/**
+ * @deprecated Use freshnessPeriod.
+ */
+static inline void ndn_ForwardingEntry_setFreshnessSeconds
+  (struct ndn_ForwardingEntry *self, int freshnessSeconds) 
+{ 
+  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 
 }
 
 #ifdef __cplusplus

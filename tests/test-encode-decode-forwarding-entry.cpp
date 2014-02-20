@@ -15,7 +15,7 @@
 using namespace std;
 using namespace ndn;
 
-uint8_t Interest1[] = {
+uint8_t BinaryXmlInterest[] = {
 0x01, 0xd2, 0xf2, 0xfa, 0xa5, 0x6e, 0x64, 0x6e, 0x78, 0x00, 0xfa, 0x02, 0x85, 0xe0, 0xa0, 0x1e, 0x09, 0x39, 0x68,
 0xf9, 0x74, 0x0c, 0xe7, 0xf4, 0x36, 0x1b, 0xab, 0xf5, 0xbb, 0x05, 0xa4, 0xe5, 0x5a, 0xac, 0xa5, 0xe5, 0x8f, 0x73,
 0xed, 0xde, 0xb8, 0xe0, 0x13, 0xaa, 0x8f, 0x00, 0xfa, 0xcd, 0x70, 0x72, 0x65, 0x66, 0x69, 0x78, 0x72, 0x65, 0x67,
@@ -98,9 +98,9 @@ static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
     cout << " captureOk";
   cout << endl;
   
-  cout << "freshnessSeconds: ";
-  if (forwardingEntry.getFreshnessSeconds() >= 0)
-    cout << forwardingEntry.getFreshnessSeconds() << endl;
+  cout << "freshnessPeriod (milliseconds): ";
+  if (forwardingEntry.getFreshnessPeriod() >= 0)
+    cout << forwardingEntry.getFreshnessPeriod() << endl;
   else
     cout << "<none>" << endl;
 }
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
   try {
     Interest interest;
     // Note, until the registration protocol is defined for the new TLV forwarder, we use the old BinaryXml format.
-    interest.wireDecode(Interest1, sizeof(Interest1), *BinaryXmlWireFormat::get());
+    interest.wireDecode(BinaryXmlInterest, sizeof(BinaryXmlInterest), *BinaryXmlWireFormat::get());
     cout << "Interest:" << endl;
     dumpInterestWithForwardingEntry(interest);
     
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 
     Interest reDecodedInterest;
     reDecodedInterest.wireDecode(*encoding, *BinaryXmlWireFormat::get());
-    cout << "Re-decoded Interest:" << endl;
+    cout << endl << "Re-decoded Interest:" << endl;
     dumpInterestWithForwardingEntry(reDecodedInterest);
   } catch (exception& e) {
     cout << "exception: " << e.what() << endl;

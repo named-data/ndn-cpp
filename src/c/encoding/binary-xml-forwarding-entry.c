@@ -33,7 +33,8 @@ ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
        ndn_ForwardingFlags_getForwardingEntryFlags(&forwardingEntry->forwardingFlags))))
     return error;
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement
-      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds, forwardingEntry->freshnessSeconds)))
+      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds, 
+       ndn_ForwardingEntry_getFreshnessSeconds(forwardingEntry))))
     return error;
   
   if ((error = ndn_BinaryXmlEncoder_writeElementClose(encoder)))
@@ -69,9 +70,11 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
     // This sets the default flags.
     ndn_ForwardingFlags_initialize(&forwardingEntry->forwardingFlags);
   
+  int freshnessSeconds;
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
-      (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &forwardingEntry->freshnessSeconds)))
+      (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &freshnessSeconds)))
     return error;
+  ndn_ForwardingEntry_setFreshnessSeconds(forwardingEntry, freshnessSeconds);
 
   if ((error = ndn_BinaryXmlDecoder_readElementClose(decoder)))
     return error;

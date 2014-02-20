@@ -8,6 +8,7 @@
 #ifndef NDN_FORWARDING_ENTRY_HPP
 #define NDN_FORWARDING_ENTRY_HPP
 
+#include <math.h>
 #include <string>
 #include "name.hpp"
 #include "publisher-public-key-digest.hpp"
@@ -19,20 +20,21 @@ struct ndn_ForwardingEntry;
 namespace ndn {
 
 /**
- * An ForwardingEntry holds an action and  Name prefix and other fields for an forwarding entry.
+ * A ForwardingEntry holds an action and Name prefix and other fields for a
+ * forwarding entry.
  */
 class ForwardingEntry {
 public:    
   ForwardingEntry
     (const std::string& action, const Name& prefix, const PublisherPublicKeyDigest publisherPublicKeyDigest,
-     int faceId, const ForwardingFlags& forwardingFlags, int freshnessSeconds) 
+     int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod) 
   : action_(action), prefix_(prefix), publisherPublicKeyDigest_(publisherPublicKeyDigest), 
-    faceId_(faceId), forwardingFlags_(forwardingFlags), freshnessSeconds_(freshnessSeconds)
+    faceId_(faceId), forwardingFlags_(forwardingFlags), freshnessPeriod_(freshnessPeriod)
   {
   }
 
   ForwardingEntry()
-  : faceId_(-1), freshnessSeconds_(-1)
+  : faceId_(-1), freshnessPeriod_(-1.0)
   {
     forwardingFlags_.setActive(true);
     forwardingFlags_.setChildInherit(true);
@@ -85,8 +87,17 @@ public:
   const ForwardingFlags& 
   getForwardingFlags() const { return forwardingFlags_; }
 
+  Milliseconds 
+  getFreshnessPeriod() const { return freshnessPeriod_; }
+
+  /**
+   * @deprecated Use getFreshnessPeriod.
+   */
   int 
-  getFreshnessSeconds() const { return freshnessSeconds_; }
+  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const 
+  { 
+    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); 
+  }
   
   /**
    * Clear this forwarding entry, and set the values by copying from forwardingEntryStruct.
@@ -105,7 +116,19 @@ public:
   setForwardingFlags(const ForwardingFlags& forwardingFlags) { forwardingFlags_ = forwardingFlags; }
       
   void 
-  setFreshnessSeconds(int freshnessSeconds) { freshnessSeconds_ = freshnessSeconds; }
+  setFreshnessPeriod(Milliseconds freshnessPeriod) 
+  { 
+    freshnessPeriod_ = freshnessPeriod; 
+  }
+
+  /**
+   * @deprecated Use setFreshnessPeriod.
+   */
+  void 
+  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds) 
+  { 
+    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); 
+  }
       
 private:
   std::string action_;   /**< empty for none. */
@@ -113,7 +136,7 @@ private:
   PublisherPublicKeyDigest publisherPublicKeyDigest_;
   int faceId_;           /**< -1 for none. */
   ForwardingFlags forwardingFlags_;
-  int freshnessSeconds_; /**< -1 for none. */
+  Milliseconds freshnessPeriod_; /**< -1 for none. */
 };
 
 }

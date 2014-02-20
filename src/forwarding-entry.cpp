@@ -26,7 +26,7 @@ ForwardingEntry::set(const struct ndn_ForwardingEntry& forwardingEntryStruct)
   publisherPublicKeyDigest_.set(forwardingEntryStruct.publisherPublicKeyDigest);  
   faceId_ = forwardingEntryStruct.faceId;
   forwardingFlags_ = forwardingEntryStruct.forwardingFlags;
-  freshnessSeconds_ = forwardingEntryStruct.freshnessSeconds;
+  freshnessPeriod_ = forwardingEntryStruct.freshnessPeriod;
 }
 
 void 
@@ -36,7 +36,7 @@ ForwardingEntry::get(struct ndn_ForwardingEntry& forwardingEntryStruct) const
   publisherPublicKeyDigest_.get(forwardingEntryStruct.publisherPublicKeyDigest);
   forwardingEntryStruct.faceId = faceId_;
   forwardingEntryStruct.forwardingFlags = forwardingFlags_;
-  forwardingEntryStruct.freshnessSeconds = freshnessSeconds_;
+  forwardingEntryStruct.freshnessPeriod = freshnessPeriod_;
 
   forwardingEntryStruct.action.length = action_.size();
   if (action_.size() > 0)
