@@ -223,8 +223,6 @@ public:
 
   /**
    * Sign data packet based on the certificate name.
-   * Note: the caller must make sure the timestamp in data is correct, for example with 
-   * data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0).
    * @param data The Data object to sign and update its signature.
    * @param certificateName The Name identifying the certificate which identifies the signing key.
    * @param wireFormat The WireFormat for calling encodeData, or WireFormat::getDefaultWireFormat() if omitted.

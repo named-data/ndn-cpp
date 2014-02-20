@@ -203,8 +203,6 @@ public:
 
   /**
    * Wire encode the Data object, sign it and set its signature.
-   * Note: the caller must make sure the timestamp is correct, for example with 
-   * data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0).
    * @param data The Data object to be signed.  This updates its signature and key locator field and wireEncoding.
    * @param certificateName The certificate name of the key to use for signing.  If omitted, infer the signing identity from the data packet name.
    * @param wireFormat A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
@@ -236,8 +234,6 @@ public:
 
   /**
    * Wire encode the Data object, sign it and set its signature.
-   * Note: the caller must make sure the timestamp is correct, for example with 
-   * data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0).
    * @param data The Data object to be signed.  This updates its signature and key locator field and wireEncoding.
    * @param identityName The identity name for the key to use for signing.  If omitted, infer the signing identity from the data packet name.
    * @param wireFormat A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
