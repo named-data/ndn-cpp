@@ -188,8 +188,11 @@ void
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& ndndIdData)
 {
   // Assume that the content is a DER encoded public key of the ndnd.  Do a quick check that the first byte is for DER encoding.
-  if (ndndIdData->getContent().size() < 1 || ndndIdData->getContent().buf()[0] != 0x30)
+  if (ndndIdData->getContent().size() < 1 || 
+      ndndIdData->getContent().buf()[0] != 0x30) {
     info_->onRegisterFailed_(info_->prefix_);
+    return;
+  }
   
   // Get the digest of the public key.
   uint8_t digest[SHA256_DIGEST_LENGTH];
