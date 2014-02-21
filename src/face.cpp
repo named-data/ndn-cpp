@@ -43,7 +43,7 @@ Face::expressInterest
   if (interestTemplate)
     return node_->expressInterest(Interest
       (name, interestTemplate->getMinSuffixComponents(), interestTemplate->getMaxSuffixComponents(),
-       interestTemplate->getPublisherPublicKeyDigest(), interestTemplate->getExclude(),
+       interestTemplate->getKeyLocator(), interestTemplate->getExclude(),
        interestTemplate->getChildSelector(), interestTemplate->getAnswerOriginKind(),
        interestTemplate->getScope(), interestTemplate->getInterestLifetimeMilliseconds()), onData, onTimeout, wireFormat);
   else
