@@ -59,7 +59,7 @@ public:
    * use func_lib::ref() as appropriate.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
-   * @param flags The flags for finer control of which interests are forward to the application.
+   * @param flags The flags for finer control of which interests are forwarded to the application.
    * @param wireFormat A WireFormat object used to encode the message.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
