@@ -54,7 +54,7 @@ ndn_Error ndn_ElementReader_onReceivedData
         // We have partial data from a previous call, so append this data and point to partialData.
         if ((error = ndn_DynamicUInt8Array_set(&self->partialData, data, offset, self->partialDataLength)))
           return error;
-        self->partialDataLength += dataLength;
+        self->partialDataLength += offset;
                 
         (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData.array, self->partialDataLength);
         // Assume we don't need to use partialData anymore until needed.
