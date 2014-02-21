@@ -204,7 +204,7 @@ public:
   /**
    * Wire encode the Data object, sign it and set its signature.
    * @param data The Data object to be signed.  This updates its signature and key locator field and wireEncoding.
-   * @param certificateName The certificate name of the key to use for signing.  If omitted, infer the signing identity from the data packet name.
+   * @param certificateName The certificate name of the key to use for signing.
    * @param wireFormat A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void 
