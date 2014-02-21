@@ -56,7 +56,7 @@ static inline void ndn_ElementReader_initialize
  * Continue to read data until the end of an element, then call (*elementListener->onReceivedElement)(element, elementLength).
  * The buffer passed to onReceivedElement is only valid during this call.  If you need the data later, you must copy.
  * @param self pointer to the ndn_ElementReader struct
- * @param data pointer to the buffer with the binary XML bytes
+ * @param data pointer to the buffer with the incoming element's bytes
  * @param dataLength length of data
  * @return 0 for success, else an error code
  */
