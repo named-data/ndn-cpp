@@ -81,6 +81,8 @@ public:
     Data data(interest->getName());
     string content(string("Echo ") + interest->getName().toUri());
     data.setContent((const uint8_t *)&content[0], content.size());
+    // setTimestampMilliseconds is needed for BinaryXml compatibility.
+    data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0);
     keyChain_.sign(data, certificateName_);
     Blob encodedData = data.wireEncode();
 
