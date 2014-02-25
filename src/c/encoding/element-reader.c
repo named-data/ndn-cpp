@@ -52,7 +52,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
         // We have partial data from a previous call, so append this data and point to partialData.
-        if ((error = ndn_DynamicUInt8Array_set(&self->partialData, data, offset, self->partialDataLength)))
+        if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, offset, self->partialDataLength)))
           return error;
         self->partialDataLength += offset;
                 
@@ -82,7 +82,7 @@ ndn_Error ndn_ElementReader_onReceivedData
         self->partialDataLength = 0;
       }
       
-      if ((error = ndn_DynamicUInt8Array_set(&self->partialData, data, dataLength, self->partialDataLength)))
+      if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, dataLength, self->partialDataLength)))
         return error;
       self->partialDataLength += dataLength;
       

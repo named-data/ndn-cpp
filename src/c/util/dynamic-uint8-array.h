@@ -75,7 +75,7 @@ static inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUIn
  * @param offset the offset in self->array to copy to
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
-static inline ndn_Error ndn_DynamicUInt8Array_set
+static inline ndn_Error ndn_DynamicUInt8Array_copy
   (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength, size_t offset) 
 {
   ndn_Error error;
