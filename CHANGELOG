@@ -1,5 +1,10 @@
-Changes since NDN-CPP v0.3 (2014-02-13)
+NDN-CPP v0.4 (2014-02-27)
+
+This release uses NDN-TLV for the default wire format.
+
 Changes
+* Changed the default wire format to TlvWireFormat.
+* In ./configure, added option --enable-binary-xml=yes to revert to Binary XML.
 * http://redmine.named-data.net/issues/1249. Support TLV FinalBlockId.
 
 Deprecated
