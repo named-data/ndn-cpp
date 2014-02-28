@@ -315,14 +315,10 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
       entry->getOnInterest()(entry->getPrefix(), interest, *transport_, entry->getRegisteredPrefixId());
   }
   else if (data) {
-    int iPendingInterest = getEntryIndexForExpressedInterest(data->getName());
-    if (iPendingInterest >= 0) {
-      // Copy pointers to the needed objects and remove the PIT entry before the calling the callback.
-      const OnData onData = pendingInterestTable_[iPendingInterest]->getOnData();
-      const ptr_lib::shared_ptr<const Interest> interest = pendingInterestTable_[iPendingInterest]->getInterest();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + iPendingInterest);
-      onData(interest, data);
-    }
+    vector<ptr_lib::shared_ptr<PendingInterest> > pitEntries;
+    extractEntriesForExpressedInterest(data->getName(), pitEntries);
+    for (size_t i = 0; i < pitEntries.size(); ++i)
+      pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
   }
 }
 
@@ -333,7 +329,8 @@ Node::shutdown()
 }
 
 int 
-Node::getEntryIndexForExpressedInterest(const Name& name)
+Node::extractEntriesForExpressedInterest
+  (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
   // TODO: Doesn't this belong in the Name class?
   vector<struct ndn_NameComponent> nameComponents;
@@ -342,19 +339,15 @@ Node::getEntryIndexForExpressedInterest(const Name& name)
   ndn_Name_initialize(&nameStruct, &nameComponents[0], nameComponents.capacity());
   name.get(nameStruct);
   
-  int iResult = -1;
-    
-  for (size_t i = 0; i < pendingInterestTable_.size(); ++i) {
-    if (ndn_Interest_matchesName((struct ndn_Interest *)&pendingInterestTable_[i]->getInterestStruct(), &nameStruct)) {
-      if (iResult < 0 || 
-          pendingInterestTable_[i]->getInterestStruct().name.nComponents > 
-          pendingInterestTable_[iResult]->getInterestStruct().name.nComponents)
-        // Update to the longer match.
-        iResult = i;
+  // Go backwards through the list so we can erase entries.
+  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
+    if (ndn_Interest_matchesName
+        ((struct ndn_Interest *)&pendingInterestTable_[i]->getInterestStruct(), 
+         &nameStruct)) {
+      entries.push_back(pendingInterestTable_[i]);
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
-    
-  return iResult;
 }
   
 Node::RegisteredPrefix*

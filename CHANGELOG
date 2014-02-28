@@ -1,4 +1,11 @@
+Interim changes after NDN-CPP v0.4 (2014-02-28)
+-----------------------------------------------
+
+Bug fixes
+* http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
+
 NDN-CPP v0.4 (2014-02-27)
+-------------------------
 
 This release uses NDN-TLV for the default wire format.
 
@@ -22,6 +29,7 @@ Bug fixes
   time as using the updated ndnd-tlv which uses the new type codes. 
 
 NDN-CPP v0.3 (2014-01-31)
+-------------------------
 
 Changes
 * Added option for "./configure --enable-tlv=yes" to build with NDN-TLV as the default wire format.
@@ -74,6 +82,7 @@ Bug fixes
 * Fix bug in getForwardingEntryFlags: Need to check all flags, not the first flag using "else if".
 
 NDN-CPP v0.2 (2013-11-08)
+-------------------------
 
 This release fully supports the Common Client Libraries API.
 http://named-data.net/codebase/platform/documentation/ndn-ccl-api/
@@ -81,6 +90,7 @@ http://named-data.net/codebase/platform/documentation/ndn-ccl-api/
 Changes to future versions will be detailed in this CHANGELOG.
 
 NDN-CPP v0.1 (2013-08-09)
+-------------------------
 
 This is the initial release, with support for expressInterest for one interest at a time.  A new release
 coming soon will have a Pending Interest Table and support processing multiple simultaneous interest and
