@@ -280,13 +280,17 @@ private:
   };
   
   /**
-   * Find the entry from the pit_ where the name conforms to the entry's interest selectors, and
-   * the entry interest name is the longest that matches name.
+   * Find all entries from pendingInterestTable_ where the name conforms to the 
+   * entry's interest selectors, remove the entries from the table and add to
+   * the entries vector.
    * @param name The name to find the interest for (from the incoming data packet).
-   * @return The index in pit_ of the pit entry, or -1 if not found.
+   * @param entries Add matching entries from pendingInterestTable_.  The caller
+   * should pass in a reference to an empty vector.
    */
   int 
-  getEntryIndexForExpressedInterest(const Name& name);
+  extractEntriesForExpressedInterest
+    (const Name& name, 
+     std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
   
   /**
    * Find the first entry from the registeredPrefixTable_ where the entry prefix is the longest that matches name.
