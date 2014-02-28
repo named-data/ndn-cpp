@@ -829,6 +829,7 @@ with_sysroot
 enable_libtool_lock
 with_sqlite3
 enable_tlv
+enable_binary_xml
 enable_doxygen_doc
 enable_doxygen_dot
 enable_doxygen_man
@@ -1488,8 +1489,10 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-tlv            enable NDN-TLV as the default wire format [default:
+  --enable-tlv            force NDN-TLV as the default wire format [default:
                           no]
+  --enable-binary-xml     force Binary XML as the default wire format
+                          [default: no]
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -17067,6 +17070,19 @@ fi
 if test "x${default_tlv}" = xyes; then
 
 $as_echo "#define USE_DEFAULT_TLV 1" >>confdefs.h
+
+fi
+
+# Check whether --enable-binary-xml was given.
+if test "${enable_binary_xml+set}" = set; then :
+  enableval=$enable_binary_xml; default_binary_xml=${enableval}
+else
+  default_binary_xml=no
+fi
+
+if test "x${default_binary_xml}" = xyes; then
+
+$as_echo "#define USE_DEFAULT_BINARY_XML 1" >>confdefs.h
 
 fi
 
