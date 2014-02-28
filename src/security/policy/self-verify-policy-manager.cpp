@@ -77,8 +77,7 @@ ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 { 
-  // Cast to const Data* so that we use the const version of getSignature() and don't reset the default encoding.
-  const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(((const Data*)data.get())->getSignature());
+  const Sha256WithRsaSignature *signature = dynamic_cast<Sha256WithRsaSignature *>(data->getSignature());
   if (!signature)
     throw SecurityException("SelfVerifyPolicyManager: Signature is not Sha256WithRsaSignature.");
   

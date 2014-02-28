@@ -23,10 +23,13 @@ class IdentityManager;
 class SelfVerifyPolicyManager : public PolicyManager {
 public:
   /**
-   * Create a new SelfVerifyPolicyManager which will look up the public key in the given identityManager.
-   * @param identityManager (optional) The IdentityManager for looking up the public key.  This points to an object must which remain 
-   * valid during the life of this SelfVerifyPolicyManager.  If omitted, then don't look for a public key with the name 
-   * in the KeyLocator and rely on the KeyLocator having the full public key DER.
+   * Create a new SelfVerifyPolicyManager which will look up the public key in 
+   * the given identityStorage.
+   * @param identityStorage (optional) The IdentityStorage for looking up the 
+   * public key.  This points to an object must which remain valid during the 
+   * life of this SelfVerifyPolicyManager. If omitted, then don't look for a 
+   * public key with the name in the KeyLocator and rely on the KeyLocator 
+   * having the full public key DER.
    */
   SelfVerifyPolicyManager(IdentityStorage* identityStorage = 0)
   : identityStorage_(identityStorage)
