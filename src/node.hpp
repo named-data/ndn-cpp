@@ -287,7 +287,7 @@ private:
    * @param entries Add matching entries from pendingInterestTable_.  The caller
    * should pass in a reference to an empty vector.
    */
-  int 
+  void 
   extractEntriesForExpressedInterest
     (const Name& name, 
      std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);

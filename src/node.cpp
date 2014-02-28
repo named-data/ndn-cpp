@@ -328,7 +328,7 @@ Node::shutdown()
   transport_->close();
 }
 
-int 
+void 
 Node::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
