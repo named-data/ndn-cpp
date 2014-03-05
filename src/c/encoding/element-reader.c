@@ -21,7 +21,8 @@ ndn_Error ndn_ElementReader_onReceivedData
       // The type codes for TLV Interest and Data packets are chosen to not
       //   conflict with the first byte of a binary XML packet, so we can
       //   just look at the first byte.
-      if (data[0] == ndn_Tlv_Interest || data[0] == ndn_Tlv_Data)
+      if (data[0] == ndn_Tlv_Interest || data[0] == ndn_Tlv_Data ||
+          data[0] == 0x80)
         self->useTlv = 1;
       else
         // Binary XML.
