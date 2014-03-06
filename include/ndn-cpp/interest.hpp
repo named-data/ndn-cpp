@@ -202,13 +202,17 @@ public:
   DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const { return answerOriginKind_; }
   
   /**
-   * Return true if the content must be fresh.
+   * Return true if the content must be fresh. The default is true.
    * @return true if must be fresh, otherwise false.
    */
   bool
   getMustBeFresh() const
   {
-    return answerOriginKind_ >= 0 && (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
+    // Imitate ndn_Interest_getMustBeFresh.
+    if (answerOriginKind_ < 0)
+      return true;
+    else 
+      return (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
   }
 
   int 
@@ -287,9 +291,10 @@ public:
   void setMustBeFresh(bool mustBeFresh)
   {
     if (answerOriginKind_ < 0) {
-      // It is is already the default where MustBeFresh is false.
-      if (mustBeFresh) {
-        answerOriginKind_ = 0; 
+      // It is is already the default where MustBeFresh is true.
+      if (!mustBeFresh) {
+        // Set answerOriginKind_ so that getMustBeFresh returns false.
+        answerOriginKind_ = ndn_Interest_ANSWER_STALE; 
         ++changeCount_;
       }
     }

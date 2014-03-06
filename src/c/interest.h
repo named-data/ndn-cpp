@@ -133,16 +133,17 @@ static inline void ndn_Interest_initialize
 int ndn_Interest_matchesName(struct ndn_Interest *self, struct ndn_Name *name);
 
 /**
- * Return true if answerOriginKind indicates that the content must be fresh.
+ * Return true if answerOriginKind indicates that the content must be fresh. If
+ * answerOriginKind is not specified, the default is true.
  * @param self A pointer to the ndn_Interest struct.
  * @return 1 if must be fresh, otherwise 0.
  */
 static inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
 {
-  if (self->answerOriginKind >= 0 && (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0)
+  if (self->answerOriginKind < 0)
     return 1;
   else
-    return 0;
+    return (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0 ? 1 : 0;
 }
 
 #ifdef __cplusplus

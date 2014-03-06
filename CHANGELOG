@@ -1,8 +1,9 @@
-Interim changes after NDN-CPP v0.4 (2014-03-05)
+Interim changes after NDN-CPP v0.4 (2014-03-06)
 -----------------------------------------------
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
+* http://redmine.named-data.net/issues/1334 Interest.getMustBeFresh() is default true.
 * For TLV packets over UDP, ignore packets starting with 0x80.
 
 NDN-CPP v0.4 (2014-02-27)
