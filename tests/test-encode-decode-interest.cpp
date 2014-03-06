@@ -134,7 +134,7 @@ int main(int argc, char** argv)
     freshInterest.getExclude().appendComponent(Name("abc")[0]).appendAny();
     freshInterest.setInterestLifetimeMilliseconds(30000);
     freshInterest.setChildSelector(1);
-    freshInterest.setMustBeFresh(true);
+    freshInterest.setMustBeFresh(false);
     freshInterest.setScope(2);
 
     Interest reDecodedFreshInterest; 
