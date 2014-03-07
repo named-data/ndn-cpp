@@ -56,9 +56,17 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_FreshnessPeriod, metaInfo->freshnessPeriod)))
     return error;
-  if ((error = ndn_TlvEncoder_writeOptionalBlobTlv
-      (encoder, ndn_Tlv_FinalBlockId, &metaInfo->finalBlockID.value)))
-    return error;                                                                                             
+  if (metaInfo->finalBlockID.value.value && 
+      metaInfo->finalBlockID.value.length > 0) {
+    // The FinalBlockID has an inner NameComponent.
+    if ((error = ndn_TlvEncoder_writeTypeAndLength
+         (encoder, ndn_Tlv_FinalBlockId, ndn_TlvEncoder_sizeOfBlobTlv
+            (ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value))))
+      return error;
+    if ((error = ndn_TlvEncoder_writeBlobTlv
+         (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value)))
+      return error;    
+  }
     
   return NDN_ERROR_success;  
 }
@@ -177,10 +185,24 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))
     return error;
-  if ((error = ndn_TlvDecoder_readOptionalBlobTlv
-       (decoder, ndn_Tlv_FinalBlockId, endOffset, 
-        &metaInfo->finalBlockID.value)))
-    return error;
+  
+  int gotExpectedType;
+  if ((error = ndn_TlvDecoder_peekType
+       (decoder, ndn_Tlv_FinalBlockId, endOffset, &gotExpectedType)))
+    return error;    
+  if (gotExpectedType) {
+    size_t finalBlockIdEndOffset;
+    if ((error = ndn_TlvDecoder_readNestedTlvsStart
+         (decoder, ndn_Tlv_FinalBlockId, &finalBlockIdEndOffset)))
+      return error;
+    if ((error = ndn_TlvDecoder_readBlobTlv
+         (decoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value)))
+      return error;
+    if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, finalBlockIdEndOffset)))
+      return error;
+  }
+  else
+    ndn_NameComponent_initialize(&metaInfo->finalBlockID, 0, 0);
 
   // Set fields not used by NDN-TLV to none.
   metaInfo->timestampMilliseconds = -1;
