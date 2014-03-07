@@ -672,7 +672,7 @@ public:
    * this returns -1 if the first comes before the second using the NDN canonical ordering for name components, or 1 if it comes after.
    * If they are equal, this compares the second components of each name, etc.  If both names are the same up to
    * the size of the shorter name, this returns -1 if the first name is shorter than the second or 1 if it is longer.  
-   * For example, if you std::sort gives: /a/b/d /a/b/cc /c /c/a /bb .  This is intuitive because all names
+   * For example, std::sort gives: /a/b/d /a/b/cc /c /c/a /bb .  This is intuitive because all names
    * with the prefix /a are next to each other.  But it may be also be counter-intuitive because /c comes before /bb 
    * according to NDN canonical ordering since it is shorter.  
    * @param other The other Name to compare with.
