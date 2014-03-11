@@ -282,7 +282,7 @@ private:
   
   /**
    * A RegisterResponse receives the response Data packet from the register 
-   * prefix interest sent to the connected NDN hub.  If this gest a bad response
+   * prefix interest sent to the connected NDN hub.  If this gets a bad response
    * or a timeout, call onRegisterFailed.
    * This class is a function object for the callbacks.
    */
