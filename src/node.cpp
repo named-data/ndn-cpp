@@ -213,6 +213,27 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timed
 }
 
 void 
+Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
+{
+  Name expectedName("/ndnx/.../selfreg");
+  // Got a response. Do a quick check of expected name components.
+  if (responseData->getName()[0] != expectedName[0] ||
+      responseData->getName()[2] != expectedName[2]) {
+    info_->onRegisterFailed_(info_->prefix_);
+    return;
+  }
+  
+  // Otherwise, silently succeed.
+}
+
+void 
+Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
+{
+  // Timeout.
+  info_->onRegisterFailed_(info_->prefix_);
+}
+
+void 
 Node::registerPrefixHelper
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
    const ForwardingFlags& flags, WireFormat& wireFormat)
@@ -244,15 +265,19 @@ Node::registerPrefixHelper
   interestName.append(encodedData);
   
   Interest interest(interestName);
+  interest.setInterestLifetimeMilliseconds(4000.0);
   interest.setScope(1);
-  // Even though the inner Data packet and ForwardingEntry are encoded as BinaryXml, we send the interest using the given
-  //   wire format so that the hub receives (and sends) in the application's desired wire format.
-  Blob encodedInterest = interest.wireEncode(wireFormat);
   
   // Save the onInterest callback and send the registration interest.
   registeredPrefixTable_.push_back(ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
   
-  transport_->send(*encodedInterest);
+  RegisterResponse response
+    (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
+     (prefix, onRegisterFailed)));
+  // It is OK for func_lib::function make a copy of the function object because 
+  //   the Info is in a ptr_lib::shared_ptr.
+  expressInterest
+    (interest, response, response, *WireFormat::getDefaultWireFormat());
 }
 
 void 

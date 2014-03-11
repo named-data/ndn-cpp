@@ -279,6 +279,53 @@ private:
     ptr_lib::shared_ptr<Info> info_;
   };
   
+  
+  /**
+   * A RegisterResponse receives the response Data packet from the register 
+   * prefix interest sent to the connected NDN hub.  If this gest a bad response
+   * or a timeout, call onRegisterFailed.
+   * This class is a function object for the callbacks.
+   */
+  class RegisterResponse {
+  public:
+    class Info;
+    RegisterResponse(ptr_lib::shared_ptr<RegisterResponse::Info> info)
+    : info_(info)
+    {      
+    }
+    
+    /**
+     * We received the response.
+     * @param interest
+     * @param data
+     */
+    void 
+    operator()(const ptr_lib::shared_ptr<const Interest>& interest, 
+               const ptr_lib::shared_ptr<Data>& responseData);
+
+    /**
+     * We timed out waiting for the response.
+     * @param interest
+     */
+    void 
+    operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest);
+    
+    class Info {
+    public:
+      Info(const ptr_lib::shared_ptr<const Name>& prefix, 
+           const OnRegisterFailed& onRegisterFailed)
+      : prefix_(prefix), onRegisterFailed_(onRegisterFailed)
+      {      
+      }
+      
+      ptr_lib::shared_ptr<const Name> prefix_;
+      const OnRegisterFailed onRegisterFailed_;
+    };
+    
+  private:
+    ptr_lib::shared_ptr<Info> info_;
+  };
+  
   /**
    * Find all entries from pendingInterestTable_ where the name conforms to the 
    * entry's interest selectors, remove the entries from the table and add to
