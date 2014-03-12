@@ -72,6 +72,8 @@ TcpTransport::processEvents()
     if ((error = ndn_TcpTransport_receive
          (transport_.get(), buffer, sizeof(buffer), &nBytes)))
       throw runtime_error(ndn_getErrorString(error));  
+    if (nBytes == 0)
+      return;
 
     ndn_ElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
   }
