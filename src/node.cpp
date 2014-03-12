@@ -217,7 +217,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
 {
   Name expectedName("/ndnx/.../selfreg");
   // Got a response. Do a quick check of expected name components.
-  if (responseData->getName()[0] != expectedName[0] ||
+  if (responseData->getName().size() < 4 ||
+      responseData->getName()[0] != expectedName[0] ||
       responseData->getName()[2] != expectedName[2]) {
     info_->onRegisterFailed_(info_->prefix_);
     return;
@@ -276,8 +277,7 @@ Node::registerPrefixHelper
      (prefix, onRegisterFailed)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest
-    (interest, response, response, *WireFormat::getDefaultWireFormat());
+  expressInterest(interest, response, response, wireFormat);
 }
 
 void 
