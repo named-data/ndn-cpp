@@ -108,6 +108,7 @@ Data::wireDecode(const Blob& input, WireFormat& wireFormat)
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
+    // Take a pointer to the input Blob without copying.
     setDefaultWireEncoding
       (SignedBlob(input, signedPortionBeginOffset, signedPortionEndOffset),
        WireFormat::getDefaultWireFormat());
@@ -123,6 +124,7 @@ Data::wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireForma
   
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
+    // The input is not an immutable Blob, so we need to copy.
     setDefaultWireEncoding
       (SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset),
        WireFormat::getDefaultWireFormat());
