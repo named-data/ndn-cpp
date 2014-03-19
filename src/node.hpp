@@ -135,20 +135,6 @@ private:
     getOnData() { return onData_; }
     
     /**
-     * Get the struct ndn_Interest for the interest_.
-     * WARNING: Assume that this PendingInterest was created with new, so that no copy constructor is invoked between calls.
-     * This class is private to Node and only used by its methods, so this should be OK.
-     * TODO: Doesn't this functionality belong in the Interest class?
-     * @return A reference to the ndn_Interest struct.
-     * WARNING: The resulting pointers in are invalid uses getInterest() to manipulate the object which could reallocate memory.
-     */
-    const struct ndn_Interest& 
-    getInterestStruct()
-    {
-      return *interestStruct_;
-    }
-    
-    /**
      * Check if this interest is timed out.
      * @param nowMilliseconds The current time in milliseconds from ndn_getNowMilliseconds.
      * @return true if this interest timed out, otherwise false.
@@ -166,12 +152,7 @@ private:
     callTimeout();
     
   private:
-    ptr_lib::shared_ptr<const Interest> interest_;
-    std::vector<struct ndn_NameComponent> nameComponents_;
-    std::vector<struct ndn_ExcludeEntry> excludeEntries_;
-    std::vector<struct ndn_NameComponent> keyNameComponents_;
-    ptr_lib::shared_ptr<struct ndn_Interest> interestStruct_;
-  
+    ptr_lib::shared_ptr<const Interest> interest_;  
     static uint64_t lastPendingInterestId_; /**< A class variable used to get the next unique ID. */
     uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
     const OnData onData_;

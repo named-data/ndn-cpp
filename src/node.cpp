@@ -357,18 +357,9 @@ void
 Node::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
-  // TODO: Doesn't this belong in the Name class?
-  vector<struct ndn_NameComponent> nameComponents;
-  nameComponents.reserve(name.size());
-  struct ndn_Name nameStruct;
-  ndn_Name_initialize(&nameStruct, &nameComponents[0], nameComponents.capacity());
-  name.get(nameStruct);
-  
   // Go backwards through the list so we can erase entries.
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (ndn_Interest_matchesName
-        ((struct ndn_Interest *)&pendingInterestTable_[i]->getInterestStruct(), 
-         &nameStruct)) {
+    if (pendingInterestTable_[i]->getInterest()->matchesName(name)) {
       entries.push_back(pendingInterestTable_[i]);
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
@@ -397,8 +388,7 @@ Node::getEntryForRegisteredPrefix(const Name& name)
 
 Node::PendingInterest::PendingInterest
   (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
-: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout),
-  interestStruct_(new struct ndn_Interest)
+: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout)
 {
   // Set up timeoutTime_.
   if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
@@ -406,16 +396,6 @@ Node::PendingInterest::PendingInterest
   else
     // No timeout.
     timeoutTimeMilliseconds_ = -1.0;
-  
-  // Set up interestStruct_.
-  // TODO: Doesn't this belong in the Interest class?
-  nameComponents_.reserve(interest_->getName().size());
-  excludeEntries_.reserve(interest_->getExclude().size());
-  keyNameComponents_.reserve(interest_->getKeyLocator().getKeyName().size());
-  ndn_Interest_initialize
-    (interestStruct_.get(), &nameComponents_[0], nameComponents_.capacity(), &excludeEntries_[0], excludeEntries_.capacity(), 
-     &keyNameComponents_[0], keyNameComponents_.capacity());
-  interest_->get(*interestStruct_);  
 }
 
 void 
