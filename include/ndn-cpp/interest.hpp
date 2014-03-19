@@ -341,6 +341,15 @@ public:
     keyLocator_ = keyLocator; 
     ++changeCount_;
   }
+  
+  /**
+   * Check if this Interest's name matches the given name (using Name::match) 
+   * and the given name also conforms to the interest selectors.
+   * @param name The name to check.
+   * @return True if the name and interest selectors match, otherwise false.
+   */
+  bool
+  matchesName(const Name& name) const;
 
   /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.

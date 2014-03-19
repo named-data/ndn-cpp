@@ -68,14 +68,6 @@ static inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn_E
 int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2);
 
 /**
- * Check if the component matches any of the exclude criteria.
- * @param self A pointer to the ndn_Exclude struct.
- * @param component A pointer to the name component to check.
- * @return 1 if the component matches any of the exclude criteria, otherwise 0.
- */
-int ndn_Exclude_matches(struct ndn_Exclude *self, struct ndn_NameComponent *component);
-
-/**
  * An ndn_Interest holds an ndn_Name and other fields for an interest.
  */
 struct ndn_Interest {
@@ -122,15 +114,6 @@ static inline void ndn_Interest_initialize
   ndn_Blob_initialize(&self->nonce, 0, 0);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
 }
-
-/**
- * Check if self's name matches the given name (using ndn_Name_match) and the given name also conforms to the 
- * interest selectors.
- * @param self A pointer to the ndn_Interest struct.
- * @param name A pointer to the name to check.
- * @return 1 if the name and interest selectors match, 0 otherwise.
- */
-int ndn_Interest_matchesName(struct ndn_Interest *self, struct ndn_Name *name);
 
 /**
  * Return true if answerOriginKind indicates that the content must be fresh. If

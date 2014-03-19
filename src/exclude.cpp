@@ -49,6 +49,61 @@ Exclude::set(const struct ndn_Exclude& excludeStruct)
   }
 }
 
+bool
+Exclude::matches(const Name::Component& component) const
+{
+  size_t i;
+  for (i = 0; i < entries_.size(); ++i) {
+    if (entries_[i].type_ == ndn_Exclude_ANY) {
+      const Entry* lowerBound = 0;
+      if (i > 0)
+        lowerBound = &entries_[i - 1];
+      
+      // Find the upper bound, possibly skipping over multiple ANY in a row.
+      size_t iUpperBound;
+      const Entry* upperBound = 0;
+      for (iUpperBound = i + 1; iUpperBound < entries_.size(); ++iUpperBound) {
+        if (entries_[iUpperBound].type_ == ndn_Exclude_COMPONENT) {
+          upperBound = &entries_[iUpperBound];
+          break;
+        }
+      }
+      
+      // If lowerBound != 0, we already checked component equals lowerBound on the last pass.
+      // If upperBound != 0, we will check component equals upperBound on the next pass.
+      if (upperBound != 0) {
+        if (lowerBound != 0) {
+          if (component > lowerBound->component_ &&
+              component < upperBound->component_)
+            return true;
+        }
+        else {
+          if (component < upperBound->component_)
+            return true;
+        }
+        
+        // Make i equal iUpperBound on the next pass.
+        i = iUpperBound - 1;
+      }
+      else {
+        if (lowerBound != 0) {
+          if (component > lowerBound->component_)
+            return true;
+        }
+        else
+          // entries_ has only ANY.
+          return true;
+      }
+    }
+    else {
+      if (component == entries_[i].component_)
+        return true;
+    }
+  }
+  
+  return false;
+}
+
 string 
 Exclude::toUri() const
 {
@@ -60,10 +115,10 @@ Exclude::toUri() const
     if (i > 0)
       result << ",";
         
-    if (entries_[i].getType() == ndn_Exclude_ANY)
+    if (entries_[i].type_ == ndn_Exclude_ANY)
       result << "*";
     else
-      Name::toEscapedString(*entries_[i].getComponent().getValue(), result);
+      Name::toEscapedString(*entries_[i].component_.getValue(), result);
   }
   
   return result.str();  

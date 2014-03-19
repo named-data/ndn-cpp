@@ -92,5 +92,26 @@ Interest::toUri() const
   return result.str();  
 }
 
+bool
+Interest::matchesName(const Name& name) const
+{
+  if (!getName().match(name))
+    return false;
+  
+  if (minSuffixComponents_ >= 0 &&
+    // Add 1 for the implicit digest.
+    !(name.size() + 1 - getName().size() >= minSuffixComponents_))
+    return false;
+  if (maxSuffixComponents_ >= 0 &&
+    // Add 1 for the implicit digest.
+    !(name.size() + 1 - getName().size() <= maxSuffixComponents_))
+    return false;
+  if (getExclude().size() > 0 && name.size() > getName().size() &&
+      getExclude().matches(name.get(getName().size())))
+    return false;
+  
+  return true; 
+}
+
 }
 

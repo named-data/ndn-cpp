@@ -71,8 +71,9 @@ public:
 
     const Name::Component& 
     getComponent() const { return component_; }
-
+    
   private:
+    friend class Exclude;
     ndn_ExcludeType type_;
     Name::Component component_; /**< only used if type_ is ndn_Exclude_COMPONENT */
   }; 
@@ -182,6 +183,15 @@ public:
     entries_.clear();
     ++changeCount_;
   }
+
+  /**
+   * Check if the component matches any of the exclude criteria.
+   * @param component The name component to check.
+   * @return True if the component matches any of the exclude criteria, 
+   * otherwise false.
+   */
+  bool
+  matches(const Name::Component& component) const;
   
   /**
    * Encode this Exclude with elements separated by "," and ndn_Exclude_ANY shown as "*".
@@ -189,7 +199,7 @@ public:
    */
   std::string 
   toUri() const;
-
+  
   /**
    * Get the change count, which is incremented each time this object is changed.
    * @return The change count.
