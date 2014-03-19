@@ -73,7 +73,6 @@ public:
     getComponent() const { return component_; }
     
   private:
-    friend class Exclude;
     ndn_ExcludeType type_;
     Name::Component component_; /**< only used if type_ is ndn_Exclude_COMPONENT */
   }; 

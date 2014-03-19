@@ -54,7 +54,7 @@ Exclude::matches(const Name::Component& component) const
 {
   size_t i;
   for (i = 0; i < entries_.size(); ++i) {
-    if (entries_[i].type_ == ndn_Exclude_ANY) {
+    if (entries_[i].getType() == ndn_Exclude_ANY) {
       const Entry* lowerBound = 0;
       if (i > 0)
         lowerBound = &entries_[i - 1];
@@ -63,7 +63,7 @@ Exclude::matches(const Name::Component& component) const
       size_t iUpperBound;
       const Entry* upperBound = 0;
       for (iUpperBound = i + 1; iUpperBound < entries_.size(); ++iUpperBound) {
-        if (entries_[iUpperBound].type_ == ndn_Exclude_COMPONENT) {
+        if (entries_[iUpperBound].getType() == ndn_Exclude_COMPONENT) {
           upperBound = &entries_[iUpperBound];
           break;
         }
@@ -73,12 +73,12 @@ Exclude::matches(const Name::Component& component) const
       // If upperBound != 0, we will check component equals upperBound on the next pass.
       if (upperBound != 0) {
         if (lowerBound != 0) {
-          if (component > lowerBound->component_ &&
-              component < upperBound->component_)
+          if (component > lowerBound->getComponent() &&
+              component < upperBound->getComponent())
             return true;
         }
         else {
-          if (component < upperBound->component_)
+          if (component < upperBound->getComponent())
             return true;
         }
         
@@ -87,7 +87,7 @@ Exclude::matches(const Name::Component& component) const
       }
       else {
         if (lowerBound != 0) {
-          if (component > lowerBound->component_)
+          if (component > lowerBound->getComponent())
             return true;
         }
         else
@@ -96,7 +96,7 @@ Exclude::matches(const Name::Component& component) const
       }
     }
     else {
-      if (component == entries_[i].component_)
+      if (component == entries_[i].getComponent())
         return true;
     }
   }
@@ -115,10 +115,10 @@ Exclude::toUri() const
     if (i > 0)
       result << ",";
         
-    if (entries_[i].type_ == ndn_Exclude_ANY)
+    if (entries_[i].getType() == ndn_Exclude_ANY)
       result << "*";
     else
-      Name::toEscapedString(*entries_[i].component_.getValue(), result);
+      Name::toEscapedString(*entries_[i].getComponent().getValue(), result);
   }
   
   return result.str();  
