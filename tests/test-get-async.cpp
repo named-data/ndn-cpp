@@ -45,12 +45,12 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    Face face("spurs.cs.ucla.edu");
+    Face face("borges.metwi.ucla.edu");
     
     // Counter holds data used by the callbacks.
     Counter counter;
     
-    Name name1("/ndn/ucla.edu/apps/lwndn-test/howdy.txt");    
+    Name name1("/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4");    
     cout << "Express name " << name1.toUri() << endl;
     // Use bind to pass the counter object to the callbacks.
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
