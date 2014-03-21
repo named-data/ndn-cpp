@@ -24,6 +24,8 @@ class PolicyManager;
  *
  * The KeyChain class provides a set of interfaces to the security library such as identity management, policy configuration 
  * and packet signing and verification.
+ * @note This class is an experimental feature.  See the API docs for more detail at
+ * http://named-data.net/doc/ndn-ccl-api/key-chain.html .
  */
 class KeyChain {
 public:
