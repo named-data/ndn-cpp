@@ -5,17 +5,17 @@
  * See COPYING for copyright and distribution information.
  */
 
-#ifndef NDN_MEMORY_CONTENT_STORE_HPP
-#define NDN_MEMORY_CONTENT_STORE_HPP
+#ifndef NDN_MEMORY_CONTENT_CACHE_HPP
+#define NDN_MEMORY_CONTENT_CACHE_HPP
 
 #include <vector>
 #include "../face.hpp"
 
 namespace ndn {
 
-class MemoryContentStore {
+class MemoryContentCache {
 public:
-  MemoryContentStore(Face* face)
+  MemoryContentCache(Face* face)
   : face_(face)
   {
   }
@@ -33,7 +33,7 @@ public:
   void
   add(const Data& data)
   {
-    contentStore_.push_back(ptr_lib::make_shared<const Content>(data));
+    contentCache_.push_back(ptr_lib::make_shared<const Content>(data));
   }
   
   // onInterest.
@@ -76,10 +76,10 @@ private:
   };
 
   void
-  pruneContentStore();
+  pruneContentCache();
   
   Face* face_;
-  std::vector<ptr_lib::shared_ptr<const Content> > contentStore_;
+  std::vector<ptr_lib::shared_ptr<const Content> > contentCache_;
 };
 
 }

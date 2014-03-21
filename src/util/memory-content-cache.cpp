@@ -6,22 +6,22 @@
  */
 
 #include "../c/util/time.h"
-#include <ndn-cpp/util/memory-content-store.hpp>
+#include <ndn-cpp/util/memory-content-cache.hpp>
 
 using namespace std;
 
 namespace ndn {
 
 void 
-MemoryContentStore::operator()
+MemoryContentCache::operator()
   (const ptr_lib::shared_ptr<const Name>& prefix, 
    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
    uint64_t registeredPrefixId)
 {
-  pruneContentStore();
+  pruneContentCache();
   
-  for (size_t i = 0; i < contentStore_.size(); ++i) {
-    const Content* content = contentStore_[i].get();
+  for (size_t i = 0; i < contentCache_.size(); ++i) {
+    const Content* content = contentCache_[i].get();
     // TODO: Look for longest match?
     // TODO: Check childSelector.
     if (interest->matchesName(content->getName())) {
@@ -33,17 +33,17 @@ MemoryContentStore::operator()
 
 
 void
-MemoryContentStore::pruneContentStore()
+MemoryContentCache::pruneContentCache()
 {
   // Go backwards through the list so we can erase entries.
   MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
-  for (int i = (int)contentStore_.size() - 1; i >= 0; --i) {
-    if (contentStore_[i]->isStale(nowMilliseconds))
-      contentStore_.erase(contentStore_.begin() + i);
+  for (int i = (int)contentCache_.size() - 1; i >= 0; --i) {
+    if (contentCache_[i]->isStale(nowMilliseconds))
+      contentCache_.erase(contentCache_.begin() + i);
   }
 }
 
-MemoryContentStore::Content::Content(const Data& data)
+MemoryContentCache::Content::Content(const Data& data)
 // wireEncode returns the cached encoding if available.
 : name_(data.getName()), dataEncoding_(data.wireEncode())
 {

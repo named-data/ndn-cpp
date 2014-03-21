@@ -74,7 +74,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/transport/udp-transport.hpp \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
-  include/ndn-cpp/util/memory-content-store.hpp \
+  include/ndn-cpp/util/memory-content-cache.hpp \
   include/ndn-cpp/util/signed-blob.hpp
 
 # Just the C code.
@@ -175,7 +175,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/util/blob.cpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
-  src/util/memory-content-store.cpp
+  src/util/memory-content-cache.cpp
 
 bin_test_encode_decode_benchmark_SOURCES = tests/test-encode-decode-benchmark.cpp
 bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
