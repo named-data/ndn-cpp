@@ -248,7 +248,7 @@ private:
    * @return The name of the generated key.
    */
   Name
-  generateKeyPair(const Name& identityName, bool isKsk = false, KeyType keyType = KEY_TYPE_RSA, int keySize = 2048);
+  generateKeyPair(const Name& identityName, bool isKsk, KeyType keyType, int keySize);
 
   static Name
   getKeyNameFromCertificatePrefix(const Name& certificatePrefix);
