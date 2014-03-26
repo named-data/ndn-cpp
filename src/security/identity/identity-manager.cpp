@@ -59,10 +59,10 @@ IdentityManager::generateKeyPair(const Name& identityName, bool isKsk, KeyType k
   Name keyName = identityStorage_->getNewKeyName(identityName, isKsk);
 
   _LOG_DEBUG("Generate key pair in private storage");
-  privateKeyStorage_->generateKeyPair(keyName.toUri(), keyType, keySize);
+  privateKeyStorage_->generateKeyPair(keyName, keyType, keySize);
 
   _LOG_DEBUG("Create a key record in public storage");
-  ptr_lib::shared_ptr<PublicKey> pubKey = privateKeyStorage_->getPublicKey(keyName.toUri());
+  ptr_lib::shared_ptr<PublicKey> pubKey = privateKeyStorage_->getPublicKey(keyName);
   identityStorage_->addKey(keyName, keyType, pubKey->getKeyDer());
 
   return keyName;
