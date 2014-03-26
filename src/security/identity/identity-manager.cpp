@@ -33,20 +33,20 @@ Name
 IdentityManager::createIdentity(const Name& identityName)
 {
   if (!identityStorage_->doesIdentityExist(identityName)) {
-  _LOG_DEBUG("Create Identity");
-  identityStorage_->addIdentity(identityName);
-  
-  _LOG_DEBUG("Create Default RSA key pair");
-  Name keyName = generateRSAKeyPairAsDefault(identityName, true);
+    _LOG_DEBUG("Create Identity");
+    identityStorage_->addIdentity(identityName);
 
-  _LOG_DEBUG("Create self-signed certificate");
-  ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName); 
-  
-  _LOG_DEBUG("Add self-signed certificate as default");
+    _LOG_DEBUG("Create Default RSA key pair");
+    Name keyName = generateRSAKeyPairAsDefault(identityName, true);
 
-  addCertificateAsDefault(*selfCert);
+    _LOG_DEBUG("Create self-signed certificate");
+    ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName); 
 
-  return keyName;
+    _LOG_DEBUG("Add self-signed certificate as default");
+
+    addCertificateAsDefault(*selfCert);
+
+    return keyName;
   }
   else
     throw SecurityException("Identity has already been created!");
