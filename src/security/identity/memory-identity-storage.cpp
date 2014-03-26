@@ -118,9 +118,8 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
     throw SecurityException("Certificate does not match the public key!");
   
   // Insert the certificate.
-  if (!certificate.getDefaultWireEncoding())
-    certificate.wireEncode();
-  certificateStore_[certificateName.toUri()] = certificate.getDefaultWireEncoding();
+  // wireEncode returns the cached encoding if available.
+  certificateStore_[certificateName.toUri()] = certificate.wireEncode();
 }
 
 ptr_lib::shared_ptr<Data> 

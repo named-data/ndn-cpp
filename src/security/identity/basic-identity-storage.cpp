@@ -382,9 +382,8 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
   sqlite3_bind_int64(statement, 5, (sqlite3_int64)floor(certificate.getNotBefore() / 1000.0));
   sqlite3_bind_int64(statement, 6, (sqlite3_int64)floor(certificate.getNotAfter() / 1000.0));
 
-  if (!certificate.getDefaultWireEncoding())
-    certificate.wireEncode();
-  sqlite3_bind_blob(statement, 7, certificate.getDefaultWireEncoding().buf(), certificate.getDefaultWireEncoding().size(), SQLITE_TRANSIENT);
+  // wireEncode returns the cached encoding if available.
+  sqlite3_bind_blob(statement, 7, certificate.wireEncode().buf(), certificate.wireEncode().size(), SQLITE_TRANSIENT);
 
   int res = sqlite3_step(statement);
 
@@ -435,9 +434,8 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   sqlite3_bind_int64(statement, 5, (sqlite3_int64)floor(certificate.getNotBefore() / 1000.0));
   sqlite3_bind_int64(statement, 6, (sqlite3_int64)floor(certificate.getNotAfter() / 1000.0));
 
-  if (!certificate.getDefaultWireEncoding())
-    certificate.wireEncode();
-  sqlite3_bind_blob(statement, 7, certificate.getDefaultWireEncoding().buf(), certificate.getDefaultWireEncoding().size(), SQLITE_TRANSIENT);
+  // wireEncode returns the cached encoding if available.
+  sqlite3_bind_blob(statement, 7, certificate.wireEncode().buf(), certificate.wireEncode().size(), SQLITE_TRANSIENT);
 
   int res = sqlite3_step(statement);
 

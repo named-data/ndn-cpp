@@ -33,13 +33,10 @@ verifySha256WithRsaSignature(const Data& data, const Blob& publicKeyDer)
   if (!signature)
     throw SecurityException("signature is not Sha256WithRsaSignature.");
   
-  // Set the data packet's default wire encoding if it is not already there.
-  if (!data.getDefaultWireEncoding())
-    data.wireEncode();
-  
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  ndn_digestSha256(data.getDefaultWireEncoding().signedBuf(), data.getDefaultWireEncoding().signedSize(), signedPortionDigest);
+  // wireEncode returns the cached encoding if available.
+  ndn_digestSha256(data.wireEncode().signedBuf(), data.wireEncode().signedSize(), signedPortionDigest);
   
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
