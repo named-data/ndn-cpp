@@ -188,9 +188,9 @@ ptr_lib::shared_ptr<Signature>
 IdentityManager::signByCertificate(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
 {
   Name keyName = IdentityCertificate::certificateNameToPublicKeyName(certificateName);
-  ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey(keyName.toUri());
+  ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey(keyName);
 
-  Blob sigBits = privateKeyStorage_->sign(buffer, bufferLength, keyName.toUri());
+  Blob sigBits = privateKeyStorage_->sign(buffer, bufferLength, keyName);
 
   //For temporary usage, we support RSA + SHA256 only, but will support more.
   ptr_lib::shared_ptr<Sha256WithRsaSignature> sha256Sig(new Sha256WithRsaSignature());
