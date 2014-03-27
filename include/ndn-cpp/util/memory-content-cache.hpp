@@ -8,18 +8,42 @@
 #ifndef NDN_MEMORY_CONTENT_CACHE_HPP
 #define NDN_MEMORY_CONTENT_CACHE_HPP
 
-#include <vector>
+#include <deque>
 #include "../face.hpp"
 
 namespace ndn {
 
+/**
+ * A MemoryContentCache holds a set of Data packets and answers an Interest to
+ * return the correct Data packet. The cached is periodically cleaned up to
+ * remove each stale Data packet based on its FreshnessPeriod (if it has one).
+ * @note This class is an experimental feature.  See the API docs for more detail at
+ * http://named-data.net/doc/ndn-ccl-api/memory-content-cache.html .
+ */
 class MemoryContentCache {
 public:
-  MemoryContentCache(Face* face)
-  : face_(face)
-  {
-  }
+  /**
+   * Create a new MemoryContentCache to use the given Face.
+   * @param face The Face to use to call registerPrefix and which will call
+   * the OnInterest callback.
+   * @param cleanupIntervalMilliseconds (optional) The interval in milliseconds
+   * between each check to clean up stale content in the cache. If omitted,
+   * use a default of 1000 milliseconds. If this is a large number, then
+   * effectively the stale content will not be removed from the cache.
+   */
+  MemoryContentCache
+    (Face* face, Milliseconds cleanupIntervalMilliseconds = 1000.0);
   
+  /**
+   * Call registerPrefix on the Face given to the constructor so that this
+   * MemoryContentCache will answer interests whose name has the prefix.
+   * @param prefix The Name for the prefix to register. This copies the Name.
+   * @param onRegisterFailed A function object to call if failed to retrieve the 
+   * connected hub’s ID or failed to register the prefix. This calls 
+   * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @param flags (optional) See Face::registerPrefix.
+   * @param wireFormat (optional) See Face::registerPrefix.
+   */
   void
   registerPrefix
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed, 
@@ -30,13 +54,25 @@ public:
       (prefix, func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
   }
   
+  /**
+   * Add the Data packet to the cache so that it is available to use to 
+   * answer interests. If data.getFreshnessPeriod() is not negative, set the
+   * staleness time to now plus data.getFreshnessPeriod(), which is checked
+   * during cleanup to remove stale content.
+   * @param data The Data packet object to put in the cache. This copies the 
+   * fields from the object.
+   */
   void
-  add(const Data& data)
-  {
-    contentCache_.push_back(ptr_lib::make_shared<const Content>(data));
-  }
+  add(const Data& data);
   
-  // onInterest.
+  /**
+   * This is the OnInterest callback which is called when the library receives
+   * an interest whose name has the prefix given to registerPrefix. First check
+   * if cleanupIntervalMilliseconds milliseconds have passed and remove stale
+   * content from the cache. Then search the cache for the Data packet, matching
+   * any interest selectors including ChildSelector, and send the Data packet
+   * to the transport.
+   */
   void 
   operator()
     (const ptr_lib::shared_ptr<const Name>& prefix, 
@@ -44,15 +80,46 @@ public:
      uint64_t registeredPrefixId);
   
 private:
+  /**
+   * Content is a private class to hold the name and encoding for each entry
+   * in the cache. This base class is for a Data packet without a 
+   * FreshnessPeriod.
+   */
   class Content {
   public:
-    Content(const Data& data);
+    /**
+     * Create a new Content entry to hold data's name and wire encoding.
+     * @param data The Data packet whose name and wire encoding are copied.
+     */
+    Content(const Data& data)
+    // wireEncode returns the cached encoding if available.
+    : name_(data.getName()), dataEncoding_(data.wireEncode())
+    {}
     
     const Name&
     getName() const { return name_; }
     
     const Blob&
     getDataEncoding() const { return dataEncoding_; }
+    
+  private:
+    Name name_;
+    Blob dataEncoding_;
+  };
+
+  /**
+   * StaleTimeContent extends Content to include the staleTimeMilliseconds
+   * for when this entry should be cleaned up from the cache.
+   */
+  class StaleTimeContent : public Content {
+  public:
+    /**
+     * Create a new StaleTimeContent to hold data's name and wire encoding
+     * as well as the staleTimeMilliseconds which is now plus 
+     * data.getMetaInfo().getFreshnessPeriod().
+     * @param data The Data packet whose name and wire encoding are copied.
+     */
+    StaleTimeContent(const Data& data);
 
     /**
      * Check if this content is stale.
@@ -63,23 +130,46 @@ private:
     bool 
     isStale(MillisecondsSince1970 nowMilliseconds) const
     {
-      return staleTimeMilliseconds_ >= 0.0 && 
-             nowMilliseconds >= staleTimeMilliseconds_;
+      return staleTimeMilliseconds_ <= nowMilliseconds;
     }
+
+    /**
+     * Compare shared_ptrs to Content based only on staleTimeMilliseconds_.
+     */
+    class Compare {
+    public:
+      bool 
+      operator()
+        (const ptr_lib::shared_ptr<const StaleTimeContent>& x, 
+         const ptr_lib::shared_ptr<const StaleTimeContent>& y) const
+      { 
+        return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_; 
+      }
+    };
     
   private:
-    Name name_;
-    Blob dataEncoding_;
     MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content 
-      becomse stale in milliseconds according to ndn_getNowMilliseconds, or -1 
-      to never become stale. */
+      becomse stale in milliseconds according to ndn_getNowMilliseconds */
   };
 
+  /**
+   * Check if now is greater than nextCleanupTime_ and, if so, remove stale
+   * content from staleTimeCache_ and reset nextCleanupTime_ based on
+   * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into 
+   * staleTimeCache_, the check for stale data is quick and does not require
+   * searching the entire staleTimeCache_.
+   */
   void
-  pruneContentCache();
-  
+  doCleanup();
+
   Face* face_;
-  std::vector<ptr_lib::shared_ptr<const Content> > contentCache_;
+  Milliseconds cleanupIntervalMilliseconds_;
+  MillisecondsSince1970 nextCleanupTime_;
+  std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
+  // Use a deque so we can efficiently remove from the front.
+  std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
+  StaleTimeContent::Compare contentCompare_;
+  Name::Component emptyComponent_;
 };
 
 }
