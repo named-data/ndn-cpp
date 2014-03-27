@@ -102,7 +102,7 @@ public:
    * @param certificatePrefix The name of public key to be signed.
    * @param signerCertificateName The name of signing certificate.
    * @param notBefore The notBefore value in the validity field of the generated certificate.
-   * @param notAfter The notAfter vallue in validity field of the generated certificate.
+   * @param notAfter The notAfter value in validity field of the generated certificate.
    * @return The name of generated identity certificate.
    */
   Name
