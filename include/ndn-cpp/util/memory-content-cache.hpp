@@ -8,6 +8,7 @@
 #ifndef NDN_MEMORY_CONTENT_CACHE_HPP
 #define NDN_MEMORY_CONTENT_CACHE_HPP
 
+#include <map>
 #include <deque>
 #include "../face.hpp"
 
@@ -41,15 +42,22 @@ public:
    * @param onRegisterFailed A function object to call if failed to retrieve the 
    * connected hub’s ID or failed to register the prefix. This calls 
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @param onDataNotFound (optional) A function object to call to forward the
+   * OnInterest message when a data packet is not found in the cache. 
+   * If onDataNotFound is an empty OnTimeout(), this does not use it.
+   * This copies the function object, so you may need to use func_lib::ref() as 
+   * appropriate.
    * @param flags (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
   void
   registerPrefix
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed, 
+     const OnInterest& onDataNotFound = OnInterest(),
      const ForwardingFlags& flags = ForwardingFlags(), 
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
+    onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
     face_->registerPrefix
       (prefix, func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
   }
@@ -71,7 +79,8 @@ public:
    * if cleanupIntervalMilliseconds milliseconds have passed and remove stale
    * content from the cache. Then search the cache for the Data packet, matching
    * any interest selectors including ChildSelector, and send the Data packet
-   * to the transport.
+   * to the transport. If no matching Data packet is in the cache, call
+   * the callback in onDataNotFoundForPrefix_ (if defined).
    */
   void 
   operator()
@@ -165,6 +174,7 @@ private:
   Face* face_;
   Milliseconds cleanupIntervalMilliseconds_;
   MillisecondsSince1970 nextCleanupTime_;
+  std::map<std::string, OnInterest> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
   std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
   // Use a deque so we can efficiently remove from the front.
   std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;

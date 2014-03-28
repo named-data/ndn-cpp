@@ -98,6 +98,14 @@ MemoryContentCache::operator()
   if (selectedEncoding)
     // We found the leftmost or rightmost child.
     transport.send(*selectedEncoding);
+  else {
+    // Call the onDataNotFound callback (if defined).
+    map<string, OnInterest>::iterator onDataNotFound = 
+      onDataNotFoundForPrefix_.find(prefix->toUri());
+    if (onDataNotFound != onDataNotFoundForPrefix_.end() &&
+        onDataNotFound->second)
+      onDataNotFound->second(prefix, interest, transport, registeredPrefixId);
+  }
 }
 
 void
