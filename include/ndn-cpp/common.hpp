@@ -80,10 +80,22 @@ typedef double MillisecondsSince1970;
 /**
  * Return the hex representation of the bytes in array.
  * @param array The array of bytes.
- * @return Hex string.
+ * @param arrayLength The number of bytes in array.
+ * @return The hex string.
  */
 std::string 
-toHex(const std::vector<uint8_t>& array);
+toHex(const uint8_t* array, size_t arrayLength);
+
+/**
+ * Return the hex representation of the bytes in array.
+ * @param array The array of bytes.
+ * @return The hex string.
+ */
+static inline std::string 
+toHex(const std::vector<uint8_t>& array)
+{
+  return toHex(&array[0], array.size());
+}
 
 }
 

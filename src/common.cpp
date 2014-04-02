@@ -13,14 +13,14 @@ using namespace std;
 namespace ndn {
 
 string 
-toHex(const vector<uint8_t>& array) 
+toHex(const uint8_t* array, size_t arrayLength) 
 {
-  if (!&array)
+  if (arrayLength == 0)
     return "";
   
   ostringstream result;
   result.flags(ios::hex);
-  for (size_t i = 0; i < array.size(); ++i) {
+  for (size_t i = 0; i < arrayLength; ++i) {
     uint8_t x = array[i];
     if (x < 16)
       result << '0';
