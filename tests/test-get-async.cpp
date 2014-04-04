@@ -45,7 +45,7 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    Face face("borges.metwi.ucla.edu");
+    Face face("aleph.ndn.ucla.edu");
     
     // Counter holds data used by the callbacks.
     Counter counter;
