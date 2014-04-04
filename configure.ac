@@ -126,7 +126,7 @@ AC_CHECK_LIB([crypto], [EVP_EncryptInit], [],
 AX_LIB_SQLITE3()
 if grep -q "#define HAVE_SQLITE3" confdefs.h ; then
   AC_CHECK_LIB([sqlite3], [sqlite3_open], [],
-               [AC_MSG_FAILURE([have sqlite2 headers but no libsqlite3])])
+               [AC_MSG_FAILURE([have sqlite3 headers but no libsqlite3])])
 fi
 
 # Conditionally use the OSX Security framework .
