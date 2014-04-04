@@ -5,6 +5,7 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include <algorithm>
 #include "../c/util/time.h"
 #include <ndn-cpp/util/memory-content-cache.hpp>
 
