@@ -190,20 +190,19 @@ IdentityManager::signByCertificate(const uint8_t* buffer, size_t bufferLength, c
   Name keyName = IdentityCertificate::certificateNameToPublicKeyName(certificateName);
   ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey(keyName);
 
-  Blob sigBits = privateKeyStorage_->sign(buffer, bufferLength, keyName);
-
   //For temporary usage, we support RSA + SHA256 only, but will support more.
-  ptr_lib::shared_ptr<Sha256WithRsaSignature> sha256Sig(new Sha256WithRsaSignature());
+  ptr_lib::shared_ptr<Sha256WithRsaSignature> signature(new Sha256WithRsaSignature());
+  DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256;
 
-  KeyLocator keyLocator;    
-  keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
-  keyLocator.setKeyName(certificateName);
+  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+  // Ignore witness and leave the digestAlgorithm as the default.
+  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
   
-  sha256Sig->setKeyLocator(keyLocator);
-  sha256Sig->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
-  sha256Sig->setSignature(sigBits);
+  signature->setSignature
+    (privateKeyStorage_->sign(buffer, bufferLength, keyName, digestAlgorithm));
 
-  return sha256Sig;
+  return signature;
 }
 
 void
@@ -220,8 +219,6 @@ IdentityManager::signByCertificate(Data &data, const Name &certificateName, Wire
     
   signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
   signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
-  // Omit the certificate digest.
-  signature->getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
   // Ignore witness and leave the digestAlgorithm as the default.
   signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
   
