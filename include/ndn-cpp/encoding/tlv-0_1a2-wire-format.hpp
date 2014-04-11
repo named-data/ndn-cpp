@@ -73,24 +73,30 @@ public:
   virtual void 
   decodeData
     (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
-
-#if 0
+  
   /**
-   * Encode forwardingEntry in NDN-TLV and return the encoding. 
-   * @param forwardingEntry The ForwardingEntry object to encode.
+   * Encode prefixRegistrationOptions as NDN-TLV and return the encoding.  
+   * @param prefixRegistrationOptions The PrefixRegistrationOptions object to 
+   * encode.
    * @return A Blob containing the encoding.
    */
   virtual Blob 
-  encodeForwardingEntry(const ForwardingEntry& forwardingEntry);
+  encodePrefixRegistrationOptions
+    (const PrefixRegistrationOptions& prefixRegistrationOptions);
   
+#if 0
   /**
-   * Decode input as a forwarding entry in NDN-TLV and set the fields of the forwardingEntry object. 
-   * @param forwardingEntry The ForwardingEntry object whose fields are updated.
+   * Decode input as a prefix registration options in NDN-TLV and set the fields 
+   * of the prefixRegistrationOptions object.
+   * @param prefixRegistrationOptions The PrefixRegistrationOptions object whose 
+   * fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
    */
   virtual void 
-  decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
+  decodePrefixRegistrationOptions
+    (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+     size_t inputLength);
 #endif
 
   /**

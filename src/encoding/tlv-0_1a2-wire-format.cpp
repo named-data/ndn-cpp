@@ -8,12 +8,10 @@
 #include <stdexcept>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
-#include <ndn-cpp/forwarding-entry.hpp>
+#include <ndn-cpp/prefix-registration-options.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
 #include "../c/encoding/tlv/tlv-data.h"
-#if 0
-#include "../c/encoding/tlv/tlv-forwarding-entry.h"
-#endif
+#include "../c/encoding/tlv/tlv-prefix-registration-options.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp>
@@ -105,38 +103,32 @@ Tlv1_0a2WireFormat::decodeData
   data.set(dataStruct);
 }
 
-#if 0
 Blob 
-Tlv1_0a2WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
+Tlv1_0a2WireFormat::encodePrefixRegistrationOptions
+  (const PrefixRegistrationOptions& prefixRegistrationOptions)
 {
   struct ndn_NameComponent prefixNameComponents[100];
-  struct ndn_ForwardingEntry forwardingEntryStruct;
-  ndn_ForwardingEntry_initialize
-    (&forwardingEntryStruct, prefixNameComponents, sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-  forwardingEntry.get(forwardingEntryStruct);
+  struct ndn_PrefixRegistrationOptions prefixRegistrationOptionsStruct;
+  ndn_PrefixRegistrationOptions_initialize
+    (&prefixRegistrationOptionsStruct, prefixNameComponents, 
+     sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
+  prefixRegistrationOptions.get(prefixRegistrationOptionsStruct);
 
-  TlvEncoder encoder;
+  TlvEncoder encoder(256);
   ndn_Error error;
-  if ((error = ndn_encodeTlvForwardingEntry(&forwardingEntryStruct, &encoder)))
+  if ((error = ndn_encodeTlvPrefixRegOptions
+       (&prefixRegistrationOptionsStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
   return encoder.getOutput();
 }
 
+#if 0
 void 
-Tlv1_0a2WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
+Tlv1_0a2WireFormat::decodePrefixRegistrationOptions
+  (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+   size_t inputLength)
 {
-  struct ndn_NameComponent prefixNameComponents[100];
-  struct ndn_ForwardingEntry forwardingEntryStruct;
-  ndn_ForwardingEntry_initialize
-    (&forwardingEntryStruct, prefixNameComponents, sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-    
-  TlvDecoder decoder(input, inputLength);  
-  ndn_Error error;
-  if ((error = ndn_decodeTlvForwardingEntry(&forwardingEntryStruct, &decoder)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  forwardingEntry.set(forwardingEntryStruct);
 }
 #endif
 

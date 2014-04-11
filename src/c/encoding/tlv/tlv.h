@@ -50,6 +50,15 @@ enum {
   ndn_Tlv_ContentType_Link = 1,
   ndn_Tlv_ContentType_Key = 2
 };
+
+enum {
+  ndn_Tlv_PrefixRegOptions_PrefixRegOptions = 101,
+  ndn_Tlv_PrefixRegOptions_FaceId =           102,
+  ndn_Tlv_PrefixRegOptions_Flags =            103,
+  ndn_Tlv_PrefixRegOptions_Cost =             104,
+  ndn_Tlv_PrefixRegOptions_ExpirationPeriod = 105,
+  ndn_Tlv_PrefixRegOptions_Protocol =         107
+};
   
 #ifdef __cplusplus
 }
