@@ -107,6 +107,8 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
+  src/c/encoding/tlv/tlv-prefix-registration-options.c src/c/encoding/tlv/tlv-prefix-registration-options.h \
+  src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
