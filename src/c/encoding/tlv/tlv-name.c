@@ -8,7 +8,9 @@
 #include "tlv-name.h"
 
 ndn_Error 
-ndn_encodeTlvName(struct ndn_Name *name, struct ndn_TlvEncoder *encoder)
+ndn_encodeTlvName
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   size_t nameValueLength = 0;
   size_t i;
@@ -19,9 +21,21 @@ ndn_encodeTlvName(struct ndn_Name *name, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_Name, nameValueLength)))
     return error;
   
-  for (i = 0; i < name->nComponents; ++i) {
-    if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_NameComponent, &name->components[i].value)))
-      return error;
+  *signedPortionBeginOffset = encoder->offset;
+
+  if (name->nComponents == 0)
+    // There is no "final component", so set signedPortionEndOffset arbitrarily.
+    *signedPortionEndOffset = *signedPortionBeginOffset;
+  else {
+    for (i = 0; i < name->nComponents; ++i) {
+      if (i == name->nComponents - 1)
+        // We will begin the final component.
+        *signedPortionEndOffset = encoder->offset;
+        
+      if ((error = ndn_TlvEncoder_writeBlobTlv
+           (encoder, ndn_Tlv_NameComponent, &name->components[i].value)))
+        return error;
+    }
   }
   
   return NDN_ERROR_success;

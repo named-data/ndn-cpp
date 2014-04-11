@@ -17,7 +17,9 @@ ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
   
   ndn_Error error;
   if (keyLocator->type == ndn_KeyLocatorType_KEYNAME) {
-    if ((error = ndn_encodeTlvName(&keyLocator->keyName, encoder)))
+    size_t dummyBeginOffset, dummyEndOffset;
+    if ((error = ndn_encodeTlvName
+         (&keyLocator->keyName, &dummyBeginOffset, &dummyEndOffset, encoder)))
       return error;
   }
   else if (keyLocator->type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST && keyLocator->keyData.length > 0) {

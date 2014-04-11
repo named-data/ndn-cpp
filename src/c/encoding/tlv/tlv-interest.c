@@ -121,19 +121,32 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;  
 }
 
+/* An InterestValueContext is for passing the context to encodeInterestValue so 
+ *   that we can include signedPortionBeginOffset and signedPortionEndOffset.
+ */
+struct InterestValueContext {
+  struct ndn_Interest *interest;
+  size_t *signedPortionBeginOffset;
+  size_t *signedPortionEndOffset;
+};
+
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Interest value.
- * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
+ * @param context This is the InterestValueContext struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
 static ndn_Error 
 encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 {
-  struct ndn_Interest *interest = (struct ndn_Interest *)context;
+  struct InterestValueContext *interestValueContext = 
+    (struct InterestValueContext *)context;
+  struct ndn_Interest *interest = interestValueContext->interest;
   
   ndn_Error error;
-  if ((error = ndn_encodeTlvName(&interest->name, encoder)))
+  if ((error = ndn_encodeTlvName
+       (&interest->name, interestValueContext->signedPortionBeginOffset, 
+        interestValueContext->signedPortionEndOffset, encoder)))
     return error;
   // For Selectors, set omitZeroLength true.
   if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Selectors, encodeSelectorsValue, interest, 1)))
@@ -171,9 +184,18 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 }
 
 ndn_Error 
-ndn_encodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvEncoder *encoder)
+ndn_encodeTlvInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
-  return ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Interest, encodeInterestValue, interest, 0);
+  // Create the context to pass to encodeInterestValue.
+  struct InterestValueContext interestValueContext;
+  interestValueContext.interest = interest;
+  interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
+  interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
+  
+  return ndn_TlvEncoder_writeNestedTlv
+    (encoder, ndn_Tlv_Interest, encodeInterestValue, &interestValueContext, 0);
 }
 
 static ndn_Error

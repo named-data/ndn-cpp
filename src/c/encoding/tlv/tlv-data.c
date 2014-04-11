@@ -133,7 +133,9 @@ encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
   *dataValueContext->signedPortionBeginOffset = encoder->offset;
   
   ndn_Error error;
-  if ((error = ndn_encodeTlvName(&data->name, encoder)))
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_encodeTlvName
+       (&data->name, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
   if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_MetaInfo, encodeMetaInfoValue, &data->metaInfo, 0)))
     return error;
