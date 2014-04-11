@@ -20,13 +20,40 @@ class ForwardingEntry;
 class WireFormat {
 public:
   /**
+   * Encode interest and return the encoding. Your derived class should override.
+   * @param interest The Interest object to encode.
+   * @param signedPortionBeginOffset Return the offset in the encoding of the 
+   * beginning of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
+   * If you are not encoding in order to sign, you can call 
+   * encodeInterest(const Interest& interest) to ignore this returned value.
+   * @param signedPortionEndOffset Return the offset in the encoding of the end 
+   * of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
+   * If you are not encoding in order to sign, you can call 
+   * encodeInterest(const Interest& interest) to ignore this returned value.
+   * @return A Blob containing the encoding.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob 
+  encodeInterest
+    (const Interest& interest, size_t *signedPortionBeginOffset, 
+     size_t *signedPortionEndOffset);
+  
+  /**
    * Encode interest and return the encoding.  Your derived class should override.
    * @param interest The Interest object to encode.
    * @return A Blob containing the encoding.
    * @throw logic_error for unimplemented if the derived class does not override.
    */
-  virtual Blob 
-  encodeInterest(const Interest& interest);
+  Blob 
+  encodeInterest(const Interest& interest)
+  {
+    size_t dummyBeginOffset, dummyEndOffset;
+    return encodeInterest(interest, &dummyBeginOffset, &dummyEndOffset);
+  }
   
   /**
    * Decode input as an interest and set the fields of the interest object.  Your derived class should override.

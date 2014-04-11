@@ -30,7 +30,9 @@ WireFormat::getDefaultWireFormat()
 }
 
 Blob 
-WireFormat::encodeInterest(const Interest& interest) 
+WireFormat::encodeInterest
+  (const Interest& interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset) 
 {
   throw logic_error("unimplemented");
 }

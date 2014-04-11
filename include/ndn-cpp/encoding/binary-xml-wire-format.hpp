@@ -36,10 +36,20 @@ public:
   /**
    * Encode interest in binary XML and return the encoding.
    * @param interest The Interest object to encode.
+   * @param signedPortionBeginOffset Return the offset in the encoding of the 
+   * beginning of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
+   * @param signedPortionEndOffset Return the offset in the encoding of the end 
+   * of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
    * @return A Blob containing the encoding.
    */  
   virtual Blob 
-  encodeInterest(const Interest& interest);
+  encodeInterest
+    (const Interest& interest, size_t *signedPortionBeginOffset, 
+     size_t *signedPortionEndOffset);
     
   /**
    * Decode input as an interest in binary XML and set the fields of the interest object.

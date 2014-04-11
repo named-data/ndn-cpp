@@ -33,7 +33,9 @@ WireFormat::newInitialDefaultWireFormat()
 #endif
   
 Blob 
-BinaryXmlWireFormat::encodeInterest(const Interest& interest) 
+BinaryXmlWireFormat::encodeInterest
+  (const Interest& interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset) 
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -47,7 +49,9 @@ BinaryXmlWireFormat::encodeInterest(const Interest& interest)
 
   BinaryXmlEncoder encoder(256);
   ndn_Error error;
-  if ((error = ndn_encodeBinaryXmlInterest(&interestStruct, &encoder)))
+  if ((error = ndn_encodeBinaryXmlInterest
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset, 
+        &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
   return encoder.getOutput();

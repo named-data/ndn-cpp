@@ -23,7 +23,9 @@ using namespace std;
 namespace ndn {
 
 Blob 
-Tlv1_0a2WireFormat::encodeInterest(const Interest& interest) 
+Tlv1_0a2WireFormat::encodeInterest
+  (const Interest& interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset) 
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -37,7 +39,9 @@ Tlv1_0a2WireFormat::encodeInterest(const Interest& interest)
 
   TlvEncoder encoder(256);
   ndn_Error error;
-  if ((error = ndn_encodeTlvInterest(&interestStruct, &encoder)))
+  if ((error = ndn_encodeTlvInterest
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset, 
+        &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
   return encoder.getOutput();
