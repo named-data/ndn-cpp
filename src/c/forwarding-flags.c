@@ -5,6 +5,7 @@
  */
 
 #include "forwarding-entry.h"
+#include "prefix-registration-options.h"
 
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 {
@@ -52,4 +53,25 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
   self->local = (forwardingEntryFlags & ndn_ForwardingEntryFlags_LOCAL) ? 1 : 0;
   self->tap = (forwardingEntryFlags & ndn_ForwardingEntryFlags_TAP) ? 1 : 0;
   self->captureOk = (forwardingEntryFlags & ndn_ForwardingEntryFlags_CAPTURE_OK) ? 1 : 0;
+}
+
+int 
+ndn_ForwardingFlags_getNrdForwardingFlags(struct ndn_ForwardingFlags *self)
+{
+  int result = 0;
+  
+  if (self->childInherit)
+    result |= ndn_NrdForwardingFlags_CHILD_INHERIT;
+  if (self->capture)
+    result |= ndn_NrdForwardingFlags_CAPTURE;
+  
+  return result;
+}
+
+void 
+ndn_ForwardingFlags_setNrdForwardingFlags
+  (struct ndn_ForwardingFlags *self, int nrdForwardingFlags)
+{
+  self->childInherit = (nrdForwardingFlags & ndn_NrdForwardingFlags_CHILD_INHERIT) ? 1 : 0;
+  self->capture = (nrdForwardingFlags & ndn_NrdForwardingFlags_CAPTURE) ? 1 : 0;
 }

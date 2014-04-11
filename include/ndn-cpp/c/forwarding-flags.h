@@ -47,6 +47,22 @@ int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self
  */
 void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *self, int forwardingEntryFlags);
 
+/**
+ * Get an integer with the bits set according to the NRD forwarding flags as 
+ * used in the PrefixRegOptions of the command interest.
+ * @param self A pointer to the ndn_ForwardingFlags struct.
+ * @return An integer with the bits set.
+ */
+int ndn_ForwardingFlags_getNrdForwardingFlags(struct ndn_ForwardingFlags *self);
+
+/**
+ * Set the flags according to the NRD forwarding flags as used in the 
+ * PrefixRegOptions of the command interest.
+ * @param self A pointer to the ndn_ForwardingFlags struct.
+ * @param nrdForwardingFlags An integer with the bits set.
+ */
+void ndn_ForwardingFlags_setNrdForwardingFlags
+  (struct ndn_ForwardingFlags *self, int nrdForwardingFlags);
 
 #ifdef __cplusplus
 }
