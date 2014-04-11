@@ -13,6 +13,7 @@
 #include "key-locator.hpp"
 #include "c/interest-types.h"
 #include "encoding/wire-format.hpp"
+#include "util/signed-blob.hpp"
 #include "util/change-counter.hpp"
 #include "exclude.hpp"
 
@@ -104,10 +105,14 @@ public:
    * Interest. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
    */
-  Blob 
+  SignedBlob 
   wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const 
   {
-    return wireFormat.encodeInterest(*this);
+    size_t signedPortionBeginOffset, signedPortionEndOffset;
+    return SignedBlob
+      (wireFormat.encodeInterest(*this, &signedPortionBeginOffset, 
+                                 &signedPortionEndOffset), 
+       signedPortionBeginOffset, signedPortionEndOffset);
   }
   
   /**
