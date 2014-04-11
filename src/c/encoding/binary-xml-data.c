@@ -195,7 +195,9 @@ ndn_Error ndn_encodeBinaryXmlData
   
   *signedPortionBeginOffset = encoder->offset;
 
-  if ((error = ndn_encodeBinaryXmlName(&data->name, encoder)))
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_encodeBinaryXmlName
+       (&data->name, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
   
   if ((error = encodeSignedInfo(&data->signature, &data->metaInfo, encoder)))

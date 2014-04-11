@@ -16,7 +16,9 @@
 extern "C" {
 #endif
 
-ndn_Error ndn_encodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_BinaryXmlEncoder *encoder);
+ndn_Error ndn_encodeBinaryXmlInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset, struct ndn_BinaryXmlEncoder *encoder);
 
 ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_BinaryXmlDecoder *decoder);
 

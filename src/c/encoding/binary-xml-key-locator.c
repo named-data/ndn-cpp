@@ -86,7 +86,9 @@ ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
   else if (keyLocator->type == ndn_KeyLocatorType_KEYNAME) {
     if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_KeyName)))
       return error;
-    if ((error = ndn_encodeBinaryXmlName(&keyLocator->keyName, encoder)))
+    size_t dummyBeginOffset, dummyEndOffset;
+    if ((error = ndn_encodeBinaryXmlName
+         (&keyLocator->keyName, &dummyBeginOffset, &dummyEndOffset, encoder)))
       return error;
     
     if ((int)keyLocator->keyNameType >= 0 && keyLocator->keyData.length > 0) {

@@ -20,7 +20,9 @@ ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
       (encoder, ndn_BinaryXml_DTag_Action, &forwardingEntry->action)))
     return error;
-  if ((error = ndn_encodeBinaryXmlName(&forwardingEntry->prefix, encoder)))
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_encodeBinaryXmlName
+       (&forwardingEntry->prefix, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
   // This will skip encoding if there is no publisherPublicKeyDigest.
   if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&forwardingEntry->publisherPublicKeyDigest, encoder)))

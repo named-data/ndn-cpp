@@ -115,13 +115,17 @@ static ndn_Error decodeExclude(struct ndn_Exclude *exclude, struct ndn_BinaryXml
   return NDN_ERROR_success;
 }
 
-ndn_Error ndn_encodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_BinaryXmlEncoder *encoder)
+ndn_Error ndn_encodeBinaryXmlInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_Interest)))
     return error;
     
-  if ((error = ndn_encodeBinaryXmlName(&interest->name, encoder)))
+  if ((error = ndn_encodeBinaryXmlName
+       (&interest->name, signedPortionBeginOffset, signedPortionEndOffset, 
+        encoder)))
     return error;
   
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement

@@ -7,16 +7,30 @@
 
 #include "binary-xml-name.h"
 
-ndn_Error ndn_encodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlEncoder *encoder)
+ndn_Error ndn_encodeBinaryXmlName
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset, 
+   size_t *signedPortionEndOffset, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_Name)))
     return error;
   
-  size_t i;
-  for (i = 0; i < name->nComponents; ++i) {
-    if ((error = ndn_BinaryXmlEncoder_writeBlobDTagElement(encoder, ndn_BinaryXml_DTag_Component, &name->components[i].value)))
-      return error;
+  *signedPortionBeginOffset = encoder->offset;
+
+  if (name->nComponents == 0)
+    // There is no "final component", so set signedPortionEndOffset arbitrarily.
+    *signedPortionEndOffset = *signedPortionBeginOffset;
+  else {
+    size_t i;
+    for (i = 0; i < name->nComponents; ++i) {
+      if (i == name->nComponents - 1)
+        // We will begin the final component.
+        *signedPortionEndOffset = encoder->offset;
+        
+      if ((error = ndn_BinaryXmlEncoder_writeBlobDTagElement
+           (encoder, ndn_BinaryXml_DTag_Component, &name->components[i].value)))
+        return error;
+    }
   }
   
   if ((error = ndn_BinaryXmlEncoder_writeElementClose(encoder)))
