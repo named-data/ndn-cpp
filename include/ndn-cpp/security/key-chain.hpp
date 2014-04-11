@@ -10,6 +10,7 @@
 #define NDN_KEY_CHAIN_HPP
 
 #include "../data.hpp"
+#include "../interest.hpp"
 #include "../face.hpp"
 #include "identity/identity-manager.hpp"
 #include "encryption/encryption-manager.hpp"
@@ -211,6 +212,20 @@ public:
    */
   void 
   sign(Data& data, const Name& certificateName, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Append a SignatureInfo to the Interest name, sign the name components and
+   * append a final name component with the signature bits.
+   * @param interest The Interest object to be signed. This appends a name
+   * components of SignatureInfo and the signature bits.
+   * @param certificateName The certificate name of the key to use for signing.
+   * @param wireFormat A WireFormat object used to encode the input. If omitted, 
+   * use WireFormat getDefaultWireFormat().
+   */
+  void 
+  sign
+    (Interest& interest, const Name& certificateName, 
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
   
   /**
    * Sign the byte array using a certificate name and return a Signature object.

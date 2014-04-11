@@ -10,6 +10,11 @@
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#if 1 // Temporary until we move code from sign(Interest)
+#include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include "../encoding/tlv-encoder.hpp"
+#include "../c/encoding/tlv/tlv-signature-info.h"
+#endif
 
 using namespace std;
 using namespace ndn::func_lib;
@@ -29,6 +34,58 @@ void
 KeyChain::sign(Data& data, const Name& certificateName, WireFormat& wireFormat)
 {
   identityManager_->signByCertificate(data, certificateName, wireFormat);
+}
+
+void 
+KeyChain::sign
+  (Interest& interest, const Name& certificateName, WireFormat& wireFormat)
+{
+  // TODO: Handle signature algorithms other than Sha256WithRsa.
+  Sha256WithRsaSignature signature;
+  signature.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature.getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+
+  // Append the encoded SignatureInfo.
+#if 1 // TODO: Move this into a WireFormat abstraction.
+  {
+    TlvEncoder encoder(256);
+    struct ndn_Signature signatureStruct;
+    struct ndn_NameComponent nameComponents[100];
+    ndn_Signature_initialize
+      (&signatureStruct, nameComponents, 
+       sizeof(nameComponents) / sizeof(nameComponents[0]));
+    signature.get(signatureStruct);
+
+    ndn_Error error;
+    if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    interest.getName().append(encoder.getOutput());  
+  }
+#endif
+
+  // Append an empty signature so that the "signedPortion" is correct.
+  interest.getName().append(Name::Component());
+  // Encode once to get the signed portion.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+  ptr_lib::shared_ptr<Signature> signedSignaturePtr = sign
+    (encoding.signedBuf(), encoding.signedSize(), certificateName);
+  Sha256WithRsaSignature& signedSignature = 
+    dynamic_cast<Sha256WithRsaSignature&>(*signedSignaturePtr);
+  
+  // Remove the empty signature and append the real one.
+#if 1 // TODO: Move this into a WireFormat abstraction.
+  {
+    TlvEncoder encoder(256);
+    ndn_Error error;
+    struct ndn_Blob signatureStruct;
+    signedSignature.getSignature().get(signatureStruct);
+    if ((error = ndn_TlvEncoder_writeBlobTlv
+         (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
+      throw runtime_error(ndn_getErrorString(error));
+    interest.setName(interest.getName().getPrefix(-1).append(encoder.getOutput()));
+  }
+#endif
 }
 
 ptr_lib::shared_ptr<Signature> 
