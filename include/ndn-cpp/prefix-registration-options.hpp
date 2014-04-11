@@ -87,19 +87,32 @@ public:
   void 
   set(const struct ndn_PrefixRegistrationOptions& prefixRegistrationOptionsStruct);
   
-  void 
-  setFaceId(int faceId) { faceId_ = faceId; }
+  PrefixRegistrationOptions& 
+  setFaceId(int faceId) 
+  { 
+    faceId_ = faceId; 
+    return *this;
+  }
       
-  void 
-  setFlags(const ForwardingFlags& flags) { flags_ = flags; }
+  PrefixRegistrationOptions& 
+  setFlags(const ForwardingFlags& flags) 
+  { 
+    flags_ = flags; 
+    return *this;
+  }
       
-  void 
-  setCost(int cost) { cost_ = cost; }
+  PrefixRegistrationOptions& 
+  setCost(int cost) 
+  { 
+    cost_ = cost; 
+    return *this;
+  }
       
-  void 
+  PrefixRegistrationOptions& 
   setExpirationPeriod(Milliseconds expirationPeriod) 
   { 
     expirationPeriod_ = expirationPeriod; 
+    return *this;
   }
       
 private:
