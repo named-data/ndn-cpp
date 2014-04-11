@@ -68,4 +68,19 @@ WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_
   throw logic_error("unimplemented");
 }
 
+Blob 
+WireFormat::encodePrefixRegistrationOptions
+  (const PrefixRegistrationOptions& prefixRegistrationOptions)
+{
+  throw logic_error("unimplemented");
+}
+
+void 
+WireFormat::decodePrefixRegistrationOptions
+  (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+   size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
 }
