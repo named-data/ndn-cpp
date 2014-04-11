@@ -43,7 +43,7 @@ struct ndn_ForwardingEntry {
 /**
  * Initialize an ndn_ForwardingEntry struct with the pre-allocated prefixNameComponents,
  * and defaults for all the values.
- * @param self pointer to the ndn_Interest struct
+ * @param self pointer to the ndn_ForwardingEntry struct
  * @param prefixNameComponents the pre-allocated array of ndn_NameComponent
  * @param maxPrefixNameComponents the number of elements in the allocated prefixNameComponents array
  */
