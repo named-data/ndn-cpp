@@ -18,7 +18,7 @@ PrefixRegistrationOptions::get
 {
   prefix_.get(prefixRegistrationOptionsStruct.prefix);
   prefixRegistrationOptionsStruct.faceId = faceId_;
-  prefixRegistrationOptionsStruct.forwardingFlags = forwardingFlags_;
+  prefixRegistrationOptionsStruct.flags = flags_;
   prefixRegistrationOptionsStruct.cost = cost_;
   prefixRegistrationOptionsStruct.expirationPeriod = expirationPeriod_;
 }
@@ -29,7 +29,7 @@ PrefixRegistrationOptions::set
 {
   prefix_.set(prefixRegistrationOptionsStruct.prefix);
   faceId_ = prefixRegistrationOptionsStruct.faceId;
-  forwardingFlags_ = prefixRegistrationOptionsStruct.forwardingFlags;
+  flags_ = prefixRegistrationOptionsStruct.flags;
   cost_ = prefixRegistrationOptionsStruct.cost;
   expirationPeriod_ = prefixRegistrationOptionsStruct.expirationPeriod;
 }

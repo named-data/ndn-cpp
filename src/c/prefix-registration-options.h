@@ -26,7 +26,7 @@ typedef enum {
 struct ndn_PrefixRegistrationOptions {
   struct ndn_Name prefix;
   int faceId;                        /**< -1 for none. */
-  struct ndn_ForwardingFlags forwardingFlags;
+  struct ndn_ForwardingFlags flags;
   int cost;                          /**< -1 for none. */
   ndn_Milliseconds expirationPeriod; /**< -1 for none. */
   // TODO: Add "Protocol" string.
@@ -48,7 +48,7 @@ ndn_PrefixRegistrationOptions_initialize
 {
   ndn_Name_initialize(&self->prefix, prefixNameComponents, maxPrefixNameComponents);
   self->faceId = -1;
-  ndn_ForwardingFlags_initialize(&self->forwardingFlags);
+  ndn_ForwardingFlags_initialize(&self->flags);
   self->cost = -1;
   self->expirationPeriod = -1.0;
 }

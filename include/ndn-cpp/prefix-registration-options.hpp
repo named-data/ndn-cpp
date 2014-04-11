@@ -70,7 +70,7 @@ public:
   getFaceId() const { return faceId_; }
 
   const ForwardingFlags& 
-  getForwardingFlags() const { return forwardingFlags_; }
+  getFlags() const { return flags_; }
   
   int 
   getCost() const { return cost_; }
@@ -91,7 +91,7 @@ public:
   setFaceId(int faceId) { faceId_ = faceId; }
       
   void 
-  setForwardingFlags(const ForwardingFlags& forwardingFlags) { forwardingFlags_ = forwardingFlags; }
+  setFlags(const ForwardingFlags& flags) { flags_ = flags; }
       
   void 
   setCost(int cost) { cost_ = cost; }
@@ -105,7 +105,7 @@ public:
 private:
   Name prefix_;
   int faceId_;                    /**< -1 for none. */
-  ForwardingFlags forwardingFlags_;
+  ForwardingFlags flags_;
   int cost_;                      /**< -1 for none. */
   Milliseconds expirationPeriod_; /**< -1 for none. */
   // TODO: Add "Protocol" string.
