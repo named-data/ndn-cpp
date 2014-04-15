@@ -490,12 +490,15 @@ BasicIdentityStorage::getDefaultIdentity()
       
   Name identity;
 
-  if (res == SQLITE_ROW)
+  if (res == SQLITE_ROW) {
     identity = Name(string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)), sqlite3_column_bytes(statement, 0)));
- 
-  sqlite3_finalize(statement);
-      
-  return identity;
+    sqlite3_finalize(statement);
+    return identity;
+  }
+  else {
+    sqlite3_finalize(statement);
+    throw SecurityException("BasicIdentityStorage::getDefaultIdentity: The default identity is not defined");    
+  }
 }
 
 Name 

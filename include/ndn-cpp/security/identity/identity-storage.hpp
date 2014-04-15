@@ -133,7 +133,8 @@ public:
 
   /**
    * Get the default identity. 
-   * @param return The name of default identity, or an empty name if there is no default.
+   * @return The name of default identity.
+   * @throw SecurityException if the default identity is not set.
    */
   virtual Name 
   getDefaultIdentity() = 0;
@@ -164,7 +165,7 @@ public:
 
   /**
    * Set the default identity.  If the identityName does not exist, then clear the default identity
-   * so that getDefaultIdentity() returns an empty name.
+   * so that getDefaultIdentity() throws an exception.
    * @param identityName The default identity name.
    */
   virtual void 

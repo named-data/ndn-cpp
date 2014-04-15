@@ -138,6 +138,9 @@ MemoryIdentityStorage::getCertificate(const Name& certificateName, bool allowAny
 Name 
 MemoryIdentityStorage::getDefaultIdentity()
 {
+  if (defaultIdentity_.size() == 0)
+    throw SecurityException("MemoryIdentityStorage::getDefaultIdentity: The default identity is not defined");
+  
   return Name(defaultIdentity_);
 }
 

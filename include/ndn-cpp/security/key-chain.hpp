@@ -50,7 +50,8 @@ public:
 
   /**
    * Get the default identity.
-   * @return The default identity name.
+   * @return The name of default identity.
+   * @throw SecurityException if the default identity is not set.
    */
   Name
   getDefaultIdentity()

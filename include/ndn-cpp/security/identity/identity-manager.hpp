@@ -36,7 +36,8 @@ public:
     
   /**
    * Get the default identity.
-   * @return The default identity name.
+   * @return The name of default identity.
+   * @throw SecurityException if the default identity is not set.
    */
   Name
   getDefaultIdentity()
@@ -192,6 +193,7 @@ public:
    * Get the default certificate name of the default identity, which will be used when signing is based on identity and 
    * the identity is not specified.
    * @return The requested certificate name.
+   * @throw SecurityException if the default identity is not set.
    */
   Name
   getDefaultCertificateName()
