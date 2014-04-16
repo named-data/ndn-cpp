@@ -82,16 +82,11 @@ First follow the Prerequisites above for your platforms.
 * Mac OS X 10.7.3, Mac OS X 10.8.4, Mac OS X 10.9
 Install MacPorts from http://www.macports.org/install.php
 In a terminal, enter:
-sudo port install automake
-sudo port install autoconf
-sudo port install libtool
-sudo port install doxygen
+sudo port install automake autoconf libtool doxygen
 
 * Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
 In a terminal, enter:
-sudo apt-get install automake
-sudo apt-get install libtool
-sudo apt-get install doxygen
+sudo apt-get install automake libtool doxygen
 
 Development
 -----------
