@@ -828,6 +828,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 with_sqlite3
+with_osx_keychain
 enable_tlv
 enable_binary_xml
 enable_doxygen_doc
@@ -1515,6 +1516,8 @@ Optional Packages:
                         (or the compiler's sysroot if not specified).
   --with-sqlite3=[ARG]    use SQLite 3 library [default=yes], optionally
                           specify the prefix for sqlite3 library
+  --with-osx-keychain     use the OS X Keychain as the default private key
+                          store [default: yes]
 
 Some influential environment variables:
   CC          C compiler command
@@ -17021,6 +17024,28 @@ _ACEOF
 
 if test "$HAVE_OSX_SECURITY" == "1" ; then
   LIBS="$LIBS -framework Security"
+
+
+# Check whether --with-osx-keychain was given.
+if test "${with_osx_keychain+set}" = set; then :
+  withval=$with_osx_keychain; osx_keychain=${withval}
+else
+  osx_keychain=yes
+fi
+
+  if test "x${osx_keychain}" = xyes; then
+
+$as_echo "#define WITH_OSX_KEYCHAIN 1" >>confdefs.h
+
+  else
+
+$as_echo "#define WITH_OSX_KEYCHAIN 0" >>confdefs.h
+
+  fi
+else
+
+$as_echo "#define WITH_OSX_KEYCHAIN 0" >>confdefs.h
+
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for __attribute__((deprecated))" >&5

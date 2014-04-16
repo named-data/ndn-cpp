@@ -146,6 +146,17 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 AC_DEFINE_UNQUOTED([HAVE_OSX_SECURITY], $HAVE_OSX_SECURITY, [1 if have the OSX framework.])
 if test "$HAVE_OSX_SECURITY" == "1" ; then
   LIBS="$LIBS -framework Security"
+
+  AC_ARG_WITH([osx-keychain],
+    [AS_HELP_STRING([--with-osx-keychain], [use the OS X Keychain as the default private key store @<:@default: yes@:>@])],
+    [osx_keychain=${withval}], [osx_keychain=yes])
+  if test "x${osx_keychain}" = xyes; then
+    AC_DEFINE([WITH_OSX_KEYCHAIN], 1, [Define to 1 if the OS X Keychain should be the default private key store.])
+  else
+    AC_DEFINE([WITH_OSX_KEYCHAIN], 0, [Define to 1 if the OS X Keychain should be the default private key store.])
+  fi
+else
+  AC_DEFINE([WITH_OSX_KEYCHAIN], 0, [Define to 1 if the OS X Keychain should be the default private key store.])
 fi
 
 AC_MSG_CHECKING([for __attribute__((deprecated))])
