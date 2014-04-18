@@ -38,6 +38,7 @@ typedef func_lib::function<void
 typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&)> OnRegisterFailed;
   
 class Node;
+class KeyChain;
   
 /**
  * The Face class provides the main methods for NDN communication.
@@ -121,7 +122,39 @@ public:
   removePendingInterest(uint64_t pendingInterestId);
   
   /**
-   * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
+   * Set the KeyChain and certificate name used to sign command interests 
+   * (e.g. for registerPrefix).
+   * @param keyChain The KeyChain object for signing interests, which
+   * must remain valid for the life of this Face. You must create the KeyChain
+   * object and pass it in. You can create a default KeyChain for your
+   * system with the default KeyChain constructor.
+   * @param certificateName The certificate name for signing interest.
+   * This makes a copy of the Name. You can get the default certificate name
+   * with keyChain.getDefaultCertificateName() .
+   */
+  void
+  setCommandSigningInfo(KeyChain& keyChain, const Name& certificateName)
+  {
+    commandKeyChain_ = &keyChain;
+    commandCertificateName_ = certificateName;
+  }
+  
+  /**
+   * Set the certificate name used to sign command interest (e.g. for
+   * registerPrefix), using the KeyChain that was set with setCommandSigningInfo.
+   * @param certificateName The certificate name for signing interest.
+   * This makes a copy of the Name.
+   */
+  void
+  setCommandCertificateName(const Name& certificateName)
+  {
+    commandCertificateName_ = certificateName;
+  }
+  
+  /**
+   * Register prefix with the connected NDN hub and call onInterest when a 
+   * matching interest is received. Make sure you have called 
+   * setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
@@ -131,6 +164,8 @@ public:
    * the default flags defined by the default ForwardingFlags constructor.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
+   * @throw This throws an exception if setCommandSigningInfo has not been 
+   * called to set the KeyChain, etc. for signing the command interest.
    */
   uint64_t 
   registerPrefix
@@ -169,6 +204,8 @@ public:
   
 private:
   Node *node_;
+  KeyChain* commandKeyChain_;
+  Name commandCertificateName_;
 };
 
 }

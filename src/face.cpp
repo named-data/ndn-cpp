@@ -13,7 +13,7 @@ using namespace std;
 namespace ndn {
 
 Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
-: node_(new Node(transport, connectionInfo))
+: node_(new Node(transport, connectionInfo)), commandKeyChain_(0)
 {
 }
 
@@ -61,7 +61,9 @@ Face::registerPrefix
   (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
-  return node_->registerPrefix(prefix, onInterest, onRegisterFailed, flags, wireFormat);
+  return node_->registerPrefix
+    (prefix, onInterest, onRegisterFailed, flags, wireFormat, *commandKeyChain_,
+     commandCertificateName_);
 }
 
 void
