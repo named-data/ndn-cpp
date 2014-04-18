@@ -5,6 +5,7 @@
  */
 
 #include <math.h>
+#include <ndn-cpp/security/key-chain.hpp>
 #include "../c/util/time.h"
 #include "../c/util/crypto.h"
 #include "nfd-command-interest-generator.hpp"

@@ -8,10 +8,11 @@
 #define NDN_NFD_COMMAND_INTEREST_GENERATOR_HPP
 
 #include <ndn-cpp/interest.hpp>
-#include <ndn-cpp/security/key-chain.hpp>
 
 namespace ndn {
 
+class KeyChain;
+  
 /** An NfdCommandInterestGenerator keeps track of a timestamp and generates
  * command interests according to the NFD Signed Command Interests protocol:
  * http://redmine.named-data.net/projects/nfd/wiki/Command_Interests
