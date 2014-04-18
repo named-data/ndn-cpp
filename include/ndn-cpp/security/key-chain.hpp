@@ -58,6 +58,19 @@ public:
   {
     return identityManager_->getDefaultIdentity();
   }
+    
+  /**
+   * Get the default certificate name of the default identity.
+   * @return The requested certificate name.
+   * @throw SecurityException if the default identity is not set or the default 
+   * key name for the identity is not set or the default certificate name for 
+   * the key name is not set.
+   */
+  Name
+  getDefaultCertificateName()
+  {
+    return identityManager_->getDefaultCertificateName();
+  }
   
   /**
    * Generate a pair of RSA keys for the specified identity.
