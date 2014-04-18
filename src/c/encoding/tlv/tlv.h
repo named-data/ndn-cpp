@@ -52,6 +52,12 @@ enum {
 };
 
 enum {
+  ndn_Tlv_NfdCommand_ControlResponse = 101,
+  ndn_Tlv_NfdCommand_StatusCode =      102,
+  ndn_Tlv_NfdCommand_StatusText =      103,
+};
+
+enum {
   ndn_Tlv_PrefixRegOptions_PrefixRegOptions = 101,
   ndn_Tlv_PrefixRegOptions_FaceId =           102,
   ndn_Tlv_PrefixRegOptions_Flags =            103,
