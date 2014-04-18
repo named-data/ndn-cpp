@@ -143,6 +143,7 @@ public:
    * Get the default key name for the specified identity.
    * @param identityName The identity name.
    * @return The default key name.
+   * @throw SecurityException if the default key name for the identity is not set.
    */
   virtual Name 
   getDefaultKeyNameForIdentity(const Name& identityName);
@@ -151,6 +152,8 @@ public:
    * Get the default certificate name for the specified key.
    * @param keyName The key name.
    * @return The default certificate name.
+   * @throw SecurityException if the default certificate name for the key name 
+   * is not set.
    */
   virtual Name 
   getDefaultCertificateNameForKey(const Name& keyName);

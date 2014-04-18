@@ -70,6 +70,7 @@ public:
    * Get the default key for an identity.
    * @param identityName the name of the identity. If omitted, the identity name is inferred from the keyName.
    * @return The default key name.
+   * @throw SecurityException if the default key name for the identity is not set.
    */
   Name
   getDefaultKeyNameForIdentity(const Name& identityName = Name())
@@ -182,6 +183,8 @@ public:
    * Get the default certificate name for the specified identity, which will be used when signing is performed based on identity.
    * @param identityName The name of the specified identity.
    * @return The requested certificate name.
+   * @throw SecurityException if the default key name for the identity is not 
+   * set or the default certificate name for the key name is not set.
    */
   Name
   getDefaultCertificateNameForIdentity(const Name& identityName)
@@ -193,7 +196,9 @@ public:
    * Get the default certificate name of the default identity, which will be used when signing is based on identity and 
    * the identity is not specified.
    * @return The requested certificate name.
-   * @throw SecurityException if the default identity is not set.
+   * @throw SecurityException if the default identity is not set or the default 
+   * key name for the identity is not set or the default certificate name for 
+   * the key name is not set.
    */
   Name
   getDefaultCertificateName()

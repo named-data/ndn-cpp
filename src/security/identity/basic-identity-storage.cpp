@@ -497,7 +497,8 @@ BasicIdentityStorage::getDefaultIdentity()
   }
   else {
     sqlite3_finalize(statement);
-    throw SecurityException("BasicIdentityStorage::getDefaultIdentity: The default identity is not defined");    
+    throw SecurityException
+      ("BasicIdentityStorage::getDefaultIdentity: The default identity is not defined");    
   }
 }
 
@@ -513,12 +514,16 @@ BasicIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
       
   Name keyName;
 
-  if (res == SQLITE_ROW)
+  if (res == SQLITE_ROW) {
     keyName = Name(identityName).append(string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)), sqlite3_column_bytes(statement, 0)));
- 
-  sqlite3_finalize(statement);
-      
-  return keyName;
+    sqlite3_finalize(statement);
+    return keyName;
+  }
+  else {
+    sqlite3_finalize(statement);    
+    throw SecurityException
+      ("BasicIdentityStorage::getDefaultKeyNameForIdentity: The default key for the identity is not defined");    
+  }
 }
 
 Name 
@@ -537,12 +542,16 @@ BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 
   Name certName;
 
-  if (res == SQLITE_ROW)
+  if (res == SQLITE_ROW) {
     certName = Name(string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)), sqlite3_column_bytes(statement, 0)));
- 
-  sqlite3_finalize(statement);
-      
-  return certName;
+    sqlite3_finalize(statement);
+    return certName;
+  }
+  else {
+    sqlite3_finalize(statement);
+    throw SecurityException
+      ("BasicIdentityStorage::getDefaultCertificateNameForKey: The default certificate for the key name is not defined");    
+  }
 }
 
 void 
