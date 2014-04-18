@@ -35,6 +35,10 @@ NfdCommandInterestGenerator::generate
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
 
   keyChain.sign(interest, certificateName);
+  
+  if (interest.getInterestLifetimeMilliseconds() < 0)
+    // The caller has not set the interest lifetime, so set it here.
+    interest.setInterestLifetimeMilliseconds(1000.0);
 
   // We successfully signed the interest, so update the timestamp.
   lastTimestamp_ = timestamp;

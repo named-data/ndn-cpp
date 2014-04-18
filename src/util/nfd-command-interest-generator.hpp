@@ -29,7 +29,8 @@ public:
    * Append a timestamp component and a random value component to interest's
    * name. This ensures that the timestamp is greater than the timestamp used in
    * the previous call. Then use keyChain to sign the interest which appends a
-   * SignatureInfo component and a component with the signature bits.
+   * SignatureInfo component and a component with the signature bits. If the
+   * interest lifetime is not set, this sets it.
    * @param interest The interest whose name is append with components.
    * @param keyChain The KeyChain for calling sign.
    * @param certificateName The certificate name of the key to use for signing.
