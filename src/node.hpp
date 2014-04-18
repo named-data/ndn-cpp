@@ -13,6 +13,7 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-flags.hpp>
 #include <ndn-cpp/face.hpp>
+#include "util/nfd-command-interest-generator.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -61,12 +62,17 @@ public:
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forwarded to the application.
    * @param wireFormat A WireFormat object used to encode the message.
+   * @param commandKeyChain The KeyChain object for signing interests.  If null,
+   * assume we are connected to a legacy NDNx forwarder.
+   * @param commandCertificateName The certificate name for signing interests.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t 
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
-     WireFormat& wireFormat);
+    (const Name& prefix, const OnInterest& onInterest, 
+     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     WireFormat& wireFormat, KeyChain& commandKeyChain, 
+     const Name& commandCertificateName);
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the registered prefix table.  
@@ -299,13 +305,14 @@ private:
     class Info {
     public:
       Info(const ptr_lib::shared_ptr<const Name>& prefix, 
-           const OnRegisterFailed& onRegisterFailed)
-      : prefix_(prefix), onRegisterFailed_(onRegisterFailed)
+           const OnRegisterFailed& onRegisterFailed, bool isNfd)
+      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), isNfd_(isNfd)
       {      
       }
       
       ptr_lib::shared_ptr<const Name> prefix_;
       const OnRegisterFailed onRegisterFailed_;
+      bool isNfd_;
     };
     
   private:
@@ -347,6 +354,13 @@ private:
   registerPrefixHelper
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, 
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat);
+
+  void
+  nfdRegisterPrefix
+    (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
+     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+     const ForwardingFlags& flags, KeyChain& commandKeyChain, 
+     const Name& commandCertificateName);
   
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
@@ -354,6 +368,7 @@ private:
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
+  NfdCommandInterestGenerator commandInterestGenerator_;
 };
 
 }

@@ -11,7 +11,6 @@
 #include "c/util/crypto.h"
 #include "c/util/time.h"
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
-#include "c/encoding/tlv/tlv.h"
 #include "encoding/tlv-decoder.hpp"
 #include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include "c/encoding/binary-xml.h"
@@ -19,6 +18,7 @@
 #include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/prefix-registration-options.hpp>
 #include "node.hpp"
 
 using namespace std;
@@ -151,24 +151,35 @@ Node::removePendingInterest(uint64_t pendingInterestId)
 
 uint64_t 
 Node::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
-   WireFormat& wireFormat)
+  (const Name& prefix, const OnInterest& onInterest, 
+   const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+   WireFormat& wireFormat, KeyChain& commandKeyChain, 
+   const Name& commandCertificateName)
 {
   // Get the registeredPrefixId now so we can return it to the caller.
   uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
 
-  if (ndndId_.size() == 0) {
-    // First fetch the ndndId of the connected hub.
-    NdndIdFetcher fetcher
-      (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-        (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat)));
-    // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
-    // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-    expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
+  if (!&commandKeyChain) {
+    // Assume we are connected to a legacy NDNx server.
+    
+    if (ndndId_.size() == 0) {
+      // First fetch the ndndId of the connected hub.
+      NdndIdFetcher fetcher
+        (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
+          (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat)));
+      // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
+      // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
+      expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
+    }
+    else
+      registerPrefixHelper
+        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags, wireFormat);
   }
   else
-    registerPrefixHelper
-      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags, wireFormat);
+    // The application set the KeyChain for signing NFD interests.
+    nfdRegisterPrefix
+      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, 
+       onRegisterFailed, flags, commandKeyChain, commandCertificateName);
   
   return registeredPrefixId;
 }
@@ -215,16 +226,44 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timed
 void 
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
 {
-  Name expectedName("/ndnx/.../selfreg");
-  // Got a response. Do a quick check of expected name components.
-  if (responseData->getName().size() < 4 ||
-      responseData->getName()[0] != expectedName[0] ||
-      responseData->getName()[2] != expectedName[2]) {
-    info_->onRegisterFailed_(info_->prefix_);
-    return;
-  }
+  if (info_->isNfd_) {
+    // Decode responseData->getContent() and check for a success code.
+    // TODO: Move this into the TLV code.
+    struct ndn_TlvDecoder decoder;
+    ndn_TlvDecoder_initialize
+      (&decoder, responseData->getContent().buf(), 
+       responseData->getContent().size());
+    size_t endOffset;
+    if (ndn_TlvDecoder_readNestedTlvsStart
+        (&decoder, ndn_Tlv_NfdCommand_ControlResponse, &endOffset)) {
+      info_->onRegisterFailed_(info_->prefix_);
+      return;
+    }
+    uint64_t statusCode;
+    if (ndn_TlvDecoder_readNonNegativeIntegerTlv
+         (&decoder, ndn_Tlv_NfdCommand_StatusCode, &statusCode)) {
+      info_->onRegisterFailed_(info_->prefix_);
+      return;
+    }
+    
+    // Status code 200 is "OK".
+    if (statusCode != 200)
+      info_->onRegisterFailed_(info_->prefix_);
   
-  // Otherwise, silently succeed.
+    // Otherwise, silently succeed.
+  }
+  else {
+    Name expectedName("/ndnx/.../selfreg");
+    // Got a response. Do a quick check of expected name components.
+    if (responseData->getName().size() < 4 ||
+        responseData->getName()[0] != expectedName[0] ||
+        responseData->getName()[2] != expectedName[2]) {
+      info_->onRegisterFailed_(info_->prefix_);
+      return;
+    }
+  
+    // Otherwise, silently succeed.
+  }
 }
 
 void 
@@ -274,10 +313,49 @@ Node::registerPrefixHelper
   
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed)));
+     (prefix, onRegisterFailed, false)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(interest, response, response, wireFormat);
+}
+
+void
+Node::nfdRegisterPrefix
+  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
+   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+   const ForwardingFlags& flags, KeyChain& commandKeyChain, 
+   const Name& commandCertificateName)
+{
+  if (!&commandKeyChain)
+    throw runtime_error
+      ("registerPrefix: The command KeyChain has not been set. You must call setCommandSigningInfo.");
+  if (commandCertificateName.size() == 0)
+    throw runtime_error
+      ("registerPrefix: The command certificate name has not been set. You must call setCommandSigningInfo.");
+  
+  PrefixRegistrationOptions options(*prefix);
+  // Face ID 0 is for self-registration.
+  options.setFaceId(0);
+  options.setCost(0);
+
+  Interest commandInterest("/localhost/nrd/register");
+  // NFD only accepts TlvWireFormat packets.
+  commandInterest.getName().append(options.wireEncode(*TlvWireFormat::get()));
+  commandInterestGenerator_.generate
+    (commandInterest, commandKeyChain, commandCertificateName,
+     *TlvWireFormat::get());
+
+  // Save the onInterest callback and send the registration interest.
+  registeredPrefixTable_.push_back
+    (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
+      (registeredPrefixId, prefix, onInterest)));
+
+  RegisterResponse response
+    (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
+     (prefix, onRegisterFailed, true)));
+  // It is OK for func_lib::function make a copy of the function object because 
+  //   the Info is in a ptr_lib::shared_ptr.
+  expressInterest(commandInterest, response, response, *TlvWireFormat::get());
 }
 
 void 
