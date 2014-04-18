@@ -1,8 +1,9 @@
-Interim changes after NDN-CPP v0.4 (2014-04-14)
+Interim changes after NDN-CPP v0.4 (2014-04-17)
 -----------------------------------------------
 
 Changes
 * Changed ndn::toHex and Blob::toHex to output lower-case.
+* In the KeyChain constructor, if policyManager is omitted, use NoVerifyPolicyManager.
 * In BasicIdentityStorage, change the SQL file to ~/.ndn/ndnsec-public-info.db .
 
 Bug fixes

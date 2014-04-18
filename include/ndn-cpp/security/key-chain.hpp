@@ -30,8 +30,27 @@ class PolicyManager;
  */
 class KeyChain {
 public:
+  /**
+   * Create a new KeyChain with the given IdentityManager and PolicyManager.
+   * @param identityManager An object of a subclass of IdentityManager.
+   * @param policyManager An object of a subclass of PolicyManager.
+   */
   KeyChain
-    (const ptr_lib::shared_ptr<IdentityManager>& identityManager, const ptr_lib::shared_ptr<PolicyManager>& policyManager);
+    (const ptr_lib::shared_ptr<IdentityManager>& identityManager, 
+     const ptr_lib::shared_ptr<PolicyManager>& policyManager);
+
+  /**
+   * Create a new KeyChain with the given IdentityManager and a 
+   * NoVerifyPolicyManager.
+   * @param identityManager An object of a subclass of IdentityManager.
+   */
+  KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager);
+
+  /**
+   * Create a new KeyChain with the the default IdentityManager and a 
+   * NoVerifyPolicyManager.
+   */
+  KeyChain();
 
   /*****************************************
    *          Identity Management          *

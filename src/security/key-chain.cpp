@@ -10,6 +10,7 @@
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #if 1 // Temporary until we move code from sign(Interest)
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../encoding/tlv-encoder.hpp"
@@ -25,9 +26,20 @@ using namespace ndn::func_lib::placeholders;
 
 namespace ndn {
   
-KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager, const ptr_lib::shared_ptr<PolicyManager>& policyManager)
-: identityManager_(identityManager), policyManager_(policyManager), face_(0), maxSteps_(100)
-{  
+KeyChain::KeyChain
+  (const ptr_lib::shared_ptr<IdentityManager>& identityManager, 
+   const ptr_lib::shared_ptr<PolicyManager>& policyManager)
+: identityManager_(identityManager), policyManager_(policyManager), 
+  face_(0), maxSteps_(100)
+{
+}
+  
+KeyChain::KeyChain
+  (const ptr_lib::shared_ptr<IdentityManager>& identityManager)
+: identityManager_(identityManager), 
+  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()), 
+  face_(0), maxSteps_(100)
+{
 }
 
 void 
