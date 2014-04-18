@@ -32,9 +32,10 @@ public:
   class Component {
   public:
     /**
-     * Create a new Name::Component with a null value.
+     * Create a new Name::Component with a zero-length value.
      */
     Component()
+    : value_((const uint8_t*)0, 0)
     {    
     }
   
