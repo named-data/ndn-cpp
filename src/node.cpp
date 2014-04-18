@@ -344,6 +344,8 @@ Node::nfdRegisterPrefix
   commandInterestGenerator_.generate
     (commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
+  // The interest is answered by the local host, so set a short timeout.
+  commandInterest.setInterestLifetimeMilliseconds(1000.0);
 
   // Save the onInterest callback and send the registration interest.
   registeredPrefixTable_.push_back
