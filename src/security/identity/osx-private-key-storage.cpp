@@ -23,36 +23,8 @@ INIT_LOGGER("ndn.OSXPrivateKeyStorage");
 
 namespace ndn
 {
-  OSXPrivateKeyStorage::OSXPrivateKeyStorage(const string & keychainName)
-    : keyChainName_("" == keychainName ?  "NDN.keychain" : keychainName)
+  OSXPrivateKeyStorage::~OSXPrivateKeyStorage()
   {
-    OSStatus res = SecKeychainCreate(keyChainName_.c_str(), //Keychain path
-                                      0,                       //Keychain password length
-                                      NULL,                    //Keychain password
-                                      true,                    //User prompt
-                                      NULL,                    //Initial access of Keychain
-                                      &keyChainRef_);         //Keychain reference
-
-    if (res == errSecDuplicateKeychain)
-      res = SecKeychainOpen(keyChainName_.c_str(),
-                             &keyChainRef_);
-
-    if (res != errSecSuccess){
-      _LOG_DEBUG("Fail to initialize keychain ref: " << res);
-      throw SecurityException("Fail to initialize keychain ref");
-    }
-
-    res = SecKeychainCopyDefault(&originalDefaultKeyChain_);
-
-    res = SecKeychainSetDefault(keyChainRef_);
-    if (res != errSecSuccess){
-      _LOG_DEBUG("Fail to set default keychain: " << res);
-      throw SecurityException("Fail to set default keychain");
-    }
-  }
-
-  OSXPrivateKeyStorage::~OSXPrivateKeyStorage(){
-    //TODO: implement
   }
 
   void 

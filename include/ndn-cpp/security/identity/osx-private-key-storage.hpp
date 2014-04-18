@@ -25,10 +25,9 @@ namespace ndn
 class OSXPrivateKeyStorage : public PrivateKeyStorage {
 public:
   /**
-   * constructor of OSXPrivateKeyStorage
-   * @param keychainName the name of keychain
+   * Create a new OSXPrivateKeyStorage.
    */
-  OSXPrivateKeyStorage(const std::string & keychainName = "");
+  OSXPrivateKeyStorage() {}
 
   /**
    * destructor of OSXPrivateKeyStore
@@ -184,10 +183,6 @@ public:
    */
   long 
   getDigestSize(DigestAlgorithm digestAlgo);
-
-  const std::string keyChainName_;
-  SecKeychainRef keyChainRef_;
-  SecKeychainRef originalDefaultKeyChain_;
 };
   
 }
