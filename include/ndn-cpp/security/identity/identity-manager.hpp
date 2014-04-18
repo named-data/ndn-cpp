@@ -21,11 +21,32 @@ namespace ndn {
  */
 class IdentityManager {
 public:
-  IdentityManager(const ptr_lib::shared_ptr<IdentityStorage>& identityStorage, const ptr_lib::shared_ptr<PrivateKeyStorage>& privateKeyStorage)
-  : identityStorage_(identityStorage), privateKeyStorage_(privateKeyStorage)
-  {
-  }
+  /**
+   * Create a new IdentityManager to use the given IdentityStorage and 
+   * PrivateKeyStorage.
+   * @param identityStorage An object of a subclass of IdentityStorage.
+   * @param privateKeyStorage An object of a subclass of PrivateKeyStorage.
+   */
+  IdentityManager
+    (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage, 
+     const ptr_lib::shared_ptr<PrivateKeyStorage>& privateKeyStorage);
   
+  /**
+   * Create a new IdentityManager to use the given IdentityStorage and 
+   * the default PrivateKeyStorage for your system, which is 
+   * OSXPrivateKeyStorage for OS X, otherwise FilePrivateKeyStorage.
+   * @param identityStorage An object of a subclass of IdentityStorage.
+   */
+  IdentityManager(const ptr_lib::shared_ptr<IdentityStorage>& identityStorage);
+  
+  /**
+   * Create a new IdentityManager to use BasicIdentityStorage and 
+   * the default PrivateKeyStorage for your system, which is 
+   * OSXPrivateKeyStorage for OS X, otherwise FilePrivateKeyStorage.
+   * @param identityStorage An object of a subclass of IdentityStorage.
+   */
+  IdentityManager();
+
   /**
    * Create an identity by creating a pair of Key-Signing-Key (KSK) for this identity and a self-signed certificate of the KSK.
    * @param identityName The name of the identity.
