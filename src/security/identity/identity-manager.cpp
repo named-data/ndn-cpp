@@ -20,9 +20,7 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
-#if NDN_CPP_HAVE_OSX_SECURITY
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
-#endif
 #include "../../util/logging.hpp"
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/identity/identity-manager.hpp>
@@ -39,6 +37,8 @@ IdentityManager::IdentityManager
 : identityStorage_(identityStorage), privateKeyStorage_(privateKeyStorage)
 {
 }
+
+#ifdef NDN_CPP_HAVE_SQLITE3
 
 #if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
 IdentityManager::IdentityManager
@@ -67,6 +67,40 @@ IdentityManager::IdentityManager()
   privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
 {
 }
+#endif
+
+#else
+// No SQLite, so we can't use BasicIdentityStorage.
+
+#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
+IdentityManager::IdentityManager
+  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
+: identityStorage_(identityStorage), 
+  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
+{
+}
+
+IdentityManager::IdentityManager()
+: identityStorage_(ptr_lib::shared_ptr<IdentityStorage>()), 
+  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
+{
+}
+#else
+// TODO: Implement FilePrivateKeyStorage.
+IdentityManager::IdentityManager
+  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
+: identityStorage_(identityStorage), 
+  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+{
+}
+
+IdentityManager::IdentityManager()
+: identityStorage_(ptr_lib::shared_ptr<IdentityStorage>()), 
+  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+{
+}
+#endif
+
 #endif
   
 Name
