@@ -6,8 +6,9 @@ Changes
 * In IdentityManager, added a default constructor to use the system storage.
 * In the KeyChain constructor, if identityManager is omitted, use the system default IdentityManager.
 * In the KeyChain constructor, if policyManager is omitted, use NoVerifyPolicyManager.
-* In BasicIdentityStorage, change the SQL file to ~/.ndn/ndnsec-public-info.db .
+* In BasicIdentityStorage, changed the SQL file to ~/.ndn/ndnsec-public-info.db .
 * In the default Name::Component constructor, create a zero-length value, not null, to avoid null pointer problems.
+* Renamed test-publish-async to test-publish-async-ndnx.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
