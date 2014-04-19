@@ -19,7 +19,8 @@ Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 
 Face::Face(const char *host, unsigned short port)
 : node_(new Node(ptr_lib::shared_ptr<TcpTransport>(new TcpTransport()), 
-                 ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port)))
+                 ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port))), 
+  commandKeyChain_(0)
 {
 }
 
