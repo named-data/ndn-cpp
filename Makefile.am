@@ -14,8 +14,9 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
-noinst_PROGRAMS = bin/test-encode-decode-benchmark bin/test-encode-decode-data bin/test-encode-decode-forwarding-entry \
-  bin/test-encode-decode-interest bin/test-get-async bin/test-publish-async-ndnx
+noinst_PROGRAMS = bin/test-encode-decode-benchmark bin/test-encode-decode-data \
+  bin/test-encode-decode-forwarding-entry bin/test-encode-decode-interest \
+  bin/test-get-async bin/test-publish-async-ndnx bin/test-publish-async-nfd
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -200,5 +201,8 @@ bin_test_get_async_LDADD = libndn-cpp.la
 
 bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
+
+bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
+bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 
 dist_noinst_SCRIPTS = autogen.sh

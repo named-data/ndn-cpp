@@ -92,7 +92,8 @@ noinst_PROGRAMS = bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-forwarding-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) \
-	bin/test-publish-async-ndnx$(EXEEXT)
+	bin/test-publish-async-ndnx$(EXEEXT) \
+	bin/test-publish-async-nfd$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
@@ -264,6 +265,11 @@ am_bin_test_publish_async_ndnx_OBJECTS =  \
 bin_test_publish_async_ndnx_OBJECTS =  \
 	$(am_bin_test_publish_async_ndnx_OBJECTS)
 bin_test_publish_async_ndnx_DEPENDENCIES = libndn-cpp.la
+am_bin_test_publish_async_nfd_OBJECTS =  \
+	tests/test-publish-async-nfd.$(OBJEXT)
+bin_test_publish_async_nfd_OBJECTS =  \
+	$(am_bin_test_publish_async_nfd_OBJECTS)
+bin_test_publish_async_nfd_DEPENDENCIES = libndn-cpp.la
 SCRIPTS = $(dist_noinst_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -323,14 +329,16 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
-	$(bin_test_publish_async_ndnx_SOURCES)
+	$(bin_test_publish_async_ndnx_SOURCES) \
+	$(bin_test_publish_async_nfd_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
-	$(bin_test_publish_async_ndnx_SOURCES)
+	$(bin_test_publish_async_ndnx_SOURCES) \
+	$(bin_test_publish_async_nfd_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -779,6 +787,8 @@ bin_test_get_async_SOURCES = tests/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
 bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
+bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
+bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 dist_noinst_SCRIPTS = autogen.sh
 all: all-recursive
 
@@ -1189,6 +1199,12 @@ tests/test-publish-async-ndnx.$(OBJEXT): tests/$(am__dirstamp) \
 bin/test-publish-async-ndnx$(EXEEXT): $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_DEPENDENCIES) $(EXTRA_bin_test_publish_async_ndnx_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-ndnx$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_LDADD) $(LIBS)
+tests/test-publish-async-nfd.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-publish-async-nfd$(EXEEXT): $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-publish-async-nfd$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1316,6 +1332,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-get-async.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

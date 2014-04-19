@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-04-17)
+Interim changes after NDN-CPP v0.4 (2014-04-18)
 -----------------------------------------------
 
 Changes
@@ -9,6 +9,7 @@ Changes
 * In BasicIdentityStorage, changed the SQL file to ~/.ndn/ndnsec-public-info.db .
 * In the default Name::Component constructor, create a zero-length value, not null, to avoid null pointer problems.
 * Renamed test-publish-async to test-publish-async-ndnx.
+* Added test-publish-async-nfd.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
