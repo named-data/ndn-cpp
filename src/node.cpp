@@ -226,7 +226,7 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timed
 void 
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
 {
-  if (info_->isNfd_) {
+  if (info_->isNfdCommand_) {
     // Decode responseData->getContent() and check for a success code.
     // TODO: Move this into the TLV code.
     struct ndn_TlvDecoder decoder;
@@ -313,7 +313,7 @@ Node::registerPrefixHelper
   
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed, false)));
+     (prefix, onRegisterFailed, false, true)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(interest, response, response, wireFormat);
@@ -354,7 +354,7 @@ Node::nfdRegisterPrefix
 
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed, true)));
+     (prefix, onRegisterFailed, true, true)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(commandInterest, response, response, *TlvWireFormat::get());

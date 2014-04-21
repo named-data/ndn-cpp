@@ -305,14 +305,17 @@ private:
     class Info {
     public:
       Info(const ptr_lib::shared_ptr<const Name>& prefix, 
-           const OnRegisterFailed& onRegisterFailed, bool isNfd)
-      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), isNfd_(isNfd)
+           const OnRegisterFailed& onRegisterFailed, bool isNfdCommand,
+           bool isFirstAttempt)
+      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), 
+        isNfdCommand_(isNfdCommand), isFirstAttempt_(isFirstAttempt)
       {      
       }
       
       ptr_lib::shared_ptr<const Name> prefix_;
       const OnRegisterFailed onRegisterFailed_;
-      bool isNfd_;
+      bool isNfdCommand_;
+      bool isFirstAttempt_;
     };
     
   private:
