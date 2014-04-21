@@ -16,7 +16,7 @@ namespace ndn {
 class Interest;
 class Data;
 class ForwardingEntry;
-class PrefixRegistrationOptions;
+class ControlParameters;
   
 class WireFormat {
 public:
@@ -137,29 +137,28 @@ public:
   decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
   
   /**
-   * Encode prefixRegistrationOptions and return the encoding.  
+   * Encode controlParameters and return the encoding.  
    * Your derived class should override.
-   * @param prefixRegistrationOptions The PrefixRegistrationOptions object to 
-   * encode.
+   * @param controlParameters The ControlParameters object to encode.
    * @return A Blob containing the encoding.
    * @throw logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob 
-  encodePrefixRegistrationOptions
-    (const PrefixRegistrationOptions& prefixRegistrationOptions);
+  encodeControlParameters
+    (const ControlParameters& controlParameters);
   
   /**
-   * Decode input as a prefix registration options and set the fields of the 
-   * prefixRegistrationOptions object.  Your derived class should override.
-   * @param prefixRegistrationOptions The PrefixRegistrationOptions object whose 
-   * fields are updated.
+   * Decode input as a command parameters and set the fields of the 
+   * controlParameters object.  Your derived class should override.
+   * @param controlParameters The ControlParameters object whose fields are 
+   * updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
    * @throw logic_error for unimplemented if the derived class does not override.
    */
   virtual void 
-  decodePrefixRegistrationOptions
-    (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+  decodeControlParameters
+    (ControlParameters& controlParameters, const uint8_t *input, 
      size_t inputLength);
 
   /**

@@ -18,7 +18,7 @@
 #include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include <ndn-cpp/prefix-registration-options.hpp>
+#include <ndn-cpp/control-parameters.hpp>
 #include "node.hpp"
 
 using namespace std;
@@ -333,14 +333,12 @@ Node::nfdRegisterPrefix
     throw runtime_error
       ("registerPrefix: The command certificate name has not been set. You must call setCommandSigningInfo.");
   
-  PrefixRegistrationOptions options(*prefix);
-  // Face ID 0 is for self-registration.
-  options.setFaceId(0);
-  options.setCost(0);
+  ControlParameters controlParameters;
+  controlParameters.setName(*prefix);
 
-  Interest commandInterest("/localhost/nrd/register");
+  Interest commandInterest("/localhost/nfd/rib/register");
   // NFD only accepts TlvWireFormat packets.
-  commandInterest.getName().append(options.wireEncode(*TlvWireFormat::get()));
+  commandInterest.getName().append(controlParameters.wireEncode(*TlvWireFormat::get()));
   commandInterestGenerator_.generate
     (commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());

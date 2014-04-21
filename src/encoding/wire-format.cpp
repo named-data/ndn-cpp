@@ -69,15 +69,15 @@ WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_
 }
 
 Blob 
-WireFormat::encodePrefixRegistrationOptions
-  (const PrefixRegistrationOptions& prefixRegistrationOptions)
+WireFormat::encodeControlParameters
+  (const ControlParameters& controlParameters)
 {
   throw logic_error("unimplemented");
 }
 
 void 
-WireFormat::decodePrefixRegistrationOptions
-  (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+WireFormat::decodeControlParameters
+  (ControlParameters& controlParameters, const uint8_t *input, 
    size_t inputLength)
 {
   throw logic_error("unimplemented");

@@ -5,7 +5,7 @@
  */
 
 #include "forwarding-entry.h"
-#include "prefix-registration-options.h"
+#include "control-parameters.h"
 
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 {
@@ -56,22 +56,22 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
 }
 
 int 
-ndn_ForwardingFlags_getNrdForwardingFlags(struct ndn_ForwardingFlags *self)
+ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self)
 {
   int result = 0;
   
   if (self->childInherit)
-    result |= ndn_NrdForwardingFlags_CHILD_INHERIT;
+    result |= ndn_NfdForwardingFlags_CHILD_INHERIT;
   if (self->capture)
-    result |= ndn_NrdForwardingFlags_CAPTURE;
+    result |= ndn_NfdForwardingFlags_CAPTURE;
   
   return result;
 }
 
 void 
-ndn_ForwardingFlags_setNrdForwardingFlags
-  (struct ndn_ForwardingFlags *self, int nrdForwardingFlags)
+ndn_ForwardingFlags_setNfdForwardingFlags
+  (struct ndn_ForwardingFlags *self, int nfdForwardingFlags)
 {
-  self->childInherit = (nrdForwardingFlags & ndn_NrdForwardingFlags_CHILD_INHERIT) ? 1 : 0;
-  self->capture = (nrdForwardingFlags & ndn_NrdForwardingFlags_CAPTURE) ? 1 : 0;
+  self->childInherit = (nfdForwardingFlags & ndn_NfdForwardingFlags_CHILD_INHERIT) ? 1 : 0;
+  self->capture = (nfdForwardingFlags & ndn_NfdForwardingFlags_CAPTURE) ? 1 : 0;
 }

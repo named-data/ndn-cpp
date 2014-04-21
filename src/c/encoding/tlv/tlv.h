@@ -58,12 +58,15 @@ enum {
 };
 
 enum {
-  ndn_Tlv_PrefixRegOptions_PrefixRegOptions = 101,
-  ndn_Tlv_PrefixRegOptions_FaceId =           102,
-  ndn_Tlv_PrefixRegOptions_Flags =            103,
-  ndn_Tlv_PrefixRegOptions_Cost =             104,
-  ndn_Tlv_PrefixRegOptions_ExpirationPeriod = 105,
-  ndn_Tlv_PrefixRegOptions_Protocol =         107
+  ndn_Tlv_ControlParameters_ControlParameters =   104,
+  ndn_Tlv_ControlParameters_FaceId =              105,
+  ndn_Tlv_ControlParameters_Uri =                 114,
+  ndn_Tlv_ControlParameters_LocalControlFeature = 110,
+  ndn_Tlv_ControlParameters_Origin =              111,
+  ndn_Tlv_ControlParameters_Cost =                106,
+  ndn_Tlv_ControlParameters_Flags =               108,
+  ndn_Tlv_ControlParameters_Strategy =            107,
+  ndn_Tlv_ControlParameters_ExpirationPeriod =    109
 };
   
 #ifdef __cplusplus

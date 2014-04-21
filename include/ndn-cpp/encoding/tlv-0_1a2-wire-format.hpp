@@ -75,27 +75,27 @@ public:
     (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
   
   /**
-   * Encode prefixRegistrationOptions as NDN-TLV and return the encoding.  
-   * @param prefixRegistrationOptions The PrefixRegistrationOptions object to 
+   * Encode controlParameters as NDN-TLV and return the encoding.  
+   * @param controlParameters The ControlParameters object to 
    * encode.
    * @return A Blob containing the encoding.
    */
   virtual Blob 
-  encodePrefixRegistrationOptions
-    (const PrefixRegistrationOptions& prefixRegistrationOptions);
+  encodeControlParameters
+    (const ControlParameters& controlParameters);
   
 #if 0
   /**
-   * Decode input as a prefix registration options in NDN-TLV and set the fields 
-   * of the prefixRegistrationOptions object.
-   * @param prefixRegistrationOptions The PrefixRegistrationOptions object whose 
+   * Decode input as a ControlParameters in NDN-TLV and set the fields of the 
+   * controlParameters object.
+   * @param controlParameters The ControlParameters object whose 
    * fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
    */
   virtual void 
-  decodePrefixRegistrationOptions
-    (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+  decodeControlParameters
+    (ControlParameters& controlParameters, const uint8_t *input, 
      size_t inputLength);
 #endif
 

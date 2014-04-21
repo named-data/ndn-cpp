@@ -8,10 +8,10 @@
 #include <stdexcept>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
-#include <ndn-cpp/prefix-registration-options.hpp>
+#include <ndn-cpp/control-parameters.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
 #include "../c/encoding/tlv/tlv-data.h"
-#include "../c/encoding/tlv/tlv-prefix-registration-options.h"
+#include "../c/encoding/tlv/tlv-control-parameters.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp>
@@ -104,20 +104,20 @@ Tlv1_0a2WireFormat::decodeData
 }
 
 Blob 
-Tlv1_0a2WireFormat::encodePrefixRegistrationOptions
-  (const PrefixRegistrationOptions& prefixRegistrationOptions)
+Tlv1_0a2WireFormat::encodeControlParameters
+  (const ControlParameters& controlParameters)
 {
-  struct ndn_NameComponent prefixNameComponents[100];
-  struct ndn_PrefixRegistrationOptions prefixRegistrationOptionsStruct;
-  ndn_PrefixRegistrationOptions_initialize
-    (&prefixRegistrationOptionsStruct, prefixNameComponents, 
-     sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-  prefixRegistrationOptions.get(prefixRegistrationOptionsStruct);
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_ControlParameters controlParametersStruct;
+  ndn_ControlParameters_initialize
+    (&controlParametersStruct, nameComponents, 
+     sizeof(nameComponents) / sizeof(nameComponents[0]));
+  controlParameters.get(controlParametersStruct);
 
   TlvEncoder encoder(256);
   ndn_Error error;
-  if ((error = ndn_encodeTlvPrefixRegOptions
-       (&prefixRegistrationOptionsStruct, &encoder)))
+  if ((error = ndn_encodeTlvControlParameters
+       (&controlParametersStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
   return encoder.getOutput();
@@ -125,8 +125,8 @@ Tlv1_0a2WireFormat::encodePrefixRegistrationOptions
 
 #if 0
 void 
-Tlv1_0a2WireFormat::decodePrefixRegistrationOptions
-  (PrefixRegistrationOptions& prefixRegistrationOptions, const uint8_t *input, 
+Tlv1_0a2WireFormat::decodeControlParameters
+  (ControlParameters& controlParameters, const uint8_t *input, 
    size_t inputLength)
 {
 }

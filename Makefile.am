@@ -41,7 +41,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/key-locator.hpp \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
-  include/ndn-cpp/prefix-registration-options.hpp \
+  include/ndn-cpp/control-parameters.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
   include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
@@ -88,7 +88,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
-  src/c/prefix-registration-options.h \
+  src/c/control-parameters.h \
   src/c/publisher-public-key-digest.h \
   src/c/encoding/binary-xml-data.c src/c/encoding/binary-xml-data.h \
   src/c/encoding/binary-xml-decoder.c src/c/encoding/binary-xml-decoder.h \
@@ -108,7 +108,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
-  src/c/encoding/tlv/tlv-prefix-registration-options.c src/c/encoding/tlv/tlv-prefix-registration-options.h \
+  src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
@@ -134,7 +134,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/meta-info.cpp \
   src/name.cpp \
   src/node.cpp src/node.hpp \
-  src/prefix-registration-options.cpp \
+  src/control-parameters.cpp \
   src/publisher-public-key-digest.cpp \
   src/signature.cpp \
   src/sha256-with-rsa-signature.cpp \
