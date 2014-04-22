@@ -36,7 +36,7 @@ To build in a terminal, change directory to the NDN-CPP root.  Enter:
 
 ./configure
 make
-make install
+sudo make install
 
 NDN-CPP uses NDN-TLV as the default wire format:
 http://named-data.net/doc/ndn-tlv/tlv.html
