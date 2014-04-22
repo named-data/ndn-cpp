@@ -1,5 +1,5 @@
 /**
- * @author: Jeff Thompson
+ * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * See COPYING for copyright and distribution information.
  */
 

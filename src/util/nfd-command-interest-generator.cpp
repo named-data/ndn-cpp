@@ -1,5 +1,6 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * @author: Jeff Thompson
+ * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from command-interest-generator.hpp by the NFD authors: https://github.com/named-data/NFD/blob/master/AUTHORS.md .
  * See COPYING for copyright and distribution information.
  */
