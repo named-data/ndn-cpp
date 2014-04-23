@@ -100,6 +100,7 @@ FilePrivateKeyStorage::generateKeyPair
 ptr_lib::shared_ptr<PublicKey> 
 FilePrivateKeyStorage::getPublicKey(const Name& keyName)
 {
+#if 0
   string keyURI = keyName.toUri();
 
   if (!doesKeyExist(keyName, KEY_CLASS_PUBLIC))
@@ -109,11 +110,9 @@ FilePrivateKeyStorage::getPublicKey(const Name& keyName)
   stringstream base64;
   base64 << file.rdbuf();
 
-#if 1
-  cout << "base64 " << base64 << endl;
-  throw runtime_error("FilePrivateKeyStorage::getPublicKey not implemented");
-#else
   return PublicKey::fromDer(Blob(os.str().c_str(), os.str().size()));
+#else
+  throw runtime_error("FilePrivateKeyStorage::getPublicKey not implemented");
 #endif
 }
 
