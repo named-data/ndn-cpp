@@ -97,6 +97,26 @@ toHex(const std::vector<uint8_t>& array)
   return toHex(&array[0], array.size());
 }
 
+/**
+ * Return the base64 representation of the bytes in array.
+ * @param array The array of bytes.
+ * @param arrayLength The number of bytes in array.
+ * @return The base64 string.
+ */
+std::string
+toBase64(const uint8_t* array, size_t arrayLength);
+
+/**
+ * Return the base64 representation of the bytes in array.
+ * @param array The array of bytes.
+ * @return The base64 string.
+ */
+static inline std::string 
+toBase64(const std::vector<uint8_t>& array)
+{
+  return toBase64(&array[0], array.size());
+}
+
 }
 
 #endif
