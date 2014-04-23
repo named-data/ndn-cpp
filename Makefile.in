@@ -221,6 +221,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/certificate/identity-certificate.lo \
 	src/security/certificate/public-key.lo \
 	src/security/identity/basic-identity-storage.lo \
+	src/security/identity/file-private-key-storage.lo \
 	src/security/identity/identity-manager.lo \
 	src/security/identity/identity-storage.lo \
 	src/security/identity/memory-identity-storage.lo \
@@ -648,6 +649,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/certificate/public-key.hpp \
   include/ndn-cpp/security/encryption/encryption-manager.hpp \
   include/ndn-cpp/security/identity/basic-identity-storage.hpp \
+  include/ndn-cpp/security/identity/file-private-key-storage.hpp \
   include/ndn-cpp/security/identity/identity-manager.hpp \
   include/ndn-cpp/security/identity/identity-storage.hpp \
   include/ndn-cpp/security/identity/memory-identity-storage.hpp \
@@ -756,6 +758,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/security/certificate/identity-certificate.cpp \
   src/security/certificate/public-key.cpp \
   src/security/identity/basic-identity-storage.cpp \
+  src/security/identity/file-private-key-storage.cpp \
   src/security/identity/identity-manager.cpp \
   src/security/identity/identity-storage.cpp \
   src/security/identity/memory-identity-storage.cpp \
@@ -1077,6 +1080,9 @@ src/security/identity/$(DEPDIR)/$(am__dirstamp):
 src/security/identity/basic-identity-storage.lo:  \
 	src/security/identity/$(am__dirstamp) \
 	src/security/identity/$(DEPDIR)/$(am__dirstamp)
+src/security/identity/file-private-key-storage.lo:  \
+	src/security/identity/$(am__dirstamp) \
+	src/security/identity/$(DEPDIR)/$(am__dirstamp)
 src/security/identity/identity-manager.lo:  \
 	src/security/identity/$(am__dirstamp) \
 	src/security/identity/$(DEPDIR)/$(am__dirstamp)
@@ -1309,6 +1315,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/identity-certificate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/public-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/basic-identity-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/file-private-key-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/identity-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/identity-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/memory-identity-storage.Plo@am__quote@

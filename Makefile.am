@@ -60,6 +60,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/certificate/public-key.hpp \
   include/ndn-cpp/security/encryption/encryption-manager.hpp \
   include/ndn-cpp/security/identity/basic-identity-storage.hpp \
+  include/ndn-cpp/security/identity/file-private-key-storage.hpp \
   include/ndn-cpp/security/identity/identity-manager.hpp \
   include/ndn-cpp/security/identity/identity-storage.hpp \
   include/ndn-cpp/security/identity/memory-identity-storage.hpp \
@@ -166,6 +167,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/security/certificate/identity-certificate.cpp \
   src/security/certificate/public-key.cpp \
   src/security/identity/basic-identity-storage.cpp \
+  src/security/identity/file-private-key-storage.cpp \
   src/security/identity/identity-manager.cpp \
   src/security/identity/identity-storage.cpp \
   src/security/identity/memory-identity-storage.cpp \
