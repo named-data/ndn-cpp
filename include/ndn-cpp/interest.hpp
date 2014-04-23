@@ -109,10 +109,10 @@ public:
   wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const 
   {
     size_t signedPortionBeginOffset, signedPortionEndOffset;
+    Blob encoding(wireFormat.encodeInterest(*this, &signedPortionBeginOffset, 
+                  &signedPortionEndOffset));
     return SignedBlob
-      (wireFormat.encodeInterest(*this, &signedPortionBeginOffset, 
-                                 &signedPortionEndOffset), 
-       signedPortionBeginOffset, signedPortionEndOffset);
+      (encoding, signedPortionBeginOffset, signedPortionEndOffset);
   }
   
   /**
