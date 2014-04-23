@@ -101,7 +101,6 @@ FilePrivateKeyStorage::generateKeyPair
 ptr_lib::shared_ptr<PublicKey> 
 FilePrivateKeyStorage::getPublicKey(const Name& keyName)
 {
-#if 0
   string keyURI = keyName.toUri();
 
   if (!doesKeyExist(keyName, KEY_CLASS_PUBLIC))
@@ -110,11 +109,11 @@ FilePrivateKeyStorage::getPublicKey(const Name& keyName)
   ifstream file(nameTransform(keyURI, ".pub").c_str());
   stringstream base64;
   base64 << file.rdbuf();
-
-  return PublicKey::fromDer(Blob(os.str().c_str(), os.str().size()));
-#else
-  throw runtime_error("FilePrivateKeyStorage::getPublicKey not implemented");
-#endif
+  
+  // Use a vector in a shared_ptr so we can make it a Blob without copying.
+  ptr_lib::shared_ptr<vector<uint8_t> > der(new vector<uint8_t>());
+  fromBase64(base64.str(), *der);
+  return PublicKey::fromDer(Blob(der));
 }
 
 Blob 
