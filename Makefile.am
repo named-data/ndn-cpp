@@ -139,6 +139,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/publisher-public-key-digest.cpp \
   src/signature.cpp \
   src/sha256-with-rsa-signature.cpp \
+  src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
   src/encoding/binary-xml-wire-format.cpp \

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 #include "../../c/util/crypto.h"
+#include "../../encoding/base64.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 

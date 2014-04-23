@@ -203,7 +203,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/meta-info.lo src/name.lo src/node.lo \
 	src/control-parameters.lo src/publisher-public-key-digest.lo \
 	src/signature.lo src/sha256-with-rsa-signature.lo \
-	src/encoding/binary-xml-wire-format.lo \
+	src/encoding/base64.lo src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
 	src/encoding/tlv-0_1a2-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
@@ -730,6 +730,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/publisher-public-key-digest.cpp \
   src/signature.cpp \
   src/sha256-with-rsa-signature.cpp \
+  src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
   src/encoding/binary-xml-wire-format.cpp \
@@ -994,6 +995,8 @@ src/encoding/$(am__dirstamp):
 src/encoding/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/encoding/$(DEPDIR)
 	@: > src/encoding/$(DEPDIR)/$(am__dirstamp)
+src/encoding/base64.lo: src/encoding/$(am__dirstamp) \
+	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/binary-xml-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/element-listener.lo: src/encoding/$(am__dirstamp) \
@@ -1293,6 +1296,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ndn_memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ndn_realloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/time.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/binary-xml-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/element-listener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/oid.Plo@am__quote@
