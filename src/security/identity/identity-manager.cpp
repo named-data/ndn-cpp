@@ -20,6 +20,7 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
+#include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
 #include "../../util/logging.hpp"
 #include "../../c/util/time.h"
@@ -54,17 +55,16 @@ IdentityManager::IdentityManager()
 {
 }
 #else
-// TODO: Implement FilePrivateKeyStorage.
 IdentityManager::IdentityManager
   (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
 : identityStorage_(identityStorage), 
-  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
 {
 }
 
 IdentityManager::IdentityManager()
 : identityStorage_(ptr_lib::make_shared<BasicIdentityStorage>()), 
-  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
 {
 }
 #endif
@@ -86,17 +86,16 @@ IdentityManager::IdentityManager()
 {
 }
 #else
-// TODO: Implement FilePrivateKeyStorage.
 IdentityManager::IdentityManager
   (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
 : identityStorage_(identityStorage), 
-  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
 {
 }
 
 IdentityManager::IdentityManager()
 : identityStorage_(ptr_lib::shared_ptr<IdentityStorage>()), 
-  privateKeyStorage_(ptr_lib::shared_ptr<PrivateKeyStorage>())
+  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
 {
 }
 #endif
