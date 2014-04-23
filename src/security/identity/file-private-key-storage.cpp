@@ -121,9 +121,44 @@ FilePrivateKeyStorage::sign
   (const uint8_t *data, size_t dataLength, const Name& keyName, 
    DigestAlgorithm digestAlgorithm)
 {
-#if 1
-  throw runtime_error("FilePrivateKeyStorage::sign not implemented");
-#endif
+  string keyURI = keyName.toUri();
+
+  if (!doesKeyExist(keyName, KEY_CLASS_PRIVATE))
+    throw SecurityException
+      ("FilePrivateKeyStorage::sign: private key doesn't exist");
+
+  if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
+    throw SecurityException
+      ("FilePrivateKeyStorage::sign: Unsupported digest algorithm");
+  
+  // Read the private key.
+  ifstream file(nameTransform(keyURI, ".pri").c_str());
+  stringstream base64;
+  base64 << file.rdbuf();
+  vector<uint8_t> der;
+  fromBase64(base64.str(), der);
+  // Use a temporary pointer since d2i updates it.
+  const uint8_t* derPointer = (const uint8_t*)&der[0];
+  rsa_st* privateKey = d2i_RSAPrivateKey(NULL, &derPointer, der.size());
+  if (!privateKey)
+    throw SecurityException
+      ("FilePrivateKeyStorage::sign: Error decoding private key DER");
+
+  // Sign.
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256(data, dataLength, digest);
+  // TODO: use RSA_size to get the proper size of the signature buffer.
+  uint8_t signatureBits[1000];
+  unsigned int signatureBitsLength;
+  int success = RSA_sign
+    (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength, 
+     privateKey);
+  // Free the private key before checking for success.
+  RSA_free(privateKey);
+  if (!success)
+    throw SecurityException("FilePrivateKeyStorage::sign: Error in RSA_sign");
+  
+  return Blob(signatureBits, (size_t)signatureBitsLength);
 }
 
 Blob 
