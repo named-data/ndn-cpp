@@ -12,6 +12,7 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #if 1 // Temporary until we move code from sign(Interest)
+#include <stdexcept>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../encoding/tlv-encoder.hpp"
 #include "../c/encoding/tlv/tlv-signature-info.h"
