@@ -108,7 +108,7 @@ BasicIdentityStorage::BasicIdentityStorage()
   if (res != SQLITE_OK)
     throw SecurityException("identity DB cannot be opened/created");
   
-  //Check if Key table exists;
+  //Check if ID table exists.
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT name FROM sqlite_master WHERE type='table' And name='Identity'", -1, &statement, 0);
   res = sqlite3_step(statement);
