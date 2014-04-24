@@ -234,16 +234,16 @@ BasicIdentityStorage::doesKeyExist(const Name& keyName)
 
   int res = sqlite3_step(statement);
 
-  bool keyIdExist = false;
+  bool keyIdExists = false;
   if (res == SQLITE_ROW) {
     int countAll = sqlite3_column_int(statement, 0);
     if (countAll > 0)
-      keyIdExist = true;
+      keyIdExists = true;
   }
  
   sqlite3_finalize(statement);
 
-  return keyIdExist;
+  return keyIdExists;
 }
 
 void
@@ -340,16 +340,16 @@ BasicIdentityStorage::doesCertificateExist(const Name& certificateName)
 
   int res = sqlite3_step(statement);
 
-  bool certExist = false;
+  bool certExists = false;
   if (res == SQLITE_ROW) {
     int countAll = sqlite3_column_int(statement, 0);
     if (countAll > 0)
-      certExist = true;
+      certExists = true;
   }
  
   sqlite3_finalize(statement);
   
-  return certExist;
+  return certExists;
 }
 
 void
@@ -399,7 +399,7 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   if (!doesKeyExist(keyName))
     throw SecurityException("No corresponding Key record for certificate!" + keyName.toUri() + " " + certificateName.toUri());
 
-  // Check if certificate has already existed!
+  // Check if certificate already exists!
   if (doesCertificateExist(certificateName))
     throw SecurityException("Certificate has already been installed!");
 
