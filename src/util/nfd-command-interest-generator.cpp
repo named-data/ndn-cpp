@@ -30,7 +30,7 @@ NfdCommandInterestGenerator::generate
     timestamp += 1.0;
 
   interest.getName().append
-    (Name::Component::fromNumber(ndn_getNowMilliseconds()));
+    (Name::Component::fromNumber(timestamp));
   uint8_t randomBuffer[8];
   ndn_generateRandomBytes(randomBuffer, sizeof(randomBuffer));
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
