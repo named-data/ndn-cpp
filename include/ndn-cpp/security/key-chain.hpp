@@ -94,8 +94,10 @@ public:
   /**
    * Generate a pair of RSA keys for the specified identity.
    * @param identityName The name of the identity.
-   * @param isKsk true for generating a Key-Signing-Key (KSK), false for a Data-Signing-Key (KSK).
-   * @param keySize The size of the key.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
    * @return The generated key name.
    */
   Name
@@ -107,7 +109,8 @@ public:
   /**
    * Set a key as the default key of an identity.
    * @param keyName The name of the key.
-   * @param identityName the name of the identity. If not specified, the identity name is inferred from the keyName.
+   * @param identityName (optional) the name of the identity. If not specified, 
+   * the identity name is inferred from the keyName.
    */
   void
   setDefaultKeyForIdentity(const Name& keyName, const Name& identityName = Name())
@@ -118,8 +121,10 @@ public:
   /**
    * Generate a pair of RSA keys for the specified identity and set it as default key for the identity.
    * @param identityName The name of the identity.
-   * @param isKsk true for generating a Key-Signing-Key (KSK), false for a Data-Signing-Key (KSK).
-   * @param keySize The size of the key.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
    * @return The generated key name.
    */
   Name
@@ -151,7 +156,7 @@ public:
 
   /**
    * Set the certificate as the default for its corresponding key.
-   * @param certificateName The certificate.
+   * @param certificate The certificate.
    */
   void
   setDefaultCertificateForKey(const IdentityCertificate& certificate)
@@ -162,7 +167,7 @@ public:
   /**
    * Get a certificate with the specified name.
    * @param certificateName The name of the requested certificate.
-   * @return the requested certificate which is valid.
+   * @return The requested certificate which is valid.
    */
   ptr_lib::shared_ptr<Certificate>
   getCertificate(const Name& certificateName)
@@ -173,7 +178,7 @@ public:
   /**
    * Get a certificate even if the certificate is not valid anymore.
    * @param certificateName The name of the requested certificate.
-   * @return the requested certificate.
+   * @return The requested certificate.
    */
   ptr_lib::shared_ptr<Certificate>
   getAnyCertificate(const Name& certificateName)
@@ -184,7 +189,7 @@ public:
   /**
    * Get an identity certificate with the specified name.
    * @param certificateName The name of the requested certificate.
-   * @return the requested certificate which is valid.
+   * @return The requested certificate which is valid.
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   getIdentityCertificate(const Name& certificateName)
@@ -195,7 +200,7 @@ public:
   /**
    * Get an identity certificate even if the certificate is not valid anymore.
    * @param certificateName The name of the requested certificate.
-   * @return the requested certificate.
+   * @return The requested certificate.
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   getAnyIdentityCertificate(const Name& certificateName)
@@ -204,8 +209,8 @@ public:
   }
 
   /**
-   * Revoke a key
-   * @param keyName the name of the key that will be revoked
+   * Revoke a key.
+   * @param keyName The name of the key that will be revoked.
    */
   void 
   revokeKey(const Name & keyName)
@@ -214,8 +219,8 @@ public:
   }
 
   /**
-   * Revoke a certificate
-   * @param certificateName the name of the certificate that will be revoked
+   * Revoke a certificate.
+   * @param certificateName The name of the certificate that will be revoked.
    */
   void 
   revokeCertificate(const Name & certificateName)
@@ -223,6 +228,10 @@ public:
     //TODO: Implement
   }
 
+  /**
+   * Get the identity manager given to or created by the constructor.
+   * @return The identity manager.
+   */
   ptr_lib::shared_ptr<IdentityManager>
   getIdentityManager() { return identityManager_; }
   
@@ -230,6 +239,10 @@ public:
    *           Policy Management           *
    *****************************************/
 
+  /**
+   * Get the policy manager given to or created by the constructor.
+   * @return The policy manager.
+   */
   const ptr_lib::shared_ptr<PolicyManager>&
   getPolicyManager() { return policyManager_; }
   
@@ -241,7 +254,7 @@ public:
    * Wire encode the Data object, sign it and set its signature.
    * @param data The Data object to be signed.  This updates its signature and key locator field and wireEncoding.
    * @param certificateName The certificate name of the key to use for signing.
-   * @param wireFormat A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
+   * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void 
   sign(Data& data, const Name& certificateName, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -249,10 +262,10 @@ public:
   /**
    * Append a SignatureInfo to the Interest name, sign the name components and
    * append a final name component with the signature bits.
-   * @param interest The Interest object to be signed. This appends a name
+   * @param interest The Interest object to be signed. This appends name
    * components of SignatureInfo and the signature bits.
    * @param certificateName The certificate name of the key to use for signing.
-   * @param wireFormat A WireFormat object used to encode the input. If omitted, 
+   * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted, 
    * use WireFormat getDefaultWireFormat().
    */
   void 
@@ -285,8 +298,8 @@ public:
   /**
    * Wire encode the Data object, sign it and set its signature.
    * @param data The Data object to be signed.  This updates its signature and key locator field and wireEncoding.
-   * @param identityName The identity name for the key to use for signing.  If omitted, infer the signing identity from the data packet name.
-   * @param wireFormat A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
+   * @param identityName (optional) The identity name for the key to use for signing.  If omitted, infer the signing identity from the data packet name.
+   * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void 
   signByIdentity(Data& data, const Name& identityName = Name(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -345,9 +358,12 @@ public:
    * @param keyName The name of the encrypting key.
    * @param data The byte array that will be encrypted.
    * @param dataLength The length of data.
-   * @param useSymmetric If true then symmetric encryption is used, otherwise asymmetric encryption is used.
-   * @param encryptMode the encryption mode
-   * @return the encrypted data as an immutable Blob.
+   * @param useSymmetric (optional) If true then symmetric encryption is used, 
+   * otherwise asymmetric encryption is used. If omitted, use symmetric 
+   * encryption.
+   * @param encryptMode (optional) The encryption mode. If omitted, use
+   * ENCRYPT_MODE_DEFAULT.
+   * @return The encrypted data as an immutable Blob.
    */
   Blob
   encrypt(const Name &keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = true, 
@@ -361,9 +377,11 @@ public:
    * @param keyName The name of the decrypting key.
    * @param data The byte array that will be decrypted.
    * @param dataLength The length of data.
-   * @param useSymmetric If true then symmetric encryption is used, otherwise asymmetric encryption is used.
-   * @param encryptMode the encryption mode
-   * @return the decrypted data as an immutable Blob.
+   * @param useSymmetric (optional) If true then symmetric encryption is used, 
+   * otherwise asymmetric encryption is used. If omitted, use symmetric 
+   * encryption.
+   * @param encryptMode (optional) The encryption mode. If omitted, use
+   * @return The decrypted data as an immutable Blob.
    */
   Blob
   decrypt(const Name &keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = true, 
