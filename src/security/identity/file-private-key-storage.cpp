@@ -83,9 +83,9 @@ FilePrivateKeyStorage::FilePrivateKeyStorage()
     // Strip the ending '/'.
     homeDir.erase(homeDir.size() - 1);
   
-  keystorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";
+  keyStorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";
   // TODO: Handle non-unix file systems which don't have "mkdir -p".
-  ::system(("mkdir -p " + keystorePath_).c_str());
+  ::system(("mkdir -p " + keyStorePath_).c_str());
 }
 
 FilePrivateKeyStorage::~FilePrivateKeyStorage()
@@ -225,7 +225,7 @@ FilePrivateKeyStorage::nameTransform
   trim(digest);
   std::replace(digest.begin(), digest.end(), '/', '%');
 
-  return keystorePath_ + "/" + digest + extension;
+  return keyStorePath_ + "/" + digest + extension;
 }
 
 }

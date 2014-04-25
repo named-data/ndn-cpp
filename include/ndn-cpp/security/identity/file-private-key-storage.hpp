@@ -102,7 +102,7 @@ private:
   std::string
   nameTransform(const std::string& keyName, const std::string& extension);
 
-  std::string keystorePath_;
+  std::string keyStorePath_;
 };
 
 }
