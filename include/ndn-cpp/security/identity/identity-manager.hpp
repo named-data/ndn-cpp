@@ -69,8 +69,10 @@ public:
   /**
    * Generate a pair of RSA keys for the specified identity.
    * @param identityName The name of the identity.
-   * @param isKsk true for generating a Key-Signing-Key (KSK), false for a Data-Signing-Key (KSK).
-   * @param keySize The size of the key.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
    * @return The generated key name.
    */
   Name
@@ -79,7 +81,8 @@ public:
   /**
    * Set a key as the default key of an identity.
    * @param keyName The name of the key.
-   * @param identityName the name of the identity. If not specified, the identity name is inferred from the keyName.
+   * @param identityName (optional) the name of the identity. If not specified, 
+   * the identity name is inferred from the keyName.
    */
   void
   setDefaultKeyForIdentity(const Name& keyName, const Name& identityName = Name())
@@ -89,12 +92,12 @@ public:
 
   /**
    * Get the default key for an identity.
-   * @param identityName the name of the identity. If omitted, the identity name is inferred from the keyName.
+   * @param identityName The name of the identity.
    * @return The default key name.
    * @throw SecurityException if the default key name for the identity is not set.
    */
   Name
-  getDefaultKeyNameForIdentity(const Name& identityName = Name())
+  getDefaultKeyNameForIdentity(const Name& identityName)
   {
     return identityStorage_->getDefaultKeyNameForIdentity(identityName);
   }
@@ -102,8 +105,10 @@ public:
   /**
    * Generate a pair of RSA keys for the specified identity and set it as default key for the identity.
    * @param identityName The name of the identity.
-   * @param isKsk true for generating a Key-Signing-Key (KSK), false for a Data-Signing-Key (KSK).
-   * @param keySize The size of the key.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
    * @return The generated key name.
    */
   Name
