@@ -57,12 +57,13 @@ encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
          (encoder, ndn_Tlv_ControlParameters_Flags, flags)))
       return error;    
   }
+  
+  // TODO: Encode Strategy.
+
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
        (encoder, ndn_Tlv_ControlParameters_ExpirationPeriod, 
         controlParameters->expirationPeriod)))
     return error;
-  
-  // TODO: Encode Strategy.
   
   return NDN_ERROR_success;  
 }
