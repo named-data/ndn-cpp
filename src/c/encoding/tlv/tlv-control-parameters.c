@@ -49,9 +49,9 @@ encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
   
   struct ndn_ForwardingFlags defaultFlags;
   ndn_ForwardingFlags_initialize(&defaultFlags);
-  int flags = ndn_ForwardingFlags_getForwardingEntryFlags(&defaultFlags);
-  if (ndn_ForwardingFlags_getForwardingEntryFlags
-      (&controlParameters->flags) != flags) {
+  int flags = ndn_ForwardingFlags_getNfdForwardingFlags
+    (&controlParameters->flags);
+  if (flags != ndn_ForwardingFlags_getNfdForwardingFlags(&defaultFlags)) {
     // The flags are not the default value.
     if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
          (encoder, ndn_Tlv_ControlParameters_Flags, flags)))
