@@ -128,7 +128,7 @@ public:
    * must remain valid for the life of this Face. You must create the KeyChain
    * object and pass it in. You can create a default KeyChain for your
    * system with the default KeyChain constructor.
-   * @param certificateName The certificate name for signing interest.
+   * @param certificateName The certificate name for signing interests.
    * This makes a copy of the Name. You can get the default certificate name
    * with keyChain.getDefaultCertificateName() .
    */
