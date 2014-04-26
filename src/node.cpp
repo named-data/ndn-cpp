@@ -159,7 +159,8 @@ Node::registerPrefix
   // Get the registeredPrefixId now so we can return it to the caller.
   uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
 
-  if (!&commandKeyChain) {
+  // If we have an _ndndId, we know we already connected to NDNx.
+  if (ndndId_.size() != 0 || !&commandKeyChain) {
     // Assume we are connected to a legacy NDNx server.
     
     if (ndndId_.size() == 0) {
@@ -173,7 +174,8 @@ Node::registerPrefix
     }
     else
       registerPrefixHelper
-        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed, flags, wireFormat);
+        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), 
+         onInterest, onRegisterFailed, flags, wireFormat);
   }
   else
     // The application set the KeyChain for signing NFD interests.
@@ -213,8 +215,8 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
   // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
   info_->node_.ndndId_ = Blob(digest, sizeof(digest));
   info_->node_.registerPrefixHelper
-    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, info_->flags_, 
-     info_->wireFormat_);
+    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, 
+     info_->onRegisterFailed_, info_->flags_, info_->wireFormat_);
 }
 
 void 
@@ -269,13 +271,39 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
 void 
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
-  // Timeout.
-  info_->onRegisterFailed_(info_->prefix_);
+  if (info_->isNfdCommand_) {
+    // The application set the commandKeyChain, but we may be connected to NDNx.
+    if (info_->node_.ndndId_.size() == 0) {
+      // First fetch the ndndId of the connected hub.
+      // Pass 0 for registeredPrefixId since the entry was already added to
+      //   registeredPrefixTable_ on the first try.
+      NdndIdFetcher fetcher
+        (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
+          (&info_->node_, 0, *info_->prefix_, info_->onInterest_, 
+           info_->onRegisterFailed_, info_->flags_, info_->wireFormat_)));
+      // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
+      // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
+      info_->node_.expressInterest
+        (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher, 
+         info_->wireFormat_);
+    }
+    else
+      // Pass 0 for registeredPrefixId since the entry was already added to
+      //   registeredPrefixTable_ on the first try.
+      info_->node_.registerPrefixHelper
+        (0, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, 
+         info_->flags_, info_->wireFormat_);
+  }
+  else
+    // An NDNx command was sent because there is no commandKeyChain, so we
+    //   can't try an NFD command. Fail.
+    info_->onRegisterFailed_(info_->prefix_);
 }
 
 void 
 Node::registerPrefixHelper
-  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
+   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   // Create a ForwardingEntry.
@@ -308,12 +336,15 @@ Node::registerPrefixHelper
   interest.setInterestLifetimeMilliseconds(4000.0);
   interest.setScope(1);
   
-  // Save the onInterest callback and send the registration interest.
-  registeredPrefixTable_.push_back(ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
+  if (registeredPrefixId != 0)
+    // Save the onInterest callback and send the registration interest.
+    registeredPrefixTable_.push_back
+      (ptr_lib::shared_ptr<RegisteredPrefix>
+       (new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
   
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed, false, true)));
+     (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(interest, response, response, wireFormat);
@@ -345,14 +376,16 @@ Node::nfdRegisterPrefix
   // The interest is answered by the local host, so set a short timeout.
   commandInterest.setInterestLifetimeMilliseconds(1000.0);
 
-  // Save the onInterest callback and send the registration interest.
-  registeredPrefixTable_.push_back
-    (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
-      (registeredPrefixId, prefix, onInterest)));
+  if (registeredPrefixId != 0)
+    // Save the onInterest callback and send the registration interest.
+    registeredPrefixTable_.push_back
+      (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
+        (registeredPrefixId, prefix, onInterest)));
 
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed, true, true)));
+     (this, prefix, onInterest, onRegisterFailed, flags, *TlvWireFormat::get(), 
+      true)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(commandInterest, response, response, *TlvWireFormat::get());

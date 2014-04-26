@@ -304,18 +304,24 @@ private:
     
     class Info {
     public:
-      Info(const ptr_lib::shared_ptr<const Name>& prefix, 
-           const OnRegisterFailed& onRegisterFailed, bool isNfdCommand,
-           bool isFirstAttempt)
-      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), 
-        isNfdCommand_(isNfdCommand), isFirstAttempt_(isFirstAttempt)
+      Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
+           const OnInterest& onInterest,
+           const OnRegisterFailed& onRegisterFailed, 
+           const ForwardingFlags& flags, WireFormat& wireFormat, 
+           bool isNfdCommand)
+      : node_(*node), prefix_(prefix), onInterest_(onInterest),
+        onRegisterFailed_(onRegisterFailed), flags_(flags), 
+        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand)
       {      
       }
       
+      Node& node_;
       ptr_lib::shared_ptr<const Name> prefix_;
+      const OnInterest onInterest_;
       const OnRegisterFailed onRegisterFailed_;
+      ForwardingFlags flags_;
+      WireFormat& wireFormat_;
       bool isNfdCommand_;
-      bool isFirstAttempt_;
     };
     
   private:
@@ -344,9 +350,11 @@ private:
   getEntryForRegisteredPrefix(const Name& name);
 
   /**
-   * Do the work of registerPrefix once we know we are connected with an ndndId_.
+   * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
    * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
-   *   which registerPrefix got so it could return it to the caller.
+   * which registerPrefix got so it could return it to the caller. If this
+   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
+   * been done).  
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
@@ -355,9 +363,23 @@ private:
    */  
   void 
   registerPrefixHelper
-    (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest, 
-     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat);
+    (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
+     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+     const ForwardingFlags& flags, WireFormat& wireFormat);
 
+  /**
+   * Do the work of registerPrefix to register with NFD.
+   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
+   * which registerPrefix got so it could return it to the caller. If this
+   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
+   * been done).  
+   * @param prefix
+   * @param onInterest
+   * @param onRegisterFailed
+   * @param flags
+   * @param commandKeyChain
+   * @param commandCertificateName
+   */
   void
   nfdRegisterPrefix
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
