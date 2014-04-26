@@ -156,7 +156,8 @@ public:
    * matching interest is received. If you have not called setCommandSigningInfo,
    * this assumes you are connecting to NDNx. If you have called
    * setCommandSigningInfo, this first sends an NFD registration request, and if 
-   * that times out then this sends an NDNx registration request.
+   * that times out then this sends an NDNx registration request. If need to 
+   * register a prefix with NFD, you must first call setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
