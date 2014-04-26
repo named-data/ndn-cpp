@@ -153,8 +153,10 @@ public:
   
   /**
    * Register prefix with the connected NDN hub and call onInterest when a 
-   * matching interest is received. Make sure you have called 
-   * setCommandSigningInfo.
+   * matching interest is received. If you have not called setCommandSigningInfo,
+   * this assumes you are connecting to NDNx. If you have called
+   * setCommandSigningInfo, this first sends an NFD registration request, and if 
+   * that times out then this sends an NDNx registration request.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
