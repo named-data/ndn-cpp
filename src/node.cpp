@@ -296,7 +296,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
   }
   else
     // An NDNx command was sent because there is no commandKeyChain, so we
-    //   can't try an NFD command. Fail.
+    //   can't try an NFD command. Or it was sent from this callback after 
+    //   trying an NFD command. Fail.
     info_->onRegisterFailed_(info_->prefix_);
 }
 
