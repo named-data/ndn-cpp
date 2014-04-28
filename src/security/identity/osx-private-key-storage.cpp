@@ -49,7 +49,7 @@ namespace ndn
                                                              &kCFTypeDictionaryKeyCallBacks,
                                                              NULL);
 
-    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getAsymKeyType(keyType));
+    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getAsymmetricKeyType(keyType));
     CFDictionaryAddValue(attrDict, kSecAttrKeySizeInBits, CFNumberCreate(NULL, kCFNumberIntType, &keySize));
     CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
 
@@ -82,7 +82,7 @@ namespace ndn
                                                      keyNameUri.c_str(), 
                                                      kCFStringEncodingUTF8);
 
-    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getSymKeyType(keyType));
+    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getSymmetricKeyType(keyType));
     CFDictionaryAddValue(attrDict, kSecAttrKeySizeInBits, CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &keySize));
     CFDictionaryAddValue(attrDict, kSecAttrIsPermanent, kCFBooleanTrue);
     CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
@@ -401,7 +401,7 @@ namespace ndn
       return keyUri;
   }
 
-  const CFTypeRef OSXPrivateKeyStorage::getAsymKeyType(KeyType keyType)
+  const CFTypeRef OSXPrivateKeyStorage::getAsymmetricKeyType(KeyType keyType)
   {
     switch(keyType){
     case KEY_TYPE_RSA:
@@ -412,7 +412,7 @@ namespace ndn
     }
   }
 
-  const CFTypeRef OSXPrivateKeyStorage::getSymKeyType(KeyType keyType)
+  const CFTypeRef OSXPrivateKeyStorage::getSymmetricKeyType(KeyType keyType)
   {
     switch(keyType){
     case KEY_TYPE_AES:
@@ -438,9 +438,9 @@ namespace ndn
     }
   }
 
-  const CFStringRef OSXPrivateKeyStorage::getDigestAlgorithm(DigestAlgorithm digestAlgo)
+  const CFStringRef OSXPrivateKeyStorage::getDigestAlgorithm(DigestAlgorithm digestAlgorithm)
   {
-    switch(digestAlgo){
+    switch(digestAlgorithm){
     // case DIGEST_MD2:
     //   return kSecDigestMD2;
     // case DIGEST_MD5:

@@ -150,7 +150,7 @@ public:
    * @returns MAC OS key type
    */
   const CFTypeRef 
-  getSymKeyType(KeyType keyType);
+  getSymmetricKeyType(KeyType keyType);
 
   /**
    * convert keyType to MAC OS asymmetirc key type
@@ -158,7 +158,7 @@ public:
    * @returns MAC OS key type
    */
   const CFTypeRef 
-  getAsymKeyType(KeyType keyType);
+  getAsymmetricKeyType(KeyType keyType);
 
   /**
    * convert keyClass to MAC OS key class
@@ -169,12 +169,12 @@ public:
   getKeyClass(KeyClass keyClass);
 
   /**
-   * convert digestAlgo to MAC OS algorithm id
-   * @param digestAlgo
+   * convert digestAlgorithm to MAC OS algorithm id
+   * @param digestAlgorithm
    * @returns MAC OS algorithm id
    */
   const CFStringRef 
-  getDigestAlgorithm(DigestAlgorithm digestAlgo);
+  getDigestAlgorithm(DigestAlgorithm digestAlgorithm);
 
   /**
    * get the digest size of the corresponding algorithm
