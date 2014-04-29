@@ -44,7 +44,7 @@ public:
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onDataNotFound (optional) A function object to call to forward the
    * OnInterest message when a data packet is not found in the cache. 
-   * If onDataNotFound is an empty OnTimeout(), this does not use it.
+   * If onDataNotFound is an empty OnInterest(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as 
    * appropriate.
    * @param flags (optional) See Face::registerPrefix.
