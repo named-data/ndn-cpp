@@ -139,7 +139,8 @@ public:
    * Get key
    * @param keyName the name of the key
    * @param keyClass the class of the key
-   * @returns pointer to the key
+   * @returns 0 if not found,  otherwise a Keychain ref to the key. You 
+   * must use CFRelease to free it.
    */
   SecKeychainItemRef 
   getKey(const Name & keyName, KeyClass keyClass);
