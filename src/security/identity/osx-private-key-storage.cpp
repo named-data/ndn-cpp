@@ -273,55 +273,6 @@ namespace ndn
 #endif
   }
 
-  bool OSXPrivateKeyStorage::verifyData(const Name & keyName, const Blob & pData, const Blob & pSig, DigestAlgorithm digestAlgo)
-  {
-    throw SecurityException("OSXPrivateKeyStorage::verifyData is not supported");
-#if 0
-    _LOG_TRACE("OSXPrivateKeyStorage::Verify");
-    
-    CFDataRef dataRef = CFDataCreate(NULL,
-                                      reinterpret_cast<const unsigned char*>(pData.buf()),
-                                      pData.size());
-
-    CFDataRef sigRef = CFDataCreate(NULL,
-                                     reinterpret_cast<const unsigned char*>(pSig.buf()),
-                                     pSig.size());
-
-    SecKeyRef publicKey = (SecKeyRef)getKey(keyName, KEY_CLASS_PUBLIC);
-    
-    CFErrorRef error;
-    SecTransformRef verifier = SecVerifyTransformCreate(publicKey, sigRef, &error);
-    if (error) throw SecurityException("Fail to create verifier");
-    
-    Boolean set_res = SecTransformSetAttribute(verifier,
-                                               kSecTransformInputAttributeName,
-                                               dataRef,
-                                               &error);
-    if (error) throw SecurityException("Fail to configure input of verifier");
-
-    set_res = SecTransformSetAttribute(verifier,
-                                       kSecDigestTypeAttribute,
-                                       getDigestAlgorithm(digestAlgo),
-                                       &error);
-    if (error) throw SecurityException("Fail to configure digest algorithm of verifier");
-
-    long digestSize = getDigestSize(digestAlgo);
-    set_res = SecTransformSetAttribute(verifier,
-                                       kSecDigestLengthAttribute,
-                                       CFNumberCreate(NULL, kCFNumberLongType, &digestSize),
-                                       &error);
-    if (error) throw SecurityException("Fail to configure digest size of verifier");
-
-    CFBooleanRef result = (CFBooleanRef) SecTransformExecute(verifier, &error);
-    if (error) throw SecurityException("Fail to verify data");
-
-    if (result == kCFBooleanTrue)
-      return true;
-    else
-      return false;
-#endif
-  }
-
   Blob OSXPrivateKeyStorage::encrypt(const Name & keyName, const uint8_t* data, size_t dataLength, bool sym)
   {
     throw SecurityException("OSXPrivateKeyStorage::encrypt is not supported");
