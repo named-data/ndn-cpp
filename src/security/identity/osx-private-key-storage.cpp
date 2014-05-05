@@ -38,25 +38,24 @@ namespace ndn
 
     string keyNameUri = toInternalKeyName(keyName, KEY_CLASS_PUBLIC);
 
-    SecKeyRef publicKey, privateKey;
-
-    CFStringRef keyLabel = CFStringCreateWithCString(NULL, 
+    CFReleaser<CFStringRef> keyLabel = CFStringCreateWithCString(NULL, 
                                                      keyNameUri.c_str(), 
                                                      kCFStringEncodingUTF8);
     
-    CFMutableDictionaryRef attrDict = CFDictionaryCreateMutable(NULL,
+    CFReleaser<CFMutableDictionaryRef> attrDict = CFDictionaryCreateMutable(NULL,
                                                              3,
                                                              &kCFTypeDictionaryKeyCallBacks,
                                                              NULL);
 
-    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getAsymmetricKeyType(keyType));
-    CFDictionaryAddValue(attrDict, kSecAttrKeySizeInBits, CFNumberCreate(NULL, kCFNumberIntType, &keySize));
-    CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
+    CFReleaser<CFNumberRef> cfKeySize = CFNumberCreate(0, kCFNumberIntType, &keySize);
 
-    OSStatus res = SecKeyGeneratePair((CFDictionaryRef)attrDict, &publicKey, &privateKey);
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyType, getAsymmetricKeyType(keyType));
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeySizeInBits, cfKeySize.get());
+    CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
 
-    CFRelease(publicKey);
-    CFRelease(privateKey);
+    CFReleaser<SecKeyRef> publicKey, privateKey;
+    OSStatus res = SecKeyGeneratePair((CFDictionaryRef)attrDict.get(),
+                                      &publicKey.get(), &privateKey.get());
 
     if (res != errSecSuccess){
       _LOG_DEBUG("Fail to create a key pair: " << res);
@@ -67,49 +66,56 @@ namespace ndn
   void 
   OSXPrivateKeyStorage::generateKey(const Name & keyName, KeyType keyType, int keySize)
   {
-
+    throw SecurityException("OSXPrivateKeyStorage::generateKey is not supported");
+#if 0
     if(doesKeyExist(keyName, KEY_CLASS_SYMMETRIC))
         throw SecurityException("keyName has existed!");
 
     string keyNameUri =  toInternalKeyName(keyName, KEY_CLASS_SYMMETRIC);
 
-    CFMutableDictionaryRef attrDict = CFDictionaryCreateMutable(kCFAllocatorDefault,
+    CFReleaser<CFMutableDictionaryRef> attrDict = CFDictionaryCreateMutable(kCFAllocatorDefault,
                                                                 0,
                                                                 &kCFTypeDictionaryKeyCallBacks,
                                                                 &kCFTypeDictionaryValueCallBacks);
 
-    CFStringRef keyLabel = CFStringCreateWithCString(NULL, 
+    CFReleaser<CFStringRef> keyLabel = CFStringCreateWithCString(NULL, 
                                                      keyNameUri.c_str(), 
                                                      kCFStringEncodingUTF8);
 
-    CFDictionaryAddValue(attrDict, kSecAttrKeyType, getSymmetricKeyType(keyType));
-    CFDictionaryAddValue(attrDict, kSecAttrKeySizeInBits, CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &keySize));
-    CFDictionaryAddValue(attrDict, kSecAttrIsPermanent, kCFBooleanTrue);
-    CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
+    CFReleaser<CFNumberRef> cfKeySize = CFNumberCreate(0, kCFNumberIntType, &keySize);
+    
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyType, getSymmetricKeyType(keyType));
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeySizeInBits, cfKeySize.get());
+    CFDictionaryAddValue(attrDict.get(), kSecAttrIsPermanent, kCFBooleanTrue);
+    CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
 
-    CFErrorRef error = NULL;
+    CFReleaser<CFErrorRef> error = NULL;
 
-    SecKeyRef symmetricKey = SecKeyGenerateSymmetric(attrDict, &error);
+    SecKeyRef symmetricKey = SecKeyGenerateSymmetric(attrDict.get(), &error.get());
 
-    if (error) 
+    if (error.get() != 0) 
         throw SecurityException("Fail to create a symmetric key");
+#endif
   }
 
   ptr_lib::shared_ptr<PublicKey> OSXPrivateKeyStorage::getPublicKey(const Name & keyName)
   {
     _LOG_TRACE("OSXPrivateKeyStorage::getPublickey");
 
-    SecKeychainItemRef publicKey = getKey(keyName, KEY_CLASS_PUBLIC);
+    CFReleaser<SecKeychainItemRef> publicKey = getKey(keyName, KEY_CLASS_PUBLIC);
+    if (publicKey.get() == 0)
+      throw SecurityException("The requested public key [" + keyName.toUri() + "] does not exist in the OSX Keychain");
 
-    CFDataRef exportedKey;
-
-    OSStatus res = SecItemExport(publicKey,
+    CFReleaser<CFDataRef> exportedKey;
+    OSStatus res = SecItemExport(publicKey.get(),
                                   kSecFormatOpenSSL,
                                   0,
                                   NULL,
-                                  &exportedKey);
+                                  &exportedKey.get());
+    if (res != errSecSuccess)
+      throw SecurityException("Cannot export the requested public key from the OSX Keychain");
     
-    Blob blob(CFDataGetBytePtr(exportedKey), CFDataGetLength(exportedKey));
+    Blob blob(CFDataGetBytePtr(exportedKey.get()), CFDataGetLength(exportedKey.get()));
 
     return PublicKey::fromDer(blob);
   }
@@ -118,50 +124,59 @@ namespace ndn
   {
     _LOG_TRACE("OSXPrivateKeyStorage::Sign");
     
-    CFDataRef dataRef = CFDataCreate(NULL,
-                                      reinterpret_cast<const unsigned char*>(data),
-                                      dataLength
-                                      );
-
-    SecKeyRef privateKey = (SecKeyRef)getKey(keyName, KEY_CLASS_PRIVATE);
+    CFReleaser<CFDataRef> dataRef = CFDataCreateWithBytesNoCopy(0,
+                                                                data,
+                                                                dataLength,
+                                                                kCFAllocatorNull);
+    CFReleaser<SecKeychainItemRef> privateKey = getKey(keyName, KEY_CLASS_PRIVATE);
+    if (privateKey.get() == 0)
+      throw SecurityException("The private key [" + keyName.toUri() + "] does not exist in the OSX Keychain");
     
-    CFErrorRef error;
-    SecTransformRef signer = SecSignTransformCreate((SecKeyRef)privateKey, &error);
-    if (error) throw SecurityException("Fail to create signer");
+    CFReleaser<CFErrorRef> error;
+    CFReleaser<SecTransformRef> signer = SecSignTransformCreate((SecKeyRef)privateKey.get(),
+                                                                &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to create signer");
     
-    Boolean set_res = SecTransformSetAttribute(signer,
+    Boolean set_res = SecTransformSetAttribute(signer.get(),
                                                kSecTransformInputAttributeName,
-                                               dataRef,
-                                               &error);
-    if (error) throw SecurityException("Fail to configure input of signer");
+                                               dataRef.get(),
+                                               &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to configure input of signer");
 
-    set_res = SecTransformSetAttribute(signer,
+    set_res = SecTransformSetAttribute(signer.get(),
                                        kSecDigestTypeAttribute,
                                        getDigestAlgorithm(digestAlgo),
-                                       &error);
-    if (error) throw SecurityException("Fail to configure digest algorithm of signer");
+                                       &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to configure digest algorithm of signer");
 
     long digestSize = getDigestSize(digestAlgo);
-
-    set_res = SecTransformSetAttribute(signer,
+    CFReleaser<CFNumberRef> cfDigestSize = CFNumberCreate(0, kCFNumberLongType, &digestSize);
+    set_res = SecTransformSetAttribute(signer.get(),
                                        kSecDigestLengthAttribute,
-                                       CFNumberCreate(NULL, kCFNumberLongType, &digestSize),
-                                       &error);
-    if (error) throw SecurityException("Fail to configure digest size of signer");
+                                       cfDigestSize.get(),
+                                       &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to configure digest size of signer");
 
-    CFDataRef signature = (CFDataRef) SecTransformExecute(signer, &error);
-    if (error) {
-      CFShow(error);
+    CFReleaser<CFDataRef> signature = (CFDataRef) SecTransformExecute(signer.get(), &error.get());
+    if (error.get() != 0) {
+      CFShow(error.get());
       throw SecurityException("Fail to sign data");
     }
 
-    if (!signature) throw SecurityException("Signature is NULL!\n");
+    if (signature.get() == 0) 
+      throw SecurityException("Signature is NULL!\n");
 
-    return Blob(CFDataGetBytePtr(signature), CFDataGetLength(signature));
+    return Blob(CFDataGetBytePtr(signature.get()), CFDataGetLength(signature.get()));
   }
 
   Blob OSXPrivateKeyStorage::decrypt(const Name & keyName, const uint8_t* data, size_t dataLength, bool sym)
   {
+    throw SecurityException("OSXPrivateKeyStorage::decrypt is not supported");
+#if 0
     _LOG_TRACE("OSXPrivateKeyStorage::Decrypt");
 
     KeyClass keyClass;
@@ -170,40 +185,46 @@ namespace ndn
     else
         keyClass = KEY_CLASS_PRIVATE;
 
-    CFDataRef dataRef = CFDataCreate(NULL,
+    CFReleaser<CFDataRef> dataRef = CFDataCreate(NULL,
                                       reinterpret_cast<const unsigned char*>(data),
                                       dataLength
                                       );
 
     // _LOG_DEBUG("CreateData");
     
-    SecKeyRef decryptKey = (SecKeyRef)getKey(keyName, keyClass);
+    CFReleaser<SecKeychainItemRef> decryptKey = getKey(keyName, keyClass);
 
     // _LOG_DEBUG("GetKey");
 
-    CFErrorRef error;
-    SecTransformRef decrypt = SecDecryptTransformCreate(decryptKey, &error);
-    if (error) throw SecurityException("Fail to create decrypt");
+    CFReleaser<CFErrorRef> error;
+    CFReleaser<SecTransformRef> decrypt = SecDecryptTransformCreate((SecKeyRef)decryptKey.get(), &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to create decrypt");
 
-    Boolean set_res = SecTransformSetAttribute(decrypt,
+    Boolean set_res = SecTransformSetAttribute(decrypt.get(),
                                                kSecTransformInputAttributeName,
-                                               dataRef,
-                                               &error);
-    if (error) throw SecurityException("Fail to configure decrypt");
+                                               dataRef.get(),
+                                               &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to configure decrypt");
 
-    CFDataRef output = (CFDataRef) SecTransformExecute(decrypt, &error);
-    if (error)
+    CFReleaser<CFDataRef> output = (CFDataRef) SecTransformExecute(decrypt.get(), &error.get());
+    if (error.get() != 0)
       {
-        CFShow(error);
+        CFShow(error.get());
         throw SecurityException("Fail to decrypt data");
       }
-    if (!output) throw SecurityException("Output is NULL!\n");
+    if (output.get() == 0) 
+      throw SecurityException("Output is NULL!\n");
 
-    return Blob(CFDataGetBytePtr(output), CFDataGetLength(output));
+    return Blob(CFDataGetBytePtr(output.get()), CFDataGetLength(output.get()));
+#endif
   }
   
   bool OSXPrivateKeyStorage::setACL(const Name & keyName, KeyClass keyClass, int acl, const string & appPath)
   {
+    throw SecurityException("OSXPrivateKeyStorage::setACL is not supported");
+#if 0
     SecKeychainItemRef privateKey = getKey(keyName, keyClass);
     
     SecAccessRef accRef;
@@ -249,10 +270,13 @@ namespace ndn
     acc_res = SecKeychainItemSetAccess(privateKey, accRef);
 
     return true;
+#endif
   }
 
   bool OSXPrivateKeyStorage::verifyData(const Name & keyName, const Blob & pData, const Blob & pSig, DigestAlgorithm digestAlgo)
   {
+    throw SecurityException("OSXPrivateKeyStorage::verifyData is not supported");
+#if 0
     _LOG_TRACE("OSXPrivateKeyStorage::Verify");
     
     CFDataRef dataRef = CFDataCreate(NULL,
@@ -295,10 +319,13 @@ namespace ndn
       return true;
     else
       return false;
+#endif
   }
 
   Blob OSXPrivateKeyStorage::encrypt(const Name & keyName, const uint8_t* data, size_t dataLength, bool sym)
   {
+    throw SecurityException("OSXPrivateKeyStorage::encrypt is not supported");
+#if 0
     _LOG_TRACE("OSXPrivateKeyStorage::Encrypt");
 
     KeyClass keyClass;
@@ -307,29 +334,34 @@ namespace ndn
     else
         keyClass = KEY_CLASS_PUBLIC;
     
-    CFDataRef dataRef = CFDataCreate(NULL,
+    CFReleaser<CFDataRef> dataRef = CFDataCreate(NULL,
                                       reinterpret_cast<const unsigned char*>(data),
                                       dataLength
                                       );
     
-    SecKeyRef encryptKey = (SecKeyRef)getKey(keyName, keyClass);
+    CFReleaser<SecKeychainItemRef> encryptKey = getKey(keyName, keyClass);
 
-    CFErrorRef error;
-    SecTransformRef encrypt = SecEncryptTransformCreate(encryptKey, &error);
-    if (error) throw SecurityException("Fail to create encrypt");
+    CFReleaser<CFErrorRef> error;
+    CFReleaser<SecTransformRef> encrypt = SecEncryptTransformCreate((SecKeyRef)encryptKey.get(), &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to create encrypt");
 
-    Boolean set_res = SecTransformSetAttribute(encrypt,
+    Boolean set_res = SecTransformSetAttribute(encrypt.get(),
                                                kSecTransformInputAttributeName,
-                                               dataRef,
-                                               &error);
-    if (error) throw SecurityException("Fail to configure encrypt");
+                                               dataRef.get(),
+                                               &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to configure encrypt");
 
-    CFDataRef output = (CFDataRef) SecTransformExecute(encrypt, &error);
-    if (error) throw SecurityException("Fail to encrypt data");
+    CFReleaser<CFDataRef> output = (CFDataRef) SecTransformExecute(encrypt.get(), &error.get());
+    if (error.get() != 0) 
+      throw SecurityException("Fail to encrypt data");
 
-    if (!output) throw SecurityException("Output is NULL!\n");
+    if (output.get() == 0) 
+      throw SecurityException("Output is NULL!\n");
 
-    return Blob(CFDataGetBytePtr(output), CFDataGetLength(output));
+    return Blob(CFDataGetBytePtr(output.get()), CFDataGetLength(output.get()));
+#endif
   }
 
   bool OSXPrivateKeyStorage::doesKeyExist(const Name & keyName, KeyClass keyClass)
@@ -338,21 +370,21 @@ namespace ndn
 
     string keyNameUri = toInternalKeyName(keyName, keyClass);
 
-    CFStringRef keyLabel = CFStringCreateWithCString(NULL, 
+    CFReleaser<CFStringRef> keyLabel = CFStringCreateWithCString(NULL, 
                                                      keyNameUri.c_str(), 
                                                      kCFStringEncodingUTF8);
     
-    CFMutableDictionaryRef attrDict = CFDictionaryCreateMutable(NULL,
+    CFReleaser<CFMutableDictionaryRef> attrDict = CFDictionaryCreateMutable(NULL,
                                                                 3,
                                                                 &kCFTypeDictionaryKeyCallBacks,
                                                                 NULL);
 
-    CFDictionaryAddValue(attrDict, kSecAttrKeyClass, getKeyClass(keyClass));
-    CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
-    CFDictionaryAddValue(attrDict, kSecReturnRef, kCFBooleanTrue);
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyClass, getKeyClass(keyClass));
+    CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
+    CFDictionaryAddValue(attrDict.get(), kSecReturnRef, kCFBooleanTrue);
     
-    SecKeychainItemRef itemRef;
-    OSStatus res = SecItemCopyMatching((CFDictionaryRef)attrDict, (CFTypeRef*)&itemRef);
+    CFReleaser<SecKeychainItemRef> itemRef;
+    OSStatus res = SecItemCopyMatching((CFDictionaryRef)attrDict.get(), (CFTypeRef*)&itemRef.get());
     
     if(res == errSecItemNotFound)
       return true;
@@ -361,27 +393,26 @@ namespace ndn
 
   }
 
-  SecKeychainItemRef OSXPrivateKeyStorage::getKey(const Name & keyName, KeyClass keyClass)
+  CFReleaser<SecKeychainItemRef> OSXPrivateKeyStorage::getKey(const Name & keyName, KeyClass keyClass)
   {
     string keyNameUri = toInternalKeyName(keyName, keyClass);
 
-    CFStringRef keyLabel = CFStringCreateWithCString(NULL, 
+    CFReleaser<CFStringRef> keyLabel = CFStringCreateWithCString(NULL, 
                                                      keyNameUri.c_str(), 
                                                      kCFStringEncodingUTF8);
     
-    CFMutableDictionaryRef attrDict = CFDictionaryCreateMutable(NULL,
+    CFReleaser<CFMutableDictionaryRef> attrDict = CFDictionaryCreateMutable(NULL,
                                                              5,
                                                              &kCFTypeDictionaryKeyCallBacks,
                                                              NULL);
 
-    CFDictionaryAddValue(attrDict, kSecClass, kSecClassKey);
-    CFDictionaryAddValue(attrDict, kSecAttrLabel, keyLabel);
-    CFDictionaryAddValue(attrDict, kSecAttrKeyClass, getKeyClass(keyClass));
-    CFDictionaryAddValue(attrDict, kSecReturnRef, kCFBooleanTrue);
+    CFDictionaryAddValue(attrDict.get(), kSecClass, kSecClassKey);
+    CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyClass, getKeyClass(keyClass));
+    CFDictionaryAddValue(attrDict.get(), kSecReturnRef, kCFBooleanTrue);
     
-    SecKeychainItemRef keyItem;
-
-    OSStatus res = SecItemCopyMatching((CFDictionaryRef) attrDict, (CFTypeRef*)&keyItem);
+    CFReleaser<SecKeychainItemRef> keyItem;
+    OSStatus res = SecItemCopyMatching((CFDictionaryRef)attrDict.get(), (CFTypeRef*)&keyItem.get());
     
     if(res != errSecSuccess){
       _LOG_DEBUG("Fail to find the key!");
