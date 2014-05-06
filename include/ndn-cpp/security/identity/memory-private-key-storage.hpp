@@ -28,6 +28,24 @@ public:
   ~MemoryPrivateKeyStorage();
 
   /**
+   * Set the public key for the keyName.
+   * @param keyName The key name.
+   * @param publicKeyDer The public key DER byte array.
+   * @param publicKeyDerLength The length of publicKeyDer.
+   */
+  void setPublicKeyForKeyName
+    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength);
+
+  /**
+   * Set the private key for the keyName.
+   * @param keyName The key name.
+   * @param privateKeyDer The private key DER byte array.
+   * @param privateKeyDerLength The length of privateKeyDer.
+   */
+  void setPrivateKeyForKeyName
+    (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength);
+
+  /**
    * Set the public and private key for the keyName.
    * @param keyName The key name.
    * @param publicKeyDer The public key DER byte array.
@@ -36,8 +54,12 @@ public:
    * @param privateKeyDerLength The length of privateKeyDer.
    */
   void setKeyPairForKeyName
-    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength, uint8_t *privateKeyDer, 
-     size_t privateKeyDerLength);
+    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength, 
+     uint8_t *privateKeyDer, size_t privateKeyDerLength)
+  {
+    setPublicKeyForKeyName(keyName, publicKeyDer, publicKeyDerLength);
+    setPrivateKeyForKeyName(keyName, privateKeyDer, privateKeyDerLength);
+  }
   
   /**
    * Generate a pair of asymmetric keys.

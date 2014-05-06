@@ -20,11 +20,15 @@ MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 {
 }
 
-void MemoryPrivateKeyStorage::setKeyPairForKeyName
-  (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength, uint8_t *privateKeyDer, 
-   size_t privateKeyDerLength)
+void MemoryPrivateKeyStorage::setPublicKeyForKeyName
+  (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength)
 {
   publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(Blob(publicKeyDer, publicKeyDerLength));
+}
+
+void MemoryPrivateKeyStorage::setPrivateKeyForKeyName
+  (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength)
+{
   privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<RsaPrivateKey>(privateKeyDer, privateKeyDerLength);
 }
 
