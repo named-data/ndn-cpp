@@ -14,7 +14,7 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
-noinst_PROGRAMS = bin/test-encode-decode-benchmark bin/test-encode-decode-data \
+noinst_PROGRAMS = bin/test-echo-consumer bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-forwarding-entry bin/test-encode-decode-interest \
   bin/test-get-async bin/test-publish-async-ndnx bin/test-publish-async-nfd
 
@@ -186,6 +186,9 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
   src/util/nfd-command-interest-generator.cpp src/util/nfd-command-interest-generator.hpp
+
+bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
+bin_test_echo_consumer_LDADD = libndn-cpp.la
 
 bin_test_encode_decode_benchmark_SOURCES = tests/test-encode-decode-benchmark.cpp
 bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
