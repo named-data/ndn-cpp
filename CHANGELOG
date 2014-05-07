@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-04-18)
+Interim changes after NDN-CPP v0.4 (2014-05-07)
 -----------------------------------------------
 
 Changes
@@ -16,6 +16,7 @@ Bug fixes
 * http://redmine.named-data.net/issues/1334 Interest.getMustBeFresh() is default true.
 * http://redmine.named-data.net/issues/1338 Fix FinalBlockID TLV encoding.
 * For TLV packets over UDP, ignore packets starting with 0x80.
+* Fix bug for registerPrefix with NDNx.
 
 NDN-CPP v0.4 (2014-02-27)
 -------------------------
