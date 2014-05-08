@@ -98,7 +98,8 @@ ndn_decodeTlvSignatureInfo
   // TODO: The library needs to handle other signature types than 
   //   SignatureSha256WithRsa.
   if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa) {
-    if ((error = ndn_decodeTlvKeyLocator(&signatureInfo->keyLocator, decoder)))
+    if ((error = ndn_decodeTlvKeyLocator
+         (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
       return error;
     if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       // For backwards compatibility, also set the publisherPublicKeyDigest.
