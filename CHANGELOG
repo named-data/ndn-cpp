@@ -17,6 +17,7 @@ Bug fixes
 * http://redmine.named-data.net/issues/1338 Fix FinalBlockID TLV encoding.
 * For TLV packets over UDP, ignore packets starting with 0x80.
 * Fix bug for registerPrefix with NDNx.
+* Fix bug for encoding/decoding the TLV Interest PublisherPublicKeyLocator.
 
 NDN-CPP v0.4 (2014-02-27)
 -------------------------

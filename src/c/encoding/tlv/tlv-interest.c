@@ -85,13 +85,16 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
   //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call 
   //   with omitZeroLength true.)
   size_t saveOffset = encoder->offset;
-  if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue, &interest->keyLocator, 1)))
+  if ((error = ndn_TlvEncoder_writeNestedTlv
+       (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue, 
+        &interest->keyLocator, 1)))
     return error;
   if (encoder->offset == saveOffset) {
-    // There is no keyLocator.  If there is a publisherPublicKeyDigest, the encode as KEY_LOCATOR_DIGEST.
+    // There is no keyLocator.  If there is a publisherPublicKeyDigest, then encode as KEY_LOCATOR_DIGEST.
     if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
       if ((error = ndn_TlvEncoder_writeNestedTlv
-           (encoder, ndn_Tlv_KeyLocator, encodeKeyLocatorPublisherPublicKeyDigestValue, interest, 0)))
+           (encoder, ndn_Tlv_PublisherPublicKeyLocator, 
+            encodeKeyLocatorPublisherPublicKeyDigestValue, interest, 0)))
         return error;
     }
   }
@@ -268,10 +271,12 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
   // Initially set publisherPublicKeyDigest to none.
   ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
   int gotExpectedType;
-  if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_KeyLocator, endOffset, &gotExpectedType)))
+  if ((error = ndn_TlvDecoder_peekType
+       (decoder, ndn_Tlv_PublisherPublicKeyLocator, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {
-    if ((error = ndn_decodeTlvKeyLocator(&interest->keyLocator, decoder)))
+    if ((error = ndn_decodeTlvKeyLocator
+         (ndn_Tlv_PublisherPublicKeyLocator, &interest->keyLocator, decoder)))
       return error;
     if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       // For backwards compatibility, also set the publisherPublicKeyDigest.
