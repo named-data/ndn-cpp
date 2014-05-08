@@ -112,7 +112,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 }
 
 ndn_Error 
-ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct ndn_Blob *value)
+ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, unsigned int type, struct ndn_Blob *value)
 {
   ndn_Error error;
   if ((error = ndn_TlvEncoder_writeTypeAndLength(self, type, value->length)))
@@ -125,7 +125,7 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, int type, struct
 
 ndn_Error 
 ndn_TlvEncoder_writeNestedTlv
-  (struct ndn_TlvEncoder *self, int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
+  (struct ndn_TlvEncoder *self, unsigned int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
    void *context, int omitZeroLength)
 {
   int originalEnableOutput = self->enableOutput;
