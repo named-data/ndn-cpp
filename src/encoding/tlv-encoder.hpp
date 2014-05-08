@@ -9,6 +9,8 @@
 #define NDN_TLV_ENCODER_HPP
 
 #include <vector>
+#include <string>
+#include <stdexcept>
 #include <ndn-cpp/common.hpp>
 #include "../util/dynamic-uint8-vector.hpp"
 #include "../c/encoding/tlv/tlv-encoder.h"
@@ -40,6 +42,126 @@ public:
     output_.get()->resize(offset);
     return output_.get();
   }
+  
+  void
+  writeTypeAndLength(unsigned int type, size_t length)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeTypeAndLength(this, type, length)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+  
+  void
+  writeBlobTlv(unsigned int type, struct ndn_Blob *value)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeBlobTlv(this, type, value)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+  
+  /**
+   * Call writeBlobTlv using the raw string bytes.
+   * @param type The type of the TLV.
+   * @param value The raw string.
+   */
+  void
+  writeRawStringTlv(unsigned int type, const std::string& value)
+  {
+    struct ndn_Blob valueBlob;
+    ndn_Blob_initialize(&valueBlob, (const uint8_t*)&value[0], value.size());
+    writeBlobTlv(type, &valueBlob);
+  }
+  
+  void
+  writeNonNegativeIntegerTlv(unsigned int type, uint64_t value)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv(this, type, value)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+  
+  void
+  writeNestedTlv
+  (unsigned int type, 
+   ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder* encoder), 
+   void *context, bool omitZeroLength = false)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeNestedTlv
+         (this, type, writeValue, context, omitZeroLength ? 1 : 0)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+  
+  /**
+   * Call writeNestedTlv so that it calls writeValue(context, *this).
+   * @param type The TLV type for writeNestedTlv.
+   * @param writeValue The callback to write the TLV value. This calls 
+   * writeValue(context, *this).
+   * @param context The context to pass to writeValue.
+   * @param omitZeroLength The omitZeroLength flag for writeNestedTlv.
+   */
+  void
+  writeNestedTlv
+  (unsigned int type, void (*writeValue)(void *context, TlvEncoder& encoder), 
+   void *context, bool omitZeroLength = false)
+  {
+    WriteValueWrapper(writeValue, context).writeNestedTlv
+      (*this, type, omitZeroLength);
+  }
+  
+private:
+  /* An WriteValueWrapper holds the caller context so that it can be
+   * passed to the caller's writeValue. See writeNestedTlv.
+   */
+  class WriteValueWrapper {
+  public:
+    /**
+     * Create a new WriteValueWrapper to hold the writeValue and context.
+     * See writeNestedTlv.
+     * @param writeValue The callback to write the TLV value. This calls 
+     * writeValue(context, encoder).
+     * @param context The context to pass to writeValue.
+     */
+    WriteValueWrapper
+      (void (*writeValue)(void *context, TlvEncoder& encoder), void *context)
+    : writeValue_(writeValue), context_(context) {}
+
+    /**
+     * Call encoder.writeNestedTlv so that it calls writeValue(context, encoder)
+     * with the writeValue and context given to the constructor.
+     * @param encoder The TlvEncoder.
+     * @param type The TLV type for encoder.writeNestedTlv.
+     * @param omitZeroLength The omitZeroLength flag for encoder.writeNestedTlv.
+     */
+    void
+    writeNestedTlv(TlvEncoder& encoder, unsigned int type, bool omitZeroLength)
+    {
+      encoder.writeNestedTlv(type, writeValueWrapper, this, omitZeroLength);
+    }
+    
+  private:
+    /**
+     * This private function is called by ndn_TlvEncoder_writeTlv to write the 
+     * TLVs in the body of a next TLV.
+     * @param context A pointer to this WriteValueWrapper which was passed to 
+     * writeTlv.
+     * @param encoder the TlvEncoder object which is calling this.
+     * @return 0 for success. The wrapped writeValue_ throws an exception if
+     * needed.
+     */
+    static ndn_Error 
+    writeValueWrapper(void *context, struct ndn_TlvEncoder *encoder)
+    {
+      WriteValueWrapper& wrapper = *(WriteValueWrapper*)context;
+      wrapper.writeValue_(wrapper.context_, (TlvEncoder&)*encoder);
+      
+      // wrapper.writeValue_ has thrown an exception if needed.
+      return NDN_ERROR_success;
+    }
+
+    void (*writeValue_)(void *context, TlvEncoder& encoder);
+    void *context_;
+  };
   
   DynamicUInt8Vector output_;
 };
