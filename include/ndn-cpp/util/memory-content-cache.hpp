@@ -66,7 +66,9 @@ public:
    * Add the Data packet to the cache so that it is available to use to 
    * answer interests. If data.getFreshnessPeriod() is not negative, set the
    * staleness time to now plus data.getFreshnessPeriod(), which is checked
-   * during cleanup to remove stale content.
+   * during cleanup to remove stale content. This also checks if 
+   * cleanupIntervalMilliseconds milliseconds have passed and remove stale
+   * content from the cache. 
    * @param data The Data packet object to put in the cache. This copies the 
    * fields from the object.
    */

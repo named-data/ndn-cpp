@@ -23,6 +23,8 @@ MemoryContentCache::MemoryContentCache
 void
 MemoryContentCache::add(const Data& data)
 {
+  doCleanup();
+  
   if (data.getMetaInfo().getFreshnessPeriod() >= 0.0) {
     // The content will go stale, so use staleTimeCache_.
     ptr_lib::shared_ptr<const StaleTimeContent> content(new StaleTimeContent(data));
