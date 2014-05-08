@@ -33,11 +33,13 @@ ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
 }
 
 ndn_Error
-ndn_decodeTlvKeyLocator(struct ndn_KeyLocator *keyLocator, struct ndn_TlvDecoder *decoder)
+ndn_decodeTlvKeyLocator
+  (unsigned int expectedType, struct ndn_KeyLocator *keyLocator, 
+   struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
-  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_KeyLocator, &endOffset)))
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, expectedType, &endOffset)))
     return error;
 
   ndn_KeyLocator_initialize
