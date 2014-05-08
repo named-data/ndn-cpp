@@ -5,6 +5,7 @@
  * See COPYING for copyright and distribution information.
  */
 
+#include <math.h>
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
 #include "c/interest.h"
@@ -67,7 +68,7 @@ Interest::toUri() const
   if (scope_ >= 0)
     selectors << "&ndn.Scope=" << scope_;
   if (interestLifetimeMilliseconds_ >= 0)
-    selectors << "&ndn.InterestLifetime=" << interestLifetimeMilliseconds_;
+    selectors << "&ndn.InterestLifetime=" << (uint64_t)round(interestLifetimeMilliseconds_);
   if (publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest().size() > 0) {
     selectors << "&ndn.PublisherPublicKeyDigest=";
     Name::toEscapedString(*publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest(), selectors);
