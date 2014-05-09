@@ -385,7 +385,7 @@ private:
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
      const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
      const ForwardingFlags& flags, KeyChain& commandKeyChain, 
-     const Name& commandCertificateName);
+     const Name& commandCertificateName, WireFormat& wireFormat);
   
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;

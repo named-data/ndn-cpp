@@ -182,7 +182,8 @@ Node::registerPrefix
     // The application set the KeyChain for signing NFD interests.
     nfdRegisterPrefix
       (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, 
-       onRegisterFailed, flags, commandKeyChain, commandCertificateName);
+       onRegisterFailed, flags, commandKeyChain, commandCertificateName,
+       wireFormat);
   
   return registeredPrefixId;
 }
@@ -357,7 +358,7 @@ Node::nfdRegisterPrefix
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
    const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
    const ForwardingFlags& flags, KeyChain& commandKeyChain, 
-   const Name& commandCertificateName)
+   const Name& commandCertificateName, WireFormat& wireFormat)
 {
   if (!&commandKeyChain)
     throw runtime_error
@@ -386,11 +387,10 @@ Node::nfdRegisterPrefix
 
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (this, prefix, onInterest, onRegisterFailed, flags, *TlvWireFormat::get(), 
-      true)));
+     (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true)));
   // It is OK for func_lib::function make a copy of the function object because 
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(commandInterest, response, response, *TlvWireFormat::get());
+  expressInterest(commandInterest, response, response, wireFormat);
 }
 
 void 
