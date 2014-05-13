@@ -61,15 +61,45 @@ public:
   Blob(const struct ndn_Blob& blobStruct);
   
   /**
-   * Create a new Blob to point to an existing byte array.  IMPORTANT: After calling this constructor,
-   * if you keep a pointer to the array then you must treat the array as immutable and promise not to change it.
-   * @param value A pointer to a vector with the byte array.  This takes another reference and does not copy the bytes.
+   * Create a new Blob and take another pointer to the given blob's buffer.
+   * @param blob The Blob from which we take another pointer to the same buffer.
    */
-  Blob(const ptr_lib::shared_ptr<std::vector<uint8_t> > &value)
+  Blob(const Blob& blob)
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >(blob)
+  {
+  }
+  
+  /**
+   * Create a new Blob to point to an existing byte array. IMPORTANT: If copy is 
+   * false, after calling this constructor, if you keep a pointer to the array 
+   * then you must treat the array as immutable and promise not to change it.
+   * @param value A pointer to a vector with the byte array.
+   * @param copy If true, copy the value into a new vector. Otherwise, take 
+   * another reference and do not copy the bytes.
+   */
+  Blob(const ptr_lib::shared_ptr<std::vector<uint8_t> > &value, bool copy)
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >
+     ((const ptr_lib::shared_ptr<const std::vector<uint8_t> > &)value)
+  {
+    if (copy)
+      this->reset(new std::vector<uint8_t>(*value));
+  }
+  Blob(const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value, bool copy)
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >(value)
+  {
+    if (copy)
+      this->reset(new std::vector<uint8_t>(*value));
+  }
+  
+  /**
+   * Create a new Blob to point to an existing byte array.
+   * @deprecated Use the constructor with an explicit copy parameter.
+   */
+  DEPRECATED_IN_NDN_CPP Blob(const ptr_lib::shared_ptr<std::vector<uint8_t> > &value)
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >((const ptr_lib::shared_ptr<const std::vector<uint8_t> > &)value)
   {
   }
-  Blob(const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value)
+  DEPRECATED_IN_NDN_CPP Blob(const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value)
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >(value)
   {
   }

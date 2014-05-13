@@ -26,6 +26,20 @@ public:
   : signedPortionBeginOffset_(0), signedPortionEndOffset_(0)
   {  
   }
+
+  /**
+   * Create a new SignedBlob and take another pointer to the given blob's 
+   * buffer.
+   * @param blob The Blob from which we take another pointer to the same buffer.
+   * @param signedPortionBeginOffset The offset in the encoding of the beginning of the signed portion.
+   * @param signedPortionEndOffset The offset in the encoding of the end of the signed portion.
+   */
+  SignedBlob
+    (const Blob& blob, size_t signedPortionBeginOffset, size_t signedPortionEndOffset)
+  : Blob(blob), signedPortionBeginOffset_(signedPortionBeginOffset), 
+    signedPortionEndOffset_(signedPortionEndOffset)
+  {
+  }
   
   /**
    * Create a new SignedBlob with an immutable copy of the given array.
@@ -55,25 +69,47 @@ public:
   }
   
   /**
-   * Create a new SignedBlob to point to an existing byte array.  IMPORTANT: After calling this constructor,
-   * if you keep a pointer to the array then you must treat the array as immutable and promise not to change it.
-   * @param value A pointer to a vector with the byte array.  This takes another reference and does not copy the bytes.
+   * Create a new SignedBlob to point to an existing byte array. IMPORTANT: If copy is 
+   * false, after calling this constructor, if you keep a pointer to the array 
+   * then you must treat the array as immutable and promise not to change it.
+   * @param value A pointer to a vector with the byte array.
+   * @param copy If true, copy the value into a new vector. Otherwise, take 
+   * another reference and do not copy the bytes.
    * @param signedPortionBeginOffset The offset in the array of the beginning of the signed portion.
    * @param signedPortionEndOffset The offset in the array of the end of the signed portion.
    */
   SignedBlob
-    (const ptr_lib::shared_ptr<std::vector<uint8_t> > &value, 
+    (const ptr_lib::shared_ptr<std::vector<uint8_t> > &value, bool copy,
      size_t signedPortionBeginOffset, size_t signedPortionEndOffset)
-  : Blob(value), signedPortionBeginOffset_(signedPortionBeginOffset), signedPortionEndOffset_(signedPortionEndOffset)
+  : Blob(value, copy), signedPortionBeginOffset_(signedPortionBeginOffset), 
+    signedPortionEndOffset_(signedPortionEndOffset)
   {
   }
   SignedBlob
-    (const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value, 
+    (const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value, bool copy, 
      size_t signedPortionBeginOffset, size_t signedPortionEndOffset)
-  : Blob(value), signedPortionBeginOffset_(signedPortionBeginOffset), signedPortionEndOffset_(signedPortionEndOffset)
+  : Blob(value, copy), signedPortionBeginOffset_(signedPortionBeginOffset), 
+    signedPortionEndOffset_(signedPortionEndOffset)
   {
   }
-    
+
+  /**
+   * Create a new SignedBlob to point to an existing byte array.
+   * @deprecated Use the constructor with an explicit copy parameter.
+   */
+  DEPRECATED_IN_NDN_CPP SignedBlob
+    (const ptr_lib::shared_ptr<std::vector<uint8_t> > &value, 
+     size_t signedPortionBeginOffset, size_t signedPortionEndOffset)
+  : Blob(value, false), signedPortionBeginOffset_(signedPortionBeginOffset), signedPortionEndOffset_(signedPortionEndOffset)
+  {
+  }
+  DEPRECATED_IN_NDN_CPP SignedBlob
+    (const ptr_lib::shared_ptr<const std::vector<uint8_t> > &value, 
+     size_t signedPortionBeginOffset, size_t signedPortionEndOffset)
+  : Blob(value,false), signedPortionBeginOffset_(signedPortionBeginOffset), signedPortionEndOffset_(signedPortionEndOffset)
+  {
+  }
+  
   /**
    * Return the length of the signed portion of the immutable byte array, or 0 of the pointer to the array is null.
    */
