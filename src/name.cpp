@@ -158,7 +158,7 @@ Name::Component::fromNumber(uint64_t number)
   
   // Make it big endian.
   reverse(value->begin(), value->end());
-  return Blob(value);
+  return Blob(value, false);
 }
 
 Name::Component 
@@ -177,7 +177,7 @@ Name::Component::fromNumberWithMarker(uint64_t number, uint8_t marker)
   
   // Make it big endian.
   reverse(value->begin() + 1, value->end());
-  return Blob(value);
+  return Blob(value, false);
 }
 
 Name::Component 
@@ -194,7 +194,7 @@ Name::Component::fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, si
   
   // Make it big endian.
   reverse(value->begin() + prefixLength, value->end());
-  return Blob(value);
+  return Blob(value, false);
 }
 
 void 

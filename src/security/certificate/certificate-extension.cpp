@@ -40,7 +40,7 @@ CertificateExtension::toDerBlob() const
 
   toDer()->encode(start);
 
-  return blobStream.buf();
+  return Blob(blobStream.buf(), false);
 }
 
 

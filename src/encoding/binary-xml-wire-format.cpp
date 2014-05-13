@@ -54,7 +54,7 @@ BinaryXmlWireFormat::encodeInterest
         &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 void 
@@ -93,7 +93,7 @@ BinaryXmlWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffs
   if ((error = ndn_encodeBinaryXmlData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 void 
@@ -129,7 +129,7 @@ BinaryXmlWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntr
   if ((error = ndn_encodeBinaryXmlForwardingEntry(&forwardingEntryStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 void 

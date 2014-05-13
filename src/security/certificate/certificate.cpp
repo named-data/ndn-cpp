@@ -102,7 +102,7 @@ Certificate::encode()
   root->encode(start);
 
   ptr_lib::shared_ptr<vector<uint8_t> > blob = blobStream.buf();
-  setContent(blob);
+  setContent(Blob(blob, false));
   getMetaInfo().setType(ndn_ContentType_KEY);
 }
 

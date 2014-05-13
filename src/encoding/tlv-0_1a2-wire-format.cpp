@@ -42,7 +42,7 @@ Tlv1_0a2WireFormat::encodeInterest
         &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 void 
@@ -81,7 +81,7 @@ Tlv1_0a2WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
   if ((error = ndn_encodeTlvData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 void 
@@ -120,7 +120,7 @@ Tlv1_0a2WireFormat::encodeControlParameters
        (&controlParametersStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
      
-  return encoder.getOutput();
+  return Blob(encoder.getOutput(), false);
 }
 
 #if 0

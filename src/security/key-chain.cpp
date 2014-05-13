@@ -79,7 +79,7 @@ KeyChain::sign
     if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
       throw runtime_error(ndn_getErrorString(error));
 
-    interest.getName().append(encoder.getOutput());  
+    interest.getName().append(Blob(encoder.getOutput(), false));  
   }
 #endif
 
@@ -102,7 +102,7 @@ KeyChain::sign
     if ((error = ndn_TlvEncoder_writeBlobTlv
          (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
       throw runtime_error(ndn_getErrorString(error));
-    interest.setName(interest.getName().getPrefix(-1).append(encoder.getOutput()));
+    interest.setName(interest.getName().getPrefix(-1).append(Blob(encoder.getOutput(), false)));
   }
 #endif
 }

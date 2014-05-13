@@ -222,7 +222,7 @@ DerComplex::getRaw()
     Blob childBlob = (*it)->getRaw();
     blob->insert(blob->end(), childBlob->begin(), childBlob->end());
   }
-  return blob;
+  return Blob(blob, false);
 }
 
 void

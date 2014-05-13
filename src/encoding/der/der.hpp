@@ -125,7 +125,7 @@ public:
     blob->insert(blob->end(), header_.begin(), header_.end());
     blob->insert(blob->end(), payload_.begin(), payload_.end());
 
-    return blob;
+    return Blob(blob, false);
   }
 
   virtual void accept(VoidNoArgumentsVisitor& visitor) = 0;
