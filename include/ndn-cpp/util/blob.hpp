@@ -127,6 +127,13 @@ public:
     else
       return 0;
   }
+
+  /**
+   * Check if the array pointer is null.
+   * @return true if the buffer pointer is null, otherwise false.
+   */  
+  bool 
+  isNull() const { return !(*this); }
   
   /**
    * Return the hex representation of the bytes in array.
