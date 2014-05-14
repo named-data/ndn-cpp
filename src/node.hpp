@@ -55,8 +55,8 @@ public:
   
   /**
    * Append a timestamp component and a random value component to interest's
-   * name. Then use the keyChain and certificateName from setCommandSigningInfo
-   * to sign the interest. If the interest lifetime is not set, this sets it.
+   * name. Then use the keyChain and certificateName to sign the interest. If 
+   * the interest lifetime is not set, this sets it.
    * @param interest The interest whose name is append with components.
    * @param keyChain The KeyChain object for signing interests.
    * @param certificateName The certificate name for signing interests.
