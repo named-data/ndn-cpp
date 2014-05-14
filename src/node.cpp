@@ -373,7 +373,7 @@ Node::nfdRegisterPrefix
   Interest commandInterest("/localhost/nfd/rib/register");
   // NFD only accepts TlvWireFormat packets.
   commandInterest.getName().append(controlParameters.wireEncode(*TlvWireFormat::get()));
-  commandInterestGenerator_.generate
+  makeCommandInterest
     (commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
   // The interest is answered by the local host, so set a short timeout.

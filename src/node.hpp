@@ -54,6 +54,25 @@ public:
   removePendingInterest(uint64_t pendingInterestId);
   
   /**
+   * Append a timestamp component and a random value component to interest's
+   * name. Then use the keyChain and certificateName from setCommandSigningInfo
+   * to sign the interest. If the interest lifetime is not set, this sets it.
+   * @param interest The interest whose name is append with components.
+   * @param keyChain The KeyChain object for signing interests.
+   * @param certificateName The certificate name for signing interests.
+   * @param wireFormat A WireFormat object used to encode the SignatureInfo and
+   * to encode interest name for signing. 
+   */
+  void
+  makeCommandInterest
+    (Interest& interest, KeyChain& keyChain, const Name& certificateName,
+     WireFormat& wireFormat)
+  {
+    commandInterestGenerator_.generate
+      (interest, keyChain, certificateName, wireFormat);
+  }
+  
+  /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to

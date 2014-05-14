@@ -57,6 +57,13 @@ Face::removePendingInterest(uint64_t pendingInterestId)
   node_->removePendingInterest(pendingInterestId);
 }
 
+void
+Face::makeCommandInterest(Interest& interest, WireFormat& wireFormat)
+{
+  node_->makeCommandInterest
+    (interest, *commandKeyChain_, commandCertificateName_, wireFormat);
+}
+
 uint64_t 
 Face::registerPrefix
   (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 

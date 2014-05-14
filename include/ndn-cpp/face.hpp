@@ -152,6 +152,20 @@ public:
   }
   
   /**
+   * Append a timestamp component and a random value component to interest's
+   * name. Then use the keyChain and certificateName from setCommandSigningInfo
+   * to sign the interest. If the interest lifetime is not set, this sets it.
+   * @param interest The interest whose name is append with components.
+   * @param wireFormat A WireFormat object used to encode the SignatureInfo and
+   * to encode interest name for signing. If omitted, use 
+   * WireFormat getDefaultWireFormat().
+   */
+  void
+  makeCommandInterest
+    (Interest& interest,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Register prefix with the connected NDN hub and call onInterest when a 
    * matching interest is received. If you have not called setCommandSigningInfo,
    * this assumes you are connecting to NDNx. If you have called
