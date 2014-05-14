@@ -13,10 +13,10 @@
 namespace ndn {
 
 /**
- * A Tlv1_0a2WireFormat extends WireFormat to override its virtual methods to implement encoding and decoding
- * using NDN-TLV version 1.0a2.  To always use the preferred version NDN-TLV, you should use the class TlvWireFormat.
+ * A Tlv0_1WireFormat extends WireFormat to override its virtual methods to implement encoding and decoding
+ * using NDN-TLV version 0.1.  To always use the preferred version NDN-TLV, you should use the class TlvWireFormat.
  */
-class Tlv1_0a2WireFormat : public WireFormat {
+class Tlv0_1WireFormat : public WireFormat {
 public:
   /**
    * Encode interest in NDN-TLV and return the encoding.
@@ -100,21 +100,21 @@ public:
 #endif
 
   /**
-   * Get a singleton instance of a Tlv1_0a2WireFormat.  To always use the 
+   * Get a singleton instance of a Tlv0_1WireFormat.  To always use the 
    * preferred version NDN-TLV, you should use TlvWireFormat::get().
    * @return A pointer to the singleton instance.
    */
-  static Tlv1_0a2WireFormat* 
+  static Tlv0_1WireFormat* 
   get()
   {
     if (!instance_)
-      instance_ = new Tlv1_0a2WireFormat();
+      instance_ = new Tlv0_1WireFormat();
     
     return instance_;
   }
   
 private:
-  static Tlv1_0a2WireFormat* instance_;
+  static Tlv0_1WireFormat* instance_;
 };
 
 }

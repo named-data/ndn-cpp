@@ -14,14 +14,14 @@
 #include "../c/encoding/tlv/tlv-control-parameters.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
-#include <ndn-cpp/encoding/tlv-0_1a2-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-0_1-wire-format.hpp>
 
 using namespace std;
 
 namespace ndn {
 
 Blob 
-Tlv1_0a2WireFormat::encodeInterest
+Tlv0_1WireFormat::encodeInterest
   (const Interest& interest, size_t *signedPortionBeginOffset, 
    size_t *signedPortionEndOffset) 
 {
@@ -46,7 +46,7 @@ Tlv1_0a2WireFormat::encodeInterest
 }
 
 void 
-Tlv1_0a2WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -66,7 +66,7 @@ Tlv1_0a2WireFormat::decodeInterest(Interest& interest, const uint8_t *input, siz
 }
 
 Blob 
-Tlv1_0a2WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
@@ -85,7 +85,7 @@ Tlv1_0a2WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
 }
 
 void 
-Tlv1_0a2WireFormat::decodeData
+Tlv0_1WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -104,7 +104,7 @@ Tlv1_0a2WireFormat::decodeData
 }
 
 Blob 
-Tlv1_0a2WireFormat::encodeControlParameters
+Tlv0_1WireFormat::encodeControlParameters
   (const ControlParameters& controlParameters)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -125,7 +125,7 @@ Tlv1_0a2WireFormat::encodeControlParameters
 
 #if 0
 void 
-Tlv1_0a2WireFormat::decodeControlParameters
+Tlv0_1WireFormat::decodeControlParameters
   (ControlParameters& controlParameters, const uint8_t *input, 
    size_t inputLength)
 {
