@@ -7,18 +7,6 @@
  * Author: Junxiao Shi <shijunxiao@email.arizona.edu>
  */
 
-#ifdef __linux__
-
-#include <endian.h>
-
-#endif
-
-#ifdef __FreeBSD__
-
-#include <sys/endian.h>
-
-#endif
-
 #ifdef __APPLE__
 
 #include <libkern/OSByteOrder.h>
@@ -34,5 +22,14 @@
 #define htole64(x) OSSwapHostToLittleInt64(x)
 #define be64toh(x) OSSwapBigToHostInt64(x)
 #define le64toh(x) OSSwapLittleToHostInt64(x)
+
+#else
+
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#else
+// Linux, Cygwin, etc.
+#include <endian.h>
+#endif
 
 #endif
