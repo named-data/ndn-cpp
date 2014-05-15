@@ -25,8 +25,9 @@ sudo apt-get install build-essential
 sudo apt-get install libssl-dev
 
 * Windows Cygwin
-Cygwin is tested on Windows 7 64-bit with the "Devel" packages selected to install at the top level of the
-cygwin installer.  This includes libcrypto and libsqlite3.
+Cygwin is tested on Windows 7 64-bit. 
+In the Cygwin installer, select and install the "Devel" packages at the top level of the installer.
+(The "Devel" packages include libcrypto and libsqlite3.)
 
 Build
 -----
