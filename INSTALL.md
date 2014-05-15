@@ -13,7 +13,7 @@ Prerequisites
 Following are the detailed steps for each platform to install the prerequisites.
 
 ## Mac OS X 10.7.3, Mac OS X 10.8.4
-Install Xcode.
+Install Xcode.  
 In Xcode Preferences > Downloads, install "Command Line Tools".
 
 ## Mac OS X 10.9
@@ -42,7 +42,7 @@ To build in a terminal, change directory to the NDN-CPP root.  Enter:
     sudo make install
 
 NDN-CPP uses NDN-TLV as the default wire format:
-http://named-data.net/doc/ndn-tlv/tlv.html
+http://named-data.net/doc/ndn-tlv/tlv.html .
 To revert to Binary XML (ndnb) as the default wire format, instead of ./configure, use:
 
     ./configure --enable-binary-xml=yes
@@ -76,7 +76,7 @@ These steps are only needed to do development of NDN-CPP code and update the bui
 First follow the Prerequisites above for your platforms.
 
 ## Mac OS X 10.7.3, Mac OS X 10.8.4, Mac OS X 10.9
-Install MacPorts from http://www.macports.org/install.php .
+Install MacPorts from http://www.macports.org/install.php .  
 In a terminal, enter:
  
     sudo port install automake autoconf libtool doxygen
