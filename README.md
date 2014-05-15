@@ -8,7 +8,7 @@ NDN-CPP is open source under a license described in the file COPYING.  While the
 does not require it, we really would appreciate it if others would share their
 contributions to the library if they are willing to do so under the same license. 
 
-See the file INSTALL for build and install instructions.
+See the file INSTALL.md for build and install instructions.
 
 Please submit any bugs or issues to the NDN-CPP issue tracker:
 http://redmine.named-data.net/projects/ndn-cpp/issues
