@@ -29,25 +29,72 @@ public:
     ndn_TlvDecoder_initialize(this, input, inputLength);
   }
   
-  /**
-   * Decode the type from the input starting at offset, and if it is the expectedType,
-   * then return true, else false.  However, if offset is greater than or equal to endOffset,
-   * then return false and don't try to read the type.
-   * Do not update offset, including if throwing an exception.
-   * @param expectedType The expected type.
-   * @param endOffset The offset of the end of the parent TLV.
-   * @return True if got the expected type, else false.
-   */
+  size_t
+  readNestedTlvsStart(unsigned int expectedType)
+  {
+    size_t endOffset;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_readNestedTlvsStart
+         (this, expectedType, &endOffset)))
+      throw runtime_error(ndn_getErrorString(error));
+    
+    return endOffset;
+  }
+  
+  void
+  finishNestedTlvs(int endOffset)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_finishNestedTlvs(this, endOffset)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+  
   bool 
   peekType(unsigned int expectedType, size_t endOffset) 
   {
     int gotExpectedType;
     ndn_Error error;
-    if ((error = ndn_TlvDecoder_peekType(this, expectedType, endOffset, &gotExpectedType)))
+    if ((error = ndn_TlvDecoder_peekType
+         (this, expectedType, endOffset, &gotExpectedType)))
       throw runtime_error(ndn_getErrorString(error));
     
     return gotExpectedType != 0 ? true : false;
   }  
+  
+  uint64_t
+  readNonNegativeIntegerTlv(unsigned int expectedType)
+  {
+    uint64_t value;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+         (this, expectedType, &value)))
+      throw runtime_error(ndn_getErrorString(error));
+    
+    return value;
+  }
+  
+  struct ndn_Blob
+  readBlobTlv(unsigned int expectedType)
+  {
+    struct ndn_Blob value;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_readBlobTlv(this, expectedType, &value)))
+      throw runtime_error(ndn_getErrorString(error));
+    
+    return value;
+  }
+  
+  bool
+  readBooleanTlv(unsigned int expectedType, size_t endOffset)
+  {
+    int value;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_readBooleanTlv
+         (this, expectedType, endOffset, &value)))
+      throw runtime_error(ndn_getErrorString(error));
+    
+    return value != 0;
+  }
 };
 
 }
