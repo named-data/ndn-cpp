@@ -31,7 +31,7 @@ struct ndn_ExcludeEntry {
  * @param component the pre-allocated buffer for the component value, only used if type is ndn_Exclude_COMPONENT
  * @param componentLength the number of bytes in value, only used if type is ndn_Exclude_COMPONENT
  */
-static inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, const uint8_t *component, size_t componentLength) 
+static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, const uint8_t *component, size_t componentLength) 
 {
   self->type = type;
   ndn_NameComponent_initialize(&self->component, component, componentLength);
@@ -51,7 +51,7 @@ struct ndn_Exclude {
  * @param entries the pre-allocated array of ndn_ExcludeEntry
  * @param maxEntries the number of elements in the allocated entries array
  */
-static inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn_ExcludeEntry *entries, size_t maxEntries) 
+static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn_ExcludeEntry *entries, size_t maxEntries) 
 {
   self->entries = entries;
   self->maxEntries = maxEntries;
@@ -97,7 +97,7 @@ struct ndn_Interest {
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the keyLocator.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
-static inline void ndn_Interest_initialize
+static __inline void ndn_Interest_initialize
   (struct ndn_Interest *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents,
    struct ndn_ExcludeEntry *excludeEntries, size_t maxExcludeEntries, struct ndn_NameComponent *keyNameComponents, 
    size_t maxKeyNameComponents) 
@@ -121,7 +121,7 @@ static inline void ndn_Interest_initialize
  * @param self A pointer to the ndn_Interest struct.
  * @return 1 if must be fresh, otherwise 0.
  */
-static inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
+static __inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
 {
   if (self->answerOriginKind < 0)
     return 1;

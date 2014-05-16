@@ -39,7 +39,7 @@ struct ndn_KeyLocator {
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
-static inline void ndn_KeyLocator_initialize
+static __inline void ndn_KeyLocator_initialize
   (struct ndn_KeyLocator *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
   self->type = (ndn_KeyLocatorType)-1;
   ndn_Blob_initialize(&self->keyData, 0, 0);

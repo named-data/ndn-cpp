@@ -27,7 +27,7 @@ struct ndn_Blob {
  * @param value The pre-allocated buffer for the value, or 0 for none.
  * @param length The number of bytes in value.
  */
-static inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length) 
+static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length) 
 {
   self->value = value;
   self->length = length;

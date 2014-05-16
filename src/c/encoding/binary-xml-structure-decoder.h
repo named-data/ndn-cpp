@@ -51,7 +51,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
  * @param self pointer to the ndn_BinaryXmlStructureDecoder struct
  * @param offset the new offset
  */
-static inline void ndn_BinaryXmlStructureDecoder_seek(struct ndn_BinaryXmlStructureDecoder *self, size_t offset) 
+static __inline void ndn_BinaryXmlStructureDecoder_seek(struct ndn_BinaryXmlStructureDecoder *self, size_t offset) 
 {
   self->offset = offset;
 }

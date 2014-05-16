@@ -37,7 +37,7 @@ struct ndn_Signature {
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the keyLocator.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
-static inline void ndn_Signature_initialize(struct ndn_Signature *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
+static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
   ndn_Blob_initialize(&self->digestAlgorithm, 0, 0);
   ndn_Blob_initialize(&self->witness, 0, 0);
   ndn_Blob_initialize(&self->signature, 0, 0);
@@ -59,7 +59,7 @@ struct ndn_MetaInfo {
  * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_BLOB.
  * @param self A pointer to the ndn_MetaInfo struct.
  */
-static inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self) 
+static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self) 
 {
   self->timestampMilliseconds = -1;
   self->type = ndn_ContentType_BLOB;
@@ -70,7 +70,7 @@ static inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self) 
+static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self) 
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }
@@ -78,7 +78,7 @@ static inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds) 
+static __inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds) 
 { 
   self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 
 }
@@ -99,7 +99,7 @@ struct ndn_Data {
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the signature.keyLocator.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
-static inline void ndn_Data_initialize
+static __inline void ndn_Data_initialize
   (struct ndn_Data *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents, 
    struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) 
 {

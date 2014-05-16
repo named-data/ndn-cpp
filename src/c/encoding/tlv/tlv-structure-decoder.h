@@ -59,7 +59,7 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  * @param offset The new offset.
  */
-static inline void 
+static __inline void 
 ndn_TlvStructureDecoder_seek(struct ndn_TlvStructureDecoder *self, size_t offset) 
 {
   self->offset = offset;

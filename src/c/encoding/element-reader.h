@@ -41,7 +41,7 @@ struct ndn_ElementReader {
  * @param bufferLength the length of the buffer
  * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
  */
-static inline void ndn_ElementReader_initialize
+static __inline void ndn_ElementReader_initialize
   (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener,
    uint8_t *buffer, size_t bufferLength, uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t))
 {

@@ -26,7 +26,7 @@ struct ndn_ElementListener {
  * @param onReceivedElement pointer to a function which is called when an entire binary XML element is received.
  * self is the pointer to this ndn_ElementListener struct.  See ndn_ElementReader_onReceivedData.
  */
-static inline void ndn_ElementListener_initialize
+static __inline void ndn_ElementListener_initialize
   (struct ndn_ElementListener *self, void (*onReceivedElement)(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength))
 {
   self->onReceivedElement = onReceivedElement;

@@ -26,7 +26,7 @@ struct ndn_BinaryXmlDecoder {
   unsigned int previouslyPeekedDTag;
 };
 
-static inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, const uint8_t *input, size_t inputLength) 
+static __inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, const uint8_t *input, size_t inputLength) 
 {
   self->input = input;
   self->inputLength = inputLength;
@@ -184,7 +184,7 @@ double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(const uint8_t *bytes, size
  * @param self pointer to the ndn_BinaryXmlDecoder struct
  * @param offset the new offset
  */
-static inline void ndn_BinaryXmlDecoder_seek(struct ndn_BinaryXmlDecoder *self, size_t offset) 
+static __inline void ndn_BinaryXmlDecoder_seek(struct ndn_BinaryXmlDecoder *self, size_t offset) 
 {
   self->offset = offset;
 }

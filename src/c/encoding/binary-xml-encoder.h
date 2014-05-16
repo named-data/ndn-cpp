@@ -31,7 +31,7 @@ struct ndn_BinaryXmlEncoder {
  * remain valid during the entire life of this ndn_BinaryXmlEncoder. If the output->realloc
  * function pointer is null, its array must be large enough to receive the entire encoding.
  */
-static inline void ndn_BinaryXmlEncoder_initialize(struct ndn_BinaryXmlEncoder *self, struct ndn_DynamicUInt8Array *output) 
+static __inline void ndn_BinaryXmlEncoder_initialize(struct ndn_BinaryXmlEncoder *self, struct ndn_DynamicUInt8Array *output) 
 {
   self->output = output;
   self->offset = 0;
@@ -52,7 +52,7 @@ ndn_Error ndn_BinaryXmlEncoder_encodeTypeAndValue(struct ndn_BinaryXmlEncoder *s
  * @param tag the DTAG tag
  * @return 0 for success, else an error code
  */
-static inline ndn_Error ndn_BinaryXmlEncoder_writeElementStartDTag(struct ndn_BinaryXmlEncoder *self, unsigned int tag) 
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeElementStartDTag(struct ndn_BinaryXmlEncoder *self, unsigned int tag) 
 {
   return ndn_BinaryXmlEncoder_encodeTypeAndValue(self, ndn_BinaryXml_DTAG, tag);
 }
@@ -89,7 +89,7 @@ ndn_Error ndn_BinaryXmlEncoder_writeBlobDTagElement(struct ndn_BinaryXmlEncoder 
  * @param value A Blob with the array of bytes for the value.
  * @return 0 for success, else an error code
  */
-static inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalBlobDTagElement
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalBlobDTagElement
   (struct ndn_BinaryXmlEncoder *self, unsigned int tag, struct ndn_Blob *value)
 {
   if (value->value && value->length > 0)
@@ -123,7 +123,7 @@ ndn_Error ndn_BinaryXmlEncoder_writeUDataDTagElement(struct ndn_BinaryXmlEncoder
  * @param value A Blob with the array of bytes for the value.
  * @return 0 for success, else an error code
  */
-static inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
   (struct ndn_BinaryXmlEncoder *self, unsigned int tag, struct ndn_Blob *value)
 {
   if (value->value && value->length > 0)
@@ -158,7 +158,7 @@ ndn_Error ndn_BinaryXmlEncoder_writeUnsignedDecimalIntDTagElement(struct ndn_Bin
  * @param value negative for none, otherwise use (unsigned int)value
  * @return 0 for success, else an error code
  */
-static inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement(struct ndn_BinaryXmlEncoder *self, unsigned int tag, int value)
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement(struct ndn_BinaryXmlEncoder *self, unsigned int tag, int value)
 {
   if (value >= 0)
     return ndn_BinaryXmlEncoder_writeUnsignedDecimalIntDTagElement(self, tag, (size_t)value);
@@ -193,7 +193,7 @@ ndn_Error ndn_BinaryXmlEncoder_writeTimeMillisecondsDTagElement(struct ndn_Binar
  * @param milliseconds negative for none, otherwise the number of milliseconds
  * @return 0 for success, else an error code
  */
-static inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalTimeMillisecondsDTagElement
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalTimeMillisecondsDTagElement
   (struct ndn_BinaryXmlEncoder *self, unsigned int tag, double milliseconds)
 {
   if (milliseconds >= 0)

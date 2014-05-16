@@ -28,7 +28,7 @@ struct ndn_NameComponent {
  * @param value the pre-allocated buffer for the component value
  * @param valueLength the number of bytes in value
  */
-static inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength) 
+static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength) 
 {
   ndn_Blob_initialize(&self->value, value, valueLength);
 }
@@ -75,7 +75,7 @@ struct ndn_Name {
  * @param components the pre-allocated array of ndn_NameComponent
  * @param maxComponents the number of elements in the allocated components array
  */
-static inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameComponent *components, size_t maxComponents) 
+static __inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameComponent *components, size_t maxComponents) 
 {
   self->components = components;
   self->maxComponents = maxComponents;
@@ -105,7 +105,7 @@ ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t* value, 
  * @param value An ndn_Blob with the bytes of the component.  This does not copy the bytes.
  * @return 0 for success, or an error code if there is no more room in the components array (nComponents is already maxComponents).
  */
-static inline ndn_Error ndn_Name_appendBlob(struct ndn_Name *self, struct ndn_Blob *value)
+static __inline ndn_Error ndn_Name_appendBlob(struct ndn_Name *self, struct ndn_Blob *value)
 {
   return ndn_Name_appendComponent(self, value->value, value->length);
 }

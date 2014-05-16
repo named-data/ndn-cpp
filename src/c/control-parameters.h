@@ -43,7 +43,7 @@ struct ndn_ControlParameters {
  * @param maxNameComponents the number of elements in the allocated 
  * nameComponents array.
  */
-static inline void 
+static __inline void 
 ndn_ControlParameters_initialize
   (struct ndn_ControlParameters *self, struct ndn_NameComponent *nameComponents, 
    size_t maxNameComponents) 

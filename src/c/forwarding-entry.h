@@ -47,7 +47,7 @@ struct ndn_ForwardingEntry {
  * @param prefixNameComponents the pre-allocated array of ndn_NameComponent
  * @param maxPrefixNameComponents the number of elements in the allocated prefixNameComponents array
  */
-static inline void ndn_ForwardingEntry_initialize
+static __inline void ndn_ForwardingEntry_initialize
   (struct ndn_ForwardingEntry *self, struct ndn_NameComponent *prefixNameComponents, size_t maxPrefixNameComponents) 
 {
   ndn_Blob_initialize(&self->action, 0, 0);
@@ -61,7 +61,7 @@ static inline void ndn_ForwardingEntry_initialize
 /**
  * @deprecated Use freshnessPeriod.
  */
-static inline int ndn_ForwardingEntry_getFreshnessSeconds
+static __inline int ndn_ForwardingEntry_getFreshnessSeconds
   (struct ndn_ForwardingEntry *self) 
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
@@ -70,7 +70,7 @@ static inline int ndn_ForwardingEntry_getFreshnessSeconds
 /**
  * @deprecated Use freshnessPeriod.
  */
-static inline void ndn_ForwardingEntry_setFreshnessSeconds
+static __inline void ndn_ForwardingEntry_setFreshnessSeconds
   (struct ndn_ForwardingEntry *self, int freshnessSeconds) 
 { 
   self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 

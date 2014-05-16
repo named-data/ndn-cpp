@@ -4,8 +4,8 @@
  * See COPYING for copyright and distribution information.
  */
 
-#ifndef NDN_DYNAMICUCHARARRAY_H
-#define NDN_DYNAMICUCHARARRAY_H
+#ifndef NDN_DYNAMIC_UINT8_ARRAY_H
+#define NDN_DYNAMIC_UINT8_ARRAY_H
 
 #include "../errors.h"
 #include "ndn_memory.h"
@@ -32,7 +32,7 @@ struct ndn_DynamicUInt8Array {
  * @param length the length of the allocated array buffer
  * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
  */
-static inline void ndn_DynamicUInt8Array_initialize
+static __inline void ndn_DynamicUInt8Array_initialize
   (struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length, 
    uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t)) 
 {
@@ -59,7 +59,7 @@ ndn_Error ndn_DynamicUInt8Array_reallocArray(struct ndn_DynamicUInt8Array *self,
  * @param length the needed minimum size for self->length
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
-static inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUInt8Array *self, size_t length) 
+static __inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUInt8Array *self, size_t length) 
 {
   if (self->length >= length)
     return NDN_ERROR_success;
@@ -75,7 +75,7 @@ static inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUIn
  * @param offset the offset in self->array to copy to
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
-static inline ndn_Error ndn_DynamicUInt8Array_copy
+static __inline ndn_Error ndn_DynamicUInt8Array_copy
   (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength, size_t offset) 
 {
   ndn_Error error;

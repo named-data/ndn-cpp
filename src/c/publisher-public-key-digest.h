@@ -25,7 +25,7 @@ struct ndn_PublisherPublicKeyDigest {
 /**
  * Initialize an ndn_PublisherPublicKeyDigest struct with 0 for none.
  */
-static inline void ndn_PublisherPublicKeyDigest_initialize(struct ndn_PublisherPublicKeyDigest *self)
+static __inline void ndn_PublisherPublicKeyDigest_initialize(struct ndn_PublisherPublicKeyDigest *self)
 {
   ndn_Blob_initialize(&self->publisherPublicKeyDigest, 0, 0);
 }
