@@ -9,6 +9,7 @@
 #define NDN_TRANSPORT_HPP
 
 #include <vector>
+#include "../common.hpp"
 
 namespace ndn {
 
