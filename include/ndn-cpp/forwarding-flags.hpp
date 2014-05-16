@@ -36,49 +36,49 @@ public:
    * Get the value of the "active" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getActive() const { return active; }
+  bool getActive() const { return active != 0; }
   
   /**
    * Get the value of the "childInherit" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getChildInherit() const { return childInherit; }
+  bool getChildInherit() const { return childInherit != 0; }
   
   /**
    * Get the value of the "advertise" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getAdvertise() const { return advertise; }
+  bool getAdvertise() const { return advertise != 0; }
   
   /**
    * Get the value of the "last" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getLast() const { return last; }
+  bool getLast() const { return last != 0; }
   
   /**
    * Get the value of the "capture" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getCapture() const { return capture; }
+  bool getCapture() const { return capture != 0; }
   
   /**
    * Get the value of the "local" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getLocal() const { return local; }
+  bool getLocal() const { return local != 0; }
   
   /**
    * Get the value of the "tap" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getTap() const { return tap; }
+  bool getTap() const { return tap != 0; }
   
   /**
    * Get the value of the "captureOk" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getCaptureOk() const { return captureOk; }
+  bool getCaptureOk() const { return captureOk != 0; }
 
   /**
    * Set the value of the "active" flag
