@@ -101,11 +101,11 @@ Interest::matchesName(const Name& name) const
   
   if (minSuffixComponents_ >= 0 &&
     // Add 1 for the implicit digest.
-    !(name.size() + 1 - getName().size() >= minSuffixComponents_))
+    !(name.size() + 1 - getName().size() >= (size_t)minSuffixComponents_))
     return false;
   if (maxSuffixComponents_ >= 0 &&
     // Add 1 for the implicit digest.
-    !(name.size() + 1 - getName().size() <= maxSuffixComponents_))
+    !(name.size() + 1 - getName().size() <= (size_t)maxSuffixComponents_))
     return false;
   if (getExclude().size() > 0 && name.size() > getName().size() &&
       getExclude().matches(name.get(getName().size())))
