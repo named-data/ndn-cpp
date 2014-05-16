@@ -21,6 +21,9 @@
 /* 1 if have sys/time gmtime support including timegm. */
 #undef HAVE_GMTIME_SUPPORT
 
+/* 1 if have WinSock2 `htonll'. */
+#undef HAVE_HTONLL
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

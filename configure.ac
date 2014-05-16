@@ -170,6 +170,19 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     AC_DEFINE_UNQUOTED([HAVE_ATTRIBUTE_DEPRECATED], 0, [1 if have `__attribute__((deprecated))'.])
 ])
 
+# htonll is supported on Windows 8 but not earlier Windows.
+AC_MSG_CHECKING([for htonll])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <WinSock2.h>]]
+    [[htonll(1);]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_HTONLL], 1, [1 if have WinSock2 `htonll'.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_HTONLL], 0, [1 if have WinSock2 `htonll'.])
+])
+
 AC_ARG_ENABLE([tlv],
   [AS_HELP_STRING([--enable-tlv], [force NDN-TLV as the default wire format @<:@default: no@:>@])],
   [default_tlv=${enableval}], [default_tlv=no])

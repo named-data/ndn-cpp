@@ -85,8 +85,8 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/configure \
 	$(am__configure_deps) $(dist_noinst_SCRIPTS) depcomp COPYING \
-	INSTALL ar-lib compile config.guess config.sub install-sh \
-	missing ltmain.sh
+	ar-lib compile config.guess config.sub install-sh missing \
+	ltmain.sh
 noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \

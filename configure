@@ -17085,6 +17085,45 @@ _ACEOF
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
+# htonll is supported on Windows 8 but not earlier Windows.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for htonll" >&5
+$as_echo_n "checking for htonll... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <WinSock2.h>
+    htonll(1);
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_HTONLL 1
+_ACEOF
+
+
+else
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_HTONLL 0
+_ACEOF
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 # Check whether --enable-tlv was given.
 if test "${enable_tlv+set}" = set; then :
   enableval=$enable_tlv; default_tlv=${enableval}
