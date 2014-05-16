@@ -43,7 +43,7 @@ public:
     if ((error = ndn_BinaryXmlDecoder_peekDTag(this, expectedTag, &gotExpectedTag)))
       throw runtime_error(ndn_getErrorString(error));
     
-    return gotExpectedTag;
+    return gotExpectedTag != 0;
   }
 };
 
