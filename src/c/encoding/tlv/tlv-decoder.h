@@ -29,7 +29,7 @@ struct ndn_TlvDecoder {
  * @param input A pointer to the input buffer to decode.
  * @param inputLength The number of bytes in input.
  */
-static inline void 
+static __inline void 
 ndn_TlvDecoder_initialize(struct ndn_TlvDecoder *self, const uint8_t *input, size_t inputLength) 
 {
   self->input = input;
@@ -53,14 +53,16 @@ ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int f
  * @param varNumber Return the VAR-NUMBER.
  * @return 0 for success, else an error code for read past the end of the input.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readVarNumber(struct ndn_TlvDecoder *self, uint64_t *varNumber)
 {
+  unsigned int firstOctet;
+
   // Read the first octet inline.
   if (self->offset >= self->inputLength)
     return NDN_ERROR_read_past_the_end_of_the_input;
 
-  unsigned int firstOctet = (unsigned int)self->input[self->offset++];
+  firstOctet = (unsigned int)self->input[self->offset++];
   if (firstOctet < 253) {
     // The value is simple, so we can return it inline.
     *varNumber = (uint64_t)firstOctet;
@@ -79,19 +81,20 @@ ndn_TlvDecoder_readVarNumber(struct ndn_TlvDecoder *self, uint64_t *varNumber)
  * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
  * exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readTypeAndLength
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *length)
 {
   ndn_Error error;
   uint64_t type;
+  uint64_t lengthVarNumber;
+
   if ((error = ndn_TlvDecoder_readVarNumber(self, &type)))
     return error;
 
   if (type != (uint64_t)expectedType)
     return NDN_ERROR_did_not_get_the_expected_TLV_type;
   
-  uint64_t lengthVarNumber;
   if ((error = ndn_TlvDecoder_readVarNumber(self, &lengthVarNumber)))
     return error;
   
@@ -114,7 +117,7 @@ ndn_TlvDecoder_readTypeAndLength
  * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
  * exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readNestedTlvsStart(struct ndn_TlvDecoder *self, unsigned int expectedType, size_t *endOffset)
 {
   ndn_Error error;
@@ -147,7 +150,7 @@ ndn_TlvDecoder_skipRemainingNestedTlvs
  * @param endOffset The offset of the end of the parent TLV, returned by ndn_TlvDecoder_readNestedTlvsStart.
  * @return 0 for success, else an error code if the TLV length does not equal the total length of nested TLVs
  */
-static inline ndn_Error
+static __inline ndn_Error
 ndn_TlvDecoder_finishNestedTlvs(struct ndn_TlvDecoder *self, size_t endOffset)
 {
   // Check the simple, expected case inline.
@@ -168,7 +171,7 @@ ndn_TlvDecoder_finishNestedTlvs(struct ndn_TlvDecoder *self, size_t endOffset)
  * @param gotExpectedType Return a 1 if got the expected type, else 0
  * @return 0 for success, else an error code for read past the end of the input.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_peekType(struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, int *gotExpectedType)
 {
   if (self->offset >= endOffset)
@@ -206,7 +209,7 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
  * @param value Return the integer.
  * @return 0 for success, else an error code for read past the end of the input.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length, uint64_t *value)
 {
   if (length == 1) {
@@ -230,7 +233,7 @@ ndn_TlvDecoder_readNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length
  * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
  * exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readNonNegativeIntegerTlv(struct ndn_TlvDecoder *self, unsigned int expectedType, uint64_t *value)
 {
   ndn_Error error;
@@ -253,13 +256,15 @@ ndn_TlvDecoder_readNonNegativeIntegerTlv(struct ndn_TlvDecoder *self, unsigned i
  * @param value Return the integer (converted to int) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, 
    int *value)
 {
   int gotExpectedType;
   ndn_Error error;
+  uint64_t unsignedValue;
+
   if ((error = ndn_TlvDecoder_peekType
        (self, expectedType, endOffset, &gotExpectedType)))
     return error;
@@ -269,7 +274,6 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
     return NDN_ERROR_success;
   }
 
-  uint64_t unsignedValue;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (self, expectedType, &unsignedValue)))
     return error;
@@ -288,13 +292,15 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
  * @param value Return the integer (converted to double) or -1 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, 
    double *value)
 {
   int gotExpectedType;
   ndn_Error error;
+  uint64_t unsignedValue;
+
   if ((error = ndn_TlvDecoder_peekType
        (self, expectedType, endOffset, &gotExpectedType)))
     return error;
@@ -304,7 +310,6 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
     return NDN_ERROR_success;
   }
 
-  uint64_t unsignedValue;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (self, expectedType, &unsignedValue)))
     return error;
@@ -322,7 +327,7 @@ ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
  * @return 0 for success, else an error code, including an error if not the expected type or if the decoded length
  * exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readBlobTlv
   (struct ndn_TlvDecoder *self, unsigned int expectedType, struct ndn_Blob *value)
 {
@@ -350,13 +355,14 @@ ndn_TlvDecoder_readBlobTlv
  * @return 0 for success, else an error code, including if the decoded length
  * exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readOptionalBlobTlv
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset,
    struct ndn_Blob *value)
 {
   int gotExpectedType;
   ndn_Error error;
+
   if ((error = ndn_TlvDecoder_peekType
        (self, expectedType, endOffset, &gotExpectedType)))
     return error;
@@ -367,7 +373,6 @@ ndn_TlvDecoder_readOptionalBlobTlv
     return NDN_ERROR_success;
   }
 
-  uint64_t unsignedValue;
   if ((error = ndn_TlvDecoder_readBlobTlv(self, expectedType, value)))
     return error;
   
@@ -384,7 +389,7 @@ ndn_TlvDecoder_readOptionalBlobTlv
  * @param value Return 1 or 0 if the next TLV doesn't have the expected type.
  * @return 0 for success, else an error code, including if the decoded length exceeds the number of bytes remaining.
  */
-static inline ndn_Error 
+static __inline ndn_Error 
 ndn_TlvDecoder_readBooleanTlv
   (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset, int *value)
 {
@@ -413,7 +418,7 @@ ndn_TlvDecoder_readBooleanTlv
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param offset The new offset.
  */
-static inline void ndn_TlvDecoder_seek(struct ndn_TlvDecoder *self, size_t offset) 
+static __inline void ndn_TlvDecoder_seek(struct ndn_TlvDecoder *self, size_t offset) 
 {
   self->offset = offset;
 }

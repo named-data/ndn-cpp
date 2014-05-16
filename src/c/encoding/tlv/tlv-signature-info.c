@@ -37,8 +37,9 @@ static ndn_Error
 encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
-  
   ndn_Error error;
+  size_t saveOffset;
+
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
        (encoder, ndn_Tlv_SignatureType, 
         ndn_Tlv_SignatureType_SignatureSha256WithRsa)))
@@ -46,7 +47,7 @@ encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
   // Save the offset and set omitZeroLength true so we can detect if the key 
   //   locator is omitted.  (When we remove the deprecated 
   //   publisherPublicKeyDigest, we can call normally with omitZeroLength false.)
-  size_t saveOffset = encoder->offset;
+  saveOffset = encoder->offset;
   if ((error = ndn_TlvEncoder_writeNestedTlv
        (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue, 
         &signature->keyLocator, 1)))
@@ -87,11 +88,12 @@ ndn_decodeTlvSignatureInfo
 {
   ndn_Error error;
   size_t endOffset;
+  uint64_t signatureType;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
        (decoder, ndn_Tlv_SignatureInfo, &endOffset)))
     return error;
 
-  uint64_t signatureType;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (decoder, ndn_Tlv_SignatureType, &signatureType)))
     return error;

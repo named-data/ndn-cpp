@@ -11,7 +11,7 @@
  * Return the octet at self->offset, converting to unsigned int.  Increment self->offset.
  * This does not check for reading past the end of the input, so this is called "unsafe".
  */
-static inline unsigned int unsafeReadOctet(struct ndn_BinaryXmlDecoder *self) 
+static __inline unsigned int unsafeReadOctet(struct ndn_BinaryXmlDecoder *self) 
 {
   return (unsigned int)self->input[self->offset++];  
 }
@@ -20,7 +20,7 @@ static inline unsigned int unsafeReadOctet(struct ndn_BinaryXmlDecoder *self)
  * Return the octet at self->offset, converting to unsigned int.  Do not increment self->offset.
  * This does not check for reading past the end of the input, so this is called "unsafe".
  */
-static inline unsigned int unsafeGetOctet(struct ndn_BinaryXmlDecoder *self) 
+static __inline unsigned int unsafeGetOctet(struct ndn_BinaryXmlDecoder *self) 
 {
   return (unsigned int)self->input[self->offset];  
 }
@@ -57,10 +57,12 @@ ndn_Error ndn_BinaryXmlDecoder_decodeTypeAndValue(struct ndn_BinaryXmlDecoder *s
   int gotFirstOctet = 0;
   
   while (1) {
+    unsigned int octet;
+
     if (self->offset >= self->inputLength)
       return NDN_ERROR_read_past_the_end_of_the_input;
     
-    unsigned int octet = unsafeReadOctet(self);
+    octet = unsafeReadOctet(self);
     
     if (!gotFirstOctet) {
       if (octet == 0)
@@ -127,6 +129,11 @@ ndn_Error ndn_BinaryXmlDecoder_peekDTag(struct ndn_BinaryXmlDecoder *self, unsig
     // We already decoded this DTag.
     *gotExpectedTag = (self->previouslyPeekedDTag == expectedTag ? 1 : 0);
   else {
+    unsigned int type;
+    unsigned int value;
+    size_t saveOffset;
+    ndn_Error error;
+
     // Default to 0.
     *gotExpectedTag = 0;
 
@@ -136,10 +143,8 @@ ndn_Error ndn_BinaryXmlDecoder_peekDTag(struct ndn_BinaryXmlDecoder *self, unsig
     if (unsafeGetOctet(self) == ndn_BinaryXml_CLOSE)
       return NDN_ERROR_success;
 
-    unsigned int type;
-    unsigned int value;
-    size_t saveOffset = self->offset;
-    ndn_Error error = ndn_BinaryXmlDecoder_decodeTypeAndValue(self, &type, &value);
+    saveOffset = self->offset;
+    error = ndn_BinaryXmlDecoder_decodeTypeAndValue(self, &type, &value);
     // readElementStartDTag will use this to fast forward.
     self->previouslyPeekedDTagEndOffset = self->offset;
     // Restore offset.
@@ -164,6 +169,9 @@ ndn_Error ndn_BinaryXmlDecoder_readBinaryDTagElement
   (struct ndn_BinaryXmlDecoder *self, unsigned int expectedTag, int allowNull, struct ndn_Blob *value)
 {
   ndn_Error error;
+  unsigned int itemType;
+  unsigned int uintValueLength;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(self, expectedTag)))
     return error;
   
@@ -180,8 +188,6 @@ ndn_Error ndn_BinaryXmlDecoder_readBinaryDTagElement
     }
   }
   
-  unsigned int itemType;
-  unsigned int uintValueLength;
   if ((error = ndn_BinaryXmlDecoder_decodeTypeAndValue(self, &itemType, &uintValueLength)))
     return error;
   // Ignore itemType.
@@ -218,11 +224,12 @@ ndn_Error ndn_BinaryXmlDecoder_readUDataDTagElement
   (struct ndn_BinaryXmlDecoder *self, unsigned int expectedTag, struct ndn_Blob *value)
 {
   ndn_Error error;
+  unsigned int itemType;
+  unsigned int uintValueLength;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(self, expectedTag)))
     return error;
     
-  unsigned int itemType;
-  unsigned int uintValueLength;
   if ((error = ndn_BinaryXmlDecoder_decodeTypeAndValue(self, &itemType, &uintValueLength)))
     return error;
   if (itemType != ndn_BinaryXml_UDATA)
@@ -275,6 +282,8 @@ ndn_Error ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
 {
   int gotExpectedTag;
   ndn_Error error;
+  unsigned int unsignedValue;
+
   if ((error = ndn_BinaryXmlDecoder_peekDTag(self, expectedTag, &gotExpectedTag)))
     return error;
     
@@ -283,7 +292,6 @@ ndn_Error ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
     return NDN_ERROR_success;
   }
 
-  unsigned int unsignedValue;
   if ((error = ndn_BinaryXmlDecoder_readUnsignedIntegerDTagElement(self, expectedTag, &unsignedValue)))
     return error;
   

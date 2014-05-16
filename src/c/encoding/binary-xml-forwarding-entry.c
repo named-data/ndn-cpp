@@ -14,13 +14,14 @@
 ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forwardingEntry, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_ForwardingEntry)))
     return error;
     
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
       (encoder, ndn_BinaryXml_DTag_Action, &forwardingEntry->action)))
     return error;
-  size_t dummyBeginOffset, dummyEndOffset;
   if ((error = ndn_encodeBinaryXmlName
        (&forwardingEntry->prefix, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
@@ -48,6 +49,9 @@ ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
 ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forwardingEntry, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
+  int forwardingEntryFlags;
+  int freshnessSeconds;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_ForwardingEntry)))
     return error;
     
@@ -62,7 +66,6 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
       (decoder, ndn_BinaryXml_DTag_FaceID, &forwardingEntry->faceId)))
     return error;
   
-  int forwardingEntryFlags;
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_ForwardingFlags, &forwardingEntryFlags)))
     return error;
@@ -72,7 +75,6 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
     // This sets the default flags.
     ndn_ForwardingFlags_initialize(&forwardingEntry->forwardingFlags);
   
-  int freshnessSeconds;
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &freshnessSeconds)))
     return error;

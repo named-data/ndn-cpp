@@ -22,11 +22,13 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
 
 ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, uint8_t marker, uint64_t *result)
 {
+  uint64_t localResult;
+  size_t i;
+
   if (self->value.length == 0 || self->value.value[0] != marker)
     return NDN_ERROR_Name_component_does_not_begin_with_the_expected_marker;
   
-  uint64_t localResult = 0;
-  size_t i;
+  localResult = 0;
   for (i = 1; i < self->value.length; ++i) {
     localResult *= 256;
     localResult += (uint64_t)self->value.value[i];
@@ -39,11 +41,13 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
 ndn_Error ndn_NameComponent_toNumberWithPrefix
   (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result)
 {
+  uint64_t localResult;
+  size_t i;
+
   if (self->value.length < prefixLength || ndn_memcmp(self->value.value, prefix, prefixLength) != 0)
     return NDN_ERROR_Name_component_does_not_begin_with_the_expected_marker;
   
-  uint64_t localResult = 0;
-  size_t i;
+  localResult = 0;
   for (i = prefixLength; i < self->value.length; ++i) {
     localResult *= 256;
     localResult += (uint64_t)self->value.value[i];
@@ -55,12 +59,13 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
 
 int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
 {
+  size_t i;
+
   // This name is longer than the name we are checking it against.
   if (self->nComponents > name->nComponents)
     return 0;
 
   // Check if at least one of given components doesn't match.
-  size_t i;
   for (i = 0; i < self->nComponents; ++i) {
     struct ndn_NameComponent *selfComponent = self->components + i;
     struct ndn_NameComponent *nameComponent = name->components + i;

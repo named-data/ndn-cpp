@@ -63,6 +63,8 @@ static ndn_Error decodeKeyNameData(struct ndn_KeyLocator *keyLocator, struct ndn
 
 ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struct ndn_BinaryXmlEncoder *encoder)
 {
+  ndn_Error error;
+
   if ((int)keyLocator->type < 0)
     return NDN_ERROR_success;
 
@@ -71,7 +73,6 @@ ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
     //   so do nothing here.
     return NDN_ERROR_success;
 
-  ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_KeyLocator)))
     return error;
 
@@ -84,9 +85,10 @@ ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
       return error;    
   }
   else if (keyLocator->type == ndn_KeyLocatorType_KEYNAME) {
+    size_t dummyBeginOffset, dummyEndOffset;
+
     if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_KeyName)))
       return error;
-    size_t dummyBeginOffset, dummyEndOffset;
     if ((error = ndn_encodeBinaryXmlName
          (&keyLocator->keyName, &dummyBeginOffset, &dummyEndOffset, encoder)))
       return error;
@@ -131,10 +133,11 @@ ndn_Error ndn_encodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
 ndn_Error ndn_decodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
+  int gotExpectedTag;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_KeyLocator)))
     return error;
 
-  int gotExpectedTag;
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Key, &gotExpectedTag)))
     return error;
   if (gotExpectedTag) {

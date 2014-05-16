@@ -19,10 +19,12 @@ static ndn_Error
 encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_ControlParameters *controlParameters = 
-    (struct ndn_ControlParameters *)context;
-  
+    (struct ndn_ControlParameters *)context;  
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset;
+  struct ndn_ForwardingFlags defaultFlags;
+  int flags;
+
   if ((error = ndn_encodeTlvName
        (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset, 
         encoder)))
@@ -47,9 +49,8 @@ encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
         controlParameters->cost)))
     return error;
   
-  struct ndn_ForwardingFlags defaultFlags;
   ndn_ForwardingFlags_initialize(&defaultFlags);
-  int flags = ndn_ForwardingFlags_getNfdForwardingFlags
+  flags = ndn_ForwardingFlags_getNfdForwardingFlags
     (&controlParameters->flags);
   if (flags != ndn_ForwardingFlags_getNfdForwardingFlags(&defaultFlags)) {
     // The flags are not the default value.

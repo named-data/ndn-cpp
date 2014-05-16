@@ -56,10 +56,11 @@ static ndn_Error decodeSignature(struct ndn_Signature *signature, struct ndn_Bin
 
 static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_MetaInfo *metaInfo, struct ndn_BinaryXmlEncoder *encoder)
 {
+  ndn_Error error;
+
   if ((int)metaInfo->type < 0)
     return NDN_ERROR_success;
 
-  ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_SignedInfo)))
     return error;
 
@@ -127,6 +128,9 @@ static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
 static ndn_Error decodeSignedInfo(struct ndn_Signature *signature, struct ndn_MetaInfo *metaInfo, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
+  struct ndn_Blob typeBytes;
+  int freshnessSeconds;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_SignedInfo)))
     return error;
   
@@ -137,7 +141,6 @@ static ndn_Error decodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
        (decoder, ndn_BinaryXml_DTag_Timestamp, &metaInfo->timestampMilliseconds)))
     return error;
   
-  struct ndn_Blob typeBytes;
   if ((error = ndn_BinaryXmlDecoder_readOptionalBinaryDTagElement
       (decoder, ndn_BinaryXml_DTag_Type, 0, &typeBytes)))
     return error;
@@ -164,7 +167,6 @@ static ndn_Error decodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
   else
     return NDN_ERROR_unrecognized_ndn_ContentType;
  
-  int freshnessSeconds;
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &freshnessSeconds)))
     return error;
@@ -187,6 +189,8 @@ ndn_Error ndn_encodeBinaryXmlData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_ContentObject)))
     return error;
   
@@ -195,7 +199,6 @@ ndn_Error ndn_encodeBinaryXmlData
   
   *signedPortionBeginOffset = encoder->offset;
 
-  size_t dummyBeginOffset, dummyEndOffset;
   if ((error = ndn_encodeBinaryXmlName
        (&data->name, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
@@ -218,10 +221,11 @@ ndn_Error ndn_decodeBinaryXmlData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
+  int gotExpectedTag;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_ContentObject)))
     return error;
 
-  int gotExpectedTag;
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Signature, &gotExpectedTag)))
     return error;
   if (gotExpectedTag) {

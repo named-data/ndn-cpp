@@ -13,30 +13,33 @@ ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int f
 {
   // This is a private function so we know firstOctet >= 253.
   if (firstOctet == 253) {
+    uint16_t beValue;
     if (self->offset + 2 > self->inputLength)
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint16_t beValue = *(uint16_t *)(self->input + self->offset);
+    beValue = *(uint16_t *)(self->input + self->offset);
     *varNumber = (uint64_t)be16toh(beValue);
     self->offset += 2;
   }
   else if (firstOctet == 254) {
+    uint32_t beValue;
     if (self->offset + 4 > self->inputLength)
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint32_t beValue = *(uint32_t *)(self->input + self->offset);
+    beValue = *(uint32_t *)(self->input + self->offset);
     *varNumber = (uint64_t)be32toh(beValue);
     self->offset += 4;
   }
   else {
     // value == 255.
+    uint64_t beValue;
     if (self->offset + 8 > self->inputLength)
       return NDN_ERROR_read_past_the_end_of_the_input;
 
     // kind of dangerous... but should be efficient.
-    uint64_t beValue = *(uint64_t *)(self->input + self->offset);
+    beValue = *(uint64_t *)(self->input + self->offset);
     *varNumber = be64toh(beValue);
     self->offset += 8;
   }
@@ -51,10 +54,11 @@ ndn_TlvDecoder_skipRemainingNestedTlvs
   while(self->offset < endOffset) {
     ndn_Error error;
     uint64_t dummyType;
+    uint64_t lengthVarNumber;
+
     if ((error = ndn_TlvDecoder_readVarNumber(self, &dummyType)))
       return error;
     
-    uint64_t lengthVarNumber;
     if ((error = ndn_TlvDecoder_readVarNumber(self, &lengthVarNumber)))
       return error;
     // Silently ignore if the length is larger than size_t.

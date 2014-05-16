@@ -11,10 +11,11 @@
 ndn_Error ndn_encodeBinaryXmlPublisherPublicKeyDigest
   (struct ndn_PublisherPublicKeyDigest *publisherPublicKeyDigest, struct ndn_BinaryXmlEncoder *encoder)
 {  
+  ndn_Error error;
+
   if (!publisherPublicKeyDigest->publisherPublicKeyDigest.value || publisherPublicKeyDigest->publisherPublicKeyDigest.length == 0)
     return NDN_ERROR_success;
   
-  ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeBlobDTagElement
       (encoder, ndn_BinaryXml_DTag_PublisherPublicKeyDigest, &publisherPublicKeyDigest->publisherPublicKeyDigest)))
     return error;

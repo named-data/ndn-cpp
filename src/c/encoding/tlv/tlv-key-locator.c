@@ -11,11 +11,11 @@ ndn_Error
 ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_KeyLocator *keyLocator = (struct ndn_KeyLocator *)context;
+  ndn_Error error;
 
   if ((int)keyLocator->type < 0)
     return NDN_ERROR_success;
   
-  ndn_Error error;
   if (keyLocator->type == ndn_KeyLocatorType_KEYNAME) {
     size_t dummyBeginOffset, dummyEndOffset;
     if ((error = ndn_encodeTlvName
@@ -39,6 +39,8 @@ ndn_decodeTlvKeyLocator
 {
   ndn_Error error;
   size_t endOffset;
+  int gotExpectedType;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, expectedType, &endOffset)))
     return error;
 
@@ -49,7 +51,6 @@ ndn_decodeTlvKeyLocator
     // The KeyLocator is omitted, so leave the fields as none.
     return NDN_ERROR_success;
 
-  int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {

@@ -42,29 +42,32 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
     self->offset += 1;  
   }
   else if (varNumber <= 0xffff) {
+    uint16_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 3)))
       return error;
     self->output->array[self->offset] = 253;
 
-    uint16_t beValue = htobe16((uint16_t)varNumber);
+    beValue = htobe16((uint16_t)varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 2);
     self->offset += 3;  
   }
   else if (varNumber <= 0xffffffff) {
+    uint32_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 5)))
       return error;
     self->output->array[self->offset] = 254;
 
-    uint32_t beValue = htobe32((uint32_t)varNumber);
+    beValue = htobe32((uint32_t)varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 4);
     self->offset += 5;  
   }
   else {
+    uint64_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 9)))
       return error;
     self->output->array[self->offset] = 255;
 
-    uint64_t beValue = htobe64(varNumber);
+    beValue = htobe64(varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 8);
     self->offset += 9;  
   }
@@ -84,26 +87,29 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
     self->offset += 1;  
   }
   else if (value <= 0xffff) {
+    uint16_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 2)))
       return error;
 
-    uint16_t beValue = htobe16((uint16_t)value);
+    beValue = htobe16((uint16_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 2);
     self->offset += 2;  
   }
   else if (value <= 0xffffffff) {
+    uint32_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 4)))
       return error;
 
-    uint32_t beValue = htobe32((uint32_t)value);
+    beValue = htobe32((uint32_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 4);
     self->offset += 4;  
   }
   else {
+    uint64_t beValue;
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 8)))
       return error;
 
-    uint64_t beValue = htobe64(value);
+    beValue = htobe64(value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 8);
     self->offset += 8;  
   }
@@ -128,15 +134,16 @@ ndn_TlvEncoder_writeNestedTlv
   (struct ndn_TlvEncoder *self, unsigned int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
    void *context, int omitZeroLength)
 {
+  ndn_Error error;
+  size_t valueLength;
   int originalEnableOutput = self->enableOutput;
   
   // Make a first pass to get the value length by setting enableOutput = 0.
   size_t saveOffset = self->offset;
   self->enableOutput = 0;
-  ndn_Error error;
   if ((error = writeValue(context, self)))
     return error;
-  size_t valueLength = self->offset - saveOffset;
+  valueLength = self->offset - saveOffset;
   
   if (omitZeroLength && valueLength == 0) {
     // Omit the optional TLV.

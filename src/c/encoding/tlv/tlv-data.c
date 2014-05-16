@@ -72,11 +72,11 @@ encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct DataValueContext *dataValueContext = (struct DataValueContext *)context;
   struct ndn_Data *data = dataValueContext->data;
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
   
   *dataValueContext->signedPortionBeginOffset = encoder->offset;
   
-  ndn_Error error;
-  size_t dummyBeginOffset, dummyEndOffset;
   if ((error = ndn_encodeTlvName
        (&data->name, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
@@ -113,6 +113,8 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
+  int gotExpectedType;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_MetaInfo, &endOffset)))
     return error;
 
@@ -128,7 +130,6 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))
     return error;
   
-  int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_FinalBlockId, endOffset, &gotExpectedType)))
     return error;    

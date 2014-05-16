@@ -72,8 +72,9 @@ static ndn_Error
 encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
-  
   ndn_Error error;
+  size_t saveOffset;
+
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_MinSuffixComponents, interest->minSuffixComponents)))
     return error;
@@ -84,7 +85,7 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
   // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted to see if we need to
   //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call 
   //   with omitZeroLength true.)
-  size_t saveOffset = encoder->offset;
+  saveOffset = encoder->offset;
   if ((error = ndn_TlvEncoder_writeNestedTlv
        (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue, 
         &interest->keyLocator, 1)))
@@ -144,9 +145,11 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct InterestValueContext *interestValueContext = 
     (struct InterestValueContext *)context;
-  struct ndn_Interest *interest = interestValueContext->interest;
-  
+  struct ndn_Interest *interest = interestValueContext->interest;  
   ndn_Error error;
+  uint8_t nonceBuffer[4];    
+  struct ndn_Blob nonceBlob;
+
   if ((error = ndn_encodeTlvName
        (&interest->name, interestValueContext->signedPortionBeginOffset, 
         interestValueContext->signedPortionEndOffset, encoder)))
@@ -156,8 +159,6 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
     return error;
 
   // Encode the Nonce as 4 bytes.
-  uint8_t nonceBuffer[4];    
-  struct ndn_Blob nonceBlob;
   nonceBlob.length = sizeof(nonceBuffer);
   if (interest->nonce.length == 0) {
     // Generate a random nonce.
@@ -212,6 +213,7 @@ decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
   exclude->nEntries = 0;
   while (1) {
     int gotExpectedTag;
+    int isAny;
     
     if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_NameComponent, endOffset, &gotExpectedTag)))
       return error;    
@@ -230,7 +232,6 @@ decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
       continue;
     }
     
-    int isAny;
     if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_Any, endOffset, &isAny)))
       return error;    
     if (isAny) {
@@ -258,6 +259,9 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
+  int gotExpectedType;
+  int mustBeFresh;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Selectors, &endOffset)))
     return error;
 
@@ -270,7 +274,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 
   // Initially set publisherPublicKeyDigest to none.
   ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);      
-  int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_PublisherPublicKeyLocator, endOffset, &gotExpectedType)))
     return error;
@@ -300,7 +303,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_ChildSelector, endOffset, &interest->childSelector)))
     return error;
 
-  int mustBeFresh;
   if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_MustBeFresh, endOffset, &mustBeFresh)))
     return error;
   // Setting the ndn_Interest_ANSWER_STALE bit means mustBeFresh is false. 
@@ -318,13 +320,14 @@ ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *deco
 {
   ndn_Error error;
   size_t endOffset;
+  int gotExpectedType;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Interest, &endOffset)))
     return error;
     
   if ((error = ndn_decodeTlvName(&interest->name, decoder)))
     return error;
     
-  int gotExpectedType;
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Selectors, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {

@@ -48,6 +48,8 @@ ndn_Error ndn_decodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlDec
   name->nComponents = 0;
   while (1) {
     int gotExpectedTag;
+    struct ndn_Blob component;
+
     if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Component, &gotExpectedTag)))
       return error;
     
@@ -55,7 +57,6 @@ ndn_Error ndn_decodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlDec
       // No more components.
       break;
     
-    struct ndn_Blob component;
     if ((error = ndn_BinaryXmlDecoder_readBinaryDTagElement(decoder, ndn_BinaryXml_DTag_Component, 0, &component)))
       return error;
     if ((error = ndn_Name_appendBlob(name, &component)))

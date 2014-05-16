@@ -23,11 +23,12 @@ ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
 ndn_Error 
 ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength) 
 {
+  struct ndn_TlvDecoder decoder;
+
   if (self->gotElementEnd)
     // Someone is calling when we already got the end.
     return NDN_ERROR_success;
   
-  struct ndn_TlvDecoder decoder;
   ndn_TlvDecoder_initialize(&decoder, input, inputLength);
   
   while (1) {
@@ -104,11 +105,12 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
       {
         size_t nRemainingBytes = inputLength - self->offset;
         if (!self->useHeaderBuffer && nRemainingBytes >= self->nBytesToRead) {
+          uint64_t lengthVarNumber;
+          ndn_Error error;
+
           // We don't have to use the headerBuffer.  Set nBytesToRead.
           ndn_TlvDecoder_seek(&decoder, self->offset);
 
-          uint64_t lengthVarNumber;
-          ndn_Error error;
           if ((error = ndn_TlvDecoder_readExtendedVarNumber(&decoder, self->firstOctet, &lengthVarNumber)))
             return error;
           // Update self->offset to the decoder's offset after reading.
@@ -117,9 +119,14 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
           self->nBytesToRead = (size_t)lengthVarNumber;          
         }
         else {
+          size_t nNeededBytes;
+          struct ndn_TlvDecoder bufferDecoder;
+          uint64_t lengthVarNumber;
+          ndn_Error error;
+
           self->useHeaderBuffer = 1;
 
-          size_t nNeededBytes = self->nBytesToRead - self->headerLength;
+          nNeededBytes = self->nBytesToRead - self->headerLength;
           if (nNeededBytes > nRemainingBytes) {
             // We can't get all of the header bytes from this input. Save in headerBuffer.
             if (self->headerLength + nRemainingBytes > sizeof(self->headerBuffer))
@@ -138,10 +145,7 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
           self->offset += nNeededBytes;
 
           // Use a local decoder just for the headerBuffer.
-          struct ndn_TlvDecoder bufferDecoder;
           ndn_TlvDecoder_initialize(&bufferDecoder, self->headerBuffer, sizeof(self->headerBuffer));
-          uint64_t lengthVarNumber;
-          ndn_Error error;
           if ((error = ndn_TlvDecoder_readExtendedVarNumber(&bufferDecoder, self->firstOctet, &lengthVarNumber)))
             return error;
           // Replace nBytesToRead with the length of the value.

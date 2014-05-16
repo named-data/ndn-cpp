@@ -12,6 +12,10 @@ ndn_Error ndn_ElementReader_onReceivedData
 {
   // Process multiple objects in the data.
   while(1) {
+    ndn_Error error;
+    int gotElementEnd;
+    size_t offset;
+
     if (!self->usePartialData) {
       // This is the beginning of an element.  Check whether it is binaryXML or TLV.
       if (dataLength <= 0)
@@ -29,9 +33,6 @@ ndn_Error ndn_ElementReader_onReceivedData
         self->useTlv = 0;
     }
     
-    ndn_Error error;
-    int gotElementEnd;
-    size_t offset;
     if (self->useTlv) {
       // Scan the input to check if a whole TLV element has been read.
       ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);    

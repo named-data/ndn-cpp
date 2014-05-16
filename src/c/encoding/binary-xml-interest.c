@@ -11,15 +11,16 @@
 
 static ndn_Error encodeExclude(struct ndn_Exclude *exclude, struct ndn_BinaryXmlEncoder *encoder)
 {
+  ndn_Error error;
+  size_t i;
+
   if (exclude->nEntries == 0)
     return NDN_ERROR_success;
   
-  ndn_Error error;
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_Exclude)))
     return error;
   
   // TODO: Do we want to order the components (except for ANY)?
-  size_t i;
   for (i = 0; i < exclude->nEntries; ++i) {
     struct ndn_ExcludeEntry *entry = &exclude->entries[i];
     
@@ -179,6 +180,8 @@ ndn_Error ndn_encodeBinaryXmlInterest
 ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
+  int gotExpectedTag;
+
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_Interest)))
     return error;
     
@@ -202,7 +205,6 @@ ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_
     interest->keyLocator.keyData = interest->publisherPublicKeyDigest.publisherPublicKeyDigest;
   }
   
-  int gotExpectedTag;
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Exclude, &gotExpectedTag)))
     return error;
   if (gotExpectedTag) {

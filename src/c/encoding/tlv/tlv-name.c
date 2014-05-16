@@ -14,10 +14,11 @@ ndn_encodeTlvName
 {
   size_t nameValueLength = 0;
   size_t i;
+  ndn_Error error;
+
   for (i = 0; i < name->nComponents; ++i)
     nameValueLength += ndn_TlvEncoder_sizeOfBlobTlv(ndn_Tlv_NameComponent, &name->components[i].value);
 
-  ndn_Error error;
   if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_Name, nameValueLength)))
     return error;
   

@@ -40,6 +40,8 @@ static ndn_Error writeArray(struct ndn_BinaryXmlEncoder *self, const uint8_t *ar
  */
 static size_t getNHeaderEncodingBytes(unsigned int x) 
 {
+  size_t nBytes;
+
   // Do a quick check for pre-compiled results.
   if (x <= ENCODING_LIMIT_1_BYTE) 
     return 1;
@@ -48,7 +50,7 @@ static size_t getNHeaderEncodingBytes(unsigned int x)
   if (x <= ENCODING_LIMIT_3_BYTES) 
     return 3;
   
-  size_t nBytes = 1;
+  nBytes = 1;
   
   // Last byte gives you TT_VALUE_BITS.
   // Remainder each gives you REGULAR_VALUE_BITS.
@@ -68,11 +70,14 @@ static size_t getNHeaderEncodingBytes(unsigned int x)
  */
 static void reverse(uint8_t *array, size_t length) 
 {
+  uint8_t *left;
+  uint8_t *right;
+
   if (length == 0)
     return;
   
-  uint8_t *left = array;
-  uint8_t *right = array + length - 1;
+  left = array;
+  right = array + length - 1;
   while (left < right) {
     // Swap.
     uint8_t temp = *left;
@@ -123,15 +128,19 @@ static ndn_Error reverseBufferAndInsertHeader
 {
   size_t nBufferBytes = self->offset - startOffset;
   size_t nHeaderBytes = getNHeaderEncodingBytes(nBufferBytes);
+  uint8_t *from;
+  uint8_t *fromEnd;
+  uint8_t *to;
+
   ndn_Error error;
   if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + nHeaderBytes)))
     return error;
   
   // To reverse and shift at the same time, we first shift nHeaderBytes to the destination while reversing,
   //   then reverse the remaining bytes in place.
-  uint8_t *from = self->output->array + startOffset;
-  uint8_t *fromEnd = from + nHeaderBytes;
-  uint8_t *to = self->output->array + startOffset + nBufferBytes + nHeaderBytes - 1;
+  from = self->output->array + startOffset;
+  fromEnd = from + nHeaderBytes;
+  to = self->output->array + startOffset + nBufferBytes + nHeaderBytes - 1;
   while (from < fromEnd)
     *(to--) = *(from++);
   // Reverse the remaining bytes in place (if any).
@@ -157,26 +166,32 @@ static ndn_Error reverseBufferAndInsertHeader
  * @param hi32 output the high 32 bits
  * @param lo32 output the low 32 bits
  */
-static inline void splitAbsDouble(double x, unsigned long *hi32, unsigned long *lo32)
+static __inline void splitAbsDouble(double x, unsigned long *hi32, unsigned long *lo32)
 {
+  double twoPower32;
+  double lo32Double;
+
   if (x < 0)
     x = -x;
   x = round(x);
   
-  double twoPower32 = 4294967296.0;
-  double lo32Double = fmod(x, twoPower32);
+  twoPower32 = 4294967296.0;
+  lo32Double = fmod(x, twoPower32);
   *lo32 = (unsigned long)lo32Double;
   *hi32 = (unsigned long)((x - lo32Double) / twoPower32);
 }
 
 ndn_Error ndn_BinaryXmlEncoder_encodeTypeAndValue(struct ndn_BinaryXmlEncoder *self, unsigned int type, unsigned int value)
 {
+  size_t nEncodingBytes;
+  ndn_Error error;
+  size_t i;
+
   if (type > ndn_BinaryXml_UDATA)
     return NDN_ERROR_header_type_is_out_of_range;
   
   // Encode backwards. Calculate how many bytes we need.
-  size_t nEncodingBytes = getNHeaderEncodingBytes(value);
-  ndn_Error error;
+  nEncodingBytes = getNHeaderEncodingBytes(value);
   if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + nEncodingBytes)))
     return error;
 
@@ -188,7 +203,7 @@ ndn_Error ndn_BinaryXmlEncoder_encodeTypeAndValue(struct ndn_BinaryXmlEncoder *s
   value >>= ndn_BinaryXml_TT_VALUE_BITS;
   
   // Rest of value goes into preceding bytes, 7 bits per byte. (Zero top bit is "more" flag.)
-  size_t i = self->offset + nEncodingBytes - 2;
+  i = self->offset + nEncodingBytes - 2;
   while (value != 0 && i >= self->offset) {
     self->output->array[i] = (value & ndn_BinaryXml_REGULAR_VALUE_MASK);
     value >>= ndn_BinaryXml_REGULAR_VALUE_BITS;
@@ -302,12 +317,14 @@ ndn_Error ndn_BinaryXmlEncoder_writeUnsignedDecimalIntDTagElement(struct ndn_Bin
 ndn_Error ndn_BinaryXmlEncoder_writeAbsDoubleBigEndianBlob(struct ndn_BinaryXmlEncoder *self, double value)
 {
   unsigned long hi32, lo32;
+  size_t startOffset;
+  ndn_Error error;
+
   splitAbsDouble(value, &hi32, &lo32);
   
   // First encode the big endian backwards, then reverseBufferAndInsertHeader will reverse it.
-  size_t startOffset = self->offset;
+  startOffset = self->offset;
   
-  ndn_Error error;
   while (lo32 != 0) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 1)))
       return error;
