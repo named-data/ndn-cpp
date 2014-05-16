@@ -468,14 +468,14 @@ const Name::Component&
 Name::get(int i) const
 { 
   if (i >= 0) {
-    if (i >= components_.size())
+    if (i >= (int)components_.size())
       throw runtime_error("Name.get: Index is out of bounds");
 
     return components_[i];
   }
   else {
     // Negative index.
-    if (i < -components_.size())
+    if (i < -((int)components_.size()))
       throw runtime_error("Name.get: Index is out of bounds");
 
     return components_[components_.size() - (-i)];
