@@ -206,6 +206,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/signature.lo src/sha256-with-rsa-signature.lo \
 	src/encoding/base64.lo src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
+	src/encoding/protobuf-tlv.lo \
 	src/encoding/tlv-0_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der.lo \
@@ -643,9 +644,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
-  include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encoding/protobuf-tlv.hpp \
   include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
+  include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -743,6 +745,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp src/encoding/element-listener.hpp \
   src/encoding/oid.cpp \
+  src/encoding/protobuf-tlv.cpp \
   src/encoding/tlv-0_1-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
@@ -1011,6 +1014,8 @@ src/encoding/binary-xml-wire-format.lo: src/encoding/$(am__dirstamp) \
 src/encoding/element-listener.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/oid.lo: src/encoding/$(am__dirstamp) \
+	src/encoding/$(DEPDIR)/$(am__dirstamp)
+src/encoding/protobuf-tlv.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/tlv-0_1-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
@@ -1315,6 +1320,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/binary-xml-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/element-listener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/oid.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/protobuf-tlv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-0_1-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
