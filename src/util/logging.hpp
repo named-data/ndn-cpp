@@ -11,7 +11,7 @@
 
 #include <ndn-cpp/common.hpp>
 
-#ifdef NDN_CPP_HAVE_LOG4CXX
+#if NDN_CPP_HAVE_LOG4CXX
 
 #include <log4cxx/logger.h>
 
