@@ -184,6 +184,30 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     AC_DEFINE_UNQUOTED([HAVE_HTONLL], 0, [1 if have WinSock2 `htonll'.])
 ])
 
+AC_MSG_CHECKING([for log4cxx])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <log4cxx/logger.h>]]
+    [[log4cxx::LoggerPtr staticModuleLogger;]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_LOG4CXX], 1, [1 if have log4cxx.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_LOG4CXX], 0, [1 if have log4cxx.])
+])
+
+AC_MSG_CHECKING([for Protobuf])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <google/protobuf/message.h>]]
+    [[google::protobuf::Message *message;]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], 1, [1 if have Google Protobuf.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], 0, [1 if have Google Protobuf.])
+])
+
 AC_ARG_ENABLE([tlv],
   [AS_HELP_STRING([--enable-tlv], [force NDN-TLV as the default wire format @<:@default: no@:>@])],
   [default_tlv=${enableval}], [default_tlv=no])

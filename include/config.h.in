@@ -33,6 +33,9 @@
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #undef HAVE_LIBSQLITE3
 
+/* 1 if have log4cxx. */
+#undef HAVE_LOG4CXX
+
 /* Define to 1 if you have the `memcmp' function. */
 #undef HAVE_MEMCMP
 
@@ -47,6 +50,9 @@
 
 /* 1 if have the OSX framework. */
 #undef HAVE_OSX_SECURITY
+
+/* 1 if have Google Protobuf. */
+#undef HAVE_PROTOBUF
 
 /* Define to 1 if you have the `round' function. */
 #undef HAVE_ROUND
