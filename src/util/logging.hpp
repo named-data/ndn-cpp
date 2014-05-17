@@ -64,7 +64,7 @@ INIT_LOGGERS ();
 
 #ifdef _DEBUG
 
-#include <sys/time.h>
+#include <time.h>
 #include <iostream>
 
 #define _LOG_DEBUG(x) \
