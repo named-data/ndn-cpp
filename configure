@@ -16330,6 +16330,17 @@ else
 fi
 done
 
+for ac_func in round
+do :
+  ac_fn_cxx_check_func "$LINENO" "round" "ac_cv_func_round"
+if test "x$ac_cv_func_round" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_ROUND 1
+_ACEOF
+
+fi
+done
+
     ax_cxx_compile_cxx11_required=falsednl
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'

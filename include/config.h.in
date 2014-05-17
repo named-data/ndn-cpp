@@ -48,6 +48,9 @@
 /* 1 if have the OSX framework. */
 #undef HAVE_OSX_SECURITY
 
+/* Define to 1 if you have the `round' function. */
+#undef HAVE_ROUND
+
 /* Have the SQLITE3 library */
 #undef HAVE_SQLITE3
 
