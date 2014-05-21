@@ -4,10 +4,6 @@ NDN-CPP:  A Named Data Networking client library for C++ and C
 NDN-CPP is a new implementation of a Named Data Networking client library written in C++ and C.  
 It is wire format compatible with the new NDN-TLV encoding, with NDNx and PARC's CCNx.
 	
-NDN-CPP is open source under a license described in the file COPYING.  While the license
-does not require it, we really would appreciate it if others would share their
-contributions to the library if they are willing to do so under the same license. 
-
 See the file INSTALL.md for build and install instructions.
 
 Please submit any bugs or issues to the NDN-CPP issue tracker:
@@ -26,3 +22,19 @@ Currently, the library has two APIs for developers:
 	2. A core C library implementing lower-level encoding and communication.  Applications should normally
      use the C++ API, but core C code will also function on embedded devices and other environments 
      which don't have C++ support.
+
+License
+-------
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+A copy of the GNU General Public License is in the file COPYING.

@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-05-14)
+Interim changes after NDN-CPP v0.4 (2014-05-21)
 -----------------------------------------------
 
 Changes
@@ -11,6 +11,7 @@ Changes
 * Renamed test-publish-async to test-publish-async-ndnx.
 * Added test-publish-async-nfd.
 * Renamed internal class Tlv1_0a2WireFormat to Tlv0_1WireFormat.
+* COPYING: Changed the license to LGPLv3.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
