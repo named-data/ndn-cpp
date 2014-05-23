@@ -31,6 +31,7 @@ class Interest;
 class Data;
 class ForwardingEntry;
 class ControlParameters;
+class Signature;
   
 class WireFormat {
 public:
@@ -174,6 +175,28 @@ public:
   decodeControlParameters
     (ControlParameters& controlParameters, const uint8_t *input, 
      size_t inputLength);
+  
+  /**
+   * Encode signature as a SignatureInfo and return the encoding.  
+   * Your derived class should override.
+   * @param signature An object of a subclass of Signature to encode.
+   * @return A Blob containing the encoding.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob 
+  encodeSignatureInfo(const Signature& signature);
+  
+  /**
+   * Encode the signatureValue in the Signature object as a SignatureValue (the 
+   * signature bits) and return the encoding.  
+   * Your derived class should override.
+   * @param signature An object of a subclass of Signature with the signature
+   * value to encode.
+   * @return A Blob containing the encoding.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob 
+  encodeSignatureValue(const Signature& signature);
 
   /**
    * Set the static default WireFormat used by default encoding and decoding methods.

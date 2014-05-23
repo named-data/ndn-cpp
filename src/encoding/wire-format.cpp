@@ -83,8 +83,7 @@ WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_
 }
 
 Blob 
-WireFormat::encodeControlParameters
-  (const ControlParameters& controlParameters)
+WireFormat::encodeControlParameters(const ControlParameters& controlParameters)
 {
   throw logic_error("unimplemented");
 }
@@ -93,6 +92,18 @@ void
 WireFormat::decodeControlParameters
   (ControlParameters& controlParameters, const uint8_t *input, 
    size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
+Blob 
+WireFormat::encodeSignatureInfo(const Signature& signature)
+{
+  throw logic_error("unimplemented");
+}
+
+Blob 
+WireFormat::encodeSignatureValue(const Signature& signature)
 {
   throw logic_error("unimplemented");
 }

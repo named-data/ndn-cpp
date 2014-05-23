@@ -98,20 +98,23 @@ public:
   encodeControlParameters
     (const ControlParameters& controlParameters);
   
-#if 0
   /**
-   * Decode input as a ControlParameters in NDN-TLV and set the fields of the 
-   * controlParameters object.
-   * @param controlParameters The ControlParameters object whose 
-   * fields are updated.
-   * @param input A pointer to the input buffer to decode.
-   * @param inputLength The number of bytes in input.
+   * Encode signature as an NDN-TLV SignatureInfo and return the encoding.  
+   * @param signature An object of a subclass of Signature to encode.
+   * @return A Blob containing the encoding.
    */
-  virtual void 
-  decodeControlParameters
-    (ControlParameters& controlParameters, const uint8_t *input, 
-     size_t inputLength);
-#endif
+  virtual Blob 
+  encodeSignatureInfo(const Signature& signature);
+  
+  /**
+   * Encode the signatureValue in the Signature object as an NDN-TLV 
+   * SignatureValue (the signature bits) and return the encoding.  
+   * @param signature An object of a subclass of Signature with the signature
+   * value to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob 
+  encodeSignatureValue(const Signature& signature);
 
   /**
    * Get a singleton instance of a Tlv0_1WireFormat.  To always use the 

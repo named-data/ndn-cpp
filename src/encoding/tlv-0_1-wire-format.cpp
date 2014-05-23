@@ -23,9 +23,11 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/control-parameters.hpp>
+#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
 #include "../c/encoding/tlv/tlv-data.h"
 #include "../c/encoding/tlv/tlv-control-parameters.h"
+#include "../c/encoding/tlv/tlv-signature-info.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1-wire-format.hpp>
@@ -137,13 +139,41 @@ Tlv0_1WireFormat::encodeControlParameters
   return Blob(encoder.getOutput(), false);
 }
 
-#if 0
-void 
-Tlv0_1WireFormat::decodeControlParameters
-  (ControlParameters& controlParameters, const uint8_t *input, 
-   size_t inputLength)
+Blob 
+Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
 {
+  struct ndn_Signature signatureStruct;
+  struct ndn_NameComponent nameComponents[100];
+  ndn_Signature_initialize
+    (&signatureStruct, nameComponents, 
+     sizeof(nameComponents) / sizeof(nameComponents[0]));
+  signature.get(signatureStruct);
+
+  TlvEncoder encoder(256);
+  ndn_Error error;
+  if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
+    throw runtime_error(ndn_getErrorString(error));
+     
+  return Blob(encoder.getOutput(), false);
 }
-#endif
+
+
+Blob 
+Tlv0_1WireFormat::encodeSignatureValue(const Signature& signature)
+{
+  // TODO: Handle signature algorithms other than Sha256WithRsa.
+  const Sha256WithRsaSignature& sha256WithRsaSignature = 
+    dynamic_cast<const Sha256WithRsaSignature&>(signature);
+  struct ndn_Blob signatureStruct;
+  sha256WithRsaSignature.getSignature().get(signatureStruct);
+
+  TlvEncoder encoder(256);
+  ndn_Error error;
+  if ((error = ndn_TlvEncoder_writeBlobTlv
+       (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
+    throw runtime_error(ndn_getErrorString(error));
+     
+  return Blob(encoder.getOutput(), false);
+}
 
 }
