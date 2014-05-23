@@ -99,26 +99,16 @@ DerNode::decodeHeader(InputIterator& start)
 
   bool longFormat = sizeLen & (1 << 7);
 
-  if (!longFormat) {
-    // _LOG_DEBUG("Short Format");
-    // _LOG_DEBUG("sizeLen: " << (int)sizeLen);
+  if (!longFormat)
     return (int)sizeLen;
-  }
   else {
-    // _LOG_DEBUG("Long Format");
     uint8_t byte;
-    // char byte;
     int lenCount = sizeLen & ((1<<7) - 1);
-    // _LOG_DEBUG("sizeLen: " << (int)sizeLen);
-    // _LOG_DEBUG("mask: " << (int)((1<<7) - 1));
-    // _LOG_DEBUG("lenCount: " << (int)lenCount);
     int size = 0;
     do {
       byte = start.ReadU8();
       header_.push_back(byte);
       size = size * 256 + (int)byte;
-      // _LOG_DEBUG("byte: " << (int)byte);
-      // _LOG_DEBUG("size: " << size);
       lenCount--;
     } while (lenCount > 0);
 
@@ -137,7 +127,6 @@ void
 DerNode::decode(InputIterator& start)
 {
   int payloadSize = decodeHeader(start);
-  // _LOG_DEBUG("payloadSize: " << payloadSize);
   if (payloadSize > 0 ) {
     char buf[payloadSize];
     start.read(buf, payloadSize);
@@ -150,7 +139,6 @@ DerNode::parse(InputIterator& start)
 {
   int type = ((uint8_t)start.PeekU8());
 
-  // _LOG_DEBUG("Type: " << hex << setw(2) << setfill('0') << type);
   switch(type) {
     case DER_BOOLEAN:
       return ptr_lib::shared_ptr<DerBool>(new DerBool(start));
@@ -197,12 +185,10 @@ DerComplex::DerComplex(InputIterator& start)
    size_(0)
 {
   size_ = DerNode::decodeHeader(start);
-  // _LOG_DEBUG("Size: " << size_);
 
   int accSize = 0;
   
   while (accSize < size_) {
-    // _LOG_DEBUG("accSize: " << accSize);
     ptr_lib::shared_ptr<DerNode> nodePtr = DerNode::parse(start);
     accSize += nodePtr->getSize();
     addChild(nodePtr, false);

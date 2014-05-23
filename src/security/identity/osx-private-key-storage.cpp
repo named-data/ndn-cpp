@@ -45,10 +45,8 @@ namespace ndn
   OSXPrivateKeyStorage::generateKeyPair(const Name & keyName, KeyType keyType, int keySize)
   { 
     
-    if(doesKeyExist(keyName, KEY_CLASS_PUBLIC)){
-      _LOG_DEBUG("keyName has existed");
-      throw SecurityException("keyName has existed");
-    }
+    if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
+      throw SecurityException("keyName already exists");
 
     string keyNameUri = toInternalKeyName(keyName, KEY_CLASS_PUBLIC);
 
@@ -71,10 +69,8 @@ namespace ndn
     OSStatus res = SecKeyGeneratePair((CFDictionaryRef)attrDict.get(),
                                       &publicKey.get(), &privateKey.get());
 
-    if (res != errSecSuccess){
-      _LOG_DEBUG("Fail to create a key pair: " << res);
+    if (res != errSecSuccess)
       throw SecurityException("Fail to create a key pair");
-    }
   }
 
   void 
@@ -203,12 +199,8 @@ namespace ndn
                                       reinterpret_cast<const unsigned char*>(data),
                                       dataLength
                                       );
-
-    // _LOG_DEBUG("CreateData");
     
     CFReleaser<SecKeychainItemRef> decryptKey = getKey(keyName, keyClass);
-
-    // _LOG_DEBUG("GetKey");
 
     CFReleaser<CFErrorRef> error;
     CFReleaser<SecTransformRef> decrypt = SecDecryptTransformCreate((SecKeyRef)decryptKey.get(), &error.get());
@@ -379,10 +371,8 @@ namespace ndn
     CFReleaser<SecKeychainItemRef> keyItem;
     OSStatus res = SecItemCopyMatching((CFDictionaryRef)attrDict.get(), (CFTypeRef*)&keyItem.get());
     
-    if(res != errSecSuccess){
-      _LOG_DEBUG("Fail to find the key!");
+    if(res != errSecSuccess)
       return NULL;
-    }
     else
       return keyItem;
   }
@@ -403,7 +393,6 @@ namespace ndn
     case KEY_TYPE_RSA:
       return kSecAttrKeyTypeRSA;
     default:
-      _LOG_DEBUG("Unrecognized key type!")
       return NULL;
     }
   }
@@ -414,7 +403,6 @@ namespace ndn
     case KEY_TYPE_AES:
       return kSecAttrKeyTypeAES;
     default:
-      _LOG_DEBUG("Unrecognized key type!")
       return NULL;
     }
   }
@@ -429,7 +417,6 @@ namespace ndn
     case KEY_CLASS_SYMMETRIC:
       return kSecAttrKeyClassSymmetric;
     default:
-      _LOG_DEBUG("Unrecognized key class!");
       return NULL;
     }
   }
@@ -446,7 +433,6 @@ namespace ndn
     case DIGEST_ALGORITHM_SHA256:
       return kSecDigestSHA2;
     default:
-      _LOG_DEBUG("Unrecognized digest algorithm!");
       return NULL;
     }
   }
@@ -461,7 +447,6 @@ namespace ndn
     // case DIGEST_MD5:
     //   return 0;
     default:
-      _LOG_DEBUG("Unrecognized digest algorithm! Unknown digest size");
       return -1;
     }
   }

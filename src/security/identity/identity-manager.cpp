@@ -120,17 +120,9 @@ Name
 IdentityManager::createIdentity(const Name& identityName)
 {
   if (!identityStorage_->doesIdentityExist(identityName)) {
-    _LOG_DEBUG("Create Identity");
     identityStorage_->addIdentity(identityName);
-
-    _LOG_DEBUG("Create Default RSA key pair");
     Name keyName = generateRSAKeyPairAsDefault(identityName, true);
-
-    _LOG_DEBUG("Create self-signed certificate");
     ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName); 
-
-    _LOG_DEBUG("Add self-signed certificate as default");
-
     addCertificateAsDefault(*selfCert);
 
     return keyName;
@@ -142,13 +134,8 @@ IdentityManager::createIdentity(const Name& identityName)
 Name
 IdentityManager::generateKeyPair(const Name& identityName, bool isKsk, KeyType keyType, int keySize)
 {
-  _LOG_DEBUG("Get new key ID");    
   Name keyName = identityStorage_->getNewKeyName(identityName, isKsk);
-
-  _LOG_DEBUG("Generate key pair in private storage");
   privateKeyStorage_->generateKeyPair(keyName, keyType, keySize);
-
-  _LOG_DEBUG("Create a key record in public storage");
   ptr_lib::shared_ptr<PublicKey> pubKey = privateKeyStorage_->getPublicKey(keyName);
   identityStorage_->addKey(keyName, keyType, pubKey->getKeyDer());
 

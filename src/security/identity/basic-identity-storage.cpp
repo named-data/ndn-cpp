@@ -289,11 +289,9 @@ BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& p
 Blob
 BasicIdentityStorage::getKey(const Name& keyName)
 {
-  if (!doesKeyExist(keyName)) {
-    _LOG_DEBUG("keyName does not exist");
+  if (!doesKeyExist(keyName))
     return Blob();
-  }
-
+  
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
   
@@ -382,7 +380,6 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
                       -1, &statement, 0);
 
   
-  _LOG_DEBUG("certName: " << certificateName.toUri().c_str());
   sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
   const Sha256WithRsaSignature* signature = dynamic_cast<const Sha256WithRsaSignature*>(certificate.getSignature());
@@ -434,7 +431,6 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
                        values (?, ?, ?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'), ?)",
                       -1, &statement, 0);
 
-  _LOG_DEBUG("certName: " << certificateName.toUri().c_str());
   sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
   const Sha256WithRsaSignature* signature = dynamic_cast<const Sha256WithRsaSignature*>(certificate.getSignature());
@@ -488,10 +484,8 @@ BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
       
     return data;
   }
-  else {
-    _LOG_DEBUG("Certificate does not exist!");
+  else
     return ptr_lib::shared_ptr<Data>();
-  }
 }
 
 Name 

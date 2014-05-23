@@ -48,8 +48,6 @@ Certificate::Certificate(const Data& data)
 // Use the copy constructor.  It clones the signature object.
 : Data(data)
 {
-  // _LOG_DEBUG("Finish local copy: " << getContent().getContent().size());
-
   decode();
 }
 

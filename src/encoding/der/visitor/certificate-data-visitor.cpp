@@ -31,8 +31,6 @@ namespace der {
 void 
 CertificateDataVisitor::visit(DerSequence& derSeq, ndnboost::any param)
 {
-  // _LOG_DEBUG("CertificateDataVisitor::visit");
-
   DerNodePtrList& children = derSeq.getChildren();
   CertificateValidityVisitor validityVisitor;
   children[0]->accept(validityVisitor, param);
@@ -55,8 +53,6 @@ CertificateDataVisitor::visit(DerSequence& derSeq, ndnboost::any param)
 void 
 CertificateValidityVisitor::visit(DerSequence& derSeq, ndnboost::any param)
 {
-  // _LOG_DEBUG("CertValidityVisitor::visit");
-  
   Certificate* certData = ndnboost::any_cast<Certificate*>(param); 
 
   DerNodePtrList& children = derSeq.getChildren();
@@ -65,9 +61,6 @@ CertificateValidityVisitor::visit(DerSequence& derSeq, ndnboost::any param)
 
   MillisecondsSince1970 notBefore = ndnboost::any_cast<MillisecondsSince1970>(children[0]->accept(simpleVisitor));
   MillisecondsSince1970 notAfter = ndnboost::any_cast<MillisecondsSince1970>(children[1]->accept(simpleVisitor));
-
-  // _LOG_DEBUG("parsed notBefore: " << notBefore);
-  // _LOG_DEBUG("parsed notAfter: " << notAfter);
 
   certData->setNotBefore(notBefore);
   certData->setNotAfter(notAfter);
@@ -99,8 +92,6 @@ CertificateSubjectDescriptionVisitor::visit(DerSequence& derSeq, ndnboost::any p
 void 
 CertificateSubjectVisitor::visit(DerSequence& derSeq, ndnboost::any param)
 {
-  // _LOG_DEBUG("CertSubjectVisitor::visit");
-
   DerNodePtrList& children = derSeq.getChildren();
   
   CertificateSubjectDescriptionVisitor descryptVisitor;
