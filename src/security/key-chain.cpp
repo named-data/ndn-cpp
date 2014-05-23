@@ -25,12 +25,7 @@
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
-#if 1 // Temporary until we move code from sign(Interest)
-#include <stdexcept>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include "../encoding/tlv-encoder.hpp"
-#include "../c/encoding/tlv/tlv-signature-info.h"
-#endif
 
 using namespace std;
 using namespace ndn::func_lib;
@@ -79,46 +74,18 @@ KeyChain::sign
   signature.getKeyLocator().setKeyName(certificateName.getPrefix(-1));
 
   // Append the encoded SignatureInfo.
-#if 1 // TODO: Move this into a WireFormat abstraction.
-  {
-    TlvEncoder encoder(256);
-    struct ndn_Signature signatureStruct;
-    struct ndn_NameComponent nameComponents[100];
-    ndn_Signature_initialize
-      (&signatureStruct, nameComponents, 
-       sizeof(nameComponents) / sizeof(nameComponents[0]));
-    signature.get(signatureStruct);
-
-    ndn_Error error;
-    if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
-      throw runtime_error(ndn_getErrorString(error));
-
-    interest.getName().append(Blob(encoder.getOutput(), false));  
-  }
-#endif
+  interest.getName().append(wireFormat.encodeSignatureInfo(signature));  
 
   // Append an empty signature so that the "signedPortion" is correct.
   interest.getName().append(Name::Component());
-  // Encode once to get the signed portion.
+  // Encode once to get the signed portion, and sign.
   SignedBlob encoding = interest.wireEncode(wireFormat);
-  ptr_lib::shared_ptr<Signature> signedSignaturePtr = sign
+  ptr_lib::shared_ptr<Signature> signedSignature = sign
     (encoding.signedBuf(), encoding.signedSize(), certificateName);
-  Sha256WithRsaSignature& signedSignature = 
-    dynamic_cast<Sha256WithRsaSignature&>(*signedSignaturePtr);
   
   // Remove the empty signature and append the real one.
-#if 1 // TODO: Move this into a WireFormat abstraction.
-  {
-    TlvEncoder encoder(256);
-    ndn_Error error;
-    struct ndn_Blob signatureStruct;
-    signedSignature.getSignature().get(signatureStruct);
-    if ((error = ndn_TlvEncoder_writeBlobTlv
-         (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
-      throw runtime_error(ndn_getErrorString(error));
-    interest.setName(interest.getName().getPrefix(-1).append(Blob(encoder.getOutput(), false)));
-  }
-#endif
+  interest.setName(interest.getName().getPrefix(-1).append
+    (wireFormat.encodeSignatureValue(*signedSignature)));
 }
 
 ptr_lib::shared_ptr<Signature> 
