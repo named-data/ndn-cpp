@@ -184,10 +184,10 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/transport/udp-transport.cpp \
   src/util/blob-stream.hpp \
   src/util/blob.cpp \
+  src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
-  src/util/memory-content-cache.cpp \
-  src/util/nfd-command-interest-generator.cpp src/util/nfd-command-interest-generator.hpp
+  src/util/memory-content-cache.cpp
 
 bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la

@@ -23,19 +23,19 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include "../c/util/time.h"
 #include "../c/util/crypto.h"
-#include "nfd-command-interest-generator.hpp"
+#include "command-interest-generator.hpp"
 
 using namespace std;
 
 namespace ndn {
 
-NfdCommandInterestGenerator::NfdCommandInterestGenerator()
+CommandInterestGenerator::CommandInterestGenerator()
 : lastTimestamp_(::round(ndn_getNowMilliseconds()))
 {
 }
 
 void
-NfdCommandInterestGenerator::generate
+CommandInterestGenerator::generate
   (Interest& interest, KeyChain& keyChain, const Name& certificateName, 
    WireFormat& wireFormat)
 {
@@ -49,7 +49,7 @@ NfdCommandInterestGenerator::generate
   ndn_generateRandomBytes(randomBuffer, sizeof(randomBuffer));
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
 
-  keyChain.sign(interest, certificateName);
+  keyChain.sign(interest, certificateName, wireFormat);
   
   if (interest.getInterestLifetimeMilliseconds() < 0)
     // The caller has not set the interest lifetime, so set it here.

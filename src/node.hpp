@@ -27,7 +27,7 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-flags.hpp>
 #include <ndn-cpp/face.hpp>
-#include "util/nfd-command-interest-generator.hpp"
+#include "util/command-interest-generator.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -426,7 +426,7 @@ private:
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
-  NfdCommandInterestGenerator commandInterestGenerator_;
+  CommandInterestGenerator commandInterestGenerator_;
 };
 
 }

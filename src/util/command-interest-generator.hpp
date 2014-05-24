@@ -28,17 +28,17 @@ namespace ndn {
 
 class KeyChain;
   
-/** An NfdCommandInterestGenerator keeps track of a timestamp and generates
+/** An CommandInterestGenerator keeps track of a timestamp and generates
  * command interests according to the NFD Signed Command Interests protocol:
  * http://redmine.named-data.net/projects/nfd/wiki/Command_Interests
  */
-class NfdCommandInterestGenerator {
+class CommandInterestGenerator {
 public:
   /**
-   * Create a new NfdCommandInterestGenerator and initialize the timestamp to 
+   * Create a new CommandInterestGenerator and initialize the timestamp to 
    * now.
    */
-  NfdCommandInterestGenerator();
+  CommandInterestGenerator();
 
   /**
    * Append a timestamp component and a random value component to interest's
