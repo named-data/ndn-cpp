@@ -202,11 +202,16 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[google::protobuf::Message *message;]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], 1, [1 if have Google Protobuf.])
+    HAVE_PROTOBUF=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], 0, [1 if have Google Protobuf.])
+    HAVE_PROTOBUF=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], $HAVE_PROTOBUF, [1 if have Google Protobuf.])
+if test "$HAVE_PROTOBUF" == "1" ; then
+  AC_CHECK_LIB([protobuf], [main], [],
+               [AC_MSG_FAILURE([have protobuf headers but no libprotobuf])])
+fi
 
 AC_ARG_ENABLE([tlv],
   [AS_HELP_STRING([--enable-tlv], [force NDN-TLV as the default wire format @<:@default: no@:>@])],
