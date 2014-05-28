@@ -9,6 +9,7 @@ Prerequisites
 * Required: libcrypto
 * Optional: libsqlite3 (for key storage)
 * Optional: OSX Security framework (for key storage)
+* Optional: Protobuf (for the ProtobufTlv converter)
 
 Following are the detailed steps for each platform to install the prerequisites.
 
@@ -16,8 +17,18 @@ Following are the detailed steps for each platform to install the prerequisites.
 Install Xcode.  
 In Xcode Preferences > Downloads, install "Command Line Tools".
 
+Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install protobuf-cpp
+
 ## Mac OS X 10.9
 Install Xcode.  (Xcode on OS X 10.9 seems to already have the Command Line Tools.)
+
+Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install protobuf-cpp
 
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
 In a terminal, enter:
@@ -65,8 +76,8 @@ This makes the following test files:
 * bin/test-publish-async-nfd: Connect to the local NFD hub, accept interests with prefix /testecho and echo back a data packet. See test-echo-consumer.
 * bin/test-echo-consumer: Prompt for a word, send the interest /testecho/word to the local hub which is echoed by test-publish-async-nfd (or test-publish-async-ndnx).
 * bin/test-encode-decode-interest: Encode and decode an interest, testing interest selectors and the name URI.
-* bin/test-encode-decode-data: Encode and decode a data packet.
-* bin/test-encode-decode-forwarding-entry: Encode and decode a data packet, including signing the data packet.
+* bin/test-encode-decode-data: Encode and decode a data packet, including signing the data packet.
+* bin/test-encode-decode-forwarding-entry: Encode and decode a data packet.
 * bin/test-encode-decode-fib-entry: Encode and decode a sample Protobuf message using ProtobufTlv.
 
 Running make doxygen-doc puts code documentation in doc/html.
