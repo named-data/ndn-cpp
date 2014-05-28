@@ -24,6 +24,7 @@
 #if NDN_CPP_HAVE_PROTOBUF
 
 #include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/protobuf-tlv.hpp>
