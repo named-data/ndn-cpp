@@ -473,13 +473,13 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
   {
     int nIterations = useCrypto ? 20000 : 2000000;
     double duration = benchmarkEncodeDataSecondsCpp(nIterations, useComplex, useCrypto, encoding);
-    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
     int nIterations = useCrypto ? 100000 : 2000000;
     double duration = benchmarkDecodeDataSecondsCpp(nIterations, useCrypto, encoding);
-    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
 }
@@ -499,13 +499,13 @@ benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
   {
     int nIterations = useCrypto ? 20000 : 10000000;
     double duration = benchmarkEncodeDataSecondsC(nIterations, useComplex, useCrypto, encoding, sizeof(encoding), &encodingLength);
-    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
     int nIterations = useCrypto ? 150000 : 15000000;
     double duration = benchmarkDecodeDataSecondsC(nIterations, useCrypto, encoding, encodingLength);
-    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "yes" : "no ") 
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
 }
