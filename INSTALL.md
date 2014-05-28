@@ -36,6 +36,10 @@ In a terminal, enter:
     sudo apt-get install build-essential
     sudo apt-get install libssl-dev
 
+Optional: To install Protobuf, in a terminal, enter:
+
+    sudo apt-get install libprotobuf-dev
+
 ## Windows Cygwin
 Cygwin is tested on Windows 7 64-bit. 
 
