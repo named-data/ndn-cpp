@@ -211,6 +211,9 @@ AC_DEFINE_UNQUOTED([HAVE_PROTOBUF], $HAVE_PROTOBUF, [1 if have Google Protobuf.]
 if test "$HAVE_PROTOBUF" == "1" ; then
   AC_CHECK_LIB([protobuf], [main], [],
                [AC_MSG_FAILURE([have protobuf headers but no libprotobuf])])
+  # libprotobuf needs libpthread.
+  AC_CHECK_LIB([pthread], [main], [],
+               [AC_MSG_FAILURE([have libprotobuf but no libpthread])])
 fi
 
 AC_ARG_ENABLE([tlv],
