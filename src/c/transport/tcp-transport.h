@@ -18,8 +18,8 @@
  * A copy of the GNU General Public License is in the file COPYING.
  */
 
-#ifndef NDN_TCPTRANSPORT_H
-#define NDN_TCPTRANSPORT_H
+#ifndef NDN_TCP_TRANSPORT_H
+#define NDN_TCP_TRANSPORT_H
 
 #include "socket-transport.h"
 
@@ -47,7 +47,8 @@ static inline void ndn_TcpTransport_initialize(struct ndn_TcpTransport *self)
  * @param port The port to connect to.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_connect(struct ndn_TcpTransport *self, char *host, unsigned short port)
+static inline ndn_Error ndn_TcpTransport_connect
+  (struct ndn_TcpTransport *self, char *host, unsigned short port)
 {
   return ndn_SocketTransport_connect(&self->base, SOCKET_TCP, host, port);
 }
@@ -59,26 +60,29 @@ static inline ndn_Error ndn_TcpTransport_connect(struct ndn_TcpTransport *self, 
  * @param dataLength The number of bytes in data.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_send(struct ndn_TcpTransport *self, const uint8_t *data, size_t dataLength)
+static inline ndn_Error ndn_TcpTransport_send
+  (struct ndn_TcpTransport *self, const uint8_t *data, size_t dataLength)
 {
   return ndn_SocketTransport_send(&self->base, data, dataLength);
 }
 
 /**
- * Check if there is data ready on the socket to be received with ndn_TcpTransport_receive.
- * This does not block, and returns immediately.
+ * Check if there is data ready on the socket to be received with 
+ * ndn_TcpTransport_receive. This does not block, and returns immediately.
  * @param self A pointer to the ndn_TcpTransport struct.
  * @param receiveIsReady This will be set to 1 if data is ready, 0 if not.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_receiveIsReady(struct ndn_TcpTransport *self, int *receiveIsReady)
+static inline ndn_Error ndn_TcpTransport_receiveIsReady
+  (struct ndn_TcpTransport *self, int *receiveIsReady)
 {
   return ndn_SocketTransport_receiveIsReady(&self->base, receiveIsReady);
 }
 
 /**
- * Receive data from the socket.  NOTE: This is a blocking call.  You should first call ndn_SocketTransport_receiveIsReady
- * to make sure there is data ready to receive.
+ * Receive data from the socket.  NOTE: This is a blocking call.  
+ * You should first call ndn_SocketTransport_receiveIsReady to make sure there 
+ * is data ready to receive.
  * @param self A pointer to the ndn_TcpTransport struct.
  * @param buffer A pointer to the buffer to receive the data.
  * @param bufferLength The maximum length of buffer.
@@ -86,7 +90,8 @@ static inline ndn_Error ndn_TcpTransport_receiveIsReady(struct ndn_TcpTransport 
  * @return 0 for success, else an error code.
  */
 static inline ndn_Error ndn_TcpTransport_receive
-  (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength, size_t *nBytes)
+  (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength, 
+   size_t *nBytes)
 {
   return ndn_SocketTransport_receive(&self->base, buffer, bufferLength, nBytes);
 }
