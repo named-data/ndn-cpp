@@ -32,7 +32,8 @@ class ElementListener;
 class Transport {
 public:
   /**
-   * A Transport::ConnectionInfo is a base class for connection information used by subclasses of Transport.
+   * A Transport::ConnectionInfo is a base class for connection information used 
+   * by subclasses of Transport.
    */
   class ConnectionInfo { 
   public:
@@ -40,12 +41,16 @@ public:
   };
   
   /**
-   * Connect according to the info in ConnectionInfo, and processEvents() will use elementListener.
-   * @param connectionInfo A reference to an object of a subclass of ConnectionInfo.
-   * @param elementListener Not a shared_ptr because we assume that it will remain valid during the life of this object.
+   * Connect according to the info in ConnectionInfo, and processEvents() will 
+   * use elementListener.
+   * @param connectionInfo A reference to an object of a subclass of 
+   * ConnectionInfo.
+   * @param elementListener Not a shared_ptr because we assume that it will 
+   * remain valid during the life of this object.
    */
   virtual void 
-  connect(const Transport::ConnectionInfo& connectionInfo, ElementListener& elementListener);
+  connect(const Transport::ConnectionInfo& connectionInfo, 
+          ElementListener& elementListener);
   
   /**
    * Set data to the host
@@ -62,11 +67,13 @@ public:
   }
   
   /**
-   * Process any data to receive.  For each element received, call elementListener.onReceivedElement.
-   * This is non-blocking and will return immediately if there is no data to receive.
-   * You should normally not call this directly since it is called by Face.processEvents.
-   * @throw This may throw an exception for reading data or in the callback for processing the data.  If you
-   * call this from an main event loop, you may want to catch and log/disregard all exceptions.
+   * Process any data to receive.  For each element received, call 
+   * elementListener.onReceivedElement. This is non-blocking and will return 
+   * immediately if there is no data to receive. You should normally not call 
+   * this directly since it is called by Face.processEvents.
+   * @throw This may throw an exception for reading data or in the callback for 
+   * processing the data.  If you call this from an main event loop, you may 
+   * want to catch and log/disregard all exceptions.
    */
   virtual void 
   processEvents() = 0;
@@ -75,7 +82,8 @@ public:
   getIsConnected();
   
   /**
-   * Close the connection.  This base class implementation does nothing, but your derived class can override.
+   * Close the connection.  This base class implementation does nothing, but 
+   * your derived class can override.
    */
   virtual void 
   close();

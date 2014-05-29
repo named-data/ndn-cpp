@@ -31,7 +31,9 @@ Transport::ConnectionInfo::~ConnectionInfo()
 }
 
 void 
-Transport::connect(const Transport::ConnectionInfo& connectionInfo, ElementListener& elementListener) 
+Transport::connect
+  (const Transport::ConnectionInfo& connectionInfo, 
+   ElementListener& elementListener) 
 {
   throw logic_error("unimplemented");
 }

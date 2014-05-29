@@ -36,26 +36,33 @@ UdpTransport::ConnectionInfo::~ConnectionInfo()
 }
 
 UdpTransport::UdpTransport() 
-  : isConnected_(false), transport_(new struct ndn_UdpTransport), elementReader_(new struct ndn_ElementReader)
+  : isConnected_(false), transport_(new struct ndn_UdpTransport), 
+    elementReader_(new struct ndn_ElementReader)
 {
   ndn_UdpTransport_initialize(transport_.get());
   elementReader_->partialData.array = 0;
 }
 
 void 
-UdpTransport::connect(const Transport::ConnectionInfo& connectionInfo, ElementListener& elementListener)
+UdpTransport::connect
+  (const Transport::ConnectionInfo& connectionInfo, 
+   ElementListener& elementListener)
 {
-  const UdpTransport::ConnectionInfo& udpConnectionInfo = dynamic_cast<const UdpTransport::ConnectionInfo&>(connectionInfo);
+  const UdpTransport::ConnectionInfo& udpConnectionInfo = 
+    dynamic_cast<const UdpTransport::ConnectionInfo&>(connectionInfo);
   
   ndn_Error error;
-  if ((error = ndn_UdpTransport_connect(transport_.get(), (char *)udpConnectionInfo.getHost().c_str(), udpConnectionInfo.getPort())))
+  if ((error = ndn_UdpTransport_connect
+       (transport_.get(), (char *)udpConnectionInfo.getHost().c_str(), 
+        udpConnectionInfo.getPort())))
     throw runtime_error(ndn_getErrorString(error)); 
 
   // TODO: This belongs in the socket listener.
   const size_t initialLength = 1000;
   // Automatically cast elementReader_ to (struct ndn_ElementListener *)
   ndn_ElementReader_initialize
-    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), initialLength, ndn_realloc);
+    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), 
+     initialLength, ndn_realloc);
   
   isConnected_ = true;
 }

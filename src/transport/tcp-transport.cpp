@@ -36,26 +36,33 @@ TcpTransport::ConnectionInfo::~ConnectionInfo()
 }
 
 TcpTransport::TcpTransport() 
-  : isConnected_(false), transport_(new struct ndn_TcpTransport), elementReader_(new struct ndn_ElementReader)
+  : isConnected_(false), transport_(new struct ndn_TcpTransport), 
+    elementReader_(new struct ndn_ElementReader)
 {
   ndn_TcpTransport_initialize(transport_.get());
   elementReader_->partialData.array = 0;
 }
 
 void 
-TcpTransport::connect(const Transport::ConnectionInfo& connectionInfo, ElementListener& elementListener)
+TcpTransport::connect
+  (const Transport::ConnectionInfo& connectionInfo, 
+   ElementListener& elementListener)
 {
-  const TcpTransport::ConnectionInfo& tcpConnectionInfo = dynamic_cast<const TcpTransport::ConnectionInfo&>(connectionInfo);
+  const TcpTransport::ConnectionInfo& tcpConnectionInfo = 
+    dynamic_cast<const TcpTransport::ConnectionInfo&>(connectionInfo);
   
   ndn_Error error;
-  if ((error = ndn_TcpTransport_connect(transport_.get(), (char *)tcpConnectionInfo.getHost().c_str(), tcpConnectionInfo.getPort())))
+  if ((error = ndn_TcpTransport_connect
+       (transport_.get(), (char *)tcpConnectionInfo.getHost().c_str(), 
+        tcpConnectionInfo.getPort())))
     throw runtime_error(ndn_getErrorString(error)); 
 
   // TODO: This belongs in the socket listener.
   const size_t initialLength = 1000;
   // Automatically cast elementReader_ to (struct ndn_ElementListener *)
   ndn_ElementReader_initialize
-    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), initialLength, ndn_realloc);
+    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), 
+     initialLength, ndn_realloc);
   
   isConnected_ = true;
 }
