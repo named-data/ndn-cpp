@@ -76,6 +76,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/transport/tcp-transport.hpp \
   include/ndn-cpp/transport/transport.hpp \
   include/ndn-cpp/transport/udp-transport.hpp \
+  include/ndn-cpp/transport/unix-transport.hpp \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
@@ -117,6 +118,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
+  src/c/transport/unix-transport.h \
   src/c/util/blob.h \
   src/c/util/crypto.c src/c/util/crypto.h \
   src/c/util/dynamic-uint8-array.c src/c/util/dynamic-uint8-array.h \
@@ -182,6 +184,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/transport/tcp-transport.cpp \
   src/transport/transport.cpp \
   src/transport/udp-transport.cpp \
+  src/transport/unix-transport.cpp \
   src/util/blob-stream.hpp \
   src/util/blob.cpp \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
