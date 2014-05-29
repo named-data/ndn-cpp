@@ -31,7 +31,8 @@ extern "C" {
 
 typedef enum {
   SOCKET_TCP,
-  SOCKET_UDP
+  SOCKET_UDP,
+  SOCKET_UNIX
 } ndn_SocketType;
   
 struct ndn_SocketTransport {
@@ -48,11 +49,13 @@ static inline void ndn_SocketTransport_initialize(struct ndn_SocketTransport *se
 }
 
 /**
- * Connect with TCP or UDP to the host:port.
+ * Connect with TCP or UDP to the host:port, or with Unix Sockets to host
+ *   (which is interpreted as the Unix Socket filename).
  * @param self A pointer to the ndn_SocketTransport struct.
- * @param socketType SOCKET_TCP or SOCKET_UDP.
- * @param host The host to connect to.
- * @param port The port to connect to.
+ * @param socketType SOCKET_TCP, SOCKET_UDP or SOCKET_UNIX.
+ * @param host For SOCKET_TCP or SOCKET_UDP, the host to connect to. For 
+ * SOCKET_UNIX, the socket filename.
+ * @param port The port to connect to (ignored for SOCKET_UNIX).
  * @return 0 for success, else an error code.
  */
 ndn_Error ndn_SocketTransport_connect(struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host, unsigned short port);

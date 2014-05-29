@@ -18,8 +18,6 @@
  * A copy of the GNU General Public License is in the file COPYING.
  */
 
-#include "socket-transport.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -27,57 +25,81 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 #include <poll.h>
 #include "../util/ndn_memory.h"
+#include "socket-transport.h"
+#include <errno.h>
 
-ndn_Error ndn_SocketTransport_connect(struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host, unsigned short port)
+ndn_Error ndn_SocketTransport_connect
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host, 
+   unsigned short port)
 {
-  if (self->socketDescriptor >= 0) {
-    close(self->socketDescriptor);
-    self->socketDescriptor = -1;
-  }
-  
-  struct addrinfo hints;
-  ndn_memset((uint8_t *)&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  if (socketType == SOCKET_TCP)
-    hints.ai_socktype = SOCK_STREAM;
-  else if (socketType == SOCKET_UDP)
-    hints.ai_socktype = SOCK_DGRAM;
-  else
-    return NDN_ERROR_unrecognized_ndn_SocketTransport;
-
-  char portString[10];
-  sprintf(portString, "%d", port);
-  
-  struct addrinfo *serverInfo;
-  if (getaddrinfo(host, portString, &hints, &serverInfo) != 0)
-    return NDN_ERROR_SocketTransport_error_in_getaddrinfo;
-
-  // loop through all the results and connect to the first we can
-  struct addrinfo *p;
   int socketDescriptor;
-  for(p = serverInfo; p != NULL; p = p->ai_next) {
-    if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-      continue;
 
-    if (connect(socketDescriptor, p->ai_addr, p->ai_addrlen) == -1) {
+  if (socketType == SOCKET_UNIX) {
+    struct sockaddr_un address;
+    memset(&address, 0, sizeof(struct sockaddr_un));
+
+    if ((socketDescriptor = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+      return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
+
+    address.sun_family = AF_UNIX;
+    strcpy(address.sun_path, host);
+    if (connect(socketDescriptor, (struct sockaddr *)&address, 
+                SUN_LEN(&address)) == -1) {
       close(socketDescriptor);
-      continue;
+      return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
+    }
+  }
+  else {
+    struct addrinfo hints;
+    char portString[10];
+    struct addrinfo *serverInfo;
+    struct addrinfo *p;
+
+    if (self->socketDescriptor >= 0) {
+      close(self->socketDescriptor);
+      self->socketDescriptor = -1;
     }
 
-    break;
-  }
+    ndn_memset((uint8_t *)&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    if (socketType == SOCKET_TCP)
+      hints.ai_socktype = SOCK_STREAM;
+    else if (socketType == SOCKET_UDP)
+      hints.ai_socktype = SOCK_DGRAM;
+    else
+      return NDN_ERROR_unrecognized_ndn_SocketTransport;
 
-  if (p == NULL) {
+    sprintf(portString, "%d", port);
+
+    if (getaddrinfo(host, portString, &hints, &serverInfo) != 0)
+      return NDN_ERROR_SocketTransport_error_in_getaddrinfo;
+
+    // loop through all the results and connect to the first we can
+    for(p = serverInfo; p != NULL; p = p->ai_next) {
+      if ((socketDescriptor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
+        continue;
+
+      if (connect(socketDescriptor, p->ai_addr, p->ai_addrlen) == -1) {
+        close(socketDescriptor);
+        continue;
+      }
+
+      break;
+    }
+
+    if (p == NULL) {
+      freeaddrinfo(serverInfo);
+      return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
+    }
+
     freeaddrinfo(serverInfo);
-    return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
   }
-
-  freeaddrinfo(serverInfo);
-  self->socketDescriptor = socketDescriptor;
-
+  
+  self->socketDescriptor = socketDescriptor;  
   return NDN_ERROR_success;
 }
 
