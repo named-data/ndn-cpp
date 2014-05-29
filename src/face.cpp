@@ -19,12 +19,57 @@
  * A copy of the GNU General Public License is in the file COPYING.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "node.hpp"
+#include <ndn-cpp/transport/tcp-transport.hpp>
+#include <ndn-cpp/transport/unix-transport.hpp>
 #include <ndn-cpp/face.hpp>
 
 using namespace std;
 
 namespace ndn {
+
+/**
+ * If host is "localhost" and port is the default port, and the forwarder's Unix
+ * socket file path exists, then return the file path.  Otherwise return an
+ * empty string.
+ * @param host The host to check for "localhost".
+ * @param port The port to check for the default port.
+ * @return The Unix socket file path to use, or an empty string.
+ */
+static string getUnixSocketFilePathForLocalhost
+  (const char *host, unsigned short port)
+{
+  if (!(::strcmp(host, "localhost") == 0 && port == 6363))
+    return "";
+  
+  string filePath("/var/run/nfd.sock");
+  if (::access(filePath.c_str(), R_OK) == 0)
+    return filePath;
+  else
+    return "";
+}
+  
+static ptr_lib::shared_ptr<Transport> getDefaultTransport
+  (const char *host, unsigned short port)
+{
+  if (getUnixSocketFilePathForLocalhost(host, port) == "")
+    return ptr_lib::make_shared<TcpTransport>();
+  else
+    return ptr_lib::make_shared<UnixTransport>();
+}
+
+static ptr_lib::shared_ptr<Transport::ConnectionInfo> getDefaultConnectionInfo
+  (const char *host, unsigned short port)
+{
+  string filePath = getUnixSocketFilePathForLocalhost(host, port);
+  if (filePath == "")
+    return ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port);
+  else
+    return ptr_lib::make_shared<UnixTransport::ConnectionInfo>(filePath.c_str());
+}
 
 Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : node_(new Node(transport, connectionInfo)), commandKeyChain_(0)
@@ -32,8 +77,8 @@ Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 }
 
 Face::Face(const char *host, unsigned short port)
-: node_(new Node(ptr_lib::shared_ptr<TcpTransport>(new TcpTransport()), 
-                 ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host, port))), 
+: node_(new Node(getDefaultTransport(host, port), 
+                 getDefaultConnectionInfo(host, port))), 
   commandKeyChain_(0)
 {
 }

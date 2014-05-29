@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-05-27)
+Interim changes after NDN-CPP v0.4 (2014-05-29)
 -----------------------------------------------
 
 Changes
@@ -13,6 +13,7 @@ Changes
 * Renamed internal class Tlv1_0a2WireFormat to Tlv0_1WireFormat.
 * COPYING: Changed the license to LGPLv3.
 * Added encoding/ProtobufTlv for converting a Protobuf message object to TLV encoding.
+* Added UnixTransport. If using Face("localhost"), try to connect using a Unix socket.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.

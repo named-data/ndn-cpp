@@ -26,7 +26,7 @@
 #include "data.hpp"
 #include "forwarding-flags.hpp"
 #include "encoding/wire-format.hpp"
-#include "transport/tcp-transport.hpp"
+#include <ndn-cpp/transport/transport.hpp>
 
 namespace ndn {
 
@@ -67,7 +67,10 @@ public:
   Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo);
   
   /**
-   * Create a new Face for communication with an NDN hub at host:port using the default TcpTransport.
+   * Create a new Face for communication with an NDN hub at host:port using the 
+   * default TcpTransport. However, if the host is "localhost" and the port is
+   * the default and the forwarder's Unix socket file exists, then connect using 
+   * UnixTransport.
    * @param host The host of the NDN hub.
    * @param port The port of the NDN hub. If omitted. use 6363.
    */
