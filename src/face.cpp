@@ -45,11 +45,16 @@ static string getUnixSocketFilePathForLocalhost
   if (!(::strcmp(host, "localhost") == 0 && port == 6363))
     return "";
   
-  string filePath("/var/run/nfd.sock");
+  string filePath = "/var/run/nfd.sock";
   if (::access(filePath.c_str(), R_OK) == 0)
     return filePath;
-  else
-    return "";
+  else {
+    filePath = "/tmp/.ndnd.sock";
+    if (::access(filePath.c_str(), R_OK) == 0)
+      return filePath;
+    else
+      return "";
+  }
 }
   
 static ptr_lib::shared_ptr<Transport> getDefaultTransport
