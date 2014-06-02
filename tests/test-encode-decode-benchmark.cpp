@@ -525,13 +525,13 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
   const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
   Blob encoding;
   {
-    int nIterations = useCrypto ? 20000 : 2000000;
+    int nIterations = useCrypto ? 5000 : 2000000;
     double duration = benchmarkEncodeDataSecondsCpp(nIterations, useComplex, useCrypto, encoding);
     cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
-    int nIterations = useCrypto ? 100000 : 2000000;
+    int nIterations = useCrypto ? 50000 : 2000000;
     double duration = benchmarkDecodeDataSecondsCpp(nIterations, useCrypto, encoding);
     cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
@@ -551,13 +551,13 @@ benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
   uint8_t encoding[1600];
   size_t encodingLength;
   {
-    int nIterations = useCrypto ? 20000 : 10000000;
+    int nIterations = useCrypto ? 5000 : 10000000;
     double duration = benchmarkEncodeDataSecondsC(nIterations, useComplex, useCrypto, encoding, sizeof(encoding), &encodingLength);
     cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
   }
   {
-    int nIterations = useCrypto ? 150000 : 15000000;
+    int nIterations = useCrypto ? 50000 : 15000000;
     double duration = benchmarkDecodeDataSecondsC(nIterations, useCrypto, encoding, encodingLength);
     cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ") 
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;  
