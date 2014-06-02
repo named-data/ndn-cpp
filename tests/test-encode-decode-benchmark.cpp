@@ -364,7 +364,7 @@ benchmarkEncodeDataSecondsC
   ndn_digestSha256(publicKeyDer, publicKeyDerLength, publisherPublicKeyDigestArray);
   struct ndn_Blob publisherPublicKeyDigest;
   ndn_Blob_initialize(&publisherPublicKeyDigest, publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
-  uint8_t signatureBitsArray[128];
+  uint8_t signatureBitsArray[1000];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
   
   // Set up the private key now in case useCrypto is true.
