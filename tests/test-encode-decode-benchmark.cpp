@@ -196,7 +196,7 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
     ostringstream contentStream;
     int count = 1;
     contentStream << (count++);
-    while (contentStream.str().length() < 1170)
+    while (contentStream.str().length() < 1115)
       contentStream << " " << (count++);
     content = Blob((uint8_t*)contentStream.str().c_str(), contentStream.str().length());
   }
@@ -337,7 +337,7 @@ benchmarkEncodeDataSecondsC
     ostringstream contentStream;
     int count = 1;
     contentStream << (count++);
-    while (contentStream.str().length() < 1170)
+    while (contentStream.str().length() < 1115)
       contentStream << " " << (count++);
     contentBlob = Blob((uint8_t*)contentStream.str().c_str(), contentStream.str().length());
   }
