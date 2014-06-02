@@ -223,7 +223,7 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
   uint8_t publisherPublicKeyDigestArray[32];
   memset(publisherPublicKeyDigestArray, 0, sizeof(publisherPublicKeyDigestArray));
   Blob publisherPublicKeyDigest(publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
-  uint8_t signatureBitsArray[128];
+  uint8_t signatureBitsArray[1000];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
   Blob signatureBits(signatureBitsArray, sizeof(signatureBitsArray));
 
@@ -548,7 +548,7 @@ static void
 benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
 {
   const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
-  uint8_t encoding[1500];
+  uint8_t encoding[2000];
   size_t encodingLength;
   {
     int nIterations = useCrypto ? 20000 : 10000000;
