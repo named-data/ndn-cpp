@@ -10,6 +10,7 @@ Prerequisites
 * Optional: libsqlite3 (for key storage)
 * Optional: OSX Security framework (for key storage)
 * Optional: Protobuf (for the ProtobufTlv converter)
+* Optional: Doxygen (to make documentation)
 
 Following are the detailed steps for each platform to install the prerequisites.
 
@@ -22,6 +23,11 @@ In a new terminal, enter:
 
     sudo port install protobuf-cpp
 
+Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install doxygen
+
 ## Mac OS X 10.9
 Install Xcode.  (Xcode on OS X 10.9 seems to already have the Command Line Tools.)
 
@@ -29,6 +35,11 @@ Optional: To install Protobuf, install MacPorts from http://www.macports.org/ins
 In a new terminal, enter:
 
     sudo port install protobuf-cpp
+
+Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install doxygen
 
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
 In a terminal, enter:
@@ -66,7 +77,8 @@ To make documentation, enter:
   
     make doxygen-doc
 
-The documentation output is in `doc/html/index.html`.
+The documentation output is in `doc/html/index.html`. (If you already did ./configure
+before installing Doxygen, you need to do ./configure again before make doxygen-doc.)
 
 Files
 =====
