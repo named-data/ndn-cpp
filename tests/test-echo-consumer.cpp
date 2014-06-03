@@ -59,7 +59,8 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    Face face("localhost");
+    // The default Face will connect using a Unix socket, or to "localhost".
+    Face face;
     
     // Counter holds data used by the callbacks.
     Counter counter;
