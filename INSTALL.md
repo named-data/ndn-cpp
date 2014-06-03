@@ -51,6 +51,10 @@ Optional: To install Protobuf, in a terminal, enter:
 
     sudo apt-get install libprotobuf-dev
 
+Optional: To install Doxygen, in a terminal, enter:
+
+    sudo apt-get install doxygen
+
 ## Windows Cygwin
 Cygwin is tested on Windows 7 64-bit. 
 
