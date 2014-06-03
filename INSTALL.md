@@ -66,6 +66,8 @@ To make documentation, enter:
   
     make doxygen-doc
 
+The documentation output is in `doc/html/index.html`.
+
 Files
 =====
 This makes the following libraries:
