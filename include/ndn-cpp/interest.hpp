@@ -361,6 +361,13 @@ public:
     ++changeCount_;
   }
   
+  void 
+  setExclude(const Exclude& exclude) 
+  { 
+    exclude_ = exclude; 
+    ++changeCount_;
+  }
+  
   /**
    * Check if this Interest's name matches the given name (using Name::match) 
    * and the given name also conforms to the interest selectors.
