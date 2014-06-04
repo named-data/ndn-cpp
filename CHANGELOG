@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-06-01)
+Interim changes after NDN-CPP v0.4 (2014-06-03)
 -----------------------------------------------
 
 Changes
@@ -14,7 +14,7 @@ Changes
 * COPYING: Changed the license to LGPLv3.
 * Added encoding/ProtobufTlv for converting a Protobuf message object to TLV encoding.
 * In test-encode-decode-data and test-encode-decode-benchmark, change the RSA test key to 2048 bits.
-* Added UnixTransport. If using Face("localhost"), try to connect using a Unix socket.
+* Added UnixTransport. If using the default Face(), try to connect using a Unix socket.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
