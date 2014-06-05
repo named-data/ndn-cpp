@@ -75,7 +75,7 @@ verifyRsaSignature
   return (success == 1);
 }
 
-static uint8_t DEFAULT_PUBLIC_KEY_DER[] = {
+static uint8_t DEFAULT_RSA_PUBLIC_KEY_DER[] = {
   0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
   0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00, 0x30, 0x82, 0x01, 0x0a, 0x02, 0x82, 0x01, 0x01,
   0x00, 0xb8, 0x09, 0xa7, 0x59, 0x82, 0x84, 0xec, 0x4f, 0x06, 0xfa, 0x1c, 0xb2, 0xe1, 0x38, 0x93,
@@ -97,7 +97,7 @@ static uint8_t DEFAULT_PUBLIC_KEY_DER[] = {
   0x41, 0x02, 0x03, 0x01, 0x00, 0x01
 };
 
-static uint8_t DEFAULT_PRIVATE_KEY_DER[] = {
+static uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
   0x30, 0x82, 0x04, 0xa5, 0x02, 0x01, 0x00, 0x02, 0x82, 0x01, 0x01, 0x00, 0xb8, 0x09, 0xa7, 0x59,
   0x82, 0x84, 0xec, 0x4f, 0x06, 0xfa, 0x1c, 0xb2, 0xe1, 0x38, 0x93, 0x53, 0xbb, 0x7d, 0xd4, 0xac,
   0x88, 0x1a, 0xf8, 0x25, 0x11, 0xe4, 0xfa, 0x1d, 0x61, 0x24, 0x5b, 0x82, 0xca, 0xcd, 0x72, 0xce,
@@ -217,7 +217,7 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
   Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
     (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
   privateKeyStorage->setKeyPairForKeyName
-    (keyName, DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER), DEFAULT_PRIVATE_KEY_DER, sizeof(DEFAULT_PRIVATE_KEY_DER));
+    (keyName, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
   
   // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
   uint8_t publisherPublicKeyDigestArray[32];
@@ -286,7 +286,7 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
     (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage), 
      ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
   Name keyName("/testname/DSK-123");
-  identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER)));
+  identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
@@ -358,8 +358,8 @@ benchmarkEncodeDataSecondsC
   ndn_Name_appendString(&certificateName, (char*)"0");
   
   // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
-  uint8_t* publicKeyDer = DEFAULT_PUBLIC_KEY_DER;
-  size_t publicKeyDerLength = sizeof(DEFAULT_PUBLIC_KEY_DER);
+  uint8_t* publicKeyDer = DEFAULT_RSA_PUBLIC_KEY_DER;
+  size_t publicKeyDerLength = sizeof(DEFAULT_RSA_PUBLIC_KEY_DER);
   uint8_t publisherPublicKeyDigestArray[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(publicKeyDer, publicKeyDerLength, publisherPublicKeyDigestArray);
   struct ndn_Blob publisherPublicKeyDigest;
@@ -369,8 +369,8 @@ benchmarkEncodeDataSecondsC
   
   // Set up the private key now in case useCrypto is true.
   // Use a temporary pointer since d2i updates it.
-  const uint8_t *privateKeyDerPointer = DEFAULT_PRIVATE_KEY_DER;
-  RSA *privateKey = d2i_RSAPrivateKey(NULL, &privateKeyDerPointer, sizeof(DEFAULT_PRIVATE_KEY_DER));
+  const uint8_t *privateKeyDerPointer = DEFAULT_RSA_PRIVATE_KEY_DER;
+  RSA *privateKey = d2i_RSAPrivateKey(NULL, &privateKeyDerPointer, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
   if (!privateKey) {
     // Don't expect this to happen.
     cout << "Error decoding private key DER" << endl;
@@ -504,7 +504,7 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
       if (!verifyRsaSignature
           (encoding + signedPortionBeginOffset, signedPortionEndOffset - signedPortionBeginOffset,
            data.signature.signature.value, data.signature.signature.length,
-           DEFAULT_PUBLIC_KEY_DER, sizeof(DEFAULT_PUBLIC_KEY_DER)))
+           DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)))
         cout << "Signature verification: FAILED" << endl;
     }
   }
