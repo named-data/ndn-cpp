@@ -31,7 +31,7 @@ using namespace std;
 namespace ndn {
 
 /**
- * Verify the signature on the data packet using the given public key.  If there is no data.getDefaultWireEncoding(),
+ * Verify the RSA signature on the data packet using the given public key.  If there is no data.getDefaultWireEncoding(),
  * this calls data.wireEncode() to set it.
  * TODO: Move this general verification code to a more central location.
  * @param data The data packet with the signed portion and the signature to verify.  The data packet must have a
@@ -63,6 +63,55 @@ verifySha256WithRsaSignature(const Data& data, const Blob& publicKeyDer)
      signature->getSignature().size(), rsaPublicKey);
   // Free the public key before checking for success.
   RSA_free(rsaPublicKey);
+  
+  // RSA_verify returns 1 for a valid signature.
+  return (success == 1);
+}
+
+/**
+ * Verify the ECDSA signature on the data packet using the given public key.  
+ * If there is no data.getDefaultWireEncoding(), this calls data.wireEncode() to 
+ * set it.
+ * TODO: Move this general verification code to a more central location.
+ * @param data The data packet with the signed portion and the signature to 
+ * verify.  The data packet must have a Sha256WithEcdsaSignature.
+ * @param publicKeyDer The DER-encoded public key used to verify the signature.
+ * @return true if the signature verifies, false if not.
+ * @throw SecurityException if data does not have a Sha256WithEcdsaSignature.
+ */
+static bool
+verifySha256WithEcdsaSignature(const Data& data, const Blob& publicKeyDer)
+{
+#if 0
+  const Sha256WithEcdsaSignature *signature = 
+    dynamic_cast<const Sha256WithEcdsaSignature*>(data.getSignature());
+#else
+  const Sha256WithRsaSignature *signature = 
+    dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
+#endif
+  if (!signature)
+    throw SecurityException("signature is not Sha256WithEcdsaSignature.");
+  
+  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
+  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  // wireEncode returns the cached encoding if available.
+  ndn_digestSha256
+    (data.wireEncode().signedBuf(), data.wireEncode().signedSize(), 
+     signedPortionDigest);
+  
+  // Verify the signedPortionDigest.
+  // Use a temporary pointer since d2i updates it.
+  const uint8_t *derPointer = publicKeyDer.buf();
+  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDer.size());
+  if (!ecPublicKey)
+    throw UnrecognizedKeyFormatException
+      ("Error decoding public key in d2i_EC_PUBKEY");
+  int success = ECDSA_verify
+    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), 
+     (uint8_t *)signature->getSignature().buf(),signature->getSignature().size(), 
+      ecPublicKey);
+  // Free the public key before checking for success.
+  EC_KEY_free(ecPublicKey);
   
   // RSA_verify returns 1 for a valid signature.
   return (success == 1);
