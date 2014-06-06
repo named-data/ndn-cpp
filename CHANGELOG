@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-06-03)
+Interim changes after NDN-CPP v0.4 (2014-06-06)
 -----------------------------------------------
 
 Changes
@@ -15,6 +15,10 @@ Changes
 * Added encoding/ProtobufTlv for converting a Protobuf message object to TLV encoding.
 * In test-encode-decode-data and test-encode-decode-benchmark, change the RSA test key to 2048 bits.
 * Added UnixTransport. If using the default Face(), try to connect using a Unix socket.
+
+Deprecated
+* MemoryPrivateKeyStorage: Deprecated setKeyPairForKeyName without an explicit keyType. Use
+  setKeyPairForKeyName passing the explicit key type such as KEY_TYPE_RSA.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.

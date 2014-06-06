@@ -23,6 +23,7 @@
 #include <stdexcept>
 #endif
 #include "../../c/util/crypto.h"
+#include <openssl/ec.h>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
@@ -34,16 +35,21 @@ MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 {
 }
 
-void MemoryPrivateKeyStorage::setPublicKeyForKeyName
-  (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength)
+void 
+MemoryPrivateKeyStorage::setPublicKeyForKeyName
+  (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
+   size_t publicKeyDerLength)
 {
-  publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(Blob(publicKeyDer, publicKeyDerLength));
+  publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(keyType, Blob(publicKeyDer, publicKeyDerLength));
 }
 
-void MemoryPrivateKeyStorage::setPrivateKeyForKeyName
-  (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength)
+void 
+MemoryPrivateKeyStorage::setPrivateKeyForKeyName
+  (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer, 
+   size_t privateKeyDerLength)
 {
-  privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<RsaPrivateKey>(privateKeyDer, privateKeyDerLength);
+  privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<PrivateKey>
+    (keyType, privateKeyDer, privateKeyDerLength);
 }
 
 void 
@@ -76,11 +82,22 @@ MemoryPrivateKeyStorage::sign(const uint8_t *data, size_t dataLength, const Name
   unsigned int signatureBitsLength;
   
   // Find the private key and sign.
-  map<string, ptr_lib::shared_ptr<RsaPrivateKey> >::iterator privateKey = privateKeyStore_.find(keyName.toUri());
+  map<string, ptr_lib::shared_ptr<PrivateKey> >::iterator privateKey = privateKeyStore_.find(keyName.toUri());
   if (privateKey == privateKeyStore_.end())
     throw SecurityException(string("MemoryPrivateKeyStorage: Cannot find private key ") + keyName.toUri());
-  if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength, privateKey->second->getPrivateKey()))
-    throw SecurityException("Error in RSA_sign");
+  if (privateKey->second->getKeyType() == KEY_TYPE_RSA) {
+    if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBits, 
+                  &signatureBitsLength, privateKey->second->getRsaPrivateKey()))
+      throw SecurityException("Error in RSA_sign");
+  }
+  else if (privateKey->second->getKeyType() == KEY_TYPE_EC) {
+    if (!ECDSA_sign(NID_sha256, digest, sizeof(digest), signatureBits, 
+                  &signatureBitsLength, privateKey->second->getEcPrivateKey()))
+      throw SecurityException("Error in RSA_sign");
+  }
+  else
+    // We don't expect this to happen.
+    throw SecurityException("Unrecognized private key type");
   
   return Blob(signatureBits, (size_t)signatureBitsLength);
 }
@@ -121,19 +138,35 @@ MemoryPrivateKeyStorage::doesKeyExist(const Name& keyName, KeyClass keyClass)
     return false;
 }
 
-MemoryPrivateKeyStorage::RsaPrivateKey::RsaPrivateKey(uint8_t *keyDer, size_t keyDerLength)
+MemoryPrivateKeyStorage::PrivateKey::PrivateKey
+  (KeyType keyType, uint8_t *keyDer, size_t keyDerLength)
 {
+  keyType_ = keyType;
+  rsaPrivateKey_ = 0;
+  ecPrivateKey_ = 0;
+  
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer;
-  privateKey_ = d2i_RSAPrivateKey(NULL, &derPointer, keyDerLength);
-  if (!privateKey_)
-    throw SecurityException("RsaPrivateKey constructor: Error decoding private key DER");
+  if (keyType == KEY_TYPE_RSA) {
+    rsaPrivateKey_ = d2i_RSAPrivateKey(NULL, &derPointer, keyDerLength);
+    if (!rsaPrivateKey_)
+      throw SecurityException("PrivateKey constructor: Error decoding RSA private key DER");
+  }
+  else if (keyType == KEY_TYPE_EC) {
+    ecPrivateKey_ = d2i_ECPrivateKey(NULL, &derPointer, keyDerLength);
+    if (!ecPrivateKey_)
+      throw SecurityException("PrivateKey constructor: Error decoding EC private key DER");
+  }
+  else
+    throw SecurityException("PrivateKey constructor: Unrecognized keyType");
 }
 
-MemoryPrivateKeyStorage::RsaPrivateKey::~RsaPrivateKey()
+MemoryPrivateKeyStorage::PrivateKey::~PrivateKey()
 {
-  if (privateKey_)
-    RSA_free(privateKey_);
+  if (rsaPrivateKey_)
+    RSA_free(rsaPrivateKey_);
+  if (ecPrivateKey_)
+    EC_KEY_free(ecPrivateKey_);
 }
 
 }

@@ -26,6 +26,7 @@
 #include "private-key-storage.hpp"
 
 struct rsa_st;
+struct ec_key_st;
 
 namespace ndn {
 
@@ -44,36 +45,81 @@ public:
   /**
    * Set the public key for the keyName.
    * @param keyName The key name.
+   * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param publicKeyDer The public key DER byte array.
    * @param publicKeyDerLength The length of publicKeyDer.
    */
-  void setPublicKeyForKeyName
-    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength);
+  void 
+  setPublicKeyForKeyName
+    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
+     size_t publicKeyDerLength);
+
+  /**
+   * @deprecated Use setPublicKeyForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, 
+   * publicKeyDerLength).
+   */
+  void
+  DEPRECATED_IN_NDN_CPP setPublicKeyForKeyName
+    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength)
+  {
+    setPublicKeyForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength);
+  }
 
   /**
    * Set the private key for the keyName.
    * @param keyName The key name.
+   * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param privateKeyDer The private key DER byte array.
    * @param privateKeyDerLength The length of privateKeyDer.
    */
-  void setPrivateKeyForKeyName
-    (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength);
+  void 
+ setPrivateKeyForKeyName
+    (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer, 
+     size_t privateKeyDerLength);
+
+  /**
+   * @deprecated Use setPrivateKeyForKeyName(keyName, KEY_TYPE_RSA, 
+   * privateKeyDer, privateKeyDerLength).
+   */
+  void 
+   DEPRECATED_IN_NDN_CPP setPrivateKeyForKeyName
+    (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength)
+  {
+    setPrivateKeyForKeyName(keyName, KEY_TYPE_RSA, privateKeyDer, privateKeyDerLength);
+  }
 
   /**
    * Set the public and private key for the keyName.
    * @param keyName The key name.
+   * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param publicKeyDer The public key DER byte array.
    * @param publicKeyDerLength The length of publicKeyDer.
    * @param privateKeyDer The private key DER byte array.
    * @param privateKeyDerLength The length of privateKeyDer.
    */
-  void setKeyPairForKeyName
+  void 
+  setKeyPairForKeyName
+    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
+     size_t publicKeyDerLength, uint8_t *privateKeyDer, 
+     size_t privateKeyDerLength)
+  {
+    setPublicKeyForKeyName(keyName, keyType, publicKeyDer, publicKeyDerLength);
+    setPrivateKeyForKeyName(keyName, keyType, privateKeyDer, privateKeyDerLength);
+  }
+
+  /**
+   * @deprecated Use setKeyPairForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, 
+   * publicKeyDerLength, privateKeyDer, privateKeyDerLength).
+   */
+  void 
+  DEPRECATED_IN_NDN_CPP setKeyPairForKeyName
     (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength, 
      uint8_t *privateKeyDer, size_t privateKeyDerLength)
   {
-    setPublicKeyForKeyName(keyName, publicKeyDer, publicKeyDerLength);
-    setPrivateKeyForKeyName(keyName, privateKeyDer, privateKeyDerLength);
-  }
+    setKeyPairForKeyName
+      (keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength, privateKeyDer, 
+       privateKeyDerLength);
+  } 
   
   /**
    * Generate a pair of asymmetric keys.
@@ -145,22 +191,28 @@ public:
   
 private:
   /**
-   * RsaPrivateKey is a simple class to hold an RSA private key.
+   * PrivateKey is a simple class to hold an RSA or EC private key.
    */
-  class RsaPrivateKey {
+  class PrivateKey {
   public:
-    RsaPrivateKey(uint8_t *keyDer, size_t keyDerLength);
+    PrivateKey(KeyType keyType, uint8_t *keyDer, size_t keyDerLength);
     
-    ~RsaPrivateKey();
+    ~PrivateKey();
     
-    struct rsa_st* getPrivateKey() { return privateKey_; }
+    KeyType getKeyType() const { return keyType_; }
+    
+    struct rsa_st* getRsaPrivateKey() const { return rsaPrivateKey_; }
+
+    struct ec_key_st* getEcPrivateKey() const { return ecPrivateKey_; }
     
   private:
-    struct rsa_st* privateKey_;
+    KeyType keyType_;
+    struct rsa_st* rsaPrivateKey_;
+    struct ec_key_st* ecPrivateKey_;
   };
     
   std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;      /**< The map key is the keyName.toUri() */
-  std::map<std::string, ptr_lib::shared_ptr<RsaPrivateKey> > privateKeyStore_; /**< The map key is the keyName.toUri() */
+  std::map<std::string, ptr_lib::shared_ptr<PrivateKey> > privateKeyStore_; /**< The map key is the keyName.toUri() */
 };
 
 }
