@@ -235,7 +235,9 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
   Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
     (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
   privateKeyStorage->setKeyPairForKeyName
-    (keyName, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+    (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER, 
+     sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER, 
+     sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
   
   // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
   uint8_t publisherPublicKeyDigestArray[32];
