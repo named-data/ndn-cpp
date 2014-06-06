@@ -24,9 +24,9 @@ PublicKeyVisitor::visit(DerSequence& derSeq)
 
   SimpleVisitor simpleVisitor;
   ptr_lib::shared_ptr<DerSequence> algoSeq = ptr_lib::dynamic_pointer_cast<DerSequence>(children[0]); 
-  OID algorithm = ndnboost::any_cast<OID>(algoSeq->getChildren()[0]->accept(simpleVisitor));  
   Blob raw = derSeq.getRaw();   
-  return ndnboost::any(ptr_lib::shared_ptr<PublicKey>(new PublicKey(algorithm, raw)));    
+  // TODO: Determine and pass the correct KeyType.
+  return ndnboost::any(ptr_lib::shared_ptr<PublicKey>(new PublicKey(KEY_TYPE_RSA, raw)));    
 }
 
 } // der

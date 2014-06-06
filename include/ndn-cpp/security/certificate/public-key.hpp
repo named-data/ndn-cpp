@@ -40,11 +40,11 @@ public:
 
   /**
    * Create a new PublicKey with the given values.
-   * @param algorithm The algorithm of the public key.
+   * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param keyDer The blob of the PublicKeyInfo in terms of DER.
    */
-  PublicKey(const OID& algorithm, const Blob& keyDer)
-  : algorithm_(algorithm), keyDer_(keyDer)
+  PublicKey(KeyType keyType, const Blob& keyDer)
+  : keyType_(keyType), keyDer_(keyDer)
   {
   }
 
@@ -57,12 +57,15 @@ public:
 
   /**
    * Decode the public key from DER blob.
+   * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param keyDer The DER blob.
    * @return The decoded public key.
    */
   static ptr_lib::shared_ptr<PublicKey>
-  fromDer(const Blob& keyDer);
+  fromDer(KeyType keyType, const Blob& keyDer);
 
+  KeyType getKeyType() const { return keyType_; }
+    
   /*
    * Get the digest of the public key.
    * @param digestAlgorithm The digest algorithm. If omitted, use DIGEST_ALGORITHM_SHA256 by default.
@@ -77,8 +80,8 @@ public:
   getKeyDer() const { return keyDer_; }
     
 private:
-  OID algorithm_; /**< Algorithm */
-  Blob keyDer_;   /**< PublicKeyInfo in DER */
+  KeyType keyType_;
+  Blob keyDer_;   /**< SubjectPublicKeyInfo in DER */
 };
 
 }

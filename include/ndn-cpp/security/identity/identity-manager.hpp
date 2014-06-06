@@ -136,7 +136,8 @@ public:
   ptr_lib::shared_ptr<PublicKey>
   getPublicKey(const Name& keyName)
   {
-    return PublicKey::fromDer(identityStorage_->getKey(keyName));
+    return PublicKey::fromDer
+      (identityStorage_->getKeyType(keyName), identityStorage_->getKey(keyName));
   }
 
   /**

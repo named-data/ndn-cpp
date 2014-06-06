@@ -23,6 +23,7 @@
 // We can use ndnboost::iostreams because this is internal and will not conflict with the application if it uses boost::iostreams.
 #include <ndnboost/iostreams/stream.hpp>
 #include <ndnboost/iostreams/device/array.hpp>
+#include <openssl/ec.h>
 #include <ndn-cpp/security//security-exception.hpp>
 #include "../../c/util/crypto.h"
 #include "../../encoding/der/der.hpp"
@@ -43,16 +44,26 @@ PublicKey::toDer()
 static int RSA_OID[] = { 1, 2, 840, 113549, 1, 1, 1 };
 
 ptr_lib::shared_ptr<PublicKey>
-PublicKey::fromDer(const Blob& keyDer)
+PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
 {
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer.buf();
-  RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyDer.size());
-  if (!publicKey)
-    throw UnrecognizedKeyFormatException("Error decoding public key DER");  
-  RSA_free(publicKey);
-  
-  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(OID(vector<int>(RSA_OID, RSA_OID + sizeof(RSA_OID))), keyDer));
+  if (keyType == KEY_TYPE_RSA) {
+    RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyDer.size());
+    if (!publicKey)
+      throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");  
+    RSA_free(publicKey);
+  }
+  else if (keyType == KEY_TYPE_RSA) {
+    EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
+    if (!publicKey)
+      throw UnrecognizedKeyFormatException("Error decoding EC public key DER");  
+    EC_KEY_free(publicKey);
+  }
+  else
+    throw SecurityException("PublicKey::fromDer: Unrecognized keyType");
+    
+  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(KEY_TYPE_RSA, keyDer));
 }
 
 Blob
