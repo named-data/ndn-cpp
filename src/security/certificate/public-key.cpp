@@ -54,7 +54,7 @@ PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
       throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");  
     RSA_free(publicKey);
   }
-  else if (keyType == KEY_TYPE_RSA) {
+  else if (keyType == KEY_TYPE_EC) {
     EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)
       throw UnrecognizedKeyFormatException("Error decoding EC public key DER");  
