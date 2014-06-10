@@ -57,6 +57,13 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
         else if (field->type() == FieldDescriptor::TYPE_UINT64)
           encoder.writeNonNegativeIntegerTlv
             (tlvType, (uint64_t)reflection.GetRepeatedUInt64(message, field, i));
+        else if (field->type() == FieldDescriptor::TYPE_ENUM)
+        {
+          int number = reflection.GetRepeatedEnum(message, field, i)->number();
+          if (number < 0)
+            throw runtime_error("ProtobufTlv::encode: ENUM value may not be negative");
+          encoder.writeNonNegativeIntegerTlv(tlvType, (uint64_t)number);
+        }
         else if (field->type() == FieldDescriptor::TYPE_BYTES ||
                  field->type() == FieldDescriptor::TYPE_STRING)
           encoder.writeRawStringTlv
@@ -82,6 +89,13 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
         else if (field->type() == FieldDescriptor::TYPE_UINT64)
           encoder.writeNonNegativeIntegerTlv
             (tlvType, (uint64_t)reflection.GetUInt64(message, field));
+        else if (field->type() == FieldDescriptor::TYPE_ENUM)
+        {
+          int number = reflection.GetEnum(message, field)->number();
+          if (number < 0)
+            throw runtime_error("ProtobufTlv::encode: ENUM value may not be negative");
+          encoder.writeNonNegativeIntegerTlv(tlvType, (uint64_t)number);
+        }
         else if (field->type() == FieldDescriptor::TYPE_BYTES ||
                  field->type() == FieldDescriptor::TYPE_STRING)
           encoder.writeRawStringTlv
@@ -135,6 +149,11 @@ decodeMessageValue
         else if (field->type() == FieldDescriptor::TYPE_UINT64)
           reflection.AddUInt64
             (&message, field, decoder.readNonNegativeIntegerTlv(tlvType));
+        else if (field->type() == FieldDescriptor::TYPE_ENUM)
+          reflection.AddEnum
+            (&message, field, 
+             field->enum_type()->FindValueByNumber
+               (decoder.readNonNegativeIntegerTlv(tlvType)));
         else if (field->type() == FieldDescriptor::TYPE_BYTES ||
                  field->type() == FieldDescriptor::TYPE_STRING) {
           struct ndn_Blob value = decoder.readBlobTlv(tlvType);
@@ -163,6 +182,11 @@ decodeMessageValue
       else if (field->type() == FieldDescriptor::TYPE_UINT64)
         reflection.SetUInt64
           (&message, field, decoder.readNonNegativeIntegerTlv(tlvType));
+      else if (field->type() == FieldDescriptor::TYPE_ENUM)
+        reflection.SetEnum
+          (&message, field, 
+           field->enum_type()->FindValueByNumber
+             (decoder.readNonNegativeIntegerTlv(tlvType)));
       else if (field->type() == FieldDescriptor::TYPE_BYTES ||
                field->type() == FieldDescriptor::TYPE_STRING) {
         struct ndn_Blob value = decoder.readBlobTlv(tlvType);

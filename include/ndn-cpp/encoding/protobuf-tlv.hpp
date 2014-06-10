@@ -31,10 +31,11 @@ namespace ndn {
 /** ProtobufTlv has static methods to encode and decode an Protobuf Message
  * object as NDN-TLV. The Protobuf tag value is used as the TLV type code. A 
  * Protobuf message is encoded/decoded as a nested TLV encoding. Protobuf types 
- * uint32 and uint64 are encoded/decoded as TLV nonNegativeInteger. Protobuf 
- * types bytes and string are encoded/decoded as TLV bytes. The Protobuf type 
- * bool is encoded/decoded as a TLV boolean (a zero length value for True, 
- * omitted for False). Other Protobuf types are an error.
+ * uint32, uint64 and enum are encoded/decoded as TLV nonNegativeInteger. (It is
+ * an error if an enum value is negative.) Protobuf types bytes and string are 
+ * encoded/decoded as TLV bytes. The Protobuf type bool is encoded/decoded as a 
+ * TLV boolean (a zero length value for True, omitted for False). Other Protobuf 
+ * types are an error.
  * 
  * Protobuf has no "outer" message type, so you need to put your TLV message
  * inside an outer "typeless" message.
