@@ -178,10 +178,12 @@ public:
    * Append a timestamp component and a random value component to interest's
    * name. Then use the keyChain and certificateName from setCommandSigningInfo
    * to sign the interest. If the interest lifetime is not set, this sets it.
-   * @param interest The interest whose name is append with components.
+   * @param interest The interest whose name is appended with components.
    * @param wireFormat A WireFormat object used to encode the SignatureInfo and
-   * to encode interest name for signing. If omitted, use 
+   * to encode the interest name for signing. If omitted, use 
    * WireFormat getDefaultWireFormat().
+   * @note This method is an experimental feature. See the API docs for more detail at
+   * http://named-data.net/doc/ndn-ccl-api/face.html#face-makecommandinterest-method .
    */
   void
   makeCommandInterest
