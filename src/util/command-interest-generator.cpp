@@ -23,6 +23,7 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include "../c/util/time.h"
 #include "../c/util/crypto.h"
+#include "../encoding/tlv-encoder.hpp"
 #include "command-interest-generator.hpp"
 
 using namespace std;
@@ -43,8 +44,13 @@ CommandInterestGenerator::generate
   while (timestamp <= lastTimestamp_)
     timestamp += 1.0;
 
-  interest.getName().append
-    (Name::Component::fromNumber(timestamp));
+  // The timestamp is encoded as a TLV nonNegativeInteger.
+  TlvEncoder encoder(8);
+  encoder.writeNonNegativeInteger((uint64_t)timestamp);
+  interest.getName().append(Blob(encoder.getOutput(), false));
+  
+  // The random value is a TLV nonNegativeInteger too, but we know it is 8 bytes,
+  //   so we don't need to call the nonNegativeInteger encoder.
   uint8_t randomBuffer[8];
   ndn_generateRandomBytes(randomBuffer, sizeof(randomBuffer));
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
