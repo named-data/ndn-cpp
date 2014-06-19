@@ -64,6 +64,14 @@ public:
     if ((error = ndn_TlvEncoder_writeTypeAndLength(this, type, length)))
       throw std::runtime_error(ndn_getErrorString(error));
   }
+
+  void
+  writeNonNegativeInteger(uint64_t value)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeNonNegativeInteger(this, value)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
   
   void
   writeBlobTlv(unsigned int type, struct ndn_Blob *value)
