@@ -1,9 +1,16 @@
+//! \mainpage
+
 NDN-CPP:  A Named Data Networking client library for C++ and C
 --------------------------------------------------------------
 
 NDN-CPP is a new implementation of a Named Data Networking client library written in C++ and C.  
 It is wire format compatible with the new NDN-TLV encoding, with NDNx and PARC's CCNx.
 	
+NDN-CPP conforms to the NDN Common Client Libraries API and your application should
+follow this public API:
+http://named-data.net/doc/ndn-ccl-api/ .
+Further classes and methods are in the Doxygen-generated documentation.
+
 See the file INSTALL.md for build and install instructions.
 
 Please submit any bugs or issues to the NDN-CPP issue tracker:
@@ -11,8 +18,10 @@ http://redmine.named-data.net/projects/ndn-cpp/issues
 
 ---
 	
-The library currently requires a remote NDN daemon, and has been tested with ndnd, from
-the NDNx package: https://github.com/named-data/ndnx .
+The library currently requires a remote NDN daemon, and has been tested with:
+* ndnd from NDNx: https://github.com/named-data/ndnx
+* ndnd-tlv (which uses NDNx): https://github.com/named-data/ndnd-tlv
+* The new NFD forwarder: https://github.com/named-data/NFD
 
 Currently, the library has two APIs for developers: 
 
