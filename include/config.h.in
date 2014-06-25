@@ -136,9 +136,21 @@
 /* Define to 1 if TlvWireFormat should be the default WireFormat. */
 #undef USE_DEFAULT_TLV
 
+/* Define to 1 if func_lib should use boost::function, etc. if available */
+#undef WITH_BOOST_FUNCTION
+
+/* Define to 1 if ptr_lib should use boost::shared_ptr, etc. if available */
+#undef WITH_BOOST_SHARED_PTR
+
 /* Define to 1 if the OS X Keychain should be the default private key store.
    */
 #undef WITH_OSX_KEYCHAIN
+
+/* Define to 1 if func_lib should use std::function, etc. if available */
+#undef WITH_STD_FUNCTION
+
+/* Define to 1 if ptr_lib should use std::shared_ptr, etc. if available */
+#undef WITH_STD_SHARED_PTR
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

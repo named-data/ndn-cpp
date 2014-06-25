@@ -62,22 +62,50 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[std::shared_ptr<int> have_shared_ptr;]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_STD_SHARED_PTR], 1, [1 if have the `std::shared_ptr' class.])
+    HAVE_STD_SHARED_PTR=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_STD_SHARED_PTR], 0, [1 if have the `std::shared_ptr' class.])
+    HAVE_STD_SHARED_PTR=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_STD_SHARED_PTR], $HAVE_STD_SHARED_PTR, [1 if have the `std::shared_ptr' class.])
 AC_MSG_CHECKING([for boost::shared_ptr])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <boost/shared_ptr.hpp>]]
     [[boost::shared_ptr<int> have_shared_ptr;]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_BOOST_SHARED_PTR], 1, [1 if have the `boost::shared_ptr' class.])
+    HAVE_BOOST_SHARED_PTR=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_BOOST_SHARED_PTR], 0, [1 if have the `boost::shared_ptr' class.])
+    HAVE_BOOST_SHARED_PTR=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_BOOST_SHARED_PTR], $HAVE_BOOST_SHARED_PTR, [1 if have the `boost::shared_ptr' class.])
+
+# Conditionally use std::shared_ptr or boost::shared_ptr.
+if test "$HAVE_STD_SHARED_PTR" == "1" ; then
+  AC_ARG_WITH([std-shared-ptr],
+    [AS_HELP_STRING([--with-std-shared-ptr], [ptr_lib should use std::shared_ptr, etc. if available @<:@default: yes@:>@])],
+    [std_shared_ptr=${withval}], [std_shared_ptr=yes])
+  if test "x${std_shared_ptr}" = xyes; then
+    AC_DEFINE([WITH_STD_SHARED_PTR], 1, [Define to 1 if ptr_lib should use std::shared_ptr, etc. if available])
+  else
+    AC_DEFINE([WITH_STD_SHARED_PTR], 0, [Define to 1 if ptr_lib should use std::shared_ptr, etc. if available])
+  fi
+else
+  AC_DEFINE([WITH_STD_SHARED_PTR], 0, [Define to 1 if ptr_lib should use std::shared_ptr, etc. if available])
+fi
+if test "$HAVE_BOOST_SHARED_PTR" == "1" ; then
+  AC_ARG_WITH([boost-shared-ptr],
+    [AS_HELP_STRING([--with-boost-shared-ptr], [ptr_lib should use boost::shared_ptr, etc. if available @<:@default: yes@:>@])],
+    [boost_shared_ptr=${withval}], [boost_shared_ptr=yes])
+  if test "x${boost_shared_ptr}" = xyes; then
+    AC_DEFINE([WITH_BOOST_SHARED_PTR], 1, [Define to 1 if ptr_lib should use boost::shared_ptr, etc. if available])
+  else
+    AC_DEFINE([WITH_BOOST_SHARED_PTR], 0, [Define to 1 if ptr_lib should use boost::shared_ptr, etc. if available])
+  fi
+else
+  AC_DEFINE([WITH_BOOST_SHARED_PTR], 0, [Define to 1 if ptr_lib should use boost::shared_ptr, etc. if available])
+fi
 
 AC_MSG_CHECKING([for std::function])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
@@ -85,22 +113,50 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[std::function<int> have_function();]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_STD_FUNCTION], 1, [1 if have the `std::function' class.])
+    HAVE_STD_FUNCTION=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_STD_FUNCTION], 0, [1 if have the `std::function' class.])
+    HAVE_STD_FUNCTION=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_STD_FUNCTION], $HAVE_STD_FUNCTION, [1 if have the `std::function' class.])
 AC_MSG_CHECKING([for boost::function])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <boost/function.hpp>]]
     [[boost::function<int> have_function();]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_BOOST_FUNCTION], 1, [1 if have the `boost::function' class.])
+    HAVE_BOOST_FUNCTION=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_BOOST_FUNCTION], 0, [1 if have the `boost::function' class.])
+    HAVE_BOOST_FUNCTION=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_BOOST_FUNCTION], $HAVE_BOOST_FUNCTION, [1 if have the `boost::function' class.])
+
+# Conditionally use std::function or boost::function.
+if test "$HAVE_STD_FUNCTION" == "1" ; then
+  AC_ARG_WITH([std-function],
+    [AS_HELP_STRING([--with-std-function], [func_lib should use std::function, etc. if available @<:@default: yes@:>@])],
+    [std_function=${withval}], [std_function=yes])
+  if test "x${std_function}" = xyes; then
+    AC_DEFINE([WITH_STD_FUNCTION], 1, [Define to 1 if func_lib should use std::function, etc. if available])
+  else
+    AC_DEFINE([WITH_STD_FUNCTION], 0, [Define to 1 if func_lib should use std::function, etc. if available])
+  fi
+else
+  AC_DEFINE([WITH_STD_FUNCTION], 0, [Define to 1 if func_lib should use std::function, etc. if available])
+fi
+if test "$HAVE_BOOST_FUNCTION" == "1" ; then
+  AC_ARG_WITH([boost-function],
+    [AS_HELP_STRING([--with-boost-function], [func_lib should use boost::function, etc. if available @<:@default: yes@:>@])],
+    [boost_function=${withval}], [boost_function=yes])
+  if test "x${boost_function}" = xyes; then
+    AC_DEFINE([WITH_BOOST_FUNCTION], 1, [Define to 1 if func_lib should use boost::function, etc. if available])
+  else
+    AC_DEFINE([WITH_BOOST_FUNCTION], 0, [Define to 1 if func_lib should use boost::function, etc. if available])
+  fi
+else
+  AC_DEFINE([WITH_BOOST_FUNCTION], 0, [Define to 1 if func_lib should use boost::function, etc. if available])
+fi
 
 AC_MSG_CHECKING([for gmtime support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
