@@ -827,6 +827,10 @@ enable_fast_install
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+with_std_shared_ptr
+with_boost_shared_ptr
+with_std_function
+with_boost_function
 with_sqlite3
 with_osx_keychain
 enable_tlv
@@ -1514,6 +1518,16 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
+  --with-std-shared-ptr   ptr_lib should use std::shared_ptr, etc. if
+                          available[default: yes]
+  --with-boost-shared-ptr ptr_lib should use boost::shared_ptr, etc. if
+                          available. (--with-std-shared-ptr=yes overrides
+                          this.) [default: yes]
+  --with-std-function     func_lib should use std::function, etc. if available
+                          [default: yes]
+  --with-boost-function   func_lib should use boost::function, etc. if
+                          available (--with-std-function=yes overrides this.)
+                          [default: yes]
   --with-sqlite3=[ARG]    use SQLite 3 library [default=yes], optionally
                           specify the prefix for sqlite3 library
   --with-osx-keychain     use the OS X Keychain as the default private key
@@ -16573,24 +16587,21 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STD_SHARED_PTR 1
-_ACEOF
-
+    HAVE_STD_SHARED_PTR=1
 
 else
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STD_SHARED_PTR 0
-_ACEOF
-
+    HAVE_STD_SHARED_PTR=0
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STD_SHARED_PTR $HAVE_STD_SHARED_PTR
+_ACEOF
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for boost::shared_ptr" >&5
 $as_echo_n "checking for boost::shared_ptr... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -16610,24 +16621,69 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_BOOST_SHARED_PTR 1
-_ACEOF
-
+    HAVE_BOOST_SHARED_PTR=1
 
 else
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_BOOST_SHARED_PTR 0
-_ACEOF
-
+    HAVE_BOOST_SHARED_PTR=0
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_BOOST_SHARED_PTR $HAVE_BOOST_SHARED_PTR
+_ACEOF
+
+
+# Conditionally use std::shared_ptr or boost::shared_ptr.
+if test "$HAVE_STD_SHARED_PTR" == "1" ; then
+
+# Check whether --with-std-shared-ptr was given.
+if test "${with_std_shared_ptr+set}" = set; then :
+  withval=$with_std_shared_ptr; std_shared_ptr=${withval}
+else
+  std_shared_ptr=yes
+fi
+
+  if test "x${std_shared_ptr}" = xyes; then
+
+$as_echo "#define WITH_STD_SHARED_PTR 1" >>confdefs.h
+
+  else
+
+$as_echo "#define WITH_STD_SHARED_PTR 0" >>confdefs.h
+
+  fi
+else
+
+$as_echo "#define WITH_STD_SHARED_PTR 0" >>confdefs.h
+
+fi
+if test "$HAVE_BOOST_SHARED_PTR" == "1" ; then
+
+# Check whether --with-boost-shared-ptr was given.
+if test "${with_boost_shared_ptr+set}" = set; then :
+  withval=$with_boost_shared_ptr; boost_shared_ptr=${withval}
+else
+  boost_shared_ptr=yes
+fi
+
+  if test "x${boost_shared_ptr}" = xyes; then
+
+$as_echo "#define WITH_BOOST_SHARED_PTR 1" >>confdefs.h
+
+  else
+
+$as_echo "#define WITH_BOOST_SHARED_PTR 0" >>confdefs.h
+
+  fi
+else
+
+$as_echo "#define WITH_BOOST_SHARED_PTR 0" >>confdefs.h
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for std::function" >&5
 $as_echo_n "checking for std::function... " >&6; }
@@ -16648,24 +16704,21 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STD_FUNCTION 1
-_ACEOF
-
+    HAVE_STD_FUNCTION=1
 
 else
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STD_FUNCTION 0
-_ACEOF
-
+    HAVE_STD_FUNCTION=0
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STD_FUNCTION $HAVE_STD_FUNCTION
+_ACEOF
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for boost::function" >&5
 $as_echo_n "checking for boost::function... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -16685,24 +16738,69 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_BOOST_FUNCTION 1
-_ACEOF
-
+    HAVE_BOOST_FUNCTION=1
 
 else
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_BOOST_FUNCTION 0
-_ACEOF
-
+    HAVE_BOOST_FUNCTION=0
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_BOOST_FUNCTION $HAVE_BOOST_FUNCTION
+_ACEOF
+
+
+# Conditionally use std::function or boost::function.
+if test "$HAVE_STD_FUNCTION" == "1" ; then
+
+# Check whether --with-std-function was given.
+if test "${with_std_function+set}" = set; then :
+  withval=$with_std_function; std_function=${withval}
+else
+  std_function=yes
+fi
+
+  if test "x${std_function}" = xyes; then
+
+$as_echo "#define WITH_STD_FUNCTION 1" >>confdefs.h
+
+  else
+
+$as_echo "#define WITH_STD_FUNCTION 0" >>confdefs.h
+
+  fi
+else
+
+$as_echo "#define WITH_STD_FUNCTION 0" >>confdefs.h
+
+fi
+if test "$HAVE_BOOST_FUNCTION" == "1" ; then
+
+# Check whether --with-boost-function was given.
+if test "${with_boost_function+set}" = set; then :
+  withval=$with_boost_function; boost_function=${withval}
+else
+  boost_function=yes
+fi
+
+  if test "x${boost_function}" = xyes; then
+
+$as_echo "#define WITH_BOOST_FUNCTION 1" >>confdefs.h
+
+  else
+
+$as_echo "#define WITH_BOOST_FUNCTION 0" >>confdefs.h
+
+  fi
+else
+
+$as_echo "#define WITH_BOOST_FUNCTION 0" >>confdefs.h
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gmtime support" >&5
 $as_echo_n "checking for gmtime support... " >&6; }
