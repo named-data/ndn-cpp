@@ -84,7 +84,7 @@ AC_DEFINE_UNQUOTED([HAVE_BOOST_SHARED_PTR], $HAVE_BOOST_SHARED_PTR, [1 if have t
 # Conditionally use std::shared_ptr or boost::shared_ptr.
 if test "$HAVE_STD_SHARED_PTR" == "1" ; then
   AC_ARG_WITH([std-shared-ptr],
-    [AS_HELP_STRING([--with-std-shared-ptr], [ptr_lib should use std::shared_ptr, etc. if available @<:@default: yes@:>@])],
+    [AS_HELP_STRING([--with-std-shared-ptr], [ptr_lib should use std::shared_ptr, etc. if available@<:@default: yes@:>@])],
     [std_shared_ptr=${withval}], [std_shared_ptr=yes])
   if test "x${std_shared_ptr}" = xyes; then
     AC_DEFINE([WITH_STD_SHARED_PTR], 1, [Define to 1 if ptr_lib should use std::shared_ptr, etc. if available])
@@ -96,7 +96,7 @@ else
 fi
 if test "$HAVE_BOOST_SHARED_PTR" == "1" ; then
   AC_ARG_WITH([boost-shared-ptr],
-    [AS_HELP_STRING([--with-boost-shared-ptr], [ptr_lib should use boost::shared_ptr, etc. if available @<:@default: yes@:>@])],
+    [AS_HELP_STRING([--with-boost-shared-ptr], [ptr_lib should use boost::shared_ptr, etc. if available. (--with-std-shared-ptr=yes overrides this.) @<:@default: yes@:>@])],
     [boost_shared_ptr=${withval}], [boost_shared_ptr=yes])
   if test "x${boost_shared_ptr}" = xyes; then
     AC_DEFINE([WITH_BOOST_SHARED_PTR], 1, [Define to 1 if ptr_lib should use boost::shared_ptr, etc. if available])
@@ -147,7 +147,7 @@ else
 fi
 if test "$HAVE_BOOST_FUNCTION" == "1" ; then
   AC_ARG_WITH([boost-function],
-    [AS_HELP_STRING([--with-boost-function], [func_lib should use boost::function, etc. if available @<:@default: yes@:>@])],
+    [AS_HELP_STRING([--with-boost-function], [func_lib should use boost::function, etc. if available (--with-std-function=yes overrides this.) @<:@default: yes@:>@])],
     [boost_function=${withval}], [boost_function=yes])
   if test "x${boost_function}" = xyes; then
     AC_DEFINE([WITH_BOOST_FUNCTION], 1, [Define to 1 if func_lib should use boost::function, etc. if available])

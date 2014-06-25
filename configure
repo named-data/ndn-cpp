@@ -1519,13 +1519,15 @@ Optional Packages:
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
   --with-std-shared-ptr   ptr_lib should use std::shared_ptr, etc. if
-                          available [default: yes]
+                          available[default: yes]
   --with-boost-shared-ptr ptr_lib should use boost::shared_ptr, etc. if
-                          available [default: yes]
+                          available. (--with-std-shared-ptr=yes overrides
+                          this.) [default: yes]
   --with-std-function     func_lib should use std::function, etc. if available
                           [default: yes]
   --with-boost-function   func_lib should use boost::function, etc. if
-                          available [default: yes]
+                          available (--with-std-function=yes overrides this.)
+                          [default: yes]
   --with-sqlite3=[ARG]    use SQLite 3 library [default=yes], optionally
                           specify the prefix for sqlite3 library
   --with-osx-keychain     use the OS X Keychain as the default private key
