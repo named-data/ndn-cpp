@@ -29,8 +29,17 @@ TEST(TestNameMethods, UriConstructor)
 {
   string expectedUri = "/entr%C3%A9e/..../%00%01%02%03";
   Name name(expectedUri);
-  ASSERT_EQ (name.size(), 3);
-  ASSERT_EQ (name.toUri(), expectedUri);
+  ASSERT_EQ(name.size(), 3);
+  ASSERT_EQ(name.toUri(), expectedUri);
+}
+
+TEST(TestNameMethods, CopyConstructor)
+{
+  string expectedUri = "/entr%C3%A9e/..../%00%01%02%03";
+  Name name(expectedUri);
+  Name name2(name);
+  ASSERT_EQ(name.size(), 3);
+  ASSERT_TRUE(name.equals(name2));
 }
 
 int main(int argc, char **argv) {
