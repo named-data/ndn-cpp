@@ -14,7 +14,7 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
-check_PROGRAMS = bin/test-name-methods
+check_PROGRAMS = bin/test-data-methods bin/test-name-methods
 
 noinst_PROGRAMS = bin/test-echo-consumer bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry bin/test-encode-decode-interest \
@@ -220,6 +220,10 @@ bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+
+bin_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_test_data_methods_LDADD = libndn-cpp.la
 
 bin_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

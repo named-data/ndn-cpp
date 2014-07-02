@@ -87,7 +87,8 @@ DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 	$(am__configure_deps) $(dist_noinst_SCRIPTS) depcomp \
 	test-driver COPYING ar-lib compile config.guess config.sub \
 	install-sh missing ltmain.sh
-check_PROGRAMS = bin/test-name-methods$(EXEEXT)
+check_PROGRAMS = bin/test-data-methods$(EXEEXT) \
+	bin/test-name-methods$(EXEEXT)
 noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
@@ -241,6 +242,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/memory-content-cache.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
+am_bin_test_data_methods_OBJECTS = tests/unit-tests/bin_test_data_methods-test-data-methods.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT)
+bin_test_data_methods_OBJECTS = $(am_bin_test_data_methods_OBJECTS)
+bin_test_data_methods_DEPENDENCIES = libndn-cpp.la
 am_bin_test_echo_consumer_OBJECTS =  \
 	tests/test-echo-consumer.$(OBJEXT)
 bin_test_echo_consumer_OBJECTS = $(am_bin_test_echo_consumer_OBJECTS)
@@ -342,6 +347,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_test_data_methods_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
@@ -352,6 +358,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_test_data_methods_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
@@ -999,6 +1006,9 @@ bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+bin_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_test_data_methods_LDADD = libndn-cpp.la
 bin_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_test_name_methods_LDADD = libndn-cpp.la
@@ -1386,6 +1396,31 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+tests/unit-tests/$(am__dirstamp):
+	@$(MKDIR_P) tests/unit-tests
+	@: > tests/unit-tests/$(am__dirstamp)
+tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
+	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_test_data_methods-test-data-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
+	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest
+	@: > contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
+	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+bin/$(am__dirstamp):
+	@$(MKDIR_P) bin
+	@: > bin/$(am__dirstamp)
+
+bin/test-data-methods$(EXEEXT): $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_DEPENDENCIES) $(EXTRA_bin_test_data_methods_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-data-methods$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_LDADD) $(LIBS)
 tests/$(am__dirstamp):
 	@$(MKDIR_P) tests
 	@: > tests/$(am__dirstamp)
@@ -1394,9 +1429,6 @@ tests/$(DEPDIR)/$(am__dirstamp):
 	@: > tests/$(DEPDIR)/$(am__dirstamp)
 tests/test-echo-consumer.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
-bin/$(am__dirstamp):
-	@$(MKDIR_P) bin
-	@: > bin/$(am__dirstamp)
 
 bin/test-echo-consumer$(EXEEXT): $(bin_test_echo_consumer_OBJECTS) $(bin_test_echo_consumer_DEPENDENCIES) $(EXTRA_bin_test_echo_consumer_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-echo-consumer$(EXEEXT)
@@ -1439,21 +1471,9 @@ tests/test-get-async.$(OBJEXT): tests/$(am__dirstamp) \
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
-tests/unit-tests/$(am__dirstamp):
-	@$(MKDIR_P) tests/unit-tests
-	@: > tests/unit-tests/$(am__dirstamp)
-tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
-	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 tests/unit-tests/bin_test_name_methods-test-name-methods.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
-	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest
-	@: > contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
-	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
@@ -1515,6 +1535,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
@@ -1611,6 +1632,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-get-async.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Po@am__quote@
 
 .c.o:
@@ -1660,6 +1682,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+tests/unit-tests/bin_test_data_methods-test-data-methods.o: tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_data_methods-test-data-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_test_data_methods-test-data-methods.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
+
+tests/unit-tests/bin_test_data_methods-test-data-methods.obj: tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_data_methods-test-data-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_test_data_methods-test-data-methods.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_test_name_methods-test-name-methods.o: tests/unit-tests/test-name-methods.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_name_methods-test-name-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Tpo -c -o tests/unit-tests/bin_test_name_methods-test-name-methods.o `test -f 'tests/unit-tests/test-name-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-methods.cpp
@@ -1986,6 +2036,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+bin/test-data-methods.log: bin/test-data-methods$(EXEEXT)
+	@p='bin/test-data-methods$(EXEEXT)'; \
+	b='bin/test-data-methods'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/test-name-methods.log: bin/test-name-methods$(EXEEXT)
 	@p='bin/test-name-methods$(EXEEXT)'; \
 	b='bin/test-name-methods'; \
