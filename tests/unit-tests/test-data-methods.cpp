@@ -27,8 +27,6 @@ using namespace ndn;
 
 TEST(TestDataMethods, EncodeDecode)
 {
-  int debugJenkins = 1;
-  ASSERT_EQ(debugJenkins, 2);
 }
 
 int main(int argc, char **argv) {
