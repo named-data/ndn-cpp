@@ -29,6 +29,7 @@ config.log
 /condefs.h
 /conftest.cpp
 /conftest.err
+/test-suite.log
 *.Po
 .deps
 .dirstamp
