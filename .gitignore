@@ -44,5 +44,26 @@ config.log
 /doc/html
 /doc/latex
 
+# Skip all gtest files except fused-src and LICENSE, etc.
+/contrib/gtest-1.7.0/aclocal.m4
+/contrib/gtest-1.7.0/CMakeLists.txt
+/contrib/gtest-1.7.0/configure
+/contrib/gtest-1.7.0/configure.ac
+/contrib/gtest-1.7.0/Makefile.am
+/contrib/gtest-1.7.0/Makefile.in
+/contrib/gtest-1.7.0/build-aux
+/contrib/gtest-1.7.0/cmake
+/contrib/gtest-1.7.0/codegear
+/contrib/gtest-1.7.0/fused-src/gtest/gtest_main.cc
+/contrib/gtest-1.7.0/include
+/contrib/gtest-1.7.0/m4
+/contrib/gtest-1.7.0/make
+/contrib/gtest-1.7.0/msvc
+/contrib/gtest-1.7.0/samples
+/contrib/gtest-1.7.0/scripts
+/contrib/gtest-1.7.0/src
+/contrib/gtest-1.7.0/test
+/contrib/gtest-1.7.0/xcode
+
 # Mac OSX
 .DS_Store
