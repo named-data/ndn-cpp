@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,7 +41,7 @@ struct ndn_Blob {
  * @param value The pre-allocated buffer for the value, or 0 for none.
  * @param length The number of bytes in value.
  */
-static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length) 
+static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length)
 {
   self->value = value;
   self->length = length;

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,38 +40,38 @@ BinaryXmlWireFormat* BinaryXmlWireFormat::instance_ = 0;
 #if !(defined(NDN_CPP_USE_DEFAULT_TLV) || !defined(NDN_CPP_USE_DEFAULT_BINARY_XML))
 // This is declared in the WireFormat class.
 WireFormat*
-WireFormat::newInitialDefaultWireFormat() 
+WireFormat::newInitialDefaultWireFormat()
 {
   return BinaryXmlWireFormat::get();
 }
 #endif
-  
-Blob 
+
+Blob
 BinaryXmlWireFormat::encodeInterest
-  (const Interest& interest, size_t *signedPortionBeginOffset, 
-   size_t *signedPortionEndOffset) 
+  (const Interest& interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
   BinaryXmlEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeBinaryXmlInterest
-       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset, 
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
         &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-void 
+void
 BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -79,11 +79,11 @@ BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, si
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-    
-  BinaryXmlDecoder decoder(input, inputLength);  
+
+  BinaryXmlDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = ndn_decodeBinaryXmlInterest(&interestStruct, &decoder)))
     throw runtime_error(ndn_getErrorString(error));
@@ -91,14 +91,14 @@ BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, si
   interest.set(interestStruct);
 }
 
-Blob 
-BinaryXmlWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+Blob
+BinaryXmlWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Data dataStruct;
   ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
+    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   data.get(dataStruct);
 
@@ -106,11 +106,11 @@ BinaryXmlWireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffs
   ndn_Error error;
   if ((error = ndn_encodeBinaryXmlData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-void 
+void
 BinaryXmlWireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
@@ -118,10 +118,10 @@ BinaryXmlWireFormat::decodeData
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Data dataStruct;
   ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
+    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-    
-  BinaryXmlDecoder decoder(input, inputLength);  
+
+  BinaryXmlDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = ndn_decodeBinaryXmlData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &decoder)))
     throw runtime_error(ndn_getErrorString(error));
@@ -129,8 +129,8 @@ BinaryXmlWireFormat::decodeData
   data.set(dataStruct);
 }
 
-Blob 
-BinaryXmlWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
+Blob
+BinaryXmlWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
 {
   struct ndn_NameComponent prefixNameComponents[100];
   struct ndn_ForwardingEntry forwardingEntryStruct;
@@ -142,19 +142,19 @@ BinaryXmlWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntr
   ndn_Error error;
   if ((error = ndn_encodeBinaryXmlForwardingEntry(&forwardingEntryStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-void 
+void
 BinaryXmlWireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent prefixNameComponents[100];
   struct ndn_ForwardingEntry forwardingEntryStruct;
   ndn_ForwardingEntry_initialize
     (&forwardingEntryStruct, prefixNameComponents, sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-    
-  BinaryXmlDecoder decoder(input, inputLength);  
+
+  BinaryXmlDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = ndn_decodeBinaryXmlForwardingEntry(&forwardingEntryStruct, &decoder)))
     throw runtime_error(ndn_getErrorString(error));

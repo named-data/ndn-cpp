@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,23 +26,23 @@ using namespace std;
 
 namespace ndn {
 
-ptr_lib::shared_ptr<Signature> 
+ptr_lib::shared_ptr<Signature>
 Sha256WithRsaSignature::clone() const
 {
   return ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature(*this));
 }
 
-void 
-Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const 
+void
+Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 {
   digestAlgorithm_.get(signatureStruct.digestAlgorithm);
   witness_.get(signatureStruct.witness);
-  signature_.get(signatureStruct.signature);  
+  signature_.get(signatureStruct.signature);
   publisherPublicKeyDigest_.get().get(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().get(signatureStruct.keyLocator);
 }
 
-void 
+void
 Sha256WithRsaSignature::set(const struct ndn_Signature& signatureStruct)
 {
   digestAlgorithm_ = Blob(signatureStruct.digestAlgorithm);

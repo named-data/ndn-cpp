@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,7 +40,7 @@ struct ndn_BinaryXmlDecoder {
   unsigned int previouslyPeekedDTag;
 };
 
-static __inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, const uint8_t *input, size_t inputLength) 
+static __inline void ndn_BinaryXmlDecoder_initialize(struct ndn_BinaryXmlDecoder *self, const uint8_t *input, size_t inputLength)
 {
   self->input = input;
   self->inputLength = inputLength;
@@ -191,14 +191,14 @@ ndn_Error ndn_BinaryXmlDecoder_readOptionalTimeMillisecondsDTagElement
  * @param bytesLength the length of bytes
  * @return the result
  */
-double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(const uint8_t *bytes, size_t bytesLength); 
+double ndn_BinaryXmlDecoder_unsignedBigEndianToDouble(const uint8_t *bytes, size_t bytesLength);
 
 /**
  * Set the offset into the input, used for the next read.
  * @param self pointer to the ndn_BinaryXmlDecoder struct
  * @param offset the new offset
  */
-static __inline void ndn_BinaryXmlDecoder_seek(struct ndn_BinaryXmlDecoder *self, size_t offset) 
+static __inline void ndn_BinaryXmlDecoder_seek(struct ndn_BinaryXmlDecoder *self, size_t offset)
 {
   self->offset = offset;
 }

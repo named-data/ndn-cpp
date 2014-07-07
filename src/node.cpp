@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -143,7 +143,7 @@ uint64_t Node::PendingInterest::lastPendingInterestId_ = 0;
 uint64_t Node::RegisteredPrefix::lastRegisteredPrefixId_ = 0;
 
 /**
- * Set the KeyLocator using the full SELFREG_PUBLIC_KEY_DER, sign the data packet using SELFREG_PRIVATE_KEY_DER 
+ * Set the KeyLocator using the full SELFREG_PUBLIC_KEY_DER, sign the data packet using SELFREG_PRIVATE_KEY_DER
  * and set the signature.
  * This is a temporary function, because we expect in the future that registerPrefix will not require a signature on the packet.
  * @param data The Data packet to sign.
@@ -154,7 +154,7 @@ selfregSign(Data& data, WireFormat& wireFormat)
 {
   data.setSignature(Sha256WithRsaSignature());
   Sha256WithRsaSignature *signature = dynamic_cast<Sha256WithRsaSignature*>(data.getSignature());
-  
+
   // Set the public key.
   uint8_t publicKeyDigest[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(SELFREG_PUBLIC_KEY_DER, sizeof(SELFREG_PUBLIC_KEY_DER), publicKeyDigest);
@@ -180,7 +180,7 @@ selfregSign(Data& data, WireFormat& wireFormat)
   RSA_free(privateKey);
   if (!success)
     throw runtime_error("Error in RSA_sign");
-  
+
   signature->setSignature(Blob(signatureBits, (size_t)signatureBitsLength));
 }
 
@@ -190,20 +190,20 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 {
 }
 
-uint64_t 
+uint64_t
 Node::expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
   // TODO: Properly check if we are already connected to the expected host.
   if (!transport_->getIsConnected())
     transport_->connect(*connectionInfo_, *this);
-  
+
   uint64_t pendingInterestId = PendingInterest::getNextPendingInterestId();
   pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>(new PendingInterest
     (pendingInterestId, ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData, onTimeout)));
-  
-  Blob encoding = interest.wireEncode(wireFormat);  
+
+  Blob encoding = interest.wireEncode(wireFormat);
   transport_->send(*encoding);
-  
+
   return pendingInterestId;
 }
 
@@ -218,11 +218,11 @@ Node::removePendingInterest(uint64_t pendingInterestId)
   }
 }
 
-uint64_t 
+uint64_t
 Node::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, 
+  (const Name& prefix, const OnInterest& onInterest,
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
-   WireFormat& wireFormat, KeyChain& commandKeyChain, 
+   WireFormat& wireFormat, KeyChain& commandKeyChain,
    const Name& commandCertificateName)
 {
   // Get the registeredPrefixId now so we can return it to the caller.
@@ -231,7 +231,7 @@ Node::registerPrefix
   // If we have an _ndndId, we know we already connected to NDNx.
   if (ndndId_.size() != 0 || !&commandKeyChain) {
     // Assume we are connected to a legacy NDNx server.
-    
+
     if (ndndId_.size() == 0) {
       // First fetch the ndndId of the connected hub.
       NdndIdFetcher fetcher
@@ -243,16 +243,16 @@ Node::registerPrefix
     }
     else
       registerPrefixHelper
-        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), 
+        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix),
          onInterest, onRegisterFailed, flags, wireFormat);
   }
   else
     // The application set the KeyChain for signing NFD interests.
     nfdRegisterPrefix
-      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest, 
+      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
        onRegisterFailed, flags, commandKeyChain, commandCertificateName,
        wireFormat);
-  
+
   return registeredPrefixId;
 }
 
@@ -267,16 +267,16 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
   }
 }
 
-void 
+void
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& ndndIdData)
 {
   // Assume that the content is a DER encoded public key of the ndnd.  Do a quick check that the first byte is for DER encoding.
-  if (ndndIdData->getContent().size() < 1 || 
+  if (ndndIdData->getContent().size() < 1 ||
       ndndIdData->getContent().buf()[0] != 0x30) {
     info_->onRegisterFailed_(info_->prefix_);
     return;
   }
-  
+
   // Get the digest of the public key.
   uint8_t digest[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(ndndIdData->getContent().buf(), ndndIdData->getContent().size(), digest);
@@ -285,17 +285,17 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
   // TODO: If there are multiple connected hubs, the NDN ID is really stored per connected hub.
   info_->node_.ndndId_ = Blob(digest, sizeof(digest));
   info_->node_.registerPrefixHelper
-    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_, 
+    (info_->registeredPrefixId_, info_->prefix_, info_->onInterest_,
      info_->onRegisterFailed_, info_->flags_, info_->wireFormat_);
 }
 
-void 
+void
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
   info_->onRegisterFailed_(info_->prefix_);
 }
 
-void 
+void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
 {
   if (info_->isNfdCommand_) {
@@ -303,7 +303,7 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     // TODO: Move this into the TLV code.
     struct ndn_TlvDecoder decoder;
     ndn_TlvDecoder_initialize
-      (&decoder, responseData->getContent().buf(), 
+      (&decoder, responseData->getContent().buf(),
        responseData->getContent().size());
     size_t endOffset;
     if (ndn_TlvDecoder_readNestedTlvsStart
@@ -317,11 +317,11 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
       info_->onRegisterFailed_(info_->prefix_);
       return;
     }
-    
+
     // Status code 200 is "OK".
     if (statusCode != 200)
       info_->onRegisterFailed_(info_->prefix_);
-  
+
     // Otherwise, silently succeed.
   }
   else {
@@ -333,12 +333,12 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
       info_->onRegisterFailed_(info_->prefix_);
       return;
     }
-  
+
     // Otherwise, silently succeed.
   }
 }
 
-void 
+void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
   if (info_->isNfdCommand_) {
@@ -349,32 +349,32 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
       //   registeredPrefixTable_ on the first try.
       NdndIdFetcher fetcher
         (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-          (&info_->node_, 0, *info_->prefix_, info_->onInterest_, 
+          (&info_->node_, 0, *info_->prefix_, info_->onInterest_,
            info_->onRegisterFailed_, info_->flags_, info_->wireFormat_)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
       info_->node_.expressInterest
-        (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher, 
+        (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher,
          info_->wireFormat_);
     }
     else
       // Pass 0 for registeredPrefixId since the entry was already added to
       //   registeredPrefixTable_ on the first try.
       info_->node_.registerPrefixHelper
-        (0, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_, 
+        (0, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_,
          info_->flags_, info_->wireFormat_);
   }
   else
     // An NDNx command was sent because there is no commandKeyChain, so we
-    //   can't try an NFD command. Or it was sent from this callback after 
+    //   can't try an NFD command. Or it was sent from this callback after
     //   trying an NFD command. Fail.
     info_->onRegisterFailed_(info_->prefix_);
 }
 
-void 
+void
 Node::registerPrefixHelper
-  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
-   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
+   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   // Create a ForwardingEntry.
@@ -393,7 +393,7 @@ Node::registerPrefixHelper
   // Always encode as BinaryXml since the internals of ndnd expect it.
   selfregSign(data, *BinaryXmlWireFormat::get());
   Blob encodedData = data.wireEncode(*BinaryXmlWireFormat::get());
-  
+
   // Create an interest where the name has the encoded Data packet.
   Name interestName;
   const uint8_t component0[] = "ndnx";
@@ -402,30 +402,30 @@ Node::registerPrefixHelper
   interestName.append(ndndId_);
   interestName.append(component2, sizeof(component2) - 1);
   interestName.append(encodedData);
-  
+
   Interest interest(interestName);
   interest.setInterestLifetimeMilliseconds(4000.0);
   interest.setScope(1);
-  
+
   if (registeredPrefixId != 0)
     // Save the onInterest callback and send the registration interest.
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>
        (new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
-  
+
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false)));
-  // It is OK for func_lib::function make a copy of the function object because 
+  // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(interest, response, response, wireFormat);
 }
 
 void
 Node::nfdRegisterPrefix
-  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, 
-   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
-   const ForwardingFlags& flags, KeyChain& commandKeyChain, 
+  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
+   const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
+   const ForwardingFlags& flags, KeyChain& commandKeyChain,
    const Name& commandCertificateName, WireFormat& wireFormat)
 {
   if (!&commandKeyChain)
@@ -434,7 +434,7 @@ Node::nfdRegisterPrefix
   if (commandCertificateName.size() == 0)
     throw runtime_error
       ("registerPrefix: The command certificate name has not been set. You must call setCommandSigningInfo.");
-  
+
   ControlParameters controlParameters;
   controlParameters.setName(*prefix);
 
@@ -456,16 +456,16 @@ Node::nfdRegisterPrefix
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true)));
-  // It is OK for func_lib::function make a copy of the function object because 
+  // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest(commandInterest, response, response, wireFormat);
 }
 
-void 
+void
 Node::processEvents()
 {
   transport_->processEvents();
-  
+
   // Check for PIT entry timeouts.  Go backwards through the list so we can erase entries.
   MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
@@ -474,14 +474,14 @@ Node::processEvents()
       ptr_lib::shared_ptr<PendingInterest> pendingInterest = pendingInterestTable_[i];
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
       pendingInterest->callTimeout();
-      
+
       // Refresh now since the timeout callback might have delayed.
       nowMilliseconds = ndn_getNowMilliseconds();
     }
   }
 }
 
-void 
+void
 Node::onReceivedElement(const uint8_t *element, size_t elementLength)
 {
   // First, decode as Interest or Data.
@@ -491,7 +491,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   //   conflict with the first byte of a binary XML packet, so we can
   //   just look at the first byte.
   if (element[0] == ndn_Tlv_Interest || element[0] == ndn_Tlv_Data) {
-    TlvDecoder decoder(element, elementLength);  
+    TlvDecoder decoder(element, elementLength);
     if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
       interest.reset(new Interest());
       interest->wireDecode(element, elementLength, *TlvWireFormat::get());
@@ -513,7 +513,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
       data->wireDecode(element, elementLength, *BinaryXmlWireFormat::get());
     }
   }
-  
+
   // Now process as Interest or Data.
   if (interest) {
     RegisteredPrefix *entry = getEntryForRegisteredPrefix(interest->getName());
@@ -528,13 +528,13 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   }
 }
 
-void 
+void
 Node::shutdown()
 {
   transport_->close();
 }
 
-void 
+void
 Node::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
@@ -546,21 +546,21 @@ Node::extractEntriesForExpressedInterest
     }
   }
 }
-  
+
 Node::RegisteredPrefix*
 Node::getEntryForRegisteredPrefix(const Name& name)
 {
   int iResult = -1;
-    
+
   for (size_t i = 0; i < registeredPrefixTable_.size(); ++i) {
     if (registeredPrefixTable_[i]->getPrefix()->match(name)) {
-      if (iResult < 0 || 
+      if (iResult < 0 ||
           registeredPrefixTable_[i]->getPrefix()->size() > registeredPrefixTable_[iResult]->getPrefix()->size())
         // Update to the longer match.
         iResult = i;
     }
   }
-    
+
   if (iResult >= 0)
     return registeredPrefixTable_[iResult].get();
   else
@@ -579,7 +579,7 @@ Node::PendingInterest::PendingInterest
     timeoutTimeMilliseconds_ = -1.0;
 }
 
-void 
+void
 Node::PendingInterest::callTimeout()
 {
   if (onTimeout_) {

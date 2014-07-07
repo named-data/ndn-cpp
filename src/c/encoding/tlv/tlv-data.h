@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,10 +37,10 @@ extern "C" {
  * If you are not encoding in order to sign, you can ignore this returned value.
  * @param signedPortionEndOffset Return the offset in the encoding of the end of the signed portion.
  * If you are not encoding in order to sign, you can ignore this returned value.
- * @param encoder Pointer to the ndn_TlvEncoder struct which receives the encoding. 
+ * @param encoder Pointer to the ndn_TlvEncoder struct which receives the encoding.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_encodeTlvData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
@@ -51,10 +51,10 @@ ndn_encodeTlvData
  * If you are not decoding in order to verify, you can ignore this returned value.
  * @param signedPortionEndOffset Return the offset in the input buffer of the end of the signed portion.
  * If you are not decoding in order to verify, you can ignore this returned value.
- * @param decoder Pointer to the ndn_TlvDecoder struct which has been initialized with the buffer to decode. 
+ * @param decoder Pointer to the ndn_TlvDecoder struct which has been initialized with the buffer to decode.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_decodeTlvData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder);
 

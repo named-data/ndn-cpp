@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,12 +34,12 @@ Sha256WithRsaHandler::verifySignature(const Data& data, const PublicKey& publicK
   const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
   if (!signature)
     throw SecurityException("signature is not Sha256WithRsaSignature.");
-  
+
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
   // wireEncode returns the cached encoding if available.
   ndn_digestSha256(data.wireEncode().signedBuf(), data.wireEncode().signedSize(), signedPortionDigest);
-  
+
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = publicKey.getKeyDer().buf();
@@ -51,7 +51,7 @@ Sha256WithRsaHandler::verifySignature(const Data& data, const PublicKey& publicK
      signature->getSignature().size(), rsaPublicKey);
   // Free the public key before checking for success.
   RSA_free(rsaPublicKey);
-  
+
   // RSA_verify returns 1 for a valid signature.
   return (success == 1);
 }

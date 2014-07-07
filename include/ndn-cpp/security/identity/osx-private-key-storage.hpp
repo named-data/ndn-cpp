@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -140,7 +140,7 @@ public:
 private:
   T m_typeRef;
 };
-  
+
 class OSXPrivateKeyStorage : public PrivateKeyStorage {
 public:
   /**
@@ -150,8 +150,8 @@ public:
 
   /**
    * destructor of OSXPrivateKeyStore
-   */    
-  virtual 
+   */
+  virtual
   ~OSXPrivateKeyStorage();
 
   /**
@@ -160,7 +160,7 @@ public:
    * @param keyType The type of the key pair, e.g. KEY_TYPE_RSA.
    * @param keySize The size of the key pair.
    */
-  virtual void 
+  virtual void
   generateKeyPair(const Name& keyName, KeyType keyType = KEY_TYPE_RSA, int keySize = 2048);
 
   /**
@@ -168,9 +168,9 @@ public:
    * @param keyName The name of public key.
    * @return The public key.
    */
-  virtual ptr_lib::shared_ptr<PublicKey> 
+  virtual ptr_lib::shared_ptr<PublicKey>
   getPublicKey(const Name& keyName);
-  
+
   /**
    * Fetch the private key for keyName and sign the data, returning a signature Blob.
    * @param data Pointer to the input byte array.
@@ -178,10 +178,10 @@ public:
    * @param keyName The name of the signing key.
    * @param digestAlgorithm the digest algorithm.
    * @return The signature, or a null pointer if signing fails.
-   */  
-  virtual Blob 
+   */
+  virtual Blob
   sign(const uint8_t *data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256);
-      
+
   /**
    * Decrypt data.
    * @param keyName The name of the decrypting key.
@@ -190,7 +190,7 @@ public:
    * @param isSymmetric If true symmetric encryption is used, otherwise asymmetric decryption is used.
    * @return The decrypted data.
    */
-  virtual Blob 
+  virtual Blob
   decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric = false);
 
   /**
@@ -210,7 +210,7 @@ public:
    * @param keyType The type of the key, e.g. KEY_TYPE_AES.
    * @param keySize The size of the key.
    */
-  virtual void 
+  virtual void
   generateKey(const Name& keyName, KeyType keyType = KEY_TYPE_AES, int keySize = 256);
 
   /**
@@ -220,7 +220,7 @@ public:
    * @return True if the key exists, otherwise false.
    */
   virtual bool
-  doesKeyExist(const Name& keyName, KeyClass keyClass);  
+  doesKeyExist(const Name& keyName, KeyClass keyClass);
 
   /**
    * configure ACL of a particular key
@@ -230,7 +230,7 @@ public:
    * @param appPath the absolute path to the application
    * @returns true if setting succeeds
    */
-  bool 
+  bool
   setACL(const Name & keyName, KeyClass keyClass, int acl, const std::string & appPath);
 
  private:
@@ -240,25 +240,25 @@ public:
    * @param keyClass the class of the key
    * @return the internal key name
    */
-  std::string 
+  std::string
   toInternalKeyName(const Name & keyName, KeyClass keyClass);
 
   /**
    * Get key
    * @param keyName the name of the key
    * @param keyClass the class of the key
-   * @returns 0 if not found,  otherwise a Keychain ref to the key. You 
+   * @returns 0 if not found,  otherwise a Keychain ref to the key. You
    * must use CFRelease to free it.
    */
-  CFReleaser<SecKeychainItemRef> 
+  CFReleaser<SecKeychainItemRef>
   getKey(const Name & keyName, KeyClass keyClass);
-      
+
   /**
    * convert keyType to MAC OS symmetric key key type
    * @param keyType
    * @returns MAC OS key type
    */
-  const CFTypeRef 
+  const CFTypeRef
   getSymmetricKeyType(KeyType keyType);
 
   /**
@@ -266,7 +266,7 @@ public:
    * @param keyType
    * @returns MAC OS key type
    */
-  const CFTypeRef 
+  const CFTypeRef
   getAsymmetricKeyType(KeyType keyType);
 
   /**
@@ -274,7 +274,7 @@ public:
    * @param keyClass
    * @returns MAC OS key class
    */
-  const CFTypeRef 
+  const CFTypeRef
   getKeyClass(KeyClass keyClass);
 
   /**
@@ -282,7 +282,7 @@ public:
    * @param digestAlgorithm
    * @returns MAC OS algorithm id
    */
-  const CFStringRef 
+  const CFStringRef
   getDigestAlgorithm(DigestAlgorithm digestAlgorithm);
 
   /**
@@ -290,10 +290,10 @@ public:
    * @param digestAlgo the digest algorithm
    * @return digest size
    */
-  long 
+  long
   getDigestSize(DigestAlgorithm digestAlgo);
 };
-  
+
 }
 
 #endif // NDN_CPP_HAVE_OSX_SECURITY

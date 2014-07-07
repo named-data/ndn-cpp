@@ -2,7 +2,7 @@
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from tlv.hpp by Alexander Afanasyev <alexander.afanasyev@ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -82,7 +82,7 @@ enum {
   ndn_Tlv_ControlParameters_Strategy =            107,
   ndn_Tlv_ControlParameters_ExpirationPeriod =    109
 };
-  
+
 #ifdef __cplusplus
 }
 #endif

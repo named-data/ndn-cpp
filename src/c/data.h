@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +39,7 @@ struct ndn_Signature {
                                     *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
   struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
   struct ndn_Blob signature;
-  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
@@ -73,7 +73,7 @@ struct ndn_MetaInfo {
  * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_BLOB.
  * @param self A pointer to the ndn_MetaInfo struct.
  */
-static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self) 
+static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 {
   self->timestampMilliseconds = -1;
   self->type = ndn_ContentType_BLOB;
@@ -84,7 +84,7 @@ static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self) 
+static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self)
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }
@@ -92,9 +92,9 @@ static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static __inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds) 
-{ 
-  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 
+static __inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds)
+{
+  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0;
 }
 
 struct ndn_Data {
@@ -114,8 +114,8 @@ struct ndn_Data {
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
 static __inline void ndn_Data_initialize
-  (struct ndn_Data *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents, 
-   struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) 
+  (struct ndn_Data *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents,
+   struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents)
 {
   ndn_Signature_initialize(&self->signature, keyNameComponents, maxKeyNameComponents);
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);

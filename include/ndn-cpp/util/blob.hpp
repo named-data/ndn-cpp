@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,8 +29,8 @@ struct ndn_Blob;
 namespace ndn {
 
 /**
- * A Blob holds a pointer to an immutable byte array implemented as const std::vector<uint8_t>.  
- * This is like a JavaScript string which is a pointer to an immutable string.  
+ * A Blob holds a pointer to an immutable byte array implemented as const std::vector<uint8_t>.
+ * This is like a JavaScript string which is a pointer to an immutable string.
  * It is OK to pass a pointer to the string because the new owner can't change the bytes
  * of the string.  However, like a JavaScript string, it is possible to change the pointer, and so this does allow
  * the copy constructor and assignment to change the pointer.  Also remember that the pointer can be null.
@@ -44,9 +44,9 @@ public:
    * Create a new Blob with a null pointer.
    */
   Blob()
-  {  
+  {
   }
-  
+
   /**
    * Create a new Blob with an immutable copy of the given array.
    * @param value A pointer to the byte array which is copied.
@@ -56,10 +56,10 @@ public:
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >(new std::vector<uint8_t>(value, value + valueLength))
   {
   }
-  
+
   /**
    * Create a new Blob with an immutable copy of the array in the given vector.
-   * If you want to transfer the array without copying, the the vector has to start as a 
+   * If you want to transfer the array without copying, the the vector has to start as a
    * ptr_lib::shared_ptr<std::vector<uint8_t> > and you can use the Blob constructor with this type.
    * @param value A reference to a vector which is copied.
    */
@@ -67,13 +67,13 @@ public:
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >(new std::vector<uint8_t>(value))
   {
   }
-  
+
   /**
    * Create a new Blob with an immutable copy of the array in the given Blob struct.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
    */
   Blob(const struct ndn_Blob& blobStruct);
-  
+
   /**
    * Create a new Blob and take another pointer to the given blob's buffer.
    * @param blob The Blob from which we take another pointer to the same buffer.
@@ -82,13 +82,13 @@ public:
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >(blob)
   {
   }
-  
+
   /**
-   * Create a new Blob to point to an existing byte array. IMPORTANT: If copy is 
-   * false, after calling this constructor, if you keep a pointer to the array 
+   * Create a new Blob to point to an existing byte array. IMPORTANT: If copy is
+   * false, after calling this constructor, if you keep a pointer to the array
    * then you must treat the array as immutable and promise not to change it.
    * @param value A pointer to a vector with the byte array.
-   * @param copy If true, copy the value into a new vector. Otherwise, take 
+   * @param copy If true, copy the value into a new vector. Otherwise, take
    * another reference and do not copy the bytes.
    */
   Blob(const ptr_lib::shared_ptr<std::vector<uint8_t> > &value, bool copy)
@@ -104,7 +104,7 @@ public:
     if (copy)
       this->reset(new std::vector<uint8_t>(*value));
   }
-  
+
   /**
    * Create a new Blob to point to an existing byte array.
    * @deprecated Use the constructor with an explicit copy parameter.
@@ -117,11 +117,11 @@ public:
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >(value)
   {
   }
-  
+
   /**
    * Return the length of the immutable byte array.
    */
-  size_t 
+  size_t
   size() const
   {
     if (*this)
@@ -133,7 +133,7 @@ public:
   /**
    * Return a const pointer to the first byte of the immutable byte array, or 0 if the pointer is null.
    */
-  const uint8_t* 
+  const uint8_t*
   buf() const
   {
     if (*this)
@@ -145,24 +145,24 @@ public:
   /**
    * Check if the array pointer is null.
    * @return true if the buffer pointer is null, otherwise false.
-   */  
-  bool 
+   */
+  bool
   isNull() const { return !(*this); }
-  
+
   /**
    * Return the hex representation of the bytes in array.
-   * @return The hex bytes as a string, or an empty string if the pointer is 
+   * @return The hex bytes as a string, or an empty string if the pointer is
    * null.
    */
-  std::string 
+  std::string
   toHex() const { return (*this) ? ndn::toHex(**this) : std::string(); }
-  
+
   /**
    * Set the blobStruct to point to this Blob's byte array, without copying any memory.
    * WARNING: The resulting pointer in blobStruct is invalid after a further use of this object which could reallocate memory.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
    */
-  void 
+  void
   get(struct ndn_Blob& blobStruct) const;
 };
 

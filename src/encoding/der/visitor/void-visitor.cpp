@@ -12,7 +12,7 @@ namespace ndn {
 
 namespace der {
 
-void 
+void
 VoidVisitor::visit(DerBool& derBool, ndnboost::any)
 {}
 
@@ -20,11 +20,11 @@ void
 VoidVisitor::visit(DerInteger& derInteger, ndnboost::any)
 {}
 
-void 
+void
 VoidVisitor::visit(DerPrintableString& derPStr, ndnboost::any)
 {}
 
-void 
+void
 VoidVisitor::visit(DerBitString& derBStr, ndnboost::any)
 {}
 
@@ -32,7 +32,7 @@ void
 VoidVisitor::visit(DerNull& derNull, ndnboost::any)
 {}
 
-void 
+void
 VoidVisitor::visit(DerOctetString& derOStr, ndnboost::any)
 {}
 
@@ -40,11 +40,11 @@ void
 VoidVisitor::visit(DerOid& derOid, ndnboost::any)
 {}
 
-void 
+void
 VoidVisitor::visit(DerSequence& derSequence, ndnboost::any)
 {}
 
-void 
+void
 VoidVisitor::visit(DerGtime& derGtime, ndnboost::any)
 {}
 

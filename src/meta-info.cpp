@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,8 +26,8 @@ using namespace std;
 
 namespace ndn {
 
-void 
-MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const 
+void
+MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const
 {
   metaInfoStruct.timestampMilliseconds = timestampMilliseconds_;
   metaInfoStruct.type = type_;
@@ -35,7 +35,7 @@ MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const
   finalBlockID_.get(metaInfoStruct.finalBlockID);
 }
 
-void 
+void
 MetaInfo::set(const struct ndn_MetaInfo& metaInfoStruct)
 {
   timestampMilliseconds_ = metaInfoStruct.timestampMilliseconds;

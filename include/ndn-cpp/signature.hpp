@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,22 +38,22 @@ public:
    * Return a pointer to a new Signature which is a copy of this signature.
    * This is pure virtual, the subclass must implement it.
    */
-  virtual ptr_lib::shared_ptr<Signature> 
+  virtual ptr_lib::shared_ptr<Signature>
   clone() const = 0;
-  
+
   /**
    * The virtual destructor.
    */
-  virtual 
+  virtual
   ~Signature();
-  
+
     /**
    * Set the signatureStruct to point to the values in this signature object, without copying any memory.
    * WARNING: The resulting pointers in signatureStruct are invalid after a further use of this object which could reallocate memory.
    * This is pure virtual, the subclass must implement it.
    * @param signatureStruct a C ndn_Signature struct where the name components array is already allocated.
    */
-  virtual void 
+  virtual void
   get(struct ndn_Signature& signatureStruct) const = 0;
 
   /**
@@ -61,14 +61,14 @@ public:
    * This is pure virtual, the subclass must implement it.
    * @param signatureStruct a C ndn_Signature struct
    */
-  virtual void 
+  virtual void
   set(const struct ndn_Signature& signatureStruct) = 0;
-  
+
   /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.
    * @return The change count.
    */
-  virtual uint64_t 
+  virtual uint64_t
   getChangeCount() const = 0;
 };
 

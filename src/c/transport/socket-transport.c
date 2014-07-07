@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,7 @@
 #include <errno.h>
 
 ndn_Error ndn_SocketTransport_connect
-  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host, 
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host,
    unsigned short port)
 {
   int socketDescriptor;
@@ -47,7 +47,7 @@ ndn_Error ndn_SocketTransport_connect
 
     address.sun_family = AF_UNIX;
     strcpy(address.sun_path, host);
-    if (connect(socketDescriptor, (struct sockaddr *)&address, 
+    if (connect(socketDescriptor, (struct sockaddr *)&address,
                 SUN_LEN(&address)) == -1) {
       close(socketDescriptor);
       return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
@@ -98,8 +98,8 @@ ndn_Error ndn_SocketTransport_connect
 
     freeaddrinfo(serverInfo);
   }
-  
-  self->socketDescriptor = socketDescriptor;  
+
+  self->socketDescriptor = socketDescriptor;
   return NDN_ERROR_success;
 }
 
@@ -107,19 +107,19 @@ ndn_Error ndn_SocketTransport_send(struct ndn_SocketTransport *self, const uint8
 {
   if (self->socketDescriptor < 0)
     return NDN_ERROR_SocketTransport_socket_is_not_open;
-  
+
   int nBytes;
   while (1) {
     if ((nBytes = send(self->socketDescriptor, data, dataLength, 0)) < 0)
       return NDN_ERROR_SocketTransport_error_in_send;
     if (nBytes >= dataLength)
       break;
-    
+
     // Send more.
     dataLength -= nBytes;
   }
 
-  return NDN_ERROR_success;  
+  return NDN_ERROR_success;
 }
 
 ndn_Error ndn_SocketTransport_receiveIsReady(struct ndn_SocketTransport *self, int *receiveIsReady)
@@ -130,11 +130,11 @@ ndn_Error ndn_SocketTransport_receiveIsReady(struct ndn_SocketTransport *self, i
   if (self->socketDescriptor < 0)
     // The socket is not open.  Just silently return.
     return NDN_ERROR_success;
-  
+
   struct pollfd pollInfo[1];
   pollInfo[0].fd = self->socketDescriptor;
   pollInfo[0].events = POLLIN;
-  
+
   int pollResult = poll(pollInfo, 1, 0);
 
   if (pollResult < 0)
@@ -156,13 +156,13 @@ ndn_Error ndn_SocketTransport_receive
   if (self->socketDescriptor < 0)
     return NDN_ERROR_SocketTransport_socket_is_not_open;
 
-  int nBytes;  
+  int nBytes;
   if ((nBytes = recv(self->socketDescriptor, buffer, bufferLength, 0)) == -1)
     return NDN_ERROR_SocketTransport_error_in_recv;
 
   *nBytesOut = (size_t)nBytes;
-  
-  return NDN_ERROR_success;  
+
+  return NDN_ERROR_success;
 }
 
 ndn_Error ndn_SocketTransport_close(struct ndn_SocketTransport *self)
@@ -170,11 +170,11 @@ ndn_Error ndn_SocketTransport_close(struct ndn_SocketTransport *self)
   if (self->socketDescriptor < 0)
     // Already closed.  Do nothing.
     return NDN_ERROR_success;
-  
+
   if (close(self->socketDescriptor) != 0)
     return NDN_ERROR_SocketTransport_error_in_close;
-  
+
   self->socketDescriptor = -1;
-  
+
   return NDN_ERROR_success;
 }

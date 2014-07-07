@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,22 +37,22 @@ public:
   Counter() {
     callbackCount_ = 0;
   }
-  
+
   void onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
   {
     ++callbackCount_;
     cout << "Got data packet with name " << data->getName().toUri() << endl;
     for (size_t i = 0; i < data->getContent().size(); ++i)
       cout << (*data->getContent())[i];
-    cout << endl;  
+    cout << endl;
   }
 
   void onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
   {
     ++callbackCount_;
-    cout << "Time out for interest " << interest->getName().toUri() << endl;    
+    cout << "Time out for interest " << interest->getName().toUri() << endl;
   }
-  
+
   int callbackCount_;
 };
 
@@ -60,20 +60,20 @@ int main(int argc, char** argv)
 {
   try {
     Face face("aleph.ndn.ucla.edu");
-    
+
     // Counter holds data used by the callbacks.
     Counter counter;
-    
-    Name name1("/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4");    
+
+    Name name1("/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4");
     cout << "Express name " << name1.toUri() << endl;
     // Use bind to pass the counter object to the callbacks.
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
-    
+
     // Try to get anything.
     Name name2("/");
     cout << "Express name " << name2.toUri() << endl;
     face.expressInterest(name2, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
-    
+
     // Expect this to time out.
     Name name3("/test/timeout");
     cout << "Express name " << name3.toUri() << endl;

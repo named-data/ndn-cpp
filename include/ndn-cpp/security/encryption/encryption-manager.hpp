@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,16 +30,16 @@ namespace ndn {
 class EncryptionManager {
 public:
   virtual ~EncryptionManager() {}
-    
-  virtual void 
+
+  virtual void
   createSymmetricKey(const Name& keyName, KeyType keyType, const Name& signkeyName = Name(), bool isSymmetric = true) = 0;
 
   virtual Blob
-  encrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = false, 
+  encrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = false,
           EncryptMode encryptMode = ENCRYPT_MODE_DEFAULT) = 0;
 
   virtual Blob
-  decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = false, 
+  decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = false,
           EncryptMode encryptMode = ENCRYPT_MODE_DEFAULT) = 0;
 };
 

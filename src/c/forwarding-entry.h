@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -62,7 +62,7 @@ struct ndn_ForwardingEntry {
  * @param maxPrefixNameComponents the number of elements in the allocated prefixNameComponents array
  */
 static __inline void ndn_ForwardingEntry_initialize
-  (struct ndn_ForwardingEntry *self, struct ndn_NameComponent *prefixNameComponents, size_t maxPrefixNameComponents) 
+  (struct ndn_ForwardingEntry *self, struct ndn_NameComponent *prefixNameComponents, size_t maxPrefixNameComponents)
 {
   ndn_Blob_initialize(&self->action, 0, 0);
   ndn_Name_initialize(&self->prefix, prefixNameComponents, maxPrefixNameComponents);
@@ -76,7 +76,7 @@ static __inline void ndn_ForwardingEntry_initialize
  * @deprecated Use freshnessPeriod.
  */
 static __inline int ndn_ForwardingEntry_getFreshnessSeconds
-  (struct ndn_ForwardingEntry *self) 
+  (struct ndn_ForwardingEntry *self)
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }
@@ -85,9 +85,9 @@ static __inline int ndn_ForwardingEntry_getFreshnessSeconds
  * @deprecated Use freshnessPeriod.
  */
 static __inline void ndn_ForwardingEntry_setFreshnessSeconds
-  (struct ndn_ForwardingEntry *self, int freshnessSeconds) 
-{ 
-  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0; 
+  (struct ndn_ForwardingEntry *self, int freshnessSeconds)
+{
+  self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0;
 }
 
 #ifdef __cplusplus

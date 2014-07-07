@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,12 +30,12 @@
 extern "C" {
 #endif
 
-ndn_Error 
+ndn_Error
 ndn_encodeTlvInterest
-  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset, 
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
-ndn_Error 
+ndn_Error
 ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder);
 
 #ifdef  __cplusplus

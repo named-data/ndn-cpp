@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -76,23 +76,23 @@ static inline string toString(const vector<uint8_t>& v)
 {
   if (!&v)
     return "";
-  
+
   return string(&v[0], &v[0] + v.size());
 }
 
-static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry) 
+static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
 {
   cout << "action: " << forwardingEntry.getAction() << endl;
   cout << "prefix: " << forwardingEntry.getPrefix().toUri() << endl;
-  cout << "publisherPublicKeyDigest: " 
-       << (forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ? 
+  cout << "publisherPublicKeyDigest: "
+       << (forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().size() > 0 ?
            forwardingEntry.getPublisherPublicKeyDigest().getPublisherPublicKeyDigest().toHex() : "<none>") << endl;
   cout << "faceId: ";
   if (forwardingEntry.getFaceId() >= 0)
     cout << forwardingEntry.getFaceId() << endl;
   else
     cout << "<none>" << endl;
-  
+
   cout << "forwardingFlags:";
   if (forwardingEntry.getForwardingFlags().getActive())
     cout << " active";
@@ -111,7 +111,7 @@ static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
   if (forwardingEntry.getForwardingFlags().getCaptureOk())
     cout << " captureOk";
   cout << endl;
-  
+
   cout << "freshnessPeriod (milliseconds): ";
   if (forwardingEntry.getFreshnessPeriod() >= 0)
     cout << forwardingEntry.getFreshnessPeriod() << endl;
@@ -120,7 +120,7 @@ static void dumpForwardingEntry(const ForwardingEntry& forwardingEntry)
 }
 
 /**
- * Show the interest name and scope, and expect the name to have 4 components where the last component is a data packet 
+ * Show the interest name and scope, and expect the name to have 4 components where the last component is a data packet
  * whose content is a forwarding entry.
  */
 static void dumpInterestWithForwardingEntry(const Interest& interest)
@@ -139,11 +139,11 @@ static void dumpInterestWithForwardingEntry(const Interest& interest)
   cout << "name[1]: " << interest.getName()[1].getValue().toHex() << endl;
   cout << "name[2]: " << toString(*interest.getName()[2].getValue()) << endl;
   cout << "name[3] decoded as Data, showing content as ForwardingEntry: " << endl;
-  
+
   Data data;
     // Note, until the registration protocol is defined for the new TLV forwarder, we use the old BinaryXml format.
   data.wireDecode(*interest.getName()[3].getValue(), *BinaryXmlWireFormat::get());
-  
+
   ForwardingEntry forwardingEntry;
   forwardingEntry.wireDecode(*data.getContent(), *BinaryXmlWireFormat::get());
   dumpForwardingEntry(forwardingEntry);
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
     interest.wireDecode(BinaryXmlInterest, sizeof(BinaryXmlInterest), *BinaryXmlWireFormat::get());
     cout << "Interest:" << endl;
     dumpInterestWithForwardingEntry(interest);
-    
+
     Blob encoding = interest.wireEncode(*BinaryXmlWireFormat::get());
     cout << endl << "Re-encoded interest " << encoding.toHex() << endl;
 

@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,11 +33,11 @@ namespace der {
 class DerException : public std::exception {
 public:
   DerException(const std::string& errorMessage) throw();
-  
+
   ~DerException() throw();
-  
+
   std::string Msg() { return errorMessage_; }
-  
+
   virtual const char* what() const throw() { return errorMessage_.c_str(); }
 
 private:

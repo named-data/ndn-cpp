@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
+
 /**
  * An ndn_NameComponent holds a pointer to the component value.
  */
@@ -37,12 +37,12 @@ struct ndn_NameComponent {
 };
 
 /**
- * 
+ *
  * @param self pointer to the ndn_NameComponent struct
  * @param value the pre-allocated buffer for the component value
  * @param valueLength the number of bytes in value
  */
-static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength) 
+static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength)
 {
   ndn_Blob_initialize(&self->value, value, valueLength);
 }
@@ -89,7 +89,7 @@ struct ndn_Name {
  * @param components the pre-allocated array of ndn_NameComponent
  * @param maxComponents the number of elements in the allocated components array
  */
-static __inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameComponent *components, size_t maxComponents) 
+static __inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameComponent *components, size_t maxComponents)
 {
   self->components = components;
   self->maxComponents = maxComponents;

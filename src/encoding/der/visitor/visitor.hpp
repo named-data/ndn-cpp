@@ -15,7 +15,7 @@
 namespace ndn {
 
 namespace der {
-  
+
 class DerBool;
 class DerInteger;
 class DerPrintableString;

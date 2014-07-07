@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,11 +28,11 @@ using namespace std;
 
 namespace ndn {
 
-ptr_lib::shared_ptr<der::DerNode> 
+ptr_lib::shared_ptr<der::DerNode>
 CertificateExtension::toDer() const
 {
   ptr_lib::shared_ptr<der::DerSequence> root(new der::DerSequence);
-    
+
   ptr_lib::shared_ptr<der::DerOid> extensionId(new der::DerOid(extensionId_));
   ptr_lib::shared_ptr<der::DerBool> isCritical(new der::DerBool(isCritical_));
   ptr_lib::shared_ptr<der::DerOctetString> extensionValue(new der::DerOctetString(*extensionValue_));

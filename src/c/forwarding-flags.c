@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +36,7 @@ void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self)
 {
   int result = 0;
-  
+
   if (self->active)
     result |= ndn_ForwardingEntryFlags_ACTIVE;
   if (self->childInherit)
@@ -53,7 +53,7 @@ int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self
     result |= ndn_ForwardingEntryFlags_TAP;
   if (self->captureOk)
     result |= ndn_ForwardingEntryFlags_CAPTURE_OK;
-  
+
   return result;
 }
 
@@ -69,20 +69,20 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
   self->captureOk = (forwardingEntryFlags & ndn_ForwardingEntryFlags_CAPTURE_OK) ? 1 : 0;
 }
 
-int 
+int
 ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self)
 {
   int result = 0;
-  
+
   if (self->childInherit)
     result |= ndn_NfdForwardingFlags_CHILD_INHERIT;
   if (self->capture)
     result |= ndn_NfdForwardingFlags_CAPTURE;
-  
+
   return result;
 }
 
-void 
+void
 ndn_ForwardingFlags_setNfdForwardingFlags
   (struct ndn_ForwardingFlags *self, int nfdForwardingFlags)
 {

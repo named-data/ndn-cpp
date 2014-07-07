@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,24 +27,24 @@
 using namespace std;
 
 namespace ndn {
-  
-void 
-ForwardingEntry::set(const struct ndn_ForwardingEntry& forwardingEntryStruct) 
+
+void
+ForwardingEntry::set(const struct ndn_ForwardingEntry& forwardingEntryStruct)
 {
   if (forwardingEntryStruct.action.value && forwardingEntryStruct.action.length > 0)
     action_ = string(forwardingEntryStruct.action.value, forwardingEntryStruct.action.value + forwardingEntryStruct.action.length);
   else
     action_ = "";
-            
+
   prefix_.set(forwardingEntryStruct.prefix);
-  publisherPublicKeyDigest_.set(forwardingEntryStruct.publisherPublicKeyDigest);  
+  publisherPublicKeyDigest_.set(forwardingEntryStruct.publisherPublicKeyDigest);
   faceId_ = forwardingEntryStruct.faceId;
   forwardingFlags_ = forwardingEntryStruct.forwardingFlags;
   freshnessPeriod_ = forwardingEntryStruct.freshnessPeriod;
 }
 
-void 
-ForwardingEntry::get(struct ndn_ForwardingEntry& forwardingEntryStruct) const 
+void
+ForwardingEntry::get(struct ndn_ForwardingEntry& forwardingEntryStruct) const
 {
   prefix_.get(forwardingEntryStruct.prefix);
   publisherPublicKeyDigest_.get(forwardingEntryStruct.publisherPublicKeyDigest);

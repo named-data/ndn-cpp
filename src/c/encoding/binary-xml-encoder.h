@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,7 +45,7 @@ struct ndn_BinaryXmlEncoder {
  * remain valid during the entire life of this ndn_BinaryXmlEncoder. If the output->realloc
  * function pointer is null, its array must be large enough to receive the entire encoding.
  */
-static __inline void ndn_BinaryXmlEncoder_initialize(struct ndn_BinaryXmlEncoder *self, struct ndn_DynamicUInt8Array *output) 
+static __inline void ndn_BinaryXmlEncoder_initialize(struct ndn_BinaryXmlEncoder *self, struct ndn_DynamicUInt8Array *output)
 {
   self->output = output;
   self->offset = 0;
@@ -66,7 +66,7 @@ ndn_Error ndn_BinaryXmlEncoder_encodeTypeAndValue(struct ndn_BinaryXmlEncoder *s
  * @param tag the DTAG tag
  * @return 0 for success, else an error code
  */
-static __inline ndn_Error ndn_BinaryXmlEncoder_writeElementStartDTag(struct ndn_BinaryXmlEncoder *self, unsigned int tag) 
+static __inline ndn_Error ndn_BinaryXmlEncoder_writeElementStartDTag(struct ndn_BinaryXmlEncoder *self, unsigned int tag)
 {
   return ndn_BinaryXmlEncoder_encodeTypeAndValue(self, ndn_BinaryXml_DTAG, tag);
 }
@@ -155,7 +155,7 @@ static __inline ndn_Error ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
 ndn_Error ndn_BinaryXmlEncoder_writeUnsignedDecimalInt(struct ndn_BinaryXmlEncoder *self, unsigned int value);
 
 /**
- * Write an element start header using DTAG with the tag to self->output, then the value as an unsigned decimal integer, 
+ * Write an element start header using DTAG with the tag to self->output, then the value as an unsigned decimal integer,
  * then an element close.
  * (If you want to just write the integer, use ndn_BinaryXmlEncoder_writeUnsignedDecimalInt .)
  * @param self pointer to the ndn_BinaryXmlEncoder struct

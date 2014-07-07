@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -108,33 +108,33 @@ public:
   virtual int
   getSize() { return header_.size() + payload_.size(); }
 
-  virtual void 
+  virtual void
   encode(OutputIterator& start);
-  
+
   void
   setParent(DerComplex * parent) { parent_ = parent; }
 
   static ptr_lib::shared_ptr<DerNode>
   parse(InputIterator& start);
 
-  const std::vector<uint8_t>& 
+  const std::vector<uint8_t>&
   getHeader() const { return header_; }
 
-  std::vector<uint8_t>& 
+  std::vector<uint8_t>&
   getHeader() { return header_; }
 
-  const std::vector<uint8_t>& 
+  const std::vector<uint8_t>&
   getPayload() const { return payload_; }
-  
-  std::vector<uint8_t>& 
+
+  std::vector<uint8_t>&
   getPayload() { return payload_; }
 
-  const DerType& 
+  const DerType&
   getType() { return type_; }
 
   virtual Blob
   getRaw()
-  { 
+  {
     ptr_lib::shared_ptr<std::vector<uint8_t> > blob(new std::vector<uint8_t>());
     blob->insert(blob->end(), header_.begin(), header_.end());
     blob->insert(blob->end(), payload_.begin(), payload_.end());
@@ -146,7 +146,7 @@ public:
   virtual void accept(VoidVisitor& visitor, ndnboost::any param) = 0;
   virtual ndnboost::any accept(NoArgumentsVisitor& visitor) = 0;
   virtual ndnboost::any accept(Visitor& visitor, ndnboost::any param) = 0;
-  
+
 protected:
   void
   decode(InputIterator& start);
@@ -154,7 +154,7 @@ protected:
   void
   encodeHeader(int size);
 
-  int 
+  int
   decodeHeader(InputIterator& start);
 
 protected:
@@ -171,27 +171,27 @@ class DerComplex : public DerNode
 {
 public:
   DerComplex();
-  
+
   DerComplex(DerType type);
 
   DerComplex(InputIterator& start);
 
-  virtual 
+  virtual
   ~DerComplex();
 
   virtual int
   getSize();
 
-  void 
+  void
   addChild(ptr_lib::shared_ptr<DerNode> nodePtr, bool notifyParent = true);
 
   virtual void
   encode(OutputIterator& start);
 
-  const DerNodePtrList& 
+  const DerNodePtrList&
   getChildren() const { return nodeList_; }
 
-  DerNodePtrList& 
+  DerNodePtrList&
   getChildren() { return nodeList_; }
 
   virtual Blob
@@ -226,7 +226,7 @@ public:
 };
 
 
-//0x01  
+//0x01
 class DerBool : public DerNode
 {
 public:
@@ -243,7 +243,7 @@ public:
   virtual ndnboost::any accept(Visitor& visitor, ndnboost::any param) { return visitor.visit(*this, param); }
 };
 
-//0x02  
+//0x02
 class DerInteger : public DerNode
 {
 public:
@@ -251,7 +251,7 @@ public:
 
   DerInteger(InputIterator& start);
 
-  virtual 
+  virtual
   ~DerInteger();
 
   virtual void accept(VoidNoArgumentsVisitor& visitor)                {        visitor.visit(*this);        }
@@ -267,7 +267,7 @@ public:
   DerBitString(const std::vector<uint8_t>& blob, uint8_t paddingLen);
 
   DerBitString(InputIterator& start);
-  
+
   virtual
   ~DerBitString();
 
@@ -282,7 +282,7 @@ class DerOctetString : public DerByteString
 {
 public:
   DerOctetString(const std::string& str);
-  
+
   DerOctetString(const std::vector<uint8_t>& blob);
 
   DerOctetString(InputIterator& start);
@@ -304,7 +304,7 @@ public:
   DerNull();
 
   DerNull(InputIterator& start);
-  
+
   virtual
   ~DerNull();
 
@@ -320,30 +320,30 @@ class DerOid : public DerNode
 {
 public:
   DerOid(const OID& oid);
-  
+
   DerOid(const std::string& oidStr);
 
   DerOid(const std::vector<int>& value);
 
   DerOid(InputIterator& start);
-  
+
   virtual
   ~DerOid();
-  
+
   virtual void accept(VoidNoArgumentsVisitor& visitor)                {        visitor.visit(*this);        }
   virtual void accept(VoidVisitor& visitor, ndnboost::any param)      {        visitor.visit(*this, param); }
   virtual ndnboost::any accept(NoArgumentsVisitor& visitor)           { return visitor.visit(*this);        }
   virtual ndnboost::any accept(Visitor& visitor, ndnboost::any param) { return visitor.visit(*this, param); }
 
-  int 
+  int
   decode128(int& offset);
 
 private:
-  void 
+  void
   prepareEncoding(const std::vector<int>& value);
 
-  void 
-  encode128(int value, std::ostringstream& os);    
+  void
+  encode128(int value, std::ostringstream& os);
 };
 
 
@@ -354,7 +354,7 @@ public:
   DerSequence();
 
   DerSequence(InputIterator& start);
-  
+
   virtual
   ~DerSequence();
 
@@ -374,7 +374,7 @@ public:
 
   DerPrintableString(InputIterator& start);
 
-  virtual 
+  virtual
   ~DerPrintableString();
 
   virtual void accept(VoidNoArgumentsVisitor& visitor)                {        visitor.visit(*this);        }
@@ -390,8 +390,8 @@ public:
   DerGtime(const MillisecondsSince1970& time);
 
   DerGtime(InputIterator& start);
-  
-  virtual 
+
+  virtual
   ~DerGtime();
 
   virtual void accept(VoidNoArgumentsVisitor& visitor)                {        visitor.visit(*this);        }
@@ -405,15 +405,15 @@ public:
    * @return The ISO string.
    */
   static std::string toIsoString(const MillisecondsSince1970& time);
-  
+
   /**
    * Convert from the ISO string representation to the internal time format.
-   * @param isoString The ISO time formatted string. 
+   * @param isoString The ISO time formatted string.
    * @return The time in milliseconds since 1/1/1970.
    */
   static MillisecondsSince1970 fromIsoString(const std::string& isoString);
 };
- 
+
 } // der
 
 }

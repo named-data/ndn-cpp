@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
     result *= 256;
     result += (uint64_t)self->value.value[i];
   }
-  
+
   return result;
 }
 
@@ -41,13 +41,13 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
 
   if (self->value.length == 0 || self->value.value[0] != marker)
     return NDN_ERROR_Name_component_does_not_begin_with_the_expected_marker;
-  
+
   localResult = 0;
   for (i = 1; i < self->value.length; ++i) {
     localResult *= 256;
     localResult += (uint64_t)self->value.value[i];
   }
-  
+
   *result = localResult;
   return NDN_ERROR_success;
 }
@@ -60,13 +60,13 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
 
   if (self->value.length < prefixLength || ndn_memcmp(self->value.value, prefix, prefixLength) != 0)
     return NDN_ERROR_Name_component_does_not_begin_with_the_expected_marker;
-  
+
   localResult = 0;
   for (i = prefixLength; i < self->value.length; ++i) {
     localResult *= 256;
     localResult += (uint64_t)self->value.value[i];
   }
-  
+
   *result = localResult;
   return NDN_ERROR_success;
 }
@@ -98,7 +98,7 @@ ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t *value, 
       return NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name;
   ndn_NameComponent_initialize(self->components + self->nComponents, value, valueLength);
   ++self->nComponents;
-      
+
   return NDN_ERROR_success;
 }
 

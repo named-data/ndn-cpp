@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,8 +23,8 @@
 #include "tlv-decoder.h"
 #include "tlv-structure-decoder.h"
 
-void 
-ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self) 
+void
+ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
 {
   self->gotElementEnd = 0;
   self->offset = 0;
@@ -34,22 +34,22 @@ ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
   self->nBytesToRead = 0;
 }
 
-ndn_Error 
-ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength) 
+ndn_Error
+ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength)
 {
   struct ndn_TlvDecoder decoder;
 
   if (self->gotElementEnd)
     // Someone is calling when we already got the end.
     return NDN_ERROR_success;
-  
+
   ndn_TlvDecoder_initialize(&decoder, input, inputLength);
-  
+
   while (1) {
     if (self->offset >= inputLength)
       // All the cases assume we have some input. Return and wait for more.
       return NDN_ERROR_success;
-    
+
     switch (self->state) {
       case ndn_TlvStructureDecoder_READ_TYPE:
       {
@@ -130,7 +130,7 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
           // Update self->offset to the decoder's offset after reading.
           self->offset = decoder.offset;
           // Silently ignore if the length is larger than size_t.
-          self->nBytesToRead = (size_t)lengthVarNumber;          
+          self->nBytesToRead = (size_t)lengthVarNumber;
         }
         else {
           size_t nNeededBytes;

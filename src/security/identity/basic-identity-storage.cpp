@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -112,16 +112,16 @@ BasicIdentityStorage::BasicIdentityStorage()
   if (homeDir[homeDir.size() - 1] == '/')
     // Strip the ending '/'.
     homeDir.erase(homeDir.size() - 1);
-  
+
   string identityDir = homeDir + '/' + ".ndn";
   // TODO: Handle non-unix file systems which don't have "mkdir -p".
   ::system(("mkdir -p " + identityDir).c_str());
-  
+
   int res = sqlite3_open((identityDir + '/' + "ndnsec-public-info.db").c_str(), &database_);
 
   if (res != SQLITE_OK)
     throw SecurityException("identity DB cannot be opened/created");
-  
+
   //Check if ID table exists.
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT name FROM sqlite_master WHERE type='table' And name='Identity'", -1, &statement, 0);
@@ -136,7 +136,7 @@ BasicIdentityStorage::BasicIdentityStorage()
   if (!idTableExists) {
     char *errorMessage = 0;
     res = sqlite3_exec(database_, INIT_ID_TABLE.c_str(), NULL, NULL, &errorMessage);
-      
+
     if (res != SQLITE_OK && errorMessage != 0) {
       _LOG_TRACE("Init \"error\" in Identity: " << errorMessage);
       sqlite3_free(errorMessage);
@@ -156,7 +156,7 @@ BasicIdentityStorage::BasicIdentityStorage()
   if (!keyTableExists) {
     char *errorMessage = 0;
     res = sqlite3_exec(database_, INIT_KEY_TABLE.c_str(), NULL, NULL, &errorMessage);
-      
+
     if (res != SQLITE_OK && errorMessage != 0) {
       _LOG_TRACE("Init \"error\" in KEY: " << errorMessage);
       sqlite3_free(errorMessage);
@@ -170,13 +170,13 @@ BasicIdentityStorage::BasicIdentityStorage()
   bool idCertificateTableExists = false;
   if (res == SQLITE_ROW)
     idCertificateTableExists = true;
-  
+
   sqlite3_finalize(statement);
 
   if (!idCertificateTableExists) {
     char *errorMessage = 0;
     res = sqlite3_exec(database_, INIT_CERT_TABLE.c_str(), NULL, NULL, &errorMessage);
-      
+
     if (res != SQLITE_OK && errorMessage != 0) {
       _LOG_TRACE("Init \"error\" in ID-CERT: " << errorMessage);
       sqlite3_free(errorMessage);
@@ -188,29 +188,29 @@ BasicIdentityStorage::~BasicIdentityStorage()
 {
 }
 
-bool 
+bool
 BasicIdentityStorage::doesIdentityExist(const Name& identityName)
 {
   bool result = false;
-  
+
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT count(*) FROM Identity WHERE identity_name=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
   int res = sqlite3_step(statement);
-  
+
   if (res == SQLITE_ROW) {
     int countAll = sqlite3_column_int(statement, 0);
     if (countAll > 0)
       result = true;
   }
- 
+
   sqlite3_finalize(statement);
 
   return result;
 }
 
-void 
+void
 BasicIdentityStorage::addIdentity(const Name& identityName)
 {
   if (doesIdentityExist(identityName))
@@ -219,22 +219,22 @@ BasicIdentityStorage::addIdentity(const Name& identityName)
   sqlite3_stmt *statement;
 
   sqlite3_prepare_v2(database_, "INSERT INTO Identity (identity_name) values (?)", -1, &statement, 0);
-      
+
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
-  
+
   int res = sqlite3_step(statement);
-  
+
   sqlite3_finalize(statement);
 }
 
-bool 
+bool
 BasicIdentityStorage::revokeIdentity()
 {
   //TODO:
   return false;
 }
 
-bool 
+bool
 BasicIdentityStorage::doesKeyExist(const Name& keyName)
 {
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
@@ -254,7 +254,7 @@ BasicIdentityStorage::doesKeyExist(const Name& keyName)
     if (countAll > 0)
       keyIdExists = true;
   }
- 
+
   sqlite3_finalize(statement);
 
   return keyIdExists;
@@ -291,10 +291,10 @@ BasicIdentityStorage::getKey(const Name& keyName)
 {
   if (!doesKeyExist(keyName))
     return Blob();
-  
+
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
-  
+
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT public_key FROM Key WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
 
@@ -329,7 +329,7 @@ BasicIdentityStorage::getKeyType(const Name& keyName)
   int keyType = -1;
   if (res == SQLITE_ROW)
     keyType = sqlite3_column_int(statement, 0);
- 
+
   sqlite3_finalize(statement);
 
   if (keyType < 0)
@@ -338,24 +338,24 @@ BasicIdentityStorage::getKeyType(const Name& keyName)
     return (KeyType)keyType;
 }
 
-void 
+void
 BasicIdentityStorage::activateKey(const Name& keyName)
 {
   updateKeyStatus(keyName, true);
 }
 
-void 
+void
 BasicIdentityStorage::deactivateKey(const Name& keyName)
 {
   updateKeyStatus(keyName, false);
 }
 
-void 
+void
 BasicIdentityStorage::updateKeyStatus(const Name& keyName, bool isActive)
 {
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
-  
+
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "UPDATE Key SET active=? WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
 
@@ -384,9 +384,9 @@ BasicIdentityStorage::doesCertificateExist(const Name& certificateName)
     if (countAll > 0)
       certExists = true;
   }
- 
+
   sqlite3_finalize(statement);
-  
+
   return certExists;
 }
 
@@ -400,12 +400,12 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
 
   sqlite3_stmt *statement;
-  sqlite3_prepare_v2(database_, 
+  sqlite3_prepare_v2(database_,
                       "INSERT INTO Certificate (cert_name, cert_issuer, identity_name, key_identifier, not_before, not_after, certificate_data)\
                        values (?, ?, ?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'), ?)",
                       -1, &statement, 0);
 
-  
+
   sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
   const Sha256WithRsaSignature* signature = dynamic_cast<const Sha256WithRsaSignature*>(certificate.getSignature());
@@ -427,7 +427,7 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
   sqlite3_finalize(statement);
 }
 
-void 
+void
 BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 {
   const Name& certificateName = certificate.getName();
@@ -442,17 +442,17 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
   Name identity = keyName.getSubName(0, keyName.size() - 1);
-  
+
   // Check if the public key of certificate is the same as the key record
- 
+
   Blob keyBlob = getKey(keyName);
-  
+
   if (!keyBlob || (*keyBlob) != *(certificate.getPublicKeyInfo().getKeyDer()))
     throw SecurityException("Certificate does not match the public key!");
 
   // Insert the certificate
   sqlite3_stmt *statement;
-  sqlite3_prepare_v2(database_, 
+  sqlite3_prepare_v2(database_,
                       "INSERT INTO Certificate (cert_name, cert_issuer, identity_name, key_identifier, not_before, not_after, certificate_data)\
                        values (?, ?, ?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'), ?)",
                       -1, &statement, 0);
@@ -478,50 +478,50 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   sqlite3_finalize(statement);
 }
 
-ptr_lib::shared_ptr<Data> 
+ptr_lib::shared_ptr<Data>
 BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
 {
   if (doesCertificateExist(certificateName)) {
     sqlite3_stmt *statement;
     if (!allowAny) {
-      sqlite3_prepare_v2(database_, 
+      sqlite3_prepare_v2(database_,
                           "SELECT certificate_data FROM Certificate \
                            WHERE cert_name=? AND not_before<datetime(?, 'unixepoch') AND not_after>datetime(?, 'unixepoch') and valid_flag=1",
                           -1, &statement, 0);
-          
+
       sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
       sqlite3_bind_int64(statement, 2, (sqlite3_int64)floor(ndn_getNowMilliseconds() / 1000.0));
       sqlite3_bind_int64(statement, 3, (sqlite3_int64)floor(ndn_getNowMilliseconds() / 1000.0));
     }
     else {
-      sqlite3_prepare_v2(database_, 
+      sqlite3_prepare_v2(database_,
                           "SELECT certificate_data FROM Certificate WHERE cert_name=?", -1, &statement, 0);
 
       sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
     }
-      
+
     int res = sqlite3_step(statement);
-      
+
     ptr_lib::shared_ptr<Data> data(new Data());
 
     if (res == SQLITE_ROW)
-      data->wireDecode((const uint8_t*)sqlite3_column_blob(statement, 0), sqlite3_column_bytes(statement, 0));            
+      data->wireDecode((const uint8_t*)sqlite3_column_blob(statement, 0), sqlite3_column_bytes(statement, 0));
     sqlite3_finalize(statement);
-      
+
     return data;
   }
   else
     return ptr_lib::shared_ptr<Data>();
 }
 
-Name 
+Name
 BasicIdentityStorage::getDefaultIdentity()
 {
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT identity_name FROM Identity WHERE default_identity=1", -1, &statement, 0);
 
   int res = sqlite3_step(statement);
-      
+
   Name identity;
 
   if (res == SQLITE_ROW) {
@@ -532,11 +532,11 @@ BasicIdentityStorage::getDefaultIdentity()
   else {
     sqlite3_finalize(statement);
     throw SecurityException
-      ("BasicIdentityStorage::getDefaultIdentity: The default identity is not defined");    
+      ("BasicIdentityStorage::getDefaultIdentity: The default identity is not defined");
   }
 }
 
-Name 
+Name
 BasicIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
 {
   sqlite3_stmt *statement;
@@ -545,7 +545,7 @@ BasicIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
 
   int res = sqlite3_step(statement);
-      
+
   Name keyName;
 
   if (res == SQLITE_ROW) {
@@ -554,13 +554,13 @@ BasicIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
     return keyName;
   }
   else {
-    sqlite3_finalize(statement);    
+    sqlite3_finalize(statement);
     throw SecurityException
-      ("BasicIdentityStorage::getDefaultKeyNameForIdentity: The default key for the identity is not defined");    
+      ("BasicIdentityStorage::getDefaultKeyNameForIdentity: The default key for the identity is not defined");
   }
 }
 
-Name 
+Name
 BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 {
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
@@ -584,11 +584,11 @@ BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
   else {
     sqlite3_finalize(statement);
     throw SecurityException
-      ("BasicIdentityStorage::getDefaultCertificateNameForKey: The default certificate for the key name is not defined");    
+      ("BasicIdentityStorage::getDefaultCertificateNameForKey: The default certificate for the key name is not defined");
   }
 }
 
-void 
+void
 BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   sqlite3_stmt *statement;
@@ -598,20 +598,20 @@ BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 
   while (sqlite3_step(statement) == SQLITE_ROW)
     {}
-  
+
   sqlite3_finalize(statement);
 
   //Set current default identity
   sqlite3_prepare_v2(database_, "UPDATE Identity SET default_identity=1 WHERE identity_name=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
-  
+
   sqlite3_step(statement);
 
   sqlite3_finalize(statement);
 }
 
-void 
+void
 BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Name& identityNameCheck)
 {
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
@@ -629,7 +629,7 @@ BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Na
 
   while (sqlite3_step(statement) == SQLITE_ROW)
     {}
-  
+
   sqlite3_finalize(statement);
 
   //Set current default Key
@@ -637,13 +637,13 @@ BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Na
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
   sqlite3_bind_text(statement, 2, keyId, SQLITE_TRANSIENT);
-  
+
   sqlite3_step(statement);
 
   sqlite3_finalize(statement);
 }
 
-void 
+void
 BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName)
 {
   string keyId = keyName.get(keyName.size() - 1).toEscapedString();
@@ -659,7 +659,7 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
 
   while (sqlite3_step(statement) == SQLITE_ROW)
     {}
-  
+
   sqlite3_finalize(statement);
 
   //Set current default Key
@@ -668,12 +668,12 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
   sqlite3_bind_text(statement, 2, keyId, SQLITE_TRANSIENT);
   sqlite3_bind_text(statement, 3, certificateName.toUri(), SQLITE_TRANSIENT);
-  
+
   sqlite3_step(statement);
 
   sqlite3_finalize(statement);
 }
-        
+
 }
 
 #endif // NDN_CPP_HAVE_SQLITE3

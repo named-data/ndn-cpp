@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ Data::Data()
 : signature_(new Sha256WithRsaSignature()), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
 {
 }
-  
+
 Data::Data(const Name& name)
 : name_(name), signature_(new Sha256WithRsaSignature()), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
 {
@@ -59,18 +59,18 @@ Data& Data::operator=(const Data& data)
     signature_.set(data.signature_.get()->clone());
   else
     signature_.set(ptr_lib::shared_ptr<Signature>());
-  
+
   setName(data.name_.get());
   setMetaInfo(data.metaInfo_.get());
   setContent(data.content_);
   setDefaultWireEncoding
     (data.defaultWireEncoding_, data.defaultWireEncodingFormat_);
-  
+
   return *this;
 }
 
-void 
-Data::get(struct ndn_Data& dataStruct) const 
+void
+Data::get(struct ndn_Data& dataStruct) const
 {
   signature_.get()->get(dataStruct.signature);
   name_.get().get(dataStruct.name);
@@ -78,7 +78,7 @@ Data::get(struct ndn_Data& dataStruct) const
   content_.get(dataStruct.content);
 }
 
-void 
+void
 Data::set(const struct ndn_Data& dataStruct)
 {
   signature_.get()->set(dataStruct.signature);
@@ -87,39 +87,39 @@ Data::set(const struct ndn_Data& dataStruct)
   setContent(Blob(dataStruct.content));
 }
 
-Data& 
-Data::setName(const Name& name) 
-{ 
-  name_.set(name); 
+Data&
+Data::setName(const Name& name)
+{
+  name_.set(name);
   ++changeCount_;
   return *this;
 }
 
-SignedBlob 
+SignedBlob
 Data::wireEncode(WireFormat& wireFormat) const
 {
   if (getDefaultWireEncoding() && getDefaultWireEncodingFormat() == &wireFormat)
     // We already have an encoding in the desired format.
     return getDefaultWireEncoding();
-  
+
   size_t signedPortionBeginOffset, signedPortionEndOffset;
   Blob encoding = wireFormat.encodeData(*this, &signedPortionBeginOffset, &signedPortionEndOffset);
   SignedBlob wireEncoding = SignedBlob(encoding, signedPortionBeginOffset, signedPortionEndOffset);
-  
+
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
     const_cast<Data*>(this)->setDefaultWireEncoding
       (wireEncoding, WireFormat::getDefaultWireFormat());
-  
+
   return wireEncoding;
 }
 
-void 
-Data::wireDecode(const Blob& input, WireFormat& wireFormat) 
+void
+Data::wireDecode(const Blob& input, WireFormat& wireFormat)
 {
   size_t signedPortionBeginOffset, signedPortionEndOffset;
   wireFormat.decodeData(*this, input.buf(), input.size(), &signedPortionBeginOffset, &signedPortionEndOffset);
-  
+
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
     // Take a pointer to the input Blob without copying.
@@ -130,12 +130,12 @@ Data::wireDecode(const Blob& input, WireFormat& wireFormat)
     setDefaultWireEncoding(SignedBlob(), 0);
 }
 
-void 
-Data::wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireFormat) 
+void
+Data::wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireFormat)
 {
   size_t signedPortionBeginOffset, signedPortionEndOffset;
   wireFormat.decodeData(*this, input, inputLength, &signedPortionBeginOffset, &signedPortionEndOffset);
-  
+
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // This is the default wire encoding.
     // The input is not an immutable Blob, so we need to copy.

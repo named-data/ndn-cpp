@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,20 +28,20 @@
 using namespace std;
 
 namespace ndn {
-  
-void 
-Interest::set(const struct ndn_Interest& interestStruct) 
+
+void
+Interest::set(const struct ndn_Interest& interestStruct)
 {
   name_.get().set(interestStruct.name);
   setMinSuffixComponents(interestStruct.minSuffixComponents);
   setMaxSuffixComponents(interestStruct.maxSuffixComponents);
-  
+
   publisherPublicKeyDigest_.get().set(interestStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(interestStruct.keyLocator);
-  
+
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
-  answerOriginKind_ = interestStruct.answerOriginKind; 
+  answerOriginKind_ = interestStruct.answerOriginKind;
   setScope(interestStruct.scope);
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
@@ -50,8 +50,8 @@ Interest::set(const struct ndn_Interest& interestStruct)
   getNonceChangeCount_ = getChangeCount();
 }
 
-void 
-Interest::get(struct ndn_Interest& interestStruct) const 
+void
+Interest::get(struct ndn_Interest& interestStruct) const
 {
   name_.get().get(interestStruct.name);
   interestStruct.minSuffixComponents = minSuffixComponents_;
@@ -66,7 +66,7 @@ Interest::get(struct ndn_Interest& interestStruct) const
   getNonce().get(interestStruct.nonce);
 }
 
-string 
+string
 Interest::toUri() const
 {
   ostringstream selectors;
@@ -103,8 +103,8 @@ Interest::toUri() const
     result << "?";
     result.write(&selectorsString[1], selectorsString.size() - 1);
   }
-  
-  return result.str();  
+
+  return result.str();
 }
 
 bool
@@ -112,7 +112,7 @@ Interest::matchesName(const Name& name) const
 {
   if (!getName().match(name))
     return false;
-  
+
   if (minSuffixComponents_ >= 0 &&
     // Add 1 for the implicit digest.
     !(name.size() + 1 - getName().size() >= (size_t)minSuffixComponents_))
@@ -124,8 +124,8 @@ Interest::matchesName(const Name& name) const
   if (getExclude().size() > 0 && name.size() > getName().size() &&
       getExclude().matches(name.get(getName().size())))
     return false;
-  
-  return true; 
+
+  return true;
 }
 
 }

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,11 +30,11 @@ struct ndn_UdpTransport;
 struct ndn_ElementReader;
 
 namespace ndn {
-  
+
 class UdpTransport : public Transport {
 public:
   /**
-   * A UdpTransport::ConnectionInfo extends Transport::ConnectionInfo to hold 
+   * A UdpTransport::ConnectionInfo extends Transport::ConnectionInfo to hold
    * the host and port info for the UDP connection.
    */
   class ConnectionInfo : public Transport::ConnectionInfo {
@@ -53,17 +53,17 @@ public:
      * Get the host given to the constructor.
      * @return A string reference for the host.
      */
-    const std::string& 
+    const std::string&
     getHost() const { return host_; }
-    
+
     /**
      * Get the port given to the constructor.
      * @return The port number.
      */
-    unsigned short 
+    unsigned short
     getPort() const { return port_; }
-    
-    virtual 
+
+    virtual
     ~ConnectionInfo();
 
   private:
@@ -72,49 +72,49 @@ public:
   };
 
   UdpTransport();
-  
+
   /**
-   * Connect according to the info in ConnectionInfo, and processEvents() will 
+   * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to a TcpTransport::ConnectionInfo.
-   * @param elementListener Not a shared_ptr because we assume that it will 
+   * @param elementListener Not a shared_ptr because we assume that it will
    * remain valid during the life of this object.
    */
-  virtual void 
-  connect(const Transport::ConnectionInfo& connectionInfo, 
+  virtual void
+  connect(const Transport::ConnectionInfo& connectionInfo,
           ElementListener& elementListener);
-  
+
   /**
    * Set data to the host
    * @param data A pointer to the buffer of data to send.
    * @param dataLength The number of bytes in data.
    */
-  virtual void 
+  virtual void
   send(const uint8_t *data, size_t dataLength);
 
   /**
-   * Process any data to receive.  For each element received, call 
-   * elementListener.onReceivedElement. This is non-blocking and will return 
-   * immediately if there is no data to receive. You should normally not call 
+   * Process any data to receive.  For each element received, call
+   * elementListener.onReceivedElement. This is non-blocking and will return
+   * immediately if there is no data to receive. You should normally not call
    * this directly since it is called by Face.processEvents.
-   * @throw This may throw an exception for reading data or in the callback for 
-   * processing the data.  If you call this from an main event loop, you may 
+   * @throw This may throw an exception for reading data or in the callback for
+   * processing the data.  If you call this from an main event loop, you may
    * want to catch and log/disregard all exceptions.
    */
-  virtual void 
+  virtual void
   processEvents();
-  
-  virtual bool 
+
+  virtual bool
   getIsConnected();
 
   /**
    * Close the connection to the host.
    */
-  virtual void 
+  virtual void
   close();
 
   ~UdpTransport();
-  
+
 private:
   ptr_lib::shared_ptr<struct ndn_UdpTransport> transport_;
   bool isConnected_;

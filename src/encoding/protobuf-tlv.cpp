@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,7 +41,7 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
   const Reflection& reflection = *message.GetReflection();
   const Descriptor& descriptor = *message.GetDescriptor();
 
-  for (int iField = 0; iField < descriptor.field_count(); ++iField) {  
+  for (int iField = 0; iField < descriptor.field_count(); ++iField) {
     const FieldDescriptor* field = descriptor.field(iField);
     int tlvType = field->number();
 
@@ -49,7 +49,7 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
       for (int i = 0; i < reflection.FieldSize(message, field); ++i) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE)
           encoder.writeNestedTlv
-            (tlvType, encodeMessageValue, 
+            (tlvType, encodeMessageValue,
              (void*)&reflection.GetRepeatedMessage(message, field, i));
         else if (field->type() == FieldDescriptor::TYPE_UINT32)
           encoder.writeNonNegativeIntegerTlv
@@ -81,7 +81,7 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
       if (reflection.HasField(message, field)) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE)
           encoder.writeNestedTlv
-            (tlvType, encodeMessageValue, 
+            (tlvType, encodeMessageValue,
              (void*)&reflection.GetMessage(message, field));
         else if (field->type() == FieldDescriptor::TYPE_UINT32)
           encoder.writeNonNegativeIntegerTlv
@@ -111,30 +111,30 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
   }
 }
 
-Blob 
+Blob
 ProtobufTlv::encode(const Message& message)
 {
   message.CheckInitialized();
   TlvEncoder encoder(256);
-  
+
   encodeMessageValue((void*)&message, encoder);
   return Blob(encoder.getOutput(), false);
 }
 
-static void 
+static void
 decodeMessageValue
   (Message& message, TlvDecoder &decoder, size_t endOffset)
 {
   const Reflection& reflection = *message.GetReflection();
   const Descriptor& descriptor = *message.GetDescriptor();
 
-  for (int iField = 0; iField < descriptor.field_count(); ++iField) {  
+  for (int iField = 0; iField < descriptor.field_count(); ++iField) {
     const FieldDescriptor* field = descriptor.field(iField);
     int tlvType = field->number();
-    
+
     if (field->is_optional() && !decoder.peekType(tlvType, endOffset))
       continue;
-    
+
     if (field->is_repeated()) {
       while (decoder.peekType(tlvType, endOffset)) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
@@ -151,7 +151,7 @@ decodeMessageValue
             (&message, field, decoder.readNonNegativeIntegerTlv(tlvType));
         else if (field->type() == FieldDescriptor::TYPE_ENUM)
           reflection.AddEnum
-            (&message, field, 
+            (&message, field,
              field->enum_type()->FindValueByNumber
                (decoder.readNonNegativeIntegerTlv(tlvType)));
         else if (field->type() == FieldDescriptor::TYPE_BYTES ||
@@ -172,7 +172,7 @@ decodeMessageValue
       if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         size_t innerEndOffset = decoder.readNestedTlvsStart(tlvType);
         decodeMessageValue
-          (*reflection.MutableMessage(&message, field), decoder, 
+          (*reflection.MutableMessage(&message, field), decoder,
            innerEndOffset);
         decoder.finishNestedTlvs(innerEndOffset);
       }
@@ -184,7 +184,7 @@ decodeMessageValue
           (&message, field, decoder.readNonNegativeIntegerTlv(tlvType));
       else if (field->type() == FieldDescriptor::TYPE_ENUM)
         reflection.SetEnum
-          (&message, field, 
+          (&message, field,
            field->enum_type()->FindValueByNumber
              (decoder.readNonNegativeIntegerTlv(tlvType)));
       else if (field->type() == FieldDescriptor::TYPE_BYTES ||
@@ -202,10 +202,10 @@ decodeMessageValue
   }
 }
 
-void 
+void
 ProtobufTlv::decode(Message& message, const uint8_t *input, size_t inputLength)
 {
-  TlvDecoder decoder(input, inputLength);  
+  TlvDecoder decoder(input, inputLength);
   decodeMessageValue(message, decoder, inputLength);
 }
 

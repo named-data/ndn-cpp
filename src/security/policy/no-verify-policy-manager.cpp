@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,36 +30,36 @@ NoVerifyPolicyManager::~NoVerifyPolicyManager()
 {
 }
 
-bool 
+bool
 NoVerifyPolicyManager::skipVerifyAndTrust(const Data& data)
-{ 
-  return true; 
+{
+  return true;
 }
 
 bool
 NoVerifyPolicyManager::requireVerify(const Data& data)
-{ 
-  return false; 
+{
+  return false;
 }
-    
+
 ptr_lib::shared_ptr<ValidationRequest>
 NoVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
-{ 
-  onVerified(data); 
+{
+  onVerified(data);
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
 
-bool 
+bool
 NoVerifyPolicyManager::checkSigningPolicy(const Name& dataName, const Name& certificateName)
-{ 
-  return true; 
+{
+  return true;
 }
 
-Name 
+Name
 NoVerifyPolicyManager::inferSigningIdentity(const Name& dataName)
-{ 
-  return Name(); 
+{
+  return Name();
 }
 
 }

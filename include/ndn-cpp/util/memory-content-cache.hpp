@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -48,47 +48,47 @@ public:
    */
   MemoryContentCache
     (Face* face, Milliseconds cleanupIntervalMilliseconds = 1000.0);
-  
+
   /**
    * Call registerPrefix on the Face given to the constructor so that this
    * MemoryContentCache will answer interests whose name has the prefix.
    * @param prefix The Name for the prefix to register. This copies the Name.
-   * @param onRegisterFailed A function object to call if failed to retrieve the 
-   * connected hub’s ID or failed to register the prefix. This calls 
+   * @param onRegisterFailed A function object to call if failed to retrieve the
+   * connected hub’s ID or failed to register the prefix. This calls
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onDataNotFound (optional) A function object to call to forward the
-   * OnInterest message when a data packet is not found in the cache. 
+   * OnInterest message when a data packet is not found in the cache.
    * If onDataNotFound is an empty OnInterest(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as 
+   * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate.
    * @param flags (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
   void
   registerPrefix
-    (const Name& prefix, const OnRegisterFailed& onRegisterFailed, 
+    (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
      const OnInterest& onDataNotFound = OnInterest(),
-     const ForwardingFlags& flags = ForwardingFlags(), 
+     const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
     face_->registerPrefix
       (prefix, func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
   }
-  
+
   /**
-   * Add the Data packet to the cache so that it is available to use to 
+   * Add the Data packet to the cache so that it is available to use to
    * answer interests. If data.getFreshnessPeriod() is not negative, set the
    * staleness time to now plus data.getFreshnessPeriod(), which is checked
-   * during cleanup to remove stale content. This also checks if 
+   * during cleanup to remove stale content. This also checks if
    * cleanupIntervalMilliseconds milliseconds have passed and removes stale
-   * content from the cache. 
-   * @param data The Data packet object to put in the cache. This copies the 
+   * content from the cache.
+   * @param data The Data packet object to put in the cache. This copies the
    * fields from the object.
    */
   void
   add(const Data& data);
-  
+
   /**
    * This is the OnInterest callback which is called when the library receives
    * an interest whose name has the prefix given to registerPrefix. First check
@@ -98,16 +98,16 @@ public:
    * to the transport. If no matching Data packet is in the cache, call
    * the callback in onDataNotFoundForPrefix_ (if defined).
    */
-  void 
+  void
   operator()
-    (const ptr_lib::shared_ptr<const Name>& prefix, 
+    (const ptr_lib::shared_ptr<const Name>& prefix,
      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
      uint64_t registeredPrefixId);
-  
+
 private:
   /**
    * Content is a private class to hold the name and encoding for each entry
-   * in the cache. This base class is for a Data packet without a 
+   * in the cache. This base class is for a Data packet without a
    * FreshnessPeriod.
    */
   class Content {
@@ -120,13 +120,13 @@ private:
     // wireEncode returns the cached encoding if available.
     : name_(data.getName()), dataEncoding_(data.wireEncode())
     {}
-    
+
     const Name&
     getName() const { return name_; }
-    
+
     const Blob&
     getDataEncoding() const { return dataEncoding_; }
-    
+
   private:
     Name name_;
     Blob dataEncoding_;
@@ -140,7 +140,7 @@ private:
   public:
     /**
      * Create a new StaleTimeContent to hold data's name and wire encoding
-     * as well as the staleTimeMilliseconds which is now plus 
+     * as well as the staleTimeMilliseconds which is now plus
      * data.getMetaInfo().getFreshnessPeriod().
      * @param data The Data packet whose name and wire encoding are copied.
      */
@@ -148,11 +148,11 @@ private:
 
     /**
      * Check if this content is stale.
-     * @param nowMilliseconds The current time in milliseconds from 
+     * @param nowMilliseconds The current time in milliseconds from
      * ndn_getNowMilliseconds.
      * @return true if this interest is stale, otherwise false.
      */
-    bool 
+    bool
     isStale(MillisecondsSince1970 nowMilliseconds) const
     {
       return staleTimeMilliseconds_ <= nowMilliseconds;
@@ -163,24 +163,24 @@ private:
      */
     class Compare {
     public:
-      bool 
+      bool
       operator()
-        (const ptr_lib::shared_ptr<const StaleTimeContent>& x, 
+        (const ptr_lib::shared_ptr<const StaleTimeContent>& x,
          const ptr_lib::shared_ptr<const StaleTimeContent>& y) const
-      { 
-        return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_; 
+      {
+        return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_;
       }
     };
-    
+
   private:
-    MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content 
+    MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content
       becomse stale in milliseconds according to ndn_getNowMilliseconds */
   };
 
   /**
    * Check if now is greater than nextCleanupTime_ and, if so, remove stale
    * content from staleTimeCache_ and reset nextCleanupTime_ based on
-   * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into 
+   * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
    * staleTimeCache_, the check for stale data is quick and does not require
    * searching the entire staleTimeCache_.
    */

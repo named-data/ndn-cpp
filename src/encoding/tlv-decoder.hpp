@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,11 +38,11 @@ public:
   /**
    * Initialize the base ndn_TlvDecoder struct with the input.
    */
-  TlvDecoder(const uint8_t *input, size_t inputLength) 
+  TlvDecoder(const uint8_t *input, size_t inputLength)
   {
     ndn_TlvDecoder_initialize(this, input, inputLength);
   }
-  
+
   size_t
   readNestedTlvsStart(unsigned int expectedType)
   {
@@ -51,10 +51,10 @@ public:
     if ((error = ndn_TlvDecoder_readNestedTlvsStart
          (this, expectedType, &endOffset)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return endOffset;
   }
-  
+
   void
   finishNestedTlvs(int endOffset)
   {
@@ -62,19 +62,19 @@ public:
     if ((error = ndn_TlvDecoder_finishNestedTlvs(this, endOffset)))
       throw runtime_error(ndn_getErrorString(error));
   }
-  
-  bool 
-  peekType(unsigned int expectedType, size_t endOffset) 
+
+  bool
+  peekType(unsigned int expectedType, size_t endOffset)
   {
     int gotExpectedType;
     ndn_Error error;
     if ((error = ndn_TlvDecoder_peekType
          (this, expectedType, endOffset, &gotExpectedType)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return gotExpectedType != 0 ? true : false;
-  }  
-  
+  }
+
   uint64_t
   readNonNegativeIntegerTlv(unsigned int expectedType)
   {
@@ -83,10 +83,10 @@ public:
     if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
          (this, expectedType, &value)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return value;
   }
-  
+
   struct ndn_Blob
   readBlobTlv(unsigned int expectedType)
   {
@@ -94,10 +94,10 @@ public:
     ndn_Error error;
     if ((error = ndn_TlvDecoder_readBlobTlv(this, expectedType, &value)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return value;
   }
-  
+
   bool
   readBooleanTlv(unsigned int expectedType, size_t endOffset)
   {
@@ -106,7 +106,7 @@ public:
     if ((error = ndn_TlvDecoder_readBooleanTlv
          (this, expectedType, endOffset, &value)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return value != 0;
   }
 };

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,22 +34,22 @@
 struct ndn_Interest;
 
 namespace ndn {
-  
+
 /**
  * An Interest holds a Name and other fields for an interest.
  */
 class Interest {
-public:    
+public:
   /**
    * Create a new Interest for the given name and values.
-   * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder 
+   * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder
    * generate a random nonce internally before sending the interest.
    */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
+  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
     int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
+    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
     nonce_(nonce), getNonceChangeCount_(0), changeCount_(0)
   {
@@ -59,11 +59,11 @@ public:
    * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
    * @deprecated You should use the constructor which has KeyLocator instead of the deprecated PublisherPublicKeyDigest.
    */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind, 
-    int scope, Milliseconds interestLifetimeMilliseconds) 
+  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
+    int scope, Milliseconds interestLifetimeMilliseconds)
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector), 
+    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
     getNonceChangeCount_(0), changeCount_(0)
   {
@@ -72,11 +72,11 @@ public:
   /**
    * Create a new Interest with the given name and values, and "none" for the nonce.
    */
-  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents, 
-    const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind, 
-    int scope, Milliseconds interestLifetimeMilliseconds) 
+  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+    const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
+    int scope, Milliseconds interestLifetimeMilliseconds)
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector), 
+    keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
     getNonceChangeCount_(0), changeCount_(0)
   {
@@ -87,7 +87,7 @@ public:
    * @param name The name for the interest.
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
    */
-  Interest(const Name& name, Milliseconds interestLifetimeMilliseconds) 
+  Interest(const Name& name, Milliseconds interestLifetimeMilliseconds)
   : name_(name), getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
@@ -98,7 +98,7 @@ public:
    * Create a new Interest with the given name and "none" for other values.
    * @param name The name for the interest.
    */
-  Interest(const Name& name) 
+  Interest(const Name& name)
   : name_(name), getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
@@ -107,55 +107,55 @@ public:
   /**
    * Create a new Interest with an empty name and "none" for all values.
    */
-  Interest() 
+  Interest()
   : getNonceChangeCount_(0), changeCount_(0)
   {
     construct();
   }
-  
+
   /**
    * Encode this Interest for a particular wire format.
-   * @param wireFormat (optional) A WireFormat object used to encode this 
+   * @param wireFormat (optional) A WireFormat object used to encode this
    * Interest. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
    */
-  SignedBlob 
-  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const 
+  SignedBlob
+  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const
   {
     size_t signedPortionBeginOffset, signedPortionEndOffset;
-    Blob encoding(wireFormat.encodeInterest(*this, &signedPortionBeginOffset, 
+    Blob encoding(wireFormat.encodeInterest(*this, &signedPortionBeginOffset,
                   &signedPortionEndOffset));
     return SignedBlob
       (encoding, signedPortionBeginOffset, signedPortionEndOffset);
   }
-  
+
   /**
    * Decode the input using a particular wire format and update this Interest.
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
-   * @param wireFormat (optional) A WireFormat object used to decode the input. 
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
    */
-  void 
-  wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
+  void
+  wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     wireFormat.decodeInterest(*this, input, inputLength);
   }
-  
+
   /**
    * Decode the input using a particular wire format and update this Interest.
    * @param input The input byte array to be decoded.
-   * @param wireFormat (optional) A WireFormat object used to decode the input. 
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
    */
-  void 
-  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
+  void
+  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     wireDecode(&input[0], input.size(), wireFormat);
   }
-  
+
   /**
-   * Encode the name according to the "NDN URI Scheme".  If there are interest 
+   * Encode the name according to the "NDN URI Scheme".  If there are interest
    * selectors, append "?" and add the selectors as a query string.  For example
    * "/test/name?ndn.ChildSelector=1".
    * @return The URI string.
@@ -164,62 +164,62 @@ public:
    */
   std::string
   toUri() const;
-  
+
   /**
    * Set the interestStruct to point to the components in this interest, without copying any memory.
    * WARNING: The resulting pointers in interestStruct are invalid after a further use of this object which could reallocate memory.
    * @param interestStruct a C ndn_Interest struct where the name components array is already allocated.
    */
-  void 
+  void
   get(struct ndn_Interest& interestStruct) const;
 
-  Name& 
+  Name&
   getName() { return name_.get(); }
-  
-  const Name& 
+
+  const Name&
   getName() const { return name_.get(); }
-  
-  int 
+
+  int
   getMinSuffixComponents() const { return minSuffixComponents_; }
-  
-  int 
+
+  int
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
- 
+
   /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
-  PublisherPublicKeyDigest& 
+  PublisherPublicKeyDigest&
   DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
-  
+
   /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
-  const PublisherPublicKeyDigest& 
+  const PublisherPublicKeyDigest&
   DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
 
-  const KeyLocator& 
+  const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
-  
-  KeyLocator& 
+
+  KeyLocator&
   getKeyLocator() { return keyLocator_.get(); }
-  
-  Exclude& 
+
+  Exclude&
   getExclude() { return exclude_.get(); }
-  
-  const Exclude& 
+
+  const Exclude&
   getExclude() const { return exclude_.get(); }
-  
-  int 
+
+  int
   getChildSelector() const { return childSelector_; }
 
   /**
    * @deprecated Use getMustBeFresh.
    */
-  int 
+  int
   DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const { return answerOriginKind_; }
-  
+
   /**
    * Return true if the content must be fresh. The default is true.
    * @return true if must be fresh, otherwise false.
@@ -230,76 +230,76 @@ public:
     // Imitate ndn_Interest_getMustBeFresh.
     if (answerOriginKind_ < 0)
       return true;
-    else 
+    else
       return (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
   }
 
-  int 
+  int
   getScope() const { return scope_; }
 
-  Milliseconds 
+  Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds_; }
 
   /**
    * Return the nonce value from the incoming interest.  If you change any of the fields in this Interest object,
    * then the nonce value is cleared.
-   * @return 
+   * @return
    */
-  const Blob& 
-  getNonce() const 
-  { 
+  const Blob&
+  getNonce() const
+  {
     if (getNonceChangeCount_ != getChangeCount()) {
       // The values have changed, so the existing nonce is invalidated.
       // This method can be called on a const object, but we want to be able to update the default cached value.
       const_cast<Interest*>(this)->nonce_ = Blob();
       const_cast<Interest*>(this)->getNonceChangeCount_ = getChangeCount();
     }
-    
-    return nonce_; 
+
+    return nonce_;
   }
-  
+
   /**
    * Clear this interest, and set the values by copying from the interest struct.
    * @param interestStruct a C ndn_Interest struct
    */
-  void 
-  set(const struct ndn_Interest& interestStruct);
-  
   void
-  setName(const Name& name) 
-  { 
+  set(const struct ndn_Interest& interestStruct);
+
+  void
+  setName(const Name& name)
+  {
     name_.set(name);
     ++changeCount_;
   }
-  
-  void 
-  setMinSuffixComponents(int minSuffixComponents) 
-  { 
-    minSuffixComponents_ = minSuffixComponents; 
+
+  void
+  setMinSuffixComponents(int minSuffixComponents)
+  {
+    minSuffixComponents_ = minSuffixComponents;
     ++changeCount_;
   }
-  
-  void 
-  setMaxSuffixComponents(int maxSuffixComponents) 
-  { 
-    maxSuffixComponents_ = maxSuffixComponents; 
+
+  void
+  setMaxSuffixComponents(int maxSuffixComponents)
+  {
+    maxSuffixComponents_ = maxSuffixComponents;
     ++changeCount_;
   }
-  
-  void 
-  setChildSelector(int childSelector) 
-  { 
-    childSelector_ = childSelector; 
+
+  void
+  setChildSelector(int childSelector)
+  {
+    childSelector_ = childSelector;
     ++changeCount_;
   }
 
   /**
    * @deprecated Use setMustBeFresh.
    */
-  void 
+  void
   DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind)
-  { 
-    answerOriginKind_ = answerOriginKind; 
+  {
+    answerOriginKind_ = answerOriginKind;
     ++changeCount_;
   }
 
@@ -313,7 +313,7 @@ public:
       // It is is already the default where MustBeFresh is true.
       if (!mustBeFresh) {
         // Set answerOriginKind_ so that getMustBeFresh returns false.
-        answerOriginKind_ = ndn_Interest_ANSWER_STALE; 
+        answerOriginKind_ = ndn_Interest_ANSWER_STALE;
         ++changeCount_;
       }
     }
@@ -327,49 +327,49 @@ public:
       ++changeCount_;
     }
   }
-  
-  void 
-  setScope(int scope) 
-  { 
-    scope_ = scope; 
+
+  void
+  setScope(int scope)
+  {
+    scope_ = scope;
     ++changeCount_;
   }
 
-  void 
-  setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds) 
-  { 
-    interestLifetimeMilliseconds_ = interestLifetimeMilliseconds; 
+  void
+  setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds)
+  {
+    interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
     ++changeCount_;
   }
 
   /**
    * @deprecated You should let the wire encoder generate a random nonce internally before sending the interest.
    */
-  void 
+  void
   DEPRECATED_IN_NDN_CPP setNonce(const Blob& nonce)
-  { 
-    nonce_ = nonce; 
+  {
+    nonce_ = nonce;
     // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
     ++changeCount_;
     getNonceChangeCount_ = getChangeCount();
   }
-  
-  void 
-  setKeyLocator(const KeyLocator& keyLocator) 
-  { 
-    keyLocator_ = keyLocator; 
+
+  void
+  setKeyLocator(const KeyLocator& keyLocator)
+  {
+    keyLocator_ = keyLocator;
     ++changeCount_;
   }
-  
-  void 
-  setExclude(const Exclude& exclude) 
-  { 
-    exclude_ = exclude; 
+
+  void
+  setExclude(const Exclude& exclude)
+  {
+    exclude_ = exclude;
     ++changeCount_;
   }
-  
+
   /**
-   * Check if this Interest's name matches the given name (using Name::match) 
+   * Check if this Interest's name matches the given name (using Name::match)
    * and the given name also conforms to the interest selectors.
    * @param name The name to check.
    * @return True if the name and interest selectors match, otherwise false.
@@ -381,7 +381,7 @@ public:
    * Get the change count, which is incremented each time this object (or a child object) is changed.
    * @return The change count.
    */
-  uint64_t 
+  uint64_t
   getChangeCount() const
   {
     // Make sure each of the checkChanged is called.
@@ -393,26 +393,26 @@ public:
       // A child object has changed, so update the change count.
       // This method can be called on a const object, but we want to be able to update the changeCount_.
       ++const_cast<Interest*>(this)->changeCount_;
-    
-    return changeCount_;    
+
+    return changeCount_;
   }
 
 private:
-  void 
-  construct() 
+  void
+  construct()
   {
     minSuffixComponents_ = -1;
-    maxSuffixComponents_ = -1;  
+    maxSuffixComponents_ = -1;
     childSelector_ = -1;
     answerOriginKind_ = -1;
     scope_ = -1;
     interestLifetimeMilliseconds_ = -1.0;
   }
-  
+
   ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
   ChangeCounter<KeyLocator> keyLocator_;
@@ -425,7 +425,7 @@ private:
   uint64_t getNonceChangeCount_;
   uint64_t changeCount_;
 };
-  
+
 }
 
 #endif
