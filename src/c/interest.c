@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +28,6 @@ int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct n
   if (component1->value.length > component2->value.length)
     return 1;
 
-  // The components are equal length.  Just do a byte compare.  
+  // The components are equal length.  Just do a byte compare.
   return ndn_memcmp(component1->value.value, component2->value.value, component1->value.length);
 }

@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,18 +44,18 @@ public:
    * @param data The data packet with the content to decode.
    */
   IdentityCertificate(const Data& data);
-  
+
   /**
-   * The copy constructor. 
+   * The copy constructor.
    */
   IdentityCertificate(const IdentityCertificate& identityCertificate);
-  
+
   /**
    * The virtual destructor.
    */
-  virtual 
+  virtual
   ~IdentityCertificate();
-  
+
   /**
    * Override the base class method to check that the name is a valid identity certificate name.
    * @param name The identity certificate name which is copied.
@@ -64,7 +64,7 @@ public:
   virtual Data &
   setName(const Name& name);
 
-  Name 
+  Name
   getPublicKeyName () const { return publicKeyName_; }
 
   static bool
@@ -77,14 +77,14 @@ public:
    */
   static Name
   certificateNameToPublicKeyName(const Name& certificateName);
-  
+
 private:
   static bool
   isCorrectName(const Name& name);
-  
+
   void
   setPublicKeyName();
-    
+
 protected:
   Name publicKeyName_;
 };

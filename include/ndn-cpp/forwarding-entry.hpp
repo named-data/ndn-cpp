@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,11 +38,11 @@ namespace ndn {
  * forwarding entry.
  */
 class ForwardingEntry {
-public:    
+public:
   ForwardingEntry
     (const std::string& action, const Name& prefix, const PublisherPublicKeyDigest publisherPublicKeyDigest,
-     int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod) 
-  : action_(action), prefix_(prefix), publisherPublicKeyDigest_(publisherPublicKeyDigest), 
+     int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod)
+  : action_(action), prefix_(prefix), publisherPublicKeyDigest_(publisherPublicKeyDigest),
     faceId_(faceId), forwardingFlags_(forwardingFlags), freshnessPeriod_(freshnessPeriod)
   {
   }
@@ -53,97 +53,97 @@ public:
     forwardingFlags_.setActive(true);
     forwardingFlags_.setChildInherit(true);
   }
-  
-  Blob 
-  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const 
+
+  Blob
+  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const
   {
     return wireFormat.encodeForwardingEntry(*this);
   }
-  
-  void 
-  wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
+
+  void
+  wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     wireFormat.decodeForwardingEntry(*this, input, inputLength);
   }
-  
-  void 
-  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) 
+
+  void
+  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     wireDecode(&input[0], input.size(), wireFormat);
   }
-  
+
   /**
    * Set the forwardingEntryStruct to point to the components in this forwarding entry, without copying any memory.
    * WARNING: The resulting pointers in forwardingEntryStruct are invalid after a further use of this object which could reallocate memory.
    * @param forwardingEntryStruct a C ndn_ForwardingEntry struct where the prefix name components array is already allocated.
    */
-  void 
+  void
   get(struct ndn_ForwardingEntry& forwardingEntryStruct) const;
 
-  const std::string& 
+  const std::string&
   getAction() const { return action_; }
-  
-  Name& 
+
+  Name&
   getPrefix() { return prefix_; }
-  
-  const Name& 
+
+  const Name&
   getPrefix() const { return prefix_; }
-  
-  PublisherPublicKeyDigest& 
+
+  PublisherPublicKeyDigest&
   getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_; }
-  
-  const PublisherPublicKeyDigest& 
+
+  const PublisherPublicKeyDigest&
   getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_; }
-  
-  int 
+
+  int
   getFaceId() const { return faceId_; }
 
-  const ForwardingFlags& 
+  const ForwardingFlags&
   getForwardingFlags() const { return forwardingFlags_; }
 
-  Milliseconds 
+  Milliseconds
   getFreshnessPeriod() const { return freshnessPeriod_; }
 
   /**
    * @deprecated Use getFreshnessPeriod.
    */
-  int 
-  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const 
-  { 
-    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); 
+  int
+  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const
+  {
+    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0);
   }
-  
+
   /**
    * Clear this forwarding entry, and set the values by copying from forwardingEntryStruct.
    * @param forwardingEntryStruct a C ndn_ForwardingEntry struct.
    */
-  void 
+  void
   set(const struct ndn_ForwardingEntry& forwardingEntryStruct);
 
-  void 
+  void
   setAction(const std::string& action) { action_ = action; }
-  
-  void 
+
+  void
   setFaceId(int faceId) { faceId_ = faceId; }
-      
-  void 
+
+  void
   setForwardingFlags(const ForwardingFlags& forwardingFlags) { forwardingFlags_ = forwardingFlags; }
-      
-  void 
-  setFreshnessPeriod(Milliseconds freshnessPeriod) 
-  { 
-    freshnessPeriod_ = freshnessPeriod; 
+
+  void
+  setFreshnessPeriod(Milliseconds freshnessPeriod)
+  {
+    freshnessPeriod_ = freshnessPeriod;
   }
 
   /**
    * @deprecated Use setFreshnessPeriod.
    */
-  void 
-  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds) 
-  { 
-    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); 
+  void
+  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds)
+  {
+    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0);
   }
-      
+
 private:
   std::string action_;   /**< empty for none. */
   Name prefix_;

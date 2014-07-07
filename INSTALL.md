@@ -3,7 +3,7 @@ NDN-CPP:  A Named Data Networking client library for C++ and C
 
 Prerequisites
 =============
-(These are prerequisites to build NDN-CPP.  To do development of NDN-CPP code and update the build system, 
+(These are prerequisites to build NDN-CPP.  To do development of NDN-CPP code and update the build system,
  see Development Prerequisites.)
 
 * Required: libcrypto
@@ -15,7 +15,7 @@ Prerequisites
 Following are the detailed steps for each platform to install the prerequisites.
 
 ## Mac OS X 10.7.3, Mac OS X 10.8.4
-Install Xcode.  
+Install Xcode.
 In Xcode Preferences > Downloads, install "Command Line Tools".
 
 Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
@@ -56,7 +56,7 @@ Optional: To install Doxygen, in a terminal, enter:
     sudo apt-get install doxygen
 
 ## Windows Cygwin
-Cygwin is tested on Windows 7 64-bit. 
+Cygwin is tested on Windows 7 64-bit.
 
 In the Cygwin installer, select and install the "Devel" packages at the top level of the installer.
 (The "Devel" packages include libcrypto and libsqlite3.)
@@ -78,7 +78,7 @@ To revert to Binary XML (ndnb) as the default wire format, instead of ./configur
     ./configure --enable-binary-xml=yes
 
 To make documentation, enter:
-  
+
     make doxygen-doc
 
 The documentation output is in `doc/html/index.html`. (If you already did ./configure
@@ -110,9 +110,9 @@ These steps are only needed to do development of NDN-CPP code and update the bui
 First follow the Prerequisites above for your platforms.
 
 ## Mac OS X 10.7.3, Mac OS X 10.8.4, Mac OS X 10.9
-Install MacPorts from http://www.macports.org/install.php .  
+Install MacPorts from http://www.macports.org/install.php .
 In a terminal, enter:
- 
+
     sudo port install automake autoconf libtool doxygen
 
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
@@ -123,7 +123,7 @@ In a terminal, enter:
 Development
 ===========
 Follow Development Prerequisites above for your platform.
-Now you can add source code files and update Makefile.am.  
+Now you can add source code files and update Makefile.am.
 After updating, change directory to the NDN-CPP root and enter the following to build the Makefile:
 
     ./autogen.sh

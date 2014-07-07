@@ -17,6 +17,7 @@ Changes
 * Added UnixTransport. If using the default Face(), try to connect using a Unix socket.
 * Added ./configure options --with-std-shared-ptr and --with-boost-shared-ptr. See ./configure --help .
 * Added ./configure options --with-std-function and --with-boost-function. See ./configure --help .
+* http://redmine.named-data.net/issues/1738 Remove trailing whitespace
 
 Deprecated
 * MemoryPrivateKeyStorage: Deprecated setKeyPairForKeyName without an explicit keyType. Use
@@ -43,16 +44,16 @@ Changes
 Deprecated
 * Name: Deprecated appendFinalSegment. Use MetaInfo.setFinalBlockID.
 * Name::Component: Deprecated toFinalSegment. Use MetaInfo.getFinalBlockID.
-* Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is 
+* Sha256WithRsaSignature: get/setDigestAlgorithm as deprecated.  (This is
   implicit in the class Sha256WithRsaSignature.)
-* MetaInfo: Deprecated get/setTimestampMilliseconds: Use the 
+* MetaInfo: Deprecated get/setTimestampMilliseconds: Use the
   application-specific content to store a timestamp.
 
 Bug fixes
 * Name: Fix bug in append to explicitly make a Component to call append(Component).
 * http://redmine.named-data.net/issues/1247 Use new TLV type codes to not
   conflict with binary XML. Note:  Using this new code must be done at the same
-  time as using the updated ndnd-tlv which uses the new type codes. 
+  time as using the updated ndnd-tlv which uses the new type codes.
 
 NDN-CPP v0.3 (2014-01-31)
 -------------------------
@@ -69,7 +70,7 @@ Changes
 * In BinaryXmlDecoder, cache the result of peekDTag for a speedup when decoding optional elements.
 * Moved validation-request.hpp to public API security/policy, and moved OnVerified and OnVerifyFailed in there.
 * In Interest, added get/setMustBeFresh.
-* In Interest, added keyLocator.  If the interest needs a publisher public key digest, the keyLocator type is 
+* In Interest, added keyLocator.  If the interest needs a publisher public key digest, the keyLocator type is
   ndn_KeyLocatorType_KEY_LOCATOR_DIGEST.
 * In Interest, if any field is changed, clear the nonce.
 * In MetaInfo, added get/setFreshnessPeriod.
@@ -88,7 +89,7 @@ Deprecated
 * Interest: Deprecated setNonce.  You should let the wire encoder generate a random nonce internally.
 * Sha256WithRsaSignature: Deprecated getPublicKeyLocator.  If the signature has a public key locator, its keyLocator has
   type ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and the key data has the digest.
-* KeyLocator: Deprecated setKeyNameType.  If you need a publisher public key digest, set the keyLocatorType to 
+* KeyLocator: Deprecated setKeyNameType.  If you need a publisher public key digest, set the keyLocatorType to
   ndn_KeyLocatorType_KEY_LOCATOR_DIGEST and set the key data to the digest.
 * KeyLocator: Deprecated getKeyNameType.  KEY_LOCATOR_DIGEST is supported as a keyLocatorType.
 * MetaInfo: Deprecated getFreshnessSeconds.  Use Milliseconds getFreshnessPeriod().

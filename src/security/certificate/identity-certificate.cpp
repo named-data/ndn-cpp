@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ IdentityCertificate::IdentityCertificate(const Data& data)
 {
   if (!isCorrectName(data.getName()))
     throw SecurityException("Wrong Identity Certificate Name!");
-  
+
   setPublicKeyName();
 }
 
@@ -50,7 +50,7 @@ bool
 IdentityCertificate::isCorrectName(const Name& name)
 {
   int i = name.size() - 1;
-  
+
   string idString("ID-CERT");
   for (; i >= 0; i--) {
     if(name.get(i).toEscapedString() == idString)
@@ -59,7 +59,7 @@ IdentityCertificate::isCorrectName(const Name& name)
 
   if (i < 0)
     return false;
-  
+
   int keyIdx = 0;
   string keyString("KEY");
   for (; keyIdx < name.size(); keyIdx++) {
@@ -73,12 +73,12 @@ IdentityCertificate::isCorrectName(const Name& name)
   return true;
 }
 
-Data& 
+Data&
 IdentityCertificate::setName(const Name& name)
 {
   if (!isCorrectName(name))
     throw SecurityException("Wrong Identity Certificate Name!");
-  
+
   Data::setName(name);
   setPublicKeyName();
   return *this;
@@ -92,8 +92,8 @@ IdentityCertificate::setPublicKeyName()
 
 bool
 IdentityCertificate::isIdentityCertificate(const Certificate& certificate)
-{ 
-  return isCorrectName(certificate.getName()); 
+{
+  return isCorrectName(certificate.getName());
 }
 
 Name
@@ -105,14 +105,14 @@ IdentityCertificate::certificateNameToPublicKeyName(const Name& certificateName)
     if (certificateName.get(i).toEscapedString() == idString)
       break;
   }
-    
-  Name tmpName = certificateName.getSubName(0, i);    
+
+  Name tmpName = certificateName.getSubName(0, i);
   string keyString("KEY");
   for (i = 0; i < tmpName.size(); i++) {
     if (tmpName.get(i).toEscapedString() == keyString)
       break;
   }
-  
+
   return tmpName.getSubName(0, i).append(tmpName.getSubName(i + 1, tmpName.size() - i - 1));
 }
 

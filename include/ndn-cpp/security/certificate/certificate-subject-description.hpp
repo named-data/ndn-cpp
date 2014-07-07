@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@
 namespace ndn {
 
 namespace der { class DerNode; }
-  
+
 /**
  * A CertificateSubjectDescription represents the SubjectDescription entry in a Certificate.
  */
@@ -54,12 +54,12 @@ public:
   : oid_(oid), value_(value)
   {
   }
-  
+
   /**
    * Encode the object into a DER syntax tree.
    * @return The encoded DER syntax tree.
    */
-  ptr_lib::shared_ptr<der::DerNode> 
+  ptr_lib::shared_ptr<der::DerNode>
   toDer() const;
 
   std::string
@@ -73,7 +73,7 @@ public:
   {
     return value_;
   }
-  
+
 private:
   OID oid_;
   std::string value_;

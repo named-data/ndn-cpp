@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,13 +39,13 @@ struct ndn_ExcludeEntry {
 };
 
 /**
- * 
+ *
  * @param self pointer to the ndn_NameComponent struct
  * @param type one of the ndn_ExcludeType enum
  * @param component the pre-allocated buffer for the component value, only used if type is ndn_Exclude_COMPONENT
  * @param componentLength the number of bytes in value, only used if type is ndn_Exclude_COMPONENT
  */
-static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, const uint8_t *component, size_t componentLength) 
+static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, ndn_ExcludeType type, const uint8_t *component, size_t componentLength)
 {
   self->type = type;
   ndn_NameComponent_initialize(&self->component, component, componentLength);
@@ -65,7 +65,7 @@ struct ndn_Exclude {
  * @param entries the pre-allocated array of ndn_ExcludeEntry
  * @param maxEntries the number of elements in the allocated entries array
  */
-static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn_ExcludeEntry *entries, size_t maxEntries) 
+static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn_ExcludeEntry *entries, size_t maxEntries)
 {
   self->entries = entries;
   self->maxEntries = maxEntries;
@@ -88,7 +88,7 @@ struct ndn_Interest {
   struct ndn_Name name;
   int minSuffixComponents;  /**< -1 for none */
   int maxSuffixComponents;  /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
@@ -113,8 +113,8 @@ struct ndn_Interest {
  */
 static __inline void ndn_Interest_initialize
   (struct ndn_Interest *self, struct ndn_NameComponent *nameComponents, size_t maxNameComponents,
-   struct ndn_ExcludeEntry *excludeEntries, size_t maxExcludeEntries, struct ndn_NameComponent *keyNameComponents, 
-   size_t maxKeyNameComponents) 
+   struct ndn_ExcludeEntry *excludeEntries, size_t maxExcludeEntries, struct ndn_NameComponent *keyNameComponents,
+   size_t maxKeyNameComponents)
 {
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   self->minSuffixComponents = -1;

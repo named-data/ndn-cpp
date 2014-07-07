@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,8 +47,8 @@ struct ndn_DynamicUInt8Array {
  * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
  */
 static __inline void ndn_DynamicUInt8Array_initialize
-  (struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length, 
-   uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t)) 
+  (struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length,
+   uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t))
 {
   self->array = array;
   self->length = length;
@@ -73,7 +73,7 @@ ndn_Error ndn_DynamicUInt8Array_reallocArray(struct ndn_DynamicUInt8Array *self,
  * @param length the needed minimum size for self->length
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
-static __inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUInt8Array *self, size_t length) 
+static __inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicUInt8Array *self, size_t length)
 {
   if (self->length >= length)
     return NDN_ERROR_success;
@@ -90,7 +90,7 @@ static __inline ndn_Error ndn_DynamicUInt8Array_ensureLength(struct ndn_DynamicU
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
 static __inline ndn_Error ndn_DynamicUInt8Array_copy
-  (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength, size_t offset) 
+  (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength, size_t offset)
 {
   ndn_Error error;
   if ((error = ndn_DynamicUInt8Array_ensureLength(self, valueLength + offset)))

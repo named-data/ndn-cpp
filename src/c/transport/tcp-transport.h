@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@ extern "C" {
 struct ndn_TcpTransport {
   struct ndn_SocketTransport base;
 };
-  
+
 /**
  * Initialize the ndn_TcpTransport struct with default values for no connection yet.
  * @param self A pointer to the ndn_TcpTransport struct.
@@ -67,7 +67,7 @@ static inline ndn_Error ndn_TcpTransport_send
 }
 
 /**
- * Check if there is data ready on the socket to be received with 
+ * Check if there is data ready on the socket to be received with
  * ndn_TcpTransport_receive. This does not block, and returns immediately.
  * @param self A pointer to the ndn_TcpTransport struct.
  * @param receiveIsReady This will be set to 1 if data is ready, 0 if not.
@@ -80,8 +80,8 @@ static inline ndn_Error ndn_TcpTransport_receiveIsReady
 }
 
 /**
- * Receive data from the socket.  NOTE: This is a blocking call.  
- * You should first call ndn_SocketTransport_receiveIsReady to make sure there 
+ * Receive data from the socket.  NOTE: This is a blocking call.
+ * You should first call ndn_SocketTransport_receiveIsReady to make sure there
  * is data ready to receive.
  * @param self A pointer to the ndn_TcpTransport struct.
  * @param buffer A pointer to the buffer to receive the data.
@@ -90,7 +90,7 @@ static inline ndn_Error ndn_TcpTransport_receiveIsReady
  * @return 0 for success, else an error code.
  */
 static inline ndn_Error ndn_TcpTransport_receive
-  (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength, 
+  (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength,
    size_t *nBytes)
 {
   return ndn_SocketTransport_receive(&self->base, buffer, bufferLength, nBytes);

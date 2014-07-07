@@ -17,11 +17,11 @@ namespace ndn {
 
 namespace der {
 
-void 
+void
 PrintVisitor::visit(DerBool& derBool, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derBool.getHeader(), indent);
   printData(derBool.getPayload(), indent + "   ");
 }
@@ -30,74 +30,74 @@ void
 PrintVisitor::visit(DerInteger& derInteger, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derInteger.getHeader(), indent);
   printData(derInteger.getPayload(), indent + "   ");
 }
-  
+
 void
 PrintVisitor::visit(DerPrintableString& derPStr, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derPStr.getHeader(), indent);
   printData(derPStr.getPayload(), indent + "   ");
 }
 
-void 
+void
 PrintVisitor::visit(DerBitString& derBStr, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derBStr.getHeader(), indent);
   const vector<uint8_t>& payload = derBStr.getPayload();
   cout << indent << "   " << " " << hex << setw(2) << setfill('0') << (int)(uint8_t)payload[0] << endl;
   printData(payload, indent + "   ", 1);
 }
 
-void 
+void
 PrintVisitor::visit(DerNull& derNull, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derNull.getHeader(), indent);
   printData(derNull.getPayload(), indent + "   ");
 
 }
 
-void 
+void
 PrintVisitor::visit(DerOctetString& derOStr, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-      
+
   printData(derOStr.getHeader(), indent);
   printData(derOStr.getPayload(), indent + "   ");
 }
 
-void 
+void
 PrintVisitor::visit(DerOid& derOid, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-  
+
   printData(derOid.getHeader(), indent);
   printData(derOid.getPayload(), indent + "   ");
 
 }
 
-void 
+void
 PrintVisitor::visit(DerGtime& derGtime, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-  
+
   printData(derGtime.getHeader(), indent);
   printData(derGtime.getPayload(), indent + "   ");
 }
 
-void 
+void
 PrintVisitor::visit(DerSequence& derSequence, ndnboost::any param)
 {
   const string& indent = ndnboost::any_cast<const string&>(param);
-  
+
   printData(derSequence.getHeader(), indent);
 
   DerNodePtrList& children = derSequence.getChildren();
@@ -107,7 +107,7 @@ PrintVisitor::visit(DerSequence& derSequence, ndnboost::any param)
 }
 
 
-void 
+void
 PrintVisitor::printData(const vector<uint8_t>& blob, const string& indent, int offset)
 {
   cout << indent;

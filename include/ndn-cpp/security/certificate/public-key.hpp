@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ namespace ndn {
   namespace der { class DerNode; }
 
 class PublicKey {
-public:    
+public:
   /**
    * The default constructor.
    */
@@ -65,20 +65,20 @@ public:
   fromDer(KeyType keyType, const Blob& keyDer);
 
   KeyType getKeyType() const { return keyType_; }
-    
+
   /*
    * Get the digest of the public key.
    * @param digestAlgorithm The digest algorithm. If omitted, use DIGEST_ALGORITHM_SHA256 by default.
    */
-  Blob 
+  Blob
   getDigest(DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256) const;
 
   /*
    * Get the raw bytes of the public key in DER format.
    */
-  const Blob& 
+  const Blob&
   getKeyDer() const { return keyDer_; }
-    
+
 private:
   KeyType keyType_;
   Blob keyDer_;   /**< SubjectPublicKeyInfo in DER */

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ namespace ndn {
  * Return the base64 representation of the bytes in array.
  * @param array The array of bytes.
  * @param arrayLength The number of bytes in array.
- * @param addNewlines (optional) If true, add newlines to the output (good for 
+ * @param addNewlines (optional) If true, add newlines to the output (good for
  * writing to a file).  If omitted, do not add newlines.
  * @return The base64 string.
  */
@@ -42,11 +42,11 @@ toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines = false);
 /**
  * Return the base64 representation of the bytes in array.
  * @param array The array of bytes.
- * @param addNewlines (optional) If true, add newlines to the output (good for 
+ * @param addNewlines (optional) If true, add newlines to the output (good for
  * writing to a file).  If omitted, do not add newlines.
  * @return The base64 string.
  */
-static inline std::string 
+static inline std::string
 toBase64(const std::vector<uint8_t>& array, bool addNewlines = false)
 {
   return toBase64(&array[0], array.size(), addNewlines);

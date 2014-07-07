@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +20,9 @@
 
 #include "tlv-name.h"
 
-ndn_Error 
+ndn_Error
 ndn_encodeTlvName
-  (struct ndn_Name *name, size_t *signedPortionBeginOffset, 
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   size_t nameValueLength = 0;
@@ -34,7 +34,7 @@ ndn_encodeTlvName
 
   if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_Name, nameValueLength)))
     return error;
-  
+
   *signedPortionBeginOffset = encoder->offset;
 
   if (name->nComponents == 0)
@@ -45,24 +45,24 @@ ndn_encodeTlvName
       if (i == name->nComponents - 1)
         // We will begin the final component.
         *signedPortionEndOffset = encoder->offset;
-        
+
       if ((error = ndn_TlvEncoder_writeBlobTlv
            (encoder, ndn_Tlv_NameComponent, &name->components[i].value)))
         return error;
     }
   }
-  
+
   return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Name, &endOffset)))
     return error;
-    
+
   name->nComponents = 0;
   while (decoder->offset < endOffset) {
     struct ndn_Blob component;
@@ -71,9 +71,9 @@ ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_Name_appendBlob(name, &component)))
       return error;
   }
-   
+
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
-  
+
   return NDN_ERROR_success;
 }

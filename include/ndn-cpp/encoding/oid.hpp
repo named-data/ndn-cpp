@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,10 +30,10 @@ namespace ndn {
 
 class OID {
 public:
-  OID () 
+  OID ()
   {
   }
-    
+
   OID(const std::string& oid);
 
   OID(const std::vector<int>& oid)
@@ -52,7 +52,7 @@ public:
     oid_ = value;
   }
 
-  std::string 
+  std::string
   toString() const;
 
   bool operator == (const OID& oid) const
@@ -64,7 +64,7 @@ public:
   {
     return !equal(oid);
   }
-  
+
 private:
   bool equal(const OID& oid) const;
 

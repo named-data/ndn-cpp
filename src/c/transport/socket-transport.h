@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,11 +34,11 @@ typedef enum {
   SOCKET_UDP,
   SOCKET_UNIX
 } ndn_SocketType;
-  
+
 struct ndn_SocketTransport {
   int socketDescriptor; /**< -1 if not connected */
 };
-  
+
 /**
  * Initialize the ndn_SocketTransport struct with default values for no connection yet.
  * @param self A pointer to the ndn_SocketTransport struct.
@@ -53,7 +53,7 @@ static inline void ndn_SocketTransport_initialize(struct ndn_SocketTransport *se
  *   (which is interpreted as the Unix Socket filename).
  * @param self A pointer to the ndn_SocketTransport struct.
  * @param socketType SOCKET_TCP, SOCKET_UDP or SOCKET_UNIX.
- * @param host For SOCKET_TCP or SOCKET_UDP, the host to connect to. For 
+ * @param host For SOCKET_TCP or SOCKET_UDP, the host to connect to. For
  * SOCKET_UNIX, the socket filename.
  * @param port The port to connect to (ignored for SOCKET_UNIX).
  * @return 0 for success, else an error code.

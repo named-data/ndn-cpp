@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +24,7 @@ char *ndn_getErrorString(int error)
 {
   switch (error) {
   case NDN_ERROR_success:
-    return      "Success"; 
+    return      "Success";
   case NDN_ERROR_element_of_value_is_not_a_decimal_digit:
     return      "Element of value is not a decimal digit";
   case NDN_ERROR_read_past_the_end_of_the_input:
@@ -106,6 +106,6 @@ char *ndn_getErrorString(int error)
   case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:
     return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
   default:
-    return "unrecognized ndn_Error code";  
+    return "unrecognized ndn_Error code";
   }
 }

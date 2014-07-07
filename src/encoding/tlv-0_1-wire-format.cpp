@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,32 +36,32 @@ using namespace std;
 
 namespace ndn {
 
-Blob 
+Blob
 Tlv0_1WireFormat::encodeInterest
-  (const Interest& interest, size_t *signedPortionBeginOffset, 
-   size_t *signedPortionEndOffset) 
+  (const Interest& interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
   TlvEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeTlvInterest
-       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset, 
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
         &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-void 
+void
 Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -69,11 +69,11 @@ Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Interest interestStruct;
   ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
-     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 
+    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+     excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-    
-  TlvDecoder decoder(input, inputLength);  
+
+  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = ndn_decodeTlvInterest(&interestStruct, &decoder)))
     throw runtime_error(ndn_getErrorString(error));
@@ -81,14 +81,14 @@ Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_
   interest.set(interestStruct);
 }
 
-Blob 
-Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+Blob
+Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Data dataStruct;
   ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
+    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   data.get(dataStruct);
 
@@ -96,11 +96,11 @@ Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset,
   ndn_Error error;
   if ((error = ndn_encodeTlvData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-void 
+void
 Tlv0_1WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
@@ -108,10 +108,10 @@ Tlv0_1WireFormat::decodeData
   struct ndn_NameComponent keyNameComponents[100];
   struct ndn_Data dataStruct;
   ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]), 
+    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-    
-  TlvDecoder decoder(input, inputLength);  
+
+  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = ndn_decodeTlvData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &decoder)))
     throw runtime_error(ndn_getErrorString(error));
@@ -119,14 +119,14 @@ Tlv0_1WireFormat::decodeData
   data.set(dataStruct);
 }
 
-Blob 
+Blob
 Tlv0_1WireFormat::encodeControlParameters
   (const ControlParameters& controlParameters)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ControlParameters controlParametersStruct;
   ndn_ControlParameters_initialize
-    (&controlParametersStruct, nameComponents, 
+    (&controlParametersStruct, nameComponents,
      sizeof(nameComponents) / sizeof(nameComponents[0]));
   controlParameters.get(controlParametersStruct);
 
@@ -135,17 +135,17 @@ Tlv0_1WireFormat::encodeControlParameters
   if ((error = ndn_encodeTlvControlParameters
        (&controlParametersStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
-Blob 
+Blob
 Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
 {
   struct ndn_Signature signatureStruct;
   struct ndn_NameComponent nameComponents[100];
   ndn_Signature_initialize
-    (&signatureStruct, nameComponents, 
+    (&signatureStruct, nameComponents,
      sizeof(nameComponents) / sizeof(nameComponents[0]));
   signature.get(signatureStruct);
 
@@ -153,16 +153,16 @@ Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
   ndn_Error error;
   if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 
 
-Blob 
+Blob
 Tlv0_1WireFormat::encodeSignatureValue(const Signature& signature)
 {
   // TODO: Handle signature algorithms other than Sha256WithRsa.
-  const Sha256WithRsaSignature& sha256WithRsaSignature = 
+  const Sha256WithRsaSignature& sha256WithRsaSignature =
     dynamic_cast<const Sha256WithRsaSignature&>(signature);
   struct ndn_Blob signatureStruct;
   sha256WithRsaSignature.getSignature().get(signatureStruct);
@@ -172,7 +172,7 @@ Tlv0_1WireFormat::encodeSignatureValue(const Signature& signature)
   if ((error = ndn_TlvEncoder_writeBlobTlv
        (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
     throw runtime_error(ndn_getErrorString(error));
-     
+
   return Blob(encoder.getOutput(), false);
 }
 

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,36 +27,36 @@ using namespace std;
 namespace ndn {
 
 Transport::ConnectionInfo::~ConnectionInfo()
-{  
+{
 }
 
-void 
+void
 Transport::connect
-  (const Transport::ConnectionInfo& connectionInfo, 
-   ElementListener& elementListener) 
+  (const Transport::ConnectionInfo& connectionInfo,
+   ElementListener& elementListener)
 {
   throw logic_error("unimplemented");
 }
-  
-void 
+
+void
 Transport::send(const uint8_t *data, size_t dataLength)
 {
   throw logic_error("unimplemented");
 }
 
-void 
+void
 Transport::processEvents()
 {
   throw logic_error("unimplemented");
 }
 
-bool 
+bool
 Transport::getIsConnected()
 {
   throw logic_error("unimplemented");
 }
 
-void 
+void
 Transport::close()
 {
 }

@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,26 +36,26 @@ namespace ndn {
 class IdentityManager {
 public:
   /**
-   * Create a new IdentityManager to use the given IdentityStorage and 
+   * Create a new IdentityManager to use the given IdentityStorage and
    * PrivateKeyStorage.
    * @param identityStorage An object of a subclass of IdentityStorage.
    * @param privateKeyStorage An object of a subclass of PrivateKeyStorage.
    */
   IdentityManager
-    (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage, 
+    (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage,
      const ptr_lib::shared_ptr<PrivateKeyStorage>& privateKeyStorage);
-  
+
   /**
-   * Create a new IdentityManager to use the given IdentityStorage and 
-   * the default PrivateKeyStorage for your system, which is 
+   * Create a new IdentityManager to use the given IdentityStorage and
+   * the default PrivateKeyStorage for your system, which is
    * OSXPrivateKeyStorage for OS X, otherwise FilePrivateKeyStorage.
    * @param identityStorage An object of a subclass of IdentityStorage.
    */
   IdentityManager(const ptr_lib::shared_ptr<IdentityStorage>& identityStorage);
-  
+
   /**
-   * Create a new IdentityManager to use BasicIdentityStorage and 
-   * the default PrivateKeyStorage for your system, which is 
+   * Create a new IdentityManager to use BasicIdentityStorage and
+   * the default PrivateKeyStorage for your system, which is
    * OSXPrivateKeyStorage for OS X, otherwise FilePrivateKeyStorage.
    * @param identityStorage An object of a subclass of IdentityStorage.
    */
@@ -68,7 +68,7 @@ public:
    */
   Name
   createIdentity(const Name& identityName);
-    
+
   /**
    * Get the default identity.
    * @return The name of default identity.
@@ -83,7 +83,7 @@ public:
   /**
    * Generate a pair of RSA keys for the specified identity.
    * @param identityName The name of the identity.
-   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
    * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
    * @param keySize (optional) The size of the key. If omitted, use a default
    * secure key size.
@@ -95,7 +95,7 @@ public:
   /**
    * Set a key as the default key of an identity.
    * @param keyName The name of the key.
-   * @param identityName (optional) the name of the identity. If not specified, 
+   * @param identityName (optional) the name of the identity. If not specified,
    * the identity name is inferred from the keyName.
    */
   void
@@ -115,11 +115,11 @@ public:
   {
     return identityStorage_->getDefaultKeyNameForIdentity(identityName);
   }
-  
+
   /**
    * Generate a pair of RSA keys for the specified identity and set it as default key for the identity.
    * @param identityName The name of the identity.
-   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false 
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
    * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
    * @param keySize (optional) The size of the key. If omitted, use a default
    * secure key size.
@@ -150,7 +150,7 @@ public:
    */
   Name
   createIdentityCertificate
-    (const Name& certificatePrefix, const Name& signerCertificateName, const MillisecondsSince1970& notBefore, 
+    (const Name& certificatePrefix, const Name& signerCertificateName, const MillisecondsSince1970& notBefore,
      const MillisecondsSince1970& notAfter);
 
   /**
@@ -164,9 +164,9 @@ public:
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   createIdentityCertificate
-    (const Name& certificatePrefix, const PublicKey& publickey, const Name& signerCertificateName, 
-     const MillisecondsSince1970& notBefore, const MillisecondsSince1970& notAfter); 
-    
+    (const Name& certificatePrefix, const PublicKey& publickey, const Name& signerCertificateName,
+     const MillisecondsSince1970& notBefore, const MillisecondsSince1970& notAfter);
+
   /**
    * Add a certificate into the public key identity storage.
    * @param certificate The certificate to to added.  This makes a copy of the certificate.
@@ -208,7 +208,7 @@ public:
   {
     return ptr_lib::make_shared<IdentityCertificate>(*identityStorage_->getCertificate(certificateName, false));
   }
-    
+
   /**
    * Get a certificate even if the certificate is not valid anymore.
    * @param certificateName The name of the requested certificate.
@@ -219,12 +219,12 @@ public:
   {
     return ptr_lib::make_shared<IdentityCertificate>(*identityStorage_->getCertificate(certificateName, true));
   }
-    
+
   /**
    * Get the default certificate name for the specified identity, which will be used when signing is performed based on identity.
    * @param identityName The name of the specified identity.
    * @return The requested certificate name.
-   * @throw SecurityException if the default key name for the identity is not 
+   * @throw SecurityException if the default key name for the identity is not
    * set or the default certificate name for the key name is not set.
    */
   Name
@@ -232,13 +232,13 @@ public:
   {
     return identityStorage_->getDefaultCertificateNameForIdentity(identityName);
   }
-    
+
   /**
-   * Get the default certificate name of the default identity, which will be used when signing is based on identity and 
+   * Get the default certificate name of the default identity, which will be used when signing is based on identity and
    * the identity is not specified.
    * @return The requested certificate name.
-   * @throw SecurityException if the default identity is not set or the default 
-   * key name for the identity is not set or the default certificate name for 
+   * @throw SecurityException if the default identity is not set or the default
+   * key name for the identity is not set or the default certificate name for
    * the key name is not set.
    */
   Name
@@ -246,7 +246,7 @@ public:
   {
     return identityStorage_->getDefaultCertificateNameForIdentity(getDefaultIdentity());
   }
-        
+
   /**
    * Sign the byte array data based on the certificate name.
    * @param buffer The byte array to be signed.
@@ -264,7 +264,7 @@ public:
    * @return The generated signature.
    */
   ptr_lib::shared_ptr<Signature>
-  signByCertificate(const std::vector<uint8_t>& buffer, const Name& certificateName) 
+  signByCertificate(const std::vector<uint8_t>& buffer, const Name& certificateName)
   {
     return signByCertificate(&buffer[0], buffer.size(), certificateName);
   }
@@ -275,7 +275,7 @@ public:
    * @param certificateName The Name identifying the certificate which identifies the signing key.
    * @param wireFormat The WireFormat for calling encodeData, or WireFormat::getDefaultWireFormat() if omitted.
    */
-  void 
+  void
   signByCertificate(Data& data, const Name& certificateName, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
@@ -285,7 +285,7 @@ public:
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   selfSign(const Name& keyName);
-  
+
 private:
   /**
    * Generate a key pair for the specified identity.
@@ -300,7 +300,7 @@ private:
 
   static Name
   getKeyNameFromCertificatePrefix(const Name& certificatePrefix);
-  
+
   ptr_lib::shared_ptr<IdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<PrivateKeyStorage> privateKeyStorage_;
 };

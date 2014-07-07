@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,28 +35,28 @@ public:
   /**
    * Encode interest in NDN-TLV and return the encoding.
    * @param interest The Interest object to encode.
-   * @param signedPortionBeginOffset Return the offset in the encoding of the 
+   * @param signedPortionBeginOffset Return the offset in the encoding of the
    * beginning of the signed portion. The signed portion starts from the first
    * name component and ends just before the final name component (which is
    * assumed to be a signature for a signed interest).
-   * @param signedPortionEndOffset Return the offset in the encoding of the end 
+   * @param signedPortionEndOffset Return the offset in the encoding of the end
    * of the signed portion. The signed portion starts from the first
    * name component and ends just before the final name component (which is
    * assumed to be a signature for a signed interest).
    * @return A Blob containing the encoding.
-   */  
-  virtual Blob 
+   */
+  virtual Blob
   encodeInterest
-    (const Interest& interest, size_t *signedPortionBeginOffset, 
+    (const Interest& interest, size_t *signedPortionBeginOffset,
      size_t *signedPortionEndOffset);
-    
+
   /**
    * Decode input as an interest in NDN-TLV and set the fields of the interest object.
    * @param interest The Interest object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
    */
-  virtual void 
+  virtual void
   decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength);
 
   /**
@@ -68,68 +68,68 @@ public:
    * If you are not encoding in order to sign, you can call encodeData(const Data& data) to ignore this returned value.
    * @return A Blob containing the encoding.
    */
-  virtual Blob 
+  virtual Blob
   encodeData
     (const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
-  
+
   /**
    * Decode input as a data packet in NDN-TLV and set the fields in the data object.
    * @param data The Data object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
    * @param signedPortionBeginOffset Return the offset in the input buffer of the beginning of the signed portion.
-   * If you are not decoding in order to verify, you can call 
+   * If you are not decoding in order to verify, you can call
    * decodeData(Data& data, const uint8_t *input, size_t inputLength) to ignore this returned value.
    * @param signedPortionEndOffset Return the offset in the input buffer of the end of the signed portion.
-   * If you are not decoding in order to verify, you can call 
+   * If you are not decoding in order to verify, you can call
    * decodeData(Data& data, const uint8_t *input, size_t inputLength) to ignore this returned value.
-   */  
-  virtual void 
+   */
+  virtual void
   decodeData
     (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
-  
+
   /**
-   * Encode controlParameters as NDN-TLV and return the encoding.  
-   * @param controlParameters The ControlParameters object to 
+   * Encode controlParameters as NDN-TLV and return the encoding.
+   * @param controlParameters The ControlParameters object to
    * encode.
    * @return A Blob containing the encoding.
    */
-  virtual Blob 
+  virtual Blob
   encodeControlParameters
     (const ControlParameters& controlParameters);
-  
+
   /**
-   * Encode signature as an NDN-TLV SignatureInfo and return the encoding.  
+   * Encode signature as an NDN-TLV SignatureInfo and return the encoding.
    * @param signature An object of a subclass of Signature to encode.
    * @return A Blob containing the encoding.
    */
-  virtual Blob 
+  virtual Blob
   encodeSignatureInfo(const Signature& signature);
-  
+
   /**
-   * Encode the signatureValue in the Signature object as an NDN-TLV 
-   * SignatureValue (the signature bits) and return the encoding.  
+   * Encode the signatureValue in the Signature object as an NDN-TLV
+   * SignatureValue (the signature bits) and return the encoding.
    * @param signature An object of a subclass of Signature with the signature
    * value to encode.
    * @return A Blob containing the encoding.
    */
-  virtual Blob 
+  virtual Blob
   encodeSignatureValue(const Signature& signature);
 
   /**
-   * Get a singleton instance of a Tlv0_1WireFormat.  To always use the 
+   * Get a singleton instance of a Tlv0_1WireFormat.  To always use the
    * preferred version NDN-TLV, you should use TlvWireFormat::get().
    * @return A pointer to the singleton instance.
    */
-  static Tlv0_1WireFormat* 
+  static Tlv0_1WireFormat*
   get()
   {
     if (!instance_)
       instance_ = new Tlv0_1WireFormat();
-    
+
     return instance_;
   }
-  
+
 private:
   static Tlv0_1WireFormat* instance_;
 };

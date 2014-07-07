@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,9 +26,9 @@
 using namespace std;
 
 namespace ndn {
-  
-void 
-KeyLocator::get(struct ndn_KeyLocator& keyLocatorStruct) const 
+
+void
+KeyLocator::get(struct ndn_KeyLocator& keyLocatorStruct) const
 {
   keyLocatorStruct.type = type_;
   keyData_.get(keyLocatorStruct.keyData);
@@ -36,7 +36,7 @@ KeyLocator::get(struct ndn_KeyLocator& keyLocatorStruct) const
   keyLocatorStruct.keyNameType = keyNameType_;
 }
 
-void 
+void
 KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
 {
   setType(keyLocatorStruct.type);

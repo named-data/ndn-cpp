@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,19 +27,19 @@ ndn_Error ndn_DynamicUInt8Array_reallocArray(struct ndn_DynamicUInt8Array *self,
 
   if (!self->realloc)
     return NDN_ERROR_DynamicUInt8Array_realloc_function_pointer_not_supplied;
-  
+
   // See if double is enough.
   newLength = self->length * 2;
   if (length > newLength)
     // The needed length is much greater, so use it.
     newLength = length;
-    
+
   newArray = (*self->realloc)(self, self->array, newLength);
   if (!newArray)
     return NDN_ERROR_DynamicUInt8Array_realloc_failed;
-  
+
   self->array = newArray;
   self->length = newLength;
-  
+
   return NDN_ERROR_success;
 }

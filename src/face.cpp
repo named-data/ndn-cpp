@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -49,7 +49,7 @@ static string getUnixSocketFilePathForLocalhost()
       return "";
   }
 }
-  
+
 static ptr_lib::shared_ptr<Transport> getDefaultTransport()
 {
   if (getUnixSocketFilePathForLocalhost() == "")
@@ -80,7 +80,7 @@ Face::Face(const char *host, unsigned short port)
 }
 
 Face::Face()
-: node_(new Node(getDefaultTransport(), getDefaultConnectionInfo())), 
+: node_(new Node(getDefaultTransport(), getDefaultConnectionInfo())),
   commandKeyChain_(0)
 {
 }
@@ -90,14 +90,14 @@ Face::~Face()
   delete node_;
 }
 
-uint64_t 
+uint64_t
 Face::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
   return node_->expressInterest(interest, onData, onTimeout, wireFormat);
 }
-  
-uint64_t 
+
+uint64_t
 Face::expressInterest
   (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout,
    WireFormat& wireFormat)
@@ -109,7 +109,7 @@ Face::expressInterest
        interestTemplate->getChildSelector(), interestTemplate->getAnswerOriginKind(),
        interestTemplate->getScope(), interestTemplate->getInterestLifetimeMilliseconds()), onData, onTimeout, wireFormat);
   else
-    return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);  
+    return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);
 }
 
 void
@@ -125,9 +125,9 @@ Face::makeCommandInterest(Interest& interest, WireFormat& wireFormat)
     (interest, *commandKeyChain_, commandCertificateName_, wireFormat);
 }
 
-uint64_t 
+uint64_t
 Face::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed, 
+  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   return node_->registerPrefix
@@ -141,14 +141,14 @@ Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
   node_->removeRegisteredPrefix(registeredPrefixId);
 }
 
-void 
+void
 Face::processEvents()
 {
   // Just call Node's processEvents.
   node_->processEvents();
 }
 
-void 
+void
 Face::shutdown()
 {
   node_->shutdown();

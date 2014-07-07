@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,11 +46,11 @@ enum {
 };
 
 void ndn_BinaryXmlStructureDecoder_initialize(struct ndn_BinaryXmlStructureDecoder *self);
-        
+
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check
- *   self->gotElementEnd: If the end of the element which started at offset 0 is found, 
- *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-forElementEnd is 0 
+ *   self->gotElementEnd: If the end of the element which started at offset 0 is found,
+ *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-forElementEnd is 0
  *   which means you should read more into input and call again.
  * @param self pointer to the ndn_BinaryXmlStructureDecoder struct
  * @param input the input buffer. You have to pass in input each time because the buffer could be reallocated.
@@ -65,7 +65,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
  * @param self pointer to the ndn_BinaryXmlStructureDecoder struct
  * @param offset the new offset
  */
-static __inline void ndn_BinaryXmlStructureDecoder_seek(struct ndn_BinaryXmlStructureDecoder *self, size_t offset) 
+static __inline void ndn_BinaryXmlStructureDecoder_seek(struct ndn_BinaryXmlStructureDecoder *self, size_t offset)
 {
   self->offset = offset;
 }

@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -69,21 +69,21 @@ public:
    * encode the object into DER syntax tree
    * @return the encoded DER syntax tree
    */
-  ptr_lib::shared_ptr<der::DerNode> 
+  ptr_lib::shared_ptr<der::DerNode>
   toDer() const;
 
   Blob
   toDerBlob() const;
 
-  inline const OID& 
+  inline const OID&
   getOid() const { return extensionId_; }
 
-  inline const bool 
+  inline const bool
   getIsCritical() const { return isCritical_; }
 
-  inline const Blob& 
+  inline const Blob&
   getValue() const { return extensionValue_; }
-    
+
 protected:
   OID extensionId_;
   bool isCritical_;

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,8 +38,8 @@ class MemoryPrivateKeyStorage : public PrivateKeyStorage {
 public:
   /**
    * The virtual destructor
-   */    
-  virtual 
+   */
+  virtual
   ~MemoryPrivateKeyStorage();
 
   /**
@@ -49,13 +49,13 @@ public:
    * @param publicKeyDer The public key DER byte array.
    * @param publicKeyDerLength The length of publicKeyDer.
    */
-  void 
+  void
   setPublicKeyForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
+    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
      size_t publicKeyDerLength);
 
   /**
-   * @deprecated Use setPublicKeyForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, 
+   * @deprecated Use setPublicKeyForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer,
    * publicKeyDerLength).
    */
   void
@@ -72,16 +72,16 @@ public:
    * @param privateKeyDer The private key DER byte array.
    * @param privateKeyDerLength The length of privateKeyDer.
    */
-  void 
+  void
  setPrivateKeyForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer, 
+    (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer,
      size_t privateKeyDerLength);
 
   /**
-   * @deprecated Use setPrivateKeyForKeyName(keyName, KEY_TYPE_RSA, 
+   * @deprecated Use setPrivateKeyForKeyName(keyName, KEY_TYPE_RSA,
    * privateKeyDer, privateKeyDerLength).
    */
-  void 
+  void
    DEPRECATED_IN_NDN_CPP setPrivateKeyForKeyName
     (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength)
   {
@@ -97,10 +97,10 @@ public:
    * @param privateKeyDer The private key DER byte array.
    * @param privateKeyDerLength The length of privateKeyDer.
    */
-  void 
+  void
   setKeyPairForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
-     size_t publicKeyDerLength, uint8_t *privateKeyDer, 
+    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
+     size_t publicKeyDerLength, uint8_t *privateKeyDer,
      size_t privateKeyDerLength)
   {
     setPublicKeyForKeyName(keyName, keyType, publicKeyDer, publicKeyDerLength);
@@ -108,26 +108,26 @@ public:
   }
 
   /**
-   * @deprecated Use setKeyPairForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, 
+   * @deprecated Use setKeyPairForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer,
    * publicKeyDerLength, privateKeyDer, privateKeyDerLength).
    */
-  void 
+  void
   DEPRECATED_IN_NDN_CPP setKeyPairForKeyName
-    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength, 
+    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength,
      uint8_t *privateKeyDer, size_t privateKeyDerLength)
   {
     setKeyPairForKeyName
-      (keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength, privateKeyDer, 
+      (keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength, privateKeyDer,
        privateKeyDerLength);
-  } 
-  
+  }
+
   /**
    * Generate a pair of asymmetric keys.
    * @param keyName The name of the key pair.
    * @param keyType The type of the key pair, e.g. KEY_TYPE_RSA.
    * @param keySize The size of the key pair.
    */
-  virtual void 
+  virtual void
   generateKeyPair(const Name& keyName, KeyType keyType, int keySize);
 
   /**
@@ -135,9 +135,9 @@ public:
    * @param keyName The name of public key.
    * @return The public key.
    */
-  virtual ptr_lib::shared_ptr<PublicKey> 
+  virtual ptr_lib::shared_ptr<PublicKey>
   getPublicKey(const Name& keyName);
-  
+
   /**
    * Fetch the private key for keyName and sign the data, returning a signature Blob.
    * @param data Pointer to the input byte array.
@@ -145,10 +145,10 @@ public:
    * @param keyName The name of the signing key.
    * @param digestAlgorithm the digest algorithm.
    * @return The signature, or a null pointer if signing fails.
-   */  
-  virtual Blob 
+   */
+  virtual Blob
   sign(const uint8_t *data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm);
-    
+
   /**
    * Decrypt data.
    * @param keyName The name of the decrypting key.
@@ -157,7 +157,7 @@ public:
    * @param isSymmetric If true symmetric encryption is used, otherwise asymmetric decryption is used.
    * @return The decrypted data.
    */
-  virtual Blob 
+  virtual Blob
   decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric);
 
   /**
@@ -177,7 +177,7 @@ public:
    * @param keyType The type of the key, e.g. KEY_TYPE_AES.
    * @param keySize The size of the key.
    */
-  virtual void 
+  virtual void
   generateKey(const Name& keyName, KeyType keyType, int keySize);
 
   /**
@@ -187,8 +187,8 @@ public:
    * @return True if the key exists, otherwise false.
    */
   virtual bool
-  doesKeyExist(const Name& keyName, KeyClass keyClass);  
-  
+  doesKeyExist(const Name& keyName, KeyClass keyClass);
+
 private:
   /**
    * PrivateKey is a simple class to hold an RSA or EC private key.
@@ -196,21 +196,21 @@ private:
   class PrivateKey {
   public:
     PrivateKey(KeyType keyType, uint8_t *keyDer, size_t keyDerLength);
-    
+
     ~PrivateKey();
-    
+
     KeyType getKeyType() const { return keyType_; }
-    
+
     struct rsa_st* getRsaPrivateKey() const { return rsaPrivateKey_; }
 
     struct ec_key_st* getEcPrivateKey() const { return ecPrivateKey_; }
-    
+
   private:
     KeyType keyType_;
     struct rsa_st* rsaPrivateKey_;
     struct ec_key_st* ecPrivateKey_;
   };
-    
+
   std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;      /**< The map key is the keyName.toUri() */
   std::map<std::string, ptr_lib::shared_ptr<PrivateKey> > privateKeyStore_; /**< The map key is the keyName.toUri() */
 };

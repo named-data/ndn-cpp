@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,13 +26,13 @@ extern "C" {
 #endif
 
 enum {
-  ndn_BinaryXml_EXT = 0x00,   
-  ndn_BinaryXml_TAG = 0x01, 
-  ndn_BinaryXml_DTAG = 0x02, 
-  ndn_BinaryXml_ATTR = 0x03, 
-  ndn_BinaryXml_DATTR = 0x04, 
-  ndn_BinaryXml_BLOB = 0x05, 
-  ndn_BinaryXml_UDATA = 0x06, 
+  ndn_BinaryXml_EXT = 0x00,
+  ndn_BinaryXml_TAG = 0x01,
+  ndn_BinaryXml_DTAG = 0x02,
+  ndn_BinaryXml_ATTR = 0x03,
+  ndn_BinaryXml_DATTR = 0x04,
+  ndn_BinaryXml_BLOB = 0x05,
+  ndn_BinaryXml_UDATA = 0x06,
   ndn_BinaryXml_CLOSE = 0x0,
 
   ndn_BinaryXml_TT_BITS = 3,

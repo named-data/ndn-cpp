@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,36 +35,36 @@ using namespace ndn::func_lib::placeholders;
 #endif
 
 namespace ndn {
-  
+
 KeyChain::KeyChain
-  (const ptr_lib::shared_ptr<IdentityManager>& identityManager, 
+  (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
    const ptr_lib::shared_ptr<PolicyManager>& policyManager)
-: identityManager_(identityManager), policyManager_(policyManager), 
-  face_(0), maxSteps_(100)
-{
-}
-  
-KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
-: identityManager_(identityManager), 
-  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()), 
-  face_(0), maxSteps_(100)
-{
-}
-  
-KeyChain::KeyChain()
-: identityManager_(ptr_lib::make_shared<IdentityManager>()), 
-  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()), 
+: identityManager_(identityManager), policyManager_(policyManager),
   face_(0), maxSteps_(100)
 {
 }
 
-void 
+KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
+: identityManager_(identityManager),
+  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
+  face_(0), maxSteps_(100)
+{
+}
+
+KeyChain::KeyChain()
+: identityManager_(ptr_lib::make_shared<IdentityManager>()),
+  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
+  face_(0), maxSteps_(100)
+{
+}
+
+void
 KeyChain::sign(Data& data, const Name& certificateName, WireFormat& wireFormat)
 {
   identityManager_->signByCertificate(data, certificateName, wireFormat);
 }
 
-void 
+void
 KeyChain::sign
   (Interest& interest, const Name& certificateName, WireFormat& wireFormat)
 {
@@ -74,7 +74,7 @@ KeyChain::sign
   signature.getKeyLocator().setKeyName(certificateName.getPrefix(-1));
 
   // Append the encoded SignatureInfo.
-  interest.getName().append(wireFormat.encodeSignatureInfo(signature));  
+  interest.getName().append(wireFormat.encodeSignatureInfo(signature));
 
   // Append an empty signature so that the "signedPortion" is correct.
   interest.getName().append(Name::Component());
@@ -82,29 +82,29 @@ KeyChain::sign
   SignedBlob encoding = interest.wireEncode(wireFormat);
   ptr_lib::shared_ptr<Signature> signedSignature = sign
     (encoding.signedBuf(), encoding.signedSize(), certificateName);
-  
+
   // Remove the empty signature and append the real one.
   interest.setName(interest.getName().getPrefix(-1).append
     (wireFormat.encodeSignatureValue(*signedSignature)));
 }
 
-ptr_lib::shared_ptr<Signature> 
+ptr_lib::shared_ptr<Signature>
 KeyChain::sign(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
 {
   return identityManager_->signByCertificate(buffer, bufferLength, certificateName);
 }
 
-void 
+void
 KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireFormat)
 {
   Name signingCertificateName;
-  
+
   if (identityName.size() == 0) {
     Name inferredIdentity = policyManager_->inferSigningIdentity(data.getName());
     if (inferredIdentity.size() == 0)
       signingCertificateName = identityManager_->getDefaultCertificateName();
     else
-      signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(inferredIdentity);    
+      signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(inferredIdentity);
   }
   else
     signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(identityName);
@@ -115,14 +115,14 @@ KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireF
   if (!policyManager_->checkSigningPolicy(data.getName(), signingCertificateName))
     throw SecurityException("Signing Cert name does not comply with signing policy");
 
-  identityManager_->signByCertificate(data, signingCertificateName, wireFormat);  
+  identityManager_->signByCertificate(data, signingCertificateName, wireFormat);
 }
 
-ptr_lib::shared_ptr<Signature> 
+ptr_lib::shared_ptr<Signature>
 KeyChain::signByIdentity(const uint8_t* buffer, size_t bufferLength, const Name& identityName)
 {
   Name signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(identityName);
-    
+
   if (signingCertificateName.size() == 0)
     throw SecurityException("No qualified certificate name found!");
 
@@ -140,8 +140,8 @@ KeyChain::verifyData
       (data, stepCount, onVerified, onVerifyFailed);
     if (nextStep)
       face_->expressInterest
-        (*nextStep->interest_, 
-         bind(&KeyChain::onCertificateData, this, _1, _2, nextStep), 
+        (*nextStep->interest_,
+         bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
          bind(&KeyChain::onCertificateInterestTimeout, this, _1, nextStep->retry_, onVerifyFailed, data, nextStep));
   }
   else if (policyManager_->skipVerifyAndTrust(*data))
@@ -159,14 +159,14 @@ KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest,
 
 void
 KeyChain::onCertificateInterestTimeout
-  (const ptr_lib::shared_ptr<const Interest> &interest, int retry, const OnVerifyFailed& onVerifyFailed, const ptr_lib::shared_ptr<Data> &data, 
+  (const ptr_lib::shared_ptr<const Interest> &interest, int retry, const OnVerifyFailed& onVerifyFailed, const ptr_lib::shared_ptr<Data> &data,
    ptr_lib::shared_ptr<ValidationRequest> nextStep)
 {
   if (retry > 0)
     // Issue the same expressInterest as in verifyData except decrement retry.
     face_->expressInterest
-      (*interest, 
-       bind(&KeyChain::onCertificateData, this, _1, _2, nextStep), 
+      (*interest,
+       bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
        bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, onVerifyFailed, data, nextStep));
   else
     onVerifyFailed(data);

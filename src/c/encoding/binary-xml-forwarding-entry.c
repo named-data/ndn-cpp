@@ -2,7 +2,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from ForwardingEntry.js by Meki Cheraoui.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
 
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_ForwardingEntry)))
     return error;
-    
+
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUDataDTagElement
       (encoder, ndn_BinaryXml_DTag_Action, &forwardingEntry->action)))
     return error;
@@ -46,18 +46,18 @@ ndn_Error ndn_encodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
       (encoder, ndn_BinaryXml_DTag_FaceID, forwardingEntry->faceId)))
     return error;
   if ((error = ndn_BinaryXmlEncoder_writeUnsignedDecimalIntDTagElement
-      (encoder, ndn_BinaryXml_DTag_ForwardingFlags, 
+      (encoder, ndn_BinaryXml_DTag_ForwardingFlags,
        ndn_ForwardingFlags_getForwardingEntryFlags(&forwardingEntry->forwardingFlags))))
     return error;
   if ((error = ndn_BinaryXmlEncoder_writeOptionalUnsignedDecimalIntDTagElement
-      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds, 
+      (encoder, ndn_BinaryXml_DTag_FreshnessSeconds,
        ndn_ForwardingEntry_getFreshnessSeconds(forwardingEntry))))
     return error;
-  
+
   if ((error = ndn_BinaryXmlEncoder_writeElementClose(encoder)))
     return error;
-  
-  return NDN_ERROR_success;  
+
+  return NDN_ERROR_success;
 }
 
 ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forwardingEntry, struct ndn_BinaryXmlDecoder *decoder)
@@ -68,7 +68,7 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
 
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_ForwardingEntry)))
     return error;
-    
+
   if ((error = ndn_BinaryXmlDecoder_readOptionalUDataDTagElement
       (decoder, ndn_BinaryXml_DTag_Action, &forwardingEntry->action)))
     return error;
@@ -79,7 +79,7 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_FaceID, &forwardingEntry->faceId)))
     return error;
-  
+
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_ForwardingFlags, &forwardingEntryFlags)))
     return error;
@@ -88,7 +88,7 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
   else
     // This sets the default flags.
     ndn_ForwardingFlags_initialize(&forwardingEntry->forwardingFlags);
-  
+
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_FreshnessSeconds, &freshnessSeconds)))
     return error;
@@ -96,6 +96,6 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
 
   if ((error = ndn_BinaryXmlDecoder_readElementClose(decoder)))
     return error;
-  
+
   return NDN_ERROR_success;
 }

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,25 +26,25 @@
 using namespace std;
 
 namespace ndn {
-  
+
 MemoryContentCache::MemoryContentCache
   (Face* face, Milliseconds cleanupIntervalMilliseconds)
 : face_(face), cleanupIntervalMilliseconds_(cleanupIntervalMilliseconds),
   nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds)
 {
 }
-  
+
 void
 MemoryContentCache::add(const Data& data)
 {
   doCleanup();
-  
+
   if (data.getMetaInfo().getFreshnessPeriod() >= 0.0) {
     // The content will go stale, so use staleTimeCache_.
     ptr_lib::shared_ptr<const StaleTimeContent> content(new StaleTimeContent(data));
     // Insert into staleTimeCache_, sorted on content->staleTimeMilliseconds_.
     staleTimeCache_.insert
-      (std::lower_bound(staleTimeCache_.begin(), staleTimeCache_.end(), content, contentCompare_), 
+      (std::lower_bound(staleTimeCache_.begin(), staleTimeCache_.end(), content, contentCompare_),
        content);
   }
   else
@@ -53,14 +53,14 @@ MemoryContentCache::add(const Data& data)
       (ptr_lib::make_shared<const Content>(data));
 }
 
-void 
+void
 MemoryContentCache::operator()
-  (const ptr_lib::shared_ptr<const Name>& prefix, 
+  (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
    uint64_t registeredPrefixId)
 {
   doCleanup();
-  
+
   const Name::Component* selectedComponent = 0;
   Blob selectedEncoding;
   // We need to iterate over both arrays.
@@ -72,7 +72,7 @@ MemoryContentCache::operator()
     else
       // We have iterated over the first array. Get from the second.
       content = noStaleTimeCache_[i - staleTimeCache_.size()].get();
-    
+
     if (interest->matchesName(content->getName())) {
       if (interest->getChildSelector() < 0) {
         // No child selector, so send the first match that we have found.
@@ -86,12 +86,12 @@ MemoryContentCache::operator()
           component = &content->getName().get(interest->getName().size());
         else
           component = &emptyComponent_;
-        
+
         bool gotBetterMatch = false;
         if (!selectedEncoding)
           // Save the first match.
           gotBetterMatch = true;
-        else { 
+        else {
           if (interest->getChildSelector() == 0) {
             // Leftmost child.
             if (*component < *selectedComponent)
@@ -103,7 +103,7 @@ MemoryContentCache::operator()
               gotBetterMatch = true;
           }
         }
-        
+
         if (gotBetterMatch) {
           selectedComponent = component;
           selectedEncoding = content->getDataEncoding();
@@ -111,13 +111,13 @@ MemoryContentCache::operator()
       }
     }
   }
-  
+
   if (selectedEncoding)
     // We found the leftmost or rightmost child.
     transport.send(*selectedEncoding);
   else {
     // Call the onDataNotFound callback (if defined).
-    map<string, OnInterest>::iterator onDataNotFound = 
+    map<string, OnInterest>::iterator onDataNotFound =
       onDataNotFoundForPrefix_.find(prefix->toUri());
     if (onDataNotFound != onDataNotFoundForPrefix_.end() &&
         onDataNotFound->second)
@@ -134,7 +134,7 @@ MemoryContentCache::doCleanup()
     // erase the stale entries at the front, then quit.
     while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(now))
       staleTimeCache_.erase(staleTimeCache_.begin());
-    
+
     nextCleanupTime_ = now + cleanupIntervalMilliseconds_;
   }
 }
@@ -144,7 +144,7 @@ MemoryContentCache::StaleTimeContent::StaleTimeContent(const Data& data)
 : Content(data)
 {
   // Set up staleTimeMilliseconds_.
-  staleTimeMilliseconds_ = ndn_getNowMilliseconds() + 
+  staleTimeMilliseconds_ = ndn_getNowMilliseconds() +
     data.getMetaInfo().getFreshnessPeriod();
 }
 

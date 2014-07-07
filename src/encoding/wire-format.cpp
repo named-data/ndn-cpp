@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,70 +39,70 @@ WireFormat::getDefaultWireFormat()
     // NOTE: This allocates one object which we never free for the life of the application.
     defaultWireFormat_ = newInitialDefaultWireFormat();
   }
-  
+
   return defaultWireFormat_;
 }
 
-Blob 
+Blob
 WireFormat::encodeInterest
-  (const Interest& interest, size_t *signedPortionBeginOffset, 
-   size_t *signedPortionEndOffset) 
+  (const Interest& interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset)
 {
   throw logic_error("unimplemented");
 }
 
-void 
-WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength) 
+void
+WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
 {
   throw logic_error("unimplemented");
 }
 
-Blob 
-WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+Blob
+WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   throw logic_error("unimplemented");
 }
 
-void 
+void
 WireFormat::decodeData
-  (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset) 
+  (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   throw logic_error("unimplemented");
 }
 
-Blob 
-WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry) 
+Blob
+WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
 {
   throw logic_error("unimplemented");
 }
 
-void 
-WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength) 
+void
+WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
 {
   throw logic_error("unimplemented");
 }
 
-Blob 
+Blob
 WireFormat::encodeControlParameters(const ControlParameters& controlParameters)
 {
   throw logic_error("unimplemented");
 }
 
-void 
+void
 WireFormat::decodeControlParameters
-  (ControlParameters& controlParameters, const uint8_t *input, 
+  (ControlParameters& controlParameters, const uint8_t *input,
    size_t inputLength)
 {
   throw logic_error("unimplemented");
 }
 
-Blob 
+Blob
 WireFormat::encodeSignatureInfo(const Signature& signature)
 {
   throw logic_error("unimplemented");
 }
 
-Blob 
+Blob
 WireFormat::encodeSignatureValue(const Signature& signature)
 {
   throw logic_error("unimplemented");

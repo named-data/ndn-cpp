@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,11 +36,11 @@ DynamicUInt8Vector::realloc(struct ndn_DynamicUInt8Array *self, uint8_t *array, 
 {
   // Because this method is private, assume there is not a problem with upcasting.
   DynamicUInt8Vector *thisObject = (DynamicUInt8Vector *)self;
-  
+
   if (array != &thisObject->vector_->front())
     // We don't expect this to ever happen. The caller didn't pass the array from this object.
     return 0;
-  
+
   thisObject->vector_->resize(length);
   return &thisObject->vector_->front();
 }

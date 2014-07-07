@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +23,7 @@
 #include "binary-xml-decoder.h"
 #include "binary-xml-structure-decoder.h"
 
-void ndn_BinaryXmlStructureDecoder_initialize(struct ndn_BinaryXmlStructureDecoder *self) 
+void ndn_BinaryXmlStructureDecoder_initialize(struct ndn_BinaryXmlStructureDecoder *self)
 {
   self->gotElementEnd = 0;
   self->offset = 0;
@@ -41,25 +41,25 @@ static __inline void startHeader(struct ndn_BinaryXmlStructureDecoder *self)
 {
   self->headerLength = 0;
   self->useHeaderBuffer = 0;
-  self->state = ndn_BinaryXmlStructureDecoder_READ_HEADER_OR_CLOSE;    
+  self->state = ndn_BinaryXmlStructureDecoder_READ_HEADER_OR_CLOSE;
 }
 
 ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
-  (struct ndn_BinaryXmlStructureDecoder *self, uint8_t *input, size_t inputLength) 
+  (struct ndn_BinaryXmlStructureDecoder *self, uint8_t *input, size_t inputLength)
 {
   struct ndn_BinaryXmlDecoder decoder;
 
   if (self->gotElementEnd)
     // Someone is calling when we already got the end.
     return NDN_ERROR_success;
-  
+
   ndn_BinaryXmlDecoder_initialize(&decoder, input, inputLength);
-  
+
   while (1) {
     if (self->offset >= inputLength)
       // All the cases assume we have some input. Return and wait for more.
       return NDN_ERROR_success;
-    
+
     if (self->state == ndn_BinaryXmlStructureDecoder_READ_HEADER_OR_CLOSE) {
       size_t startingHeaderLength;
       unsigned int type;
@@ -77,12 +77,12 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
         }
         if (self->level < 0)
           return NDN_ERROR_findElementEnd_unexpected_close_tag;
-          
+
         // Get ready for the next header.
         startHeader(self);
         continue;
       }
-        
+
       startingHeaderLength = self->headerLength;
       while (1) {
         unsigned int headerByte;
@@ -96,7 +96,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
           self->useHeaderBuffer = 1;
           nNewBytes = self->headerLength - startingHeaderLength;
           ndn_memcpy(self->headerBuffer + startingHeaderLength, input + (self->offset - nNewBytes), nNewBytes);
-            
+
           return NDN_ERROR_success;
         }
         headerByte = (unsigned int)input[self->offset++];
@@ -105,7 +105,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
           // Break and read the header.
           break;
       }
-        
+
       if (self->useHeaderBuffer) {
         size_t nNewBytes;
         struct ndn_BinaryXmlDecoder bufferDecoder;
@@ -127,7 +127,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
         if (ndn_BinaryXmlDecoder_decodeTypeAndValue(&decoder, &type, &value))
           return NDN_ERROR_findElementEnd_cannot_read_header_type_and_value;
       }
-        
+
       // Set the next state based on the type.
       if (type == ndn_BinaryXml_DATTR)
         // We already consumed the item. READ_HEADER_OR_CLOSE again.
@@ -153,7 +153,7 @@ ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
       }
       else
         return NDN_ERROR_findElementEnd_unrecognized_header_type;
-    }  
+    }
     else if (self->state == ndn_BinaryXmlStructureDecoder_READ_BYTES) {
       size_t nRemainingBytes = inputLength - self->offset;
       if (nRemainingBytes < self->nBytesToRead) {

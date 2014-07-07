@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,7 @@ class IdentityCertificate;
 class Data;
 
 /**
- * IdentityStorage is a base class for the storage of identity, public keys and certificates. 
+ * IdentityStorage is a base class for the storage of identity, public keys and certificates.
  * Private keys are stored in PrivateKeyStorage.
  * This is an abstract base class.  A subclass must implement the methods.
  */
@@ -42,7 +42,7 @@ public:
   /**
    * The virtual Destructor.
    */
-  virtual 
+  virtual
   ~IdentityStorage() {}
 
   /**
@@ -50,7 +50,7 @@ public:
    * @param identityName The identity name.
    * @return true if the identity exists, otherwise false.
    */
-  virtual bool 
+  virtual bool
   doesIdentityExist(const Name& identityName) = 0;
 
   /**
@@ -64,7 +64,7 @@ public:
    * Revoke the identity.
    * @return true if the identity was revoked, false if not.
    */
-  virtual bool 
+  virtual bool
   revokeIdentity() = 0;
 
   /**
@@ -73,7 +73,7 @@ public:
    * @param useKsk If true, generate a KSK name, otherwise a DSK name.
    * @return The generated key name.
    */
-  Name 
+  Name
   getNewKeyName(const Name& identityName, bool useKsk);
 
   /**
@@ -81,7 +81,7 @@ public:
    * @param keyName The name of the key.
    * @return true if the key exists, otherwise false.
    */
-  virtual bool 
+  virtual bool
   doesKeyExist(const Name& keyName) = 0;
 
   /**
@@ -90,7 +90,7 @@ public:
    * @param keyType Type of the public key to be added.
    * @param publicKeyDer A blob of the public key DER to be added.
    */
-  virtual void 
+  virtual void
   addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer) = 0;
 
   /**
@@ -108,19 +108,19 @@ public:
    */
   virtual KeyType
   getKeyType(const Name& keyName) = 0;
-  
+
   /**
    * Activate a key.  If a key is marked as inactive, its private part will not be used in packet signing.
    * @param keyName name of the key
    */
-  virtual void 
+  virtual void
   activateKey(const Name& keyName) = 0;
 
   /**
    * Deactivate a key. If a key is marked as inactive, its private part will not be used in packet signing.
    * @param keyName name of the key
    */
-  virtual void 
+  virtual void
   deactivateKey(const Name& keyName) = 0;
 
   /**
@@ -135,17 +135,17 @@ public:
    * Add a certificate to the identity storage.
    * @param certificate The certificate to be added.  This makes a copy of the certificate.
    */
-  virtual void 
+  virtual void
   addCertificate(const IdentityCertificate& certificate) = 0;
 
   /**
    * Get a certificate from the identity storage.
    * @param certificateName The name of the requested certificate.
-   * @param allowAny (optional) If false, only a valid certificate will be returned, 
+   * @param allowAny (optional) If false, only a valid certificate will be returned,
    *   otherwise validity is disregarded. If omitted, allowAny is false.
    * @return The requested certificate.  If not found, return a shared_ptr with a null pointer.
    */
-  virtual ptr_lib::shared_ptr<Data> 
+  virtual ptr_lib::shared_ptr<Data>
   getCertificate(const Name &certificateName, bool allowAny = false) = 0;
 
 
@@ -154,11 +154,11 @@ public:
    *****************************************/
 
   /**
-   * Get the default identity. 
+   * Get the default identity.
    * @return The name of default identity.
    * @throw SecurityException if the default identity is not set.
    */
-  virtual Name 
+  virtual Name
   getDefaultIdentity() = 0;
 
   /**
@@ -167,27 +167,27 @@ public:
    * @return The default key name.
    * @throw SecurityException if the default key name for the identity is not set.
    */
-  virtual Name 
+  virtual Name
   getDefaultKeyNameForIdentity(const Name& identityName) = 0;
 
   /**
    * Get the default certificate name for the specified identity.
    * @param identityName The identity name.
    * @return The default certificate name.
-   * @throw SecurityException if the default key name for the identity is not 
+   * @throw SecurityException if the default key name for the identity is not
    * set or the default certificate name for the key name is not set.
    */
-  Name 
+  Name
   getDefaultCertificateNameForIdentity(const Name& identityName);
 
   /**
    * Get the default certificate name for the specified key.
    * @param keyName The key name.
    * @return The default certificate name.
-   * @throw SecurityException if the default certificate name for the key name 
+   * @throw SecurityException if the default certificate name for the key name
    * is not set.
    */
-  virtual Name 
+  virtual Name
   getDefaultCertificateNameForKey(const Name& keyName) = 0;
 
   /**
@@ -195,7 +195,7 @@ public:
    * so that getDefaultIdentity() throws an exception.
    * @param identityName The default identity name.
    */
-  virtual void 
+  virtual void
   setDefaultIdentity(const Name& identityName) = 0;
 
   /**
@@ -203,7 +203,7 @@ public:
    * @param keyName The key name.
    * @param identityNameCheck (optional) The identity name to check the keyName.
    */
-  virtual void 
+  virtual void
   setDefaultKeyNameForIdentity(const Name& keyName, const Name& identityNameCheck = Name()) = 0;
 
   /**
@@ -211,8 +211,8 @@ public:
    * @param keyName The key name.
    * @param certificateName The certificate name.
    */
-  virtual void 
-  setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName) = 0;  
+  virtual void
+  setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName) = 0;
 };
 
 }
