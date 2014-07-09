@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,9 +35,9 @@ namespace ndn {
  */
 class MetaInfo {
 public:
-  MetaInfo() 
+  MetaInfo()
   : changeCount_(0)
-  {   
+  {
     timestampMilliseconds_ = -1;
     type_ = ndn_ContentType_BLOB;
     freshnessPeriod_ = -1;
@@ -48,99 +48,99 @@ public:
    * WARNING: The resulting pointers in metaInfoStruct are invalid after a further use of this object which could reallocate memory.
    * @param metaInfoStruct a C ndn_MetaInfo struct where the name components array is already allocated.
    */
-  void 
+  void
   get(struct ndn_MetaInfo& metaInfoStruct) const;
 
   /**
    * Clear this meta info, and set the values by copying from the ndn_MetaInfo struct.
    * @param metaInfoStruct a C ndn_MetaInfo struct
    */
-  void 
+  void
   set(const struct ndn_MetaInfo& metaInfoStruct);
 
   /**
    * @deprecated Use the application-specific content to store a timestamp.
    */
-  MillisecondsSince1970 
-  DEPRECATED_IN_NDN_CPP getTimestampMilliseconds() const 
-  { 
-    return timestampMilliseconds_; 
+  MillisecondsSince1970
+  DEPRECATED_IN_NDN_CPP getTimestampMilliseconds() const
+  {
+    return timestampMilliseconds_;
   }
-  
-  ndn_ContentType 
+
+  ndn_ContentType
   getType() const { return type_; }
-  
-  Milliseconds 
+
+  Milliseconds
   getFreshnessPeriod() const { return freshnessPeriod_; }
 
   /**
    * @deprecated Use getFreshnessPeriod.
    */
-  int 
-  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const 
-  { 
-    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0); 
+  int
+  DEPRECATED_IN_NDN_CPP getFreshnessSeconds() const
+  {
+    return freshnessPeriod_ < 0 ? -1 : (int)round(freshnessPeriod_ / 1000.0);
   }
-  
+
   /**
    * Get the final block ID.
    * @return The final block ID as a Name::Component.  If the name component
    * getValue().size() is 0, then the final block ID is not specified.
    */
-  const Name::Component& 
+  const Name::Component&
   getFinalBlockID() const { return finalBlockID_; }
-  
+
   /**
    * @deprecated Use the application-specific content to store a timestamp.
    */
-  void 
+  void
   DEPRECATED_IN_NDN_CPP setTimestampMilliseconds
-    (MillisecondsSince1970 timestampMilliseconds) 
-  { 
-    timestampMilliseconds_ = timestampMilliseconds; 
-    ++changeCount_;
-  }
-  
-  void 
-  setType(ndn_ContentType type) 
-  { 
-    type_ = type; 
+    (MillisecondsSince1970 timestampMilliseconds)
+  {
+    timestampMilliseconds_ = timestampMilliseconds;
     ++changeCount_;
   }
 
-  void 
-  setFreshnessPeriod(Milliseconds freshnessPeriod) 
-  { 
-    freshnessPeriod_ = freshnessPeriod; 
+  void
+  setType(ndn_ContentType type)
+  {
+    type_ = type;
     ++changeCount_;
   }
-  
+
+  void
+  setFreshnessPeriod(Milliseconds freshnessPeriod)
+  {
+    freshnessPeriod_ = freshnessPeriod;
+    ++changeCount_;
+  }
+
   /**
    * @deprecated Use setFreshnessPeriod.
    */
-  void 
-  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds) 
-  { 
-    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0); 
+  void
+  DEPRECATED_IN_NDN_CPP setFreshnessSeconds(int freshnessSeconds)
+  {
+    setFreshnessPeriod(freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0);
   }
 
   /**
    * Set the final block ID.
-   * @param finalBlockID The final block ID as a Name::Component.  If the name 
+   * @param finalBlockID The final block ID as a Name::Component.  If the name
    * component getValue().size() is 0, then the final block ID is not specified.
    */
-  void 
-  setFinalBlockID(const Name::Component& finalBlockID) 
-  { 
-    finalBlockID_ = finalBlockID; 
+  void
+  setFinalBlockID(const Name::Component& finalBlockID)
+  {
+    finalBlockID_ = finalBlockID;
     ++changeCount_;
   }
-    
+
   /**
    * Get the change count, which is incremented each time this object is changed.
    * @return The change count.
    */
-  uint64_t 
+  uint64_t
   getChangeCount() const { return changeCount_; }
 
 private:

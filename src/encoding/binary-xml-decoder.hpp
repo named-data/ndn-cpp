@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@
 using namespace std;
 
 namespace ndn {
-  
+
 /**
  * A BinaryXmlDecoder extends a C ndn_BinaryXmlDecoder struct and wraps related functions.
  */
@@ -38,25 +38,25 @@ public:
   /**
    * Initialize the base ndn_BinaryXmlDecoder struct with the input.
    */
-  BinaryXmlDecoder(const uint8_t *input, size_t inputLength) 
+  BinaryXmlDecoder(const uint8_t *input, size_t inputLength)
   {
     ndn_BinaryXmlDecoder_initialize(this, input, inputLength);
   }
-  
+
   /**
    * Decode the header from the input starting at offset, and if it is a DTAG where the value is the expectedTag,
    * then return true, else false.  Do not update offset, including if throwing an exception.
    * @param expectedTag the expected value for DTAG
    * @return true if got the expected tag, else false
    */
-  bool 
-  peekDTag(unsigned int expectedTag) 
+  bool
+  peekDTag(unsigned int expectedTag)
   {
     int gotExpectedTag;
     ndn_Error error;
     if ((error = ndn_BinaryXmlDecoder_peekDTag(this, expectedTag, &gotExpectedTag)))
       throw runtime_error(ndn_getErrorString(error));
-    
+
     return gotExpectedTag != 0;
   }
 };

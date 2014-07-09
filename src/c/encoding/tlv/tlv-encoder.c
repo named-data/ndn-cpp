@@ -2,7 +2,7 @@
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from tlv.hpp by Alexander Afanasyev <alexander.afanasyev@ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +31,7 @@
  * @param arrayLength the length of the array
  * @return 0 for success, else an error code.
  */
-static ndn_Error 
+static ndn_Error
 writeArrayEnabled(struct ndn_TlvEncoder *self, const uint8_t *array, size_t arrayLength)
 {
   ndn_Error error;
@@ -40,7 +40,7 @@ writeArrayEnabled(struct ndn_TlvEncoder *self, const uint8_t *array, size_t arra
 
   ndn_memcpy(self->output->array + self->offset, array, arrayLength);
   self->offset += arrayLength;
-  
+
   return NDN_ERROR_success;
 }
 
@@ -48,12 +48,12 @@ ndn_Error
 ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNumber)
 {
   ndn_Error error;
-  
+
   if (varNumber < 253) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 1)))
       return error;
     self->output->array[self->offset] = (uint8_t)varNumber;
-    self->offset += 1;  
+    self->offset += 1;
   }
   else if (varNumber <= 0xffff) {
     uint16_t beValue;
@@ -63,7 +63,7 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
 
     beValue = htobe16((uint16_t)varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 2);
-    self->offset += 3;  
+    self->offset += 3;
   }
   else if (varNumber <= 0xffffffff) {
     uint32_t beValue;
@@ -73,7 +73,7 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
 
     beValue = htobe32((uint32_t)varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 4);
-    self->offset += 5;  
+    self->offset += 5;
   }
   else {
     uint64_t beValue;
@@ -83,7 +83,7 @@ ndn_TlvEncoder_writeVarNumberEnabled(struct ndn_TlvEncoder *self, uint64_t varNu
 
     beValue = htobe64(varNumber);
     ndn_memcpy(self->output->array + self->offset + 1, (uint8_t *)&beValue, 8);
-    self->offset += 9;  
+    self->offset += 9;
   }
 
   return NDN_ERROR_success;
@@ -93,12 +93,12 @@ ndn_Error
 ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint64_t value)
 {
   ndn_Error error;
-  
+
   if (value < 253) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 1)))
       return error;
     self->output->array[self->offset] = (uint8_t)value;
-    self->offset += 1;  
+    self->offset += 1;
   }
   else if (value <= 0xffff) {
     uint16_t beValue;
@@ -107,7 +107,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 
     beValue = htobe16((uint16_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 2);
-    self->offset += 2;  
+    self->offset += 2;
   }
   else if (value <= 0xffffffff) {
     uint32_t beValue;
@@ -116,7 +116,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 
     beValue = htobe32((uint32_t)value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 4);
-    self->offset += 4;  
+    self->offset += 4;
   }
   else {
     uint64_t beValue;
@@ -125,13 +125,13 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 
     beValue = htobe64(value);
     ndn_memcpy(self->output->array + self->offset, (uint8_t *)&beValue, 8);
-    self->offset += 8;  
+    self->offset += 8;
   }
 
   return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, unsigned int type, struct ndn_Blob *value)
 {
   ndn_Error error;
@@ -139,32 +139,32 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, unsigned int typ
     return error;
   if ((error = writeArrayEnabled(self, value->value, value->length)))
     return error;
-  
-  return NDN_ERROR_success;  
+
+  return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_TlvEncoder_writeNestedTlv
-  (struct ndn_TlvEncoder *self, unsigned int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder), 
+  (struct ndn_TlvEncoder *self, unsigned int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder),
    void *context, int omitZeroLength)
 {
   ndn_Error error;
   size_t valueLength;
   int originalEnableOutput = self->enableOutput;
-  
+
   // Make a first pass to get the value length by setting enableOutput = 0.
   size_t saveOffset = self->offset;
   self->enableOutput = 0;
   if ((error = writeValue(context, self)))
     return error;
   valueLength = self->offset - saveOffset;
-  
+
   if (omitZeroLength && valueLength == 0) {
     // Omit the optional TLV.
     self->enableOutput = originalEnableOutput;
     return NDN_ERROR_success;
   }
-  
+
   if (originalEnableOutput) {
     // Restore the offset and enableOutput.
     self->offset = saveOffset;
@@ -179,6 +179,6 @@ ndn_TlvEncoder_writeNestedTlv
   else
     // The output was originally disabled. Just advance offset further by the type and length.
     ndn_TlvEncoder_writeTypeAndLength(self, type, valueLength);
-  
+
   return NDN_ERROR_success;
 }

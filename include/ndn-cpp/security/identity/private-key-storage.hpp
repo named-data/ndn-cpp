@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,8 +35,8 @@ class PrivateKeyStorage {
 public:
   /**
    * The virtual destructor.
-   */    
-  virtual 
+   */
+  virtual
   ~PrivateKeyStorage() {}
 
   /**
@@ -45,7 +45,7 @@ public:
    * @param keyType The type of the key pair, e.g. KEY_TYPE_RSA.
    * @param keySize The size of the key pair.
    */
-  virtual void 
+  virtual void
   generateKeyPair(const Name& keyName, KeyType keyType = KEY_TYPE_RSA, int keySize = 2048) = 0;
 
   /**
@@ -53,9 +53,9 @@ public:
    * @param keyName The name of public key.
    * @return The public key.
    */
-  virtual ptr_lib::shared_ptr<PublicKey> 
+  virtual ptr_lib::shared_ptr<PublicKey>
   getPublicKey(const Name& keyName) = 0;
-  
+
   /**
    * Fetch the private key for keyName and sign the data, returning a signature Blob.
    * @param data Pointer to the input byte array.
@@ -63,16 +63,16 @@ public:
    * @param keyName The name of the signing key.
    * @param digestAlgorithm the digest algorithm.
    * @return The signature, or a null pointer if signing fails.
-   */  
-  virtual Blob 
+   */
+  virtual Blob
   sign(const uint8_t *data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256) = 0;
-    
-  Blob 
+
+  Blob
   sign(const Blob& data, const Name& keyName, DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256)
   {
     return sign(data.buf(), data.size(), keyName, digestAlgorithm);
   }
-  
+
   /**
    * Decrypt data.
    * @param keyName The name of the decrypting key.
@@ -81,10 +81,10 @@ public:
    * @param isSymmetric If true symmetric encryption is used, otherwise asymmetric encryption is used.
    * @return The decrypted data.
    */
-  virtual Blob 
+  virtual Blob
   decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric = false) = 0;
 
-  Blob 
+  Blob
   decrypt(const Name& keyName, const Blob& data, bool isSymmetric = false)
   {
     return decrypt(keyName, data.buf(), data.size(), isSymmetric);
@@ -113,7 +113,7 @@ public:
    * @param keyType The type of the key, e.g. KEY_TYPE_AES.
    * @param keySize The size of the key.
    */
-  virtual void 
+  virtual void
   generateKey(const Name& keyName, KeyType keyType = KEY_TYPE_AES, int keySize = 256) = 0;
 
   /**
@@ -123,7 +123,7 @@ public:
    * @return True if the key exists, otherwise false.
    */
   virtual bool
-  doesKeyExist(const Name& keyName, KeyClass keyClass) = 0;  
+  doesKeyExist(const Name& keyName, KeyClass keyClass) = 0;
 };
 
 }

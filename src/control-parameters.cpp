@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,9 +28,9 @@ using namespace std;
 
 namespace ndn {
 
-void 
+void
 ControlParameters::get
-  (struct ndn_ControlParameters& controlParametersStruct) const 
+  (struct ndn_ControlParameters& controlParametersStruct) const
 {
   name_.get(controlParametersStruct.name);
   controlParametersStruct.faceId = faceId_;
@@ -43,9 +43,9 @@ ControlParameters::get
   controlParametersStruct.expirationPeriod = expirationPeriod_;
 }
 
-void 
+void
 ControlParameters::set
-  (const struct ndn_ControlParameters& controlParametersStruct) 
+  (const struct ndn_ControlParameters& controlParametersStruct)
 {
   name_.set(controlParametersStruct.name);
   faceId_ = controlParametersStruct.faceId;

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,11 +40,11 @@ public:
   : changeCount_(0)
   {
   }
-  
+
   /**
    * Return a pointer to a new Sha256WithRsaSignature which is a copy of this signature.
    */
-  virtual ptr_lib::shared_ptr<Signature> 
+  virtual ptr_lib::shared_ptr<Signature>
   clone() const;
 
   /**
@@ -52,100 +52,100 @@ public:
    * WARNING: The resulting pointers in signatureStruct are invalid after a further use of this object which could reallocate memory.
    * @param signatureStruct a C ndn_Signature struct where the name components array is already allocated.
    */
-  virtual void 
+  virtual void
   get(struct ndn_Signature& signatureStruct) const;
 
   /**
    * Clear this signature, and set the values by copying from the ndn_Signature struct.
    * @param signatureStruct a C ndn_Signature struct
    */
-  virtual void 
+  virtual void
   set(const struct ndn_Signature& signatureStruct);
 
   /**
    * @deprecated digestAlgorithm is deprecated.
    */
-  const Blob& 
+  const Blob&
   DEPRECATED_IN_NDN_CPP getDigestAlgorithm() const { return digestAlgorithm_; }
 
   /**
-   * @deprecated Witness is deprecated. 
+   * @deprecated Witness is deprecated.
    */
-  const Blob& 
+  const Blob&
   DEPRECATED_IN_NDN_CPP getWitness() const { return witness_; }
 
-  const Blob& 
+  const Blob&
   getSignature() const { return signature_; }
-  
+
   /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
-  const PublisherPublicKeyDigest& 
+  const PublisherPublicKeyDigest&
   DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
-  
+
   /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
-  PublisherPublicKeyDigest& 
+  PublisherPublicKeyDigest&
   DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
-  
-  const KeyLocator& 
+
+  const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
-  
-  KeyLocator& 
+
+  KeyLocator&
   getKeyLocator() { return keyLocator_.get(); }
 
   /**
    * @deprecated digestAlgorithm is deprecated.
    */
-  void 
-  DEPRECATED_IN_NDN_CPP setDigestAlgorithm(const Blob& digestAlgorithm) 
-  { 
-    digestAlgorithm_ = digestAlgorithm; 
+  void
+  DEPRECATED_IN_NDN_CPP setDigestAlgorithm(const Blob& digestAlgorithm)
+  {
+    digestAlgorithm_ = digestAlgorithm;
     ++changeCount_;
   }
 
   /**
-   * @deprecated Witness is deprecated. 
+   * @deprecated Witness is deprecated.
    */
-  void 
-  DEPRECATED_IN_NDN_CPP setWitness(const Blob& witness) 
-  { 
-    witness_ = witness; 
+  void
+  DEPRECATED_IN_NDN_CPP setWitness(const Blob& witness)
+  {
+    witness_ = witness;
     ++changeCount_;
   }
 
-  void 
-  setSignature(const Blob& signature) 
-  { 
-    signature_ = signature; 
+  void
+  setSignature(const Blob& signature)
+  {
+    signature_ = signature;
     ++changeCount_;
   }
 
   /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
    */
-  void 
-  DEPRECATED_IN_NDN_CPP setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest) 
-  { 
-    publisherPublicKeyDigest_.set(publisherPublicKeyDigest); 
+  void
+  DEPRECATED_IN_NDN_CPP setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest)
+  {
+    publisherPublicKeyDigest_.set(publisherPublicKeyDigest);
     ++changeCount_;
   }
-  
-  void 
-  setKeyLocator(const KeyLocator& keyLocator) 
-  { 
-    keyLocator_.set(keyLocator); 
+
+  void
+  setKeyLocator(const KeyLocator& keyLocator)
+  {
+    keyLocator_.set(keyLocator);
     ++changeCount_;
   }
-  
+
   /**
    * Clear all the fields.
    */
-  void 
+  void
   clear()
   {
     digestAlgorithm_.reset();
@@ -160,7 +160,7 @@ public:
    * Get the change count, which is incremented each time this object (or a child object) is changed.
    * @return The change count.
    */
-  virtual uint64_t 
+  virtual uint64_t
   getChangeCount() const
   {
     // Make sure each of the checkChanged is called.
@@ -170,8 +170,8 @@ public:
       // A child object has changed, so update the change count.
       // This method can be called on a const object, but we want to be able to update the changeCount_.
       ++const_cast<Sha256WithRsaSignature*>(this)->changeCount_;
-    
-    return changeCount_;    
+
+    return changeCount_;
   }
 
 private:
@@ -179,7 +179,7 @@ private:
   /** @deprecated Witness is deprecated. */
   Blob witness_;
   Blob signature_;
-  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest, 
+  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
    * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
   ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
   ChangeCounter<KeyLocator> keyLocator_;

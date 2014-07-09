@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +44,7 @@ extern "C" {
  * A time interval represented as the number of milliseconds.
  */
 typedef double ndn_Milliseconds;
-   
+
 /**
  * The calendar time represented as the number of milliseconds since 1/1/1970.
  */

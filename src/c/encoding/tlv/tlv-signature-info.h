@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,11 +33,11 @@ extern "C" {
 /**
  * Encode signatureInfo as an NDN-TLV SignatureInfo.
  * @param signatureInfo A pointer to the ndn_Signature struct to encode.
- * @param encoder A pointer to the ndn_TlvEncoder struct which receives the 
- * encoding. 
+ * @param encoder A pointer to the ndn_TlvEncoder struct which receives the
+ * encoding.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_encodeTlvSignatureInfo
   (struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder);
 
@@ -45,11 +45,11 @@ ndn_encodeTlvSignatureInfo
  * Decode as an NDN-TLV SignatureInfo and set the fields in signatureInfo.
  * @param signatureInfo A pointer to the ndn_Signature struct to receive the
  * values.
- * @param decoder A pointer to the ndn_TlvDecoder struct which has been 
- * initialized with the buffer to decode. 
+ * @param decoder A pointer to the ndn_TlvDecoder struct which has been
+ * initialized with the buffer to decode.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_decodeTlvSignatureInfo
   (struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder);
 

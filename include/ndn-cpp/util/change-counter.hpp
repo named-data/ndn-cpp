@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,7 +43,7 @@ public:
   {
     changeCount_ = target_.getChangeCount();
   }
-  
+
   /**
    * Create a new ChangeCounter, calling the copy constructor on T with the given target.
    * This sets the local change counter to target_.getChangeCount().
@@ -54,39 +54,39 @@ public:
   {
     changeCount_ = target_.getChangeCount();
   }
-  
+
   /**
    * Get a const reference to the target object.
    * @return A const reference to the target.
    */
-  const T& 
+  const T&
   get() const { return target_; }
-  
+
   /**
    * Get a reference to the target object.  If the target is changed, then checkChanged will detect it.
    * @return A reference to the target.
    */
-  T& 
-  get() { return target_; }  
-  
+  T&
+  get() { return target_; }
+
   /**
    * Set the target to the given target.  This sets the local change counter to target.getChangeCount().
    * @param target A reference to the target object whose assignment operator is called to copy it.
    */
-  void 
+  void
   set(const T& target)
   {
     target_ = target;
     changeCount_ = target_.getChangeCount();
   }
-  
+
   /**
    * If the target's change count is different than the local change count, then update the local change count
    * and return true.  Otherwise return false, meaning that the target has not changed.  This is useful since the
    * target (or one of the target's targets) may be changed and you need to find out.
    * @return True if the change count has been updated, false if not.
    */
-  bool 
+  bool
   checkChanged() const
   {
     uint64_t targetChangeCount = target_.getChangeCount();
@@ -96,9 +96,9 @@ public:
       return true;
     }
     else
-      return false;    
+      return false;
   }
-  
+
 private:
   T target_;
   uint64_t changeCount_;
@@ -115,14 +115,14 @@ template<class T>
 class SharedPointerChangeCounter {
 public:
   /**
-   * Create a new SharedPointerChangeCounter with a default a null shared_ptr for the target.  
+   * Create a new SharedPointerChangeCounter with a default a null shared_ptr for the target.
    * This sets the local change counter to 0.
    */
   SharedPointerChangeCounter()
   {
     changeCount_ = 0;
   }
-  
+
   /**
    * Create a new SharedPointerChangeCounter with the given target.  This sets the local change counter to target_->getChangeCount().
    * @param target A new object for initializing the shared_ptr to the target.
@@ -142,19 +142,19 @@ public:
    */
   const T*
   get() const { return target_.get(); }
-  
+
   /**
    * Get a pointer to the target object.  If the target is changed, then checkChanged will detect it.
    * @return A pointer to the target.
    */
   T*
-  get() { return target_.get(); }  
-  
+  get() { return target_.get(); }
+
   /**
    * Set the shared_ptr to the target to the given value.  If target is not null, this sets the local change counter to target->getChangeCount().
    * @param target A reference to the shared_ptr to the target object whose assignment operator is called to copy the shared_ptr.
    */
-  void 
+  void
   set(const ptr_lib::shared_ptr<T>& target)
   {
     target_ = target;
@@ -163,20 +163,20 @@ public:
     else
       changeCount_ = 0;
   }
-  
+
   /**
    * If the target's change count is different than the local change count, then update the local change count
-   * and return true.  Otherwise return false, meaning that the target has not changed.  
+   * and return true.  Otherwise return false, meaning that the target has not changed.
    * However, if the shared_ptr to the target is null, return false.
    * This is useful since the target (or one of the target's targets) may be changed and you need to find out.
    * @return True if the change count has been updated, false if not.
    */
-  bool 
+  bool
   checkChanged() const
   {
     if (!target_)
       return false;
-    
+
     uint64_t targetChangeCount = target_->getChangeCount();
     if (changeCount_ != targetChangeCount) {
       // This method can be called on a const object, but we want to be able to update the changeCount_.
@@ -184,9 +184,9 @@ public:
       return true;
     }
     else
-      return false;    
+      return false;
   }
-  
+
 private:
   ptr_lib::shared_ptr<T> target_;
   uint64_t changeCount_;

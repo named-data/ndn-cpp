@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +28,7 @@
 #include "../c/encoding/binary-xml-encoder.h"
 
 namespace ndn {
-  
+
 /**
  * A BinaryXmlEncoder extends a C ndn_BinaryXmlEncoder struct and wraps related functions.
  */
@@ -38,23 +38,23 @@ public:
    * Initialize the base ndn_BinaryXmlEncoder struct with the initialLength.  Use simpleRealloc.
    * @param initialLength The initial size of the output.  If omitted, use 16.
    */
-  BinaryXmlEncoder(size_t initialLength = 16) 
+  BinaryXmlEncoder(size_t initialLength = 16)
   : output_(16)
   {
     ndn_BinaryXmlEncoder_initialize(this, &output_);
   }
-  
+
   /**
    * Resize the output vector to the correct encoding length and return.
    * @return The encoding as a shared_ptr.  Assume that the caller now owns the vector.
    */
-  const ptr_lib::shared_ptr<std::vector<uint8_t> >& 
-  getOutput() 
+  const ptr_lib::shared_ptr<std::vector<uint8_t> >&
+  getOutput()
   {
     output_.get()->resize(offset);
     return output_.get();
   }
-  
+
   DynamicUInt8Vector output_;
 };
 

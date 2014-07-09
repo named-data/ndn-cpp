@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -93,7 +93,7 @@ DerNode::decodeHeader(InputIterator& start)
   header_.push_back(type);
   type_ = static_cast<DerType>((int)type);
 
-  uint8_t sizeLen = start.ReadU8(); 
+  uint8_t sizeLen = start.ReadU8();
   // char sizeLen = start.get();
   header_.push_back(sizeLen);
 
@@ -123,7 +123,7 @@ DerNode::encode(OutputIterator& start)
   start.write((const char*)&payload_[0], payload_.size());
 }
 
-void 
+void
 DerNode::decode(InputIterator& start)
 {
   int payloadSize = decodeHeader(start);
@@ -187,7 +187,7 @@ DerComplex::DerComplex(InputIterator& start)
   size_ = DerNode::decodeHeader(start);
 
   int accSize = 0;
-  
+
   while (accSize < size_) {
     ptr_lib::shared_ptr<DerNode> nodePtr = DerNode::parse(start);
     accSize += nodePtr->getSize();
@@ -234,7 +234,7 @@ DerComplex::updateSize()
   for (; it != nodeList_.end(); it++) {
     newSize += (*it)->getSize();
   }
-  
+
   size_ = newSize;
   childChanged_ = false;
 }
@@ -318,7 +318,7 @@ DerByteString::~DerByteString()
 DerBool::DerBool(bool value)
   :DerNode(DER_BOOLEAN)
 
-{ 
+{
   char payload = (value ? 0xFF : 0x00);
   payload_.push_back(payload);
 
@@ -357,7 +357,7 @@ DerInteger::~DerInteger()
  */
 DerBitString::DerBitString(const vector<uint8_t>& blob, uint8_t paddingLen)
   :DerNode(DER_BIT_STRING)
-{     
+{
   payload_.push_back((char)paddingLen);
   payload_.insert(payload_.end(), blob.begin(), blob.end());
 
@@ -403,7 +403,7 @@ DerNull::DerNull()
 DerNull::DerNull(InputIterator& start)
   :DerNode(start)
 {}
-  
+
 DerNull::~DerNull()
 {}
 
@@ -452,7 +452,7 @@ DerOid::DerOid(const vector<int>& value)
 DerOid::DerOid(InputIterator& start)
   :DerNode(start)
 {}
-  
+
 DerOid::~DerOid()
 {}
 
@@ -462,7 +462,7 @@ DerOid::prepareEncoding(const vector<int>& value)
   ostringstream os;
 
   int firstNumber = 0;
-  
+
   if (value.size() >= 1) {
     if (0 <= value[0] && 2 >= value[0])
       firstNumber = value[0] * 40;
@@ -478,7 +478,7 @@ DerOid::prepareEncoding(const vector<int>& value)
     else
       throw DerEncodingException("second integer of oid is out of range");
   }
-  
+
   encode128(firstNumber, os);
 
   if (value.size() > 2) {
@@ -492,7 +492,7 @@ DerOid::prepareEncoding(const vector<int>& value)
 
   payload_.insert(payload_.end(), output.begin(), output.end());
 }
-  
+
 void
 DerOid::encode128(int value, ostringstream& os)
 {
@@ -515,7 +515,7 @@ DerOid::encode128(int value, ostringstream& os)
       n++;
       value >>= 7;
     }
-    
+
     os.write((char *)p, n);
   }
 }
@@ -548,7 +548,7 @@ DerSequence::DerSequence(InputIterator& start)
   :DerComplex(start)
 {}
 
-DerSequence::~DerSequence() 
+DerSequence::~DerSequence()
 {}
 
 
@@ -588,7 +588,7 @@ DerGtime::DerGtime(const MillisecondsSince1970& time)
 DerGtime::DerGtime(InputIterator& start)
   :DerNode(start)
 {}
-  
+
 DerGtime::~DerGtime()
 {}
 
@@ -598,7 +598,7 @@ string DerGtime::toIsoString(const MillisecondsSince1970& time)
   ndn_Error error;
   if ((error = ndn_toIsoString(time, isoString)))
     throw runtime_error(ndn_getErrorString(error));
-  
+
   return isoString;
 }
 
@@ -608,7 +608,7 @@ MillisecondsSince1970 DerGtime::fromIsoString(const string& isoString)
   ndn_Error error;
   if ((error = ndn_fromIsoString(isoString.c_str(), &milliseconds)))
     throw runtime_error(ndn_getErrorString(error));
-  
+
   return milliseconds;
 }
 

@@ -2,7 +2,7 @@
  * Define error codes and ndn_getErrorString to convert to a string.
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author, Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -69,7 +69,7 @@ typedef enum {
   NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type,
   NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh
 } ndn_Error;
-  
+
 /**
  * Convert the error code to its string.
  * @param error the error code

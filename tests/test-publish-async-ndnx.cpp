@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -135,16 +135,16 @@ class Echo {
 public:
   Echo(KeyChain &keyChain, const Name& certificateName)
   : keyChain_(keyChain), certificateName_(certificateName), responseCount_(0)
-  { 
+  {
   }
-  
+
   // onInterest.
   void operator()
      (const ptr_lib::shared_ptr<const Name>& prefix, const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t registeredPrefixId) 
+      uint64_t registeredPrefixId)
   {
     ++responseCount_;
-    
+
     // Make and sign a Data packet.
     Data data(interest->getName());
     string content(string("Echo ") + interest->getName().toUri());
@@ -157,7 +157,7 @@ public:
     cout << "Sent content " << content << endl;
     transport.send(*encodedData);
   }
-  
+
   // onRegisterFailed.
   void operator()(const ptr_lib::shared_ptr<const Name>& prefix)
   {
@@ -175,29 +175,29 @@ int main(int argc, char** argv)
   try {
     // The default Face will connect using a Unix socket, or to "localhost".
     Face face;
-        
+
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage(new MemoryIdentityStorage());
     ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage(new MemoryPrivateKeyStorage());
     KeyChain keyChain
       (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage), ptr_lib::shared_ptr<NoVerifyPolicyManager>(new NoVerifyPolicyManager()));
     keyChain.setFace(&face);
-    
+
     // Initialize the storage.
     Name keyName("/testname/DSK-123");
     Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
            (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
     identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
     privateKeyStorage->setKeyPairForKeyName
-      (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER, 
-       sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER, 
+      (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER,
+       sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
        sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
-   
+
     Echo echo(keyChain, certificateName);
     Name prefix("/testecho");
     cout << "Register prefix  " << prefix.toUri() << endl;
     face.registerPrefix(prefix, func_lib::ref(echo), func_lib::ref(echo));
-    
-    // The main event loop.  
+
+    // The main event loop.
     // Wait forever to receive one interest for the prefix.
     while (echo.responseCount_ < 1) {
       face.processEvents();

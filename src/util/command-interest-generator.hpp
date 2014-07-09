@@ -2,7 +2,7 @@
 /**
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from command-interest-generator.hpp by the NFD authors: https://github.com/named-data/NFD/blob/master/AUTHORS.md .
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +27,7 @@
 namespace ndn {
 
 class KeyChain;
-  
+
 /** An CommandInterestGenerator keeps track of a timestamp and generates
  * command interests according to the NFD Signed Command Interests protocol:
  * http://redmine.named-data.net/projects/nfd/wiki/Command_Interests
@@ -35,7 +35,7 @@ class KeyChain;
 class CommandInterestGenerator {
 public:
   /**
-   * Create a new CommandInterestGenerator and initialize the timestamp to 
+   * Create a new CommandInterestGenerator and initialize the timestamp to
    * now.
    */
   CommandInterestGenerator();
@@ -50,12 +50,12 @@ public:
    * @param keyChain The KeyChain for calling sign.
    * @param certificateName The certificate name of the key to use for signing.
    * @param wireFormat A WireFormat object used to encode the SignatureInfo and
-   * to encode interest name for signing. If omitted, use 
+   * to encode interest name for signing. If omitted, use
    * WireFormat getDefaultWireFormat().
    */
   void
   generate
-    (Interest& interest, KeyChain& keyChain, const Name& certificateName, 
+    (Interest& interest, KeyChain& keyChain, const Name& certificateName,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
 private:

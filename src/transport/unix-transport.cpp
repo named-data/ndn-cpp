@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,49 +32,49 @@ using namespace std;
 namespace ndn {
 
 UnixTransport::ConnectionInfo::~ConnectionInfo()
-{  
+{
 }
 
-UnixTransport::UnixTransport() 
-  : isConnected_(false), transport_(new struct ndn_UnixTransport), 
+UnixTransport::UnixTransport()
+  : isConnected_(false), transport_(new struct ndn_UnixTransport),
     elementReader_(new struct ndn_ElementReader)
 {
   ndn_UnixTransport_initialize(transport_.get());
   elementReader_->partialData.array = 0;
 }
 
-void 
+void
 UnixTransport::connect
-  (const Transport::ConnectionInfo& connectionInfo, 
+  (const Transport::ConnectionInfo& connectionInfo,
    ElementListener& elementListener)
 {
-  const UnixTransport::ConnectionInfo& unixConnectionInfo = 
+  const UnixTransport::ConnectionInfo& unixConnectionInfo =
     dynamic_cast<const UnixTransport::ConnectionInfo&>(connectionInfo);
-  
+
   ndn_Error error;
   if ((error = ndn_UnixTransport_connect
        (transport_.get(), (char *)unixConnectionInfo.getFilePath().c_str())))
-    throw runtime_error(ndn_getErrorString(error)); 
+    throw runtime_error(ndn_getErrorString(error));
 
   // TODO: This belongs in the socket listener.
   const size_t initialLength = 1000;
   // Automatically cast elementReader_ to (struct ndn_ElementListener *)
   ndn_ElementReader_initialize
-    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), 
+    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength),
      initialLength, ndn_realloc);
-  
+
   isConnected_ = true;
 }
 
-void 
+void
 UnixTransport::send(const uint8_t *data, size_t dataLength)
 {
   ndn_Error error;
   if ((error = ndn_UnixTransport_send(transport_.get(), data, dataLength)))
-    throw runtime_error(ndn_getErrorString(error));  
+    throw runtime_error(ndn_getErrorString(error));
 }
 
-void 
+void
 UnixTransport::processEvents()
 {
   // Loop until there is no more data in the receive buffer.
@@ -83,7 +83,7 @@ UnixTransport::processEvents()
     ndn_Error error;
     if ((error = ndn_UnixTransport_receiveIsReady
          (transport_.get(), &receiveIsReady)))
-      throw runtime_error(ndn_getErrorString(error));  
+      throw runtime_error(ndn_getErrorString(error));
     if (!receiveIsReady)
       return;
 
@@ -91,7 +91,7 @@ UnixTransport::processEvents()
     size_t nBytes;
     if ((error = ndn_UnixTransport_receive
          (transport_.get(), buffer, sizeof(buffer), &nBytes)))
-      throw runtime_error(ndn_getErrorString(error));  
+      throw runtime_error(ndn_getErrorString(error));
     if (nBytes == 0)
       return;
 
@@ -99,18 +99,18 @@ UnixTransport::processEvents()
   }
 }
 
-bool 
+bool
 UnixTransport::getIsConnected()
 {
   return isConnected_;
 }
 
-void 
+void
 UnixTransport::close()
 {
   ndn_Error error;
   if ((error = ndn_UnixTransport_close(transport_.get())))
-    throw runtime_error(ndn_getErrorString(error));  
+    throw runtime_error(ndn_getErrorString(error));
 }
 
 UnixTransport::~UnixTransport()

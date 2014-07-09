@@ -2,7 +2,7 @@
 /**
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from command-interest-generator.hpp by the NFD authors: https://github.com/named-data/NFD/blob/master/AUTHORS.md .
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,7 +37,7 @@ CommandInterestGenerator::CommandInterestGenerator()
 
 void
 CommandInterestGenerator::generate
-  (Interest& interest, KeyChain& keyChain, const Name& certificateName, 
+  (Interest& interest, KeyChain& keyChain, const Name& certificateName,
    WireFormat& wireFormat)
 {
   MillisecondsSince1970 timestamp = ::round(ndn_getNowMilliseconds());
@@ -48,7 +48,7 @@ CommandInterestGenerator::generate
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger((uint64_t)timestamp);
   interest.getName().append(Blob(encoder.getOutput(), false));
-  
+
   // The random value is a TLV nonNegativeInteger too, but we know it is 8 bytes,
   //   so we don't need to call the nonNegativeInteger encoder.
   uint8_t randomBuffer[8];
@@ -56,7 +56,7 @@ CommandInterestGenerator::generate
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
 
   keyChain.sign(interest, certificateName, wireFormat);
-  
+
   if (interest.getInterestLifetimeMilliseconds() < 0)
     // The caller has not set the interest lifetime, so set it here.
     interest.setInterestLifetimeMilliseconds(1000.0);

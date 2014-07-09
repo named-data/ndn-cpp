@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -66,7 +66,7 @@ Certificate::isTooEarly()
     return false;
 }
 
-bool 
+bool
 Certificate::isTooLate()
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
@@ -80,7 +80,7 @@ void
 Certificate::encode()
 {
   ptr_lib::shared_ptr<der::DerSequence> root(new der::DerSequence());
-  
+
   ptr_lib::shared_ptr<der::DerSequence> validity(new der::DerSequence());
   ptr_lib::shared_ptr<der::DerGtime> notBefore(new der::DerGtime(notBefore_));
   ptr_lib::shared_ptr<der::DerGtime> notAfter(new der::DerGtime(notAfter_));
@@ -118,7 +118,7 @@ Certificate::encode()
   getMetaInfo().setType(ndn_ContentType_KEY);
 }
 
-void 
+void
 Certificate::decode()
 {
   Blob blob = getContent();
@@ -134,14 +134,14 @@ Certificate::decode()
   node->accept(certDataVisitor, this);
 }
 
-void 
+void
 Certificate::printCertificate()
 {
   cout << "Validity:" << endl;
   cout << der::DerGtime::toIsoString(notBefore_) << endl;
   cout << der::DerGtime::toIsoString(notAfter_) << endl;
 
-  cout << "Subject Info:" << endl;  
+  cout << "Subject Info:" << endl;
   vector<CertificateSubjectDescription>::iterator it = subjectDescriptionList_.begin();
   for(; it < subjectDescriptionList_.end(); it++){
     cout << it->getOidString() << "\t" << it->getValue() << endl;

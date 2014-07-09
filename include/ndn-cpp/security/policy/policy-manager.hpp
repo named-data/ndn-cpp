@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@
 namespace ndn {
 
 class ValidationRequest;
-  
+
 /**
  * A PolicyManager is an abstract base class to represent the policy for verifying data packets.
  * You must create an object of a subclass.
@@ -47,7 +47,7 @@ public:
    * @param data The received data packet.
    * @return true if the data does not need to be verified to be trusted as valid, otherwise false.
    */
-  virtual bool 
+  virtual bool
   skipVerifyAndTrust(const Data& data) = 0;
 
   /**
@@ -69,22 +69,22 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed) = 0;
-    
+
   /**
    * Check if the signing certificate name and data name satisfy the signing policy.
    * @param dataName The name of data to be signed.
    * @param certificateName The name of signing certificate.
    * @return true if the signing certificate can be used to sign the data, otherwise false.
    */
-  virtual bool 
+  virtual bool
   checkSigningPolicy(const Name& dataName, const Name& certificateName) = 0;
-    
+
   /**
    * Infer the signing identity name according to the policy. If the signing identity cannot be inferred, return an empty name.
    * @param dataName The name of data to be signed.
-   * @return The signing identity or an empty name if cannot infer. 
+   * @return The signing identity or an empty name if cannot infer.
    */
-  virtual Name 
+  virtual Name
   inferSigningIdentity(const Name& dataName) = 0;
 };
 

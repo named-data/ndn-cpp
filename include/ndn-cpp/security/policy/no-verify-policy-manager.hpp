@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,7 +40,7 @@ public:
    * @param data The received data packet.
    * @return true.
    */
-  virtual bool 
+  virtual bool
   skipVerifyAndTrust(const Data& data);
 
   /**
@@ -62,22 +62,22 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
-    
+
   /**
    * Override to always indicate that the signing certificate name and data name satisfy the signing policy.
    * @param dataName The name of data to be signed.
    * @param certificateName The name of signing certificate.
    * @return true to indicate that the signing certificate can be used to sign the data.
    */
-  virtual bool 
+  virtual bool
   checkSigningPolicy(const Name& dataName, const Name& certificateName);
-    
+
   /**
    * Override to indicate that the signing identity cannot be inferred.
    * @param dataName The name of data to be signed.
-   * @return An empty name because cannot infer. 
+   * @return An empty name because cannot infer.
    */
-  virtual Name 
+  virtual Name
   inferSigningIdentity(const Name& dataName);
 };
 

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,50 +32,50 @@ using namespace std;
 namespace ndn {
 
 UdpTransport::ConnectionInfo::~ConnectionInfo()
-{  
+{
 }
 
-UdpTransport::UdpTransport() 
-  : isConnected_(false), transport_(new struct ndn_UdpTransport), 
+UdpTransport::UdpTransport()
+  : isConnected_(false), transport_(new struct ndn_UdpTransport),
     elementReader_(new struct ndn_ElementReader)
 {
   ndn_UdpTransport_initialize(transport_.get());
   elementReader_->partialData.array = 0;
 }
 
-void 
+void
 UdpTransport::connect
-  (const Transport::ConnectionInfo& connectionInfo, 
+  (const Transport::ConnectionInfo& connectionInfo,
    ElementListener& elementListener)
 {
-  const UdpTransport::ConnectionInfo& udpConnectionInfo = 
+  const UdpTransport::ConnectionInfo& udpConnectionInfo =
     dynamic_cast<const UdpTransport::ConnectionInfo&>(connectionInfo);
-  
+
   ndn_Error error;
   if ((error = ndn_UdpTransport_connect
-       (transport_.get(), (char *)udpConnectionInfo.getHost().c_str(), 
+       (transport_.get(), (char *)udpConnectionInfo.getHost().c_str(),
         udpConnectionInfo.getPort())))
-    throw runtime_error(ndn_getErrorString(error)); 
+    throw runtime_error(ndn_getErrorString(error));
 
   // TODO: This belongs in the socket listener.
   const size_t initialLength = 1000;
   // Automatically cast elementReader_ to (struct ndn_ElementListener *)
   ndn_ElementReader_initialize
-    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength), 
+    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength),
      initialLength, ndn_realloc);
-  
+
   isConnected_ = true;
 }
 
-void 
+void
 UdpTransport::send(const uint8_t *data, size_t dataLength)
 {
   ndn_Error error;
   if ((error = ndn_UdpTransport_send(transport_.get(), data, dataLength)))
-    throw runtime_error(ndn_getErrorString(error));  
+    throw runtime_error(ndn_getErrorString(error));
 }
 
-void 
+void
 UdpTransport::processEvents()
 {
   // Loop until there is no more data in the receive buffer.
@@ -84,7 +84,7 @@ UdpTransport::processEvents()
     ndn_Error error;
     if ((error = ndn_UdpTransport_receiveIsReady
          (transport_.get(), &receiveIsReady)))
-      throw runtime_error(ndn_getErrorString(error));  
+      throw runtime_error(ndn_getErrorString(error));
     if (!receiveIsReady)
       return;
 
@@ -92,7 +92,7 @@ UdpTransport::processEvents()
     size_t nBytes;
     if ((error = ndn_UdpTransport_receive
          (transport_.get(), buffer, sizeof(buffer), &nBytes)))
-      throw runtime_error(ndn_getErrorString(error));  
+      throw runtime_error(ndn_getErrorString(error));
     if (nBytes == 0)
       return;
 
@@ -100,18 +100,18 @@ UdpTransport::processEvents()
   }
 }
 
-bool 
+bool
 UdpTransport::getIsConnected()
 {
   return isConnected_;
 }
 
-void 
+void
 UdpTransport::close()
 {
   ndn_Error error;
   if ((error = ndn_UdpTransport_close(transport_.get())))
-    throw runtime_error(ndn_getErrorString(error));  
+    throw runtime_error(ndn_getErrorString(error));
 }
 
 UdpTransport::~UdpTransport()

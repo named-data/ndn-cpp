@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,7 +38,7 @@ struct ndn_ForwardingFlags {
   int capture;
   int local;
   int tap;
-  int captureOk;  
+  int captureOk;
 };
 
 /**
@@ -62,7 +62,7 @@ int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self
 void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *self, int forwardingEntryFlags);
 
 /**
- * Get an integer with the bits set according to the NFD forwarding flags as 
+ * Get an integer with the bits set according to the NFD forwarding flags as
  * used in the ControlParameters of the command interest.
  * @param self A pointer to the ndn_ForwardingFlags struct.
  * @return An integer with the bits set.
@@ -70,7 +70,7 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
 int ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self);
 
 /**
- * Set the flags according to the NFD forwarding flags as used in the 
+ * Set the flags according to the NFD forwarding flags as used in the
  * ControlParameters of the command interest.
  * @param self A pointer to the ndn_ForwardingFlags struct.
  * @param nfdForwardingFlags An integer with the bits set.

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,11 +29,11 @@
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
-static ndn_Error 
+static ndn_Error
 encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_MetaInfo *metaInfo = (struct ndn_MetaInfo *)context;
-  
+
   ndn_Error error;
 
   if (!((int)metaInfo->type < 0 || metaInfo->type == ndn_ContentType_BLOB)) {
@@ -51,7 +51,7 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_FreshnessPeriod, metaInfo->freshnessPeriod)))
     return error;
-  if (metaInfo->finalBlockID.value.value && 
+  if (metaInfo->finalBlockID.value.value &&
       metaInfo->finalBlockID.value.length > 0) {
     // The FinalBlockID has an inner NameComponent.
     if ((error = ndn_TlvEncoder_writeTypeAndLength
@@ -60,10 +60,10 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
       return error;
     if ((error = ndn_TlvEncoder_writeBlobTlv
          (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value)))
-      return error;    
+      return error;
   }
-    
-  return NDN_ERROR_success;  
+
+  return NDN_ERROR_success;
 }
 
 /* An DataValueContext is for passing the context to encodeDataValue so that we can include
@@ -81,16 +81,16 @@ struct DataValueContext {
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
-static ndn_Error 
+static ndn_Error
 encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
 {
   struct DataValueContext *dataValueContext = (struct DataValueContext *)context;
   struct ndn_Data *data = dataValueContext->data;
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset;
-  
+
   *dataValueContext->signedPortionBeginOffset = encoder->offset;
-  
+
   if ((error = ndn_encodeTlvName
        (&data->name, &dummyBeginOffset, &dummyEndOffset, encoder)))
     return error;
@@ -99,17 +99,17 @@ encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_Content, &data->content)))
     return error;
   if ((error = ndn_encodeTlvSignatureInfo(&data->signature, encoder)))
-    return error;  
+    return error;
 
   *dataValueContext->signedPortionEndOffset = encoder->offset;
 
   if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_SignatureValue, &data->signature.signature)))
-    return error;  
-  
-  return NDN_ERROR_success;  
+    return error;
+
+  return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_encodeTlvData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
@@ -118,7 +118,7 @@ ndn_encodeTlvData
   dataValueContext.data = data;
   dataValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   dataValueContext.signedPortionEndOffset = signedPortionEndOffset;
-  
+
   return ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Data, encodeDataValue, &dataValueContext, 0);
 }
 
@@ -139,14 +139,14 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   if ((int)metaInfo->type < 0)
     // Set to the actual value for the default.
     metaInfo->type = ndn_ContentType_BLOB;
-  
+
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))
     return error;
-  
+
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_FinalBlockId, endOffset, &gotExpectedType)))
-    return error;    
+    return error;
   if (gotExpectedType) {
     size_t finalBlockIdEndOffset;
     if ((error = ndn_TlvDecoder_readNestedTlvsStart
@@ -163,14 +163,14 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
 
   // Set fields not used by NDN-TLV to none.
   metaInfo->timestampMilliseconds = -1;
-  
+
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
 
-  return NDN_ERROR_success;    
+  return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_decodeTlvData
   (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder)
 {
@@ -178,7 +178,7 @@ ndn_decodeTlvData
   size_t endOffset;
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Data, &endOffset)))
     return error;
-    
+
   *signedPortionBeginOffset = decoder->offset;
 
   if ((error = ndn_decodeTlvName(&data->name, decoder)))
@@ -189,12 +189,12 @@ ndn_decodeTlvData
     return error;
   if ((error = ndn_decodeTlvSignatureInfo(&data->signature, decoder)))
     return error;
-  
+
   *signedPortionEndOffset = decoder->offset;
-  
+
   if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_SignatureValue, &data->signature.signature)))
-    return error;  
-      
+    return error;
+
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
 

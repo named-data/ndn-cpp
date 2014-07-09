@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +36,7 @@ extern "C" {
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder);
 
 /**
@@ -49,7 +49,7 @@ ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder);
  */
 ndn_Error
 ndn_decodeTlvKeyLocator
-  (unsigned int expectedType, struct ndn_KeyLocator *keyLocator, 
+  (unsigned int expectedType, struct ndn_KeyLocator *keyLocator,
    struct ndn_TlvDecoder *decoder);
 
 #ifdef  __cplusplus

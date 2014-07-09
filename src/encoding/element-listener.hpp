@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,20 +32,20 @@ namespace ndn {
  */
 class ElementListener : public ndn_ElementListener {
 public:
-  ElementListener() 
+  ElementListener()
   {
     ndn_ElementListener_initialize(this, staticOnReceivedElement);
   }
-  
+
   /**
    * This is called when an entire binary XML element is received.  You must extend this class to override this method.
    * @param element pointer to the binary XML element.  This buffer is only valid during this call.  If you need the data
    * later, you must copy.
    * @param elementLength length of element
    */
-  virtual void 
+  virtual void
   onReceivedElement(const uint8_t *element, size_t elementLength) = 0;
-  
+
 private:
   /**
    * Call the virtual method onReceivedElement. This is used to initialize the base ndn_ElementListener struct.
@@ -53,7 +53,7 @@ private:
    * @param element
    * @param elementLength
    */
-  static void 
+  static void
   staticOnReceivedElement(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength);
 };
 

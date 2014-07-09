@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,11 +47,11 @@ public:
    * @param data The data packet with the content to decode.
    */
   Certificate(const Data& data);
- 
+
   /**
    * The virtual destructor.
    */
-  virtual 
+  virtual
   ~Certificate();
 
   /**
@@ -64,63 +64,63 @@ public:
    * Add a subject description.
    * @param description The description to be added.
    */
-  void 
+  void
   addSubjectDescription(const CertificateSubjectDescription& description) { subjectDescriptionList_.push_back(description); }
 
-  const SubjectDescriptionList& 
+  const SubjectDescriptionList&
   getSubjectDescriptionList() const { return subjectDescriptionList_; }
-  
-  SubjectDescriptionList& 
+
+  SubjectDescriptionList&
   getSubjectDescriptionList() { return subjectDescriptionList_; }
- 
+
   /**
    * Add a certificate extension.
    * @param extension the extension to be added
    */
-  void 
+  void
   addExtension(const CertificateExtension& extension) { extensionList_.push_back(extension); }
 
   const ExtensionList&
   getExtensionList() const { return extensionList_; }
-  
+
   ExtensionList&
   getExtensionList() { return extensionList_; }
 
-  void 
+  void
   setNotBefore(const MillisecondsSince1970& notBefore) { notBefore_ = notBefore; }
 
-  MillisecondsSince1970& 
+  MillisecondsSince1970&
   getNotBefore() { return notBefore_; }
-  
-  const MillisecondsSince1970& 
+
+  const MillisecondsSince1970&
   getNotBefore() const { return notBefore_; }
 
   void
   setNotAfter(const MillisecondsSince1970& notAfter) { notAfter_ = notAfter; }
 
-  MillisecondsSince1970& 
+  MillisecondsSince1970&
   getNotAfter() { return notAfter_; }
 
-  const MillisecondsSince1970& 
+  const MillisecondsSince1970&
   getNotAfter() const { return notAfter_; }
 
   void
   setPublicKeyInfo(const PublicKey& key) { key_ = key; }
-  
-  PublicKey& 
+
+  PublicKey&
   getPublicKeyInfo() { return key_; }
 
-  const PublicKey& 
+  const PublicKey&
   getPublicKeyInfo() const { return key_; }
 
-  virtual Name 
+  virtual Name
   getPublicKeyName() const = 0;
-  
+
   /**
    * Check if the certificate is valid.
    * @return True if the current time is earlier than notBefore.
    */
-  bool 
+  bool
   isTooEarly();
 
   /**
@@ -130,7 +130,7 @@ public:
   bool
   isTooLate();
 
-  void 
+  void
   printCertificate();
 
 protected:

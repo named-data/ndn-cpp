@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 /**
- * Encode the ndn_KeyLocator struct using Binary XML.  If keyLocator->type is -1, then do nothing. 
+ * Encode the ndn_KeyLocator struct using Binary XML.  If keyLocator->type is -1, then do nothing.
  * @param keyLocator pointer to the ndn_KeyLocator struct
  * @param encoder pointer to the ndn_BinaryXmlEncoder struct
  * @return 0 for success, else an error code

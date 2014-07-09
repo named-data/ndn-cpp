@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,7 +35,7 @@ MemoryIdentityStorage::~MemoryIdentityStorage()
 {
 }
 
-bool 
+bool
 MemoryIdentityStorage::doesIdentityExist(const Name& identityName)
 {
   string identityUri = identityName.toUri();
@@ -48,11 +48,11 @@ MemoryIdentityStorage::addIdentity(const Name& identityName)
   string identityUri = identityName.toUri();
   if (find(identityStore_.begin(), identityStore_.end(), identityUri) != identityStore_.end())
     throw SecurityException("Identity already exists: " + identityUri);
-  
+
   identityStore_.push_back(identityUri);
 }
 
-bool 
+bool
 MemoryIdentityStorage::revokeIdentity()
 {
 #if 1
@@ -60,13 +60,13 @@ MemoryIdentityStorage::revokeIdentity()
 #endif
 }
 
-bool 
+bool
 MemoryIdentityStorage::doesKeyExist(const Name& keyName)
 {
   return keyStore_.find(keyName.toUri()) != keyStore_.end();
 }
 
-void 
+void
 MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer)
 {
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
@@ -76,7 +76,7 @@ MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& 
 
   if (doesKeyExist(keyName))
     throw SecurityException("a key with the same name already exists!");
-  
+
   keyStore_[keyName.toUri()] = ptr_lib::make_shared<KeyRecord>(keyType, publicKeyDer);
 }
 
@@ -87,7 +87,7 @@ MemoryIdentityStorage::getKey(const Name& keyName)
   if (record == keyStore_.end())
     // Not found.  Silently return null.
     return Blob();
-  
+
   return record->second->getKeyDer();
 }
 
@@ -97,11 +97,11 @@ MemoryIdentityStorage::getKeyType(const Name& keyName)
   map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record = keyStore_.find(keyName.toUri());
   if (record == keyStore_.end())
      throw SecurityException("Cannot get public key type because the keyName doesn't exist");
-  
+
   return record->second->getKeyType();
 }
 
-void 
+void
 MemoryIdentityStorage::activateKey(const Name& keyName)
 {
 #if 1
@@ -109,7 +109,7 @@ MemoryIdentityStorage::activateKey(const Name& keyName)
 #endif
 }
 
-void 
+void
 MemoryIdentityStorage::deactivateKey(const Name& keyName)
 {
 #if 1
@@ -123,7 +123,7 @@ MemoryIdentityStorage::doesCertificateExist(const Name& certificateName)
   return certificateStore_.find(certificateName.toUri()) != certificateStore_.end();
 }
 
-void 
+void
 MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 {
   const Name& certificateName = certificate.getName();
@@ -136,39 +136,39 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   if (doesCertificateExist(certificateName))
     throw SecurityException("Certificate has already been installed!");
 
-  // Check if the public key of certificate is the same as the key record. 
+  // Check if the public key of certificate is the same as the key record.
   Blob keyBlob = getKey(keyName);
   if (!keyBlob || (*keyBlob) != *(certificate.getPublicKeyInfo().getKeyDer()))
     throw SecurityException("Certificate does not match the public key!");
-  
+
   // Insert the certificate.
   // wireEncode returns the cached encoding if available.
   certificateStore_[certificateName.toUri()] = certificate.wireEncode();
 }
 
-ptr_lib::shared_ptr<Data> 
+ptr_lib::shared_ptr<Data>
 MemoryIdentityStorage::getCertificate(const Name& certificateName, bool allowAny)
 {
   map<string, Blob>::iterator record = certificateStore_.find(certificateName.toUri());
   if (record == certificateStore_.end())
     // Not found.  Silently return null.
     return ptr_lib::shared_ptr<Data>();
-  
+
   ptr_lib::shared_ptr<Data> data(new Data());
   data->wireDecode(*record->second);
   return data;
 }
 
-Name 
+Name
 MemoryIdentityStorage::getDefaultIdentity()
 {
   if (defaultIdentity_.size() == 0)
     throw SecurityException("MemoryIdentityStorage::getDefaultIdentity: The default identity is not defined");
-  
+
   return Name(defaultIdentity_);
 }
 
-Name 
+Name
 MemoryIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
 {
 #if 1
@@ -176,7 +176,7 @@ MemoryIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
 #endif
 }
 
-Name 
+Name
 MemoryIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 {
 #if 1
@@ -184,7 +184,7 @@ MemoryIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 #endif
 }
 
-void 
+void
 MemoryIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   string identityUri = identityName.toUri();
@@ -195,7 +195,7 @@ MemoryIdentityStorage::setDefaultIdentity(const Name& identityName)
     defaultIdentity_.clear();
 }
 
-void 
+void
 MemoryIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Name& identityNameCheck)
 {
 #if 1
@@ -203,8 +203,8 @@ MemoryIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const N
 #endif
 }
 
-void 
-MemoryIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName)  
+void
+MemoryIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName)
 {
 #if 1
   throw runtime_error("MemoryIdentityStorage::setDefaultCertificateNameForKey not implemented");

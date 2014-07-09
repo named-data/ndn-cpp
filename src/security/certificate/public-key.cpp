@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -51,18 +51,18 @@ PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
   if (keyType == KEY_TYPE_RSA) {
     RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)
-      throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");  
+      throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");
     RSA_free(publicKey);
   }
   else if (keyType == KEY_TYPE_EC) {
     EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)
-      throw UnrecognizedKeyFormatException("Error decoding EC public key DER");  
+      throw UnrecognizedKeyFormatException("Error decoding EC public key DER");
     EC_KEY_free(publicKey);
   }
   else
     throw SecurityException("PublicKey::fromDer: Unrecognized keyType");
-    
+
   return ptr_lib::shared_ptr<PublicKey>(new PublicKey(KEY_TYPE_RSA, keyDer));
 }
 
@@ -72,7 +72,7 @@ PublicKey::getDigest(DigestAlgorithm digestAlgorithm) const
   if (digestAlgorithm == DIGEST_ALGORITHM_SHA256) {
     uint8_t digest[SHA256_DIGEST_LENGTH];
     ndn_digestSha256(keyDer_.buf(), keyDer_.size(), digest);
-    
+
     return Blob(digest, sizeof(digest));
   }
   else

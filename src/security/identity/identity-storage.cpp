@@ -3,7 +3,7 @@
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,10 +35,10 @@ IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
   MillisecondsSince1970 ti = ::ndn_getNowMilliseconds();
   // Get the number of seconds.
   ostringstream oss;
-  oss << floor(ti / 1000.0);  
+  oss << floor(ti / 1000.0);
 
   string keyIdStr;
-    
+
   if (useKsk)
     keyIdStr = ("KSK-" + oss.str());
   else
@@ -52,10 +52,10 @@ IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
   return keyName;
 }
 
-Name 
+Name
 IdentityStorage::getDefaultCertificateNameForIdentity (const Name& identityName)
 {
-  Name keyName = getDefaultKeyNameForIdentity(identityName);    
+  Name keyName = getDefaultKeyNameForIdentity(identityName);
   return getDefaultCertificateNameForKey(keyName);
 }
 

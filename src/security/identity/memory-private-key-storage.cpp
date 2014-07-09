@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,24 +35,24 @@ MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 {
 }
 
-void 
+void
 MemoryPrivateKeyStorage::setPublicKeyForKeyName
-  (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer, 
+  (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
    size_t publicKeyDerLength)
 {
   publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(keyType, Blob(publicKeyDer, publicKeyDerLength));
 }
 
-void 
+void
 MemoryPrivateKeyStorage::setPrivateKeyForKeyName
-  (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer, 
+  (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer,
    size_t privateKeyDerLength)
 {
   privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<PrivateKey>
     (keyType, privateKeyDer, privateKeyDerLength);
 }
 
-void 
+void
 MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, int keySize)
 {
 #if 1
@@ -60,7 +60,7 @@ MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, i
 #endif
 }
 
-ptr_lib::shared_ptr<PublicKey> 
+ptr_lib::shared_ptr<PublicKey>
 MemoryPrivateKeyStorage::getPublicKey(const Name& keyName)
 {
   map<string, ptr_lib::shared_ptr<PublicKey> >::iterator publicKey = publicKeyStore_.find(keyName.toUri());
@@ -69,7 +69,7 @@ MemoryPrivateKeyStorage::getPublicKey(const Name& keyName)
   return publicKey->second;
 }
 
-Blob 
+Blob
 MemoryPrivateKeyStorage::sign(const uint8_t *data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm)
 {
   if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
@@ -80,29 +80,29 @@ MemoryPrivateKeyStorage::sign(const uint8_t *data, size_t dataLength, const Name
   // TODO: use RSA_size to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
   unsigned int signatureBitsLength;
-  
+
   // Find the private key and sign.
   map<string, ptr_lib::shared_ptr<PrivateKey> >::iterator privateKey = privateKeyStore_.find(keyName.toUri());
   if (privateKey == privateKeyStore_.end())
     throw SecurityException(string("MemoryPrivateKeyStorage: Cannot find private key ") + keyName.toUri());
   if (privateKey->second->getKeyType() == KEY_TYPE_RSA) {
-    if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBits, 
+    if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBits,
                   &signatureBitsLength, privateKey->second->getRsaPrivateKey()))
       throw SecurityException("Error in RSA_sign");
   }
   else if (privateKey->second->getKeyType() == KEY_TYPE_EC) {
-    if (!ECDSA_sign(NID_sha256, digest, sizeof(digest), signatureBits, 
+    if (!ECDSA_sign(NID_sha256, digest, sizeof(digest), signatureBits,
                   &signatureBitsLength, privateKey->second->getEcPrivateKey()))
       throw SecurityException("Error in RSA_sign");
   }
   else
     // We don't expect this to happen.
     throw SecurityException("Unrecognized private key type");
-  
+
   return Blob(signatureBits, (size_t)signatureBitsLength);
 }
 
-Blob 
+Blob
 MemoryPrivateKeyStorage::decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric)
 {
 #if 1
@@ -118,7 +118,7 @@ MemoryPrivateKeyStorage::encrypt(const Name& keyName, const uint8_t* data, size_
 #endif
 }
 
-void 
+void
 MemoryPrivateKeyStorage::generateKey(const Name& keyName, KeyType keyType, int keySize)
 {
 #if 1
@@ -144,7 +144,7 @@ MemoryPrivateKeyStorage::PrivateKey::PrivateKey
   keyType_ = keyType;
   rsaPrivateKey_ = 0;
   ecPrivateKey_ = 0;
-  
+
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer;
   if (keyType == KEY_TYPE_RSA) {

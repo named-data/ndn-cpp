@@ -14,7 +14,7 @@
 namespace ndn {
 
 namespace der {
-  
+
 class CertificateDataVisitor : public VoidVisitor {
   virtual void visit(DerSequence&,         ndnboost::any);
 };

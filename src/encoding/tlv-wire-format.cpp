@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,12 +27,12 @@ namespace ndn {
 #if (defined(NDN_CPP_USE_DEFAULT_TLV) || !defined(NDN_CPP_USE_DEFAULT_BINARY_XML))
 // This is declared in the WireFormat class.
 WireFormat*
-WireFormat::newInitialDefaultWireFormat() 
+WireFormat::newInitialDefaultWireFormat()
 {
   return TlvWireFormat::get();
 }
 #endif
-  
+
 TlvWireFormat* TlvWireFormat::instance_ = 0;
 
 }

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,7 +35,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       if (dataLength <= 0)
         // Wait for more data.
         return NDN_ERROR_success;
-      
+
       // The type codes for TLV Interest and Data packets are chosen to not
       //   conflict with the first byte of a binary XML packet, so we can
       //   just look at the first byte.
@@ -46,10 +46,10 @@ ndn_Error ndn_ElementReader_onReceivedData
         // Binary XML.
         self->useTlv = 0;
     }
-    
+
     if (self->useTlv) {
       // Scan the input to check if a whole TLV element has been read.
-      ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);    
+      ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);
       if ((error = ndn_TlvStructureDecoder_findElementEnd(&self->tlvStructureDecoder, data, dataLength)))
         return error;
       gotElementEnd = self->tlvStructureDecoder.gotElementEnd;
@@ -57,13 +57,13 @@ ndn_Error ndn_ElementReader_onReceivedData
     }
     else {
       // Scan the input to check if a whole binary XML element has been read.
-      ndn_BinaryXmlStructureDecoder_seek(&self->binaryXmlStructureDecoder, 0);    
+      ndn_BinaryXmlStructureDecoder_seek(&self->binaryXmlStructureDecoder, 0);
       if ((error = ndn_BinaryXmlStructureDecoder_findElementEnd(&self->binaryXmlStructureDecoder, data, dataLength)))
         return error;
       gotElementEnd = self->binaryXmlStructureDecoder.gotElementEnd;
       offset = self->binaryXmlStructureDecoder.offset;
     }
-    
+
     if (gotElementEnd) {
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
@@ -71,7 +71,7 @@ ndn_Error ndn_ElementReader_onReceivedData
         if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, offset, self->partialDataLength)))
           return error;
         self->partialDataLength += offset;
-                
+
         (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData.array, self->partialDataLength);
         // Assume we don't need to use partialData anymore until needed.
         self->usePartialData = 0;
@@ -79,7 +79,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       else
         // We are not using partialData, so just point to the input data buffer.
         (*self->elementListener->onReceivedElement)(self->elementListener, data, offset);
-        
+
       // Need to read a new object.
       data += offset;
       dataLength -= offset;
@@ -88,7 +88,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       if (dataLength == 0)
         // No more data in the packet.
         return NDN_ERROR_success;
-            
+
       // else loop back to decode.
     }
     else {
@@ -97,12 +97,12 @@ ndn_Error ndn_ElementReader_onReceivedData
         self->usePartialData = 1;
         self->partialDataLength = 0;
       }
-      
+
       if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, dataLength, self->partialDataLength)))
         return error;
       self->partialDataLength += dataLength;
-      
+
       return NDN_ERROR_success;
     }
-  }      
+  }
 }

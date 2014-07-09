@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -52,20 +52,20 @@ enum {
  * Initialize a ndn_TlvStructureDecoder struct.
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  */
-void 
+void
 ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self);
-        
+
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check
- *   self->gotElementEnd: If the end of the element which started at offset 0 is found, 
- *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-gotElementEnd is 0 
+ *   self->gotElementEnd: If the end of the element which started at offset 0 is found,
+ *   then self->gotElementEnd is 1 and self->offset is the length of the element.  Otherwise, self-gotElementEnd is 0
  *   which means you should read more into input and call again.
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  * @param input The input buffer. You have to pass in input each time because the buffer could be reallocated.
  * @param inputLength The number of bytes in input.
  * @return 0 for success, else an error code.
  */
-ndn_Error 
+ndn_Error
 ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength);
 
 /**
@@ -73,8 +73,8 @@ ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uin
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  * @param offset The new offset.
  */
-static __inline void 
-ndn_TlvStructureDecoder_seek(struct ndn_TlvStructureDecoder *self, size_t offset) 
+static __inline void
+ndn_TlvStructureDecoder_seek(struct ndn_TlvStructureDecoder *self, size_t offset)
 {
   self->offset = offset;
 }

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,14 +39,14 @@ public:
    * @param initialLength The initial size of the allocated vector.
    */
   DynamicUInt8Vector(size_t initialLength);
-  
+
   /**
    * Get the shared_ptr to the allocated vector.
-   * @return The shared_ptr to the allocated vector. 
+   * @return The shared_ptr to the allocated vector.
    */
-  ptr_lib::shared_ptr<std::vector<uint8_t> >& 
+  ptr_lib::shared_ptr<std::vector<uint8_t> >&
   get() { return vector_; }
-  
+
 private:
   /**
    * Implement the static realloc function using vector resize.
@@ -57,7 +57,7 @@ private:
    */
   static uint8_t*
   realloc(struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length);
-  
+
   ptr_lib::shared_ptr<std::vector<uint8_t> > vector_;
 };
 

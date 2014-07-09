@@ -2,7 +2,7 @@
  * Copyright (C) 2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * Derived from tlv.hpp by Alexander Afanasyev <alexander.afanasyev@ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,7 @@
 #include "../../util/endian.h"
 #include "tlv-decoder.h"
 
-ndn_Error 
+ndn_Error
 ndn_TlvDecoder_readExtendedVarNumber(struct ndn_TlvDecoder *self, unsigned int firstOctet, uint64_t *varNumber)
 {
   // This is a private function so we know firstOctet >= 253.
@@ -72,7 +72,7 @@ ndn_TlvDecoder_skipRemainingNestedTlvs
 
     if ((error = ndn_TlvDecoder_readVarNumber(self, &dummyType)))
       return error;
-    
+
     if ((error = ndn_TlvDecoder_readVarNumber(self, &lengthVarNumber)))
       return error;
     // Silently ignore if the length is larger than size_t.
@@ -80,14 +80,14 @@ ndn_TlvDecoder_skipRemainingNestedTlvs
     if (self->offset > self->inputLength)
       return NDN_ERROR_TLV_length_exceeds_buffer_length;
   }
-  
+
   if (self->offset != endOffset)
     return NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs;
 
-  return NDN_ERROR_success;  
+  return NDN_ERROR_success;
 }
 
-ndn_Error 
+ndn_Error
 ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_t length, uint64_t *value)
 {
   // This is a private function so we know length != 1.
@@ -95,7 +95,7 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
     case 2:
       if (self->offset + 2 > self->inputLength)
         return NDN_ERROR_read_past_the_end_of_the_input;
-      
+
       {
         // kind of dangerous... but should be efficient.
         uint16_t beValue = *(uint16_t *)(self->input + self->offset);
@@ -106,7 +106,7 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
     case 4:
       if (self->offset + 4 > self->inputLength)
         return NDN_ERROR_read_past_the_end_of_the_input;
-      
+
       {
         // kind of dangerous... but should be efficient.
         uint32_t beValue = *(uint32_t *)(self->input + self->offset);
@@ -117,7 +117,7 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
     case 8:
       if (self->offset + 8 > self->inputLength)
         return NDN_ERROR_read_past_the_end_of_the_input;
-      
+
       {
         // kind of dangerous... but should be efficient.
         uint64_t beValue = *(uint64_t *)(self->input + self->offset);
@@ -126,6 +126,6 @@ ndn_TlvDecoder_readExtendedNonNegativeInteger(struct ndn_TlvDecoder *self, size_
       self->offset += 8;
       return NDN_ERROR_success;
   }
-  
+
   return NDN_ERROR_Invalid_length_for_nonNegativeInteger;
 }

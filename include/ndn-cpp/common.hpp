@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -87,7 +87,7 @@ namespace ndn {
  * A time interval represented as the number of milliseconds.
  */
 typedef double Milliseconds;
-   
+
 /**
  * The calendar time represented as the number of milliseconds since 1/1/1970.
  */
@@ -99,7 +99,7 @@ typedef double MillisecondsSince1970;
  * @param arrayLength The number of bytes in array.
  * @return The hex string.
  */
-std::string 
+std::string
 toHex(const uint8_t* array, size_t arrayLength);
 
 /**
@@ -107,7 +107,7 @@ toHex(const uint8_t* array, size_t arrayLength);
  * @param array The array of bytes.
  * @return The hex string.
  */
-static inline std::string 
+static inline std::string
 toHex(const std::vector<uint8_t>& array)
 {
   return toHex(&array[0], array.size());

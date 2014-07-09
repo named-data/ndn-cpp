@@ -4,7 +4,7 @@
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * @author: Alexander Afanasyev <alexander.afanasyev@ucla.edu>
  * @author: Zhenkai Zhu <zhenkai@cs.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@ struct ndn_NameComponent;
 struct ndn_Name;
 
 namespace ndn {
-    
+
 /**
  * A Name holds an array of Name::Component and represents an NDN name.
  */
@@ -50,14 +50,14 @@ public:
      */
     Component()
     : value_((const uint8_t*)0, 0)
-    {    
+    {
     }
-  
+
     /**
      * Create a new Name::Component, copying the given value.
      * @param value The value byte array.
      */
-    Component(const std::vector<uint8_t>& value) 
+    Component(const std::vector<uint8_t>& value)
     : value_(value)
     {
     }
@@ -67,11 +67,11 @@ public:
      * @param value Pointer to the value byte array.
      * @param valueLen Length of value.
      */
-    Component(const uint8_t *value, size_t valueLen) 
+    Component(const uint8_t *value, size_t valueLen)
     : value_(value, valueLen)
     {
     }
-    
+
     /**
      * Create a new Name::Component, taking another pointer to the Blob value.
      * @param value A blob with a pointer to an immutable array.  The pointer is copied.
@@ -80,16 +80,16 @@ public:
     : value_(value)
     {
     }
-  
+
     /**
      * Set the componentStruct to point to this component, without copying any memory.
      * WARNING: The resulting pointer in componentStruct is invalid after a further use of this object which could reallocate memory.
      * @param componentStruct The C ndn_NameComponent struct to receive the pointer.
      */
-    void 
+    void
     get(struct ndn_NameComponent& componentStruct) const;
-  
-    const Blob& 
+
+    const Blob&
     getValue() const { return value_; }
 
     /**
@@ -97,7 +97,7 @@ public:
      * This also adds "..." to a value with zero or more ".".
      * @param result the string stream to write to.
      */
-    void 
+    void
     toEscapedString(std::ostringstream& result) const
     {
       Name::toEscapedString(*value_, result);
@@ -113,7 +113,7 @@ public:
     {
       return Name::toEscapedString(*value_);
     }
-    
+
     /**
      * Interpret this name component as a network-ordered number and return an integer.
      * @return The integer number.
@@ -139,7 +139,7 @@ public:
      */
     uint64_t
     toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) const;
-    
+
     /**
      * Check if this name component begins with the given prefix.
      * @param prefix The required prefix of the component.
@@ -150,7 +150,7 @@ public:
     hasPrefix(const uint8_t* prefix, size_t prefixLength) const;
 
     /**
-     * Interpret this name component as a segment number according to NDN name conventions (a network-ordered number 
+     * Interpret this name component as a segment number according to NDN name conventions (a network-ordered number
      * where the first byte is the marker 0x00).
      * @return The integer segment number.
      * @throw runtime_error If the first byte of the component is not the expected marker.
@@ -160,7 +160,7 @@ public:
     {
       return toNumberWithMarker(0x00);
     }
-    
+
     /**
      * @deprecated Use toSegment.
      */
@@ -175,7 +175,7 @@ public:
      */
     bool
     DEPRECATED_IN_NDN_CPP isFinalSegment() const { return hasPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength()); }
-    
+
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
@@ -186,7 +186,7 @@ public:
     }
 
     /**
-     * Interpret this name component as a version number according to NDN name conventions (a network-ordered number 
+     * Interpret this name component as a version number according to NDN name conventions (a network-ordered number
      * where the first byte is the marker 0xFD).  Note that this returns the exact number from the component
      * without converting it to a time representation.
      * @return The integer version number.
@@ -197,35 +197,35 @@ public:
     {
       return toNumberWithMarker(0xFD);
     }
-        
+
     /**
      * Create a component whose value is the network-ordered encoding of the number.
      * Note: if the number is zero, the result is empty.
      * @param number The number to be encoded.
      * @return The component value.
      */
-    static Component 
+    static Component
     fromNumber(uint64_t number);
-    
+
     /**
      * Create a component whose value is the marker appended with the network-ordered encoding of the number.
      * Note: if the number is zero, no bytes are used for the number - the result will have only the marker.
-     * @param number The number to be encoded.  
+     * @param number The number to be encoded.
      * @param marker The marker to use as the first byte of the component.
      * @return The component value.
      */
-    static Component 
+    static Component
     fromNumberWithMarker(uint64_t number, uint8_t marker);
-    
+
     /**
      * Create a component whose value is the prefix appended with the network-ordered encoding of the number.
      * Note: if the number is zero, no bytes are used for the number - the result will have only the prefix.
-     * @param number The number to be encoded.  
+     * @param number The number to be encoded.
      * @param prefix The prefix to use as the first bytes of the component.
      * @param prefixLength The length of prefix.
      * @return The component value.
      */
-    static Component 
+    static Component
     fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, size_t prefixLength);
 
     /**
@@ -233,13 +233,13 @@ public:
      */
     static const uint8_t*
     getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
-    
+
     /**
      * @deprecated. Use MetaInfo.getFinalBlockID.
      */
     static size_t
     getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
-    
+
     /**
      * Check if this is the same component as other.
      * @param other The other Component to compare with.
@@ -250,7 +250,7 @@ public:
     {
       return *value_ == *other.value_;
     }
-    
+
     /**
      * Check if this is the same component as other.
      * @param other The other Component to compare with.
@@ -266,7 +266,7 @@ public:
      */
     bool
     operator != (const Component& other) const { return !equals(other); }
-    
+
     /**
      * Compare this to the other Component using NDN canonical ordering.
      * @param other The other Component to compare with.
@@ -277,7 +277,7 @@ public:
      */
     int
     compare(const Component& other) const;
-  
+
     /**
      * Return true if this is less than or equal to the other Component in the NDN canonical ordering.
      * @param other The other Component to compare with.
@@ -286,7 +286,7 @@ public:
      */
     bool
     operator <= (const Component& other) const { return compare(other) <= 0; }
-  
+
     /**
      * Return true if this is less than the other Component in the NDN canonical ordering.
      * @param other The other Component to compare with.
@@ -322,8 +322,8 @@ public:
     static size_t FINAL_SEGMENT_PREFIX_LENGTH;
 
     Blob value_;
-  }; 
-  
+  };
+
   /**
    * Create a new Name with no components.
    */
@@ -331,7 +331,7 @@ public:
   : changeCount_(0)
   {
   }
-  
+
   /**
    * Create a new Name, copying the name components.
    * @param components A vector of Component
@@ -340,7 +340,7 @@ public:
   : components_(components), changeCount_(0)
   {
   }
-  
+
   /**
    * Parse the uri according to the NDN URI Scheme and create the name with the components.
    * @param uri The URI string.
@@ -350,7 +350,7 @@ public:
   {
     set(uri);
   }
-  
+
   /**
    * Parse the uri according to the NDN URI Scheme and create the name with the components.
    * @param uri The URI string.
@@ -366,36 +366,36 @@ public:
    * WARNING: The resulting pointers in nameStruct are invalid after a further use of this object which could reallocate memory.
    * @param nameStruct A C ndn_Name struct where the components array is already allocated.
    */
-  void 
+  void
   get(struct ndn_Name& nameStruct) const;
-  
+
   /**
    * Clear this name, and set the components by copying from the name struct.
    * @param nameStruct A C ndn_Name struct
    */
-  void 
+  void
   set(const struct ndn_Name& nameStruct);
-  
+
   /**
    * Parse the uri according to the NDN URI Scheme and set the name with the components.
    * @param uri The null-terminated URI string.
    */
-  void 
-  set(const char *uri);  
+  void
+  set(const char *uri);
 
   /**
    * Parse the uri according to the NDN URI Scheme and set the name with the components.
    * @param uri The URI string.
    */
-  void 
-  set(const std::string& uri) { set(uri.c_str()); }  
-  
+  void
+  set(const std::string& uri) { set(uri.c_str()); }
+
   /**
    * Append a new component, copying from value of length valueLength.
    * @return This name so that you can chain calls to append.
    */
-  Name& 
-  append(const uint8_t *value, size_t valueLength) 
+  Name&
+  append(const uint8_t *value, size_t valueLength)
   {
     return append(Component(value, valueLength));
   }
@@ -404,26 +404,26 @@ public:
    * Append a new component, copying from value.
    * @return This name so that you can chain calls to append.
    */
-  Name& 
-  append(const std::vector<uint8_t>& value) 
+  Name&
+  append(const std::vector<uint8_t>& value)
   {
     return append(Component(value));
   }
-  
-  Name& 
+
+  Name&
   append(const Blob &value)
   {
     return append(Component(value));
   }
-  
-  Name& 
+
+  Name&
   append(const Component &value)
   {
     components_.push_back(value);
     ++changeCount_;
     return *this;
   }
-  
+
   /**
    * Append the components of the given name to this name.
    * @param name The Name with components to append.
@@ -431,12 +431,12 @@ public:
    */
   Name&
   append(const Name& name);
-  
+
   /**
    * @deprecated Use append.
    */
-  Name& 
-  DEPRECATED_IN_NDN_CPP appendComponent(const uint8_t *value, size_t valueLength) 
+  Name&
+  DEPRECATED_IN_NDN_CPP appendComponent(const uint8_t *value, size_t valueLength)
   {
     return append(value, valueLength);
   }
@@ -444,16 +444,16 @@ public:
   /**
    * @deprecated Use append.
    */
-  Name& 
-  DEPRECATED_IN_NDN_CPP appendComponent(const std::vector<uint8_t>& value) 
+  Name&
+  DEPRECATED_IN_NDN_CPP appendComponent(const std::vector<uint8_t>& value)
   {
     return append(value);
   }
-  
+
   /**
    * @deprecated Use append.
    */
-  Name& 
+  Name&
   DEPRECATED_IN_NDN_CPP appendComponent(const Blob &value)
   {
     return append(value);
@@ -462,8 +462,8 @@ public:
   /**
    * @deprecated Use append.
    */
-  Name& 
-  DEPRECATED_IN_NDN_CPP addComponent(const uint8_t *value, size_t valueLength) 
+  Name&
+  DEPRECATED_IN_NDN_CPP addComponent(const uint8_t *value, size_t valueLength)
   {
     return append(value, valueLength);
   }
@@ -471,42 +471,42 @@ public:
   /**
    * @deprecated Use append.
    */
-  Name& 
-  DEPRECATED_IN_NDN_CPP addComponent(const std::vector<uint8_t>& value) 
+  Name&
+  DEPRECATED_IN_NDN_CPP addComponent(const std::vector<uint8_t>& value)
   {
     return append(value);
   }
-  
+
   /**
    * @deprecated Use append.
    */
-  Name& 
+  Name&
   DEPRECATED_IN_NDN_CPP addComponent(const Blob &value)
   {
     return append(value);
   }
-  
+
   /**
    * Clear all the components.
    */
-  void 
+  void
   clear() {
     components_.clear();
     ++changeCount_;
   }
-  
+
   /**
    * @deprecated use size().
    */
-  size_t 
+  size_t
   DEPRECATED_IN_NDN_CPP getComponentCount() const { return size(); }
-  
+
   /**
    * @deprecated Use get(i).
    */
-  const Component& 
+  const Component&
   DEPRECATED_IN_NDN_CPP getComponent(size_t i) const { return get(i); }
-  
+
   /**
    * Get a new name, constructed as a subset of components.
    * @param iStartComponent The index if the first component to get.
@@ -523,7 +523,7 @@ public:
    */
   Name
   getSubName(size_t iStartComponent) const;
-  
+
   /**
    * Return a new Name with the first nComponents components of this Name.
    * @param nComponents The number of prefix components.  If nComponents is -N then return the prefix up
@@ -538,19 +538,19 @@ public:
     else
       return getSubName(0, nComponents);
   }
-  
+
   /**
    * Encode this name as a URI.
    * @return The encoded URI.
    */
-  std::string 
+  std::string
   toUri() const;
-  
+
   /**
    * @deprecated Use toUri().
    */
-  std::string 
-  DEPRECATED_IN_NDN_CPP to_uri() const 
+  std::string
+  DEPRECATED_IN_NDN_CPP to_uri() const
   {
     return toUri();
   }
@@ -559,8 +559,8 @@ public:
    * Append a component with the encoded segment number.
    * @param segment The segment number.
    * @return This name so that you can chain calls to append.
-   */  
-  Name& 
+   */
+  Name&
   appendSegment(uint64_t segment)
   {
     return append(Component::fromNumberWithMarker(segment, 0x00));
@@ -569,25 +569,25 @@ public:
   /**
    * @deprecated. Use MetaInfo.setFinalBlockID.
    */
-  Name& 
+  Name&
   DEPRECATED_IN_NDN_CPP appendFinalSegment(uint64_t segment)
   {
     return append(Component::fromNumberWithPrefix
       (segment, Component::getFinalSegmentPrefix(), Component::getFinalSegmentPrefixLength()));
   }
-  
+
   /**
    * Append a component with the encoded version number.
    * Note that this encodes the exact value of version without converting from a time representation.
    * @param version The version number.
    * @return This name so that you can chain calls to append.
-   */  
-  Name& 
+   */
+  Name&
   appendVersion(uint64_t version)
   {
     return append(Component::fromNumberWithMarker(version, 0xFD));
   }
-  
+
   /**
    * Check if this name has the same component count and components as the given name.
    * @param name The Name to check.
@@ -595,45 +595,45 @@ public:
    */
   bool
   equals(const Name& name) const;
-  
+
   /**
    * Check if the N components of this name are the same as the first N components of the given name.
    * @param name The Name to check.
    * @return true if this matches the given name, otherwise false.  This always returns true if this name is empty.
    */
-  bool 
+  bool
   match(const Name& name) const;
-  
+
   /**
    * Make a Blob value by decoding the escapedString between beginOffset and endOffset according to the NDN URI Scheme.
-   * If the escaped string is "", "." or ".." then return a Blob with a null pointer, 
+   * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
    * @param escapedString The escaped string.  It does not need to be null-terminated because we only scan to endOffset.
    * @param beginOffset The offset in escapedString of the beginning of the portion to decode.
    * @param endOffset The offset in escapedString of the end of the portion to decode.
    * @return The Blob value. If the escapedString is not a valid escaped component, then the Blob is a null pointer.
    */
-  static Blob 
+  static Blob
   fromEscapedString(const char *escapedString, size_t beginOffset, size_t endOffset);
 
   /**
    * Make a Blob value by decoding the escapedString according to the NDN URI Scheme.
-   * If the escaped string is "", "." or ".." then return a Blob with a null pointer, 
+   * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
    * @param escapedString The null-terminated escaped string.
    * @return The Blob value. If the escapedString is not a valid escaped component, then the Blob is a null pointer.
    */
-  static Blob 
+  static Blob
   fromEscapedString(const char *escapedString);
 
   /**
    * Make a Blob value by decoding the escapedString according to the NDN URI Scheme.
-   * If the escaped string is "", "." or ".." then return a Blob with a null pointer, 
+   * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
    * @param escapedString The escaped string.
    * @return The Blob value. If the escapedString is not a valid escaped component, then the Blob is a null pointer.
    */
-  static Blob 
+  static Blob
   fromEscapedString(const std::string& escapedString) { return fromEscapedString(escapedString.c_str()); }
 
   /**
@@ -642,7 +642,7 @@ public:
    * @param value the buffer with the value to escape
    * @param result the string stream to write to.
    */
-  static void 
+  static void
   toEscapedString(const std::vector<uint8_t>& value, std::ostringstream& result);
 
   /**
@@ -657,12 +657,12 @@ public:
   //
   // vector equivalent interface.
   //
-  
+
   /**
    * Get the number of components.
    * @return The number of components.
    */
-  size_t 
+  size_t
   size() const { return components_.size(); }
 
   /**
@@ -672,24 +672,24 @@ public:
    * @return The name component at the index.
    * @throw runtime_error If index is out of range.
    */
-  const Component& 
+  const Component&
   get(int i) const;
-    
+
   /**
    * Get the change count, which is incremented each time this object is changed.
    * @return The change count.
    */
-  uint64_t 
+  uint64_t
   getChangeCount() const { return changeCount_; }
-  
+
   /**
-   * Compare this to the other Name using NDN canonical ordering.  If the first components of each name are not equal, 
+   * Compare this to the other Name using NDN canonical ordering.  If the first components of each name are not equal,
    * this returns -1 if the first comes before the second using the NDN canonical ordering for name components, or 1 if it comes after.
    * If they are equal, this compares the second components of each name, etc.  If both names are the same up to
-   * the size of the shorter name, this returns -1 if the first name is shorter than the second or 1 if it is longer.  
+   * the size of the shorter name, this returns -1 if the first name is shorter than the second or 1 if it is longer.
    * For example, std::sort gives: /a/b/d /a/b/cc /c /c/a /bb .  This is intuitive because all names
-   * with the prefix /a are next to each other.  But it may be also be counter-intuitive because /c comes before /bb 
-   * according to NDN canonical ordering since it is shorter.  
+   * with the prefix /a are next to each other.  But it may be also be counter-intuitive because /c comes before /bb
+   * according to NDN canonical ordering since it is shorter.
    * @param other The other Name to compare with.
    * @return 0 If they compare equal, -1 if *this comes before other in the canonical ordering, or
    * 1 if *this comes after other in the canonical ordering.
@@ -714,7 +714,7 @@ public:
   {
     append(component);
   }
-  
+
   /**
    * Check if this name has the same component count and components as the given name.
    * @param name The Name to check.
@@ -730,7 +730,7 @@ public:
    */
   bool
   operator != (const Name &name) const { return !equals(name); }
-  
+
   /**
    * Return true if this is less than or equal to the other Name in the NDN canonical ordering.
    * @param other The other Name to compare with.
@@ -772,14 +772,14 @@ public:
    */
   static bool
   DEPRECATED_IN_NDN_CPP breadthFirstLess(const Name& name1, const Name& name2) { return name1 < name2; }
-  
+
   /**
    * @deprecated Not needed since Name defines operator < .
    */
   struct BreadthFirstLess {
     bool operator() (const Name& name1, const Name& name2) const { return name1 < name2; }
   };
-  
+
   //
   // Iterator interface to name components.
   //
@@ -815,7 +815,7 @@ public:
 private:
   std::vector<Component> components_;
   uint64_t changeCount_;
-};  
+};
 
 inline std::ostream&
 operator << (std::ostream& os, const Name& name)
