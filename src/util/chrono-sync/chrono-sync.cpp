@@ -353,17 +353,22 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
   //_LOG_DEBUG("initial sync timeout");
   //_LOG_DEBUG("no other people");
-  digest_tree_.update(chat_prefix_, session_, 0);
   ++usrseq_;
-  initialChat_(usrseq_);
+  if (usrseq_ != 0)
+    // Since there were no other users, we expect sequence no 0.
+    throw runtime_error("usrseq_ is not the expected value of 0 for first use.");
+
   Sync::SyncStateMsg content_t;
   Sync::SyncState* content = content_t.add_ss();
   content->set_name(chat_prefix_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
   content->mutable_seqno()->set_seq(usrseq_);
   content->mutable_seqno()->set_session(session_);
-
+  update(content_t.ss());
   addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
+
+  initialChat_(usrseq_);
+
   Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
