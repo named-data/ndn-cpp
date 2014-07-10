@@ -38,20 +38,20 @@ public:
   public:
     /**
      * Create a new DigestTree::Node with the given fields and compute the digest.
-     * @param prefix_name
+     * @param namePrefix
      * @param seqno_seq
      * @param seqno_session
      */
     Node
-      (const std::string& prefix_name, int seqno_seq, int seqno_session)
-    : prefix_name_(prefix_name), seqno_seq_(seqno_seq),
+      (const std::string& namePrefix, int seqno_seq, int seqno_session)
+    : namePrefix_(namePrefix), seqno_seq_(seqno_seq),
       seqno_session_(seqno_session)
     {
       recomputeDigest();
     }
 
     const std::string&
-    getPrefixName() const { return prefix_name_; }
+    getNamePrefix() const { return namePrefix_; }
 
     int
     getSequenceNo() const { return seqno_seq_; }
@@ -78,7 +78,7 @@ public:
     }
 
     /**
-     * Compare shared_ptrs to Node based on prefix_name_ and seqno_session_.
+     * Compare shared_ptrs to Node based on namePrefix_ and seqno_session_.
      */
     class Compare {
     public:
@@ -87,7 +87,7 @@ public:
         (const ptr_lib::shared_ptr<const Node>& node1,
          const ptr_lib::shared_ptr<const Node>& node2) const
       {
-        int nameComparison = node1->prefix_name_.compare(node2->prefix_name_);
+        int nameComparison = node1->namePrefix_.compare(node2->namePrefix_);
         if (nameComparison != 0)
           return nameComparison;
 
@@ -110,7 +110,7 @@ public:
     static void
     int32ToLittleEndian(uint32_t value, uint8_t* result);
 
-    std::string prefix_name_;
+    std::string namePrefix_;
     int seqno_seq_;
     int seqno_session_;
     std::string digest_;
@@ -118,19 +118,19 @@ public:
 
   /**
    * Update the digest tree and recompute the root digest.  If the combination
-   * of prefixName and sessionNo already exists in the tree then update its
+   * of namePrefix and sessionNo already exists in the tree then update its
    * sequenceNo (only if the given sequenceNo is newer), otherwise add a new node.
-   * @param prefixName The prefix name.
+   * @param namePrefix The name prefix.
    * @param sessionNo The session number.
    * @param sequenceNo The new sequence number.
    * @return True if the digest tree is updated, false if not (because the
    * given sequenceNo is not newer than the existing sequence number).
    */
   bool
-  update(const std::string& prefixName, int sessionNo, int sequenceNo);
+  update(const std::string& namePrefix, int sessionNo, int sequenceNo);
 
   int
-  find(const std::string& prefixName, int sessionNo) const;
+  find(const std::string& namePrefix, int sessionNo) const;
 
   size_t
   size() const { return digestnode_.size(); }
