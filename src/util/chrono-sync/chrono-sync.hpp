@@ -137,12 +137,13 @@ public:
     digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>(digest, data));
   }
 
+  int
+  getFlag() const { return flag_; }
+
   // TODO: Make private.
   int usrseq_;
   std::string prefix_;
-  int session_;
   std::string chat_prefix_;
-  int flag_; //The will not display the old chatmsg on the screen if the flag is 1
 
 private:
   Transport& transport_;
@@ -155,6 +156,8 @@ private:
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   DigestTree digest_tree_;
   std::string chatroom_;
+  int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
+  int session_;
 };
 
 }

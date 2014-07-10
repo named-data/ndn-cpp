@@ -221,7 +221,7 @@ Chat::onData
 #if 0 // TODO: Set the alive timeout.
     setTimeout(function(){self.alive(seqno,name,session,prefix);},120000);
 #endif
-    if (content.type() == 0 && ChronoChat::sync->flag_ == 0 && content.from() != ChronoChat::screen_name) {
+    if (content.type() == 0 && ChronoChat::sync->getFlag() == 0 && content.from() != ChronoChat::screen_name) {
 #if 0 // TODO: Show the message.
       // The display on the screen will not display old data.
       var escaped_msg = $('<div/>').text(content.data).html();  // encode special html characters to avoid script injection
