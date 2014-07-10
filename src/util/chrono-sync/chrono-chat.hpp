@@ -57,7 +57,6 @@ public:
   static std::string chatroom;
   static ChronoSync* sync;
   static std::string chat_prefix;
-  static std::string prefix_name;
   static Milliseconds sync_lifetime;
 };
 

@@ -198,7 +198,6 @@ ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
   ChronoChat::usrname = tempStream.str();
   ChronoChat::chatroom = chatRoom;
 
-  ChronoChat::prefix_name = Chat::getRandomString();
   ChronoChat::transport.reset(new TcpTransport());
   ChronoChat::face.reset
     (new Face(ChronoChat::transport,
@@ -256,7 +255,8 @@ ChronoChat::prefixData
   //_LOG_DEBUG("name " + co->getName().toUri());
   string localPrefix((const char*)co->getContent().buf(), co->getContent().size());
   trim(localPrefix);
-  ChronoChat::chat_prefix = localPrefix + "/" + ChronoChat::chatroom + "/" + ChronoChat::prefix_name;
+  // This should only be called once, so get the random string here.
+  ChronoChat::chat_prefix = localPrefix + "/" + ChronoChat::chatroom + "/" + Chat::getRandomString();
   ChronoChat::sync->chat_prefix_ = chat_prefix;
 
   Name n1(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/");
@@ -305,7 +305,6 @@ Chat* ChronoChat::chat = 0;
 string ChronoChat::chatroom;
 ChronoSync* ChronoChat::sync = 0;
 string ChronoChat::chat_prefix;
-string ChronoChat::prefix_name;
 Milliseconds ChronoChat::sync_lifetime = 5000.0;
 
 }
