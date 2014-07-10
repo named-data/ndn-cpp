@@ -438,7 +438,7 @@ Chat::alive
   string nameAndSession = tempStream.str();
   vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
   if (index_n != -1 && n != roster_.end()) {
-    int seq = ChronoChat::sync->digest_tree_.get(index_n).getSequence();
+    int seq = ChronoChat::sync->digest_tree_.get(index_n).getSequenceNo();
     if (temp_seq == seq){
       roster_.erase(n);
       //_LOG_DEBUG(name + " leave");

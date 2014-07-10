@@ -127,8 +127,8 @@ ChronoSync::processRecoveryInst
       Sync::SyncState* content = content_t.add_ss();
       content->set_name(digest_tree_.get(i).getPrefixName());
       content->set_type(Sync::SyncState_ActionType_UPDATE);
-      content->mutable_seqno()->set_seq(digest_tree_.get(i).getSequence());
-      content->mutable_seqno()->set_session(digest_tree_.get(i).getSession());
+      content->mutable_seqno()->set_seq(digest_tree_.get(i).getSequenceNo());
+      content->mutable_seqno()->set_session(digest_tree_.get(i).getSessionNo());
     }
 
     if (content_t.ss_size() != 0) {

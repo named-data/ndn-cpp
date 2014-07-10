@@ -52,10 +52,10 @@ public:
     getPrefixName() const { return prefix_name_; }
 
     int
-    getSequence() const { return seqno_seq_; }
+    getSequenceNo() const { return seqno_seq_; }
 
     int
-    getSession() const { return seqno_session_; }
+    getSessionNo() const { return seqno_session_; }
 
   private:
     friend class DigestTree;
