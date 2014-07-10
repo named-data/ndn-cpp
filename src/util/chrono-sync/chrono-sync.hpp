@@ -73,6 +73,23 @@ public:
   int
   logfind(const std::string& digest);
 
+  /**
+   * Get the digest tree for read-only.
+   * @return A const reference to the digest tree.
+   */
+  const DigestTree&
+  getDigestTree() const { return digest_tree_; }
+
+  /**
+   * Update the digest tree with the messages in content.
+   * @param content The sync state messages.
+   */
+  void
+  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
+  {
+    digest_tree_.update(content, *this);
+  }
+
   // Process Sync Interest.
   void
   onInterest
@@ -128,21 +145,23 @@ public:
   }
 
   // TODO: Make private.
+  int usrseq_;
+  std::string prefix_;
+  int session_;
+  std::string chat_prefix_;
+  int flag_; //The will not display the old chatmsg on the screen if the flag is 1
+
+private:
   Transport& transport_;
   Face& face_;
   KeyChain& keyChain_;
   Name certificateName_;
   Milliseconds sync_lifetime_;
-  DigestTree digest_tree_;
-  std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
-  int usrseq_;
   SendChatInterest sendChatInterest_;
   InitialChat initialChat_;
-  std::string prefix_;
+  std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
+  DigestTree digest_tree_;
   std::string chatroom_;
-  int session_;
-  std::string chat_prefix_;
-  int flag_; //The will not display the old chatmsg on the screen if the flag is 1
 };
 
 }
