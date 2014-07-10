@@ -32,7 +32,7 @@ int
 ChronoSync::logfind(const std::string& digest)
 {
   for (size_t i = 0; i < digest_log_.size(); ++i) {
-    if (digest == digest_log_[i]->digest_)
+    if (digest == digest_log_[i]->getDigest())
       return i;
   }
 
@@ -174,8 +174,8 @@ ChronoSync::processSyncInst
   vector<int> data_seq;
   vector<int> data_ses;
   for (size_t j = index + 1; j < digest_log_.size(); ++j) {
-    google::protobuf::RepeatedPtrField<Sync::SyncState>& temp =
-      *digest_log_[j]->data_;
+    const google::protobuf::RepeatedPtrField<Sync::SyncState>& temp =
+      digest_log_[j]->getData();
     for (size_t i = 0; i < temp.size(); ++i) {
       if (temp.Get(i).type() != 0)
         continue;

@@ -57,7 +57,13 @@ public:
       (const std::string& digest,
        const google::protobuf::RepeatedPtrField<Sync::SyncState>& data);
 
-    // TODO: Make private.
+    const std::string&
+    getDigest() const { return digest_; }
+
+    const google::protobuf::RepeatedPtrField<Sync::SyncState>&
+    getData() const { return *data_; }
+
+  private:
     std::string digest_;
     ptr_lib::shared_ptr<google::protobuf::RepeatedPtrField<Sync::SyncState> > data_;
   };
