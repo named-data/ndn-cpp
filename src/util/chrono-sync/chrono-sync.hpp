@@ -27,11 +27,7 @@
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include "digest-tree.hpp"
-#if 0
-#include "sync-state.pb.h"
-#endif
 
-namespace google { namespace protobuf { class Message; } }
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
 namespace Sync { class SyncState; }
 
@@ -85,10 +81,7 @@ public:
    * @param content The sync state messages.
    */
   void
-  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
-  {
-    digest_tree_.update(content, *this);
-  }
+  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
   // Process Sync Interest.
   void

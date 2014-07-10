@@ -125,14 +125,21 @@ public:
   void
   initial(ChronoSync& self);
 
-  // Update the digest_tree when we get some new data.
-  void
-  update
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
-     ChronoSync& self);
+  /**
+   * Update the digest tree and recompute the root digest.  If the combination
+   * of prefixName and sessionNo already exists in the tree then update its
+   * sequenceNo (only if the given sequenceNo is newer), otherwise add a new node.
+   * @param prefixName The prefix name.
+   * @param sessionNo The session number.
+   * @param sequenceNo The new sequence number.
+   * @return True if the digest tree is updated, false if not (because the
+   * given sequenceNo is not newer than the existing sequence number).
+   */
+  bool
+  update(const std::string& prefixName, int sessionNo, int sequenceNo);
 
   int
-  find(const std::string& name, int session) const;
+  find(const std::string& prefixName, int sessionNo) const;
 
   size_t
   size() const { return digestnode_.size(); }

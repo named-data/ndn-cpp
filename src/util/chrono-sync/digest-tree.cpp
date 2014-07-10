@@ -85,48 +85,34 @@ DigestTree::initial(ChronoSync& self)
 #endif
 }
 
-void
-DigestTree::update
-  (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
-   ChronoSync& self)
+bool
+DigestTree::update(const std::string& prefixName, int sessionNo, int sequenceNo)
 {
-  for (size_t i = 0; i < content.size(); ++i) {
-    if (content.Get(i).type() == 0) {
-      int n_index = find(content.Get(i).name(), content.Get(i).seqno().session());
-      _LOG_DEBUG(content.Get(i).name() << ", " << content.Get(i).seqno().session());
-      _LOG_DEBUG("DigestTree::update session " << content.Get(i).seqno().session() << ", n_index " << n_index);
-      if (n_index >= 0) {
-        //only update the newer status
-        if (digestnode_[n_index]->getSequenceNo() < content.Get(i).seqno().seq()) {
-          if (self.chat_prefix_ == content.Get(i).name())
-            self.usrseq_ = content.Get(i).seqno().seq();
-
-          digestnode_[n_index]->setSequenceNo(content.Get(i).seqno().seq());
-        }
-      }
-      else {
-        _LOG_DEBUG("new comer " << content.Get(i).name() << "," <<
-                   content.Get(i).seqno().seq() << "," <<
-                   content.Get(i).seqno().session());
-        if (self.chat_prefix_ == content.Get(i).name())
-          self.usrseq_ = content.Get(i).seqno().seq();
-
-        // Insert into digestnode_ sorted.
-        ptr_lib::shared_ptr<Node> temp(new Node
-          (content.Get(i).name(), content.Get(i).seqno().seq(),
-           content.Get(i).seqno().session()));
-        digestnode_.insert
-          (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
-           temp);
-      }
-    }
+  int n_index = find(prefixName, sessionNo);
+  _LOG_DEBUG(prefixName << ", " << sessionNo);
+  _LOG_DEBUG("DigestTree::update session " << sessionNo << ", n_index " << n_index);
+  if (n_index >= 0) {
+    // only update the newer status
+    if (digestnode_[n_index]->getSequenceNo() < sequenceNo)
+      digestnode_[n_index]->setSequenceNo(sequenceNo);
+    else
+      return false;
+  }
+  else {
+    _LOG_DEBUG("new comer " << prefixName << "," << sequenceNo << "," <<
+               sessionNo);
+    // Insert into digestnode_ sorted.
+    ptr_lib::shared_ptr<Node> temp(new Node(prefixName, sequenceNo, sessionNo));
+    digestnode_.insert
+      (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
+       temp);
   }
 
   recomputeRoot();
-
 #if 0
   printTree();
 #endif
+  return true;
 }
 
 void
@@ -144,11 +130,11 @@ DigestTree::recomputeRoot()
 }
 
 int
-DigestTree::find(const string& name, int session) const
+DigestTree::find(const string& prefixName, int sessionNo) const
 {
   for (size_t i = 0; i < digestnode_.size(); ++i) {
-    if (digestnode_[i]->getPrefixName() == name &&
-        digestnode_[i]->getSessionNo() == session)
+    if (digestnode_[i]->getPrefixName() == prefixName &&
+        digestnode_[i]->getSessionNo() == sessionNo)
       return i;
   }
 

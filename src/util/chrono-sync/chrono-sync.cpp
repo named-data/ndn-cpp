@@ -40,6 +40,23 @@ ChronoSync::logfind(const std::string& digest)
 };
 
 void
+ChronoSync::update
+  (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
+{
+  for (size_t i = 0; i < content.size(); ++i) {
+    if (content.Get(i).type() == 0) {
+      if (digest_tree_.update
+          (content.Get(i).name(), content.Get(i).seqno().session(),
+           content.Get(i).seqno().seq())) {
+        // The digest tree was updated.
+        if (chat_prefix_ == content.Get(i).name())
+          usrseq_ = content.Get(i).seqno().seq();
+      }
+    }
+  }
+}
+
+void
 ChronoSync::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
@@ -94,7 +111,7 @@ ChronoSync::onData
     initialOndata(content);
   }
   else {
-    digest_tree_.update(content, *this);
+    update(content);
     if (logfind(digest_tree_.getRoot()) == -1)
       addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
     if (inst->getName().size() == 6)
@@ -259,7 +276,7 @@ ChronoSync::initialOndata
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   // The user is a new comer and receive data of all other people in the group.
-  digest_tree_.update(content, *this);
+  update(content);
   if (logfind(digest_tree_.getRoot()) == -1)
     addDigestLogEntry(digest_tree_.getRoot(), content);
   string digest_t = digest_tree_.getRoot();
@@ -272,7 +289,7 @@ ChronoSync::initialOndata
       content2->set_type(Sync::SyncState_ActionType_UPDATE);
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(session_);
-      digest_tree_.update(content_t.ss(), *this);
+      update(content_t.ss());
       if (logfind(digest_tree_.getRoot()) == -1) {
         addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
         initialChat_(usrseq_);
@@ -301,7 +318,7 @@ ChronoSync::initialOndata
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content2_t.ByteSize()));
   content2_t.SerializeToArray(&array->front(), array->size());
   Data co(n);
-  co.setContent(Blob(array));
+  co.setContent(Blob(array, false));
   keyChain_.sign(co, certificateName_);
   //_LOG_DEBUG("initial update data sending back");
   //_LOG_DEBUG(n.toUri());
@@ -322,7 +339,7 @@ ChronoSync::initialOndata
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(usrseq_);
     content2->mutable_seqno()->set_session(session_);
-    digest_tree_.update(content_t.ss(), *this);
+    update(content_t.ss());
 
     if (logfind(digest_tree_.getRoot()) == -1) {
       addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
