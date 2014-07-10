@@ -75,85 +75,10 @@ SHA256_UpdateHex(SHA256_CTX *context, const string& hex)
 void
 DigestTree::initial(ChronoSync& self)
 {
-  uint8_t number[4];
-  SHA256_CTX sha256;
-
-  SHA256_Init(&sha256);
-  int32ToLittleEndian(self.session_, number);
-  SHA256_Update(&sha256, number, sizeof(number));
-  int32ToLittleEndian(0, number);
-  SHA256_Update(&sha256, number, sizeof(number));
-  uint8_t digest_seq[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_seq, &sha256);
-
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, &self.chat_prefix_[0], self.chat_prefix_.size());
-  uint8_t digest_name[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_name, &sha256);
-
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, digest_name, sizeof(digest_name));
-  SHA256_Update(&sha256, digest_seq, sizeof(digest_seq));
-  uint8_t digest_node[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_node, &sha256);
-
   digestnode_.push_back
-    (ptr_lib::make_shared<Node>
-     (self.chat_prefix_, 0, self.session_, toHex(digest_node, sizeof(digest_node))));
+    (ptr_lib::make_shared<Node>(self.chat_prefix_, 0, self.session_));
 
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, digest_node, sizeof(digest_node));
-  uint8_t digest_root[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_root, &sha256);
-  root_ = toHex(digest_root, sizeof(digest_root));
-
-#if 0
-  printTree();
-#endif
-}
-
-void
-DigestTree::newcomer
-  (const string& name, int seqno_seq, int seqno_session, ChronoSync& self)
-{
-  uint8_t number[4];
-  SHA256_CTX sha256;
-
-  SHA256_Init(&sha256);
-  if (self.chat_prefix_ == name)
-    self.usrseq_ = seqno_seq;
-  int32ToLittleEndian(seqno_session, number);
-  SHA256_Update(&sha256, number, sizeof(number));
-  int32ToLittleEndian(seqno_seq, number);
-  SHA256_Update(&sha256, number, sizeof(number));
-  uint8_t digest_seq[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_seq, &sha256);
-
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, &name[0], name.size());
-  uint8_t digest_name[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_name, &sha256);
-
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, digest_name, sizeof(digest_name));
-  SHA256_Update(&sha256, digest_seq, sizeof(digest_seq));
-  uint8_t digest_node[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_node, &sha256);
-
-  _LOG_DEBUG("new comer " << name << "," << seqno_seq << "," << seqno_session);
-  // Insert into digestnode_ sorted.
-  ptr_lib::shared_ptr<Node> temp
-    (new Node(name, seqno_seq, seqno_session, toHex(digest_node, sizeof(digest_node))));
-  digestnode_.insert
-    (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
-     temp);
-
-  SHA256_Init(&sha256);
-  for (size_t i = 0; i < digestnode_.size(); ++i)
-    SHA256_UpdateHex(&sha256, digestnode_[i]->digest_);
-  uint8_t digest_root[SHA256_DIGEST_LENGTH];
-  SHA256_Final(&digest_root[0], &sha256);
-  root_ = toHex(digest_root, sizeof(digest_root));
+  recomputeRoot();
 
 #if 0
   printTree();
@@ -165,8 +90,6 @@ DigestTree::update
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
    ChronoSync& self)
 {
-  SHA256_CTX sha256;
-
   for (size_t i = 0; i < content.size(); ++i) {
     if (content.Get(i).type() == 0) {
       int n_index = find(content.Get(i).name(), content.Get(i).seqno().session());
@@ -174,63 +97,58 @@ DigestTree::update
       _LOG_DEBUG("DigestTree::update session " << content.Get(i).seqno().session() << ", n_index " << n_index);
       if (n_index >= 0) {
         //only update the newer status
-        if (digestnode_[n_index]->seqno_seq_ < content.Get(i).seqno().seq()) {
+        if (digestnode_[n_index]->getSequenceNo() < content.Get(i).seqno().seq()) {
           if (self.chat_prefix_ == content.Get(i).name())
             self.usrseq_ = content.Get(i).seqno().seq();
 
-          digestnode_[n_index]->seqno_seq_ = content.Get(i).seqno().seq();
-          digestnode_[n_index]->seqno_session_ = content.Get(i).seqno().session();
-          digestnode_[n_index]->prefix_name_ = content.Get(i).name();
-
-          SHA256_Init(&sha256);
-          uint8_t number[4];
-          int32ToLittleEndian(content.Get(i).seqno().session(), number);
-          SHA256_Update(&sha256, number, sizeof(number));
-          int32ToLittleEndian(content.Get(i).seqno().seq(), number);
-          SHA256_Update(&sha256, number, sizeof(number));
-          uint8_t digest_seq[SHA256_DIGEST_LENGTH];
-          SHA256_Final(digest_seq, &sha256);
-
-          SHA256_Init(&sha256);
-          SHA256_Update(&sha256, &content.Get(i).name()[0], content.Get(i).name().size());
-          uint8_t digest_name[SHA256_DIGEST_LENGTH];
-          SHA256_Final(digest_name, &sha256);
-
-          SHA256_Init(&sha256);
-          SHA256_Update(&sha256, digest_name, sizeof(digest_name));
-          SHA256_Update(&sha256, digest_seq, sizeof(digest_seq));
-          uint8_t digest_node[SHA256_DIGEST_LENGTH];
-          SHA256_Final(digest_node, &sha256);
-          digestnode_[n_index]->digest_ = toHex(digest_node, sizeof(digest_node));
+          digestnode_[n_index]->setSequenceNo(content.Get(i).seqno().seq());
         }
       }
-      else
-        newcomer
+      else {
+        _LOG_DEBUG("new comer " << content.Get(i).name() << "," <<
+                   content.Get(i).seqno().seq() << "," <<
+                   content.Get(i).seqno().session());
+        if (self.chat_prefix_ == content.Get(i).name())
+          self.usrseq_ = content.Get(i).seqno().seq();
+
+        // Insert into digestnode_ sorted.
+        ptr_lib::shared_ptr<Node> temp(new Node
           (content.Get(i).name(), content.Get(i).seqno().seq(),
-           content.Get(i).seqno().session(), self);
+           content.Get(i).seqno().session()));
+        digestnode_.insert
+          (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
+           temp);
+      }
     }
   }
 
-  SHA256_Init(&sha256);
-  for (size_t i = 0; i < digestnode_.size(); ++i)
-    SHA256_UpdateHex(&sha256, digestnode_[i]->digest_);
-  uint8_t digest_root[SHA256_DIGEST_LENGTH];
-  SHA256_Final(&digest_root[0], &sha256);
-  root_ = toHex(digest_root, sizeof(digest_root));
-  _LOG_DEBUG("update root to: " + root_);
-  //usrdigest = root_;
+  recomputeRoot();
 
 #if 0
   printTree();
 #endif
 }
 
+void
+DigestTree::recomputeRoot()
+{
+  SHA256_CTX sha256;
+
+  SHA256_Init(&sha256);
+  for (size_t i = 0; i < digestnode_.size(); ++i)
+    SHA256_UpdateHex(&sha256, digestnode_[i]->getDigest());
+  uint8_t digest_root[SHA256_DIGEST_LENGTH];
+  SHA256_Final(&digest_root[0], &sha256);
+  root_ = toHex(digest_root, sizeof(digest_root));
+  _LOG_DEBUG("update root to: " + root_);
+}
+
 int
 DigestTree::find(const string& name, int session) const
 {
   for (size_t i = 0; i < digestnode_.size(); ++i) {
-    if (digestnode_[i]->prefix_name_ == name &&
-        digestnode_[i]->seqno_session_ == session)
+    if (digestnode_[i]->getPrefixName() == name &&
+        digestnode_[i]->getSessionNo() == session)
       return i;
   }
 
@@ -238,7 +156,34 @@ DigestTree::find(const string& name, int session) const
 }
 
 void
-DigestTree::int32ToLittleEndian(uint32_t value, uint8_t* result)
+DigestTree::Node::recomputeDigest()
+{
+  SHA256_CTX sha256;
+
+  SHA256_Init(&sha256);
+  uint8_t number[4];
+  int32ToLittleEndian(seqno_session_, number);
+  SHA256_Update(&sha256, number, sizeof(number));
+  int32ToLittleEndian(seqno_seq_, number);
+  SHA256_Update(&sha256, number, sizeof(number));
+  uint8_t digest_seq[SHA256_DIGEST_LENGTH];
+  SHA256_Final(digest_seq, &sha256);
+
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, &prefix_name_[0], prefix_name_.size());
+  uint8_t digest_name[SHA256_DIGEST_LENGTH];
+  SHA256_Final(digest_name, &sha256);
+
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, digest_name, sizeof(digest_name));
+  SHA256_Update(&sha256, digest_seq, sizeof(digest_seq));
+  uint8_t digest_node[SHA256_DIGEST_LENGTH];
+  SHA256_Final(digest_node, &sha256);
+  digest_ = toHex(digest_node, sizeof(digest_node));
+}
+
+void
+DigestTree::Node::int32ToLittleEndian(uint32_t value, uint8_t* result)
 {
   for (size_t i = 0; i < 4; i++) {
     result[i] = value % 256;

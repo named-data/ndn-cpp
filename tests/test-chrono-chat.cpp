@@ -32,17 +32,17 @@ using namespace ndn;
 int main(int argc, char** argv)
 {
   try {
-    ChronoChat::start("user2", "ndnchat1", "localhost");
+    ChronoChat::start("user1", "ndnchat7", "localhost");
 
     MillisecondsSince1970 start = ndn_getNowMilliseconds();
     bool sentMessage1 = false;
     bool sentMessage2 = false;
     while (true) {
-#if 0
       if (!sentMessage1 && ndn_getNowMilliseconds() - start > 10000) {
         sentMessage1 = true;
         ChronoChat::chat->sendMessage();
       }
+#if 0
       if (!sentMessage2 && ndn_getNowMilliseconds() - start > 20000) {
         sentMessage2 = true;
         ChronoChat::chat->sendMessage();

@@ -41,12 +41,19 @@ public:
 
   class Node {
   public:
+    /**
+     * Create a new DigestTree::Node with the given fields and compute the digest.
+     * @param prefix_name
+     * @param seqno_seq
+     * @param seqno_session
+     */
     Node
-      (const std::string& prefix_name, int seqno_seq, int seqno_session,
-       const std::string& digest)
+      (const std::string& prefix_name, int seqno_seq, int seqno_session)
     : prefix_name_(prefix_name), seqno_seq_(seqno_seq),
-      seqno_session_(seqno_session), digest_(digest)
-    {}
+      seqno_session_(seqno_session)
+    {
+      recomputeDigest();
+    }
 
     const std::string&
     getPrefixName() const { return prefix_name_; }
@@ -57,8 +64,23 @@ public:
     int
     getSessionNo() const { return seqno_session_; }
 
-  private:
-    friend class DigestTree;
+    /**
+     * Get the digest.
+     * @return The digest as a hex string.
+     */
+    const std::string&
+    getDigest() const { return digest_; }
+
+    /**
+     * Set the sequence number and recompute the digest.
+     * @param sequenceNo The new sequence number.
+     */
+    void
+    setSequenceNo(int sequenceNo)
+    {
+      seqno_seq_ = sequenceNo;
+      recomputeDigest();
+    }
 
     /**
      * Compare shared_ptrs to Node based on prefix_name_ and seqno_session_.
@@ -83,6 +105,16 @@ public:
       }
     };
 
+  private:
+    /**
+     * Digest the fields and set digest_ to the hex digest.
+     */
+    void
+    recomputeDigest();
+
+    static void
+    int32ToLittleEndian(uint32_t value, uint8_t* result);
+
     std::string prefix_name_;
     int seqno_seq_;
     int seqno_session_;
@@ -92,11 +124,6 @@ public:
   // Initialize after the first interest timeout.
   void
   initial(ChronoSync& self);
-
-  // Add new comer to the tree.
-  void
-  newcomer
-    (const std::string& name, int seqno_seq, int seqno_session, ChronoSync& self);
 
   // Update the digest_tree when we get some new data.
   void
@@ -113,12 +140,20 @@ public:
   const DigestTree::Node&
   get(size_t i) const { return *digestnode_[i]; }
 
+  /**
+   * Get the root digest.
+   * @return The root digest as a hex string.
+   */
   const std::string&
   getRoot() const { return root_; }
 
 private:
+  /**
+   * Set root_ to the digest of all digests in digestnode_. This sets root_
+   * to the hex value of the digest.
+   */
   void
-  static int32ToLittleEndian(uint32_t value, uint8_t* result);
+  recomputeRoot();
 
 #if 0
   void printTree() const;
@@ -132,3 +167,4 @@ private:
 }
 
 #endif
+
