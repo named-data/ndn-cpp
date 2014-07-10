@@ -286,7 +286,7 @@ Chat::heartbeat()
   content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
   content->mutable_seqno()->set_session(ChronoChat::session);
 
-  Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.root_);
+  Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.getRoot());
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
   content_t.SerializeToArray(&array->front(), array->size());
   Data co(n);
@@ -299,11 +299,11 @@ Chat::heartbeat()
   }
 
   ChronoChat::sync->digest_tree_.update(content_t.ss(), *ChronoChat::sync);
-  if (ChronoChat::sync->logfind(ChronoChat::sync->digest_tree_.root_) == -1) {
+  if (ChronoChat::sync->logfind(ChronoChat::sync->digest_tree_.getRoot()) == -1) {
     //_LOG_DEBUG("heartbeat log add");
     ChronoChat::sync->addDigestLogEntry
-      (ChronoChat::sync->digest_tree_.root_, content_t.ss());
-    Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.root_);
+      (ChronoChat::sync->digest_tree_.getRoot(), content_t.ss());
+    Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.getRoot());
     Interest interest(n);
     interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
     ChronoChat::face->expressInterest
@@ -347,7 +347,7 @@ Chat::sendMessage()
     content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
     content->mutable_seqno()->set_session(ChronoChat::session);
 
-    Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.root_);
+    Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.getRoot());
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
     content_t.SerializeToArray(&array->front(), array->size());
     Data co(n);
@@ -360,11 +360,11 @@ Chat::sendMessage()
     }
 
     ChronoChat::sync->digest_tree_.update(content_t.ss(), *ChronoChat::sync);
-    if (ChronoChat::sync->logfind(ChronoChat::sync->digest_tree_.root_) == -1) {
+    if (ChronoChat::sync->logfind(ChronoChat::sync->digest_tree_.getRoot()) == -1) {
       //_LOG_DEBUG("message log add");
       ChronoChat::sync->addDigestLogEntry
-        (ChronoChat::sync->digest_tree_.root_, content_t.ss());
-      Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.root_);
+        (ChronoChat::sync->digest_tree_.getRoot(), content_t.ss());
+      Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.getRoot());
       Interest interest(n);
       interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
       ChronoChat::face->expressInterest
@@ -408,7 +408,7 @@ Chat::leave()
   content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
   content->mutable_seqno()->set_session(ChronoChat::session);
 
-  Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.root_);
+  Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/" + ChronoChat::sync->digest_tree_.getRoot());
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
   content_t.SerializeToArray(&array->front(), array->size());
   Data co(n);
@@ -423,7 +423,7 @@ Chat::leave()
   ChronoChat::sync->digest_tree_.update(content_t.ss(), *ChronoChat::sync);
   //_LOG_DEBUG("leave log add");
   ChronoChat::sync->addDigestLogEntry
-    (ChronoChat::sync->digest_tree_.root_, content_t.ss());
+    (ChronoChat::sync->digest_tree_.getRoot(), content_t.ss());
   ChronoChat::face->shutdown();
 }
 
@@ -438,7 +438,7 @@ Chat::alive
   string nameAndSession = tempStream.str();
   vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
   if (index_n != -1 && n != roster_.end()) {
-    int seq = ChronoChat::sync->digest_tree_.digestnode_[index_n]->seqno_seq_;
+    int seq = ChronoChat::sync->digest_tree_.get(index_n).getSequence();
     if (temp_seq == seq){
       roster_.erase(n);
       //_LOG_DEBUG(name + " leave");

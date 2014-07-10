@@ -39,26 +39,6 @@ public:
   : root_("00")
   {}
 
-  // Initialize after the first interest timeout.
-  void
-  initial(ChronoSync& self);
-
-  // Add new comer to the tree.
-  void
-  newcomer
-    (const std::string& name, int seqno_seq, int seqno_session, ChronoSync& self);
-
-  // Update the digest_tree when we get some new data.
-  void
-  update
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
-     ChronoSync& self);
-
-  int
-  find(const std::string& name, int session) const;
-
-  // TODO: Make private.
-
   class Node {
   public:
     Node
@@ -67,6 +47,18 @@ public:
     : prefix_name_(prefix_name), seqno_seq_(seqno_seq),
       seqno_session_(seqno_session), digest_(digest)
     {}
+
+    const std::string&
+    getPrefixName() const { return prefix_name_; }
+
+    int
+    getSequence() const { return seqno_seq_; }
+
+    int
+    getSession() const { return seqno_session_; }
+
+  private:
+    friend class DigestTree;
 
     /**
      * Compare shared_ptrs to Node based on prefix_name_ and seqno_session_.
@@ -97,8 +89,32 @@ public:
     std::string digest_;
   };
 
-  std::vector<ptr_lib::shared_ptr<DigestTree::Node> > digestnode_;
-  std::string root_;
+  // Initialize after the first interest timeout.
+  void
+  initial(ChronoSync& self);
+
+  // Add new comer to the tree.
+  void
+  newcomer
+    (const std::string& name, int seqno_seq, int seqno_session, ChronoSync& self);
+
+  // Update the digest_tree when we get some new data.
+  void
+  update
+    (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
+     ChronoSync& self);
+
+  int
+  find(const std::string& name, int session) const;
+
+  size_t
+  size() const { return digestnode_.size(); }
+
+  const DigestTree::Node&
+  get(size_t i) const { return *digestnode_[i]; }
+
+  const std::string&
+  getRoot() const { return root_; }
 
 private:
   void
@@ -108,6 +124,8 @@ private:
   void printTree() const;
 #endif
 
+  std::vector<ptr_lib::shared_ptr<DigestTree::Node> > digestnode_;
+  std::string root_;
   Node::Compare nodeCompare_;
 };
 
