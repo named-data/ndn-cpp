@@ -123,7 +123,7 @@ ChronoSync::onData
   // Send the Chat Interest to fetch the data. This can be changed to another
   //   function in other applications.
   sendChatInterest_(content);
-  Name n(prefix_ + chatroom_ + "/" + digest_tree_.getRoot());
+  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -211,7 +211,7 @@ ChronoSync::processSyncInst
   }
 
   if (content_t.ss_size() != 0) {
-    Name n(prefix_ + chatroom_ + "/" + syncdigest_t);
+    Name n(broadcastPrefix_ + chatroom_ + "/" + syncdigest_t);
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
     content_t.SerializeToArray(&array->front(), array->size());
     Data co(n);
@@ -231,7 +231,7 @@ void
 ChronoSync::sendRecovery(const string& syncdigest_t)
 {
   //_LOG_DEBUG("unknown digest: ");
-  Name n(prefix_ + chatroom_ + "/recovery/" + syncdigest_t);
+  Name n(broadcastPrefix_ + chatroom_ + "/recovery/" + syncdigest_t);
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -314,7 +314,7 @@ ChronoSync::initialOndata
     content2->mutable_seqno()->set_session(session_);
   }
 
-  Name n(prefix_ + chatroom_ + "/" + digest_t);
+  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_t);
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content2_t.ByteSize()));
   content2_t.SerializeToArray(&array->front(), array->size());
   Data co(n);
@@ -364,7 +364,7 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   content->mutable_seqno()->set_session(session_);
 
   addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
-  Name n(prefix_ + chatroom_ + "/" + digest_tree_.getRoot());
+  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest

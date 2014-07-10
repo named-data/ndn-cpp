@@ -259,7 +259,7 @@ ChronoChat::prefixData
   ChronoChat::chat_prefix = localPrefix + "/" + ChronoChat::chatroom + "/" + ChronoChat::prefix_name;
   ChronoChat::sync->chat_prefix_ = chat_prefix;
 
-  Name n1(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/");
+  Name n1(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/");
   ChronoChat::face->registerPrefix
     (n1, bind(&ChronoSync::onInterest, ChronoChat::sync, _1, _2, _3, _4),
      ChronoChat::onRegisterFailed);
@@ -270,7 +270,7 @@ ChronoChat::prefixData
      bind(&Chat::onInterest, ChronoChat::chat, _1, _2, _3, _4),
      ChronoChat::onRegisterFailed);
   //_LOG_DEBUG("data prefix registered.");
-  Name n(ChronoChat::sync->prefix_ + ChronoChat::chatroom + "/00");
+  Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/00");
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);

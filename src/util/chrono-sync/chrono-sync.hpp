@@ -47,7 +47,7 @@ public:
   : sendChatInterest_(sendchatinterest), initialChat_(initialchat),
     chatroom_(chatroom), session_(session), transport_(transport), face_(face),
     keyChain_(keyChain), certificateName_(certificateName),
-    sync_lifetime_(sync_lifetime), prefix_("/ndn/broadcast/ChronoChat-0.3/"),
+    sync_lifetime_(sync_lifetime), broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"),
     usrseq_(-1), flag_(0)
   {}
 
@@ -140,12 +140,15 @@ public:
   int
   getFlag() const { return flag_; }
 
+  const std::string&
+  getBroadcastPrefix() const { return broadcastPrefix_; }
+
   // TODO: Make private.
   int usrseq_;
-  std::string prefix_;
   std::string chat_prefix_;
 
 private:
+  std::string broadcastPrefix_;
   Transport& transport_;
   Face& face_;
   KeyChain& keyChain_;
