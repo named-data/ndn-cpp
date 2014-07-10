@@ -22,10 +22,8 @@
 
 #include <algorithm>
 #include <openssl/ssl.h>
-#include "../../c/util/ndn_memory.h"
 #include "../logging.hpp"
-#include "sync-state.pb.h"
-#include "chrono-sync.hpp"
+#include "digest-tree.hpp"
 
 using namespace std;
 
@@ -70,19 +68,6 @@ SHA256_UpdateHex(SHA256_CTX *context, const string& hex)
     data[i] = (uint8_t)(16 * fromHexChar(hex[2 * i]) + fromHexChar(hex[2 * i + 1]));
 
   return SHA256_Update(context, &data[0], data.size());
-}
-
-void
-DigestTree::initial(ChronoSync& self)
-{
-  digestnode_.push_back
-    (ptr_lib::make_shared<Node>(self.chat_prefix_, 0, self.session_));
-
-  recomputeRoot();
-
-#if 0
-  printTree();
-#endif
 }
 
 bool

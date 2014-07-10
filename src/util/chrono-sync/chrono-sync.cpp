@@ -353,7 +353,7 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
   //_LOG_DEBUG("initial sync timeout");
   //_LOG_DEBUG("no other people");
-  digest_tree_.initial(*this);
+  digest_tree_.update(chat_prefix_, session_, 0);
   ++usrseq_;
   initialChat_(usrseq_);
   Sync::SyncStateMsg content_t;

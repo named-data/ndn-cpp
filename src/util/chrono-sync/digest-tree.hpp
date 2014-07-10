@@ -26,12 +26,7 @@
 #include <ndn-cpp/common.hpp>
 #include <string>
 
-namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
-namespace Sync { class SyncState; }
-
 namespace ndn {
-
-class ChronoSync;
 
 class DigestTree {
 public:
@@ -120,10 +115,6 @@ public:
     int seqno_session_;
     std::string digest_;
   };
-
-  // Initialize after the first interest timeout.
-  void
-  initial(ChronoSync& self);
 
   /**
    * Update the digest tree and recompute the root digest.  If the combination
