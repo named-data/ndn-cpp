@@ -298,11 +298,8 @@ Chat::heartbeat()
     _LOG_DEBUG(e.what());
   }
 
-  ChronoChat::sync->update(content_t.ss());
-  if (ChronoChat::sync->logfind(ChronoChat::sync->getDigestTree().getRoot()) == -1) {
+  if (ChronoChat::sync->update(content_t.ss())) {
     //_LOG_DEBUG("heartbeat log add");
-    ChronoChat::sync->addDigestLogEntry
-      (ChronoChat::sync->getDigestTree().getRoot(), content_t.ss());
     Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
     Interest interest(n);
     interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
@@ -359,11 +356,8 @@ Chat::sendMessage()
       _LOG_DEBUG(e.what());
     }
 
-    ChronoChat::sync->update(content_t.ss());
-    if (ChronoChat::sync->logfind(ChronoChat::sync->getDigestTree().getRoot()) == -1) {
+    if (ChronoChat::sync->update(content_t.ss())) {
       //_LOG_DEBUG("message log add");
-      ChronoChat::sync->addDigestLogEntry
-        (ChronoChat::sync->getDigestTree().getRoot(), content_t.ss());
       Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
       Interest interest(n);
       interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
@@ -422,8 +416,6 @@ Chat::leave()
 
   ChronoChat::sync->update(content_t.ss());
   //_LOG_DEBUG("leave log add");
-  ChronoChat::sync->addDigestLogEntry
-    (ChronoChat::sync->getDigestTree().getRoot(), content_t.ss());
   ChronoChat::face->shutdown();
 }
 

@@ -54,7 +54,7 @@ ChronoSync::logfind(const std::string& digest)
   return -1;
 };
 
-void
+bool
 ChronoSync::update
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
@@ -69,6 +69,14 @@ ChronoSync::update
       }
     }
   }
+
+  if (logfind(digest_tree_.getRoot()) == -1) {
+    digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
+      (digest_tree_.getRoot(), content));
+    return true;
+  }
+  else
+    return false;
 }
 
 void
@@ -127,8 +135,6 @@ ChronoSync::onData
   }
   else {
     update(content);
-    if (logfind(digest_tree_.getRoot()) == -1)
-      addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
     if (inst->getName().size() == 6)
       flag_ = 1;
     else
@@ -292,8 +298,6 @@ ChronoSync::initialOndata
 {
   // The user is a new comer and receive data of all other people in the group.
   update(content);
-  if (logfind(digest_tree_.getRoot()) == -1)
-    addDigestLogEntry(digest_tree_.getRoot(), content);
   string digest_t = digest_tree_.getRoot();
   for (size_t i = 0; i < content.size(); ++i) {
     if (content.Get(i).name() == chat_prefix_ && content.Get(i).seqno().session() == session_) {
@@ -304,11 +308,8 @@ ChronoSync::initialOndata
       content2->set_type(Sync::SyncState_ActionType_UPDATE);
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(session_);
-      update(content_t.ss());
-      if (logfind(digest_tree_.getRoot()) == -1) {
-        addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
+      if (update(content_t.ss()))
         initialChat_(usrseq_);
-      }
     }
   }
 
@@ -354,12 +355,9 @@ ChronoSync::initialOndata
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(usrseq_);
     content2->mutable_seqno()->set_session(session_);
-    update(content_t.ss());
 
-    if (logfind(digest_tree_.getRoot()) == -1) {
-      addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
+    if (update(content_t.ss()))
       initialChat_(usrseq_);
-    }
   }
 }
 
@@ -380,7 +378,6 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   content->mutable_seqno()->set_seq(usrseq_);
   content->mutable_seqno()->set_session(session_);
   update(content_t.ss());
-  addDigestLogEntry(digest_tree_.getRoot(), content_t.ss());
 
   initialChat_(usrseq_);
 

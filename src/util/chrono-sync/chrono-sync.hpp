@@ -91,10 +91,13 @@ public:
   getDigestTree() const { return digest_tree_; }
 
   /**
-   * Update the digest tree with the messages in content.
+   * Update the digest tree with the messages in content. If the digest tree
+   * root is not in the digest log, also add a log entry with the content.
    * @param content The sync state messages.
+   * @return True if added a digest log entry (because the updated digest
+   * tree root was not in the log), false if didn't add a log entry.
    */
-  void
+  bool
   update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
   // Process Sync Interest.
@@ -138,18 +141,6 @@ public:
   // Initial sync interest timeout, which means there are no other people in the chatroom.
   void
   initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
-
-  /**
-   * Add a new entry to the digest log.
-   * @param digest The digest. This is copied.
-   * @param data The data. This is copied.
-   */
-  void addDigestLogEntry
-    (const std::string& digest,
-     const google::protobuf::RepeatedPtrField<Sync::SyncState>& data)
-  {
-    digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>(digest, data));
-  }
 
   int
   getFlag() const { return flag_; }
