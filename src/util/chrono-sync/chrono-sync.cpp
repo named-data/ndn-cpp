@@ -20,6 +20,7 @@
  * A copy of the GNU General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include "../logging.hpp"
 #include "sync-state.pb.h"
 #include "chrono-sync.hpp"
@@ -44,7 +45,7 @@ ChronoSync::ChronoSync
 }
 
 int
-ChronoSync::logfind(const std::string& digest)
+ChronoSync::logfind(const std::string& digest) const
 {
   for (size_t i = 0; i < digest_log_.size(); ++i) {
     if (digest == digest_log_[i]->getDigest())
@@ -77,6 +78,36 @@ ChronoSync::update
   }
   else
     return false;
+}
+
+void
+ChronoSync::publishNextSequenceNumber()
+{
+  ++usrseq_;
+
+  Sync::SyncStateMsg syncMessage;
+  Sync::SyncState* content = syncMessage.add_ss();
+  content->set_name(chat_prefix_);
+  content->set_type(Sync::SyncState_ActionType_UPDATE);
+  content->mutable_seqno()->set_seq(usrseq_);
+  content->mutable_seqno()->set_session(session_);
+
+  broadcastSyncState(digest_tree_.getRoot(), syncMessage);
+
+  if (!update(syncMessage.ss()))
+    // Since we incremented the sequence number, we expect there to be a
+    //   new digest log entry.
+    throw runtime_error
+      ("ChronoSync: update did not create a new digest log entry");
+
+  // TODO: Should we have an option to not express an interest if this is the
+  //   final publish of the session?
+  Interest interest(Name
+    (broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot()));
+  interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+  face_.expressInterest
+    (interest, bind(&ChronoSync::onData, this, _1, _2),
+     bind(&ChronoSync::syncTimeout, this, _1));
 }
 
 void
@@ -330,20 +361,7 @@ ChronoSync::initialOndata
     content2->mutable_seqno()->set_session(session_);
   }
 
-  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_t);
-  ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content2_t.ByteSize()));
-  content2_t.SerializeToArray(&array->front(), array->size());
-  Data co(n);
-  co.setContent(Blob(array, false));
-  keyChain_.sign(co, certificateName_);
-  //_LOG_DEBUG("initial update data sending back");
-  //_LOG_DEBUG(n.toUri());
-  try {
-    pokeData(co);
-  }
-  catch (std::exception& e) {
-    _LOG_DEBUG(e.what());
-  }
+  broadcastSyncState(digest_t, content2_t);
 
   if (digest_tree_.find(chat_prefix_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
@@ -369,7 +387,8 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   ++usrseq_;
   if (usrseq_ != 0)
     // Since there were no other users, we expect sequence no 0.
-    throw runtime_error("usrseq_ is not the expected value of 0 for first use.");
+    throw runtime_error
+      ("ChronoSync: usrseq_ is not the expected value of 0 for first use.");
 
   Sync::SyncStateMsg content_t;
   Sync::SyncState* content = content_t.add_ss();
@@ -389,6 +408,23 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
      bind(&ChronoSync::syncTimeout, this, _1));
   //_LOG_DEBUG("Syncinterest expressed:");
   //_LOG_DEBUG(n.toUri());
+}
+
+void
+ChronoSync::broadcastSyncState
+  (const string& digest, const Sync::SyncStateMsg& syncMessage)
+{
+  ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
+  syncMessage.SerializeToArray(&array->front(), array->size());
+  Data data(Name(broadcastPrefix_ + chatroom_ + "/" + digest));
+  data.setContent(Blob(array, false));
+  keyChain_.sign(data, certificateName_);
+  try {
+    // TODO: Should use a MemoryContentCache instead of a direct poke.
+    transport_.send(*data.wireEncode());
+  } catch (std::exception& e) {
+    _LOG_DEBUG(e.what());
+  }
 }
 
 ChronoSync::DigestLogEntry::DigestLogEntry

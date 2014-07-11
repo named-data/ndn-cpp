@@ -29,6 +29,7 @@
 #include "digest-tree.hpp"
 
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
+namespace Sync { class SyncStateMsg; }
 namespace Sync { class SyncState; }
 
 namespace ndn {
@@ -76,13 +77,6 @@ public:
     ptr_lib::shared_ptr<google::protobuf::RepeatedPtrField<Sync::SyncState> > data_;
   };
 
-  void
-  pokeData(const Data& data) { transport_.send(*data.wireEncode()); }
-
-  // Search the digest log by digest.
-  int
-  logfind(const std::string& digest);
-
   /**
    * Get the digest tree for read-only.
    * @return A const reference to the digest tree.
@@ -91,14 +85,17 @@ public:
   getDigestTree() const { return digest_tree_; }
 
   /**
-   * Update the digest tree with the messages in content. If the digest tree
-   * root is not in the digest log, also add a log entry with the content.
-   * @param content The sync state messages.
-   * @return True if added a digest log entry (because the updated digest
-   * tree root was not in the log), false if didn't add a log entry.
+   * Increment the sequence number, create a sync message with the new
+   * sequence number and publish a data packet where the name is
+   * the broadcast prefix + chatroom_ + the root digest of the current digest
+   * tree. Then add the sync message to the digest tree and digest log which
+   * creates a new root digest. Finally, express an interest for the next sync
+   * update with the name broadcast prefix + chatroom_ + the new root digest.
+   * After this, you should publish the content for the new sequence number.
+   * You can get the new sequence number with getSequenceNumber().
    */
-  bool
-  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+  void
+  publishNextSequenceNumber();
 
   // Process Sync Interest.
   void
@@ -148,11 +145,38 @@ public:
   const std::string&
   getBroadcastPrefix() const { return broadcastPrefix_; }
 
+  int
+  getSequenceNumber() const { return usrseq_; }
+
   // TODO: Make private.
-  int usrseq_;
   std::string chat_prefix_;
 
 private:
+  /**
+   * Make a data packet with the syncMessage and with name 
+   * broadcastPrefix_ + chatroom_ + "/" + digest. Sign and send.
+   * @param digest The root digest as a hex string for the data packet name.
+   * @param syncMessage The SyncStateMsg which updates the digest tree state
+   * with the given digest.
+   */
+  void
+  broadcastSyncState
+    (const std::string& digest, const Sync::SyncStateMsg& syncMessage);
+
+  /**
+   * Update the digest tree with the messages in content. If the digest tree
+   * root is not in the digest log, also add a log entry with the content.
+   * @param content The sync state messages.
+   * @return True if added a digest log entry (because the updated digest
+   * tree root was not in the log), false if didn't add a log entry.
+   */
+  bool
+  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+
+  // Search the digest log by digest.
+  int
+  logfind(const std::string& digest) const;
+
   std::string broadcastPrefix_;
   Transport& transport_;
   Face& face_;
@@ -166,6 +190,7 @@ private:
   std::string chatroom_;
   int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
   int session_;
+  int usrseq_;
 };
 
 }

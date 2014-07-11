@@ -66,7 +66,7 @@ Chat::initial(int seqno)
     cout << ChronoChat::screen_name << ": Join" << endl;
 #endif
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_JOIN,
+      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
        "xxx", ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
       msgcache_.erase(msgcache_.begin());
@@ -271,45 +271,17 @@ Chat::heartbeat()
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
-  ++ChronoChat::sync->usrseq_;
+  ChronoChat::sync->publishNextSequenceNumber();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx", ndn_getNowMilliseconds()));
+    (ChronoChat::sync->getSequenceNumber(),
+     SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx",
+     ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
     msgcache_.erase(msgcache_.begin());
 
-  Sync::SyncStateMsg content_t;
-  Sync::SyncState* content = content_t.add_ss();
-  content->set_name(ChronoChat::chat_prefix);
-  content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
-  content->mutable_seqno()->set_session(ChronoChat::session);
-
-  Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
-  ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
-  content_t.SerializeToArray(&array->front(), array->size());
-  Data co(n);
-  co.setContent(Blob(array, false));
-  ChronoChat::keyChain->sign(co, ChronoChat::certificateName);
-  try {
-    ChronoChat::sync->pokeData(co);
-  } catch (std::exception& e) {
-    _LOG_DEBUG(e.what());
-  }
-
-  if (ChronoChat::sync->update(content_t.ss())) {
-    //_LOG_DEBUG("heartbeat log add");
-    Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
-    Interest interest(n);
-    interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
-    ChronoChat::face->expressInterest
-      (interest, bind(&ChronoSync::onData, ChronoChat::sync, _1, _2),
-       bind(&ChronoSync::syncTimeout, ChronoChat::sync, _1));
-
-    //_LOG_DEBUG("Heartbeat Interest expressed.");
-    //_LOG_DEBUG(n.toUri());
-  }
+  //_LOG_DEBUG("Heartbeat Interest expressed.");
 }
 
 void
@@ -317,7 +289,7 @@ Chat::sendMessage()
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
 #if 0 // TODO: Get the chat message.
   var msg = document.getElementById('fname').value.trim();
@@ -331,51 +303,24 @@ Chat::sendMessage()
 #if 0 // TODO: Clear fname (why?)
     document.getElementById('fname').value = "";
 #endif
-    ++ChronoChat::sync->usrseq_;
+    ChronoChat::sync->publishNextSequenceNumber();
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg, ndn_getNowMilliseconds()));
+      (ChronoChat::sync->getSequenceNumber(),
+       SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg,
+       ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
       msgcache_.erase(msgcache_.begin());
 
-    Sync::SyncStateMsg content_t;
-    Sync::SyncState* content = content_t.add_ss();
-    content->set_name(ChronoChat::chat_prefix);
-    content->set_type(Sync::SyncState_ActionType_UPDATE);
-    content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
-    content->mutable_seqno()->set_session(ChronoChat::session);
-
-    Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
-    ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
-    content_t.SerializeToArray(&array->front(), array->size());
-    Data co(n);
-    co.setContent(Blob(array, false));
-    ChronoChat::keyChain->sign(co, ChronoChat::certificateName);
-    try {
-      ChronoChat::sync->pokeData(co);
-    } catch (std::exception& e) {
-      _LOG_DEBUG(e.what());
-    }
-
-    if (ChronoChat::sync->update(content_t.ss())) {
-      //_LOG_DEBUG("message log add");
-      Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
-      Interest interest(n);
-      interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
-      ChronoChat::face->expressInterest
-        (interest, bind(&ChronoSync::onData, ChronoChat::sync, _1, _2),
-         bind(&ChronoSync::syncTimeout, ChronoChat::sync, _1));
-      //_LOG_DEBUG("Sync Interest expressed.");
-      //_LOG_DEBUG(n.toUri());
+    //_LOG_DEBUG("Sync Interest expressed.");
 #if 0 // TODO: Show the message.
-      var tt = d.toLocaleTimeString();
-      var escaped_msg = $('<div/>').text(msg).html();  // encode special html characters to avoid script injection
-      document.getElementById('txt').innerHTML += '<p><grey>'+ ChronoChat::screen_name+'-'+tt+':</grey><br />'+ escaped_msg + '</p>';
-      var objDiv = document.getElementById("txt");
-      objDiv.scrollTop = objDiv.scrollHeight;
+    var tt = d.toLocaleTimeString();
+    var escaped_msg = $('<div/>').text(msg).html();  // encode special html characters to avoid script injection
+    document.getElementById('txt').innerHTML += '<p><grey>'+ ChronoChat::screen_name+'-'+tt+':</grey><br />'+ escaped_msg + '</p>';
+    var objDiv = document.getElementById("txt");
+    objDiv.scrollTop = objDiv.scrollHeight;
 #else
-      cout << ChronoChat::screen_name << ": " << chatmsg << endl;
+    cout << ChronoChat::screen_name << ": " << chatmsg << endl;
 #endif
-    }
   }
   else
     _LOG_DEBUG("message cannot be empty");
@@ -389,32 +334,14 @@ Chat::leave()
   $("#chat").hide();
   document.getElementById('room').innerHTML = 'Please close the window. Thank you';
 #endif
-  ++ChronoChat::sync->usrseq_;
+  ChronoChat::sync->publishNextSequenceNumber();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->usrseq_, SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx", ndn_getNowMilliseconds()));
+    (ChronoChat::sync->getSequenceNumber(),
+     SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx",
+     ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
     msgcache_.erase(msgcache_.begin());
 
-  Sync::SyncStateMsg content_t;
-  Sync::SyncState* content = content_t.add_ss();
-  content->set_name(ChronoChat::chat_prefix);
-  content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(ChronoChat::sync->usrseq_);
-  content->mutable_seqno()->set_session(ChronoChat::session);
-
-  Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/" + ChronoChat::sync->getDigestTree().getRoot());
-  ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
-  content_t.SerializeToArray(&array->front(), array->size());
-  Data co(n);
-  co.setContent(Blob(array, false));
-  ChronoChat::keyChain->sign(co, ChronoChat::certificateName);
-  try {
-    ChronoChat::sync->pokeData(co);
-  } catch (std::exception& e) {
-    _LOG_DEBUG(e.what());
-  }
-
-  ChronoChat::sync->update(content_t.ss());
   //_LOG_DEBUG("leave log add");
   ChronoChat::face->shutdown();
 }
