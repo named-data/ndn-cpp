@@ -110,31 +110,6 @@ public:
     (const ptr_lib::shared_ptr<const Interest>& inst,
      const ptr_lib::shared_ptr<Data>& co);
 
-  // Process Recovery Interest, go through digest tree and send data including info of all nodes
-  void
-  processRecoveryInst
-    (const Interest& inst, const std::string& syncdigest, Transport& transport);
-
-  // Common Interest Processing, using digest log to find the difference after syncdigest_t
-  void
-  processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
-
-  // Send Recovery Interest.
-  void
-  sendRecovery(const std::string& syncdigest_t);
-
-  // Check if recovery is needed.
-  void
-  judgeRecovery(const std::string& syncdigest_t, Transport& transport);
-
-  // Sync interest time out, if the interest is the static one send again.
-  void
-  syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
-
-  // Process initial data which usually include all other users' info in the chatroom, and send back the new comer's own info.
-  void
-  initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
-
   // Initial sync interest timeout, which means there are no other people in the chatroom.
   void
   initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
@@ -176,6 +151,31 @@ private:
   // Search the digest log by digest.
   int
   logfind(const std::string& digest) const;
+
+  // Process Recovery Interest, go through digest tree and send data including info of all nodes
+  void
+  processRecoveryInst
+    (const Interest& inst, const std::string& syncdigest, Transport& transport);
+
+  // Common Interest Processing, using digest log to find the difference after syncdigest_t
+  void
+  processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
+
+  // Send Recovery Interest.
+  void
+  sendRecovery(const std::string& syncdigest_t);
+
+  // Check if recovery is needed.
+  void
+  judgeRecovery(const std::string& syncdigest_t, Transport& transport);
+
+  // Sync interest time out, if the interest is the static one send again.
+  void
+  syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
+
+  // Process initial data which usually include all other users' info in the chatroom, and send back the new comer's own info.
+  void
+  initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
   std::string broadcastPrefix_;
   Transport& transport_;
