@@ -40,16 +40,24 @@ public:
 
   typedef func_lib::function<void(int sequence)> InitialChat;
 
+  /**
+   * Create a new ChronoSync to communicate using the given face. Initialize
+   * the broadcast prefix.  Initialize the digest log with a digest of "00" and
+   * and empty content.
+   * @param sendchatinterest
+   * @param initialchat
+   * @param chatroom
+   * @param session
+   * @param transport
+   * @param face
+   * @param keyChain
+   * @param certificateName
+   * @param sync_lifetime
+   */
   ChronoSync
     (SendChatInterest sendchatinterest, InitialChat initialchat,
      const std::string& chatroom, int session, Transport& transport, Face& face,
-     KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime)
-  : sendChatInterest_(sendchatinterest), initialChat_(initialchat),
-    chatroom_(chatroom), session_(session), transport_(transport), face_(face),
-    keyChain_(keyChain), certificateName_(certificateName),
-    sync_lifetime_(sync_lifetime), broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"),
-    usrseq_(-1), flag_(0)
-  {}
+     KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime);
 
   class DigestLogEntry {
   public:

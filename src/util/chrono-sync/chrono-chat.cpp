@@ -27,7 +27,6 @@
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include "../../c/util/time.h"
 #include "chat.hpp"
-#include "sync-state.pb.h"
 #include "chrono-chat.hpp"
 
 using namespace std;
@@ -231,8 +230,6 @@ ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
      ChronoChat::chatroom, ChronoChat::session, *ChronoChat::transport,
      *ChronoChat::face, *ChronoChat::keyChain, ChronoChat::certificateName,
      ChronoChat::sync_lifetime);
-  Sync::SyncStateMsg emptyContent;
-  ChronoChat::sync->addDigestLogEntry("00", emptyContent.ss());
 
   //Getting Routable Chat Name Prefix Through Auto Configure
   Name n0("/local/ndn/prefix");
