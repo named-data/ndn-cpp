@@ -60,23 +60,6 @@ public:
      const std::string& chatroom, int session, Transport& transport, Face& face,
      KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime);
 
-  class DigestLogEntry {
-  public:
-    DigestLogEntry
-      (const std::string& digest,
-       const google::protobuf::RepeatedPtrField<Sync::SyncState>& data);
-
-    const std::string&
-    getDigest() const { return digest_; }
-
-    const google::protobuf::RepeatedPtrField<Sync::SyncState>&
-    getData() const { return *data_; }
-
-  private:
-    std::string digest_;
-    ptr_lib::shared_ptr<google::protobuf::RepeatedPtrField<Sync::SyncState> > data_;
-  };
-
   /**
    * Get the digest tree for read-only.
    * @return A const reference to the digest tree.
@@ -127,6 +110,23 @@ public:
   std::string chat_prefix_;
 
 private:
+  class DigestLogEntry {
+  public:
+    DigestLogEntry
+      (const std::string& digest,
+       const google::protobuf::RepeatedPtrField<Sync::SyncState>& data);
+
+    const std::string&
+    getDigest() const { return digest_; }
+
+    const google::protobuf::RepeatedPtrField<Sync::SyncState>&
+    getData() const { return *data_; }
+
+  private:
+    std::string digest_;
+    ptr_lib::shared_ptr<google::protobuf::RepeatedPtrField<Sync::SyncState> > data_;
+  };
+
   /**
    * Make a data packet with the syncMessage and with name 
    * broadcastPrefix_ + chatroom_ + "/" + digest. Sign and send.
