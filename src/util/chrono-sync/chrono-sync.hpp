@@ -47,6 +47,7 @@ public:
    * and empty content.
    * @param sendchatinterest
    * @param initialchat
+   * @param chatPrefix
    * @param chatroom
    * @param session
    * @param transport
@@ -57,8 +58,9 @@ public:
    */
   ChronoSync
     (SendChatInterest sendchatinterest, InitialChat initialchat,
-     const std::string& chatroom, int session, Transport& transport, Face& face,
-     KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime);
+     const std::string& chatPrefix, const std::string& chatroom, int session,
+     Transport& transport, Face& face, KeyChain& keyChain,
+     const Name& certificateName, Milliseconds sync_lifetime);
 
   /**
    * Get the current sequence number in the digest tree for the given
@@ -116,9 +118,6 @@ public:
 
   int
   getSequenceNo() const { return usrseq_; }
-
-  // TODO: Make private.
-  std::string chat_prefix_;
 
 private:
   class DigestLogEntry {
@@ -198,6 +197,7 @@ private:
   InitialChat initialChat_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   DigestTree digest_tree_;
+  std::string chat_prefix_;
   std::string chatroom_;
   int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
   int session_;

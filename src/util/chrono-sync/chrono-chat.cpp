@@ -224,13 +224,6 @@ ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
     (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
      DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
-  ChronoChat::sync = new ChronoSync
-    (bind(&Chat::sendInterest, ChronoChat::chat, _1),
-     bind(&Chat::initial, ChronoChat::chat, _1),
-     ChronoChat::chatroom, ChronoChat::session, *ChronoChat::transport,
-     *ChronoChat::face, *ChronoChat::keyChain, ChronoChat::certificateName,
-     ChronoChat::sync_lifetime);
-
   //Getting Routable Chat Name Prefix Through Auto Configure
   Name n0("/local/ndn/prefix");
   Interest interest(n0);
@@ -254,7 +247,11 @@ ChronoChat::prefixData
   trim(localPrefix);
   // This should only be called once, so get the random string here.
   ChronoChat::chat_prefix = localPrefix + "/" + ChronoChat::chatroom + "/" + Chat::getRandomString();
-  ChronoChat::sync->chat_prefix_ = chat_prefix;
+
+  sync = new ChronoSync
+    (bind(&Chat::sendInterest, ChronoChat::chat, _1),
+     bind(&Chat::initial, ChronoChat::chat, _1), chat_prefix, chatroom, session,
+     *transport, *face, *keyChain, certificateName, sync_lifetime);
 
   Name n1(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/");
   ChronoChat::face->registerPrefix

@@ -31,13 +31,14 @@ namespace ndn {
 
 ChronoSync::ChronoSync
   (SendChatInterest sendchatinterest, InitialChat initialchat,
-   const std::string& chatroom, int session, Transport& transport, Face& face,
-   KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime)
+   const string& chatPrefix, const string& chatroom, int session,
+   Transport& transport, Face& face, KeyChain& keyChain,
+   const Name& certificateName, Milliseconds sync_lifetime)
 : sendChatInterest_(sendchatinterest), initialChat_(initialchat),
-  chatroom_(chatroom), session_(session), transport_(transport), face_(face),
-  keyChain_(keyChain), certificateName_(certificateName),
-  sync_lifetime_(sync_lifetime), broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"),
-  usrseq_(-1), flag_(0)
+  chat_prefix_(chatPrefix), chatroom_(chatroom), session_(session),
+  transport_(transport), face_(face), keyChain_(keyChain),
+  certificateName_(certificateName), sync_lifetime_(sync_lifetime),
+  broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"), usrseq_(-1), flag_(0)
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
