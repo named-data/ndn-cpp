@@ -66,7 +66,7 @@ Chat::initial(int seqno)
     cout << ChronoChat::screen_name << ": Join" << endl;
 #endif
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
+      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
        "xxx", ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
       msgcache_.erase(msgcache_.begin());
@@ -271,11 +271,11 @@ Chat::heartbeat()
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
-  ChronoChat::sync->publishNextSequenceNumber();
+  ChronoChat::sync->publishNextSequenceNo();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->getSequenceNumber(),
+    (ChronoChat::sync->getSequenceNo(),
      SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx",
      ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
@@ -289,7 +289,7 @@ Chat::sendMessage()
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNumber(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
 #if 0 // TODO: Get the chat message.
   var msg = document.getElementById('fname').value.trim();
@@ -303,9 +303,9 @@ Chat::sendMessage()
 #if 0 // TODO: Clear fname (why?)
     document.getElementById('fname').value = "";
 #endif
-    ChronoChat::sync->publishNextSequenceNumber();
+    ChronoChat::sync->publishNextSequenceNo();
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNumber(),
+      (ChronoChat::sync->getSequenceNo(),
        SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg,
        ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
@@ -334,9 +334,9 @@ Chat::leave()
   $("#chat").hide();
   document.getElementById('room').innerHTML = 'Please close the window. Thank you';
 #endif
-  ChronoChat::sync->publishNextSequenceNumber();
+  ChronoChat::sync->publishNextSequenceNo();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->getSequenceNumber(),
+    (ChronoChat::sync->getSequenceNo(),
      SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx",
      ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)

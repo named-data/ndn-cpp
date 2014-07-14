@@ -81,7 +81,7 @@ ChronoSync::update
 }
 
 void
-ChronoSync::publishNextSequenceNumber()
+ChronoSync::publishNextSequenceNo()
 {
   ++usrseq_;
 

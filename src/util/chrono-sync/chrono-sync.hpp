@@ -86,10 +86,10 @@ public:
    * creates a new root digest. Finally, express an interest for the next sync
    * update with the name broadcast prefix + chatroom_ + the new root digest.
    * After this, you should publish the content for the new sequence number.
-   * You can get the new sequence number with getSequenceNumber().
+   * You can get the new sequence number with getSequenceNo().
    */
   void
-  publishNextSequenceNumber();
+  publishNextSequenceNo();
 
   // Process Sync Interest.
   void
@@ -115,7 +115,7 @@ public:
   getBroadcastPrefix() const { return broadcastPrefix_; }
 
   int
-  getSequenceNumber() const { return usrseq_; }
+  getSequenceNo() const { return usrseq_; }
 
   // TODO: Make private.
   std::string chat_prefix_;
