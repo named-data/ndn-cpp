@@ -190,32 +190,32 @@ void
 ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
 {
   // From index.html function login().)
-  ChronoChat::screen_name = screenName;
-  ChronoChat::session = (int)::round(ndn_getNowMilliseconds()  / 1000.0);
+  screen_name = screenName;
+  session = (int)::round(ndn_getNowMilliseconds()  / 1000.0);
   ostringstream tempStream;
-  tempStream << ChronoChat::screen_name << ChronoChat::session;
-  ChronoChat::usrname = tempStream.str();
-  ChronoChat::chatroom = chatRoom;
+  tempStream << screen_name << session;
+  usrname = tempStream.str();
+  chatroom = chatRoom;
 
-  ChronoChat::transport.reset(new TcpTransport());
-  ChronoChat::face.reset
-    (new Face(ChronoChat::transport,
+  transport.reset(new TcpTransport());
+  face.reset
+    (new Face(transport,
      ptr_lib::make_shared<TcpTransport::ConnectionInfo>(hub)));
-  ChronoChat::chat = new Chat();
+  chat = new Chat();
 
   ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
     (new MemoryIdentityStorage());
   ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage
     (new MemoryPrivateKeyStorage());
-  ChronoChat::keyChain.reset
+  keyChain.reset
     (new KeyChain
      (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage),
       ptr_lib::shared_ptr<NoVerifyPolicyManager>(new NoVerifyPolicyManager())));
-  ChronoChat::keyChain->setFace(ChronoChat::face.get());
+  keyChain->setFace(face.get());
 
   // Initialize the storage.
   Name keyName("/testname/DSK-123");
-  ChronoChat::certificateName = keyName.getSubName(0, keyName.size() - 1).append
+  certificateName = keyName.getSubName(0, keyName.size() - 1).append
     ("KEY").append(keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
   identityStorage->addKey
     (keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER,
@@ -230,7 +230,7 @@ ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
   interest.setInterestLifetimeMilliseconds(1000.0);
   interest.setChildSelector(1);
   interest.setAnswerOriginKind(0);
-  ChronoChat::face->expressInterest
+  face->expressInterest
     (interest, ChronoChat::prefixData, ChronoChat::prefixTimeOut);
 
   //_LOG_DEBUG("Started...");
@@ -246,31 +246,31 @@ ChronoChat::prefixData
   string localPrefix((const char*)co->getContent().buf(), co->getContent().size());
   trim(localPrefix);
   // This should only be called once, so get the random string here.
-  ChronoChat::chat_prefix = localPrefix + "/" + ChronoChat::chatroom + "/" + Chat::getRandomString();
+  chat_prefix = localPrefix + "/" + chatroom + "/" + Chat::getRandomString();
 
   sync = new ChronoSync
     (bind(&Chat::sendInterest, ChronoChat::chat, _1),
      bind(&Chat::initial, ChronoChat::chat, _1), chat_prefix, chatroom, session,
      *transport, *face, *keyChain, certificateName, sync_lifetime);
 
-  Name n1(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/");
-  ChronoChat::face->registerPrefix
+  Name n1(sync->getBroadcastPrefix() + chatroom + "/");
+  face->registerPrefix
     (n1, bind(&ChronoSync::onInterest, ChronoChat::sync, _1, _2, _3, _4),
      ChronoChat::onRegisterFailed);
   //_LOG_DEBUG("sync prefix registered.");
 
-  ChronoChat::face->registerPrefix
-    (Name(ChronoChat::chat_prefix),
-     bind(&Chat::onInterest, ChronoChat::chat, _1, _2, _3, _4),
+  face->registerPrefix
+    (Name(chat_prefix),
+     bind(&Chat::onInterest, chat, _1, _2, _3, _4),
      ChronoChat::onRegisterFailed);
   //_LOG_DEBUG("data prefix registered.");
-  Name n(ChronoChat::sync->getBroadcastPrefix() + ChronoChat::chatroom + "/00");
+  Name n(sync->getBroadcastPrefix() + chatroom + "/00");
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
-  ChronoChat::face->expressInterest
-    (interest, bind(&ChronoSync::onData, ChronoChat::sync, _1, _2),
-     bind(&ChronoSync::initialTimeOut, ChronoChat::sync, _1));
+  face->expressInterest
+    (interest, bind(&ChronoSync::onData, sync, _1, _2),
+     bind(&ChronoSync::initialTimeOut, sync, _1));
   //_LOG_DEBUG("initial sync express");
   //_LOG_DEBUG(n.toUri());
 }
