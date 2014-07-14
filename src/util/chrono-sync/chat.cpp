@@ -351,13 +351,12 @@ Chat::alive
   (int temp_seq, const string& name, int session, const string& prefix)
 {
   //_LOG_DEBUG("check alive");
-  int index_n = ChronoChat::sync->getDigestTree().find(prefix,session);
+  int seq = ChronoChat::sync->getProducerSequenceNo(prefix, session);
   ostringstream tempStream;
   tempStream << name << session;
   string nameAndSession = tempStream.str();
   vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
-  if (index_n != -1 && n != roster_.end()) {
-    int seq = ChronoChat::sync->getDigestTree().get(index_n).getSequenceNo();
+  if (seq != -1 && n != roster_.end()) {
     if (temp_seq == seq){
       roster_.erase(n);
       //_LOG_DEBUG(name + " leave");

@@ -61,11 +61,22 @@ public:
      KeyChain& keyChain, const Name& certificateName, Milliseconds sync_lifetime);
 
   /**
-   * Get the digest tree for read-only.
-   * @return A const reference to the digest tree.
+   * Get the current sequence number in the digest tree for the given
+   * producer namePrefix and sessionNo.
+   * @param namePrefix The producer name prefix.
+   * @param sessionNo The producer session number.
+   * @return The current producer sequence number, or -1 if the producer
+   * namePrefix and sessionNo are not in the digest tree.
    */
-  const DigestTree&
-  getDigestTree() const { return digest_tree_; }
+  int
+  getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
+  {
+    int index = digest_tree_.find(namePrefix, sessionNo);
+    if (index < 0)
+      return -1;
+    else
+      return digest_tree_.get(index).getSequenceNo();
+  }
 
   /**
    * Increment the sequence number, create a sync message with the new
