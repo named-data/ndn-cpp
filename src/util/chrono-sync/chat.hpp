@@ -37,7 +37,7 @@ public:
   
   // Initialization: push the JOIN message in to the msgcache, update roster and start heartbeat.
   void
-  initial(int seqno);
+  initial();
   
   // Send a Chat Interest to fetch chat messages after get the user gets the Sync data packet back but will not send interest.
   void

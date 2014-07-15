@@ -39,7 +39,7 @@ public:
   typedef func_lib::function<void
     (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content)> SendChatInterest;
 
-  typedef func_lib::function<void(int sequence)> InitialChat;
+  typedef func_lib::function<void()> InitialChat;
 
   /**
    * Create a new ChronoSync to communicate using the given face. Initialize

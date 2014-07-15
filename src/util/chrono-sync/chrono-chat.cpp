@@ -250,7 +250,7 @@ ChronoChat::prefixData
 
   sync = new ChronoSync
     (bind(&Chat::sendInterest, ChronoChat::chat, _1),
-     bind(&Chat::initial, ChronoChat::chat, _1), chat_prefix, chatroom, session,
+     bind(&Chat::initial, ChronoChat::chat), chat_prefix, chatroom, session,
      *transport, *face, *keyChain, certificateName, sync_lifetime,
      ChronoChat::onRegisterFailed);
 

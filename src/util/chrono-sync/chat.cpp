@@ -39,9 +39,8 @@ using namespace func_lib::placeholders;
 
 namespace ndn {
 
-// TODO: seqno is not used. Does ChronoSync::InitialChat need it?
 void
-Chat::initial(int seqno)
+Chat::initial()
 {
   Chat& self = *this;
   //_LOG_DEBUG("initial chat");

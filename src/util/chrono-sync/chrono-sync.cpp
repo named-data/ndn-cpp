@@ -355,7 +355,7 @@ ChronoSync::initialOndata
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(session_);
       if (update(content_t.ss()))
-        initialChat_(usrseq_);
+        initialChat_();
     }
   }
 
@@ -390,7 +390,7 @@ ChronoSync::initialOndata
     content2->mutable_seqno()->set_session(session_);
 
     if (update(content_t.ss()))
-      initialChat_(usrseq_);
+      initialChat_();
   }
 }
 
@@ -413,7 +413,7 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   content->mutable_seqno()->set_session(session_);
   update(content_t.ss());
 
-  initialChat_(usrseq_);
+  initialChat_();
 
   Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
   Interest retryInterest(n);
