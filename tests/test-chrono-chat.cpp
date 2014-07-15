@@ -22,12 +22,23 @@
 #include <iostream>
 #include <time.h>
 #include <unistd.h>
+#include <poll.h>
 #include "../src/util/chrono-sync/chat.hpp"
 #include "../src/util/chrono-sync/chrono-chat.hpp"
 #include "../src/c/util/time.h"
 
 using namespace std;
 using namespace ndn;
+
+static bool
+isStdinReady()
+{
+  struct pollfd pollInfo;
+  pollInfo.fd = STDIN_FILENO;
+  pollInfo.events = POLLIN;
+
+  return poll(&pollInfo, 1, 0) > 0;
+}
 
 int main(int argc, char** argv)
 {
