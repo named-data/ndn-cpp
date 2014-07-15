@@ -25,7 +25,6 @@
 #include <poll.h>
 #include "../src/util/chrono-sync/chat.hpp"
 #include "../src/util/chrono-sync/chrono-chat.hpp"
-#include "../src/c/util/time.h"
 
 using namespace std;
 using namespace ndn;
@@ -43,22 +42,25 @@ isStdinReady()
 int main(int argc, char** argv)
 {
   try {
-    ChronoChat::start("user1", "ndnchat7", "localhost");
+    ChronoChat::start("user1", "ndnchat1", "localhost");
 
-    MillisecondsSince1970 start = ndn_getNowMilliseconds();
-    bool sentMessage1 = false;
-    bool sentMessage2 = false;
     while (true) {
-      if (!sentMessage1 && ndn_getNowMilliseconds() - start > 10000) {
-        sentMessage1 = true;
-        ChronoChat::chat->sendMessage();
+      if (isStdinReady()) {
+        char input[256];
+        ssize_t nBytes = ::read(STDIN_FILENO, input, sizeof(input) - 1);
+        if (nBytes < 0)
+          // Don't expect an error reading from stdin.
+          return -1;
+
+        // Trim and terminate.
+        while (nBytes > 0 &&
+               (input[nBytes - 1] == '\n' || input[nBytes - 1] == '\r'))
+          --nBytes;
+        input[nBytes] = 0;
+        
+        ChronoChat::chat->sendMessage(input);
       }
-#if 0
-      if (!sentMessage2 && ndn_getNowMilliseconds() - start > 20000) {
-        sentMessage2 = true;
-        ChronoChat::chat->sendMessage();
-      }
-#endif
+
       ChronoChat::face->processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
