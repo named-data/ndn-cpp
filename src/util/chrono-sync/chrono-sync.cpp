@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include "../logging.hpp"
 #include "sync-state.pb.h"
+#include "digest-tree.hpp"
 #include "chrono-sync.hpp"
 
 using namespace std;
@@ -39,7 +40,8 @@ ChronoSync::ChronoSync
   chat_prefix_(chatPrefix), chatroom_(chatroom), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
   certificateName_(certificateName), sync_lifetime_(sync_lifetime),
-  broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"), usrseq_(-1), flag_(0)
+  broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"), usrseq_(-1), flag_(0),
+  digest_tree_(new DigestTree())
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
@@ -76,7 +78,7 @@ ChronoSync::update
 {
   for (size_t i = 0; i < content.size(); ++i) {
     if (content.Get(i).type() == 0) {
-      if (digest_tree_.update
+      if (digest_tree_->update
           (content.Get(i).name(), content.Get(i).seqno().session(),
            content.Get(i).seqno().seq())) {
         // The digest tree was updated.
@@ -86,13 +88,23 @@ ChronoSync::update
     }
   }
 
-  if (logfind(digest_tree_.getRoot()) == -1) {
+  if (logfind(digest_tree_->getRoot()) == -1) {
     digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
-      (digest_tree_.getRoot(), content));
+      (digest_tree_->getRoot(), content));
     return true;
   }
   else
     return false;
+}
+
+int
+ChronoSync::getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
+{
+  int index = digest_tree_->find(namePrefix, sessionNo);
+  if (index < 0)
+    return -1;
+  else
+    return digest_tree_->get(index).getSequenceNo();
 }
 
 void
@@ -107,7 +119,7 @@ ChronoSync::publishNextSequenceNo()
   content->mutable_seqno()->set_seq(usrseq_);
   content->mutable_seqno()->set_session(session_);
 
-  broadcastSyncState(digest_tree_.getRoot(), syncMessage);
+  broadcastSyncState(digest_tree_->getRoot(), syncMessage);
 
   if (!update(syncMessage.ss()))
     // Since we incremented the sequence number, we expect there to be a
@@ -118,7 +130,7 @@ ChronoSync::publishNextSequenceNo()
   // TODO: Should we have an option to not express an interest if this is the
   //   final publish of the session?
   Interest interest(Name
-    (broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot()));
+    (broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot()));
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
     (interest, bind(&ChronoSync::onData, this, _1, _2),
@@ -143,7 +155,7 @@ ChronoSync::onInterest
     // Recovery interest or newcomer interest.
     processRecoveryInst(*inst, syncdigest, transport);
   else {
-    if (syncdigest != digest_tree_.getRoot()) {
+    if (syncdigest != digest_tree_->getRoot()) {
       size_t index = logfind(syncdigest);
       if (index == -1) {
         ChronoSync& self = *this;
@@ -174,7 +186,7 @@ ChronoSync::onData
   Sync::SyncStateMsg content_t;
   content_t.ParseFromArray(co->getContent().buf(), co->getContent().size());
   const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = content_t.ss();
-  if (digest_tree_.getRoot() == "00") {
+  if (digest_tree_->getRoot() == "00") {
     flag_ = 1;
     //processing initial sync data
     initialOndata(content);
@@ -190,7 +202,7 @@ ChronoSync::onData
   // Send the Chat Interest to fetch the data. This can be changed to another
   //   function in other applications.
   sendChatInterest_(content);
-  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
+  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot());
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -207,12 +219,12 @@ ChronoSync::processRecoveryInst
   //_LOG_DEBUG("processRecoveryInst");
   if (logfind(syncdigest) != -1) {
     Sync::SyncStateMsg content_t;
-    for (size_t i = 0; i < digest_tree_.size(); ++i) {
+    for (size_t i = 0; i < digest_tree_->size(); ++i) {
       Sync::SyncState* content = content_t.add_ss();
-      content->set_name(digest_tree_.get(i).getNamePrefix());
+      content->set_name(digest_tree_->get(i).getNamePrefix());
       content->set_type(Sync::SyncState_ActionType_UPDATE);
-      content->mutable_seqno()->set_seq(digest_tree_.get(i).getSequenceNo());
-      content->mutable_seqno()->set_session(digest_tree_.get(i).getSessionNo());
+      content->mutable_seqno()->set_seq(digest_tree_->get(i).getSequenceNo());
+      content->mutable_seqno()->set_session(digest_tree_->get(i).getSessionNo());
     }
 
     if (content_t.ss_size() != 0) {
@@ -247,7 +259,7 @@ ChronoSync::processSyncInst
       if (temp.Get(i).type() != 0)
         continue;
 
-      if (digest_tree_.find(temp.Get(i).name(), temp.Get(i).seqno().session()) != -1) {
+      if (digest_tree_->find(temp.Get(i).name(), temp.Get(i).seqno().session()) != -1) {
         int n = -1;
         for (size_t k = 0; k < data_name.size(); ++k) {
           if (data_name[k] == temp.Get(i).name()) {
@@ -313,7 +325,7 @@ ChronoSync::judgeRecovery(const string& syncdigest_t, Transport& transport)
 {
   int index2 = logfind(syncdigest_t);
   if (index2 != -1) {
-    if (syncdigest_t != digest_tree_.getRoot())
+    if (syncdigest_t != digest_tree_->getRoot())
       processSyncInst(index2, syncdigest_t, transport);
   }
   else
@@ -326,7 +338,7 @@ ChronoSync::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
    //_LOG_DEBUG("Sync Interest time out.");
    //_LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
   string component = interest->getName().get(4).toEscapedString();
-  if (component == digest_tree_.getRoot()) {
+  if (component == digest_tree_->getRoot()) {
     Name n(interest->getName());
     Interest retryInterest(interest->getName());
     retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
@@ -344,7 +356,7 @@ ChronoSync::initialOndata
 {
   // The user is a new comer and receive data of all other people in the group.
   update(content);
-  string digest_t = digest_tree_.getRoot();
+  string digest_t = digest_tree_->getRoot();
   for (size_t i = 0; i < content.size(); ++i) {
     if (content.Get(i).name() == chat_prefix_ && content.Get(i).seqno().session() == session_) {
       // If the user was an old comer, after add the static log he needs to increase his seqno by 1.
@@ -378,7 +390,7 @@ ChronoSync::initialOndata
 
   broadcastSyncState(digest_t, content2_t);
 
-  if (digest_tree_.find(chat_prefix_, session_) == -1) {
+  if (digest_tree_->find(chat_prefix_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
     //_LOG_DEBUG("initial state")
     ++usrseq_;
@@ -415,7 +427,7 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 
   initialChat_();
 
-  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_.getRoot());
+  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot());
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest

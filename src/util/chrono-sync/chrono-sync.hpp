@@ -26,13 +26,14 @@
 #include <vector>
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
-#include "digest-tree.hpp"
 
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
 namespace Sync { class SyncStateMsg; }
 namespace Sync { class SyncState; }
 
 namespace ndn {
+
+class DigestTree;
 
 class ChronoSync {
 public:
@@ -76,14 +77,7 @@ public:
    * namePrefix and sessionNo are not in the digest tree.
    */
   int
-  getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
-  {
-    int index = digest_tree_.find(namePrefix, sessionNo);
-    if (index < 0)
-      return -1;
-    else
-      return digest_tree_.get(index).getSequenceNo();
-  }
+  getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const;
 
   /**
    * Increment the sequence number, create a sync message with the new
@@ -201,7 +195,7 @@ private:
   SendChatInterest sendChatInterest_;
   InitialChat initialChat_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
-  DigestTree digest_tree_;
+  ptr_lib::shared_ptr<DigestTree> digest_tree_;
   std::string chat_prefix_;
   std::string chatroom_;
   int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
