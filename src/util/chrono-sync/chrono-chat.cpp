@@ -251,28 +251,14 @@ ChronoChat::prefixData
   sync = new ChronoSync
     (bind(&Chat::sendInterest, ChronoChat::chat, _1),
      bind(&Chat::initial, ChronoChat::chat, _1), chat_prefix, chatroom, session,
-     *transport, *face, *keyChain, certificateName, sync_lifetime);
-
-  Name n1(sync->getBroadcastPrefix() + chatroom + "/");
-  face->registerPrefix
-    (n1, bind(&ChronoSync::onInterest, ChronoChat::sync, _1, _2, _3, _4),
+     *transport, *face, *keyChain, certificateName, sync_lifetime,
      ChronoChat::onRegisterFailed);
-  //_LOG_DEBUG("sync prefix registered.");
 
   face->registerPrefix
     (Name(chat_prefix),
      bind(&Chat::onInterest, chat, _1, _2, _3, _4),
      ChronoChat::onRegisterFailed);
   //_LOG_DEBUG("data prefix registered.");
-  Name n(sync->getBroadcastPrefix() + chatroom + "/00");
-  Interest interest(n);
-  interest.setInterestLifetimeMilliseconds(1000);
-  interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
-  face->expressInterest
-    (interest, bind(&ChronoSync::onData, sync, _1, _2),
-     bind(&ChronoSync::initialTimeOut, sync, _1));
-  //_LOG_DEBUG("initial sync express");
-  //_LOG_DEBUG(n.toUri());
 }
 
 void

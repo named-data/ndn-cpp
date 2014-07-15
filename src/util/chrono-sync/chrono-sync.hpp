@@ -44,7 +44,8 @@ public:
   /**
    * Create a new ChronoSync to communicate using the given face. Initialize
    * the broadcast prefix.  Initialize the digest log with a digest of "00" and
-   * and empty content.
+   * and empty content. Register the prefix to receive interests for the
+   * chatroom and express an interest for the initial root digest "00".
    * @param sendchatinterest
    * @param initialchat
    * @param chatPrefix
@@ -55,12 +56,16 @@ public:
    * @param keyChain
    * @param certificateName
    * @param sync_lifetime
+   * @param onRegisterFailed A function object to call if failed to register the
+   * prefix to receive interests for the chatroom. This calls
+   * onRegisterFailed(prefix) where prefix is the broadcast prefix + chatroom.
    */
   ChronoSync
     (SendChatInterest sendchatinterest, InitialChat initialchat,
      const std::string& chatPrefix, const std::string& chatroom, int session,
      Transport& transport, Face& face, KeyChain& keyChain,
-     const Name& certificateName, Milliseconds sync_lifetime);
+     const Name& certificateName, Milliseconds sync_lifetime,
+     const OnRegisterFailed& onRegisterFailed);
 
   /**
    * Get the current sequence number in the digest tree for the given
@@ -92,23 +97,6 @@ public:
    */
   void
   publishNextSequenceNo();
-
-  // Process Sync Interest.
-  void
-  onInterest
-    (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
-     uint64_t registerPrefixId);
-
-  // Process Sync Data.
-  void
-  onData
-    (const ptr_lib::shared_ptr<const Interest>& inst,
-     const ptr_lib::shared_ptr<Data>& co);
-
-  // Initial sync interest timeout, which means there are no other people in the chatroom.
-  void
-  initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
   int
   getFlag() const { return flag_; }
@@ -161,6 +149,23 @@ private:
   // Search the digest log by digest.
   int
   logfind(const std::string& digest) const;
+
+  // Process Sync Interest.
+  void
+  onInterest
+    (const ptr_lib::shared_ptr<const Name>& prefix,
+     const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+     uint64_t registerPrefixId);
+
+  // Process Sync Data.
+  void
+  onData
+    (const ptr_lib::shared_ptr<const Interest>& inst,
+     const ptr_lib::shared_ptr<Data>& co);
+
+  // Initial sync interest timeout, which means there are no other people in the chatroom.
+  void
+  initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
   // Process Recovery Interest, go through digest tree and send data including info of all nodes
   void

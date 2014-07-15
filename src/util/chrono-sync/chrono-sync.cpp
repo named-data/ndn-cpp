@@ -33,7 +33,8 @@ ChronoSync::ChronoSync
   (SendChatInterest sendchatinterest, InitialChat initialchat,
    const string& chatPrefix, const string& chatroom, int session,
    Transport& transport, Face& face, KeyChain& keyChain,
-   const Name& certificateName, Milliseconds sync_lifetime)
+   const Name& certificateName, Milliseconds sync_lifetime,
+   const OnRegisterFailed& onRegisterFailed)
 : sendChatInterest_(sendchatinterest), initialChat_(initialchat),
   chat_prefix_(chatPrefix), chatroom_(chatroom), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
@@ -43,6 +44,19 @@ ChronoSync::ChronoSync
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
     ("00", emptyContent.ss()));
+
+  face.registerPrefix
+    (Name(broadcastPrefix_ + chatroom),
+     bind(&ChronoSync::onInterest, this, _1, _2, _3, _4), onRegisterFailed);
+
+  Interest interest(Name(broadcastPrefix_ + chatroom + "/00"));
+  interest.setInterestLifetimeMilliseconds(1000);
+  interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
+  face.expressInterest
+    (interest, bind(&ChronoSync::onData, this, _1, _2),
+     bind(&ChronoSync::initialTimeOut, this, _1));
+  //_LOG_DEBUG("initial sync expressed");
+  //_LOG_DEBUG(interest.getName().toUri());
 }
 
 int
