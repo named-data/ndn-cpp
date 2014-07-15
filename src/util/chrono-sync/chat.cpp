@@ -284,18 +284,11 @@ Chat::heartbeat()
 }
 
 void
-Chat::sendMessage()
+Chat::sendMessage(const string& chatmsg)
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
       (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
-
-#if 0 // TODO: Get the chat message.
-  var msg = document.getElementById('fname').value.trim();
-  var chatmsg = msg;
-#else
-  string chatmsg("hello");
-#endif
 
   // forming Sync Data Packet.
   if (chatmsg != "") {

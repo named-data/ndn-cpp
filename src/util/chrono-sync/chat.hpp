@@ -65,7 +65,7 @@ public:
   
   // Send a chat message.
   void
-  sendMessage();
+  sendMessage(const std::string& chatmsg);
   
   // Send leave message and leave.
   void
