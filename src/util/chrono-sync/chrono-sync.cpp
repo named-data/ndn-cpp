@@ -24,7 +24,7 @@
 #include "../logging.hpp"
 #include "sync-state.pb.h"
 #include "digest-tree.hpp"
-#include "chrono-sync.hpp"
+#include <ndn-cpp/util/chrono-sync/chrono-sync.hpp>
 
 using namespace std;
 

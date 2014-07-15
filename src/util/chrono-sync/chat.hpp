@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <ndn-cpp/face.hpp>
-#include "chrono-sync.hpp"
+#include <ndn-cpp/util/chrono-sync/chrono-sync.hpp>
 
 namespace ndn {
 

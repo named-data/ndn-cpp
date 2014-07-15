@@ -25,7 +25,7 @@
 
 #include <string>
 #include <ndn-cpp/transport/tcp-transport.hpp>
-#include "chrono-sync.hpp"
+#include <ndn-cpp/util/chrono-sync/chrono-sync.hpp>
 
 namespace ndn {
 

@@ -24,8 +24,8 @@
 #define NDN_CHRONO_SYNC_HPP
 
 #include <vector>
-#include <ndn-cpp/face.hpp>
-#include <ndn-cpp/security/key-chain.hpp>
+#include "../../face.hpp"
+#include "../../security/key-chain.hpp"
 
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
 namespace Sync { class SyncStateMsg; }
