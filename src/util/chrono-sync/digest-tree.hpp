@@ -89,14 +89,9 @@ public:
       {
         int nameComparison = node1->namePrefix_.compare(node2->namePrefix_);
         if (nameComparison != 0)
-          return nameComparison;
+          return nameComparison < 0;
 
-        if (node1->seqno_session_ > node2->seqno_session_)
-          return 1;
-        else if (node1->seqno_session_ < node2->seqno_session_)
-          return -1;
-        else
-          return 0;
+        return node1->seqno_session_ < node2->seqno_session_;
       }
     };
 
