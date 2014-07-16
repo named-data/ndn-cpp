@@ -333,9 +333,6 @@ Chat::leave()
      ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
     msgcache_.erase(msgcache_.begin());
-
-  //_LOG_DEBUG("leave log add");
-  ChronoChat::face->shutdown();
 }
 
 void
