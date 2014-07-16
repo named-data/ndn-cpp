@@ -160,19 +160,19 @@ Chat::onInterest
   SyncDemo::ChatMessage content;
   int seq = ::atoi(inst->getName().get(6).toEscapedString().c_str());
   for (int i = msgcache_.size() - 1; i >= 0; --i) {
-    if (msgcache_[i]->seqno_ == seq) {
-      if (msgcache_[i]->msgtype_ != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
+    if (msgcache_[i]->getSequenceNo() == seq) {
+      if (msgcache_[i]->getMessageType() != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
         content.set_from(screen_name_);
         content.set_to(chatroom_);
-        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->msgtype_);
-        content.set_timestamp(::round(msgcache_[i]->time_ / 1000.0));
+        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->getMessageType());
+        content.set_timestamp(::round(msgcache_[i]->getTime() / 1000.0));
       }
       else {
         content.set_from(screen_name_);
         content.set_to(chatroom_);
-        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->msgtype_);
-        content.set_data(msgcache_[i]->msg_);
-        content.set_timestamp(::round(msgcache_[i]->time_ / 1000.0));
+        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->getMessageType());
+        content.set_data(msgcache_[i]->getMessage());
+        content.set_timestamp(::round(msgcache_[i]->getTime() / 1000.0));
       }
       break;
     }

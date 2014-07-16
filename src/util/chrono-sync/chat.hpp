@@ -88,15 +88,26 @@ private:
   static void
   onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
 
-  // TODO: Make private.  
   class CachedMessage {
   public:
     CachedMessage
       (int seqno, int msgtype, std::string msg, MillisecondsSince1970 time)
     : seqno_(seqno), msgtype_(msgtype), msg_(msg), time_(time)
     {}
-    
-    // TODO: Make private.
+
+    int
+    getSequenceNo() const { return seqno_; }
+
+    int
+    getMessageType() const { return msgtype_; }
+
+    const std::string&
+    getMessage() const { return msg_; }
+
+    MillisecondsSince1970
+    getTime() const { return time_; }
+
+  private:
     int seqno_;
     // This is really enum SyncDemo::ChatMessage_ChatMessageType, but make it
     //   in int so that the head doesn't need to include the protobuf header.
