@@ -31,12 +31,12 @@ using namespace std;
 namespace ndn {
 
 ChronoSync::ChronoSync
-  (SendChatInterest sendchatinterest, InitialChat initialchat,
+  (OnReceivedSyncState onReceivedSyncState, InitialChat initialchat,
    const string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
    int session, Transport& transport, Face& face, KeyChain& keyChain,
    const Name& certificateName, Milliseconds sync_lifetime,
    const OnRegisterFailed& onRegisterFailed)
-: sendChatInterest_(sendchatinterest), initialChat_(initialchat),
+: onReceivedSyncState_(onReceivedSyncState), initialChat_(initialchat),
   applicationDataPrefix_(applicationDataPrefix),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
@@ -205,9 +205,8 @@ ChronoSync::onData
       flag_ = 0;
   }
 
-  // Send the Chat Interest to fetch the data. This can be changed to another
-  //   function in other applications.
-  sendChatInterest_(content);
+  // Send the interests to fetch the application data.
+  onReceivedSyncState_(content);
   Name n(applicationBroadcastPrefix_);
   n.append(digest_tree_->getRoot());
   Interest interest(n);

@@ -38,7 +38,8 @@ class DigestTree;
 class ChronoSync {
 public:
   typedef func_lib::function<void
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content)> SendChatInterest;
+    (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content)>
+      OnReceivedSyncState;
 
   typedef func_lib::function<void()> InitialChat;
 
@@ -47,7 +48,9 @@ public:
    * digest log with a digest of "00" and and empty content. Register the prefix
    * to receive interests for the applicationBroadcastPrefix and express an
    * interest for the initial root digest "00".
-   * @param sendchatinterest
+   * @param onReceivedSyncState This callback is called when ChronoSync receives
+   * a sync state message. The callback should send interests to fetch the
+   * application data for the sequence numbers in the sync state.
    * @param initialchat
    * @param applicationDataPrefix The prefix used by this application instance
    * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
@@ -63,11 +66,10 @@ public:
    * @param certificateName
    * @param sync_lifetime
    * @param onRegisterFailed A function object to call if failed to register the
-   * prefix to receive interests for the applicationBroadcastPrefix. This calls
-   * onRegisterFailed(prefix) where prefix is the broadcast prefix + chatroom.
+   * prefix to receive interests for the applicationBroadcastPrefix.
    */
   ChronoSync
-    (SendChatInterest sendchatinterest, InitialChat initialchat,
+    (OnReceivedSyncState onReceivedSyncState, InitialChat initialchat,
      const std::string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
      int session, Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
@@ -87,10 +89,10 @@ public:
   /**
    * Increment the sequence number, create a sync message with the new
    * sequence number and publish a data packet where the name is
-   * the broadcast prefix + chatroom_ + the root digest of the current digest
+   * the applicationBroadcastPrefix + the root digest of the current digest
    * tree. Then add the sync message to the digest tree and digest log which
    * creates a new root digest. Finally, express an interest for the next sync
-   * update with the name broadcast prefix + chatroom_ + the new root digest.
+   * update with the name applicationBroadcastPrefix + the new root digest.
    * After this, you should publish the content for the new sequence number.
    * You can get the new sequence number with getSequenceNo().
    */
@@ -164,7 +166,7 @@ private:
     (const ptr_lib::shared_ptr<const Interest>& inst,
      const ptr_lib::shared_ptr<Data>& co);
 
-  // Initial sync interest timeout, which means there are no other people in the chatroom.
+  // Initial sync interest timeout, which means there are no other publishers yet.
   void
   initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
@@ -189,7 +191,7 @@ private:
   void
   syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
 
-  // Process initial data which usually include all other users' info in the chatroom, and send back the new comer's own info.
+  // Process initial data which usually includes all other publisher's info, and send back the new comer's own info.
   void
   initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
@@ -198,7 +200,7 @@ private:
   KeyChain& keyChain_;
   Name certificateName_;
   Milliseconds sync_lifetime_;
-  SendChatInterest sendChatInterest_;
+  OnReceivedSyncState onReceivedSyncState_;
   InitialChat initialChat_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
