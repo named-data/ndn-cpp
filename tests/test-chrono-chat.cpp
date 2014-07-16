@@ -29,6 +29,53 @@
 using namespace std;
 using namespace ndn;
 
+static const char *WHITESPACE_CHARS = " \n\r\t";
+
+/**
+ * Modify str in place to erase whitespace on the left.
+ * @param str
+ */
+static inline void
+trimLeft(string& str)
+{
+  size_t found = str.find_first_not_of(WHITESPACE_CHARS);
+  if (found != string::npos) {
+    if (found > 0)
+      str.erase(0, found);
+  }
+  else
+    // All whitespace
+    str.clear();
+}
+
+/**
+ * Modify str in place to erase whitespace on the right.
+ * @param str
+ */
+static inline void
+trimRight(string& str)
+{
+  size_t found = str.find_last_not_of(WHITESPACE_CHARS);
+  if (found != string::npos) {
+    if (found + 1 < str.size())
+      str.erase(found + 1);
+  }
+  else
+    // All whitespace
+    str.clear();
+}
+
+/**
+ * Modify str in place to erase whitespace on the left and right.
+ * @param str
+ */
+static void
+trim(string& str)
+{
+  trimLeft(str);
+  trimRight(str);
+}
+
 static bool
 isStdinReady()
 {
@@ -46,17 +93,15 @@ int main(int argc, char** argv)
 
     while (true) {
       if (isStdinReady()) {
-        char input[256];
-        ssize_t nBytes = ::read(STDIN_FILENO, input, sizeof(input) - 1);
+        char inputBuffer[256];
+        ssize_t nBytes = ::read(STDIN_FILENO, inputBuffer, sizeof(inputBuffer) - 1);
         if (nBytes < 0)
           // Don't expect an error reading from stdin.
           return -1;
 
-        // Trim and terminate.
-        while (nBytes > 0 &&
-               (input[nBytes - 1] == '\n' || input[nBytes - 1] == '\r'))
-          --nBytes;
-        input[nBytes] = 0;
+        inputBuffer[nBytes] = 0;
+        string input(inputBuffer);
+        trim(input);
         
         ChronoChat::chat->sendMessage(input);
       }
