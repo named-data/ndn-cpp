@@ -148,11 +148,15 @@ ChronoSync::onInterest
    //_LOG_DEBUG("Sync Interest received in callback.");
    //_LOG_DEBUG(inst->getName().toUri());
 
-  string syncdigest = inst->getName().get(4).toEscapedString();
-  if (inst->getName().size() == 6)
-    syncdigest = inst->getName().get(5).toEscapedString();
+  string syncdigest = inst->getName().get
+    (applicationBroadcastPrefix_.size()).toEscapedString();
+  if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2)
+    // Assume this is a recovery interest.
+    syncdigest = inst->getName().get
+      (applicationBroadcastPrefix_.size() + 1).toEscapedString();
    //_LOG_DEBUG("syncdigest: " + syncdigest);
-  if (inst->getName().size() == 6 || syncdigest == "00")
+  if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
+      syncdigest == "00")
     // Recovery interest or newcomer interest.
     processRecoveryInst(*inst, syncdigest, transport);
   else {
@@ -194,7 +198,8 @@ ChronoSync::onData
   }
   else {
     update(content);
-    if (inst->getName().size() == 6)
+    if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2)
+      // Assume this is a recovery interest.
       flag_ = 1;
     else
       flag_ = 0;
