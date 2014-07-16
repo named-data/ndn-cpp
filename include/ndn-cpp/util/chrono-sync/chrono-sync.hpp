@@ -49,7 +49,10 @@ public:
    * interest for the initial root digest "00".
    * @param sendchatinterest
    * @param initialchat
-   * @param chatPrefix
+   * @param applicationDataPrefix The prefix used by this application instance
+   * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
+   * This is used when sending a sync message for a new sequence number.
+   * This makes a copy of the string.
    * @param applicationBroadcastPrefix The broadcast name prefix including the
    * application name. For example, "/ndn/broadcast/ChronoChat-0.3/ndnchat1".
    * This makes a copy of the name.
@@ -60,13 +63,13 @@ public:
    * @param certificateName
    * @param sync_lifetime
    * @param onRegisterFailed A function object to call if failed to register the
-   * prefix to receive interests for the chatroom. This calls
+   * prefix to receive interests for the applicationBroadcastPrefix. This calls
    * onRegisterFailed(prefix) where prefix is the broadcast prefix + chatroom.
    */
   ChronoSync
     (SendChatInterest sendchatinterest, InitialChat initialchat,
-     const std::string& chatPrefix, const Name& applicationBroadcastPrefix, int session,
-     Transport& transport, Face& face, KeyChain& keyChain,
+     const std::string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
+     int session, Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
      const OnRegisterFailed& onRegisterFailed);
 
@@ -97,6 +100,11 @@ public:
   int
   getFlag() const { return flag_; }
 
+  /**
+   * Get the sequence number of the latest data published by this application
+   * instance.
+   * @return The sequence number.
+   */
   int
   getSequenceNo() const { return usrseq_; }
 
@@ -194,7 +202,7 @@ private:
   InitialChat initialChat_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
-  std::string chat_prefix_;
+  std::string applicationDataPrefix_;
   const Name applicationBroadcastPrefix_;
   int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
   int session_;
