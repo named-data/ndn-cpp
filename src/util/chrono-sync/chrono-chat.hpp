@@ -36,6 +36,10 @@ public:
   static void
   start(const char* screenName, const char* chatRoom, const char* hub);
 
+  static Chat* chat;
+  static ptr_lib::shared_ptr<Face> face;
+
+private:
   static void
   prefixData
     (const ptr_lib::shared_ptr<const Interest>& inst,
@@ -47,17 +51,10 @@ public:
   static void onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
 
   static ptr_lib::shared_ptr<Transport> transport;
-  static ptr_lib::shared_ptr<Face> face;
   static ptr_lib::shared_ptr<KeyChain> keyChain;
   static Name certificateName;
-  static std::string usrname;
-  static std::string screen_name;
-  static int session;
-  static Chat* chat;
-  static std::string chatroom;
-  static ChronoSync* sync;
-  static std::string chat_prefix;
-  static Milliseconds sync_lifetime;
+  static std::string screenName;
+  static std::string chatRoom;
 };
 
 }

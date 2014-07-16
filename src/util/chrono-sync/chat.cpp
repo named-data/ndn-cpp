@@ -26,7 +26,6 @@
 #include "../logging.hpp"
 #include "sync-state.pb.h"
 #include "chatbuf.pb.h"
-#include "chrono-chat.hpp"
 #include "chat.hpp"
 
 using namespace std;
@@ -39,6 +38,33 @@ using namespace func_lib::placeholders;
 
 namespace ndn {
 
+Chat::Chat
+  (const string& screenName, const string& chatRoom,
+   const std::string& localPrefix, Transport& transport, Face& face,
+   KeyChain& keyChain, const Name& certificateName)
+  : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
+    isRecoverySyncState_(true), sync_lifetime_(5000.0), face_(face),
+    keyChain_(keyChain), certificateName_(certificateName)
+{
+  // This should only be called once, so get the random string here.
+  chat_prefix_ = localPrefix + "/" + chatroom_ + "/" + Chat::getRandomString();
+  int session = (int)::round(ndn_getNowMilliseconds()  / 1000.0);
+  ostringstream tempStream;
+  tempStream << screen_name_ << session;
+  usrname_ = tempStream.str();
+  sync_.reset(new ChronoSync
+    (bind(&Chat::sendInterest, this, _1, _2),
+     bind(&Chat::initial, this), chat_prefix_,
+     Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
+     transport, face, keyChain, certificateName, sync_lifetime_,
+     onRegisterFailed));
+
+  face.registerPrefix
+    (Name(chat_prefix_), bind(&Chat::onInterest, this, _1, _2, _3, _4),
+     onRegisterFailed);
+  _LOG_DEBUG("data prefix registered.");
+}
+
 void
 Chat::initial()
 {
@@ -47,25 +73,25 @@ Chat::initial()
 #if 0 // TODO: Set the heartbeat timeout.
   var myVar = setInterval(function(){self.heartbeat();},60000);
 #endif
-  if (find(roster_.begin(), roster_.end(), ChronoChat::usrname) == roster_.end()) {
-    roster_.push_back(ChronoChat::usrname);
+  if (find(roster_.begin(), roster_.end(), usrname_) == roster_.end()) {
+    roster_.push_back(usrname_);
 #if 0 // TODO: Show the Member.
     document.getElementById('menu').innerHTML = '<p><b>Member</b></p>';
-    document.getElementById('menu').innerHTML += '<ul><li>'+ChronoChat::screen_name+'</li></ul>';
+    document.getElementById('menu').innerHTML += '<ul><li>'+screen_name_+'</li></ul>';
 #else
-    cout << "Member: " << ChronoChat::screen_name << endl;
+    cout << "Member: " << screen_name_ << endl;
 #endif
 #if 0 // TODO: Show the join message.
     var d = new Date();
     var t = d.getTime();
-    document.getElementById('txt').innerHTML += '<div><b><grey>'+ChronoChat::screen_name+'-'+d.toLocaleTimeString()+': Join</grey></b><br /></div>'
+    document.getElementById('txt').innerHTML += '<div><b><grey>'+screen_name_+'-'+d.toLocaleTimeString()+': Join</grey></b><br /></div>'
     var objDiv = document.getElementById("txt");
     objDiv.scrollTop = objDiv.scrollHeight;
 #else
-    cout << ChronoChat::screen_name << ": Join" << endl;
+    cout << screen_name_ << ": Join" << endl;
 #endif
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
+      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
        "xxx", ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
       msgcache_.erase(msgcache_.begin());
@@ -89,7 +115,7 @@ Chat::sendInterest
       Name name_components(content.Get(j).name());
       string name_t = name_components.get(-1).toEscapedString();
       int session = content.Get(j).seqno().session();
-      if (name_t != ChronoChat::screen_name) {
+      if (name_t != screen_name_) {
         int index_n = -1;
         for (size_t k = 0; k < sendlist.size(); ++k) {
           if (sendlist[k] == content.Get(j).name()) {
@@ -114,8 +140,8 @@ Chat::sendInterest
     ostringstream uri;
     uri << sendlist[i] << "/" << sessionlist[i] << "/" << seqlist[i];
     Interest interest(uri.str());
-    interest.setInterestLifetimeMilliseconds(ChronoChat::sync_lifetime);
-    ChronoChat::face->expressInterest
+    interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+    face_.expressInterest
       (interest, bind(&Chat::onData, this, _1, _2),
        bind(&Chat::chatTimeout, this, _1));
     //_LOG_DEBUG(interest.getName().toUri());
@@ -136,14 +162,14 @@ Chat::onInterest
   for (int i = msgcache_.size() - 1; i >= 0; --i) {
     if (msgcache_[i]->seqno_ == seq) {
       if (msgcache_[i]->msgtype_ != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
-        content.set_from(ChronoChat::screen_name);
-        content.set_to(ChronoChat::chatroom);
+        content.set_from(screen_name_);
+        content.set_to(chatroom_);
         content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->msgtype_);
         content.set_timestamp(::round(msgcache_[i]->time_ / 1000.0));
       }
       else {
-        content.set_from(ChronoChat::screen_name);
-        content.set_to(ChronoChat::chatroom);
+        content.set_from(screen_name_);
+        content.set_to(chatroom_);
         content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->msgtype_);
         content.set_data(msgcache_[i]->msg_);
         content.set_timestamp(::round(msgcache_[i]->time_ / 1000.0));
@@ -157,7 +183,7 @@ Chat::onInterest
     content.SerializeToArray(&array->front(), array->size());
     Data co(inst->getName());
     co.setContent(Blob(array, false));
-    ChronoChat::keyChain->sign(co, ChronoChat::certificateName);
+    keyChain_.sign(co, certificateName_);
     try {
       transport.send(*co.wireEncode());
       //_LOG_DEBUG(content.SerializeAsString());
@@ -228,7 +254,7 @@ Chat::onData
     // isRecoverySyncState_ was set by sendInterest.
     // TODO: If isRecoverySyncState_ changed, this assumes that we won't
     //   data from an interest sent before it changed.
-    if (content.type() == 0 && !isRecoverySyncState_ && content.from() != ChronoChat::screen_name) {
+    if (content.type() == 0 && !isRecoverySyncState_ && content.from() != screen_name_) {
 #if 0 // TODO: Show the message.
       // The display on the screen will not display old data.
       var escaped_msg = $('<div/>').text(content.data).html();  // encode special html characters to avoid script injection
@@ -242,7 +268,7 @@ Chat::onData
     else if (content.type() == 2) {
       // leave message
       vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
-      if (n != roster_.end() && name != ChronoChat::screen_name) {
+      if (n != roster_.end() && name != screen_name_) {
         roster_.erase(n);
 #if 0 // TODO: Update the roster.
         document.getElementById('menu').innerHTML = '<p><b>Member</b></p><ul>';
@@ -278,11 +304,11 @@ Chat::heartbeat()
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
-  ChronoChat::sync->publishNextSequenceNo();
+  sync_->publishNextSequenceNo();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->getSequenceNo(),
+    (sync_->getSequenceNo(),
      SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx",
      ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
@@ -296,16 +322,16 @@ Chat::sendMessage(const string& chatmsg)
 {
   if (msgcache_.size() == 0)
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
 
   // forming Sync Data Packet.
   if (chatmsg != "") {
 #if 0 // TODO: Clear fname (why?)
     document.getElementById('fname').value = "";
 #endif
-    ChronoChat::sync->publishNextSequenceNo();
+    sync_->publishNextSequenceNo();
     msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (ChronoChat::sync->getSequenceNo(),
+      (sync_->getSequenceNo(),
        SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg,
        ndn_getNowMilliseconds()));
     while (msgcache_.size() > maxmsgcachelength_)
@@ -315,11 +341,11 @@ Chat::sendMessage(const string& chatmsg)
 #if 0 // TODO: Show the message.
     var tt = d.toLocaleTimeString();
     var escaped_msg = $('<div/>').text(msg).html();  // encode special html characters to avoid script injection
-    document.getElementById('txt').innerHTML += '<p><grey>'+ ChronoChat::screen_name+'-'+tt+':</grey><br />'+ escaped_msg + '</p>';
+    document.getElementById('txt').innerHTML += '<p><grey>'+ screen_name_+'-'+tt+':</grey><br />'+ escaped_msg + '</p>';
     var objDiv = document.getElementById("txt");
     objDiv.scrollTop = objDiv.scrollHeight;
 #else
-    cout << ChronoChat::screen_name << ": " << chatmsg << endl;
+    cout << screen_name_ << ": " << chatmsg << endl;
 #endif
   }
   else
@@ -334,10 +360,9 @@ Chat::leave()
   $("#chat").hide();
   document.getElementById('room').innerHTML = 'Please close the window. Thank you';
 #endif
-  ChronoChat::sync->publishNextSequenceNo();
+  sync_->publishNextSequenceNo();
   msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (ChronoChat::sync->getSequenceNo(),
-     SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx",
+    (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx",
      ndn_getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
     msgcache_.erase(msgcache_.begin());
@@ -348,7 +373,7 @@ Chat::alive
   (int temp_seq, const string& name, int session, const string& prefix)
 {
   //_LOG_DEBUG("check alive");
-  int seq = ChronoChat::sync->getProducerSequenceNo(prefix, session);
+  int seq = sync_->getProducerSequenceNo(prefix, session);
   ostringstream tempStream;
   tempStream << name << session;
   string nameAndSession = tempStream.str();
@@ -390,6 +415,12 @@ Chat::getRandomString()
   }
 
   return result;
+}
+
+void
+Chat::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
+{
+  _LOG_DEBUG("Register failed for prefix " + prefix->toUri());
 }
 
 }

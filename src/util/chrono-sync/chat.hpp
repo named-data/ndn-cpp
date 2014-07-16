@@ -31,10 +31,20 @@ namespace ndn {
 
 class Chat {
 public:
-  Chat()
-  : maxmsgcachelength_(100), isRecoverySyncState_(true)
-  {}
-  
+  Chat
+    (const std::string& screenName, const std::string& chatRoom,
+     const std::string& localPrefix, Transport& transport, Face& face,
+     KeyChain& keyChain, const Name& certificateName);
+
+  // Send a chat message.
+  void
+  sendMessage(const std::string& chatmsg);
+
+  // Send leave message and leave.
+  void
+  leave();
+
+private:
   // Initialization: push the JOIN message in to the msgcache, update roster and start heartbeat.
   void
   initial();
@@ -65,14 +75,6 @@ public:
   void
   heartbeat();
   
-  // Send a chat message.
-  void
-  sendMessage(const std::string& chatmsg);
-  
-  // Send leave message and leave.
-  void
-  leave();
-  
   // Check whether a user is leaving by checking whether his seqno has changed.
   void
   alive
@@ -82,7 +84,10 @@ public:
   // Generate a random name for ChronoSync.
   static std::string
   getRandomString();
-  
+
+  static void
+  onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
+
   // TODO: Make private.  
   class CachedMessage {
   public:
@@ -104,6 +109,15 @@ public:
   std::vector<std::string> roster_;
   size_t maxmsgcachelength_;
   bool isRecoverySyncState_;
+  std::string screen_name_;
+  std::string chatroom_;
+  std::string usrname_;
+  std::string chat_prefix_;
+  Milliseconds sync_lifetime_;
+  ptr_lib::shared_ptr<ChronoSync> sync_;
+  Face& face_;
+  KeyChain& keyChain_;
+  Name certificateName_;
 };
 
 }

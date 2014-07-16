@@ -189,19 +189,13 @@ trim(string& str)
 void
 ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
 {
-  // From index.html function login().)
-  screen_name = screenName;
-  session = (int)::round(ndn_getNowMilliseconds()  / 1000.0);
-  ostringstream tempStream;
-  tempStream << screen_name << session;
-  usrname = tempStream.str();
-  chatroom = chatRoom;
+  ChronoChat::screenName = screenName;
+  ChronoChat::chatRoom = chatRoom;
 
   transport.reset(new TcpTransport());
   face.reset
     (new Face(transport,
      ptr_lib::make_shared<TcpTransport::ConnectionInfo>(hub)));
-  chat = new Chat();
 
   ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
     (new MemoryIdentityStorage());
@@ -245,21 +239,10 @@ ChronoChat::prefixData
   //_LOG_DEBUG("name " + co->getName().toUri());
   string localPrefix((const char*)co->getContent().buf(), co->getContent().size());
   trim(localPrefix);
-  // This should only be called once, so get the random string here.
-  chat_prefix = localPrefix + "/" + chatroom + "/" + Chat::getRandomString();
 
-  sync = new ChronoSync
-    (bind(&Chat::sendInterest, ChronoChat::chat, _1, _2),
-     bind(&Chat::initial, ChronoChat::chat), chat_prefix, 
-     Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom), session,
-     *transport, *face, *keyChain, certificateName, sync_lifetime,
-     ChronoChat::onRegisterFailed);
-
-  face->registerPrefix
-    (Name(chat_prefix),
-     bind(&Chat::onInterest, chat, _1, _2, _3, _4),
-     ChronoChat::onRegisterFailed);
-  //_LOG_DEBUG("data prefix registered.");
+  chat = new Chat
+    (screenName, chatRoom, localPrefix, *transport, *face, *keyChain,
+     certificateName);
 }
 
 void
@@ -272,20 +255,15 @@ ChronoChat::prefixTimeOut(const ptr_lib::shared_ptr<const Interest>& inst)
 void
 ChronoChat::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
 {
-  //_LOG_DEBUG("Register failed for prefix " + prefix->toUri());
+  _LOG_DEBUG("Register failed for prefix " + prefix->toUri());
 }
 
+string ChronoChat::screenName;
+string ChronoChat::chatRoom;
 ptr_lib::shared_ptr<Transport> ChronoChat::transport;
 ptr_lib::shared_ptr<Face> ChronoChat::face;
 ptr_lib::shared_ptr<KeyChain> ChronoChat::keyChain;
 Name ChronoChat::certificateName;
-string ChronoChat::usrname;
-string ChronoChat::screen_name;
-int ChronoChat::session = -1;
 Chat* ChronoChat::chat = 0;
-string ChronoChat::chatroom;
-ChronoSync* ChronoChat::sync = 0;
-string ChronoChat::chat_prefix;
-Milliseconds ChronoChat::sync_lifetime = 5000.0;
 
 }
