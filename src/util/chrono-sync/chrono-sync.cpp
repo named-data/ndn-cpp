@@ -31,12 +31,12 @@ using namespace std;
 namespace ndn {
 
 ChronoSync::ChronoSync
-  (OnReceivedSyncState onReceivedSyncState, InitialChat initialchat,
+  (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
    const string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
    int session, Transport& transport, Face& face, KeyChain& keyChain,
    const Name& certificateName, Milliseconds sync_lifetime,
    const OnRegisterFailed& onRegisterFailed)
-: onReceivedSyncState_(onReceivedSyncState), initialChat_(initialchat),
+: onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefix_(applicationDataPrefix),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
@@ -376,7 +376,7 @@ ChronoSync::initialOndata
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(session_);
       if (update(content_t.ss()))
-        initialChat_();
+        onInitialized_();
     }
   }
 
@@ -411,7 +411,7 @@ ChronoSync::initialOndata
     content2->mutable_seqno()->set_session(session_);
 
     if (update(content_t.ss()))
-      initialChat_();
+      onInitialized_();
   }
 }
 
@@ -434,7 +434,7 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   content->mutable_seqno()->set_session(session_);
   update(content_t.ss());
 
-  initialChat_();
+  onInitialized_();
 
   Name n(applicationBroadcastPrefix_);
   n.append(digest_tree_->getRoot());

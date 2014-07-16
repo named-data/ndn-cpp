@@ -41,7 +41,7 @@ public:
     (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content,
      bool isRecovery)> OnReceivedSyncState;
 
-  typedef func_lib::function<void()> InitialChat;
+  typedef func_lib::function<void()> OnInitialized;
 
   /**
    * Create a new ChronoSync to communicate using the given face. Initialize the
@@ -55,7 +55,9 @@ public:
    * isRecovery is true, a chat application would not want to re-display all
    * the associated chat messages.) The callback should send interests to fetch
    * the application data for the sequence numbers in the sync state.
-   * @param initialchat
+   * @param onInitialized This calls onInitialized() when the first sync data
+   * is received (or the interest times out because there are no other
+   * publishers yet).
    * @param applicationDataPrefix The prefix used by this application instance
    * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
    * This is used when sending a sync message for a new sequence number.
@@ -73,7 +75,7 @@ public:
    * prefix to receive interests for the applicationBroadcastPrefix.
    */
   ChronoSync
-    (OnReceivedSyncState onReceivedSyncState, InitialChat initialchat,
+    (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
      const std::string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
      int session, Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
@@ -202,7 +204,7 @@ private:
   Name certificateName_;
   Milliseconds sync_lifetime_;
   OnReceivedSyncState onReceivedSyncState_;
-  InitialChat initialChat_;
+  OnInitialized onInitialized_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
   std::string applicationDataPrefix_;
