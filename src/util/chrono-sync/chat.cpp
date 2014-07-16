@@ -73,8 +73,13 @@ Chat::initial()
 }
 
 void
-Chat::sendInterest(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
+Chat::sendInterest
+  (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
+   bool isRecovery)
 {
+  // This is used by onData to decide whether to display the chat messages.
+  isRecoverySyncState_ = isRecovery;
+
   //_LOG_DEBUG(content);
   vector<string> sendlist;
   vector<int> sessionlist;
@@ -220,7 +225,10 @@ Chat::onData
 #if 0 // TODO: Set the alive timeout.
     setTimeout(function(){self.alive(seqno,name,session,prefix);},120000);
 #endif
-    if (content.type() == 0 && ChronoChat::sync->getFlag() == 0 && content.from() != ChronoChat::screen_name) {
+    // isRecoverySyncState_ was set by sendInterest.
+    // TODO: If isRecoverySyncState_ changed, this assumes that we won't
+    //   data from an interest sent before it changed.
+    if (content.type() == 0 && !isRecoverySyncState_ && content.from() != ChronoChat::screen_name) {
 #if 0 // TODO: Show the message.
       // The display on the screen will not display old data.
       var escaped_msg = $('<div/>').text(content.data).html();  // encode special html characters to avoid script injection

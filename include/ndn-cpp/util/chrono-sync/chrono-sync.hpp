@@ -38,8 +38,8 @@ class DigestTree;
 class ChronoSync {
 public:
   typedef func_lib::function<void
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content)>
-      OnReceivedSyncState;
+    (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content,
+     bool isRecovery)> OnReceivedSyncState;
 
   typedef func_lib::function<void()> InitialChat;
 
@@ -48,9 +48,13 @@ public:
    * digest log with a digest of "00" and and empty content. Register the prefix
    * to receive interests for the applicationBroadcastPrefix and express an
    * interest for the initial root digest "00".
-   * @param onReceivedSyncState This callback is called when ChronoSync receives
-   * a sync state message. The callback should send interests to fetch the
-   * application data for the sequence numbers in the sync state.
+   * @param onReceivedSyncState When ChronoSync receives a sync state message,
+   * this calls onReceivedSyncState(content, isRecovery) where content is the
+   * set of SyncState messages and isRecovery is true if this is the initial
+   * set of SyncState messages or from a recovery interest. (For example, if
+   * isRecovery is true, a chat application would not want to re-display all
+   * the associated chat messages.) The callback should send interests to fetch
+   * the application data for the sequence numbers in the sync state.
    * @param initialchat
    * @param applicationDataPrefix The prefix used by this application instance
    * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
@@ -98,9 +102,6 @@ public:
    */
   void
   publishNextSequenceNo();
-
-  int
-  getFlag() const { return flag_; }
 
   /**
    * Get the sequence number of the latest data published by this application
@@ -206,7 +207,6 @@ private:
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
   std::string applicationDataPrefix_;
   const Name applicationBroadcastPrefix_;
-  int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
   int session_;
   int usrseq_;
 };

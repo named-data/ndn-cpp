@@ -41,7 +41,7 @@ ChronoSync::ChronoSync
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
   certificateName_(certificateName), sync_lifetime_(sync_lifetime),
-  usrseq_(-1), flag_(0), digest_tree_(new DigestTree())
+  usrseq_(-1), digest_tree_(new DigestTree())
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
@@ -191,8 +191,9 @@ ChronoSync::onData
   Sync::SyncStateMsg content_t;
   content_t.ParseFromArray(co->getContent().buf(), co->getContent().size());
   const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = content_t.ss();
+  bool isRecovery;
   if (digest_tree_->getRoot() == "00") {
-    flag_ = 1;
+    isRecovery = true;
     //processing initial sync data
     initialOndata(content);
   }
@@ -200,13 +201,13 @@ ChronoSync::onData
     update(content);
     if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2)
       // Assume this is a recovery interest.
-      flag_ = 1;
+      isRecovery = true;
     else
-      flag_ = 0;
+      isRecovery = false;
   }
 
   // Send the interests to fetch the application data.
-  onReceivedSyncState_(content);
+  onReceivedSyncState_(content, isRecovery);
   Name n(applicationBroadcastPrefix_);
   n.append(digest_tree_->getRoot());
   Interest interest(n);

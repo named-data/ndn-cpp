@@ -32,7 +32,7 @@ namespace ndn {
 class Chat {
 public:
   Chat()
-  : maxmsgcachelength_(100)
+  : maxmsgcachelength_(100), isRecoverySyncState_(true)
   {}
   
   // Initialization: push the JOIN message in to the msgcache, update roster and start heartbeat.
@@ -41,7 +41,9 @@ public:
   
   // Send a Chat Interest to fetch chat messages after get the user gets the Sync data packet back but will not send interest.
   void
-  sendInterest(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+  sendInterest
+    (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
+     bool isRecovery);
   
   // Send back Chat Data Packet which contains the user's message.
   void 
@@ -101,6 +103,7 @@ public:
   std::vector<ptr_lib::shared_ptr<CachedMessage> > msgcache_;
   std::vector<std::string> roster_;
   size_t maxmsgcachelength_;
+  bool isRecoverySyncState_;
 };
 
 }
