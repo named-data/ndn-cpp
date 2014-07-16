@@ -32,26 +32,27 @@ namespace ndn {
 
 ChronoSync::ChronoSync
   (SendChatInterest sendchatinterest, InitialChat initialchat,
-   const string& chatPrefix, const string& chatroom, int session,
+   const string& chatPrefix, const Name& applicationBroadcastPrefix, int session,
    Transport& transport, Face& face, KeyChain& keyChain,
    const Name& certificateName, Milliseconds sync_lifetime,
    const OnRegisterFailed& onRegisterFailed)
 : sendChatInterest_(sendchatinterest), initialChat_(initialchat),
-  chat_prefix_(chatPrefix), chatroom_(chatroom), session_(session),
+  chat_prefix_(chatPrefix),
+  applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
   certificateName_(certificateName), sync_lifetime_(sync_lifetime),
-  broadcastPrefix_("/ndn/broadcast/ChronoChat-0.3/"), usrseq_(-1), flag_(0),
-  digest_tree_(new DigestTree())
+  usrseq_(-1), flag_(0), digest_tree_(new DigestTree())
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
     ("00", emptyContent.ss()));
 
   face.registerPrefix
-    (Name(broadcastPrefix_ + chatroom),
+    (applicationBroadcastPrefix_,
      bind(&ChronoSync::onInterest, this, _1, _2, _3, _4), onRegisterFailed);
 
-  Interest interest(Name(broadcastPrefix_ + chatroom + "/00"));
+  Interest interest(applicationBroadcastPrefix_);
+  interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
   face.expressInterest
@@ -129,8 +130,8 @@ ChronoSync::publishNextSequenceNo()
 
   // TODO: Should we have an option to not express an interest if this is the
   //   final publish of the session?
-  Interest interest(Name
-    (broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot()));
+  Interest interest(applicationBroadcastPrefix_);
+  interest.getName().append(digest_tree_->getRoot());
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
     (interest, bind(&ChronoSync::onData, this, _1, _2),
@@ -202,7 +203,8 @@ ChronoSync::onData
   // Send the Chat Interest to fetch the data. This can be changed to another
   //   function in other applications.
   sendChatInterest_(content);
-  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot());
+  Name n(applicationBroadcastPrefix_);
+  n.append(digest_tree_->getRoot());
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -290,7 +292,8 @@ ChronoSync::processSyncInst
   }
 
   if (content_t.ss_size() != 0) {
-    Name n(broadcastPrefix_ + chatroom_ + "/" + syncdigest_t);
+    Name n(applicationBroadcastPrefix_);
+    n.append(syncdigest_t);
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
     content_t.SerializeToArray(&array->front(), array->size());
     Data co(n);
@@ -310,7 +313,8 @@ void
 ChronoSync::sendRecovery(const string& syncdigest_t)
 {
   //_LOG_DEBUG("unknown digest: ");
-  Name n(broadcastPrefix_ + chatroom_ + "/recovery/" + syncdigest_t);
+  Name n(applicationBroadcastPrefix_);
+  n.append("recovery").append(syncdigest_t);
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -427,7 +431,8 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 
   initialChat_();
 
-  Name n(broadcastPrefix_ + chatroom_ + "/" + digest_tree_->getRoot());
+  Name n(applicationBroadcastPrefix_);
+  n.append(digest_tree_->getRoot());
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
@@ -443,7 +448,8 @@ ChronoSync::broadcastSyncState
 {
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
   syncMessage.SerializeToArray(&array->front(), array->size());
-  Data data(Name(broadcastPrefix_ + chatroom_ + "/" + digest));
+  Data data(applicationBroadcastPrefix_);
+  data.getName().append(digest);
   data.setContent(Blob(array, false));
   keyChain_.sign(data, certificateName_);
   try {

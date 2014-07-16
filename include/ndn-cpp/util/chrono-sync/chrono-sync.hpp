@@ -43,14 +43,16 @@ public:
   typedef func_lib::function<void()> InitialChat;
 
   /**
-   * Create a new ChronoSync to communicate using the given face. Initialize
-   * the broadcast prefix.  Initialize the digest log with a digest of "00" and
-   * and empty content. Register the prefix to receive interests for the
-   * chatroom and express an interest for the initial root digest "00".
+   * Create a new ChronoSync to communicate using the given face. Initialize the
+   * digest log with a digest of "00" and and empty content. Register the prefix
+   * to receive interests for the applicationBroadcastPrefix and express an
+   * interest for the initial root digest "00".
    * @param sendchatinterest
    * @param initialchat
    * @param chatPrefix
-   * @param chatroom
+   * @param applicationBroadcastPrefix The broadcast name prefix including the
+   * application name. For example, "/ndn/broadcast/ChronoChat-0.3/ndnchat1".
+   * This makes a copy of the name.
    * @param session
    * @param transport
    * @param face
@@ -63,7 +65,7 @@ public:
    */
   ChronoSync
     (SendChatInterest sendchatinterest, InitialChat initialchat,
-     const std::string& chatPrefix, const std::string& chatroom, int session,
+     const std::string& chatPrefix, const Name& applicationBroadcastPrefix, int session,
      Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
      const OnRegisterFailed& onRegisterFailed);
@@ -95,9 +97,6 @@ public:
   int
   getFlag() const { return flag_; }
 
-  const std::string&
-  getBroadcastPrefix() const { return broadcastPrefix_; }
-
   int
   getSequenceNo() const { return usrseq_; }
 
@@ -121,7 +120,7 @@ private:
 
   /**
    * Make a data packet with the syncMessage and with name 
-   * broadcastPrefix_ + chatroom_ + "/" + digest. Sign and send.
+   * applicationBroadcastPrefix_ + digest. Sign and send.
    * @param digest The root digest as a hex string for the data packet name.
    * @param syncMessage The SyncStateMsg which updates the digest tree state
    * with the given digest.
@@ -186,7 +185,6 @@ private:
   void
   initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
-  std::string broadcastPrefix_;
   Transport& transport_;
   Face& face_;
   KeyChain& keyChain_;
@@ -197,7 +195,7 @@ private:
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
   std::string chat_prefix_;
-  std::string chatroom_;
+  const Name applicationBroadcastPrefix_;
   int flag_; // This will not display the old chatmsg on the screen if the flag is 1.
   int session_;
   int usrseq_;
