@@ -25,9 +25,29 @@
 #include <poll.h>
 #include "../src/util/chrono-sync/chat.hpp"
 #include "../src/util/chrono-sync/chrono-chat.hpp"
+#if NDN_CPP_HAVE_TIME_H
+#include <time.h>
+#endif
+#if NDN_CPP_HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
 
 using namespace std;
 using namespace ndn;
+
+/**
+ * Use gettimeofday to return the current time in milliseconds.
+ * @return The current time in milliseconds since 1/1/1970, including fractions
+ * of a millisecond according to timeval.tv_usec.
+ */
+static ndn_MillisecondsSince1970
+getNowMilliseconds()
+{
+  struct timeval t;
+  // Note: configure.ac requires gettimeofday.
+  gettimeofday(&t, 0);
+  return t.tv_sec * 1000.0 + t.tv_usec / 1000.0;
+}
 
 static const char *WHITESPACE_CHARS = " \n\r\t";
 
@@ -102,14 +122,31 @@ int main(int argc, char** argv)
         inputBuffer[nBytes] = 0;
         string input(inputBuffer);
         trim(input);
-        
+
+        if (input == "leave" || input == "exit")
+          // We will send the leave message below.
+          break;
+
         ChronoChat::chat->sendMessage(input);
       }
 
       ChronoChat::face->processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
-     }
+    }
+
+    ChronoChat::chat->leave();
+    // Wait a little bit to allow other applications to fetch the leave message.
+    ndn_MillisecondsSince1970 startTime = getNowMilliseconds();
+    while (true)
+    {
+      if (getNowMilliseconds() - startTime >= 1000.0)
+        break;
+      
+      ChronoChat::face->processEvents();
+      // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+      usleep(10000);
+    }
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
