@@ -16,9 +16,11 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/test-data-methods bin/test-name-methods
 
-noinst_PROGRAMS = bin/test-echo-consumer bin/test-encode-decode-benchmark bin/test-encode-decode-data \
-  bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry bin/test-encode-decode-interest \
-  bin/test-get-async bin/test-publish-async-ndnx bin/test-publish-async-nfd
+noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
+  bin/test-encode-decode-benchmark bin/test-encode-decode-data \
+  bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
+  bin/test-encode-decode-interest bin/test-get-async bin/test-publish-async-ndnx \
+  bin/test-publish-async-nfd
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -82,7 +84,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
-  include/ndn-cpp/util/signed-blob.hpp
+  include/ndn-cpp/util/signed-blob.hpp \
+  include/ndn-cpp/util/chrono-sync/chrono-sync.hpp
 
 # Just the C code.
 libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
@@ -192,7 +195,13 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
-  src/util/memory-content-cache.cpp
+  src/util/memory-content-cache.cpp \
+  src/util/chrono-sync/chrono-sync.cpp \
+  src/util/chrono-sync/digest-tree.cpp src/util/chrono-sync/digest-tree.hpp \
+  src/util/chrono-sync/sync-state.pb.cc src/util/chrono-sync/sync-state.pb.h
+
+bin_test_chrono_chat_SOURCES = tests/test-chrono-chat.cpp tests/chatbuf.pb.cc
+bin_test_chrono_chat_LDADD = libndn-cpp.la
 
 bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
