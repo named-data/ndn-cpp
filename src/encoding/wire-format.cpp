@@ -102,6 +102,14 @@ WireFormat::encodeSignatureInfo(const Signature& signature)
   throw logic_error("unimplemented");
 }
 
+ptr_lib::shared_ptr<Signature>
+WireFormat::decodeSignatureInfoAndValue
+  (const uint8_t *signatureInfo, size_t signatureInfoLength,
+   const uint8_t *signatureValue, size_t signatureValueLength)
+{
+  throw logic_error("unimplemented");
+}
+
 Blob
 WireFormat::encodeSignatureValue(const Signature& signature)
 {
