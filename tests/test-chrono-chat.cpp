@@ -1,6 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
+ * Derived from ChronoChat-js by Qiuhan Ding and Wentao Shang.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -630,14 +631,23 @@ prefixTimeOut(const ptr_lib::shared_ptr<const Interest>& inst)
 int main(int argc, char** argv)
 {
   try {
-    string screenName = "user1";
-    string chatRoom = "ndnchat1";
+    string screenName;
+    cout << "Enter your chat username:" << endl;
+    cin >> screenName;
+
+    string chatRoom;
+    cout << "Enter the chatroom name:" << endl;
+    cin >> chatRoom;
+
+    const char* host = "localhost";
+    cout << "Connecting to " << host << ", Chatroom: " << chatRoom <<
+      ", Username: " << screenName << endl << endl;
 
     // Set up the transport and key chain.
     ptr_lib::shared_ptr<TcpTransport> transport(new TcpTransport());
     Face face
       (transport,
-       ptr_lib::make_shared<TcpTransport::ConnectionInfo>("localhost"));
+       ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host));
 
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
       (new MemoryIdentityStorage());
