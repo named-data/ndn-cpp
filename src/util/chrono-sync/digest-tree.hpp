@@ -148,10 +148,6 @@ private:
   void
   recomputeRoot();
 
-#if 0
-  void printTree() const;
-#endif
-
   std::vector<ptr_lib::shared_ptr<DigestTree::Node> > digestnode_;
   std::string root_;
   Node::Compare nodeCompare_;

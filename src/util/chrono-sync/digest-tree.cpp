@@ -29,13 +29,6 @@ using namespace std;
 
 namespace ndn {
 
-#if 0
-void DigestTree::printTree() const
-{
-  cout << "root " << root_ << " size " << digestnode_.size() << endl;
-}
-#endif
-
 /**
  * Convert the hex character to an integer from 0 to 15, or -1 if not a hex character.
  * @param c
@@ -94,9 +87,6 @@ DigestTree::update(const std::string& namePrefix, int sessionNo, int sequenceNo)
   }
 
   recomputeRoot();
-#if 0
-  printTree();
-#endif
   return true;
 }
 
