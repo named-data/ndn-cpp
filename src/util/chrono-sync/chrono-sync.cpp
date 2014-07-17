@@ -58,8 +58,8 @@ ChronoSync::ChronoSync
   face.expressInterest
     (interest, bind(&ChronoSync::onData, this, _1, _2),
      bind(&ChronoSync::initialTimeOut, this, _1));
-  //_LOG_DEBUG("initial sync expressed");
-  //_LOG_DEBUG(interest.getName().toUri());
+  _LOG_DEBUG("initial sync expressed");
+  _LOG_DEBUG(interest.getName().toUri());
 }
 
 int
@@ -145,8 +145,8 @@ ChronoSync::onInterest
    uint64_t registerPrefixId)
 {
   // Search if the digest already exists in the digest log.
-   //_LOG_DEBUG("Sync Interest received in callback.");
-   //_LOG_DEBUG(inst->getName().toUri());
+   _LOG_DEBUG("Sync Interest received in callback.");
+   _LOG_DEBUG(inst->getName().toUri());
 
   string syncdigest = inst->getName().get
     (applicationBroadcastPrefix_.size()).toEscapedString();
@@ -154,7 +154,7 @@ ChronoSync::onInterest
     // Assume this is a recovery interest.
     syncdigest = inst->getName().get
       (applicationBroadcastPrefix_.size() + 1).toEscapedString();
-   //_LOG_DEBUG("syncdigest: " + syncdigest);
+   _LOG_DEBUG("syncdigest: " + syncdigest);
   if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
       syncdigest == "00")
     // Recovery interest or newcomer interest.
@@ -167,9 +167,9 @@ ChronoSync::onInterest
 #if 0 // TODO: Set the timeout without using usleep.
         //Wait 2 seconds to see whether there is any data packet coming back
         setTimeout(function(){self.judgeRecovery(syncdigest, transport);},2000);
-        //_LOG_DEBUG("set timer recover");
+        _LOG_DEBUG("set timer recover");
 #else
-        //_LOG_DEBUG("set timer recover");
+        _LOG_DEBUG("set timer recover");
         usleep(1000000);
         judgeRecovery(syncdigest, transport);
 #endif
@@ -186,8 +186,8 @@ ChronoSync::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
-  //_LOG_DEBUG("Sync ContentObject received in callback");
-  //_LOG_DEBUG("name: " + co->getName().toUri());
+  _LOG_DEBUG("Sync ContentObject received in callback");
+  _LOG_DEBUG("name: " + co->getName().toUri());
   Sync::SyncStateMsg content_t;
   content_t.ParseFromArray(co->getContent().buf(), co->getContent().size());
   const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = content_t.ss();
@@ -215,15 +215,15 @@ ChronoSync::onData
   face_.expressInterest
     (interest, bind(&ChronoSync::onData, this, _1, _2),
      bind(&ChronoSync::syncTimeout, this, _1));
-  //_LOG_DEBUG("Syncinterest expressed:");
-  //_LOG_DEBUG(n.toUri());
+  _LOG_DEBUG("Syncinterest expressed:");
+  _LOG_DEBUG(n.toUri());
 }
 
 void
 ChronoSync::processRecoveryInst
   (const Interest& inst, const string& syncdigest, Transport& transport)
 {
-  //_LOG_DEBUG("processRecoveryInst");
+  _LOG_DEBUG("processRecoveryInst");
   if (logfind(syncdigest) != -1) {
     Sync::SyncStateMsg content_t;
     for (size_t i = 0; i < digest_tree_->size(); ++i) {
@@ -242,8 +242,8 @@ ChronoSync::processRecoveryInst
       keyChain_.sign(co, certificateName_);
       try {
         transport.send(*co.wireEncode());
-        //_LOG_DEBUG("send recovery data back");
-        //_LOG_DEBUG(inst.getName().toUri());
+        _LOG_DEBUG("send recovery data back");
+        _LOG_DEBUG(inst.getName().toUri());
       }
       catch (std::exception& e) {
         _LOG_DEBUG(e.what());
@@ -306,8 +306,8 @@ ChronoSync::processSyncInst
     keyChain_.sign(co, certificateName_);
     try {
       transport.send(*co.wireEncode());
-      //_LOG_DEBUG("Sync Data send");
-      //_LOG_DEBUG(n.toUri());
+      _LOG_DEBUG("Sync Data send");
+      _LOG_DEBUG(n.toUri());
     } catch (std::exception& e) {
       _LOG_DEBUG(e.what());
     }
@@ -317,7 +317,7 @@ ChronoSync::processSyncInst
 void
 ChronoSync::sendRecovery(const string& syncdigest_t)
 {
-  //_LOG_DEBUG("unknown digest: ");
+  _LOG_DEBUG("unknown digest: ");
   Name n(applicationBroadcastPrefix_);
   n.append("recovery").append(syncdigest_t);
   Interest interest(n);
@@ -344,8 +344,8 @@ ChronoSync::judgeRecovery(const string& syncdigest_t, Transport& transport)
 void
 ChronoSync::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-   //_LOG_DEBUG("Sync Interest time out.");
-   //_LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
+   _LOG_DEBUG("Sync Interest time out.");
+   _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
   string component = interest->getName().get(4).toEscapedString();
   if (component == digest_tree_->getRoot()) {
     Name n(interest->getName());
@@ -354,8 +354,8 @@ ChronoSync::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
     face_.expressInterest
       (retryInterest, bind(&ChronoSync::onData, this, _1, _2),
        bind(&ChronoSync::syncTimeout, this, _1));
-     //_LOG_DEBUG("Syncinterest expressed:");
-     //_LOG_DEBUG(n.toUri());
+     _LOG_DEBUG("Syncinterest expressed:");
+     _LOG_DEBUG(n.toUri());
   }
 }
 
@@ -401,7 +401,7 @@ ChronoSync::initialOndata
 
   if (digest_tree_->find(applicationDataPrefix_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
-    //_LOG_DEBUG("initial state")
+    _LOG_DEBUG("initial state")
     ++usrseq_;
     Sync::SyncStateMsg content_t;
     Sync::SyncState* content2 = content_t.add_ss();
@@ -418,8 +418,8 @@ ChronoSync::initialOndata
 void
 ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-  //_LOG_DEBUG("initial sync timeout");
-  //_LOG_DEBUG("no other people");
+  _LOG_DEBUG("initial sync timeout");
+  _LOG_DEBUG("no other people");
   ++usrseq_;
   if (usrseq_ != 0)
     // Since there were no other users, we expect sequence no 0.
@@ -443,8 +443,8 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   face_.expressInterest
     (retryInterest, bind(&ChronoSync::onData, this, _1, _2),
      bind(&ChronoSync::syncTimeout, this, _1));
-  //_LOG_DEBUG("Syncinterest expressed:");
-  //_LOG_DEBUG(n.toUri());
+  _LOG_DEBUG("Syncinterest expressed:");
+  _LOG_DEBUG(n.toUri());
 }
 
 void
