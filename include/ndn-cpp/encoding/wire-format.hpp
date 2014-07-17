@@ -187,6 +187,23 @@ public:
   encodeSignatureInfo(const Signature& signature);
 
   /**
+   * Decode signatureInfo as a signature info and signatureValue as the related
+   * SignatureValue, and return a new object which is a subclass of Signature.
+   * Set the signature value bits to an empty buffer.
+   * Your derived class should override.
+   * @param signatureInfo A pointer to the signature info input buffer to decode.
+   * @param signatureInfoLength The number of bytes in signatureInfo.
+   * @param signatureValue A pointer to the signature value input buffer to decode.
+   * @param signatureValueLength The number of bytes in signatureValue.
+   * @return A new object which is a subclass of Signature.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual ptr_lib::shared_ptr<Signature>
+  decodeSignatureInfoAndValue
+    (const uint8_t *signatureInfo, size_t signatureInfoLength,
+     const uint8_t *signatureValue, size_t signatureValueLength);
+
+  /**
    * Encode the signatureValue in the Signature object as a SignatureValue (the
    * signature bits) and return the encoding.
    * Your derived class should override.

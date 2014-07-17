@@ -157,6 +157,36 @@ Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
   return Blob(encoder.getOutput(), false);
 }
 
+ptr_lib::shared_ptr<Signature>
+Tlv0_1WireFormat::decodeSignatureInfoAndValue
+  (const uint8_t *signatureInfo, size_t signatureInfoLength,
+   const uint8_t *signatureValue, size_t signatureValueLength)
+{
+  struct ndn_NameComponent keyNameComponents[100];
+  struct ndn_Signature signatureStruct;
+  ndn_Error error;
+  ndn_Signature_initialize
+    (&signatureStruct,
+     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+
+  {
+    TlvDecoder decoder(signatureInfo, signatureInfoLength);
+    if ((error = ndn_decodeTlvSignatureInfo(&signatureStruct, &decoder)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+  {
+    TlvDecoder decoder(signatureValue, signatureValueLength);
+    if ((error = ndn_TlvDecoder_readBlobTlv
+         (&decoder, ndn_Tlv_SignatureValue, &signatureStruct.signature)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+
+  // TODO: The library needs to handle other signature types than
+  //   SignatureSha256WithRsa.
+  ptr_lib::shared_ptr<Sha256WithRsaSignature> result(new Sha256WithRsaSignature());
+  result->set(signatureStruct);
+  return result;
+}
 
 Blob
 Tlv0_1WireFormat::encodeSignatureValue(const Signature& signature)
