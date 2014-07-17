@@ -90,6 +90,7 @@ DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 check_PROGRAMS = bin/test-data-methods$(EXEEXT) \
 	bin/test-name-methods$(EXEEXT)
 noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
+	bin/test-chrono-chat$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
@@ -239,9 +240,16 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/transport/udp-transport.lo src/transport/unix-transport.lo \
 	src/util/blob.lo src/util/command-interest-generator.lo \
 	src/util/dynamic-uint8-vector.lo src/util/logging.lo \
-	src/util/memory-content-cache.lo
+	src/util/memory-content-cache.lo \
+	src/util/chrono-sync/chrono-sync.lo \
+	src/util/chrono-sync/digest-tree.lo \
+	src/util/chrono-sync/sync-state.pb.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
+am_bin_test_chrono_chat_OBJECTS = tests/test-chrono-chat.$(OBJEXT) \
+	tests/chatbuf.pb.$(OBJEXT)
+bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
+bin_test_chrono_chat_DEPENDENCIES = libndn-cpp.la
 am_bin_test_data_methods_OBJECTS = tests/unit-tests/bin_test_data_methods-test-data-methods.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT)
 bin_test_data_methods_OBJECTS = $(am_bin_test_data_methods_OBJECTS)
@@ -347,6 +355,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_data_methods_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
@@ -358,6 +367,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_data_methods_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
@@ -874,7 +884,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
-  include/ndn-cpp/util/signed-blob.hpp
+  include/ndn-cpp/util/signed-blob.hpp \
+  include/ndn-cpp/util/chrono-sync/chrono-sync.hpp
 
 
 # Just the C code.
@@ -986,8 +997,13 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
-  src/util/memory-content-cache.cpp
+  src/util/memory-content-cache.cpp \
+  src/util/chrono-sync/chrono-sync.cpp \
+  src/util/chrono-sync/digest-tree.cpp src/util/chrono-sync/digest-tree.hpp \
+  src/util/chrono-sync/sync-state.pb.cc src/util/chrono-sync/sync-state.pb.h
 
+bin_test_chrono_chat_SOURCES = tests/test-chrono-chat.cpp tests/chatbuf.pb.cc
+bin_test_chrono_chat_LDADD = libndn-cpp.la
 bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
 bin_test_encode_decode_benchmark_SOURCES = tests/test-encode-decode-benchmark.cpp
@@ -1375,6 +1391,21 @@ src/util/logging.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/memory-content-cache.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/chrono-sync/$(am__dirstamp):
+	@$(MKDIR_P) src/util/chrono-sync
+	@: > src/util/chrono-sync/$(am__dirstamp)
+src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/util/chrono-sync/$(DEPDIR)
+	@: > src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp)
+src/util/chrono-sync/chrono-sync.lo:  \
+	src/util/chrono-sync/$(am__dirstamp) \
+	src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp)
+src/util/chrono-sync/digest-tree.lo:  \
+	src/util/chrono-sync/$(am__dirstamp) \
+	src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp)
+src/util/chrono-sync/sync-state.pb.lo:  \
+	src/util/chrono-sync/$(am__dirstamp) \
+	src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp)
 
 libndn-cpp.la: $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_DEPENDENCIES) $(EXTRA_libndn_cpp_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_LIBADD) $(LIBS)
@@ -1396,6 +1427,23 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+tests/$(am__dirstamp):
+	@$(MKDIR_P) tests
+	@: > tests/$(am__dirstamp)
+tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tests/$(DEPDIR)
+	@: > tests/$(DEPDIR)/$(am__dirstamp)
+tests/test-chrono-chat.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+tests/chatbuf.pb.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+bin/$(am__dirstamp):
+	@$(MKDIR_P) bin
+	@: > bin/$(am__dirstamp)
+
+bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-chrono-chat$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_LDADD) $(LIBS)
 tests/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests
 	@: > tests/unit-tests/$(am__dirstamp)
@@ -1414,19 +1462,10 @@ contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
 contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-bin/$(am__dirstamp):
-	@$(MKDIR_P) bin
-	@: > bin/$(am__dirstamp)
 
 bin/test-data-methods$(EXEEXT): $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_DEPENDENCIES) $(EXTRA_bin_test_data_methods_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-data-methods$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_LDADD) $(LIBS)
-tests/$(am__dirstamp):
-	@$(MKDIR_P) tests
-	@: > tests/$(am__dirstamp)
-tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) tests/$(DEPDIR)
-	@: > tests/$(DEPDIR)/$(am__dirstamp)
 tests/test-echo-consumer.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1529,6 +1568,8 @@ mostlyclean-compile:
 	-rm -f src/transport/*.lo
 	-rm -f src/util/*.$(OBJEXT)
 	-rm -f src/util/*.lo
+	-rm -f src/util/chrono-sync/*.$(OBJEXT)
+	-rm -f src/util/chrono-sync/*.lo
 	-rm -f tests/*.$(OBJEXT)
 	-rm -f tests/unit-tests/*.$(OBJEXT)
 
@@ -1622,7 +1663,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/dynamic-uint8-vector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/chrono-sync/$(DEPDIR)/chrono-sync.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/chrono-sync/$(DEPDIR)/digest-tree.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/chrono-sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/chatbuf.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/fib-entry.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-chrono-chat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-echo-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
@@ -1785,6 +1831,7 @@ clean-libtool:
 	-rm -rf src/security/signature/.libs src/security/signature/_libs
 	-rm -rf src/transport/.libs src/transport/_libs
 	-rm -rf src/util/.libs src/util/_libs
+	-rm -rf src/util/chrono-sync/.libs src/util/chrono-sync/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -2327,6 +2374,8 @@ distclean-generic:
 	-rm -f src/transport/$(am__dirstamp)
 	-rm -f src/util/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/util/$(am__dirstamp)
+	-rm -f src/util/chrono-sync/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/util/chrono-sync/$(am__dirstamp)
 	-rm -f tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tests/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2342,7 +2391,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/chrono-sync/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -2390,7 +2439,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/chrono-sync/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
