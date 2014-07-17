@@ -21,7 +21,7 @@
  */
 
 #include <sstream>
-#include "../../c/util/crypto.h"
+#include <openssl/rand.h>
 #include "../../c/util/time.h"
 #include "chatbuf.pb.h"
 #include "chat.hpp"
@@ -290,7 +290,7 @@ Chat::getRandomString()
   string seed("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789");
   string result;
   uint8_t random[10];
-  ndn_generateRandomBytes(random, sizeof(random));
+  RAND_bytes(random, sizeof(random));
   for (int i = 0; i < 10; ++i) {
     // Using % means the distribution isn't uniform, but that's OK.
     size_t pos = (size_t)random[i] % seed.size();
