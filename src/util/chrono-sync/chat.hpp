@@ -80,7 +80,16 @@ private:
   alive
     (int temp_seq, const std::string& name, int session, 
      const std::string& prefix);
-  
+
+  /**
+   * Append a new CachedMessage to msgcache, using given messageType and message,
+   * the sequence number from sync_->getSequenceNo() and the current time. Also
+   * remove elements from the front of the cache as needed to keep
+   * the size to maxmsgcachelength_.
+   */
+  void
+  messageCacheAppend(int messageType, const std::string& message);
+
   // Generate a random name for ChronoSync.
   static std::string
   getRandomString();
@@ -91,7 +100,7 @@ private:
   class CachedMessage {
   public:
     CachedMessage
-      (int seqno, int msgtype, std::string msg, MillisecondsSince1970 time)
+      (int seqno, int msgtype, const std::string& msg, MillisecondsSince1970 time)
     : seqno_(seqno), msgtype_(msgtype), msg_(msg), time_(time)
     {}
 

@@ -90,11 +90,7 @@ Chat::initial()
 #else
     cout << screen_name_ << ": Join" << endl;
 #endif
-    msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN,
-       "xxx", ndn_getNowMilliseconds()));
-    while (msgcache_.size() > maxmsgcachelength_)
-      msgcache_.erase(msgcache_.begin());
+    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
   }
 }
 
@@ -303,16 +299,10 @@ void
 Chat::heartbeat()
 {
   if (msgcache_.size() == 0)
-    msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
   sync_->publishNextSequenceNo();
-  msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (sync_->getSequenceNo(),
-     SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx",
-     ndn_getNowMilliseconds()));
-  while (msgcache_.size() > maxmsgcachelength_)
-    msgcache_.erase(msgcache_.begin());
+  messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx");
 
   //_LOG_DEBUG("Heartbeat Interest expressed.");
 }
@@ -321,8 +311,7 @@ void
 Chat::sendMessage(const string& chatmsg)
 {
   if (msgcache_.size() == 0)
-    msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx", ndn_getNowMilliseconds()));
+    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
   // forming Sync Data Packet.
   if (chatmsg != "") {
@@ -330,12 +319,7 @@ Chat::sendMessage(const string& chatmsg)
     document.getElementById('fname').value = "";
 #endif
     sync_->publishNextSequenceNo();
-    msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-      (sync_->getSequenceNo(),
-       SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg,
-       ndn_getNowMilliseconds()));
-    while (msgcache_.size() > maxmsgcachelength_)
-      msgcache_.erase(msgcache_.begin());
+    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg);
 
     //_LOG_DEBUG("Sync Interest expressed.");
 #if 0 // TODO: Show the message.
@@ -361,11 +345,7 @@ Chat::leave()
   document.getElementById('room').innerHTML = 'Please close the window. Thank you';
 #endif
   sync_->publishNextSequenceNo();
-  msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
-    (sync_->getSequenceNo(), SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx",
-     ndn_getNowMilliseconds()));
-  while (msgcache_.size() > maxmsgcachelength_)
-    msgcache_.erase(msgcache_.begin());
+  messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx");
 }
 
 void
@@ -399,6 +379,15 @@ Chat::alive
 #endif
     }
   }
+}
+
+void
+Chat::messageCacheAppend(int messageType, const string& message)
+{
+  msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
+    (sync_->getSequenceNo(), messageType, message, ndn_getNowMilliseconds()));
+  while (msgcache_.size() > maxmsgcachelength_)
+    msgcache_.erase(msgcache_.begin());
 }
 
 string
