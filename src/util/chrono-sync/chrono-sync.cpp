@@ -20,6 +20,10 @@
  * A copy of the GNU General Public License is in the file COPYING.
  */
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_PROTOBUF = 1.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_PROTOBUF
+
 #include <stdexcept>
 #include "../logging.hpp"
 #include "sync-state.pb.h"
@@ -483,3 +487,5 @@ ChronoSync::DigestLogEntry::DigestLogEntry
 }
 
 }
+
+#endif // NDN_CPP_HAVE_PROTOBUF

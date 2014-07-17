@@ -9,7 +9,7 @@ Prerequisites
 * Required: libcrypto
 * Optional: libsqlite3 (for key storage)
 * Optional: OSX Security framework (for key storage)
-* Optional: Protobuf (for the ProtobufTlv converter)
+* Optional: Protobuf (for the ProtobufTlv converter and ChronoSync)
 * Optional: Doxygen (to make documentation)
 
 Following are the detailed steps for each platform to install the prerequisites.
