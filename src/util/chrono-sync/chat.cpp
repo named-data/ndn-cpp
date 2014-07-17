@@ -23,7 +23,6 @@
 #include <sstream>
 #include "../../c/util/crypto.h"
 #include "../../c/util/time.h"
-#include "../logging.hpp"
 #include "sync-state.pb.h"
 #include "chatbuf.pb.h"
 #include "chat.hpp"
@@ -62,14 +61,12 @@ Chat::Chat
   face.registerPrefix
     (Name(chat_prefix_), bind(&Chat::onInterest, this, _1, _2, _3, _4),
      onRegisterFailed);
-  _LOG_DEBUG("data prefix registered.");
 }
 
 void
 Chat::initial()
 {
   Chat& self = *this;
-  //_LOG_DEBUG("initial chat");
 #if 0 // TODO: Set the heartbeat timeout.
   var myVar = setInterval(function(){self.heartbeat();},60000);
 #endif
@@ -89,7 +86,6 @@ Chat::sendInterest
   // This is used by onData to decide whether to display the chat messages.
   isRecoverySyncState_ = isRecovery;
 
-  //_LOG_DEBUG(content);
   vector<string> sendlist;
   vector<int> sessionlist;
   vector<int> seqlist;
@@ -127,8 +123,6 @@ Chat::sendInterest
     face_.expressInterest
       (interest, bind(&Chat::onData, this, _1, _2),
        bind(&Chat::chatTimeout, this, _1));
-    //_LOG_DEBUG(interest.getName().toUri());
-    //_LOG_DEBUG("Chat Interest expressed.");
   }
 }
 
@@ -138,8 +132,6 @@ Chat::onInterest
    const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
    uint64_t registeredPrefixId)
 {
-  //_LOG_DEBUG("Chat Interest received in callback.");
-  //_LOG_DEBUG(inst->getName().toUri());
   SyncDemo::ChatMessage content;
   int seq = ::atoi(inst->getName().get(6).toEscapedString().c_str());
   for (int i = msgcache_.size() - 1; i >= 0; --i) {
@@ -169,10 +161,9 @@ Chat::onInterest
     keyChain_.sign(co, certificateName_);
     try {
       transport.send(*co.wireEncode());
-      //_LOG_DEBUG(content.SerializeAsString());
     }
     catch (std::exception& e) {
-      _LOG_DEBUG(e.what());
+      cout << "Error sending the chat data " << e.what() << endl;
     }
   }
 }
@@ -182,8 +173,6 @@ Chat::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
-  //_LOG_DEBUG("Chat ContentObject received in callback");
-  //_LOG_DEBUG("name: " + co->getName().toUri());
   SyncDemo::ChatMessage content;
   content.ParseFromArray(co->getContent().buf(), co->getContent().size());
   if (ndn_getNowMilliseconds() - content.timestamp() * 1000.0 < 120000.0) {
@@ -229,7 +218,6 @@ Chat::onData
       vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
       if (n != roster_.end() && name != screen_name_) {
         roster_.erase(n);
-        //_LOG_DEBUG(name + " leave");
         cout << name << ": Leave" << endl;
       }
     }
@@ -239,7 +227,7 @@ Chat::onData
 void
 Chat::chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-  //_LOG_DEBUG("no chat data coming back");
+  // No chat data coming back.
 }
 
 void
@@ -250,8 +238,6 @@ Chat::heartbeat()
 
   sync_->publishNextSequenceNo();
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx");
-
-  //_LOG_DEBUG("Heartbeat Interest expressed.");
 }
 
 void
@@ -260,22 +246,18 @@ Chat::sendMessage(const string& chatmsg)
   if (msgcache_.size() == 0)
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
+  // Ignore an empty message.
   // forming Sync Data Packet.
   if (chatmsg != "") {
     sync_->publishNextSequenceNo();
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg);
-
-    //_LOG_DEBUG("Sync Interest expressed.");
     cout << screen_name_ << ": " << chatmsg << endl;
   }
-  else
-    _LOG_DEBUG("message cannot be empty");
 }
 
 void
 Chat::leave()
 {
-  //_LOG_DEBUG("Leaving the Chatroom...");
   sync_->publishNextSequenceNo();
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx");
 }
@@ -284,7 +266,6 @@ void
 Chat::alive
   (int temp_seq, const string& name, int session, const string& prefix)
 {
-  //_LOG_DEBUG("check alive");
   int seq = sync_->getProducerSequenceNo(prefix, session);
   ostringstream tempStream;
   tempStream << name << session;
@@ -293,7 +274,6 @@ Chat::alive
   if (seq != -1 && n != roster_.end()) {
     if (temp_seq == seq){
       roster_.erase(n);
-      //_LOG_DEBUG(name + " leave");
       cout << name << ": Leave" << endl;
     }
   }
@@ -327,7 +307,7 @@ Chat::getRandomString()
 void
 Chat::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
 {
-  _LOG_DEBUG("Register failed for prefix " + prefix->toUri());
+  cout << "Register failed for prefix " << prefix->toUri() << endl;
 }
 
 }

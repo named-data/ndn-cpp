@@ -21,11 +21,9 @@
  */
 
 #include <math.h>
-#include "../logging.hpp"
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
-#include "../../c/util/time.h"
 #include "chat.hpp"
 #include "chrono-chat.hpp"
 
@@ -226,8 +224,6 @@ ChronoChat::start(const char* screenName, const char* chatRoom, const char* hub)
   interest.setAnswerOriginKind(0);
   face->expressInterest
     (interest, ChronoChat::prefixData, ChronoChat::prefixTimeOut);
-
-  //_LOG_DEBUG("Started...");
 }
 
 void
@@ -235,8 +231,6 @@ ChronoChat::prefixData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
-  //_LOG_DEBUG("prefix ContentObject received in callback");
-  //_LOG_DEBUG("name " + co->getName().toUri());
   string localPrefix((const char*)co->getContent().buf(), co->getContent().size());
   trim(localPrefix);
 
@@ -248,14 +242,13 @@ ChronoChat::prefixData
 void
 ChronoChat::prefixTimeOut(const ptr_lib::shared_ptr<const Interest>& inst)
 {
-  //_LOG_DEBUG("prefix Interest time out");
-  //_LOG_DEBUG("name " + inst->getName().toUri());
+  cout << "prefix Interest timed out " << inst->getName().toUri() << endl;
 }
 
 void
 ChronoChat::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
 {
-  _LOG_DEBUG("Register failed for prefix " + prefix->toUri());
+  cout << "Register failed for prefix " << prefix->toUri() << endl;
 }
 
 string ChronoChat::screenName;
