@@ -674,6 +674,7 @@ int main(int argc, char** argv)
        certificateName);
 
     // The main loop to process Chat while checking stdin to send a message.
+    cout << "Enter your chat message. To quit, enter \"leave\" or \"exit\"." << endl;
     while (true) {
       if (isStdinReady()) {
         char inputBuffer[256];
