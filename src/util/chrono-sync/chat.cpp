@@ -23,7 +23,6 @@
 #include <sstream>
 #include "../../c/util/crypto.h"
 #include "../../c/util/time.h"
-#include "sync-state.pb.h"
 #include "chatbuf.pb.h"
 #include "chat.hpp"
 
@@ -80,8 +79,7 @@ Chat::initial()
 
 void
 Chat::sendInterest
-  (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
-   bool isRecovery)
+  (const vector<ChronoSync::SyncState>& syncStates, bool isRecovery)
 {
   // This is used by onData to decide whether to display the chat messages.
   isRecoverySyncState_ = isRecovery;
@@ -89,28 +87,26 @@ Chat::sendInterest
   vector<string> sendlist;
   vector<int> sessionlist;
   vector<int> seqlist;
-  for (size_t j = 0; j < content.size(); ++j) {
-    if (content.Get(j).type() == 0) {
-      Name name_components(content.Get(j).name());
-      string name_t = name_components.get(-1).toEscapedString();
-      int session = content.Get(j).seqno().session();
-      if (name_t != screen_name_) {
-        int index_n = -1;
-        for (size_t k = 0; k < sendlist.size(); ++k) {
-          if (sendlist[k] == content.Get(j).name()) {
-            index_n = k;
-            break;
-          }
+  for (size_t j = 0; j < syncStates.size(); ++j) {
+    Name name_components(syncStates[j].getDataPrefix());
+    string name_t = name_components.get(-1).toEscapedString();
+    int session = syncStates[j].getSessionNo();
+    if (name_t != screen_name_) {
+      int index_n = -1;
+      for (size_t k = 0; k < sendlist.size(); ++k) {
+        if (sendlist[k] == syncStates[j].getDataPrefix()) {
+          index_n = k;
+          break;
         }
-        if (index_n != -1) {
-          sessionlist[index_n] = session;
-          seqlist[index_n] = content.Get(j).seqno().seq();
-        }
-        else{
-          sendlist.push_back(content.Get(j).name());
-          sessionlist.push_back(session);
-          seqlist.push_back(content.Get(j).seqno().seq());
-        }
+      }
+      if (index_n != -1) {
+        sessionlist[index_n] = session;
+        seqlist[index_n] = syncStates[j].getSequenceNo();
+      }
+      else{
+        sendlist.push_back(syncStates[j].getDataPrefix());
+        sessionlist.push_back(session);
+        seqlist.push_back(syncStates[j].getSequenceNo());
       }
     }
   }

@@ -207,7 +207,16 @@ ChronoSync::onData
   }
 
   // Send the interests to fetch the application data.
-  onReceivedSyncState_(content, isRecovery);
+  vector<SyncState> syncStates;
+  for (size_t i = 0; i < content.size(); ++i) {
+    // Only report UPDATE sync states.
+    if (content.Get(i).type() == 0)
+      syncStates.push_back(SyncState
+        (content.Get(i).name(), content.Get(i).seqno().session(),
+         content.Get(i).seqno().seq()));
+  }
+  onReceivedSyncState_(syncStates, isRecovery);
+
   Name n(applicationBroadcastPrefix_);
   n.append(digest_tree_->getRoot());
   Interest interest(n);

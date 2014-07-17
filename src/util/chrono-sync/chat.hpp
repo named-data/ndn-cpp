@@ -52,8 +52,7 @@ private:
   // Send a Chat Interest to fetch chat messages after get the user gets the Sync data packet back but will not send interest.
   void
   sendInterest
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content,
-     bool isRecovery);
+    (const std::vector<ChronoSync::SyncState>& syncStates, bool isRecovery);
   
   // Send back Chat Data Packet which contains the user's message.
   void 

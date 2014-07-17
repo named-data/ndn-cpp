@@ -37,9 +37,10 @@ class DigestTree;
 
 class ChronoSync {
 public:
+  class SyncState;
   typedef func_lib::function<void
-    (const google::protobuf::RepeatedPtrField<Sync::SyncState>& content,
-     bool isRecovery)> OnReceivedSyncState;
+    (const std::vector<ChronoSync::SyncState>& syncStates, bool isRecovery)>
+      OnReceivedSyncState;
 
   typedef func_lib::function<void()> OnInitialized;
 
@@ -49,7 +50,7 @@ public:
    * to receive interests for the applicationBroadcastPrefix and express an
    * interest for the initial root digest "00".
    * @param onReceivedSyncState When ChronoSync receives a sync state message,
-   * this calls onReceivedSyncState(content, isRecovery) where content is the
+   * this calls onReceivedSyncState(syncStates, isRecovery) where syncStates is the
    * set of SyncState messages and isRecovery is true if this is the initial
    * set of SyncState messages or from a recovery interest. (For example, if
    * isRecovery is true, a chat application would not want to re-display all
@@ -80,6 +81,34 @@ public:
      int session, Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
      const OnRegisterFailed& onRegisterFailed);
+
+  /**
+   * A SyncState holds the data of a sync state message which is passed to the
+   * OnReceivedSyncState callback. Note: this has the same info as
+   * the Protobuf class Sync::SyncState, but we make a separate class so that
+   * we don't need the Protobuf definition in the ChronoSync API.
+   */
+  class SyncState {
+  public:
+    SyncState(const std::string& dataPrefix, int sessionNo, int sequenceNo)
+    : dataPrefix_(dataPrefix), sessionNo_(sessionNo), sequenceNo_(sequenceNo)
+    {
+    }
+
+    const std::string&
+    getDataPrefix() const { return dataPrefix_; }
+
+    int
+    getSessionNo() const { return sessionNo_; }
+
+    int
+    getSequenceNo() const { return sequenceNo_; }
+
+  private:
+    std::string dataPrefix_;
+    int sessionNo_;
+    int sequenceNo_;
+  };
 
   /**
    * Get the current sequence number in the digest tree for the given
