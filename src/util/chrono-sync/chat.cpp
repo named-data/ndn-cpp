@@ -75,21 +75,8 @@ Chat::initial()
 #endif
   if (find(roster_.begin(), roster_.end(), usrname_) == roster_.end()) {
     roster_.push_back(usrname_);
-#if 0 // TODO: Show the Member.
-    document.getElementById('menu').innerHTML = '<p><b>Member</b></p>';
-    document.getElementById('menu').innerHTML += '<ul><li>'+screen_name_+'</li></ul>';
-#else
     cout << "Member: " << screen_name_ << endl;
-#endif
-#if 0 // TODO: Show the join message.
-    var d = new Date();
-    var t = d.getTime();
-    document.getElementById('txt').innerHTML += '<div><b><grey>'+screen_name_+'-'+d.toLocaleTimeString()+': Join</grey></b><br /></div>'
-    var objDiv = document.getElementById("txt");
-    objDiv.scrollTop = objDiv.scrollHeight;
-#else
     cout << screen_name_ << ": Join" << endl;
-#endif
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
   }
 }
@@ -225,22 +212,7 @@ Chat::onData
 
     if (l == roster_.size()) {
       roster_.push_back(nameAndSession);
-#if 0 // TODO: Show the join event.
-      var t = (new Date(content.timestamp*1000)).toLocaleTimeString();
-      document.getElementById('txt').innerHTML += '<div><b><grey>'+name+'-'+t+': Join'+'</grey></b><br /></div>';
-      var objDiv = document.getElementById("txt");
-      objDiv.scrollTop = objDiv.scrollHeight;
-#else
       cout << name << ": Join" << endl;
-#endif
-#if 0 // TODO: Show the new roster.
-      document.getElementById('menu').innerHTML = '<p><b>Member</b></p><ul>';
-      for (size_t i = 0; i < roster_.size(); ++i) {
-        string name_t = roster_[i].substring(0, roster_[i].size() - 10);
-        document.getElementById('menu').innerHTML += '<li>'+name_t+'</li>';
-      }
-      document.getElementById('menu').innerHTML += '</ul>';
-#endif
     }
 
     Chat& self = *this;
@@ -250,40 +222,15 @@ Chat::onData
     // isRecoverySyncState_ was set by sendInterest.
     // TODO: If isRecoverySyncState_ changed, this assumes that we won't
     //   data from an interest sent before it changed.
-    if (content.type() == 0 && !isRecoverySyncState_ && content.from() != screen_name_) {
-#if 0 // TODO: Show the message.
-      // The display on the screen will not display old data.
-      var escaped_msg = $('<div/>').text(content.data).html();  // encode special html characters to avoid script injection
-      document.getElementById('txt').innerHTML +='<p><grey>'+ content.from+'-'+t+':</grey><br />'+escaped_msg+'</p>';
-      var objDiv = document.getElementById("txt");
-      objDiv.scrollTop = objDiv.scrollHeight;
-#else
+    if (content.type() == 0 && !isRecoverySyncState_ && content.from() != screen_name_)
       cout << content.from() << ": " << content.data() << endl;
-#endif
-    }
     else if (content.type() == 2) {
       // leave message
       vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
       if (n != roster_.end() && name != screen_name_) {
         roster_.erase(n);
-#if 0 // TODO: Update the roster.
-        document.getElementById('menu').innerHTML = '<p><b>Member</b></p><ul>';
-        for (var i = 0; i < roster.size(); ++i) {
-          string name_t = roster_[i].substring(0, roster_[i].size() - 10);
-          document.getElementById('menu').innerHTML += '<li>'+name_t+'</li>';
-        }
-        document.getElementById('menu').innerHTML += '</ul>';
-#endif
         //_LOG_DEBUG(name + " leave");
-#if 0 // TODO: Show leave message.
-        var d = new Date(content.timestamp*1000);
-        var t = d.toLocaleTimeString();
-        document.getElementById('txt').innerHTML += '<div><b><grey>'+name+'-'+t+': Leave</grey></b><br /></div>'
-        var objDiv = document.getElementById("txt");
-        objDiv.scrollTop = objDiv.scrollHeight;
-#else
         cout << name << ": Leave" << endl;
-#endif
       }
     }
   }
@@ -315,22 +262,11 @@ Chat::sendMessage(const string& chatmsg)
 
   // forming Sync Data Packet.
   if (chatmsg != "") {
-#if 0 // TODO: Clear fname (why?)
-    document.getElementById('fname').value = "";
-#endif
     sync_->publishNextSequenceNo();
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg);
 
     //_LOG_DEBUG("Sync Interest expressed.");
-#if 0 // TODO: Show the message.
-    var tt = d.toLocaleTimeString();
-    var escaped_msg = $('<div/>').text(msg).html();  // encode special html characters to avoid script injection
-    document.getElementById('txt').innerHTML += '<p><grey>'+ screen_name_+'-'+tt+':</grey><br />'+ escaped_msg + '</p>';
-    var objDiv = document.getElementById("txt");
-    objDiv.scrollTop = objDiv.scrollHeight;
-#else
     cout << screen_name_ << ": " << chatmsg << endl;
-#endif
   }
   else
     _LOG_DEBUG("message cannot be empty");
@@ -340,10 +276,6 @@ void
 Chat::leave()
 {
   //_LOG_DEBUG("Leaving the Chatroom...");
-#if 0 // TODO: Hide the chat area.
-  $("#chat").hide();
-  document.getElementById('room').innerHTML = 'Please close the window. Thank you';
-#endif
   sync_->publishNextSequenceNo();
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx");
 }
@@ -362,21 +294,7 @@ Chat::alive
     if (temp_seq == seq){
       roster_.erase(n);
       //_LOG_DEBUG(name + " leave");
-#if 0 // TODO: Show the leave message. Update the roster.
-      var d = new Date();
-      var t = d.toLocaleTimeString();
-      document.getElementById('txt').innerHTML += '<div><b><grey>'+name+'-'+t+': Leave</grey></b><br /></div>'
-      var objDiv = document.getElementById("txt");
-      objDiv.scrollTop = objDiv.scrollHeight;
-      document.getElementById('menu').innerHTML = '<p><b>Member</b></p><ul>';
-      for(size_t i = 0; i < roster_.size(); ++i) {
-        string name_t = roster_[i].substring(0, roster_[i].size() - 10);
-        document.getElementById('menu').innerHTML += '<li>'+name_t+'</li>';
-      }
-      document.getElementById('menu').innerHTML += '</ul>';
-#else
       cout << name << ": Leave" << endl;
-#endif
     }
   }
 }
