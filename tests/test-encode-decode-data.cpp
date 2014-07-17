@@ -21,7 +21,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <time.h>
-#include <stdint.h>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
@@ -319,7 +318,9 @@ int main(int argc, char** argv)
            (keyName[-1]).append("ID-CERT").append("0");
     identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
     privateKeyStorage->setKeyPairForKeyName
-      (keyName, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+      (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER,
+       sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
+       sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
     keyChain.sign(*freshData, certificateName);
     cout << endl << "Freshly-signed Data:" << endl;
