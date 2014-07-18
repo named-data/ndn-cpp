@@ -37,14 +37,14 @@ namespace ndn {
 ChronoSync2013::ChronoSync2013
   (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
    const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
-   int session, Transport& transport, Face& face, KeyChain& keyChain,
-   const Name& certificateName, Milliseconds sync_lifetime,
+   int sessionNo, Transport& transport, Face& face, KeyChain& keyChain,
+   const Name& certificateName, Milliseconds syncLifetime,
    const OnRegisterFailed& onRegisterFailed)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
-  applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
+  applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
   transport_(transport), face_(face), keyChain_(keyChain),
-  certificateName_(certificateName), sync_lifetime_(sync_lifetime),
+  certificateName_(certificateName), sync_lifetime_(syncLifetime),
   usrseq_(-1), digest_tree_(new DigestTree())
 {
   Sync::SyncStateMsg emptyContent;

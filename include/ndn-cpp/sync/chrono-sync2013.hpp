@@ -71,20 +71,20 @@ public:
    * @param applicationBroadcastPrefix The broadcast name prefix including the
    * application name. For example, "/ndn/broadcast/ChronoChat-0.3/ndnchat1".
    * This makes a copy of the name.
-   * @param session
+   * @param sessionNo
    * @param transport
    * @param face
    * @param keyChain
    * @param certificateName
-   * @param sync_lifetime
+   * @param syncLifetime
    * @param onRegisterFailed A function object to call if failed to register the
    * prefix to receive interests for the applicationBroadcastPrefix.
    */
   ChronoSync2013
     (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
      const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
-     int session, Transport& transport, Face& face, KeyChain& keyChain,
-     const Name& certificateName, Milliseconds sync_lifetime,
+     int sessionNo, Transport& transport, Face& face, KeyChain& keyChain,
+     const Name& certificateName, Milliseconds syncLifetime,
      const OnRegisterFailed& onRegisterFailed);
 
   /**
