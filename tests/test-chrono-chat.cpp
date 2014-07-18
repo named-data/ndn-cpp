@@ -60,28 +60,27 @@ class Chat {
 public:
   Chat
     (const std::string& screenName, const std::string& chatRoom,
-     const Name& localPrefix, Transport& transport, Face& face,
+     const Name& hubPrefix, Transport& transport, Face& face,
      KeyChain& keyChain, const Name& certificateName)
     : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
       isRecoverySyncState_(true), sync_lifetime_(5000.0), face_(face),
       keyChain_(keyChain), certificateName_(certificateName)
   {
     // This should only be called once, so get the random string here.
-    Name chat_prefix(localPrefix);
-    chat_prefix.append(chatroom_).append(Chat::getRandomString());
+    chat_prefix_ = Name(hubPrefix).append(chatroom_).append(Chat::getRandomString());
     int session = (int)::round(getNowMilliseconds()  / 1000.0);
     ostringstream tempStream;
     tempStream << screen_name_ << session;
     usrname_ = tempStream.str();
     sync_.reset(new ChronoSync2013
       (bind(&Chat::sendInterest, this, _1, _2),
-       bind(&Chat::initial, this), chat_prefix,
+       bind(&Chat::initial, this), chat_prefix_,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
        transport, face, keyChain, certificateName, sync_lifetime_,
        onRegisterFailed));
 
     face.registerPrefix
-      (chat_prefix, bind(&Chat::onInterest, this, _1, _2, _3, _4),
+      (chat_prefix_, bind(&Chat::onInterest, this, _1, _2, _3, _4),
        onRegisterFailed);
   }
 
@@ -188,6 +187,7 @@ private:
   std::string screen_name_;
   std::string chatroom_;
   std::string usrname_;
+  Name chat_prefix_;
   Milliseconds sync_lifetime_;
   ptr_lib::shared_ptr<ChronoSync2013> sync_;
   Face& face_;
@@ -262,7 +262,7 @@ Chat::onInterest
    uint64_t registeredPrefixId)
 {
   SyncDemo::ChatMessage content;
-  int seq = ::atoi(inst->getName().get(6).toEscapedString().c_str());
+  int seq = ::atoi(inst->getName().get(chat_prefix_.size() + 1).toEscapedString().c_str());
   for (int i = msgcache_.size() - 1; i >= 0; --i) {
     if (msgcache_[i]->getSequenceNo() == seq) {
       if (msgcache_[i]->getMessageType() != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
@@ -306,10 +306,9 @@ Chat::onData
   content.ParseFromArray(co->getContent().buf(), co->getContent().size());
   if (getNowMilliseconds() - content.timestamp() * 1000.0 < 120000.0) {
     string name = content.from();
-    Name name_t(name);
-    Name prefix = name_t.getSubName(1, 5).toUri();
-    int session = ::atoi(co->getName().get(5).toEscapedString().c_str());
-    int seqno = ::atoi(co->getName().get(6).toEscapedString().c_str());
+    string prefix = co->getName().getPrefix(chat_prefix_.size()).toUri();
+    int session = ::atoi(co->getName().get(chat_prefix_.size() + 0).toEscapedString().c_str());
+    int seqno = ::atoi(co->getName().get(chat_prefix_.size() + 1).toEscapedString().c_str());
     ostringstream tempStream;
     tempStream << name << session;
     string nameAndSession = tempStream.str();
@@ -634,37 +633,17 @@ stdinReadLine()
   return input;
 }
 
-static string* LocalPrefix = 0;
-
-static void
-prefixData
-  (const ptr_lib::shared_ptr<const Interest>& inst,
-   const ptr_lib::shared_ptr<Data>& co)
-{
-  // The main loop will see that this is set.
-  LocalPrefix = new string((const char*)co->getContent().buf(), co->getContent().size());
-  trim(*LocalPrefix);
-}
-
-static void
-prefixTimeOut(const ptr_lib::shared_ptr<const Interest>& inst)
-{
-  cout << "prefix Interest timed out " << inst->getName().toUri() << endl;
-}
-
 int main(int argc, char** argv)
 {
   try {
     cout << "Enter your chat username:" << endl;
     string screenName = stdinReadLine();
 
-#if 0
-    string defaultLocalPrefix = "ndn/edu/ucla/remap";
-    cout << "Enter your hub prefix [" << defaultLocalPrefix << "]" << endl;
-    string localPrefix = stdinReadLine();
-    if (localPrefix == "")
-      localPrefix = defaultLocalPrefix;
-#endif
+    string defaultHubPrefix = "ndn/edu/ucla/remap";
+    cout << "Enter your hub prefix [" << defaultHubPrefix << "]" << endl;
+    string hubPrefix = stdinReadLine();
+    if (hubPrefix == "")
+      hubPrefix = defaultHubPrefix;
 
     string defaultChatRoom = "ndnchat";
     cout << "Enter the chatroom name [" << defaultChatRoom << "]:" << endl;
@@ -700,24 +679,8 @@ int main(int argc, char** argv)
       (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
        DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
-    // Send an interest for the local routable prefix.
-    Interest interest(Name("/local/ndn/prefix"));
-    interest.setInterestLifetimeMilliseconds(1000.0);
-    interest.setChildSelector(1);
-    interest.setAnswerOriginKind(0);
-    face.expressInterest(interest, prefixData, prefixTimeOut);
-
-    // Wait for prefixData to set LocalPrefix.
-    while (true) {
-      if (LocalPrefix)
-        break;
-      
-      face.processEvents();
-      usleep(10000);
-    }
-
     Chat chat
-      (screenName, chatRoom, Name(*LocalPrefix), *transport, face, keyChain,
+      (screenName, chatRoom, Name(hubPrefix), *transport, face, keyChain,
        certificateName);
 
     // The main loop to process Chat while checking stdin to send a message.
