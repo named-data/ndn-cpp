@@ -31,6 +31,7 @@
 #include <poll.h>
 #include <math.h>
 #include <sstream>
+#include <stdexcept>
 #include <openssl/rand.h>
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
@@ -600,6 +601,9 @@ onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
   cout << "Register failed for prefix " << prefix->toUri() << endl;
 }
 
+/**
+ * Poll stdin and return true if it is ready to ready (e.g. from stdinReadLine).
+ */
 static bool
 isStdinReady()
 {
@@ -608,6 +612,26 @@ isStdinReady()
   pollInfo.events = POLLIN;
 
   return poll(&pollInfo, 1, 0) > 0;
+}
+
+/**
+ * Read a line from from stdin and return a trimmed string.  (We don't use
+ * cin because it ignores a blank line.)
+ */
+static string
+stdinReadLine()
+{
+  char inputBuffer[1000];
+  ssize_t nBytes = ::read(STDIN_FILENO, inputBuffer, sizeof(inputBuffer) - 1);
+  if (nBytes < 0)
+    // Don't expect an error reading from stdin.
+    throw runtime_error("stdinReadLine: error reading from STDIN_FILENO");
+
+  inputBuffer[nBytes] = 0;
+  string input(inputBuffer);
+  trim(input);
+
+  return input;
 }
 
 static string* LocalPrefix = 0;
@@ -631,13 +655,14 @@ prefixTimeOut(const ptr_lib::shared_ptr<const Interest>& inst)
 int main(int argc, char** argv)
 {
   try {
-    string screenName;
     cout << "Enter your chat username:" << endl;
-    cin >> screenName;
+    string screenName = stdinReadLine();
 
-    string chatRoom;
-    cout << "Enter the chatroom name:" << endl;
-    cin >> chatRoom;
+    string defaultChatRoom = "ndnchat";
+    cout << "Enter the chatroom name [" << defaultChatRoom << "]:" << endl;
+    string chatRoom = stdinReadLine();
+    if (chatRoom == "")
+      chatRoom = defaultChatRoom;
 
     const char* host = "localhost";
     cout << "Connecting to " << host << ", Chatroom: " << chatRoom <<
@@ -691,16 +716,7 @@ int main(int argc, char** argv)
     cout << "Enter your chat message. To quit, enter \"leave\" or \"exit\"." << endl;
     while (true) {
       if (isStdinReady()) {
-        char inputBuffer[256];
-        ssize_t nBytes = ::read(STDIN_FILENO, inputBuffer, sizeof(inputBuffer) - 1);
-        if (nBytes < 0)
-          // Don't expect an error reading from stdin.
-          return -1;
-
-        inputBuffer[nBytes] = 0;
-        string input(inputBuffer);
-        trim(input);
-
+        string input = stdinReadLine();
         if (input == "leave" || input == "exit")
           // We will send the leave message below.
           break;
