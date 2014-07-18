@@ -36,7 +36,7 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/transport/tcp-transport.hpp>
-#include <ndn-cpp/util/chrono-sync/chrono-sync.hpp>
+#include <ndn-cpp/sync/chrono-sync2013.hpp>
 #include "chatbuf.pb.h"
 #if NDN_CPP_HAVE_TIME_H
 #include <time.h>
@@ -71,7 +71,7 @@ public:
     ostringstream tempStream;
     tempStream << screen_name_ << session;
     usrname_ = tempStream.str();
-    sync_.reset(new ChronoSync
+    sync_.reset(new ChronoSync2013
       (bind(&Chat::sendInterest, this, _1, _2),
        bind(&Chat::initial, this), chat_prefix_,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
@@ -107,7 +107,7 @@ private:
   // Send a Chat Interest to fetch chat messages after get the user gets the Sync data packet back but will not send interest.
   void
   sendInterest
-    (const std::vector<ChronoSync::SyncState>& syncStates, bool isRecovery);
+    (const std::vector<ChronoSync2013::SyncState>& syncStates, bool isRecovery);
 
   // Send back Chat Data Packet which contains the user's message.
   void
@@ -188,7 +188,7 @@ private:
   std::string usrname_;
   std::string chat_prefix_;
   Milliseconds sync_lifetime_;
-  ptr_lib::shared_ptr<ChronoSync> sync_;
+  ptr_lib::shared_ptr<ChronoSync2013> sync_;
   Face& face_;
   KeyChain& keyChain_;
   Name certificateName_;
@@ -211,7 +211,7 @@ Chat::initial()
 
 void
 Chat::sendInterest
-  (const vector<ChronoSync::SyncState>& syncStates, bool isRecovery)
+  (const vector<ChronoSync2013::SyncState>& syncStates, bool isRecovery)
 {
   // This is used by onData to decide whether to display the chat messages.
   isRecoverySyncState_ = isRecovery;

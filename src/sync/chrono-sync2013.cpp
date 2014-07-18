@@ -25,16 +25,16 @@
 #if NDN_CPP_HAVE_PROTOBUF
 
 #include <stdexcept>
-#include "../logging.hpp"
+#include "../util/logging.hpp"
 #include "sync-state.pb.h"
 #include "digest-tree.hpp"
-#include <ndn-cpp/util/chrono-sync/chrono-sync.hpp>
+#include <ndn-cpp/sync/chrono-sync2013.hpp>
 
 using namespace std;
 
 namespace ndn {
 
-ChronoSync::ChronoSync
+ChronoSync2013::ChronoSync2013
   (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
    const string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
    int session, Transport& transport, Face& face, KeyChain& keyChain,
@@ -53,21 +53,21 @@ ChronoSync::ChronoSync
 
   face.registerPrefix
     (applicationBroadcastPrefix_,
-     bind(&ChronoSync::onInterest, this, _1, _2, _3, _4), onRegisterFailed);
+     bind(&ChronoSync2013::onInterest, this, _1, _2, _3, _4), onRegisterFailed);
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
   face.expressInterest
-    (interest, bind(&ChronoSync::onData, this, _1, _2),
-     bind(&ChronoSync::initialTimeOut, this, _1));
+    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
+     bind(&ChronoSync2013::initialTimeOut, this, _1));
   _LOG_DEBUG("initial sync expressed");
   _LOG_DEBUG(interest.getName().toUri());
 }
 
 int
-ChronoSync::logfind(const std::string& digest) const
+ChronoSync2013::logfind(const std::string& digest) const
 {
   for (size_t i = 0; i < digest_log_.size(); ++i) {
     if (digest == digest_log_[i]->getDigest())
@@ -78,7 +78,7 @@ ChronoSync::logfind(const std::string& digest) const
 };
 
 bool
-ChronoSync::update
+ChronoSync2013::update
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   for (size_t i = 0; i < content.size(); ++i) {
@@ -103,7 +103,7 @@ ChronoSync::update
 }
 
 int
-ChronoSync::getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
+ChronoSync2013::getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
 {
   int index = digest_tree_->find(namePrefix, sessionNo);
   if (index < 0)
@@ -113,7 +113,7 @@ ChronoSync::getProducerSequenceNo(const std::string& namePrefix, int sessionNo) 
 }
 
 void
-ChronoSync::publishNextSequenceNo()
+ChronoSync2013::publishNextSequenceNo()
 {
   ++usrseq_;
 
@@ -138,12 +138,12 @@ ChronoSync::publishNextSequenceNo()
   interest.getName().append(digest_tree_->getRoot());
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync::onData, this, _1, _2),
-     bind(&ChronoSync::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
+     bind(&ChronoSync2013::syncTimeout, this, _1));
 }
 
 void
-ChronoSync::onInterest
+ChronoSync2013::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
    uint64_t registerPrefixId)
@@ -167,7 +167,7 @@ ChronoSync::onInterest
     if (syncdigest != digest_tree_->getRoot()) {
       size_t index = logfind(syncdigest);
       if (index == -1) {
-        ChronoSync& self = *this;
+        ChronoSync2013& self = *this;
 #if 0 // TODO: Set the timeout without using usleep.
         //Wait 2 seconds to see whether there is any data packet coming back
         setTimeout(function(){self.judgeRecovery(syncdigest, transport);},2000);
@@ -186,7 +186,7 @@ ChronoSync::onInterest
 }
 
 void
-ChronoSync::onData
+ChronoSync2013::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
@@ -226,14 +226,14 @@ ChronoSync::onData
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync::onData, this, _1, _2),
-     bind(&ChronoSync::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
+     bind(&ChronoSync2013::syncTimeout, this, _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync::processRecoveryInst
+ChronoSync2013::processRecoveryInst
   (const Interest& inst, const string& syncdigest, Transport& transport)
 {
   _LOG_DEBUG("processRecoveryInst");
@@ -266,7 +266,7 @@ ChronoSync::processRecoveryInst
 }
 
 void
-ChronoSync::processSyncInst
+ChronoSync2013::processSyncInst
   (int index, const string& syncdigest_t, Transport& transport)
 {
   vector<string> data_name;
@@ -328,7 +328,7 @@ ChronoSync::processSyncInst
 }
 
 void
-ChronoSync::sendRecovery(const string& syncdigest_t)
+ChronoSync2013::sendRecovery(const string& syncdigest_t)
 {
   _LOG_DEBUG("unknown digest: ");
   Name n(applicationBroadcastPrefix_);
@@ -336,14 +336,14 @@ ChronoSync::sendRecovery(const string& syncdigest_t)
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync::onData, this, _1, _2),
-     bind(&ChronoSync::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
+     bind(&ChronoSync2013::syncTimeout, this, _1));
   _LOG_DEBUG("Recovery Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync::judgeRecovery(const string& syncdigest_t, Transport& transport)
+ChronoSync2013::judgeRecovery(const string& syncdigest_t, Transport& transport)
 {
   int index2 = logfind(syncdigest_t);
   if (index2 != -1) {
@@ -355,7 +355,7 @@ ChronoSync::judgeRecovery(const string& syncdigest_t, Transport& transport)
 }
 
 void
-ChronoSync::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
+ChronoSync2013::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
    _LOG_DEBUG("Sync Interest time out.");
    _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
@@ -365,15 +365,15 @@ ChronoSync::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
     Interest retryInterest(interest->getName());
     retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
     face_.expressInterest
-      (retryInterest, bind(&ChronoSync::onData, this, _1, _2),
-       bind(&ChronoSync::syncTimeout, this, _1));
+      (retryInterest, bind(&ChronoSync2013::onData, this, _1, _2),
+       bind(&ChronoSync2013::syncTimeout, this, _1));
      _LOG_DEBUG("Syncinterest expressed:");
      _LOG_DEBUG(n.toUri());
   }
 }
 
 void
-ChronoSync::initialOndata
+ChronoSync2013::initialOndata
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   // The user is a new comer and receive data of all other people in the group.
@@ -429,7 +429,7 @@ ChronoSync::initialOndata
 }
 
 void
-ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
+ChronoSync2013::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
@@ -454,14 +454,14 @@ ChronoSync::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (retryInterest, bind(&ChronoSync::onData, this, _1, _2),
-     bind(&ChronoSync::syncTimeout, this, _1));
+    (retryInterest, bind(&ChronoSync2013::onData, this, _1, _2),
+     bind(&ChronoSync2013::syncTimeout, this, _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync::broadcastSyncState
+ChronoSync2013::broadcastSyncState
   (const string& digest, const Sync::SyncStateMsg& syncMessage)
 {
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
@@ -478,7 +478,7 @@ ChronoSync::broadcastSyncState
   }
 }
 
-ChronoSync::DigestLogEntry::DigestLogEntry
+ChronoSync2013::DigestLogEntry::DigestLogEntry
   (const std::string& digest,
    const google::protobuf::RepeatedPtrField<Sync::SyncState>& data)
   : digest_(digest),

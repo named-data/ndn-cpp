@@ -24,8 +24,8 @@
 #define NDN_CHRONO_SYNC_HPP
 
 #include <vector>
-#include "../../face.hpp"
-#include "../../security/key-chain.hpp"
+#include "../face.hpp"
+#include "../security/key-chain.hpp"
 
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
 namespace Sync { class SyncStateMsg; }
@@ -35,11 +35,16 @@ namespace ndn {
 
 class DigestTree;
 
-class ChronoSync {
+/**
+ * ChronoSync2013 implements the NDN ChronoSync protocol as described in the
+ * 2013 paper "Let’s ChronoSync: Decentralized Dataset State Synchronization in 
+ * Named Data Networking". http://named-data.net/publications/chronosync
+ */
+class ChronoSync2013 {
 public:
   class SyncState;
   typedef func_lib::function<void
-    (const std::vector<ChronoSync::SyncState>& syncStates, bool isRecovery)>
+    (const std::vector<ChronoSync2013::SyncState>& syncStates, bool isRecovery)>
       OnReceivedSyncState;
 
   typedef func_lib::function<void()> OnInitialized;
@@ -75,7 +80,7 @@ public:
    * @param onRegisterFailed A function object to call if failed to register the
    * prefix to receive interests for the applicationBroadcastPrefix.
    */
-  ChronoSync
+  ChronoSync2013
     (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
      const std::string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
      int session, Transport& transport, Face& face, KeyChain& keyChain,

@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <openssl/ssl.h>
-#include "../logging.hpp"
+#include "../util/logging.hpp"
 #include "digest-tree.hpp"
 
 using namespace std;

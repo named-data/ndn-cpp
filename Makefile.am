@@ -77,6 +77,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
   include/ndn-cpp/security/signature/sha256-with-rsa-handler.hpp \
+  include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
   include/ndn-cpp/transport/transport.hpp \
   include/ndn-cpp/transport/udp-transport.hpp \
@@ -84,8 +85,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
-  include/ndn-cpp/util/signed-blob.hpp \
-  include/ndn-cpp/util/chrono-sync/chrono-sync.hpp
+  include/ndn-cpp/util/signed-blob.hpp
 
 # Just the C code.
 libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
@@ -186,6 +186,9 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
   src/security/signature/sha256-with-rsa-handler.cpp \
+  src/sync/chrono-sync2013.cpp \
+  src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
   src/transport/tcp-transport.cpp \
   src/transport/transport.cpp \
   src/transport/udp-transport.cpp \
@@ -195,10 +198,7 @@ libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
-  src/util/memory-content-cache.cpp \
-  src/util/chrono-sync/chrono-sync.cpp \
-  src/util/chrono-sync/digest-tree.cpp src/util/chrono-sync/digest-tree.hpp \
-  src/util/chrono-sync/sync-state.pb.cc src/util/chrono-sync/sync-state.pb.h
+  src/util/memory-content-cache.cpp
 
 bin_test_chrono_chat_SOURCES = tests/test-chrono-chat.cpp tests/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
