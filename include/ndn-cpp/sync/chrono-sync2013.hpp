@@ -67,7 +67,7 @@ public:
    * @param applicationDataPrefix The prefix used by this application instance
    * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
    * This is used when sending a sync message for a new sequence number.
-   * This makes a copy of the string.
+   * In the sync messages, this uses applicationDataPrefix.toUri().
    * @param applicationBroadcastPrefix The broadcast name prefix including the
    * application name. For example, "/ndn/broadcast/ChronoChat-0.3/ndnchat1".
    * This makes a copy of the name.
@@ -82,7 +82,7 @@ public:
    */
   ChronoSync2013
     (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
-     const std::string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
+     const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
      int session, Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds sync_lifetime,
      const OnRegisterFailed& onRegisterFailed);
@@ -241,7 +241,7 @@ private:
   OnInitialized onInitialized_;
   std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
   ptr_lib::shared_ptr<DigestTree> digest_tree_;
-  std::string applicationDataPrefix_;
+  std::string applicationDataPrefixUri_;
   const Name applicationBroadcastPrefix_;
   int session_;
   int usrseq_;

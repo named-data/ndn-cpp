@@ -36,12 +36,12 @@ namespace ndn {
 
 ChronoSync2013::ChronoSync2013
   (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
-   const string& applicationDataPrefix, const Name& applicationBroadcastPrefix,
+   const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
    int session, Transport& transport, Face& face, KeyChain& keyChain,
    const Name& certificateName, Milliseconds sync_lifetime,
    const OnRegisterFailed& onRegisterFailed)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
-  applicationDataPrefix_(applicationDataPrefix),
+  applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(session),
   transport_(transport), face_(face), keyChain_(keyChain),
   certificateName_(certificateName), sync_lifetime_(sync_lifetime),
@@ -87,7 +87,7 @@ ChronoSync2013::update
           (content.Get(i).name(), content.Get(i).seqno().session(),
            content.Get(i).seqno().seq())) {
         // The digest tree was updated.
-        if (applicationDataPrefix_ == content.Get(i).name())
+        if (applicationDataPrefixUri_ == content.Get(i).name())
           usrseq_ = content.Get(i).seqno().seq();
       }
     }
@@ -119,7 +119,7 @@ ChronoSync2013::publishNextSequenceNo()
 
   Sync::SyncStateMsg syncMessage;
   Sync::SyncState* content = syncMessage.add_ss();
-  content->set_name(applicationDataPrefix_);
+  content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
   content->mutable_seqno()->set_seq(usrseq_);
   content->mutable_seqno()->set_session(session_);
@@ -380,11 +380,11 @@ ChronoSync2013::initialOndata
   update(content);
   string digest_t = digest_tree_->getRoot();
   for (size_t i = 0; i < content.size(); ++i) {
-    if (content.Get(i).name() == applicationDataPrefix_ && content.Get(i).seqno().session() == session_) {
+    if (content.Get(i).name() == applicationDataPrefixUri_ && content.Get(i).seqno().session() == session_) {
       // If the user was an old comer, after add the static log he needs to increase his seqno by 1.
       Sync::SyncStateMsg content_t;
       Sync::SyncState* content2 = content_t.add_ss();
-      content2->set_name(applicationDataPrefix_);
+      content2->set_name(applicationDataPrefixUri_);
       content2->set_type(Sync::SyncState_ActionType_UPDATE);
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(session_);
@@ -397,14 +397,14 @@ ChronoSync2013::initialOndata
   if (usrseq_ >= 0) {
     // Send the data packet with the new seqno back.
     Sync::SyncState* content2 = content2_t.add_ss();
-    content2->set_name(applicationDataPrefix_);
+    content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(usrseq_);
     content2->mutable_seqno()->set_session(session_);
   }
   else {
     Sync::SyncState* content2 = content2_t.add_ss();
-    content2->set_name(applicationDataPrefix_);
+    content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(0);
     content2->mutable_seqno()->set_session(session_);
@@ -412,13 +412,13 @@ ChronoSync2013::initialOndata
 
   broadcastSyncState(digest_t, content2_t);
 
-  if (digest_tree_->find(applicationDataPrefix_, session_) == -1) {
+  if (digest_tree_->find(applicationDataPrefixUri_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
     _LOG_DEBUG("initial state")
     ++usrseq_;
     Sync::SyncStateMsg content_t;
     Sync::SyncState* content2 = content_t.add_ss();
-    content2->set_name(applicationDataPrefix_);
+    content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(usrseq_);
     content2->mutable_seqno()->set_session(session_);
@@ -441,7 +441,7 @@ ChronoSync2013::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& intere
 
   Sync::SyncStateMsg content_t;
   Sync::SyncState* content = content_t.add_ss();
-  content->set_name(applicationDataPrefix_);
+  content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
   content->mutable_seqno()->set_seq(usrseq_);
   content->mutable_seqno()->set_session(session_);

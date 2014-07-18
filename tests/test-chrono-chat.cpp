@@ -60,27 +60,28 @@ class Chat {
 public:
   Chat
     (const std::string& screenName, const std::string& chatRoom,
-     const std::string& localPrefix, Transport& transport, Face& face,
+     const Name& localPrefix, Transport& transport, Face& face,
      KeyChain& keyChain, const Name& certificateName)
     : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
       isRecoverySyncState_(true), sync_lifetime_(5000.0), face_(face),
       keyChain_(keyChain), certificateName_(certificateName)
   {
     // This should only be called once, so get the random string here.
-    chat_prefix_ = localPrefix + "/" + chatroom_ + "/" + Chat::getRandomString();
+    Name chat_prefix(localPrefix);
+    chat_prefix.append(chatroom_).append(Chat::getRandomString());
     int session = (int)::round(getNowMilliseconds()  / 1000.0);
     ostringstream tempStream;
     tempStream << screen_name_ << session;
     usrname_ = tempStream.str();
     sync_.reset(new ChronoSync2013
       (bind(&Chat::sendInterest, this, _1, _2),
-       bind(&Chat::initial, this), chat_prefix_,
+       bind(&Chat::initial, this), chat_prefix,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
        transport, face, keyChain, certificateName, sync_lifetime_,
        onRegisterFailed));
 
     face.registerPrefix
-      (Name(chat_prefix_), bind(&Chat::onInterest, this, _1, _2, _3, _4),
+      (chat_prefix, bind(&Chat::onInterest, this, _1, _2, _3, _4),
        onRegisterFailed);
   }
 
@@ -187,7 +188,6 @@ private:
   std::string screen_name_;
   std::string chatroom_;
   std::string usrname_;
-  std::string chat_prefix_;
   Milliseconds sync_lifetime_;
   ptr_lib::shared_ptr<ChronoSync2013> sync_;
   Face& face_;
@@ -658,6 +658,14 @@ int main(int argc, char** argv)
     cout << "Enter your chat username:" << endl;
     string screenName = stdinReadLine();
 
+#if 0
+    string defaultLocalPrefix = "ndn/edu/ucla/remap";
+    cout << "Enter your hub prefix [" << defaultLocalPrefix << "]" << endl;
+    string localPrefix = stdinReadLine();
+    if (localPrefix == "")
+      localPrefix = defaultLocalPrefix;
+#endif
+
     string defaultChatRoom = "ndnchat";
     cout << "Enter the chatroom name [" << defaultChatRoom << "]:" << endl;
     string chatRoom = stdinReadLine();
@@ -709,7 +717,7 @@ int main(int argc, char** argv)
     }
 
     Chat chat
-      (screenName, chatRoom, *LocalPrefix, *transport, face, keyChain,
+      (screenName, chatRoom, Name(*LocalPrefix), *transport, face, keyChain,
        certificateName);
 
     // The main loop to process Chat while checking stdin to send a message.
