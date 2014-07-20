@@ -38,7 +38,10 @@ class DigestTree;
 /**
  * ChronoSync2013 implements the NDN ChronoSync protocol as described in the
  * 2013 paper "Let’s ChronoSync: Decentralized Dataset State Synchronization in 
- * Named Data Networking". http://named-data.net/publications/chronosync
+ * Named Data Networking". http://named-data.net/publications/chronosync .
+ * @note The support for ChronoSync is experimental and the API is not finalized.
+ * See the API docs for more detail at
+ * http://named-data.net/doc/ndn-ccl-api/chrono-sync2013.html .
  */
 class ChronoSync2013 {
 public:
@@ -50,14 +53,14 @@ public:
   typedef func_lib::function<void()> OnInitialized;
 
   /**
-   * Create a new ChronoSync to communicate using the given face. Initialize the
-   * digest log with a digest of "00" and and empty content. Register the prefix
-   * to receive interests for the applicationBroadcastPrefix and express an
-   * interest for the initial root digest "00".
+   * Create a new ChronoSync2013 to communicate using the given face. Initialize
+   * the digest log with a digest of "00" and and empty content. Register the
+   * applicationBroadcastPrefix to receive interests for sync state messages and
+   * express an interest for the initial root digest "00".
    * @param onReceivedSyncState When ChronoSync receives a sync state message,
    * this calls onReceivedSyncState(syncStates, isRecovery) where syncStates is the
-   * set of SyncState messages and isRecovery is true if this is the initial
-   * set of SyncState messages or from a recovery interest. (For example, if
+   * list of SyncState messages and isRecovery is true if this is the initial
+   * list of SyncState messages or from a recovery interest. (For example, if
    * isRecovery is true, a chat application would not want to re-display all
    * the associated chat messages.) The callback should send interests to fetch
    * the application data for the sequence numbers in the sync state.
@@ -67,64 +70,87 @@ public:
    * @param applicationDataPrefix The prefix used by this application instance
    * for application data. For example, "/my/local/prefix/ndnchat4/0K4wChff2v".
    * This is used when sending a sync message for a new sequence number.
-   * In the sync messages, this uses applicationDataPrefix.toUri().
+   * In the sync message, this uses applicationDataPrefix.toUri().
    * @param applicationBroadcastPrefix The broadcast name prefix including the
    * application name. For example, "/ndn/broadcast/ChronoChat-0.3/ndnchat1".
    * This makes a copy of the name.
-   * @param sessionNo
-   * @param transport
-   * @param face
-   * @param keyChain
-   * @param certificateName
-   * @param syncLifetime
-   * @param onRegisterFailed A function object to call if failed to register the
-   * prefix to receive interests for the applicationBroadcastPrefix.
+   * @param sessionNo The session number used with the applicationDataPrefix in
+   * sync state messages.
+   * @param transport (temporary) This uses transport.send to poke a data
+   * packet into the NDNx content cache. When use change to use a
+   * MemoryContentCache, this transport parameter won't be needed.
+   * @param face The Face for calling registerPrefix and expressInterest. The
+   * Face object must remain valid for the life of this ChronoSync2013 object.
+   * @param keyChain To sign a data packet containing a sync state message, this
+   * calls keyChain.sign(data, certificateName).
+   * @param certificateName The certificate name of the key to use for signing a
+   * data packet containing a sync state message.
+   * @param syncLifetime The interest lifetime in milliseconds for sending
+   * sync interests.
+   * @param onRegisterFailed If failed to register the prefix to receive
+   * interests for the applicationBroadcastPrefix, this calls
+   * onRegisterFailed(applicationBroadcastPrefix).
    */
   ChronoSync2013
-    (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
-     const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
-     int sessionNo, Transport& transport, Face& face, KeyChain& keyChain,
+    (const OnReceivedSyncState& onReceivedSyncState,
+     const OnInitialized& onInitialized, const Name& applicationDataPrefix, 
+     const Name& applicationBroadcastPrefix, int sessionNo,
+     Transport& transport, Face& face, KeyChain& keyChain,
      const Name& certificateName, Milliseconds syncLifetime,
      const OnRegisterFailed& onRegisterFailed);
 
   /**
-   * A SyncState holds the data of a sync state message which is passed to the
-   * OnReceivedSyncState callback. Note: this has the same info as
-   * the Protobuf class Sync::SyncState, but we make a separate class so that
-   * we don't need the Protobuf definition in the ChronoSync API.
+   * A SyncState holds the values of a sync state message which is passed to the
+   * onReceivedSyncState callback which was given to the ChronoSyn2013
+   * constructor. Note: this has the same info as the Protobuf class
+   * Sync::SyncState, but we make a separate class so that we don't need the
+   * Protobuf definition in the ChronoSync API.
    */
   class SyncState {
   public:
-    SyncState(const std::string& dataPrefix, int sessionNo, int sequenceNo)
-    : dataPrefix_(dataPrefix), sessionNo_(sessionNo), sequenceNo_(sequenceNo)
+    SyncState(const std::string& dataPrefixUri, int sessionNo, int sequenceNo)
+    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo), sequenceNo_(sequenceNo)
     {
     }
 
+    /**
+     * Get the application data prefix for this sync state message.
+     * @return The application data prefix as a Name URI string.
+     */
     const std::string&
-    getDataPrefix() const { return dataPrefix_; }
+    getDataPrefix() const { return dataPrefixUri_; }
 
+    /**
+     * Get the session number associated with the application data prefix for
+     * this sync state message.
+     * @return The session number.
+     */
     int
     getSessionNo() const { return sessionNo_; }
 
+    /**
+     * Get the sequence number for this sync state message.
+     * @return The sequence number.
+     */
     int
     getSequenceNo() const { return sequenceNo_; }
 
   private:
-    std::string dataPrefix_;
+    std::string dataPrefixUri_;
     int sessionNo_;
     int sequenceNo_;
   };
 
   /**
    * Get the current sequence number in the digest tree for the given
-   * producer namePrefix and sessionNo.
-   * @param namePrefix The producer name prefix.
+   * producer dataPrefix and sessionNo.
+   * @param dataPrefix The producer data prefix as a Name URI string.
    * @param sessionNo The producer session number.
    * @return The current producer sequence number, or -1 if the producer
    * namePrefix and sessionNo are not in the digest tree.
    */
   int
-  getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const;
+  getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const;
 
   /**
    * Increment the sequence number, create a sync message with the new
@@ -133,8 +159,8 @@ public:
    * tree. Then add the sync message to the digest tree and digest log which
    * creates a new root digest. Finally, express an interest for the next sync
    * update with the name applicationBroadcastPrefix + the new root digest.
-   * After this, you should publish the content for the new sequence number.
-   * You can get the new sequence number with getSequenceNo().
+   * After this, your application should publish the content for the new
+   * sequence number. You can get the new sequence number with getSequenceNo().
    */
   void
   publishNextSequenceNo();
