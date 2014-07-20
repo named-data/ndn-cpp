@@ -35,11 +35,11 @@ using namespace std;
 namespace ndn {
 
 ChronoSync2013::ChronoSync2013
-  (OnReceivedSyncState onReceivedSyncState, OnInitialized onInitialized,
-   const Name& applicationDataPrefix, const Name& applicationBroadcastPrefix,
-   int sessionNo, Transport& transport, Face& face, KeyChain& keyChain,
-   const Name& certificateName, Milliseconds syncLifetime,
-   const OnRegisterFailed& onRegisterFailed)
+  (const OnReceivedSyncState& onReceivedSyncState,
+   const OnInitialized& onInitialized, const Name& applicationDataPrefix,
+   const Name& applicationBroadcastPrefix, int sessionNo, Transport& transport,
+   Face& face, KeyChain& keyChain, const Name& certificateName,
+   Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
@@ -103,9 +103,9 @@ ChronoSync2013::update
 }
 
 int
-ChronoSync2013::getProducerSequenceNo(const std::string& namePrefix, int sessionNo) const
+ChronoSync2013::getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
 {
-  int index = digest_tree_->find(namePrefix, sessionNo);
+  int index = digest_tree_->find(dataPrefix, sessionNo);
   if (index < 0)
     return -1;
   else
@@ -241,7 +241,7 @@ ChronoSync2013::processRecoveryInst
     Sync::SyncStateMsg content_t;
     for (size_t i = 0; i < digest_tree_->size(); ++i) {
       Sync::SyncState* content = content_t.add_ss();
-      content->set_name(digest_tree_->get(i).getNamePrefix());
+      content->set_name(digest_tree_->get(i).getDataPrefix());
       content->set_type(Sync::SyncState_ActionType_UPDATE);
       content->mutable_seqno()->set_seq(digest_tree_->get(i).getSequenceNo());
       content->mutable_seqno()->set_session(digest_tree_->get(i).getSessionNo());

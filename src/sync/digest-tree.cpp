@@ -64,10 +64,10 @@ SHA256_UpdateHex(SHA256_CTX *context, const string& hex)
 }
 
 bool
-DigestTree::update(const std::string& namePrefix, int sessionNo, int sequenceNo)
+DigestTree::update(const std::string& dataPrefix, int sessionNo, int sequenceNo)
 {
-  int n_index = find(namePrefix, sessionNo);
-  _LOG_DEBUG(namePrefix << ", " << sessionNo);
+  int n_index = find(dataPrefix, sessionNo);
+  _LOG_DEBUG(dataPrefix << ", " << sessionNo);
   _LOG_DEBUG("DigestTree::update session " << sessionNo << ", n_index " << n_index);
   if (n_index >= 0) {
     // only update the newer status
@@ -77,10 +77,10 @@ DigestTree::update(const std::string& namePrefix, int sessionNo, int sequenceNo)
       return false;
   }
   else {
-    _LOG_DEBUG("new comer " << namePrefix << "," << sequenceNo << "," <<
+    _LOG_DEBUG("new comer " << dataPrefix << "," << sequenceNo << "," <<
                sessionNo);
     // Insert into digestnode_ sorted.
-    ptr_lib::shared_ptr<Node> temp(new Node(namePrefix, sequenceNo, sessionNo));
+    ptr_lib::shared_ptr<Node> temp(new Node(dataPrefix, sequenceNo, sessionNo));
     digestnode_.insert
       (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
        temp);
@@ -105,10 +105,10 @@ DigestTree::recomputeRoot()
 }
 
 int
-DigestTree::find(const string& namePrefix, int sessionNo) const
+DigestTree::find(const string& dataPrefix, int sessionNo) const
 {
   for (size_t i = 0; i < digestnode_.size(); ++i) {
-    if (digestnode_[i]->getNamePrefix() == namePrefix &&
+    if (digestnode_[i]->getDataPrefix() == dataPrefix &&
         digestnode_[i]->getSessionNo() == sessionNo)
       return i;
   }
@@ -131,7 +131,7 @@ DigestTree::Node::recomputeDigest()
   SHA256_Final(digest_seq, &sha256);
 
   SHA256_Init(&sha256);
-  SHA256_Update(&sha256, &namePrefix_[0], namePrefix_.size());
+  SHA256_Update(&sha256, &dataPrefix_[0], dataPrefix_.size());
   uint8_t digest_name[SHA256_DIGEST_LENGTH];
   SHA256_Final(digest_name, &sha256);
 
