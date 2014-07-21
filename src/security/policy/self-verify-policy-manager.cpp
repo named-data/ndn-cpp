@@ -31,26 +31,23 @@ using namespace std;
 namespace ndn {
 
 /**
- * Verify the RSA signature on the data packet using the given public key.  If there is no data.getDefaultWireEncoding(),
- * this calls data.wireEncode() to set it.
+ * Verify the RSA signature on the SignedBlob using the given public key.
  * TODO: Move this general verification code to a more central location.
- * @param data The data packet with the signed portion and the signature to verify.  The data packet must have a
- * Sha256WithRsaSignature.
+ * @param signature The Sha256WithRsaSignature.
+ * @param signedBlob the SignedBlob with the signed portion to verify.
  * @param publicKeyDer The DER-encoded public key used to verify the signature.
  * @return true if the signature verifies, false if not.
- * @throw SecurityException if data does not have a Sha256WithRsaSignature.
  */
 static bool
-verifySha256WithRsaSignature(const Data& data, const Blob& publicKeyDer)
+verifySha256WithRsaSignature
+  (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
+   const Blob& publicKeyDer)
 {
-  const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
-  if (!signature)
-    throw SecurityException("signature is not Sha256WithRsaSignature.");
-
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
   // wireEncode returns the cached encoding if available.
-  ndn_digestSha256(data.wireEncode().signedBuf(), data.wireEncode().signedSize(), signedPortionDigest);
+  ndn_digestSha256
+    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
@@ -69,35 +66,29 @@ verifySha256WithRsaSignature(const Data& data, const Blob& publicKeyDer)
 }
 
 /**
- * Verify the ECDSA signature on the data packet using the given public key.
- * If there is no data.getDefaultWireEncoding(), this calls data.wireEncode() to
- * set it.
+ * Verify the ECDSA signature on the SignedBlob using the given public key.
  * TODO: Move this general verification code to a more central location.
- * @param data The data packet with the signed portion and the signature to
- * verify.  The data packet must have a Sha256WithEcdsaSignature.
+ * @param signature The Sha256WithEcdsaSignature.
+ * @param signedBlob the SignedBlob with the signed portion to verify.
  * @param publicKeyDer The DER-encoded public key used to verify the signature.
  * @return true if the signature verifies, false if not.
  * @throw SecurityException if data does not have a Sha256WithEcdsaSignature.
  */
 static bool
-verifySha256WithEcdsaSignature(const Data& data, const Blob& publicKeyDer)
-{
+verifySha256WithEcdsaSignature
+  (
 #if 0
-  const Sha256WithEcdsaSignature *signature =
-    dynamic_cast<const Sha256WithEcdsaSignature*>(data.getSignature());
+   const Sha256WithEcdsaSignature* signature,
 #else
-  const Sha256WithRsaSignature *signature =
-    dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
+   const Sha256WithRsaSignature* signature,
 #endif
-  if (!signature)
-    throw SecurityException("signature is not Sha256WithEcdsaSignature.");
-
+   const SignedBlob& signedBlob, const Blob& publicKeyDer)
+{
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
   // wireEncode returns the cached encoding if available.
   ndn_digestSha256
-    (data.wireEncode().signedBuf(), data.wireEncode().signedSize(),
-     signedPortionDigest);
+    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
@@ -128,7 +119,19 @@ SelfVerifyPolicyManager::skipVerifyAndTrust(const Data& data)
 }
 
 bool
+SelfVerifyPolicyManager::skipVerifyAndTrust(const Interest& interest)
+{
+  return false;
+}
+
+bool
 SelfVerifyPolicyManager::requireVerify(const Data& data)
+{
+  return true;
+}
+
+bool
+SelfVerifyPolicyManager::requireVerify(const Interest& interest)
 {
   return true;
 }
@@ -143,7 +146,9 @@ SelfVerifyPolicyManager::checkVerificationPolicy
 
   if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY) {
     // Use the public key DER directly.
-    if (verifySha256WithRsaSignature(*data, signature->getKeyLocator().getKeyData()))
+    // wireEncode returns the cached encoding if available.
+    if (verifySha256WithRsaSignature
+        (signature, data->wireEncode(), signature->getKeyLocator().getKeyData()))
       onVerified(data);
     else
       onVerifyFailed(data);
@@ -156,7 +161,9 @@ SelfVerifyPolicyManager::checkVerificationPolicy
       // Can't find the public key with the name.
       onVerifyFailed(data);
 
-    if (verifySha256WithRsaSignature(*data, publicKeyDer))
+    // wireEncode returns the cached encoding if available.
+    if (verifySha256WithRsaSignature
+        (signature, data->wireEncode(), publicKeyDer))
       onVerified(data);
     else
       onVerifyFailed(data);
@@ -164,6 +171,17 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   else
     // Can't find a key to verify.
     onVerifyFailed(data);
+
+  // No more steps, so return a null ValidationRequest.
+  return ptr_lib::shared_ptr<ValidationRequest>();
+}
+
+ptr_lib::shared_ptr<ValidationRequest>
+SelfVerifyPolicyManager::checkVerificationPolicy
+  (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed)
+{
 
   // No more steps, so return a null ValidationRequest.
   return ptr_lib::shared_ptr<ValidationRequest>();
