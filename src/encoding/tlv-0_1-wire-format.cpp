@@ -62,7 +62,9 @@ Tlv0_1WireFormat::encodeInterest
 }
 
 void
-Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+Tlv0_1WireFormat::decodeInterest
+  (Interest& interest, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -75,7 +77,9 @@ Tlv0_1WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_
 
   TlvDecoder decoder(input, inputLength);
   ndn_Error error;
-  if ((error = ndn_decodeTlvInterest(&interestStruct, &decoder)))
+  if ((error = ndn_decodeTlvInterest
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
+        &decoder)))
     throw runtime_error(ndn_getErrorString(error));
 
   interest.set(interestStruct);

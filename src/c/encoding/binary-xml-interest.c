@@ -191,7 +191,9 @@ ndn_Error ndn_encodeBinaryXmlInterest
   return NDN_ERROR_success;
 }
 
-ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_BinaryXmlDecoder *decoder)
+ndn_Error ndn_decodeBinaryXmlInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
   int gotExpectedTag;
@@ -199,7 +201,9 @@ ndn_Error ndn_decodeBinaryXmlInterest(struct ndn_Interest *interest, struct ndn_
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_Interest)))
     return error;
 
-  if ((error = ndn_decodeBinaryXmlName(&interest->name, decoder)))
+  if ((error = ndn_decodeBinaryXmlName
+       (&interest->name, signedPortionBeginOffset, signedPortionEndOffset,
+        decoder)))
     return error;
 
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement

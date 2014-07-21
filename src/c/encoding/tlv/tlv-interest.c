@@ -330,7 +330,9 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
 }
 
 ndn_Error
-ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
+ndn_decodeTlvInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
@@ -339,7 +341,9 @@ ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *deco
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Interest, &endOffset)))
     return error;
 
-  if ((error = ndn_decodeTlvName(&interest->name, decoder)))
+  if ((error = ndn_decodeTlvName
+       (&interest->name, signedPortionBeginOffset, signedPortionEndOffset,
+        decoder)))
     return error;
 
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Selectors, endOffset, &gotExpectedType)))

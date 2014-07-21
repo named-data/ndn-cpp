@@ -36,7 +36,9 @@ ndn_encodeTlvInterest
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 ndn_Error
-ndn_decodeTlvInterest(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder);
+ndn_decodeTlvInterest
+  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder);
 
 #ifdef  __cplusplus
 }

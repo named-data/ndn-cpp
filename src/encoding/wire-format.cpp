@@ -52,7 +52,9 @@ WireFormat::encodeInterest
 }
 
 void
-WireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+WireFormat::decodeInterest
+  (Interest& interest, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   throw logic_error("unimplemented");
 }

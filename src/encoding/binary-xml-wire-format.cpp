@@ -72,7 +72,9 @@ BinaryXmlWireFormat::encodeInterest
 }
 
 void
-BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+BinaryXmlWireFormat::decodeInterest
+  (Interest& interest, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
@@ -85,7 +87,9 @@ BinaryXmlWireFormat::decodeInterest(Interest& interest, const uint8_t *input, si
 
   BinaryXmlDecoder decoder(input, inputLength);
   ndn_Error error;
-  if ((error = ndn_decodeBinaryXmlInterest(&interestStruct, &decoder)))
+  if ((error = ndn_decodeBinaryXmlInterest
+       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
+        &decoder)))
     throw runtime_error(ndn_getErrorString(error));
 
   interest.set(interestStruct);

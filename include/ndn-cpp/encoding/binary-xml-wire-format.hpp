@@ -70,9 +70,25 @@ public:
    * @param interest The Interest object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
+   * @param signedPortionBeginOffset Return the offset in the encoding of the
+   * beginning of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
+   * If you are not decoding in order to verify, you can call
+   * decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+   * to ignore this returned value.
+   * @param signedPortionEndOffset Return the offset in the encoding of the end
+   * of the signed portion. The signed portion starts from the first
+   * name component and ends just before the final name component (which is
+   * assumed to be a signature for a signed interest).
+   * If you are not decoding in order to verify, you can call
+   * decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
+   * to ignore this returned value.
    */
   virtual void
-  decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength);
+  decodeInterest
+    (Interest& interest, const uint8_t *input, size_t inputLength,
+     size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
 
   /**
    * Encode data with binary XML and return the encoding.
