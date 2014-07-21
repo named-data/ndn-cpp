@@ -244,7 +244,7 @@ int main(int argc, char** argv)
     cout << endl << "Re-encoded interest " << encoding.toHex() << endl;
 
     Interest reDecodedInterest;
-    reDecodedInterest.wireDecode(*encoding);
+    reDecodedInterest.wireDecode(encoding);
     cout << "Re-decoded Interest:" << endl;
     dumpInterest(reDecodedInterest);
 
@@ -290,7 +290,7 @@ int main(int argc, char** argv)
       face.makeCommandInterest(freshInterest);
     
     Interest reDecodedFreshInterest;
-    reDecodedFreshInterest.wireDecode(*freshInterest.wireEncode());
+    reDecodedFreshInterest.wireDecode(freshInterest.wireEncode());
     cout << endl << "Re-decoded fresh Interest:" << endl;
     dumpInterest(reDecodedFreshInterest);
   } catch (std::exception& e) {

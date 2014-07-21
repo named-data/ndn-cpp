@@ -29,6 +29,25 @@ using namespace std;
 
 namespace ndn {
 
+Interest& Interest::operator=(const Interest& interest)
+{
+  setName(interest.name_.get());
+  setMinSuffixComponents(interest.minSuffixComponents_);
+  setMaxSuffixComponents(interest.maxSuffixComponents_);
+  publisherPublicKeyDigest_.set(interest.publisherPublicKeyDigest_.get());;
+  setKeyLocator(interest.keyLocator_.get());
+  setExclude(interest.exclude_.get());
+  setChildSelector(interest.childSelector_);
+  setAnswerOriginKind(interest.answerOriginKind_);
+  setScope(interest.scope_);
+  setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
+  setNonce(interest.nonce_);
+  setDefaultWireEncoding
+    (interest.defaultWireEncoding_, interest.defaultWireEncodingFormat_);
+
+  return *this;
+}
+
 void
 Interest::set(const struct ndn_Interest& interestStruct)
 {
@@ -64,6 +83,62 @@ Interest::get(struct ndn_Interest& interestStruct) const
   interestStruct.scope = scope_;
   interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
   getNonce().get(interestStruct.nonce);
+}
+
+SignedBlob
+Interest::wireEncode(WireFormat& wireFormat) const
+{
+  if (getDefaultWireEncoding() && getDefaultWireEncodingFormat() == &wireFormat)
+    // We already have an encoding in the desired format.
+    return getDefaultWireEncoding();
+
+  size_t signedPortionBeginOffset, signedPortionEndOffset;
+  Blob encoding(wireFormat.encodeInterest(*this, &signedPortionBeginOffset,
+                &signedPortionEndOffset));
+  SignedBlob wireEncoding = SignedBlob
+    (encoding, signedPortionBeginOffset, signedPortionEndOffset);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    const_cast<Interest*>(this)->setDefaultWireEncoding
+      (wireEncoding, WireFormat::getDefaultWireFormat());
+
+  return wireEncoding;
+}
+
+void
+Interest::wireDecode(const Blob& input, WireFormat& wireFormat)
+{
+  size_t signedPortionBeginOffset, signedPortionEndOffset;
+  wireFormat.decodeInterest
+    (*this, input.buf(), input.size(), &signedPortionBeginOffset,
+     &signedPortionEndOffset);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    // Take a pointer to the input Blob without copying.
+    setDefaultWireEncoding
+      (SignedBlob(input, signedPortionBeginOffset, signedPortionEndOffset),
+       WireFormat::getDefaultWireFormat());
+  else
+    setDefaultWireEncoding(SignedBlob(), 0);
+}
+
+void
+Interest::wireDecode
+  (const uint8_t *input, size_t inputLength, WireFormat& wireFormat)
+{
+  size_t signedPortionBeginOffset, signedPortionEndOffset;
+  wireFormat.decodeInterest(*this, input, inputLength, &signedPortionBeginOffset, &signedPortionEndOffset);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    // The input is not an immutable Blob, so we need to copy.
+    setDefaultWireEncoding
+      (SignedBlob(input, inputLength, signedPortionBeginOffset, signedPortionEndOffset),
+       WireFormat::getDefaultWireFormat());
+  else
+    setDefaultWireEncoding(SignedBlob(), 0);
 }
 
 string

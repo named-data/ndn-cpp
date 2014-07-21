@@ -51,7 +51,7 @@ public:
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    nonce_(nonce), getNonceChangeCount_(0), changeCount_(0)
+    nonce_(nonce), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
   }
 
@@ -65,7 +65,7 @@ public:
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    getNonceChangeCount_(0), changeCount_(0)
+    getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
   }
 
@@ -78,7 +78,7 @@ public:
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
     keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
     answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    getNonceChangeCount_(0), changeCount_(0)
+    getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
   }
 
@@ -88,7 +88,7 @@ public:
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
    */
   Interest(const Name& name, Milliseconds interestLifetimeMilliseconds)
-  : name_(name), getNonceChangeCount_(0), changeCount_(0)
+  : name_(name), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
     construct();
     interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
@@ -99,51 +99,80 @@ public:
    * @param name The name for the interest.
    */
   Interest(const Name& name)
-  : name_(name), getNonceChangeCount_(0), changeCount_(0)
+  : name_(name), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
     construct();
+  }
+
+  Interest(const Interest& interest)
+  : name_(interest.name_), minSuffixComponents_(interest.minSuffixComponents_),
+    maxSuffixComponents_(interest.maxSuffixComponents_),
+    publisherPublicKeyDigest_(interest.publisherPublicKeyDigest_),
+    keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
+    childSelector_(interest.childSelector_),
+    answerOriginKind_(interest.answerOriginKind_),
+    scope_(interest.scope_),
+    interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
+    nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
+  {
+    setDefaultWireEncoding
+      (interest.defaultWireEncoding_, interest.defaultWireEncodingFormat_);
   }
 
   /**
    * Create a new Interest with an empty name and "none" for all values.
    */
   Interest()
-  : getNonceChangeCount_(0), changeCount_(0)
+  : getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
     construct();
   }
 
+  Interest& operator=(const Interest& interest);
+
   /**
-   * Encode this Interest for a particular wire format.
+   * Encode this Interest for a particular wire format. If wireFormat is the
+   * default wire format, also set the defaultWireEncoding field to the encoded
+   * result. Even though this is const, if wireFormat is the default wire format
+   * we update the defaultWireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode this
    * Interest. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
    */
   SignedBlob
-  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const
-  {
-    size_t signedPortionBeginOffset, signedPortionEndOffset;
-    Blob encoding(wireFormat.encodeInterest(*this, &signedPortionBeginOffset,
-                  &signedPortionEndOffset));
-    return SignedBlob
-      (encoding, signedPortionBeginOffset, signedPortionEndOffset);
-  }
+  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**
    * Decode the input using a particular wire format and update this Interest.
+   * If wireFormat is the default wire format, also set the defaultWireEncoding
+   * to another pointer to the input Blob.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
+   * If omitted, use WireFormat::getDefaultWireFormat().
+   */
+  void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Decode the input using a particular wire format and update this Interest.
+   * If wireFormat is the default wire format, also set the defaultWireEncoding
+   * field to a copy of the input. (To not copy the input, see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
    */
   void
-  wireDecode(const uint8_t *input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-  {
-    wireFormat.decodeInterest(*this, input, inputLength);
-  }
+  wireDecode
+    (const uint8_t *input, size_t inputLength,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Decode the input using a particular wire format and update this Interest.
+   * If wireFormat is the default wire format, also set the defaultWireEncoding
+   * field to a copy of the input. (To not copy the input, see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
@@ -378,6 +407,32 @@ public:
   matchesName(const Name& name) const;
 
   /**
+   * Return a reference to the defaultWireEncoding, which was encoded with
+   * getDefaultWireEncodingFormat().  The SignedBlob may have a null pointer.
+   */
+  const SignedBlob&
+  getDefaultWireEncoding() const
+  {
+    if (getDefaultWireEncodingChangeCount_ != getChangeCount()) {
+      // The values have changed, so the default wire encoding is invalidated.
+      // This method can be called on a const object, but we want to be able to update the default cached value.
+      const_cast<Interest*>(this)->defaultWireEncoding_ = SignedBlob();
+      const_cast<Interest*>(this)->defaultWireEncodingFormat_ = 0;
+      const_cast<Interest*>(this)->getDefaultWireEncodingChangeCount_ = getChangeCount();
+    }
+
+    return defaultWireEncoding_;
+  }
+
+  /**
+   * Get the WireFormat which is used by getDefaultWireEncoding().
+   * @return The WireFormat, which is only meaningful if the
+   * getDefaultWireEncoding() does not have a null pointer.
+   */
+  WireFormat*
+  getDefaultWireEncodingFormat() const { return defaultWireEncodingFormat_; }
+
+  /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.
    * @return The change count.
    */
@@ -409,6 +464,18 @@ private:
     interestLifetimeMilliseconds_ = -1.0;
   }
 
+  void
+  setDefaultWireEncoding
+    (const SignedBlob& defaultWireEncoding,
+     WireFormat *defaultWireEncodingFormat)
+  {
+    defaultWireEncoding_ = defaultWireEncoding;
+    defaultWireEncodingFormat_ = defaultWireEncodingFormat;
+    // Set getDefaultWireEncodingChangeCount_ so that the next call to
+    //   getDefaultWireEncoding() won't clear defaultWireEncoding_.
+    getDefaultWireEncodingChangeCount_ = getChangeCount();
+  }
+
   ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
@@ -423,6 +490,9 @@ private:
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;
+  SignedBlob defaultWireEncoding_;
+  WireFormat *defaultWireEncodingFormat_;
+  uint64_t getDefaultWireEncodingChangeCount_;
   uint64_t changeCount_;
 };
 
