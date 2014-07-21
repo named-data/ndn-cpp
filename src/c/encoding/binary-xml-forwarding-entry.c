@@ -65,6 +65,7 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
   ndn_Error error;
   int forwardingEntryFlags;
   int freshnessSeconds;
+  size_t dummyBeginOffset, dummyEndOffset;
 
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_ForwardingEntry)))
     return error;
@@ -72,7 +73,8 @@ ndn_Error ndn_decodeBinaryXmlForwardingEntry(struct ndn_ForwardingEntry *forward
   if ((error = ndn_BinaryXmlDecoder_readOptionalUDataDTagElement
       (decoder, ndn_BinaryXml_DTag_Action, &forwardingEntry->action)))
     return error;
-  if ((error = ndn_decodeBinaryXmlName(&forwardingEntry->prefix, decoder)))
+  if ((error = ndn_decodeBinaryXmlName
+       (&forwardingEntry->prefix, &dummyBeginOffset, &dummyEndOffset, decoder)))
     return error;
   if ((error = ndn_decodeOptionalBinaryXmlPublisherPublicKeyDigest(&forwardingEntry->publisherPublicKeyDigest, decoder)))
     return error;

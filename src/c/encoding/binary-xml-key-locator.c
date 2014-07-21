@@ -174,11 +174,14 @@ ndn_Error ndn_decodeBinaryXmlKeyLocator(struct ndn_KeyLocator *keyLocator, struc
       if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_KeyName, &gotExpectedTag)))
         return error;
       if (gotExpectedTag) {
+        size_t dummyBeginOffset, dummyEndOffset;
+
         keyLocator->type = ndn_KeyLocatorType_KEYNAME;
 
         if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_KeyName)))
           return error;
-        if ((error = ndn_decodeBinaryXmlName(&keyLocator->keyName, decoder)))
+        if ((error = ndn_decodeBinaryXmlName
+             (&keyLocator->keyName, &dummyBeginOffset, &dummyEndOffset, decoder)))
           return error;
         if ((error = decodeKeyNameData(keyLocator, decoder)))
           return error;

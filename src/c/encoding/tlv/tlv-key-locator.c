@@ -68,8 +68,11 @@ ndn_decodeTlvKeyLocator
   if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {
+    size_t dummyBeginOffset, dummyEndOffset;
+
     // KeyLocator is a Name.
-    if ((error = ndn_decodeTlvName(&keyLocator->keyName, decoder)))
+    if ((error = ndn_decodeTlvName
+         (&keyLocator->keyName, &dummyBeginOffset, &dummyEndOffset, decoder)))
       return error;
     keyLocator->type = ndn_KeyLocatorType_KEYNAME;
   }

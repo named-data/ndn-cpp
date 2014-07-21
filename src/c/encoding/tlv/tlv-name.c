@@ -56,16 +56,26 @@ ndn_encodeTlvName
 }
 
 ndn_Error
-ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder)
+ndn_decodeTlvName
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
   size_t endOffset;
+
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Name, &endOffset)))
     return error;
+
+  *signedPortionBeginOffset = decoder->offset;
+  // In case there are no components, set signedPortionEndOffset arbitrarily.
+  *signedPortionEndOffset = *signedPortionBeginOffset;
 
   name->nComponents = 0;
   while (decoder->offset < endOffset) {
     struct ndn_Blob component;
+
+    *signedPortionEndOffset = decoder->offset;
+
     if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
       return error;
     if ((error = ndn_Name_appendBlob(name, &component)))

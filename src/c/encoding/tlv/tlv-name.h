@@ -53,7 +53,9 @@ ndn_encodeTlvName
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 ndn_Error
-ndn_decodeTlvName(struct ndn_Name *name, struct ndn_TlvDecoder *decoder);
+ndn_decodeTlvName
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvDecoder *decoder);
 
 #ifdef  __cplusplus
 }

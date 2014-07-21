@@ -53,12 +53,18 @@ ndn_Error ndn_encodeBinaryXmlName
   return NDN_ERROR_success;
 }
 
-ndn_Error ndn_decodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlDecoder *decoder)
+ndn_Error ndn_decodeBinaryXmlName
+  (struct ndn_Name *name, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_BinaryXmlDecoder *decoder)
 {
   ndn_Error error;
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_Name)))
     return error;
 
+  *signedPortionBeginOffset = decoder->offset;
+  // In case there are no components, set signedPortionEndOffset arbitrarily.
+  *signedPortionEndOffset = *signedPortionBeginOffset;
+  
   name->nComponents = 0;
   while (1) {
     int gotExpectedTag;
@@ -70,6 +76,8 @@ ndn_Error ndn_decodeBinaryXmlName(struct ndn_Name *name, struct ndn_BinaryXmlDec
     if (!gotExpectedTag)
       // No more components.
       break;
+
+    *signedPortionEndOffset = decoder->offset;
 
     if ((error = ndn_BinaryXmlDecoder_readBinaryDTagElement(decoder, ndn_BinaryXml_DTag_Component, 0, &component)))
       return error;

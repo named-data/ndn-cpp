@@ -236,6 +236,7 @@ ndn_Error ndn_decodeBinaryXmlData
 {
   ndn_Error error;
   int gotExpectedTag;
+  size_t dummyBeginOffset, dummyEndOffset;
 
   if ((error = ndn_BinaryXmlDecoder_readElementStartDTag(decoder, ndn_BinaryXml_DTag_ContentObject)))
     return error;
@@ -251,7 +252,8 @@ ndn_Error ndn_decodeBinaryXmlData
 
   *signedPortionBeginOffset = decoder->offset;
 
-  if ((error = ndn_decodeBinaryXmlName(&data->name, decoder)))
+  if ((error = ndn_decodeBinaryXmlName
+       (&data->name, &dummyBeginOffset, &dummyEndOffset, decoder)))
     return error;
 
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_SignedInfo, &gotExpectedTag)))
