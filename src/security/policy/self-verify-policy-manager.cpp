@@ -140,36 +140,10 @@ ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
-  const Sha256WithRsaSignature *signature = dynamic_cast<Sha256WithRsaSignature *>(data->getSignature());
-  if (!signature)
-    throw SecurityException("SelfVerifyPolicyManager: Signature is not Sha256WithRsaSignature.");
-
-  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY) {
-    // Use the public key DER directly.
-    // wireEncode returns the cached encoding if available.
-    if (verifySha256WithRsaSignature
-        (signature, data->wireEncode(), signature->getKeyLocator().getKeyData()))
-      onVerified(data);
-    else
-      onVerifyFailed(data);
-  }
-  else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME && identityStorage_) {
-    // Assume the key name is a certificate name.
-    Blob publicKeyDer = identityStorage_->getKey
-      (IdentityCertificate::certificateNameToPublicKeyName(signature->getKeyLocator().getKeyName()));
-    if (!publicKeyDer)
-      // Can't find the public key with the name.
-      onVerifyFailed(data);
-
-    // wireEncode returns the cached encoding if available.
-    if (verifySha256WithRsaSignature
-        (signature, data->wireEncode(), publicKeyDer))
-      onVerified(data);
-    else
-      onVerifyFailed(data);
-  }
+  // wireEncode returns the cached encoding if available.
+  if (verify(data->getSignature(), data->wireEncode()))
+    onVerified(data);
   else
-    // Can't find a key to verify.
     onVerifyFailed(data);
 
   // No more steps, so return a null ValidationRequest.
@@ -180,9 +154,22 @@ ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed)
+   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
 {
+  // Decode the last two name components of the signed interest
+  ptr_lib::shared_ptr<Signature> signature =
+    wireFormat.decodeSignatureInfoAndValue
+      (interest->getName().get(-2).getValue().buf(),
+       interest->getName().get(-2).getValue().size(),
+       interest->getName().get(-1).getValue().buf(),
+       interest->getName().get(-1).getValue().size());
 
+  // wireEncode returns the cached encoding if available.
+  if (verify(signature.get(), interest->wireEncode()))
+    onVerified(interest);
+  else
+    onVerifyFailed(interest);
+  
   // No more steps, so return a null ValidationRequest.
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
@@ -197,6 +184,46 @@ Name
 SelfVerifyPolicyManager::inferSigningIdentity(const Name& dataName)
 {
   return Name();
+}
+
+bool
+SelfVerifyPolicyManager::verify
+  (const Signature* signatureInfo, const SignedBlob& signedBlob)
+{
+  const Sha256WithRsaSignature *signature =
+    dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
+  if (!signature)
+    throw SecurityException
+      ("SelfVerifyPolicyManager: Signature is not Sha256WithRsaSignature.");
+
+  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY) {
+    // Use the public key DER directly.
+    // wireEncode returns the cached encoding if available.
+    if (verifySha256WithRsaSignature
+        (signature, signedBlob, signature->getKeyLocator().getKeyData()))
+      return true;
+    else
+      return false;
+  }
+  else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME &&
+           identityStorage_) {
+    // Assume the key name is a certificate name.
+    Blob publicKeyDer = identityStorage_->getKey
+      (IdentityCertificate::certificateNameToPublicKeyName
+       (signature->getKeyLocator().getKeyName()));
+    if (!publicKeyDer)
+      // Can't find the public key with the name.
+      return false;
+
+    // wireEncode returns the cached encoding if available.
+    if (verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer))
+      return true;
+    else
+      return false;
+  }
+  else
+    // Can't find a key to verify.
+    return false;
 }
 
 }

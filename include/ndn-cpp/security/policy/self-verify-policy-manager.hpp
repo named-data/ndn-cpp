@@ -65,12 +65,29 @@ public:
   skipVerifyAndTrust(const Data& data);
 
   /**
+   * Never skip verification.
+   * @param interest The received interest.
+   * @return false.
+   */
+  virtual bool
+  skipVerifyAndTrust(const Interest& interest);
+
+  /**
    * Always return true to use the self-verification rule for the received data.
    * @param data The received data packet.
    * @return true.
    */
   virtual bool
   requireVerify(const Data& data);
+
+  /**
+   * Always return true to use the self-verification rule for the received
+   * signed interest.
+   * @param interest The received interest.
+   * @return true.
+   */
+  virtual bool
+  requireVerify(const Interest& interest);
 
   /**
    * Use the public key DER in the data packet's KeyLocator (if available) or look in the IdentityStorage for the
@@ -86,6 +103,26 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+
+  /**
+   * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
+   * components of the signed interest. Use the public key DER in the signed 
+   * interest SignatureInfo's KeyLocator (if available) or look in the
+   * IdentityStorage for the public key with the name in the KeyLocator
+   * (if available) and use it to verify the interest. If the public key can't
+   * be found, call onVerifyFailed.
+   * @param interest The interest with the signature to check.
+   * @param stepCount The number of verification steps that have been done, used to track the verification progress.
+   * (stepCount is ignored.)
+   * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * @param onVerifyFailed If the signature check fails or can't find the public key, this calls onVerifyFailed(interest).
+   * @return null for no further step for looking up a certificate chain.
+   */
+  virtual ptr_lib::shared_ptr<ValidationRequest>
+  checkVerificationPolicy
+    (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
+     const OnVerifiedInterest& onVerified,
+     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat);
 
   /**
    * Override to always indicate that the signing certificate name and data name satisfy the signing policy.
@@ -105,6 +142,21 @@ public:
   inferSigningIdentity(const Name& dataName);
 
 private:
+  /**
+   * Check the type of signatureInfo to get the KeyLocator. Use the public key 
+   * DER in the KeyLocator (if available) or look in the IdentityStorage for the 
+   * public key with the name in the KeyLocator (if available) and use it to 
+   * verify the signedBlob. If the public key can't be found, return false.
+   * (This is a generalized method which can verify both a Data packet and an
+   * interest.)
+   * @param signatureInfo An object of a subclass of Signature, e.g.
+   * Sha256WithRsaSignature.
+   * @param signedBlob the SignedBlob with the signed portion to verify.
+   * @return True if the signature is verified, false if failed.
+   */
+  bool
+  verify(const Signature* signatureInfo, const SignedBlob& signedBlob);
+
   IdentityStorage* identityStorage_;
 };
 
