@@ -151,6 +151,36 @@ KeyChain::verifyData
 }
 
 void
+KeyChain::verifyInterest
+  (const ptr_lib::shared_ptr<Interest>& interest,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed, int stepCount,
+   WireFormat& wireFormat)
+{
+  _LOG_TRACE("Enter Verify");
+
+  if (policyManager_->requireVerify(*interest)) {
+    ptr_lib::shared_ptr<ValidationRequest> nextStep =
+      policyManager_->checkVerificationPolicy
+        (interest, stepCount, onVerified, onVerifyFailed, wireFormat);
+    if (nextStep)
+#if 0
+      face_->expressInterest
+        (*nextStep->interest_,
+         bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
+         bind(&KeyChain::onCertificateInterestTimeout, this, _1,
+              nextStep->retry_, onVerifyFailed, data, nextStep));
+#else
+    throw SecurityException("verifyInterest: ValidationRequest not implemented yet");
+#endif
+  }
+  else if (policyManager_->skipVerifyAndTrust(*interest))
+    onVerified(interest);
+  else
+    onVerifyFailed(interest);
+}
+
+void
 KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep)
 {
   // Try to verify the certificate (data) according to the parameters in nextStep.

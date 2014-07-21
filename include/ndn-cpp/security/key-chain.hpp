@@ -343,14 +343,28 @@ public:
   /**
    * Check the signature on the Data object and call either onVerify or onVerifyFailed.
    * We use callback functions because verify may fetch information to check the signature.
-   * @param data The Data object with the signature to check. It is an error if data does not have a wireEncoding.
-   * To set the wireEncoding, you can call data.wireDecode.
+   * @param data The Data object with the signature to check.
    * @param onVerified If the signature is verified, this calls onVerified(data).
    * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(data).
    */
   void
   verifyData
     (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed, int stepCount = 0);
+
+  /**
+   * Check the signature on the signed interest and call either onVerify or
+   * onVerifyFailed. We use callback functions because verify may fetch
+   * information to check the signature.
+   * @param interest The interest with the signature to check.
+   * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(interest).
+   */
+  void
+  verifyInterest
+    (const ptr_lib::shared_ptr<Interest>& interest,
+     const OnVerifiedInterest& onVerified,
+     const OnVerifyInterestFailed& onVerifyFailed, int stepCount = 0,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /*****************************************
    *           Encrypt/Decrypt             *
