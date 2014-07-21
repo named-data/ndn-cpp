@@ -228,6 +228,16 @@ static void dumpInterest(const Interest& interest)
        << (interest.getNonce().size() > 0 ? interest.getNonce().toHex() : "<none>") << endl;
 }
 
+static void onVerified(const char *prefix, const ptr_lib::shared_ptr<Interest>& interest)
+{
+  cout << prefix << " signature verification: VERIFIED" << endl;
+}
+
+static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Interest>& interest)
+{
+  cout << prefix << " signature verification: FAILED" << endl;
+}
+
 int main(int argc, char** argv)
 {
   try {
@@ -289,10 +299,16 @@ int main(int argc, char** argv)
       // For the moment, sign and verify of command interests is only supported in TLV.
       face.makeCommandInterest(freshInterest);
     
-    Interest reDecodedFreshInterest;
-    reDecodedFreshInterest.wireDecode(freshInterest.wireEncode());
+    ptr_lib::shared_ptr<Interest> reDecodedFreshInterest(new Interest());
+    reDecodedFreshInterest->wireDecode(freshInterest.wireEncode());
     cout << endl << "Re-decoded fresh Interest:" << endl;
-    dumpInterest(reDecodedFreshInterest);
+    dumpInterest(*reDecodedFreshInterest);
+
+    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
+      // For the moment, sign and verify of command interests is only supported in TLV.
+      keyChain.verifyInterest
+        (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
+         bind(&onVerifyFailed, "Freshly-signed Interest", _1));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
