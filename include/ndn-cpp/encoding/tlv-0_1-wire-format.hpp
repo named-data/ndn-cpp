@@ -125,7 +125,6 @@ public:
   /**
    * Decode signatureInfo as a signature info and signatureValue as the related
    * SignatureValue, and return a new object which is a subclass of Signature.
-   * Set the signature value bits to an empty buffer.
    * @param signatureInfo A pointer to the signature info input buffer to decode.
    * @param signatureInfoLength The number of bytes in signatureInfo.
    * @param signatureValue A pointer to the signature value input buffer to decode.
