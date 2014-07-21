@@ -51,12 +51,30 @@ public:
   skipVerifyAndTrust(const Data& data) = 0;
 
   /**
+   * Check if the received signed interest can escape from verification and be
+   * trusted as valid.
+   * @param interest The received interest.
+   * @return true if the interest does not need to be verified to be trusted as valid, otherwise false.
+   */
+  virtual bool
+  skipVerifyAndTrust(const Interest& interest) = 0;
+
+  /**
    * Check if this PolicyManager has a verification rule for the received data.
    * @param data The received data packet.
    * @return true if the data must be verified, otherwise false.
    */
   virtual bool
   requireVerify(const Data& data) = 0;
+
+  /**
+   * Check if this PolicyManager has a verification rule for the received signed
+   * interest.
+   * @param interest The received interest.
+   * @return true if the interest must be verified, otherwise false.
+   */
+  virtual bool
+  requireVerify(const Interest& interest) = 0;
 
   /**
    * Check whether the received data packet complies with the verification policy, and get the indication of the next verification step.
@@ -69,6 +87,24 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed) = 0;
+
+  /**
+   * Check whether the received signed interest complies with the verification
+   * policy, and get the indication of the next verification step.
+   * @param interest The interest with the signature to check.
+   * @param stepCount The number of verification steps that have been done, used
+   * to track the verification progress.
+   * @param onVerified If the signature is verified, this calls onVerified(data).
+   * @param onVerifyFailed If the signature check fails, this calls
+   * onVerifyFailed(data).
+   * @return the indication of next verification step, null if there is no
+   * further step.
+   */
+  virtual ptr_lib::shared_ptr<ValidationRequest>
+  checkVerificationPolicy
+    (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
+     const OnVerifiedInterest& onVerified,
+     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat) = 0;
 
   /**
    * Check if the signing certificate name and data name satisfy the signing policy.

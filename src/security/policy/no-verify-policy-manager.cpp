@@ -37,7 +37,19 @@ NoVerifyPolicyManager::skipVerifyAndTrust(const Data& data)
 }
 
 bool
+NoVerifyPolicyManager::skipVerifyAndTrust(const Interest& interest)
+{
+  return true;
+}
+
+bool
 NoVerifyPolicyManager::requireVerify(const Data& data)
+{
+  return false;
+}
+
+bool
+NoVerifyPolicyManager::requireVerify(const Interest& interest)
 {
   return false;
 }
@@ -47,6 +59,16 @@ NoVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
   onVerified(data);
+  return ptr_lib::shared_ptr<ValidationRequest>();
+}
+
+ptr_lib::shared_ptr<ValidationRequest>
+NoVerifyPolicyManager::checkVerificationPolicy
+  (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+{
+  onVerified(interest);
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
 
