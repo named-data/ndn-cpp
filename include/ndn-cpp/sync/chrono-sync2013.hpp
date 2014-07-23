@@ -26,6 +26,7 @@
 #include <vector>
 #include "../face.hpp"
 #include "../security/key-chain.hpp"
+#include "../util/memory-content-cache.hpp"
 
 namespace google { namespace protobuf { template <typename Element> class RepeatedPtrField; } }
 namespace Sync { class SyncStateMsg; }
@@ -76,9 +77,6 @@ public:
    * This makes a copy of the name.
    * @param sessionNo The session number used with the applicationDataPrefix in
    * sync state messages.
-   * @param transport (temporary) This uses transport.send to poke a data
-   * packet into the NDNx content cache. When use change to use a
-   * MemoryContentCache, this transport parameter won't be needed.
    * @param face The Face for calling registerPrefix and expressInterest. The
    * Face object must remain valid for the life of this ChronoSync2013 object.
    * @param keyChain To sign a data packet containing a sync state message, this
@@ -95,9 +93,8 @@ public:
     (const OnReceivedSyncState& onReceivedSyncState,
      const OnInitialized& onInitialized, const Name& applicationDataPrefix, 
      const Name& applicationBroadcastPrefix, int sessionNo,
-     Transport& transport, Face& face, KeyChain& keyChain,
-     const Name& certificateName, Milliseconds syncLifetime,
-     const OnRegisterFailed& onRegisterFailed);
+     Face& face, KeyChain& keyChain, const Name& certificateName,
+     Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed);
 
   /**
    * A SyncState holds the values of a sync state message which is passed to the
@@ -192,6 +189,55 @@ private:
   };
 
   /**
+   * A PendingInterest holds an interest which onInterest received but could
+   * not satisfy. When we add a new data packet to the contentCache_, we will
+   * also check if it satisfies a pending interest.
+   */
+  class PendingInterest {
+  public:
+    /**
+     * Create a new PendingInterest and set the timeoutTime_ based on the current time and the interest lifetime.
+     * @param interest A shared_ptr for the interest.
+     * @param transport The transport from the onInterest callback. If the
+     * interest is satisfied later by a new data packet, we will send the data
+     * packet to the transport.
+     */
+    PendingInterest
+      (const ptr_lib::shared_ptr<const Interest>& interest,
+       Transport& transport);
+
+    /**
+     * Return the interest given to the constructor.
+     */
+    const ptr_lib::shared_ptr<const Interest>&
+    getInterest() { return interest_; }
+
+    /**
+     * Return the transport given to the constructor.
+     */
+    Transport&
+    getTransport() { return transport_; }
+
+    /**
+     * Check if this interest is timed out.
+     * @param nowMilliseconds The current time in milliseconds from ndn_getNowMilliseconds.
+     * @return true if this interest timed out, otherwise false.
+     */
+    bool
+    isTimedOut(MillisecondsSince1970 nowMilliseconds)
+    {
+      return timeoutTimeMilliseconds_ >= 0.0 && nowMilliseconds >= timeoutTimeMilliseconds_;
+    }
+
+  private:
+    ptr_lib::shared_ptr<const Interest> interest_;
+    Transport& transport_;
+    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
+      * interest times out in milliseconds according to ndn_getNowMilliseconds,
+      * or -1 for no timeout. */
+  };
+
+  /**
    * Make a data packet with the syncMessage and with name 
    * applicationBroadcastPrefix_ + digest. Sign and send.
    * @param digest The root digest as a hex string for the data packet name.
@@ -216,7 +262,11 @@ private:
   int
   logfind(const std::string& digest) const;
 
-  // Process Sync Interest.
+  /**
+   * Process the sync interest from the applicationBroadcastPrefix. If we can't
+   * satisfy the interest, add it to the pendingInterestTable_ so that a
+   * future call to contentCacheAdd may satisfy it.
+   */
   void
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
@@ -233,13 +283,16 @@ private:
   void
   initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
-  // Process Recovery Interest, go through digest tree and send data including info of all nodes
   void
   processRecoveryInst
     (const Interest& inst, const std::string& syncdigest, Transport& transport);
 
-  // Common Interest Processing, using digest log to find the difference after syncdigest_t
-  void
+  /**
+   * Common interest processing, using digest log to find the difference after
+   * syncdigest_t. Return true if sent a data packet to satisfy the interest,
+   * otherwise false.
+   */
+  bool
   processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
 
   // Send Recovery Interest.
@@ -258,7 +311,16 @@ private:
   void
   initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
-  Transport& transport_;
+  /**
+   * Add the data packet to the contentCache_. Remove timed-out entries
+   * from pendingInterestTable_. If the data packet satisfies any pending
+   * interest, then send the data packet to the pending interest's transport
+   * and remove from the pendingInterestTable_.
+   * @param data
+   */
+  void
+  contentCacheAdd(const Data& data);
+
   Face& face_;
   KeyChain& keyChain_;
   Name certificateName_;
@@ -271,6 +333,8 @@ private:
   const Name applicationBroadcastPrefix_;
   int session_;
   int usrseq_;
+  MemoryContentCache contentCache_;
+  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
 };
 
 }

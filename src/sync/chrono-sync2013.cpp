@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include "../util/logging.hpp"
 #include "sync-state.pb.h"
+#include "../c/util/time.h"
 #include "digest-tree.hpp"
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
 
@@ -37,23 +38,25 @@ namespace ndn {
 ChronoSync2013::ChronoSync2013
   (const OnReceivedSyncState& onReceivedSyncState,
    const OnInitialized& onInitialized, const Name& applicationDataPrefix,
-   const Name& applicationBroadcastPrefix, int sessionNo, Transport& transport,
-   Face& face, KeyChain& keyChain, const Name& certificateName,
-   Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
+   const Name& applicationBroadcastPrefix, int sessionNo, Face& face, 
+   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime,
+   const OnRegisterFailed& onRegisterFailed)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
-  transport_(transport), face_(face), keyChain_(keyChain),
-  certificateName_(certificateName), sync_lifetime_(syncLifetime),
-  usrseq_(-1), digest_tree_(new DigestTree())
+  face_(face), keyChain_(keyChain), certificateName_(certificateName),
+  sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
+  contentCache_(&face)
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
     ("00", emptyContent.ss()));
 
-  face.registerPrefix
-    (applicationBroadcastPrefix_,
-     bind(&ChronoSync2013::onInterest, this, _1, _2, _3, _4), onRegisterFailed);
+  // Register the prefix with the contentCache_ and use our own onInterest
+  //   as the onDataNotFound fallback.
+  contentCache_.registerPrefix
+    (applicationBroadcastPrefix_, onRegisterFailed,
+     bind(&ChronoSync2013::onInterest, this, _1, _2, _3, _4));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
@@ -164,6 +167,10 @@ ChronoSync2013::onInterest
     // Recovery interest or newcomer interest.
     processRecoveryInst(*inst, syncdigest, transport);
   else {
+    // Save the unanswered interest in our local pending interest table.
+    pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>
+      (new PendingInterest(inst, transport)));
+
     if (syncdigest != digest_tree_->getRoot()) {
       size_t index = logfind(syncdigest);
       if (index == -1) {
@@ -265,7 +272,7 @@ ChronoSync2013::processRecoveryInst
   }
 }
 
-void
+bool
 ChronoSync2013::processSyncInst
   (int index, const string& syncdigest_t, Transport& transport)
 {
@@ -309,6 +316,7 @@ ChronoSync2013::processSyncInst
     content->mutable_seqno()->set_session(data_ses[i]);
   }
 
+  bool sent = false;
   if (content_t.ss_size() != 0) {
     Name n(applicationBroadcastPrefix_);
     n.append(syncdigest_t);
@@ -319,12 +327,15 @@ ChronoSync2013::processSyncInst
     keyChain_.sign(co, certificateName_);
     try {
       transport.send(*co.wireEncode());
+      sent = true;
       _LOG_DEBUG("Sync Data send");
       _LOG_DEBUG(n.toUri());
     } catch (std::exception& e) {
       _LOG_DEBUG(e.what());
     }
   }
+
+  return sent;
 }
 
 void
@@ -470,11 +481,37 @@ ChronoSync2013::broadcastSyncState
   data.getName().append(digest);
   data.setContent(Blob(array, false));
   keyChain_.sign(data, certificateName_);
-  try {
-    // TODO: Should use a MemoryContentCache instead of a direct poke.
-    transport_.send(*data.wireEncode());
-  } catch (std::exception& e) {
-    _LOG_DEBUG(e.what());
+  contentCacheAdd(data);
+}
+
+void
+ChronoSync2013::contentCacheAdd(const Data& data)
+{
+  contentCache_.add(data);
+
+  // Remove timed-out interests and check if the data packet matches any pending
+  // interest.
+  // Go backwards through the list so we can erase entries.
+  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
+  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
+    if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+      continue;
+    }
+
+    if (pendingInterestTable_[i]->getInterest()->matchesName(data.getName())) {
+      try {
+        // Send to the same transport from the original call to onInterest.
+        // wireEncode returns the cached encoding if available.
+        pendingInterestTable_[i]->getTransport().send
+          (*data.wireEncode());
+      }
+      catch (std::exception& e) {
+      }
+
+      // The pending interest is satisfied, so remove it.
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+    }
   }
 }
 
@@ -484,6 +521,19 @@ ChronoSync2013::DigestLogEntry::DigestLogEntry
   : digest_(digest),
    data_(new google::protobuf::RepeatedPtrField<Sync::SyncState>(data))
 {
+}
+
+ChronoSync2013::PendingInterest::PendingInterest
+  (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport)
+  : interest_(interest), transport_(transport)
+{
+  // Set up timeoutTime_.
+  if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
+    timeoutTimeMilliseconds_ = ndn_getNowMilliseconds() +
+      interest_->getInterestLifetimeMilliseconds();
+  else
+    // No timeout.
+    timeoutTimeMilliseconds_ = -1.0;
 }
 
 }
