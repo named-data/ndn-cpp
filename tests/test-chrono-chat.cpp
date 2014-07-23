@@ -60,8 +60,8 @@ class Chat {
 public:
   Chat
     (const std::string& screenName, const std::string& chatRoom,
-     const Name& hubPrefix, Transport& transport, Face& face,
-     KeyChain& keyChain, const Name& certificateName)
+     const Name& hubPrefix, Face& face, KeyChain& keyChain,
+     const Name& certificateName)
     : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
       isRecoverySyncState_(true), sync_lifetime_(5000.0), face_(face),
       keyChain_(keyChain), certificateName_(certificateName)
@@ -76,8 +76,7 @@ public:
       (bind(&Chat::sendInterest, this, _1, _2),
        bind(&Chat::initial, this), chat_prefix_,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
-       transport, face, keyChain, certificateName, sync_lifetime_,
-       onRegisterFailed));
+       face, keyChain, certificateName, sync_lifetime_, onRegisterFailed));
 
     face.registerPrefix
       (chat_prefix_, bind(&Chat::onInterest, this, _1, _2, _3, _4),
@@ -657,9 +656,7 @@ int main(int argc, char** argv)
 
     // Set up the transport and key chain.
     ptr_lib::shared_ptr<TcpTransport> transport(new TcpTransport());
-    Face face
-      (transport,
-       ptr_lib::make_shared<TcpTransport::ConnectionInfo>(host));
+    Face face(host);
 
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
       (new MemoryIdentityStorage());
@@ -680,8 +677,7 @@ int main(int argc, char** argv)
        DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
     Chat chat
-      (screenName, chatRoom, Name(hubPrefix), *transport, face, keyChain,
-       certificateName);
+      (screenName, chatRoom, Name(hubPrefix), face, keyChain, certificateName);
 
     // The main loop to process Chat while checking stdin to send a message.
     cout << "Enter your chat message. To quit, enter \"leave\" or \"exit\"." << endl;
