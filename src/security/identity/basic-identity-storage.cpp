@@ -436,7 +436,7 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   if (!doesKeyExist(keyName))
     throw SecurityException("No corresponding Key record for certificate!" + keyName.toUri() + " " + certificateName.toUri());
 
-  // Check if certificate already exists!
+  // Check if the certificate already exists.
   if (doesCertificateExist(certificateName))
     throw SecurityException("Certificate has already been installed!");
 
