@@ -132,8 +132,8 @@ private:
   // Check whether a user is leaving by checking whether his seqno has changed.
   void
   alive
-    (int temp_seq, const std::string& name, int session,
-     const std::string& prefix);
+    (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
+     const std::string& name, int session, const std::string& prefix);
 
   /**
    * Append a new CachedMessage to msgcache, using given messageType and message,
@@ -296,6 +296,12 @@ Chat::onInterest
   }
 }
 
+static void
+dummyOnData(const ptr_lib::shared_ptr<const Interest>& interest,
+            const ptr_lib::shared_ptr<Data>& data)
+{
+}
+
 void
 Chat::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
@@ -331,12 +337,16 @@ Chat::onData
       cout << name << ": Join" << endl;
     }
 
-    Chat& self = *this;
-#if 0 // TODO: Set the alive timeout.
-    setTimeout(function(){self.alive(seqno,name,session,prefix);},120000);
-#endif
+    // Set the alive timeout using the Interest timeout mechanism.
+    // TODO: Are we sure using a "/timeout" interest is the best future call approach?
+    Interest timeout("/timeout");
+    timeout.setInterestLifetimeMilliseconds(120000);
+    face_.expressInterest
+      (timeout, dummyOnData,
+       bind(&Chat::alive, this, _1, seqno, name, session, prefix));
+
     // isRecoverySyncState_ was set by sendInterest.
-    // TODO: If isRecoverySyncState_ changed, this assumes that we won't
+    // TODO: If isRecoverySyncState_ changed, this assumes that we won't get
     //   data from an interest sent before it changed.
     if (content.type() == 0 && !isRecoverySyncState_ && content.from() != screen_name_)
       cout << content.from() << ": " << content.data() << endl;
@@ -389,9 +399,17 @@ Chat::leave()
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx");
 }
 
+/**
+ * This is called after a timeout to check if the user with prefix has a newer
+ * sequence number than the given temp_seq. If not, assume the user is idle and
+ * remove from the roster and print a leave message.
+ * This method has an "interest" argument because we use it as the onTimeout
+ * for Face.expressInterest.
+ */
 void
 Chat::alive
-  (int temp_seq, const string& name, int session, const string& prefix)
+  (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
+   const string& name, int session, const string& prefix)
 {
   int seq = sync_->getProducerSequenceNo(prefix, session);
   ostringstream tempStream;
