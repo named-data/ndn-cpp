@@ -32,6 +32,11 @@
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
 
 using namespace std;
+using namespace ndn::func_lib;
+#if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
+// In the std library, the placeholders are in a different namespace than boost.
+using namespace ndn::func_lib::placeholders;
+#endif
 
 namespace ndn {
 
@@ -174,16 +179,15 @@ ChronoSync2013::onInterest
     if (syncdigest != digest_tree_->getRoot()) {
       size_t index = logfind(syncdigest);
       if (index == -1) {
-        ChronoSync2013& self = *this;
-#if 0 // TODO: Set the timeout without using usleep.
-        //Wait 2 seconds to see whether there is any data packet coming back
-        setTimeout(function(){self.judgeRecovery(syncdigest, transport);},2000);
+        // To see whether there is any data packet coming back, wait 2 seconds 
+        // using the Interest timeout mechanism.
+        // TODO: Are we sure using a "/timeout" interest is the best future call approach?
+        Interest timeout("/timeout");
+        timeout.setInterestLifetimeMilliseconds(2000);
+        face_.expressInterest
+          (timeout, dummyOnData,
+           bind(&ChronoSync2013::judgeRecovery, this, _1, syncdigest, &transport));
         _LOG_DEBUG("set timer recover");
-#else
-        _LOG_DEBUG("set timer recover");
-        usleep(1000000);
-        judgeRecovery(syncdigest, transport);
-#endif
       }
       else
         // common interest processing
@@ -354,12 +358,14 @@ ChronoSync2013::sendRecovery(const string& syncdigest_t)
 }
 
 void
-ChronoSync2013::judgeRecovery(const string& syncdigest_t, Transport& transport)
+ChronoSync2013::judgeRecovery
+  (const ptr_lib::shared_ptr<const Interest> &interest,
+   const string& syncdigest_t, Transport* transport)
 {
   int index2 = logfind(syncdigest_t);
   if (index2 != -1) {
     if (syncdigest_t != digest_tree_->getRoot())
-      processSyncInst(index2, syncdigest_t, transport);
+      processSyncInst(index2, syncdigest_t, *transport);
   }
   else
     sendRecovery(syncdigest_t);
@@ -534,6 +540,13 @@ ChronoSync2013::PendingInterest::PendingInterest
   else
     // No timeout.
     timeoutTimeMilliseconds_ = -1.0;
+}
+
+void
+ChronoSync2013::dummyOnData
+  (const ptr_lib::shared_ptr<const Interest>& interest,
+   const ptr_lib::shared_ptr<Data>& data)
+{
 }
 
 }

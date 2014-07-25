@@ -299,9 +299,15 @@ private:
   void
   sendRecovery(const std::string& syncdigest_t);
 
-  // Check if recovery is needed.
+  /**
+   * This is called by onInterest after a timeout to check if a recovery is needed.
+   * This method has an "interest" argument because we use it as the onTimeout
+   * for Face.expressInterest.
+   */
   void
-  judgeRecovery(const std::string& syncdigest_t, Transport& transport);
+  judgeRecovery
+    (const ptr_lib::shared_ptr<const Interest> &interest,
+     const std::string& syncdigest_t, Transport* transport);
 
   // Sync interest time out, if the interest is the static one send again.
   void
@@ -320,6 +326,15 @@ private:
    */
   void
   contentCacheAdd(const Data& data);
+
+  /**
+   * This is a do-nothing onData for using expressInterest for timeouts.
+   * This should never be called.
+   */
+  static void
+  dummyOnData
+    (const ptr_lib::shared_ptr<const Interest>& interest,
+     const ptr_lib::shared_ptr<Data>& data);
 
   Face& face_;
   KeyChain& keyChain_;
