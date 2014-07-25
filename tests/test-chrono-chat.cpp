@@ -125,11 +125,22 @@ private:
   void
   chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
 
-  // Send a hearbeat message.
+  /**
+   * This repeatedly calls itself after a timeout to send a heartbeat message
+   * (chat message type HELLO).
+   * This method has an "interest" argument because we use it as the onTimeout
+   * for Face.expressInterest.
+   */
   void
-  heartbeat();
+  heartbeat(const ptr_lib::shared_ptr<const Interest> &interest);
 
-  // Check whether a user is leaving by checking whether his seqno has changed.
+  /**
+   * This is called after a timeout to check if the user with prefix has a newer
+   * sequence number than the given temp_seq. If not, assume the user is idle and
+   * remove from the roster and print a leave message.
+   * This method has an "interest" argument because we use it as the onTimeout
+   * for Face.expressInterest.
+   */
   void
   alive
     (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
@@ -151,6 +162,15 @@ private:
   static void
   onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
 
+  /**
+   * This is a do-nothing onData for using expressInterest for timeouts.
+   * This should never be called.
+   */
+  static void
+  dummyOnData
+    (const ptr_lib::shared_ptr<const Interest>& interest,
+     const ptr_lib::shared_ptr<Data>& data);
+  
   class CachedMessage {
   public:
     CachedMessage
@@ -197,10 +217,13 @@ private:
 void
 Chat::initial()
 {
-  Chat& self = *this;
-#if 0 // TODO: Set the heartbeat timeout.
-  var myVar = setInterval(function(){self.heartbeat();},60000);
-#endif
+  // Set the heartbeat timeout using the Interest timeout mechanism. The
+  // heartbeat() function will call itself again after a timeout.
+  // TODO: Are we sure using a "/timeout" interest is the best future call approach?
+  Interest timeout("/timeout");
+  timeout.setInterestLifetimeMilliseconds(60000);
+  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
+
   if (find(roster_.begin(), roster_.end(), usrname_) == roster_.end()) {
     roster_.push_back(usrname_);
     cout << "Member: " << screen_name_ << endl;
@@ -296,12 +319,6 @@ Chat::onInterest
   }
 }
 
-static void
-dummyOnData(const ptr_lib::shared_ptr<const Interest>& interest,
-            const ptr_lib::shared_ptr<Data>& data)
-{
-}
-
 void
 Chat::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
@@ -368,13 +385,19 @@ Chat::chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 }
 
 void
-Chat::heartbeat()
+Chat::heartbeat(const ptr_lib::shared_ptr<const Interest> &interest)
 {
   if (msgcache_.size() == 0)
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
   sync_->publishNextSequenceNo();
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx");
+
+  // Call again.
+  // TODO: Are we sure using a "/timeout" interest is the best future call approach?
+  Interest timeout("/timeout");
+  timeout.setInterestLifetimeMilliseconds(60000);
+  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
 }
 
 void
@@ -399,13 +422,6 @@ Chat::leave()
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_LEAVE, "xxx");
 }
 
-/**
- * This is called after a timeout to check if the user with prefix has a newer
- * sequence number than the given temp_seq. If not, assume the user is idle and
- * remove from the roster and print a leave message.
- * This method has an "interest" argument because we use it as the onTimeout
- * for Face.expressInterest.
- */
 void
 Chat::alive
   (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
@@ -462,6 +478,13 @@ Chat::getNowMilliseconds()
   // Note: configure.ac requires gettimeofday.
   gettimeofday(&t, 0);
   return t.tv_sec * 1000.0 + t.tv_usec / 1000.0;
+}
+
+void
+Chat::dummyOnData
+  (const ptr_lib::shared_ptr<const Interest>& interest,
+   const ptr_lib::shared_ptr<Data>& data)
+{
 }
 
 static uint8_t DEFAULT_RSA_PUBLIC_KEY_DER[] = {
