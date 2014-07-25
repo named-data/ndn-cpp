@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-07-21)
+Interim changes after NDN-CPP v0.4 (2014-07-25)
 -----------------------------------------------
 
 Changes
@@ -14,6 +14,8 @@ Changes
 * Renamed internal class Tlv1_0a2WireFormat to Tlv0_1WireFormat.
 * COPYING: Changed the license to LGPLv3.
 * Added encoding/ProtobufTlv for converting a Protobuf message object to TLV encoding.
+* Added sync/ChronoSync2013 and the chat demo tests/test-chrono-chat. See:
+  http://named-data.net/doc/ndn-ccl-api/chrono-sync2013.html
 * In test-encode-decode-data and test-encode-decode-benchmark, change the RSA test key to 2048 bits.
 * Added UnixTransport. If using the default Face(), try to connect using a Unix socket.
 * Added ./configure options --with-std-shared-ptr and --with-boost-shared-ptr. See ./configure --help .
