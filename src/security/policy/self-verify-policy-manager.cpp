@@ -215,7 +215,6 @@ SelfVerifyPolicyManager::verify
       // Can't find the public key with the name.
       return false;
 
-    // wireEncode returns the cached encoding if available.
     if (verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer))
       return true;
     else
