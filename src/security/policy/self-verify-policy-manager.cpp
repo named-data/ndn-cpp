@@ -196,15 +196,10 @@ SelfVerifyPolicyManager::verify
     throw SecurityException
       ("SelfVerifyPolicyManager: Signature is not Sha256WithRsaSignature.");
 
-  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY) {
+  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
     // Use the public key DER directly.
-    // wireEncode returns the cached encoding if available.
-    if (verifySha256WithRsaSignature
-        (signature, signedBlob, signature->getKeyLocator().getKeyData()))
-      return true;
-    else
-      return false;
-  }
+    return verifySha256WithRsaSignature
+      (signature, signedBlob, signature->getKeyLocator().getKeyData());
   else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME &&
            identityStorage_) {
     // Assume the key name is a certificate name.
@@ -215,10 +210,7 @@ SelfVerifyPolicyManager::verify
       // Can't find the public key with the name.
       return false;
 
-    if (verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer))
-      return true;
-    else
-      return false;
+    return verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer);
   }
   else
     // Can't find a key to verify.
