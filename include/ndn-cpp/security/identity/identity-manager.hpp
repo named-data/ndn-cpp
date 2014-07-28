@@ -179,7 +179,7 @@ public:
 
   /**
    * Set the certificate as the default for its corresponding key.
-   * @param certificateName The certificate.
+   * @param certificate The certificate.
    */
   void
   setDefaultCertificateForKey(const IdentityCertificate& certificate);
