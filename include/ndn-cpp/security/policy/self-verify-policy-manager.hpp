@@ -40,7 +40,7 @@ public:
    * Create a new SelfVerifyPolicyManager which will look up the public key in
    * the given identityStorage.
    * @param identityStorage (optional) The IdentityStorage for looking up the
-   * public key.  This points to an object must which remain valid during the
+   * public key.  This points to an object which must remain valid during the
    * life of this SelfVerifyPolicyManager. If omitted, then don't look for a
    * public key with the name in the KeyLocator and rely on the KeyLocator
    * having the full public key DER.
