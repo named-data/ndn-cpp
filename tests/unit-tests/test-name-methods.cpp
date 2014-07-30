@@ -29,7 +29,7 @@ TEST(TestNameMethods, UriConstructor)
 {
   string expectedUri = "/entr%C3%A9e/..../%00%01%02%03";
   Name name(expectedUri);
-  ASSERT_EQ(name.size(), 3);
+  ASSERT_EQ(name.size(), 4) << "Constructed name has " << name.size() << " components instead of 3";
   ASSERT_EQ(name.toUri(), expectedUri);
 }
 
