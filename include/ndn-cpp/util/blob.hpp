@@ -158,6 +158,22 @@ public:
   toHex() const { return (*this) ? ndn::toHex(**this) : std::string(); }
 
   /**
+   * Check if the value of this Blob equals the other blob.
+   * @param other The other Blob to check.
+   * @return True if this isNull and other isNull or if the bytes of this
+   * blob equal the bytes of the other.
+   */
+  bool
+  equals(const Blob& other) const
+  {
+    if (isNull())
+      return other.isNull();
+    else
+      // Use the vector equals operator.
+      return (**this) == (*other);
+  }
+
+  /**
    * Set the blobStruct to point to this Blob's byte array, without copying any memory.
    * WARNING: The resulting pointer in blobStruct is invalid after a further use of this object which could reallocate memory.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
