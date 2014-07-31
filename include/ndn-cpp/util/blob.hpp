@@ -168,6 +168,8 @@ public:
   {
     if (isNull())
       return other.isNull();
+    else if (other.isNull())
+      return false;
     else
       // Use the vector equals operator.
       return (**this) == (*other);
