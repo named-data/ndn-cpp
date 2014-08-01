@@ -37,7 +37,7 @@ MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 
 void
 MemoryPrivateKeyStorage::setPublicKeyForKeyName
-  (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
+  (const Name& keyName, KeyType keyType, const uint8_t* publicKeyDer,
    size_t publicKeyDerLength)
 {
   publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(keyType, Blob(publicKeyDer, publicKeyDerLength));
@@ -45,7 +45,7 @@ MemoryPrivateKeyStorage::setPublicKeyForKeyName
 
 void
 MemoryPrivateKeyStorage::setPrivateKeyForKeyName
-  (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer,
+  (const Name& keyName, KeyType keyType, const uint8_t* privateKeyDer,
    size_t privateKeyDerLength)
 {
   privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<PrivateKey>
@@ -70,7 +70,7 @@ MemoryPrivateKeyStorage::getPublicKey(const Name& keyName)
 }
 
 Blob
-MemoryPrivateKeyStorage::sign(const uint8_t *data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm)
+MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm)
 {
   if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
     return Blob();
@@ -139,7 +139,7 @@ MemoryPrivateKeyStorage::doesKeyExist(const Name& keyName, KeyClass keyClass)
 }
 
 MemoryPrivateKeyStorage::PrivateKey::PrivateKey
-  (KeyType keyType, uint8_t *keyDer, size_t keyDerLength)
+  (KeyType keyType, const uint8_t* keyDer, size_t keyDerLength)
 {
   keyType_ = keyType;
   rsaPrivateKey_ = 0;

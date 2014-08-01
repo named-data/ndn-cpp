@@ -51,7 +51,7 @@ public:
    */
   void
   setPublicKeyForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
+    (const Name& keyName, KeyType keyType, const uint8_t* publicKeyDer,
      size_t publicKeyDerLength);
 
   /**
@@ -60,7 +60,7 @@ public:
    */
   void
   DEPRECATED_IN_NDN_CPP setPublicKeyForKeyName
-    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength)
+    (const Name& keyName, const uint8_t* publicKeyDer, size_t publicKeyDerLength)
   {
     setPublicKeyForKeyName(keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength);
   }
@@ -74,7 +74,7 @@ public:
    */
   void
  setPrivateKeyForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *privateKeyDer,
+    (const Name& keyName, KeyType keyType, const uint8_t* privateKeyDer,
      size_t privateKeyDerLength);
 
   /**
@@ -83,7 +83,7 @@ public:
    */
   void
    DEPRECATED_IN_NDN_CPP setPrivateKeyForKeyName
-    (const Name& keyName, uint8_t *privateKeyDer, size_t privateKeyDerLength)
+    (const Name& keyName, const uint8_t* privateKeyDer, size_t privateKeyDerLength)
   {
     setPrivateKeyForKeyName(keyName, KEY_TYPE_RSA, privateKeyDer, privateKeyDerLength);
   }
@@ -99,8 +99,8 @@ public:
    */
   void
   setKeyPairForKeyName
-    (const Name& keyName, KeyType keyType, uint8_t *publicKeyDer,
-     size_t publicKeyDerLength, uint8_t *privateKeyDer,
+    (const Name& keyName, KeyType keyType, const uint8_t* publicKeyDer,
+     size_t publicKeyDerLength, const uint8_t* privateKeyDer,
      size_t privateKeyDerLength)
   {
     setPublicKeyForKeyName(keyName, keyType, publicKeyDer, publicKeyDerLength);
@@ -113,8 +113,8 @@ public:
    */
   void
   DEPRECATED_IN_NDN_CPP setKeyPairForKeyName
-    (const Name& keyName, uint8_t *publicKeyDer, size_t publicKeyDerLength,
-     uint8_t *privateKeyDer, size_t privateKeyDerLength)
+    (const Name& keyName, const uint8_t* publicKeyDer, size_t publicKeyDerLength,
+     const uint8_t* privateKeyDer, size_t privateKeyDerLength)
   {
     setKeyPairForKeyName
       (keyName, KEY_TYPE_RSA, publicKeyDer, publicKeyDerLength, privateKeyDer,
@@ -195,7 +195,7 @@ private:
    */
   class PrivateKey {
   public:
-    PrivateKey(KeyType keyType, uint8_t *keyDer, size_t keyDerLength);
+    PrivateKey(KeyType keyType, const uint8_t* keyDer, size_t keyDerLength);
 
     ~PrivateKey();
 
