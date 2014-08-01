@@ -139,7 +139,9 @@ TEST_F(TestNameMethods, Match)
   ASSERT_TRUE(Name().match(name)) << "Empty name should always match another";
 }
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv)
+{
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
