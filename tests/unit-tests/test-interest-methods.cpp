@@ -239,10 +239,11 @@ TEST_F(TestInterestMethods, EmptyNonce)
 
 TEST_F(TestInterestMethods, SetRemovesNonce)
 {
-  // ensure that setting a value on an interest clears the nonce
+  // Ensure that changing a value on an interest clears the nonce.
   ASSERT_FALSE(referenceInterest.getNonce().isNull());
   Interest interest(referenceInterest);
-  interest.setChildSelector(0);
+  // Change a child object.
+  interest.getExclude().clear();
   ASSERT_TRUE(interest.getNonce().isNull()) << "Interest should not have a nonce after changing fields";
 }
 
