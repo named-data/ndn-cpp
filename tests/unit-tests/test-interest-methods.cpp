@@ -137,12 +137,12 @@ removeStartingWith(const vector<string>& strings, const string& prefix)
   return result;
 }
 
-// ignoring nonce, see if two data dumps are equal
+// ignoring nonce, check that the dumped interests are equal
 static bool
-interestDumpsEqual(const vector<string>& d1, const vector<string>& d2)
+interestDumpsEqual(const vector<string>& dump1, const vector<string>& dump2)
 {
   string prefix("nonce:");
-  return removeStartingWith(d1, prefix) == removeStartingWith(d2, prefix);
+  return removeStartingWith(dump1, prefix) == removeStartingWith(dump2, prefix);
 }
 
 static Interest
