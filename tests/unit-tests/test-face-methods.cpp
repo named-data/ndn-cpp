@@ -222,6 +222,7 @@ TEST_F(TestFaceInterestMethods, RemovePending)
   ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
 }
 
+#if 0
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
   TestFaceRegisterMethods()
@@ -282,6 +283,7 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
   self.assertTrue(expectedBlob.equals(data.getContent()), 'Data received on face does not match expected format')
 #endif
 }
+#endif
 
 int
 main(int argc, char **argv)
