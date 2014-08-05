@@ -222,7 +222,6 @@ TEST_F(TestFaceInterestMethods, RemovePending)
   ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
 }
 
-#if 0
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
   TestFaceRegisterMethods()
@@ -253,11 +252,18 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
     (prefixName,
      bind(&RegisterCounter::onInterest, &registerCounter, _1, _2, _3, _4),
      bind(&RegisterCounter::onRegisterFailed, &registerCounter, _1));
+
+  // give the 'server' time to register the interest
+  MillisecondsSince1970 startTime = getNowMilliseconds();
+  while (getNowMilliseconds() - startTime < 1000 &&
+         registerCounter.onInterestCallCount_ == 0 &&
+         registerCounter.onRegisterFailedCallCount_ == 0) {
+    faceIn.processEvents();
+    // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+    usleep(10000);
+  }
+
 #if 0
-  server = gevent.spawn(self.face_process_events, self.face_in, [interestCallback, failedCallback], 'h')
-
-  gevent.sleep(1) // give the 'server' time to register the interest
-
   // express an interest on another face
   dataCallback = Mock()
   timeoutCallback = Mock()
@@ -269,9 +275,11 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
   client = gevent.spawn(self.face_process_events, self.face_out, [dataCallback, timeoutCallback], 'c')
 
   gevent.joinall([server, client], timeout=10)
+#endif
 
-  self.assertEqual(failedCallback.call_count, 0, 'Failed to register prefix at all')
+  ASSERT_EQ(registerCounter.onRegisterFailedCallCount_, 0) << "Failed to register prefix at all";
 
+#if 0
   self.assertEqual(interestCallback.call_count, 1, 'Expected 1 onInterest callback, got '+str(interestCallback.call_count))
 
   self.assertEqual(dataCallback.call_count, 1, 'Expected 1 onData callback, got '+str(dataCallback.call_count))
@@ -283,7 +291,6 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
   self.assertTrue(expectedBlob.equals(data.getContent()), 'Data received on face does not match expected format')
 #endif
 }
-#endif
 
 int
 main(int argc, char **argv)
