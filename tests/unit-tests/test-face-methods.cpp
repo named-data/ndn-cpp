@@ -64,6 +64,7 @@ public:
          const ptr_lib::shared_ptr<Data>& data)
   {
     interest_ = *interest;
+    data_ = *data;
     ++onDataCallCount_;
   }
 
@@ -77,6 +78,7 @@ public:
   int onDataCallCount_;
   int onTimeoutCallCount_;
   Interest interest_;
+  Data data_;
 };
 
 class RegisterCounter
@@ -222,6 +224,7 @@ TEST_F(TestFaceInterestMethods, RemovePending)
   ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
 }
 
+#if 0
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
   TestFaceRegisterMethods()
@@ -259,38 +262,38 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
          registerCounter.onInterestCallCount_ == 0 &&
          registerCounter.onRegisterFailedCallCount_ == 0) {
     faceIn.processEvents();
-    // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
     usleep(10000);
   }
 
-#if 0
-  // express an interest on another face
-  dataCallback = Mock()
-  timeoutCallback = Mock()
+  CallbackCounter counter;
 
   // now express an interest on this new face, and see if onInterest is called
-  interestName = prefixName.append("hello")
-  self.face_out.expressInterest(interestName, dataCallback, timeoutCallback)
+  Name interestName = Name(prefixName).append("hello");
+  faceOut.expressInterest
+    (interestName, bind(&CallbackCounter::onData, &counter, _1, _2),
+     bind(&CallbackCounter::onTimeout, &counter, _1));
 
-  client = gevent.spawn(self.face_process_events, self.face_out, [dataCallback, timeoutCallback], 'c')
-
-  gevent.joinall([server, client], timeout=10)
-#endif
+  startTime = getNowMilliseconds();
+  while (getNowMilliseconds() - startTime < 10000 &&
+         counter.onDataCallCount_ == 0 && counter.onTimeoutCallCount_ == 0) {
+    faceIn.processEvents();
+    faceOut.processEvents();
+    usleep(10000);
+  }
 
   ASSERT_EQ(registerCounter.onRegisterFailedCallCount_, 0) << "Failed to register prefix at all";
 
-#if 0
-  self.assertEqual(interestCallback.call_count, 1, 'Expected 1 onInterest callback, got '+str(interestCallback.call_count))
+  ASSERT_EQ(registerCounter.onInterestCallCount_, 1) << "Expected 1 onInterest callback, got " << registerCounter.onInterestCallCount_;
 
-  self.assertEqual(dataCallback.call_count, 1, 'Expected 1 onData callback, got '+str(dataCallback.call_count))
+  ASSERT_EQ(counter.onDataCallCount_, 1) << "Expected 1 onData callback, got " << counter.onDataCallCount_;
 
-  onDataArgs = dataCallback.call_args[0]
   // check the message content
-  data = onDataArgs[1]
-  expectedBlob = Blob(bytearray("SUCCESS"))
-  self.assertTrue(expectedBlob.equals(data.getContent()), 'Data received on face does not match expected format')
-#endif
+  Data& data = counter.data_;
+  string content("SUCCESS");
+  Blob expectedBlob((const uint8_t *)&content[0], content.size());
+  ASSERT_TRUE(expectedBlob.equals(data.getContent())) << "Data received on face does not match expected format";
 }
+#endif
 
 int
 main(int argc, char **argv)
