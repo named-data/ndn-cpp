@@ -10,7 +10,7 @@ follow this public API:
 http://named-data.net/doc/ndn-ccl-api/ .
 Further classes and methods are in the Doxygen-generated documentation.
 
-See the file INSTALL.md for build and install instructions.
+See the file [INSTALL.md](https://github.com/named-data/ndn-cpp/blob/master/INSTALL.md) for build and install instructions.
 
 Please submit any bugs or issues to the NDN-CPP issue tracker:
 http://redmine.named-data.net/projects/ndn-cpp/issues
