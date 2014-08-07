@@ -195,7 +195,7 @@ public:
    * matching interest is received. If you have not called setCommandSigningInfo,
    * this assumes you are connecting to NDNx. If you have called
    * setCommandSigningInfo, this first sends an NFD registration request, and if
-   * that times out then this sends an NDNx registration request. If need to
+   * that times out then this sends an NDNx registration request. If you need to
    * register a prefix with NFD, you must first call setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
@@ -206,8 +206,6 @@ public:
    * the default flags defined by the default ForwardingFlags constructor.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
-   * @throw This throws an exception if setCommandSigningInfo has not been
-   * called to set the KeyChain, etc. for signing the command interest.
    */
   uint64_t
   registerPrefix
