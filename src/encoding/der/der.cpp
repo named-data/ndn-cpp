@@ -22,11 +22,8 @@
 
 #include <stdexcept>
 #include "der-exception.hpp"
-#include "../../util/logging.hpp"
 #include "../../c/util/time.h"
 #include "der.hpp"
-
-INIT_LOGGER("ndn.der.DER");
 
 using namespace std;
 

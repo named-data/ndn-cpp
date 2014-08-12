@@ -36,11 +36,8 @@
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
-#include "../../util/logging.hpp"
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/identity/identity-manager.hpp>
-
-INIT_LOGGER("ndn.security.IdentityManager")
 
 using namespace std;
 

@@ -246,11 +246,16 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[log4cxx::LoggerPtr staticModuleLogger;]])
 ], [
     AC_MSG_RESULT([yes])
-    AC_DEFINE_UNQUOTED([HAVE_LOG4CXX], 1, [1 if have log4cxx.])
+    HAVE_LOG4CXX=1
 ], [
     AC_MSG_RESULT([no])
-    AC_DEFINE_UNQUOTED([HAVE_LOG4CXX], 0, [1 if have log4cxx.])
+    HAVE_LOG4CXX=0
 ])
+AC_DEFINE_UNQUOTED([HAVE_LOG4CXX], $HAVE_LOG4CXX, [1 if have log4cxx.])
+if test "$HAVE_LOG4CXX" == "1" ; then
+  AC_CHECK_LIB([log4cxx], [main], [],
+               [AC_MSG_FAILURE([have log4cxx headers but no liblog4cxx])])
+fi
 
 AC_MSG_CHECKING([for Protobuf])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(

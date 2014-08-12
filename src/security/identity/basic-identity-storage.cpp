@@ -37,7 +37,7 @@
 #include "../../c/util/time.h"
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 
-INIT_LOGGER("BasicIdentityStorage");
+INIT_LOGGER("ndn.BasicIdentityStorage");
 
 using namespace std;
 

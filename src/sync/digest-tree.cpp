@@ -25,6 +25,8 @@
 #include "../util/logging.hpp"
 #include "digest-tree.hpp"
 
+INIT_LOGGER("ndn.DigestTree");
+
 using namespace std;
 
 namespace ndn {

@@ -14,12 +14,9 @@
 #include <ndn-cpp/security/certificate/certificate-subject-description.hpp>
 #include <ndn-cpp/security/certificate/certificate-extension.hpp>
 
-#include "../../../util/logging.hpp"
 #include "certificate-data-visitor.hpp"
 
 using namespace std;
-
-INIT_LOGGER("ndn.der.CertificateDataVisitor");
 
 namespace ndn {
 

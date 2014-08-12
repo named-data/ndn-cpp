@@ -30,6 +30,9 @@
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
 
+/* Define to 1 if you have the `log4cxx' library (-llog4cxx). */
+#undef HAVE_LIBLOG4CXX
+
 /* Define to 1 if you have the `protobuf' library (-lprotobuf). */
 #undef HAVE_LIBPROTOBUF
 
