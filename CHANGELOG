@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-07-25)
+Interim changes after NDN-CPP v0.4 (2014-08-12)
 -----------------------------------------------
 
 Changes
@@ -30,6 +30,7 @@ Bug fixes
 * http://redmine.named-data.net/issues/1307 Call all callbacks where the interest matches the incoming data packet's name.
 * http://redmine.named-data.net/issues/1334 Interest.getMustBeFresh() is default true.
 * http://redmine.named-data.net/issues/1338 Fix FinalBlockID TLV encoding.
+* http://redmine.named-data.net/issues/1846 Fix compiling if log4cxx is present.
 * For TLV packets over UDP, ignore packets starting with 0x80.
 * Fix bug for registerPrefix with NDNx.
 * Fix bug for encoding/decoding the TLV Interest PublisherPublicKeyLocator.
