@@ -28,12 +28,9 @@
 #include "../../encoding/der/der.hpp"
 #include "../../encoding/der/visitor/certificate-data-visitor.hpp"
 #include "../../encoding/der/visitor/print-visitor.hpp"
-#include "../../util/logging.hpp"
 #include "../../util/blob-stream.hpp"
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/certificate/certificate.hpp>
-
-INIT_LOGGER("ndn.security.Certificate");
 
 using namespace std;
 
