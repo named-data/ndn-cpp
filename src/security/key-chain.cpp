@@ -27,6 +27,8 @@
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 
+INIT_LOGGER("ndn.KeyChain");
+
 using namespace std;
 using namespace ndn::func_lib;
 #if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
