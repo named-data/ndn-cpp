@@ -31,6 +31,8 @@
 #include "digest-tree.hpp"
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
 
+INIT_LOGGER("ndn.ChronoSync2013");
+
 using namespace std;
 using namespace ndn::func_lib;
 #if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
