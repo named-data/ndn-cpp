@@ -203,7 +203,7 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
     (pendingInterestId, ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData, onTimeout)));
 
   // Special case: For timeoutPrefix_ we don't actually send the interest.
-  if (timeoutPrefix_.match(interest.getName())) {
+  if (!timeoutPrefix_.match(interest.getName())) {
     Blob encoding = interest.wireEncode(wireFormat);
     transport_->send(*encoding);
   }
