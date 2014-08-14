@@ -186,7 +186,8 @@ selfregSign(Data& data, WireFormat& wireFormat)
 
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
-  ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0)
+  ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0),
+  timeoutPrefix_(Name("/local/timeout"))
 {
 }
 
@@ -201,8 +202,11 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
   pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>(new PendingInterest
     (pendingInterestId, ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData, onTimeout)));
 
-  Blob encoding = interest.wireEncode(wireFormat);
-  transport_->send(*encoding);
+  // Special case: For timeoutPrefix_ we don't actually send the interest.
+  if (timeoutPrefix_.match(interest.getName())) {
+    Blob encoding = interest.wireEncode(wireFormat);
+    transport_->send(*encoding);
+  }
 
   return pendingInterestId;
 }

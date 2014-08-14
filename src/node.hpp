@@ -427,6 +427,7 @@ private:
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
+  Name timeoutPrefix_;
 };
 
 }

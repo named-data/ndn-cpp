@@ -183,8 +183,8 @@ ChronoSync2013::onInterest
       if (index == -1) {
         // To see whether there is any data packet coming back, wait 2 seconds 
         // using the Interest timeout mechanism.
-        // TODO: Are we sure using a "/timeout" interest is the best future call approach?
-        Interest timeout("/timeout");
+        // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
+        Interest timeout("/local/timeout");
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
