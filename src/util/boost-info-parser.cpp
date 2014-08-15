@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include "boost-info-parser.hpp"
 
 using namespace std;
@@ -286,9 +287,7 @@ BoostInfoParser::parseLine(const string& lineIn, BoostInfoTree* context)
     return context;
   }
 
-#if 1 // TODO: Is the program supposed to reach this point?
-  return 0;
-#endif
+  throw runtime_error("BoostInfoParser: input line is malformed");
 }
 
 }
