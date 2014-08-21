@@ -31,10 +31,6 @@ INIT_LOGGER("ndn.KeyChain");
 
 using namespace std;
 using namespace ndn::func_lib;
-#if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
-// In the std library, the placeholders are in a different namespace than boost.
-using namespace ndn::func_lib::placeholders;
-#endif
 
 namespace ndn {
 

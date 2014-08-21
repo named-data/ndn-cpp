@@ -69,7 +69,27 @@ namespace ndn { namespace ptr_lib = ndnboost; }
 // We always use ndn::func_lib.
 #if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
 #include <functional>
-namespace ndn { namespace func_lib = std; }
+// Define the func_lib namespace explicitly to pull in _1, _2, etc.
+namespace ndn { namespace func_lib {
+  using std::function;
+  using std::mem_fn;
+  using std::bind;
+  using std::ref;
+
+  using std::placeholders::_1;
+  using std::placeholders::_2;
+  using std::placeholders::_3;
+  using std::placeholders::_4;
+  using std::placeholders::_5;
+  using std::placeholders::_6;
+  using std::placeholders::_7;
+  using std::placeholders::_8;
+  using std::placeholders::_9;
+
+  // Define this namespace for backwards compatibility with code that pulls in _1, etc. with:
+  // using namespace ndn::func_lib::placeholders;
+  namespace placeholders {}
+} }
 #elif NDN_CPP_HAVE_BOOST_FUNCTION && NDN_CPP_WITH_BOOST_FUNCTION
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
