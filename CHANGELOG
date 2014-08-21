@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-08-12)
+Interim changes after NDN-CPP v0.4 (2014-08-21)
 -----------------------------------------------
 
 Changes
@@ -20,6 +20,7 @@ Changes
 * Added UnixTransport. If using the default Face(), try to connect using a Unix socket.
 * Added ./configure options --with-std-shared-ptr and --with-boost-shared-ptr. See ./configure --help .
 * Added ./configure options --with-std-function and --with-boost-function. See ./configure --help .
+* http://redmine.named-data.net/issues/1847 If using std, put _1, _2, etc. in the func_lib namespace.
 * http://redmine.named-data.net/issues/1738 Remove trailing whitespace
 
 Deprecated
