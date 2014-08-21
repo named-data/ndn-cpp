@@ -17132,7 +17132,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 if test "$HAVE_OSX_SECURITY" == "1" ; then
-  LIBS="$LIBS -framework Security"
+  LIBS="$LIBS -framework Security -framework Cocoa"
 
 
 # Check whether --with-osx-keychain was given.

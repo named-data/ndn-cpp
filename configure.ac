@@ -202,7 +202,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 ])
 AC_DEFINE_UNQUOTED([HAVE_OSX_SECURITY], $HAVE_OSX_SECURITY, [1 if have the OSX framework.])
 if test "$HAVE_OSX_SECURITY" == "1" ; then
-  LIBS="$LIBS -framework Security"
+  LIBS="$LIBS -framework Security -framework Cocoa"
 
   AC_ARG_WITH([osx-keychain],
     [AS_HELP_STRING([--with-osx-keychain], [use the OS X Keychain as the default private key store @<:@default: yes@:>@])],
