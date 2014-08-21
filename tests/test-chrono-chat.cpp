@@ -49,10 +49,6 @@
 using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
-#if NDN_CPP_HAVE_STD_FUNCTION && NDN_CPP_WITH_STD_FUNCTION
-// In the std library, the placeholders are in a different namespace than boost.
-using namespace func_lib::placeholders;
-#endif
 
 // Define the Chat class here so that the ChronoChat demo is self-contained.
 
