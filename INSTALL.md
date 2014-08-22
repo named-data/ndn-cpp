@@ -10,6 +10,7 @@ Prerequisites
 * Optional: libsqlite3 (for key storage)
 * Optional: OSX Security framework (for key storage)
 * Optional: Protobuf (for the ProtobufTlv converter and ChronoSync)
+* Optional: log4cxx (for debugging and log output)
 * Optional: Doxygen (to make documentation)
 
 Following are the detailed steps for each platform to install the prerequisites.
@@ -22,6 +23,11 @@ Optional: To install Protobuf, install MacPorts from http://www.macports.org/ins
 In a new terminal, enter:
 
     sudo port install protobuf-cpp
+
+Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install log4cxx
 
 Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:
@@ -36,12 +42,17 @@ In a new terminal, enter:
 
     sudo port install protobuf-cpp
 
+Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install log4cxx
+
 Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:
 
     sudo port install doxygen
 
-## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
+## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
 In a terminal, enter:
 
     sudo apt-get install build-essential
@@ -50,6 +61,10 @@ In a terminal, enter:
 Optional: To install Protobuf, in a terminal, enter:
 
     sudo apt-get install libprotobuf-dev
+
+Optional: To install log4cxx, in a terminal, enter:
+
+    sudo apt-get install liblog4cxx10-dev
 
 Optional: To install Doxygen, in a terminal, enter:
 
