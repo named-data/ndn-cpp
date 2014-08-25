@@ -200,7 +200,6 @@ public:
 
     /**
      * Create a component whose value is the network-ordered encoding of the number.
-     * Note: if the number is zero, the result is empty.
      * @param number The number to be encoded.
      * @return The component value.
      */
@@ -209,7 +208,6 @@ public:
 
     /**
      * Create a component whose value is the marker appended with the network-ordered encoding of the number.
-     * Note: if the number is zero, no bytes are used for the number - the result will have only the marker.
      * @param number The number to be encoded.
      * @param marker The marker to use as the first byte of the component.
      * @return The component value.

@@ -27,6 +27,7 @@
 #include <ndn-cpp/name.hpp>
 #include "c/name.h"
 #include "c/util/ndn_memory.h"
+#include "encoding/tlv-encoder.hpp"
 
 using namespace std;
 
@@ -162,36 +163,19 @@ Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) 
 Name::Component
 Name::Component::fromNumber(uint64_t number)
 {
-  ptr_lib::shared_ptr<vector<uint8_t> > value(new vector<uint8_t>());
-
-  // First encode in little endian.
-  while (number != 0) {
-    value->push_back(number & 0xff);
-    number >>= 8;
-  }
-
-  // Make it big endian.
-  reverse(value->begin(), value->end());
-  return Blob(value, false);
+  TlvEncoder encoder(8);
+  encoder.writeNonNegativeInteger(number);
+  return Name::Component(Blob(encoder.getOutput(), false));
 }
 
 Name::Component
 Name::Component::fromNumberWithMarker(uint64_t number, uint8_t marker)
 {
-  ptr_lib::shared_ptr<vector<uint8_t> > value(new vector<uint8_t>());
-
+  TlvEncoder encoder(9);
   // Add the leading marker.
-  value->push_back(marker);
-
-  // First encode in little endian.
-  while (number != 0) {
-    value->push_back(number & 0xff);
-    number >>= 8;
-  }
-
-  // Make it big endian.
-  reverse(value->begin() + 1, value->end());
-  return Blob(value, false);
+  encoder.writeNonNegativeInteger(marker & 0xff);
+  encoder.writeNonNegativeInteger(number);
+  return Name::Component(Blob(encoder.getOutput(), false));
 }
 
 Name::Component
