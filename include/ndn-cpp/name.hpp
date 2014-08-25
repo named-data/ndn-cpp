@@ -150,8 +150,9 @@ public:
     hasPrefix(const uint8_t* prefix, size_t prefixLength) const;
 
     /**
-     * Interpret this name component as a segment number according to NDN name conventions (a network-ordered number
-     * where the first byte is the marker 0x00).
+     * Interpret this name component as a segment number according to NDN naming
+     * conventions for "Segment number" (marker 0x00).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
      * @return The integer segment number.
      * @throw runtime_error If the first byte of the component is not the expected marker.
      */
@@ -159,6 +160,19 @@ public:
     toSegment() const
     {
       return toNumberWithMarker(0x00);
+    }
+
+    /**
+     * Interpret this name component as a segment byte offset according to NDN
+     * naming conventions for segment "Byte offset" (marker 0xFB).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return The integer segment byte offset.
+     * @throw runtime_error If the first byte of the component is not the expected marker.
+     */
+    uint64_t
+    toSegmentOffset() const
+    {
+      return toNumberWithMarker(0xFB);
     }
 
     /**
@@ -186,9 +200,10 @@ public:
     }
 
     /**
-     * Interpret this name component as a version number according to NDN name conventions (a network-ordered number
-     * where the first byte is the marker 0xFD).  Note that this returns the exact number from the component
-     * without converting it to a time representation.
+     * Interpret this name component as a version number  according to NDN naming
+     * conventions for "Versioning" (marker 0xFD). Note that this returns
+     * the exact number from the component without converting it to a time
+     * representation.
      * @return The integer version number.
      * @throw runtime_error If the first byte of the component is not the expected marker.
      */
@@ -196,6 +211,33 @@ public:
     toVersion() const
     {
       return toNumberWithMarker(0xFD);
+    }
+
+    /**
+     * Interpret this name component as a timestamp  according to NDN naming
+     * conventions for "Timestamp" (marker 0xFC).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return The number of microseconds since the UNIX epoch (Thursday,
+     * 1 January 1970) not counting leap seconds.
+     * @throw runtime_error If the first byte of the component is not the expected marker.
+     */
+    uint64_t
+    toTimestamp() const
+    {
+      return toNumberWithMarker(0xFC);
+    }
+
+    /**
+     * Interpret this name component as a sequence number according to NDN naming
+     * conventions for "Sequencing" (marker 0xFE).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return The integer sequence number.
+     * @throw runtime_error If the first byte of the component is not the expected marker.
+     */
+    uint64_t
+    toSequenceNumber() const
+    {
+      return toNumberWithMarker(0xFE);
     }
 
     /**
@@ -556,7 +598,9 @@ public:
   }
 
   /**
-   * Append a component with the encoded segment number.
+   * Append a component with the encoded segment number according to NDN
+   * naming conventions for "Segment number" (marker 0x00).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
    * @param segment The segment number.
    * @return This name so that you can chain calls to append.
    */
@@ -564,6 +608,19 @@ public:
   appendSegment(uint64_t segment)
   {
     return append(Component::fromNumberWithMarker(segment, 0x00));
+  }
+
+  /**
+   * Append a component with the encoded segment byte offset according to NDN
+   * naming conventions for segment "Byte offset" (marker 0xFB).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param segmentOffset The segment byte offset.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  appendSegmentOffset(uint64_t segmentOffset)
+  {
+    return append(Component::fromNumberWithMarker(segmentOffset, 0xFB));
   }
 
   /**
@@ -577,7 +634,9 @@ public:
   }
 
   /**
-   * Append a component with the encoded version number.
+   * Append a component with the encoded version number according to NDN
+   * naming conventions for "Versioning" (marker 0xFD).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
    * Note that this encodes the exact value of version without converting from a time representation.
    * @param version The version number.
    * @return This name so that you can chain calls to append.
@@ -586,6 +645,33 @@ public:
   appendVersion(uint64_t version)
   {
     return append(Component::fromNumberWithMarker(version, 0xFD));
+  }
+
+  /**
+   * Append a component with the encoded timestamp according to NDN naming
+   * conventions for "Timestamp" (marker 0xFC).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param timestamp The number of microseconds since the UNIX epoch (Thursday,
+   * 1 January 1970) not counting leap seconds.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  appendTimestamp(uint64_t timestamp)
+  {
+    return append(Component::fromNumberWithMarker(timestamp, 0xFC));
+  }
+
+  /**
+   * Append a component with the encoded sequence number according to NDN naming
+   * conventions for "Sequencing" (marker 0xFE).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param sequenceNumber The sequence number.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  appendSequenceNumber(uint64_t sequenceNumber)
+  {
+    return append(Component::fromNumberWithMarker(sequenceNumber, 0xFE));
   }
 
   /**
