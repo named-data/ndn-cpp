@@ -138,7 +138,7 @@ ndn_TlvEncoder_writeTypeAndLength(struct ndn_TlvEncoder *self, unsigned int type
 static __inline size_t
 ndn_TlvEncoder_sizeOfNonNegativeInteger(uint64_t value)
 {
-  if (value < 253)
+  if (value <= 0xff)
     return 1;
   else if (value <= 0xffff)
     return 2;
