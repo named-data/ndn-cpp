@@ -199,7 +199,8 @@ public:
     }
 
     /**
-     * Create a component whose value is the network-ordered encoding of the number.
+     * Create a component whose value is the nonNegativeInteger encoding of the
+     * number.
      * @param number The number to be encoded.
      * @return The component value.
      */
@@ -207,7 +208,8 @@ public:
     fromNumber(uint64_t number);
 
     /**
-     * Create a component whose value is the marker appended with the network-ordered encoding of the number.
+     * Create a component whose value is the marker appended with the
+     * nonNegativeInteger encoding of the number.
      * @param number The number to be encoded.
      * @param marker The marker to use as the first byte of the component.
      * @return The component value.
