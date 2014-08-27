@@ -1,4 +1,4 @@
-Interim changes after NDN-CPP v0.4 (2014-08-25)
+NDN-CPP v0.5 (2014-08-27)
 -----------------------------------------------
 
 Changes
@@ -28,7 +28,7 @@ Changes
 * http://redmine.named-data.net/issues/1738 Remove trailing whitespace
 
 Deprecated
-* MemoryPrivateKeyStorage: Deprecated setKeyPairForKeyName without an explicit keyType. Use
+* In MemoryPrivateKeyStorage, deprecated setKeyPairForKeyName without an explicit keyType. Use
   setKeyPairForKeyName passing the explicit key type such as KEY_TYPE_RSA.
 
 Bug fixes
