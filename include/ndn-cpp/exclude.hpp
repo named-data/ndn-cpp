@@ -214,6 +214,17 @@ public:
   toUri() const;
 
   /**
+   * The same as get(i), get the entry at the given index.
+   * @param i The index of the entry, starting from 0.
+   * @return The entry at the index.
+   */
+  const Exclude::Entry&
+  operator [] (int i) const
+  {
+    return get(i);
+  }
+
+  /**
    * Get the change count, which is incremented each time this object is changed.
    * @return The change count.
    */
