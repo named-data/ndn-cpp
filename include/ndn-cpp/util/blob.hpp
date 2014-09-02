@@ -184,6 +184,14 @@ public:
   get(struct ndn_Blob& blobStruct) const;
 };
 
+inline std::ostream&
+operator << (std::ostream& os, const Blob& blob)
+{
+  for (size_t i = 0; i < blob.size(); ++i)
+    os << blob.buf()[i];
+  return os;
+}
+
 }
 
 #endif
