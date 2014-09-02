@@ -22,6 +22,7 @@
 #ifndef NDN_BLOB_HPP
 #define NDN_BLOB_HPP
 
+#include <iostream>
 #include "../common.hpp"
 
 struct ndn_Blob;
