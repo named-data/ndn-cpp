@@ -88,7 +88,13 @@ public:
    * getValue().size() is 0, then the final block ID is not specified.
    */
   const Name::Component&
-  getFinalBlockID() const { return finalBlockID_; }
+  getFinalBlockId() const { return finalBlockID_; }
+
+  /**
+   * @deprecated Use getFinalBlockId.
+   */
+  const Name::Component&
+  DEPRECATED_IN_NDN_CPP getFinalBlockID() const { return getFinalBlockId(); }
 
   /**
    * @deprecated Use the application-specific content to store a timestamp.
@@ -130,7 +136,17 @@ public:
    * component getValue().size() is 0, then the final block ID is not specified.
    */
   void
-  setFinalBlockID(const Name::Component& finalBlockID)
+  setFinalBlockId(const Name::Component& finalBlockID)
+  {
+    finalBlockID_ = finalBlockID;
+    ++changeCount_;
+  }
+
+  /**
+   * @deprecated Use setFinalBlockId.
+   */
+  void
+  DEPRECATED_IN_NDN_CPP setFinalBlockID(const Name::Component& finalBlockID)
   {
     finalBlockID_ = finalBlockID;
     ++changeCount_;
