@@ -239,9 +239,9 @@ static void dumpData(const Data& data)
     cout << data.getMetaInfo().getFreshnessPeriod() << endl;
   else
     cout << "<none>" << endl;
-  cout << "metaInfo.finalBlockID: "
-       << (data.getMetaInfo().getFinalBlockID().getValue().size() > 0 ?
-           data.getMetaInfo().getFinalBlockID().getValue().toHex().c_str() : "<none>") << endl;
+  cout << "metaInfo.finalBlockId: "
+       << (data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?
+           data.getMetaInfo().getFinalBlockId().getValue().toHex().c_str() : "<none>") << endl;
 
   const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
   if (signature) {
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
     freshData->getMetaInfo().setFreshnessPeriod(5000);
-    freshData->getMetaInfo().setFinalBlockID(Name("/%00%09")[0]);
+    freshData->getMetaInfo().setFinalBlockId(Name("/%00%09")[0]);
 
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage(new MemoryIdentityStorage());
     ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage(new MemoryPrivateKeyStorage());
