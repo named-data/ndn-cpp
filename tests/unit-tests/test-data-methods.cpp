@@ -196,8 +196,8 @@ dumpData(const Data& data)
     data.getMetaInfo().getFreshnessPeriod() >= 0 ? 
       toString(data.getMetaInfo().getFreshnessPeriod()) : string("<none>")));
   result.push_back(dump("metaInfo.finalBlockID:",
-    data.getMetaInfo().getFinalBlockID().getValue().size() > 0 ?
-      data.getMetaInfo().getFinalBlockID().toEscapedString() : "<none>"));
+    data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?
+      data.getMetaInfo().getFinalBlockId().toEscapedString() : "<none>"));
   const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
   if (signature) {
     result.push_back(dump("signature.signature:",
@@ -339,7 +339,7 @@ public:
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
     freshData->getMetaInfo().setFreshnessPeriod(5000);
-    freshData->getMetaInfo().setFinalBlockID(Name("/%00%09")[0]);
+    freshData->getMetaInfo().setFinalBlockId(Name("/%00%09")[0]);
 
     return freshData;
   }

@@ -253,7 +253,7 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
     data.setContent(content);
     if (useComplex) {
       data.getMetaInfo().setFreshnessPeriod(1000);
-      data.getMetaInfo().setFinalBlockID(finalBlockId);
+      data.getMetaInfo().setFinalBlockId(finalBlockId);
     }
 
     if (useCrypto)

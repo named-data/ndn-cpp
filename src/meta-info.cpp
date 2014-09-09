@@ -41,7 +41,7 @@ MetaInfo::set(const struct ndn_MetaInfo& metaInfoStruct)
   timestampMilliseconds_ = metaInfoStruct.timestampMilliseconds;
   setType(metaInfoStruct.type);
   setFreshnessPeriod(metaInfoStruct.freshnessPeriod);
-  setFinalBlockID(Name::Component(Blob(metaInfoStruct.finalBlockID.value)));
+  setFinalBlockId(Name::Component(Blob(metaInfoStruct.finalBlockID.value)));
 }
 
 }

@@ -185,13 +185,13 @@ public:
     }
 
     /**
-     * @deprecated. Use MetaInfo.getFinalBlockID.
+     * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     bool
     DEPRECATED_IN_NDN_CPP isFinalSegment() const { return hasPrefix(getFinalSegmentPrefix(), getFinalSegmentPrefixLength()); }
 
     /**
-     * @deprecated. Use MetaInfo.getFinalBlockID.
+     * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     uint64_t
     DEPRECATED_IN_NDN_CPP toFinalSegment() const
@@ -271,13 +271,13 @@ public:
     fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, size_t prefixLength);
 
     /**
-     * @deprecated. Use MetaInfo.getFinalBlockID.
+     * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     static const uint8_t*
     getFinalSegmentPrefix() { return FINAL_SEGMENT_PREFIX; }
 
     /**
-     * @deprecated. Use MetaInfo.getFinalBlockID.
+     * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     static size_t
     getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
@@ -624,7 +624,7 @@ public:
   }
 
   /**
-   * @deprecated. Use MetaInfo.setFinalBlockID.
+   * @deprecated. Use MetaInfo.setFinalBlockId.
    */
   Name&
   DEPRECATED_IN_NDN_CPP appendFinalSegment(uint64_t segment)
