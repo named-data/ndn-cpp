@@ -66,7 +66,7 @@ struct ndn_MetaInfo {
   ndn_MillisecondsSince1970 timestampMilliseconds; /**< milliseconds since 1/1/1970. -1 for none */
   ndn_ContentType type;                  /**< default is ndn_ContentType_DATA. -1 for none */
   ndn_Milliseconds freshnessPeriod;      /**< -1 for none */
-  struct ndn_NameComponent finalBlockID; /**< has a pointer to a pre-allocated buffer.  0 for none */
+  struct ndn_NameComponent finalBlockId; /**< has a pointer to a pre-allocated buffer.  0 for none */
 };
 
 /**
@@ -78,7 +78,7 @@ static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
   self->timestampMilliseconds = -1;
   self->type = ndn_ContentType_BLOB;
   self->freshnessPeriod = -1;
-  ndn_NameComponent_initialize(&self->finalBlockID, 0, 0);
+  ndn_NameComponent_initialize(&self->finalBlockId, 0, 0);
 }
 
 /**

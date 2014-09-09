@@ -88,7 +88,7 @@ public:
    * getValue().size() is 0, then the final block ID is not specified.
    */
   const Name::Component&
-  getFinalBlockId() const { return finalBlockID_; }
+  getFinalBlockId() const { return finalBlockId_; }
 
   /**
    * @deprecated Use getFinalBlockId.
@@ -132,13 +132,13 @@ public:
 
   /**
    * Set the final block ID.
-   * @param finalBlockID The final block ID as a Name::Component.  If the name
+   * @param finalBlockId The final block ID as a Name::Component.  If the name
    * component getValue().size() is 0, then the final block ID is not specified.
    */
   void
-  setFinalBlockId(const Name::Component& finalBlockID)
+  setFinalBlockId(const Name::Component& finalBlockId)
   {
-    finalBlockID_ = finalBlockID;
+    finalBlockId_ = finalBlockId;
     ++changeCount_;
   }
 
@@ -146,9 +146,9 @@ public:
    * @deprecated Use setFinalBlockId.
    */
   void
-  DEPRECATED_IN_NDN_CPP setFinalBlockID(const Name::Component& finalBlockID)
+  DEPRECATED_IN_NDN_CPP setFinalBlockID(const Name::Component& finalBlockId)
   {
-    finalBlockID_ = finalBlockID;
+    finalBlockId_ = finalBlockId;
     ++changeCount_;
   }
 
@@ -163,7 +163,7 @@ private:
   MillisecondsSince1970 timestampMilliseconds_; /**< milliseconds since 1/1/1970. -1 for none */
   ndn_ContentType type_;         /**< default is ndn_ContentType_BLOB. -1 for none */
   Milliseconds freshnessPeriod_; /**< -1 for none */
-  Name::Component finalBlockID_; /** size 0 for none */
+  Name::Component finalBlockId_; /** size 0 for none */
   uint64_t changeCount_;
 };
 

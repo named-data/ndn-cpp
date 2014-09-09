@@ -51,15 +51,15 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_FreshnessPeriod, metaInfo->freshnessPeriod)))
     return error;
-  if (metaInfo->finalBlockID.value.value &&
-      metaInfo->finalBlockID.value.length > 0) {
-    // The FinalBlockID has an inner NameComponent.
+  if (metaInfo->finalBlockId.value.value &&
+      metaInfo->finalBlockId.value.length > 0) {
+    // The FinalBlockId has an inner NameComponent.
     if ((error = ndn_TlvEncoder_writeTypeAndLength
          (encoder, ndn_Tlv_FinalBlockId, ndn_TlvEncoder_sizeOfBlobTlv
-            (ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value))))
+            (ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value))))
       return error;
     if ((error = ndn_TlvEncoder_writeBlobTlv
-         (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value)))
+         (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
       return error;
   }
 
@@ -153,13 +153,13 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
          (decoder, ndn_Tlv_FinalBlockId, &finalBlockIdEndOffset)))
       return error;
     if ((error = ndn_TlvDecoder_readBlobTlv
-         (decoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockID.value)))
+         (decoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
       return error;
     if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, finalBlockIdEndOffset)))
       return error;
   }
   else
-    ndn_NameComponent_initialize(&metaInfo->finalBlockID, 0, 0);
+    ndn_NameComponent_initialize(&metaInfo->finalBlockId, 0, 0);
 
   // Set fields not used by NDN-TLV to none.
   metaInfo->timestampMilliseconds = -1;

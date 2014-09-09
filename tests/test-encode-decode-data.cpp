@@ -239,7 +239,7 @@ static void dumpData(const Data& data)
     cout << data.getMetaInfo().getFreshnessPeriod() << endl;
   else
     cout << "<none>" << endl;
-  cout << "metaInfo.finalBlockID: "
+  cout << "metaInfo.finalBlockId: "
        << (data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?
            data.getMetaInfo().getFinalBlockId().getValue().toHex().c_str() : "<none>") << endl;
 

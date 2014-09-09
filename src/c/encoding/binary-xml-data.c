@@ -126,7 +126,7 @@ static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
     return error;
 
   if ((error = ndn_BinaryXmlEncoder_writeOptionalBlobDTagElement
-      (encoder, ndn_BinaryXml_DTag_FinalBlockID, &metaInfo->finalBlockID.value)))
+      (encoder, ndn_BinaryXml_DTag_FinalBlockID, &metaInfo->finalBlockId.value)))
     return error;
 
   // This will skip encoding if there is no key locator.
@@ -187,7 +187,7 @@ static ndn_Error decodeSignedInfo(struct ndn_Signature *signature, struct ndn_Me
   ndn_MetaInfo_setFreshnessSeconds(metaInfo, freshnessSeconds);
 
   if ((error = ndn_BinaryXmlDecoder_readOptionalBinaryDTagElement
-      (decoder, ndn_BinaryXml_DTag_FinalBlockID, 0, &metaInfo->finalBlockID.value)))
+      (decoder, ndn_BinaryXml_DTag_FinalBlockID, 0, &metaInfo->finalBlockId.value)))
     return error;
 
   if ((error = ndn_decodeOptionalBinaryXmlKeyLocator(&signature->keyLocator, decoder)))

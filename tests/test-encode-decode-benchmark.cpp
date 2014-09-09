@@ -407,7 +407,7 @@ benchmarkEncodeDataSecondsC
     if (useComplex) {
       data.metaInfo.timestampMilliseconds = 1.3e+12;
       data.metaInfo.freshnessPeriod = 1000;
-      ndn_NameComponent_initialize(&data.metaInfo.finalBlockID, finalBlockId.value, finalBlockId.length);
+      ndn_NameComponent_initialize(&data.metaInfo.finalBlockId, finalBlockId.value, finalBlockId.length);
     }
 
     struct ndn_DynamicUInt8Array output;
