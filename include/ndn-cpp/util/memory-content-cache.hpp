@@ -150,7 +150,7 @@ private:
      * Check if this content is stale.
      * @param nowMilliseconds The current time in milliseconds from
      * ndn_getNowMilliseconds.
-     * @return true if this interest is stale, otherwise false.
+     * @return True if this content is stale, otherwise false.
      */
     bool
     isStale(MillisecondsSince1970 nowMilliseconds) const
