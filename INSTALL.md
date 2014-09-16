@@ -92,7 +92,11 @@ To revert to Binary XML (ndnb) as the default wire format, instead of ./configur
 
     ./configure --enable-binary-xml=yes
 
-To make documentation, enter:
+To run the unit tests, in a terminal enter:
+
+    make check
+
+To make documentation, in a terminal enter:
 
     make doxygen-doc
 
