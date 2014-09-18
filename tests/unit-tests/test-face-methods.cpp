@@ -190,7 +190,7 @@ TEST_F(TestFaceInterestMethods, Timeout)
   // we're expecting a timeout callback, and only 1
   ASSERT_EQ(counter.onDataCallCount_, 0) << "Data callback called for invalid interest";
 
-  ASSERT_TRUE(counter.onTimeoutCallCount_ == 1) << "Expected 1 timeout call, got " <<  + counter.onTimeoutCallCount_;
+  ASSERT_TRUE(counter.onTimeoutCallCount_ == 1) << "Expected 1 timeout call, got " << counter.onTimeoutCallCount_;
 
   // just check that the interest was returned correctly?
   const Interest& callbackInterest = counter.interest_;
