@@ -193,7 +193,7 @@ dumpData(const Data& data)
        "unknown")));
   }
   result.push_back(dump("metaInfo.freshnessPeriod (milliseconds):",
-    data.getMetaInfo().getFreshnessPeriod() >= 0 ? 
+    data.getMetaInfo().getFreshnessPeriod() >= 0 ?
       toString(data.getMetaInfo().getFreshnessPeriod()) : string("<none>")));
   result.push_back(dump("metaInfo.finalBlockId:",
     data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?

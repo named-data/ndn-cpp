@@ -108,17 +108,17 @@ dumpInterest(const Interest& interest)
   result.push_back(dump("childSelector:",
     interest.getChildSelector() >= 0 ? toString(interest.getChildSelector()) :
       "<none>"));
-  result.push_back(dump("mustBeFresh:", 
+  result.push_back(dump("mustBeFresh:",
     interest.getMustBeFresh() ? "True" : "False"));
-  result.push_back(dump("nonce:", 
+  result.push_back(dump("nonce:",
     interest.getNonce().size() == 0 ? "<none>" :
       interest.getNonce().toHex()));
-  result.push_back(dump("scope:", 
+  result.push_back(dump("scope:",
     interest.getScope() < 0 ? "<none>" : toString(interest.getScope())));
   result.push_back(dump("lifetimeMilliseconds:",
     interest.getInterestLifetimeMilliseconds() < 0 ? "<none>" :
       toString(interest.getInterestLifetimeMilliseconds())));
-                        
+
   return result;
 };
 
