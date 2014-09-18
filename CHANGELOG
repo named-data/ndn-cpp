@@ -1,8 +1,9 @@
-Interim changes since NDN-CPP v0.5 (2014-09-09)
+Interim changes since NDN-CPP v0.5 (2014-09-18)
 -----------------------------------------------
 
 Changes
 * In MetaInfo, added get/setFinalBlockId (replaces the deprecated get/setFinalBlockID).
+* In unit tests, added test-name-conventions.
 
 Deprecated
 * In MetaInfo, deprecated get/setFinalBlockID. Use get/setFinalBlockId.

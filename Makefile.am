@@ -15,7 +15,7 @@ SUBDIRS = include
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/test-data-methods bin/test-face-methods \
-  bin/test-interest-methods bin/test-name-methods
+  bin/test-interest-methods bin/test-name-conventions bin/test-name-methods
 
 noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
@@ -242,6 +242,10 @@ bin_test_face_methods_LDADD = libndn-cpp.la
 bin_test_interest_methods_SOURCES = tests/unit-tests/test-interest-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_test_interest_methods_LDADD = libndn-cpp.la
+
+bin_test_name_conventions_SOURCES = tests/unit-tests/test-name-conventions.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_test_name_conventions_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_test_name_conventions_LDADD = libndn-cpp.la
 
 bin_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
