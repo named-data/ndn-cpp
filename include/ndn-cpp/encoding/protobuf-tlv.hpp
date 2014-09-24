@@ -76,6 +76,19 @@ public:
   {
     decode(message, &input[0], input.size());
   }
+
+  /**
+   * Decode the input as NDN-TLV and update the fields of the Protobuf Message
+   * object.
+   * @param message The Protobuf Message object. This does not first clear
+   * the object.
+   * @param input The Blob with the input to be decoded.
+   */
+  static void
+  decode(google::protobuf::Message& message, const Blob& input)
+  {
+    decode(message, input.buf(), input.size());
+  }
 };
 
 }

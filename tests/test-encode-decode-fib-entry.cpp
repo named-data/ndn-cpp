@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     Blob encoding = ProtobufTlv::encode(message);
 
     ndn_message::FibEntryMessage decodedMessage;
-    ProtobufTlv::decode(decodedMessage, *encoding);
+    ProtobufTlv::decode(decodedMessage, encoding);
 
     cout << "Re-decoded FibEntry:" << endl;
     // This should print the same values that we put in message above.
