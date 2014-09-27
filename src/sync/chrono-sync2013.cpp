@@ -429,7 +429,7 @@ ChronoSync2013::initialOndata
 
   if (digest_tree_->find(applicationDataPrefixUri_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
-    _LOG_DEBUG("initial state")
+    _LOG_DEBUG("initial state");
     ++usrseq_;
     Sync::SyncStateMsg content_t;
     Sync::SyncState* content2 = content_t.add_ss();
