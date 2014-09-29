@@ -390,8 +390,8 @@ Chat::heartbeat(const ptr_lib::shared_ptr<const Interest> &interest)
   messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_HELLO, "xxx");
 
   // Call again.
-  // TODO: Are we sure using a "/timeout" interest is the best future call approach?
-  Interest timeout("/timeout");
+  // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
+  Interest timeout("/local/timeout");
   timeout.setInterestLifetimeMilliseconds(60000);
   face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
 }
@@ -691,8 +691,7 @@ int main(int argc, char** argv)
     cout << "Connecting to " << host << ", Chatroom: " << chatRoom <<
       ", Username: " << screenName << endl << endl;
 
-    // Set up the transport and key chain.
-    ptr_lib::shared_ptr<TcpTransport> transport(new TcpTransport());
+    // Set up the key chain.
     Face face(host);
 
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
