@@ -351,8 +351,8 @@ Chat::onData
     }
 
     // Set the alive timeout using the Interest timeout mechanism.
-    // TODO: Are we sure using a "/timeout" interest is the best future call approach?
-    Interest timeout("/timeout");
+    // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
+    Interest timeout("/local/timeout");
     timeout.setInterestLifetimeMilliseconds(120000);
     face_.expressInterest
       (timeout, dummyOnData,
