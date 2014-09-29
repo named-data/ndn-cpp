@@ -377,7 +377,7 @@ Chat::onData
 void
 Chat::chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-  // No chat data coming back.
+  cout << "Timeout waiting for chat data" << endl;
 }
 
 void
