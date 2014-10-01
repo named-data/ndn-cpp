@@ -245,6 +245,8 @@ int main(int argc, char** argv)
     cout << "Interest:" << endl;
     dumpInterest(interest);
 
+    // Set the name again to clear the cached encoding so we encode again.
+    interest.setName(interest.getName());
     Blob encoding = interest.wireEncode();
     cout << endl << "Re-encoded interest " << encoding.toHex() << endl;
 
