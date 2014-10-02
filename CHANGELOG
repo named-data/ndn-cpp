@@ -8,6 +8,9 @@ Changes
 Deprecated
 * In MetaInfo, deprecated get/setFinalBlockID. Use get/setFinalBlockId.
 
+Bug fixes
+* http://redmine.named-data.net/issues/2017 Support older versions of Protobuf.
+
 NDN-CPP v0.5 (2014-08-27)
 -------------------------
 
