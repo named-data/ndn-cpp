@@ -9,7 +9,7 @@
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "fib-entry.pb.h"
 
-// For backwards compatibility with system that install an older Protobuf (e.g. Ubuntu)),
+// For backwards compatibility with system that install an older Protobuf (e.g. Ubuntu 12.04)),
 //   include the older output from protoc so that the sample program compiles.
 #if GOOGLE_PROTOBUF_VERSION < 2005000
 
