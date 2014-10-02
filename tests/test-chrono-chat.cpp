@@ -38,6 +38,8 @@
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/transport/tcp-transport.hpp>
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
+// This include is produced by:
+// protoc --cpp_out=. chatbuf.proto
 #include "chatbuf.pb.h"
 #if NDN_CPP_HAVE_TIME_H
 #include <time.h>
@@ -151,6 +153,14 @@ private:
   void
   messageCacheAppend(int messageType, const std::string& message);
 
+  /**
+   * Search for an entry in the roster_.
+   * @param nameAndSession The entry to search for.
+   * @return The index on roster_, or -1 if not found.
+   */
+  int
+  rosterFind(const string& nameAndSession);
+
   // Generate a random name for ChronoSync.
   static std::string
   getRandomString();
@@ -220,7 +230,7 @@ Chat::initial()
   timeout.setInterestLifetimeMilliseconds(60000);
   face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
 
-  if (find(roster_.begin(), roster_.end(), usrname_) == roster_.end()) {
+  if (rosterFind(usrname_) < 0) {
     roster_.push_back(usrname_);
     cout << "Member: " << screen_name_ << endl;
     cout << screen_name_ << ": Join" << endl;
@@ -365,9 +375,9 @@ Chat::onData
       cout << content.from() << ": " << content.data() << endl;
     else if (content.type() == 2) {
       // leave message
-      vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
-      if (n != roster_.end() && name != screen_name_) {
-        roster_.erase(n);
+      int n = rosterFind(nameAndSession);
+      if (n >= 0 && name != screen_name_) {
+        roster_.erase(roster_.begin() + n);
         cout << name << ": Leave" << endl;
       }
     }
@@ -427,10 +437,10 @@ Chat::alive
   ostringstream tempStream;
   tempStream << name << session;
   string nameAndSession = tempStream.str();
-  vector<string>::iterator n = find(roster_.begin(), roster_.end(), nameAndSession);
-  if (seq != -1 && n != roster_.end()) {
+  int n = rosterFind(nameAndSession);
+  if (seq != -1 && n >= 0) {
     if (temp_seq == seq){
-      roster_.erase(n);
+      roster_.erase(roster_.begin() + n);
       cout << name << ": Leave" << endl;
     }
   }
@@ -443,6 +453,17 @@ Chat::messageCacheAppend(int messageType, const string& message)
     (sync_->getSequenceNo(), messageType, message, getNowMilliseconds()));
   while (msgcache_.size() > maxmsgcachelength_)
     msgcache_.erase(msgcache_.begin());
+}
+
+int
+Chat::rosterFind(const string& nameAndSession)
+{
+  for (size_t i = 0; i < roster_.size(); ++i) {
+    if (roster_[i] == nameAndSession)
+      return i;
+  }
+
+  return -1;
 }
 
 string
