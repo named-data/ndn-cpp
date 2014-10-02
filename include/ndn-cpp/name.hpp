@@ -551,20 +551,24 @@ public:
 
   /**
    * Get a new name, constructed as a subset of components.
-   * @param iStartComponent The index if the first component to get.
+   * @param iStartComponent The index if the first component to get. If
+   * iStartComponent is -N then return return components starting from
+   * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
    * @return A new name.
    */
   Name
-  getSubName(size_t iStartComponent, size_t nComponents) const;
+  getSubName(int iStartComponent, size_t nComponents) const;
 
   /**
    * Get a new name, constructed as a subset of components starting at iStartComponent until the end of the name.
-   * @param iStartComponent The index if the first component to get.
+   * @param iStartComponent The index if the first component to get. If
+   * iStartComponent is -N then return return components starting from
+   * name.size() - N.
    * @return A new name.
    */
   Name
-  getSubName(size_t iStartComponent) const;
+  getSubName(int iStartComponent) const;
 
   /**
    * Return a new Name with the first nComponents components of this Name.

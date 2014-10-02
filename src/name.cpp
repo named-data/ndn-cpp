@@ -334,8 +334,11 @@ Name::toUri() const
 }
 
 Name
-Name::getSubName(size_t iStartComponent, size_t nComponents) const
+Name::getSubName(int iStartComponent, size_t nComponents) const
 {
+  if (iStartComponent < 0)
+    iStartComponent = components_.size() - (-iStartComponent);
+
   Name result;
 
   size_t iEnd = iStartComponent + nComponents;
@@ -346,8 +349,11 @@ Name::getSubName(size_t iStartComponent, size_t nComponents) const
 }
 
 Name
-Name::getSubName(size_t iStartComponent) const
+Name::getSubName(int iStartComponent) const
 {
+  if (iStartComponent < 0)
+    iStartComponent = components_.size() - (-iStartComponent);
+
   Name result;
 
   for (size_t i = iStartComponent; i < components_.size(); ++i)
