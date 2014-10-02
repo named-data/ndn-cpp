@@ -57,7 +57,7 @@ using namespace ndn::func_lib;
 class Chat {
 public:
   Chat
-    (const std::string& screenName, const std::string& chatRoom,
+    (const string& screenName, const string& chatRoom,
      const Name& hubPrefix, Face& face, KeyChain& keyChain,
      const Name& certificateName)
     : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
@@ -83,7 +83,7 @@ public:
 
   // Send a chat message.
   void
-  sendMessage(const std::string& chatmsg);
+  sendMessage(const string& chatmsg);
 
   // Send leave message and leave.
   void
@@ -105,7 +105,7 @@ private:
   // Send a Chat Interest to fetch chat messages after get the user gets the Sync data packet back but will not send interest.
   void
   sendInterest
-    (const std::vector<ChronoSync2013::SyncState>& syncStates, bool isRecovery);
+    (const vector<ChronoSync2013::SyncState>& syncStates, bool isRecovery);
 
   // Send back Chat Data Packet which contains the user's message.
   void
@@ -142,7 +142,7 @@ private:
   void
   alive
     (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
-     const std::string& name, int session, const std::string& prefix);
+     const string& name, int session, const string& prefix);
 
   /**
    * Append a new CachedMessage to msgcache, using given messageType and message,
@@ -151,7 +151,7 @@ private:
    * the size to maxmsgcachelength_.
    */
   void
-  messageCacheAppend(int messageType, const std::string& message);
+  messageCacheAppend(int messageType, const string& message);
 
   /**
    * Search for an entry in the roster_.
@@ -162,7 +162,7 @@ private:
   rosterFind(const string& nameAndSession);
 
   // Generate a random name for ChronoSync.
-  static std::string
+  static string
   getRandomString();
 
   static void
@@ -180,7 +180,7 @@ private:
   class CachedMessage {
   public:
     CachedMessage
-      (int seqno, int msgtype, const std::string& msg, MillisecondsSince1970 time)
+      (int seqno, int msgtype, const string& msg, MillisecondsSince1970 time)
     : seqno_(seqno), msgtype_(msgtype), msg_(msg), time_(time)
     {}
 
@@ -190,7 +190,7 @@ private:
     int
     getMessageType() const { return msgtype_; }
 
-    const std::string&
+    const string&
     getMessage() const { return msg_; }
 
     MillisecondsSince1970
@@ -201,17 +201,17 @@ private:
     // This is really enum SyncDemo::ChatMessage_ChatMessageType, but make it
     //   in int so that the head doesn't need to include the protobuf header.
     int msgtype_;
-    std::string msg_;
+    string msg_;
     MillisecondsSince1970 time_;
   };
 
-  std::vector<ptr_lib::shared_ptr<CachedMessage> > msgcache_;
-  std::vector<std::string> roster_;
+  vector<ptr_lib::shared_ptr<CachedMessage> > msgcache_;
+  vector<string> roster_;
   size_t maxmsgcachelength_;
   bool isRecoverySyncState_;
-  std::string screen_name_;
-  std::string chatroom_;
-  std::string usrname_;
+  string screen_name_;
+  string chatroom_;
+  string usrname_;
   Name chat_prefix_;
   Milliseconds sync_lifetime_;
   ptr_lib::shared_ptr<ChronoSync2013> sync_;
