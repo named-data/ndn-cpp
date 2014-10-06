@@ -59,15 +59,6 @@ TEST_F(TestNameMethods, GetComponent)
   ASSERT_TRUE(comp2.equals(component2)) << "Component at index 2 is incorrect";
 }
 
-TEST_F(TestNameMethods, Prefix)
-{
-  Name name(expectedURI);
-  Name name2 = name.getPrefix(2);
-  ASSERT_EQ(name2.size(), 2) << "Name prefix has " << name2.size() << " components instead of 2";
-  for (size_t i = 0; i < 2; ++i)
-    ASSERT_TRUE(name.get(i).getValue().equals(name2.get(i).getValue()));
-}
-
 TEST_F(TestNameMethods, Append)
 {
   // could possibly split this into different tests
@@ -86,11 +77,24 @@ TEST_F(TestNameMethods, Append)
   ASSERT_EQ(name2.toUri(), name.toUri()) << "Name constructed with append has wrong URI";
 }
 
+TEST_F(TestNameMethods, Prefix)
+{
+  Name name("/edu/cmu/andrew/user/3498478");
+  Name prefix1 = name.getPrefix(2);
+
+  ASSERT_EQ(prefix1.size(), 2) << "Name prefix has " << prefix1.size() << " components instead of 2";
+  for (size_t i = 0; i < 2; ++i)
+    ASSERT_TRUE(name.get(i).getValue().equals(prefix1.get(i).getValue()));
+
+  Name prefix2 = name.getPrefix(100);
+  ASSERT_EQ(prefix2, name) << "Prefix with more components than original should stop at end of original name";
+}
+
 TEST_F(TestNameMethods, SubName)
 {
   Name name("/edu/cmu/andrew/user/3498478");
   Name subName1 = name.getSubName(0);
-  ASSERT_TRUE(subName1.equals(name)) << "Subname from first component does not match original name";
+  ASSERT_EQ(subName1, name) << "Subname from first component does not match original name";
   Name subName2 = name.getSubName(3);
   ASSERT_EQ(subName2.toUri(), "/user/3498478");
 
@@ -98,10 +102,16 @@ TEST_F(TestNameMethods, SubName)
   ASSERT_EQ(subName3.toUri(), "/cmu/andrew/user");
 
   Name subName4 = name.getSubName(0, 100);
-  ASSERT_TRUE(name.equals(subName4)) << "Subname with more components than original should stop at end of original name";
+  ASSERT_EQ(name, subName4) << "Subname with more components than original should stop at end of original name";
 
-  Name subName5 = name.getSubName(7, 9);
-  ASSERT_TRUE(Name().equals(subName5)) << "Subname beginning after end of name should be empty";
+  Name subName5 = name.getSubName(7, 2);
+  ASSERT_EQ(Name(), subName5) << "Subname beginning after end of name should be empty";
+
+  Name subName6 = name.getSubName(-1,7);
+  ASSERT_EQ(subName6, Name("/3498478")) << "Negative subname with more components than original should stop at end of original name";
+
+  Name subName7 = name.getSubName(-5,5);
+  ASSERT_EQ(subName7, name) << "Subname from (-length) should match original name";
 }
 
 TEST_F(TestNameMethods, Clear)
