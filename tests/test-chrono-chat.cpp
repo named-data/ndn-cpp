@@ -346,7 +346,7 @@ Chat::onData
     while (l < roster_.size()) {
       string name_t2 = roster_[l].substr(0, roster_[l].size() - 10);
       int session_t = ::atoi(roster_[l].substr(roster_[l].size() - 10, 10).c_str());
-      if (name != name_t2 && content.type() != ChatMessage_ChatMessageType_LEAVE)
+      if (name != name_t2 && content.type() != SyncDemo::ChatMessage_ChatMessageType_LEAVE)
         ++l;
       else {
         if (name == name_t2 && session > session_t)
@@ -371,10 +371,10 @@ Chat::onData
     // isRecoverySyncState_ was set by sendInterest.
     // TODO: If isRecoverySyncState_ changed, this assumes that we won't get
     //   data from an interest sent before it changed.
-    if (content.type() == ChatMessage_ChatMessageType_CHAT &&
+    if (content.type() == SyncDemo::ChatMessage_ChatMessageType_CHAT &&
         !isRecoverySyncState_ && content.from() != screen_name_)
       cout << content.from() << ": " << content.data() << endl;
-    else if (content.type() == ChatMessage_ChatMessageType_LEAVE) {
+    else if (content.type() == SyncDemo::ChatMessage_ChatMessageType_LEAVE) {
       // leave message
       int n = rosterFind(nameAndSession);
       if (n >= 0 && name != screen_name_) {
