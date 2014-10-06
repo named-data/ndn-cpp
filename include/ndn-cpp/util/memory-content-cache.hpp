@@ -72,9 +72,20 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
-    face_->registerPrefix
+    uint64_t registeredPrefixId = face_->registerPrefix
       (prefix, func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
+    // Remember the registeredPrefixId so unregisterAll can remove it.
+    registeredPrefixIdList_.push_back(registeredPrefixId);
   }
+
+  /**
+   * Call Face.removeRegisteredPrefix for all the prefixes given to the
+   * registerPrefix method on this MemoryContentCache object so that it will not
+   * receive interests any more. You can call this if you want to "shut down"
+   * this MemoryContentCache while your application is still running.
+   */
+  void
+  unregisterAll();
 
   /**
    * Add the Data packet to the cache so that it is available to use to
@@ -191,6 +202,7 @@ private:
   Milliseconds cleanupIntervalMilliseconds_;
   MillisecondsSince1970 nextCleanupTime_;
   std::map<std::string, OnInterest> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
+  std::vector<uint64_t> registeredPrefixIdList_;
   std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
   // Use a deque so we can efficiently remove from the front.
   std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
