@@ -88,7 +88,7 @@ ChronoSync2013::update
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   for (size_t i = 0; i < content.size(); ++i) {
-    if (content.Get(i).type() == 0) {
+    if (content.Get(i).type() == SyncState_ActionType_UPDATE) {
       if (digest_tree_->update
           (content.Get(i).name(), content.Get(i).seqno().session(),
            content.Get(i).seqno().seq())) {
@@ -223,7 +223,7 @@ ChronoSync2013::onData
   vector<SyncState> syncStates;
   for (size_t i = 0; i < content.size(); ++i) {
     // Only report UPDATE sync states.
-    if (content.Get(i).type() == 0)
+    if (content.Get(i).type() == SyncState_ActionType_UPDATE)
       syncStates.push_back(SyncState
         (content.Get(i).name(), content.Get(i).seqno().session(),
          content.Get(i).seqno().seq()));
@@ -285,7 +285,7 @@ ChronoSync2013::processSyncInst
     const google::protobuf::RepeatedPtrField<Sync::SyncState>& temp =
       digest_log_[j]->getData();
     for (size_t i = 0; i < temp.size(); ++i) {
-      if (temp.Get(i).type() != 0)
+      if (temp.Get(i).type() != SyncState_ActionType_UPDATE)
         continue;
 
       if (digest_tree_->find(temp.Get(i).name(), temp.Get(i).seqno().session()) != -1) {
