@@ -733,6 +733,7 @@ int main(int argc, char** argv)
     privateKeyStorage->setKeyPairForKeyName
       (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
        DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+    face.setCommandSigningInfo(keyChain, certificateName);
 
     Chat chat
       (screenName, chatRoom, Name(hubPrefix), face, keyChain, certificateName);
