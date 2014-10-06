@@ -39,6 +39,7 @@ MemoryContentCache::unregisterAll()
 {
   for (int i = 0; i < registeredPrefixIdList_.size(); ++i)
     face_->removeRegisteredPrefix(registeredPrefixIdList_[i]);
+  registeredPrefixIdList_.clear();
 
   // Also clear each onDataNotFoundForPrefix given to registerPrefix.
   onDataNotFoundForPrefix_.clear();
