@@ -20,6 +20,7 @@
  */
 
 #include "gtest/gtest.h"
+#include <algorithm>
 #include <ndn-cpp/name.hpp>
 
 using namespace std;
