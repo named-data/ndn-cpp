@@ -237,8 +237,8 @@ BasicIdentityStorage::revokeIdentity()
 bool
 BasicIdentityStorage::doesKeyExist(const Name& keyName)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT count(*) FROM Key WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
@@ -263,8 +263,8 @@ BasicIdentityStorage::doesKeyExist(const Name& keyName)
 void
 BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
 
   if (!doesIdentityExist(identityName))
@@ -292,8 +292,8 @@ BasicIdentityStorage::getKey(const Name& keyName)
   if (!doesKeyExist(keyName))
     return Blob();
 
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT public_key FROM Key WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
@@ -315,8 +315,8 @@ BasicIdentityStorage::getKey(const Name& keyName)
 KeyType
 BasicIdentityStorage::getKeyType(const Name& keyName)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT key_type FROM Key WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
@@ -353,8 +353,8 @@ BasicIdentityStorage::deactivateKey(const Name& keyName)
 void
 BasicIdentityStorage::updateKeyStatus(const Name& keyName, bool isActive)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "UPDATE Key SET active=? WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
@@ -396,8 +396,8 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
   const Name& certificateName = certificate.getName();
   Name keyName = certificate.getPublicKeyName();
 
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_,
@@ -440,8 +440,8 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   if (doesCertificateExist(certificateName))
     throw SecurityException("Certificate has already been installed!");
 
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identity = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identity = keyName.getPrefix(-1);
 
   // Check if the public key of certificate is the same as the key record
 
@@ -563,8 +563,8 @@ BasicIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
 Name
 BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "SELECT cert_name FROM Certificate WHERE identity_name=? AND key_identifier=? AND default_cert=1", -1, &statement, 0);
@@ -614,8 +614,8 @@ BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 void
 BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Name& identityNameCheck)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   if (identityNameCheck.size() > 0 && !identityNameCheck.equals(identityName))
     throw SecurityException("Specified identity name does not match the key name");
@@ -646,8 +646,8 @@ BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Na
 void
 BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName)
 {
-  string keyId = keyName.get(keyName.size() - 1).toEscapedString();
-  Name identityName = keyName.getSubName(0, keyName.size() - 1);
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
 
   sqlite3_stmt *statement;
 
