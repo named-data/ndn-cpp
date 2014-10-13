@@ -206,7 +206,7 @@ public:
 
 private:
 
-  virtual void
+  void
   updateKeyStatus(const Name& keyName, bool isActive);
 
   sqlite3 *database_;
