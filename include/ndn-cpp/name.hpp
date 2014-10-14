@@ -29,6 +29,7 @@
 #include <string.h>
 #include <sstream>
 #include "util/blob.hpp"
+#include "encoding/wire-format.hpp"
 
 struct ndn_NameComponent;
 struct ndn_Name;
@@ -754,6 +755,59 @@ public:
    */
   size_t
   size() const { return components_.size(); }
+
+  /**
+   * Encode this Name for a particular wire format.
+   * @param wireFormat (optional) A WireFormat object used to encode this
+   * Name. If omitted, use WireFormat::getDefaultWireFormat().
+   * @return The encoded byte array.
+   */
+  Blob
+  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const
+  {
+    return wireFormat.encodeName(*this);
+  }
+
+  /**
+   * Decode the input using a particular wire format and update this Name.
+   * @param input The input byte array to be decoded.
+   * @param inputLength The length of input.
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
+   * If omitted, use WireFormat::getDefaultWireFormat().
+   */
+  void
+  wireDecode
+    (const uint8_t *input, size_t inputLength,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireFormat.decodeName(*this, input, inputLength);
+  }
+
+  /**
+   * Decode the input using a particular wire format and update this Name.
+   * @param input The input byte array to be decoded.
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
+   * If omitted, use WireFormat::getDefaultWireFormat().
+   */
+  void
+  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(&input[0], input.size(), wireFormat);
+  }
+
+  /**
+   * Decode the input using a particular wire format and update this Name.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat (optional) A WireFormat object used to decode the input.
+   * If omitted, use WireFormat::getDefaultWireFormat().
+   */
+  void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(input.buf(), input.size(), wireFormat);
+  }
 
   /**
    * Get the component at the given index.
