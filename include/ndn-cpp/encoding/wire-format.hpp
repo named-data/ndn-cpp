@@ -27,6 +27,7 @@
 
 namespace ndn {
 
+class Name;
 class Interest;
 class Data;
 class ForwardingEntry;
@@ -35,6 +36,25 @@ class Signature;
 
 class WireFormat {
 public:
+  /**
+   * Encode name and return the encoding. Your derived class should override.
+   * @param name The Name object to encode.
+   * @return A Blob containing the encoding.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeName(const Name& name);
+
+  /**
+   * Decode input as a name and set the fields of the Name object.  Your derived class should override.
+   * @param name The Name object whose fields are updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @throw logic_error for unimplemented if the derived class does not override.
+   */
+  virtual void
+  decodeName(Name& name, const uint8_t *input, size_t inputLength);
+
   /**
    * Encode interest and return the encoding. Your derived class should override.
    * @param interest The Interest object to encode.

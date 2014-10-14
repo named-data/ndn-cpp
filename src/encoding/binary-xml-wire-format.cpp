@@ -23,6 +23,7 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-entry.hpp>
+#include "../c/encoding/binary-xml-name.h"
 #include "../c/encoding/binary-xml-interest.h"
 #include "../c/encoding/binary-xml-data.h"
 #include "../c/encoding/binary-xml-forwarding-entry.h"
@@ -45,6 +46,44 @@ WireFormat::newInitialDefaultWireFormat()
   return BinaryXmlWireFormat::get();
 }
 #endif
+
+Blob
+BinaryXmlWireFormat::encodeName(const Name& name)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_Name nameStruct;
+  ndn_Name_initialize
+    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+  name.get(nameStruct);
+
+  BinaryXmlEncoder encoder(256);
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_encodeBinaryXmlName
+       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &encoder)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return Blob(encoder.getOutput(), false);
+}
+
+void
+BinaryXmlWireFormat::decodeName
+  (Name& name, const uint8_t *input, size_t inputLength)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_Name nameStruct;
+  ndn_Name_initialize
+    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+
+  BinaryXmlDecoder decoder(input, inputLength);
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_decodeBinaryXmlName
+       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &decoder)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  name.set(nameStruct);
+}
 
 Blob
 BinaryXmlWireFormat::encodeInterest

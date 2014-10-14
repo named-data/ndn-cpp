@@ -24,6 +24,7 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/control-parameters.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include "../c/encoding/tlv/tlv-name.h"
 #include "../c/encoding/tlv/tlv-interest.h"
 #include "../c/encoding/tlv/tlv-data.h"
 #include "../c/encoding/tlv/tlv-control-parameters.h"
@@ -35,6 +36,44 @@
 using namespace std;
 
 namespace ndn {
+
+Blob
+Tlv0_1WireFormat::encodeName(const Name& name)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_Name nameStruct;
+  ndn_Name_initialize
+    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+  name.get(nameStruct);
+
+  TlvEncoder encoder(256);
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_encodeTlvName
+       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &encoder)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return Blob(encoder.getOutput(), false);
+}
+
+void
+Tlv0_1WireFormat::decodeName
+  (Name& name, const uint8_t *input, size_t inputLength)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_Name nameStruct;
+  ndn_Name_initialize
+    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+
+  TlvDecoder decoder(input, inputLength);
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+  if ((error = ndn_decodeTlvName
+       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &decoder)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  name.set(nameStruct);
+}
 
 Blob
 Tlv0_1WireFormat::encodeInterest

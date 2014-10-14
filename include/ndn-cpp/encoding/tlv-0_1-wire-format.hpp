@@ -33,6 +33,23 @@ namespace ndn {
 class Tlv0_1WireFormat : public WireFormat {
 public:
   /**
+   * Encode name in NDN-TLV and return the encoding.
+   * @param name The Name object to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob
+  encodeName(const Name& name);
+
+  /**
+   * Decode input as a name in NDN-TLV and set the fields of the Name object.
+   * @param name The Name object whose fields are updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  virtual void
+  decodeName(Name& name, const uint8_t *input, size_t inputLength);
+
+  /**
    * Encode interest in NDN-TLV and return the encoding.
    * @param interest The Interest object to encode.
    * @param signedPortionBeginOffset Return the offset in the encoding of the

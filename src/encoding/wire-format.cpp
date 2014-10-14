@@ -44,6 +44,19 @@ WireFormat::getDefaultWireFormat()
 }
 
 Blob
+WireFormat::encodeName(const Name& name)
+{
+  throw logic_error("unimplemented");
+}
+
+void
+WireFormat::decodeName
+  (Name& name, const uint8_t *input, size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
+Blob
 WireFormat::encodeInterest
   (const Interest& interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset)
