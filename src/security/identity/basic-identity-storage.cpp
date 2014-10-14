@@ -651,7 +651,7 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
 
   sqlite3_stmt *statement;
 
-  //Reset previous default Key
+  // Reset the previous default Certificate.
   sqlite3_prepare_v2(database_, "UPDATE Certificate SET default_cert=0 WHERE default_cert=1 AND identity_name=? AND key_identifier=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
@@ -662,7 +662,7 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
 
   sqlite3_finalize(statement);
 
-  //Set current default Key
+  // Set the current default Certificate.
   sqlite3_prepare_v2(database_, "UPDATE Certificate SET default_cert=1 WHERE identity_name=? AND key_identifier=? AND cert_name=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
