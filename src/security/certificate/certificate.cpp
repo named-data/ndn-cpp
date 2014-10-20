@@ -55,7 +55,7 @@ Certificate::~Certificate()
 }
 
 bool
-Certificate::isTooEarly()
+Certificate::isTooEarly() const
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
   if(now < notBefore_)
@@ -65,7 +65,7 @@ Certificate::isTooEarly()
 }
 
 bool
-Certificate::isTooLate()
+Certificate::isTooLate() const
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
   if(now > notAfter_)
@@ -133,7 +133,7 @@ Certificate::decode()
 }
 
 void
-Certificate::printCertificate(ostream& os)
+Certificate::printCertificate(ostream& os) const
 {
   os << "Certificate name:" << endl;
   os << "  " << getName() << endl;
@@ -142,7 +142,7 @@ Certificate::printCertificate(ostream& os)
   os << "  NotAfter: "  << der::DerGtime::toIsoString(notAfter_)  << endl;
 
   os << "Subject Description:" << endl;
-  vector<CertificateSubjectDescription>::iterator it = subjectDescriptionList_.begin();
+  vector<CertificateSubjectDescription>::const_iterator it = subjectDescriptionList_.begin();
   for(; it < subjectDescriptionList_.end(); it++)
     os << "  " << it->getOidString() << ": " << it->getValue() << endl;
 
@@ -151,7 +151,7 @@ Certificate::printCertificate(ostream& os)
 }
 
 void
-Certificate::printCertificate()
+Certificate::printCertificate() const
 {
   printCertificate(cout);
 }

@@ -118,20 +118,20 @@ public:
    * @return True if the current time is earlier than notBefore.
    */
   bool
-  isTooEarly();
+  isTooEarly() const;
 
   /**
    * Check if the certificate is valid.
    * @return True if the current time is later than notAfter.
    */
   bool
-  isTooLate();
+  isTooLate() const;
 
   void
-  printCertificate(std::ostream& os);
+  printCertificate(std::ostream& os) const;
 
   void
-  printCertificate();
+  printCertificate() const;
 
 protected:
   void
