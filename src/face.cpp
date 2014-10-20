@@ -64,7 +64,8 @@ static ptr_lib::shared_ptr<Transport::ConnectionInfo> getDefaultConnectionInfo()
   if (filePath == "")
     return ptr_lib::make_shared<TcpTransport::ConnectionInfo>("localhost");
   else
-    return ptr_lib::make_shared<UnixTransport::ConnectionInfo>(filePath.c_str());
+    return ptr_lib::shared_ptr<UnixTransport::ConnectionInfo>
+      (new UnixTransport::ConnectionInfo(filePath.c_str()));
 }
 
 Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
