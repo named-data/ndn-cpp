@@ -110,7 +110,9 @@ fi
 AC_MSG_CHECKING([for std::function])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <functional>]]
-    [[std::function<int> have_function();]])
+    [[typedef std::function<void(int)> MyFunction;]]
+    [[void myFunction(int x) {}]]
+    [[MyFunction functionObject = std::bind(&myFunction, std::placeholders::_1);]])
 ], [
     AC_MSG_RESULT([yes])
     HAVE_STD_FUNCTION=1
@@ -122,7 +124,10 @@ AC_DEFINE_UNQUOTED([HAVE_STD_FUNCTION], $HAVE_STD_FUNCTION, [1 if have the `std:
 AC_MSG_CHECKING([for boost::function])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <boost/function.hpp>]]
-    [[boost::function<int> have_function();]])
+    [[#include <boost/bind.hpp>]]
+    [[typedef boost::function<void(int)> MyFunction;]]
+    [[void myFunction(int x) {}]]
+    [[MyFunction functionObject = boost::bind(&myFunction, _1);]])
 ], [
     AC_MSG_RESULT([yes])
     HAVE_BOOST_FUNCTION=1
