@@ -113,9 +113,6 @@ public:
   const PublicKey&
   getPublicKeyInfo() const { return key_; }
 
-  virtual Name
-  getPublicKeyName() const = 0;
-
   /**
    * Check if the certificate is valid.
    * @return True if the current time is earlier than notBefore.
