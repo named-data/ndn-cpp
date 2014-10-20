@@ -131,6 +131,9 @@ public:
   isTooLate();
 
   void
+  printCertificate(std::ostream& os);
+
+  void
   printCertificate();
 
 protected:

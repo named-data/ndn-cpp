@@ -28,6 +28,7 @@
 #include "../../encoding/der/der.hpp"
 #include "../../encoding/der/visitor/certificate-data-visitor.hpp"
 #include "../../encoding/der/visitor/print-visitor.hpp"
+#include "../../encoding/base64.hpp"
 #include "../../util/blob-stream.hpp"
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/certificate/certificate.hpp>
@@ -132,24 +133,27 @@ Certificate::decode()
 }
 
 void
+Certificate::printCertificate(ostream& os)
+{
+  os << "Certificate name:" << endl;
+  os << "  " << getName() << endl;
+  os << "Validity:" << endl;
+  os << "  NotBefore: " << der::DerGtime::toIsoString(notBefore_) << endl;
+  os << "  NotAfter: "  << der::DerGtime::toIsoString(notAfter_)  << endl;
+
+  os << "Subject Description:" << endl;
+  vector<CertificateSubjectDescription>::iterator it = subjectDescriptionList_.begin();
+  for(; it < subjectDescriptionList_.end(); it++)
+    os << "  " << it->getOidString() << ": " << it->getValue() << endl;
+
+  os << "Public key bits:" << endl;
+  os << toBase64(key_.getKeyDer().buf(), key_.getKeyDer().size(), true);
+}
+
+void
 Certificate::printCertificate()
 {
-  cout << "Validity:" << endl;
-  cout << der::DerGtime::toIsoString(notBefore_) << endl;
-  cout << der::DerGtime::toIsoString(notAfter_) << endl;
-
-  cout << "Subject Info:" << endl;
-  vector<CertificateSubjectDescription>::iterator it = subjectDescriptionList_.begin();
-  for(; it < subjectDescriptionList_.end(); it++){
-    cout << it->getOidString() << "\t" << it->getValue() << endl;
-  }
-
-  ndnboost::iostreams::stream<ndnboost::iostreams::array_source> is((const char*)key_.getKeyDer().buf(), key_.getKeyDer().size());
-
-  ptr_lib::shared_ptr<der::DerNode> keyRoot = der::DerNode::parse(reinterpret_cast<der::InputIterator&> (is));
-
-  der::PrintVisitor printVisitor;
-  keyRoot->accept(printVisitor, string(""));
+  printCertificate(cout);
 }
 
 }
