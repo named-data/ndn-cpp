@@ -26,7 +26,7 @@
 
 namespace ndn {
 
-class IdentityManager;
+class IdentityStorage;
 
 /**
  * A SelfVerifyPolicyManager implements a PolicyManager to use the public key DER in the data packet's KeyLocator (if available)
