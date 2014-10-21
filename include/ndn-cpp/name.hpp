@@ -78,7 +78,19 @@ public:
      * NOTE: This does not escape %XX values.  If you need to escape, use
      * Name::fromEscapedString.  Also, if the string has "/", this does not split
      * into separate components.  If you need that then use Name(value).
-     * @param value
+     * @param value A null-terminated string with the bytes to copy.
+     */
+    Component(const char* value)
+    : value_((const uint8_t*)value, ::strlen(value))
+    {
+    }
+
+    /**
+     * Create a new Name::Component, copying the bytes from the value string.
+     * NOTE: This does not escape %XX values.  If you need to escape, use
+     * Name::fromEscapedString.  Also, if the string has "/", this does not split
+     * into separate components.  If you need that then use Name(value).
+     * @param value A string with the bytes to copy.
      */
     Component(const std::string& value)
     : value_((const uint8_t*)&value[0], value.size())
@@ -477,6 +489,34 @@ public:
     components_.push_back(value);
     ++changeCount_;
     return *this;
+  }
+
+  /**
+   * Append a new component, copying the bytes from the value string.
+   * NOTE: This does not escape %XX values.  If you need to escape, use
+   * Name::fromEscapedString.  Also, if the string has "/", this does not split
+   * into separate components.  If you need that then use Name(value).
+   * @param value A null-terminated string with the bytes to copy.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  append(const char* value)
+  {
+    return append(Component(value));
+  }
+
+  /**
+   * Append a new component, copying the bytes from the value string.
+   * NOTE: This does not escape %XX values.  If you need to escape, use
+   * Name::fromEscapedString.  Also, if the string has "/", this does not split
+   * into separate components.  If you need that then use Name(value).
+   * @param value A string with the bytes to copy.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  append(const std::string& value)
+  {
+    return append(Component(value));
   }
 
   /**
