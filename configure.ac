@@ -56,6 +56,9 @@ AC_CHECK_FUNCS([round])
 AX_CXX_COMPILE_STDCXX_11(, optional)
 AC_C_INLINE
 
+# Use the minimum boost version from NFD.
+AX_BOOST_BASE([1.48])
+
 AC_MSG_CHECKING([for std::shared_ptr])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <memory>]]
@@ -162,6 +165,21 @@ if test "$HAVE_BOOST_FUNCTION" == "1" ; then
 else
   AC_DEFINE([WITH_BOOST_FUNCTION], 0, [Define to 1 if func_lib should use boost::function, etc. if available])
 fi
+
+AX_BOOST_REGEX
+
+AC_MSG_CHECKING([for std::regex support])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <string>]]
+    [[#include <regex>]]
+    [[bool found = std::regex_search(std::string("Hello"), std::regex("H"));]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_STD_REGEX], 1, [1 if have std::regex.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_STD_REGEX], 0, [1 if have std::regex.])
+])
 
 AC_MSG_CHECKING([for gmtime support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
