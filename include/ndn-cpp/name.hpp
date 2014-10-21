@@ -74,6 +74,18 @@ public:
     }
 
     /**
+     * Create a new Name::Component, copying the bytes from the value string.
+     * NOTE: This does not escape %XX values.  If you need to escape, use
+     * Name::fromEscapedString.  Also, if the string has "/", this does not split
+     * into separate components.  If you need that then use Name(value).
+     * @param value
+     */
+    Component(const std::string& value)
+    : value_((const uint8_t*)&value[0], value.size())
+    {
+    }
+
+    /**
      * Create a new Name::Component, taking another pointer to the Blob value.
      * @param value A blob with a pointer to an immutable array.  The pointer is copied.
      */
