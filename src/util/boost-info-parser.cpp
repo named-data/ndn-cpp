@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <string.h>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
