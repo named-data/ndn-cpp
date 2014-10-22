@@ -45,7 +45,7 @@ NdnRegexMatcher::match(const string& patternIn, const Name& name)
 
   pattern = regex_replace(pattern, regex("<>"), "(?:<.+?>)");
   // Use regex_replace since std::string does have "replace all".
-  pattern = regex_replace(pattern, regex("\\>"), "");
+  pattern = regex_replace(pattern, regex(">"), "");
   pattern = regex_replace(pattern, regex("<(?!!)"), "/");
 
   return sregex_iterator(nameUri.begin(), nameUri.end(), regex(pattern));
@@ -79,12 +79,12 @@ NdnRegexMatcher::sanitizeSets(const string& pattern)
   // If we use negative lookahead, we also have to consume one component.
   if (newPattern.find("[^") != string::npos) {
     // Use regex_replace since std::string does have "replace all".
-    newPattern = regex_replace(newPattern,  regex("\\[\\^"), "(?:(?!");
-    newPattern = regex_replace(newPattern,  regex("\\]"), ")(?:/.*)*)");
+    newPattern = regex_replace(newPattern, regex("\\[\\^"), "(?:(?!");
+    newPattern = regex_replace(newPattern, regex("\\]"), ")(?:/.*)*)");
   }
   else {
-    newPattern = regex_replace(newPattern,  regex("\\["), "(");
-    newPattern = regex_replace(newPattern,  regex("\\]"), ")");
+    newPattern = regex_replace(newPattern, regex("\\["), "(");
+    newPattern = regex_replace(newPattern, regex("\\]"), ")");
   }
 
   return newPattern;
