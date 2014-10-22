@@ -17341,7 +17341,7 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <string>
     #include <regex>
-    bool found = std::regex_search(std::string("Hello"), std::regex("H"));
+    std::string result = std::regex_replace(std::string("Hello"), std::regex("H"), "h");
 int
 main ()
 {
