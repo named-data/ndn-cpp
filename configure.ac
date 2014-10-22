@@ -165,17 +165,8 @@ fi
 
 # Use the minimum boost version from NFD.
 AX_BOOST_BASE([1.48])
-# Conditionally use Boost.  AX_BOOST_BASE defines HAVE_BOOST in confdefs.h .
-if grep -q "#define HAVE_BOOST" confdefs.h ; then
-  AM_CPPFLAGS="$AM_CPPFLAGS $BOOST_CPPFLAGS"
-  AM_LDFLAGS="$AM_LDFLAGS $BOOST_SYSTEM_LIB"
-fi
 
 AX_BOOST_REGEX
-# Conditionally use Boost regex.  AX_BOOST_REGEX defines HAVE_BOOST_REGEX in confdefs.h .
-if grep -q "#define HAVE_BOOST_REGEX" confdefs.h ; then
-  AM_LDFLAGS="$AM_LDFLAGS $BOOST_REGEX_LIB"
-fi
 
 AC_MSG_CHECKING([for std::regex support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(

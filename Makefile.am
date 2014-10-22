@@ -9,6 +9,9 @@ AUTOMAKE_OPTIONS = subdir-objects
 ## to provide a way for the user to supply additional arguments.
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 
+AM_CPPFLAGS=${BOOST_CPPFLAGS}
+AM_LDFLAGS=${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB}
+
 # "make install" will also install the include headers.
 SUBDIRS = include
 
@@ -89,7 +92,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/signed-blob.hpp
 
 # Just the C code.
-libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
+libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-entry.h \
@@ -133,7 +136,7 @@ libndn_c_la_SOURCES = $(ndn_cpp_c_headers) \
   src/c/util/time.c src/c/util/time.h
 
 # C++ code and also the C code.
-libndn_cpp_la_SOURCES = $(libndn_c_la_SOURCES) $(ndn_cpp_cpp_headers) \
+libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
   src/data.cpp \
   src/exclude.cpp \
@@ -253,6 +256,6 @@ bin_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/g
 bin_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_test_name_methods_LDADD = libndn-cpp.la
 
-TESTS = $(check_PROGRAMS)
+TESTS = ${check_PROGRAMS}
 
 dist_noinst_SCRIPTS = autogen.sh

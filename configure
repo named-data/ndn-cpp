@@ -17106,11 +17106,6 @@ $as_echo "#define HAVE_BOOST /**/" >>confdefs.h
 fi
 
 
-# Conditionally use Boost.  AX_BOOST_BASE defines HAVE_BOOST in confdefs.h .
-if grep -q "#define HAVE_BOOST" confdefs.h ; then
-  AM_CPPFLAGS="$AM_CPPFLAGS $BOOST_CPPFLAGS"
-  AM_LDFLAGS="$AM_LDFLAGS $BOOST_SYSTEM_LIB"
-fi
 
 
 
@@ -17339,10 +17334,6 @@ fi
 	LDFLAGS="$LDFLAGS_SAVED"
 	fi
 
-# Conditionally use Boost regex.  AX_BOOST_REGEX defines HAVE_BOOST_REGEX in confdefs.h .
-if grep -q "#define HAVE_BOOST_REGEX" confdefs.h ; then
-  AM_LDFLAGS="$AM_LDFLAGS $BOOST_REGEX_LIB"
-fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for std::regex support" >&5
 $as_echo_n "checking for std::regex support... " >&6; }
