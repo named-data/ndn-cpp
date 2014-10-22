@@ -33,7 +33,8 @@
   #include <regex>
   namespace ndn { namespace regex_lib = std; }
   #define NDN_CPP_HAVE_REGEX_LIB 1
-#elif defined(NDN_CPP_HAVE_BOOST_REGEX)
+// Disable Boost until we fix it. #elif defined(NDN_CPP_HAVE_BOOST_REGEX)
+#elif 0
   #include <boost/regex.hpp>
   namespace ndn { namespace regex_lib = boost; }
   #define NDN_CPP_HAVE_REGEX_LIB 1
