@@ -30,6 +30,18 @@
 
 namespace ndn {
 
+/**
+ * BoostInfoTree is provided for compatibility with the Boost INFO property list
+ * format used in ndn-cxx.
+ *
+ * Each node in the tree may have a name and a value as well as associated
+ * sub-trees. The sub-tree names are not unique, and so sub-trees are stored as
+ * dictionaries where the key is a sub-tree name and the values are the
+ * sub-trees sharing the same name.
+ *
+ * Nodes can be accessed with a path syntax, as long as nodes in the path do not
+ * contain the path separator '/' in their names.
+ */
 class BoostInfoTree
 {
 public:
@@ -89,6 +101,10 @@ operator << (std::ostream& os, const BoostInfoTree& tree)
   return os;
 }
 
+/**
+ * A BoostInfoParser reads files in Boost's INFO format and constructs a
+ * BoostInfoTree.
+ */
 class BoostInfoParser
 {
 public:
@@ -97,12 +113,25 @@ public:
   {
   }
 
-  void
+  /**
+   * Add the contents of the file to the root BoostInfoTree.
+   * @param fileName The path to the INFO file.
+   * @return The new root BoostInfoTree.
+   */
+  const BoostInfoTree&
   read(const std::string& fileName);
 
+  /**
+   * Write the root tree of this BoostInfoParser as file in Boost's INFO format.
+   * @param fileName The output path.
+   */
   void
   write(const std::string& fileName) const;
 
+  /**
+   * Get the root tree of this parser.
+   * @return The root BoostInfoTree.
+   */
   const BoostInfoTree&
   getRoot() const { return *root_; }
 
