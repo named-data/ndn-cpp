@@ -172,7 +172,7 @@ AC_MSG_CHECKING([for std::regex support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <string>]]
     [[#include <regex>]]
-    [[bool found = std::regex_search(std::string("Hello"), std::regex("H"));]])
+    [[std::string result = std::regex_replace(std::string("Hello"), std::regex("H"), "h");]])
 ], [
     AC_MSG_RESULT([yes])
     AC_DEFINE_UNQUOTED([HAVE_STD_REGEX], 1, [1 if have std::regex.])
