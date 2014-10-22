@@ -173,7 +173,6 @@ fi
 
 AX_BOOST_REGEX
 # Conditionally use Boost regex.  AX_BOOST_REGEX defines HAVE_BOOST_REGEX in confdefs.h .
-AX_LIB_SQLITE3()
 if grep -q "#define HAVE_BOOST_REGEX" confdefs.h ; then
   AM_LDFLAGS="$AM_LDFLAGS $BOOST_REGEX_LIB"
 fi
