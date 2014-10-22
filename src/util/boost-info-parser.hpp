@@ -148,10 +148,19 @@ private:
   static void
   shlex_split(const std::string& s, std::vector<std::string>& result);
 
+  /**
+   * Internal import method with an explicit context node.
+   * @param fileName The path to the INFO file.
+   * @param ctx The node currently being populated.
+   * @return The ctx.
+   */
+  BoostInfoTree*
+  read(const std::string& fileName, BoostInfoTree* ctx);
+
   BoostInfoTree*
   parseLine(const std::string& line, BoostInfoTree* context);
 
-  BoostInfoTree* root_;
+  ptr_lib::shared_ptr<BoostInfoTree> root_;
 };
 
 }

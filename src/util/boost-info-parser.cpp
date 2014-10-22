@@ -135,12 +135,18 @@ BoostInfoTree::prettyPrint(int indentLevel) const
   return s;
 }
 
-void
+const BoostInfoTree&
 BoostInfoParser::read(const string& fileName)
+{
+  read(fileName, root_.get());
+  return *root_;
+}
+
+BoostInfoTree*
+BoostInfoParser::read(const std::string& fileName, BoostInfoTree* ctx)
 {
   ifstream stream(fileName.c_str());
 
-  BoostInfoTree* ctx = root_;
   string line;
   while (getline(stream, line)) {
     trim(line);
@@ -148,6 +154,7 @@ BoostInfoParser::read(const string& fileName)
   }
 
   stream.close();
+  return ctx;
 }
 
 void
