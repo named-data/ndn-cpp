@@ -70,19 +70,8 @@ public:
   const BoostInfoTree&
   createSubtree(const std::string& treeName, const std::string& value = "");
 
-  /**
-   * Use treeName to find the vector of BoostInfoTree in subTrees_. Even though
-   * this returns a copy of the vector of BoostInfoTree, this method is not
-   * const because it is a shallow copy and the caller can still modify the
-   * BoostInfoTree elements.
-   * @param key The key in subTrees_ to search for.
-   * @return A new shallow copy of the vector of BoostInfoTree.
-   */
-  std::vector<ptr_lib::shared_ptr<BoostInfoTree> >
-  operator [] (const std::string& key)
-  {
-    return *find(key);
-  }
+  std::vector<const BoostInfoTree*>
+  operator [] (const std::string& key) const;
 
   const std::string& getValue() const { return value_; }
 
@@ -104,6 +93,9 @@ private:
    */
   std::vector<ptr_lib::shared_ptr<BoostInfoTree> >*
   find(const std::string& treeName);
+
+  static std::vector<std::string>
+  split(const std::string &input, char separator);
 
   // We can't use a map for subTrees_ because we want the keys to be in order.
   std::vector<std::pair<std::string, std::vector<ptr_lib::shared_ptr<BoostInfoTree> > > > subTrees_;

@@ -25,6 +25,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <sstream>
 #include "boost-info-parser.hpp"
 
 using namespace std;
@@ -80,7 +81,7 @@ trim(string& str)
 
 void
 BoostInfoTree::addSubtree
-  (const std::string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree)
+  (const string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree)
 {
   vector<ptr_lib::shared_ptr<BoostInfoTree> >* subTreeList = find(treeName);
   if (subTreeList)
@@ -101,6 +102,50 @@ BoostInfoTree::createSubtree(const string& treeName, const string& value)
   ptr_lib::shared_ptr<BoostInfoTree> newTree(new BoostInfoTree(value, this));
   addSubtree(treeName, newTree);
   return *newTree;
+}
+
+vector<const BoostInfoTree*>
+BoostInfoTree::operator [] (const string& keyIn) const
+{
+  vector<const BoostInfoTree*> foundVals;
+
+  size_t iNotSlash = keyIn.find_first_not_of('/');
+  string key;
+  if (iNotSlash != string::npos)
+    key = keyIn.substr(iNotSlash);
+  if (key.size() == 0) {
+    foundVals.push_back(this);
+    return foundVals;
+  }
+  vector<string> path = split(key, '/');
+
+  const vector<ptr_lib::shared_ptr<BoostInfoTree> >* subTrees =
+    const_cast<BoostInfoTree*>(this)->find(path[0]);
+  if (!subTrees)
+    return foundVals;
+
+  if (path.size() == 1) {
+    // Copy the pointers.
+    for (int i = 0; i < (*subTrees).size(); ++i)
+      foundVals.push_back((*subTrees)[i].get());
+    return foundVals;
+  }
+
+  // newPath = '/'.join(path[1:])
+  string newPath;
+  for (int i = 1; i < path.size(); ++i) {
+    if (i > 1)
+      newPath += "/";
+    newPath += path[i];
+  }
+
+  for (int i = 0; i < (*subTrees).size(); ++i) {
+    const BoostInfoTree& t = *(*subTrees)[i];
+    vector<const BoostInfoTree*> partial = t[newPath];
+    foundVals.insert(foundVals.end(), partial.begin(), partial.end());
+  }
+
+  return foundVals;
 }
 
 vector<ptr_lib::shared_ptr<BoostInfoTree> >*
@@ -143,6 +188,18 @@ BoostInfoTree::prettyPrint(int indentLevel) const
   return s;
 }
 
+vector<string>
+BoostInfoTree::split(const string &input, char separator)
+{
+  vector<string> result;
+  stringstream is(input);
+  string str;
+  while (getline(is, str, separator))
+    result.push_back(str);
+
+  return result;
+}
+
 const BoostInfoTree&
 BoostInfoParser::read(const string& fileName)
 {
@@ -151,7 +208,7 @@ BoostInfoParser::read(const string& fileName)
 }
 
 BoostInfoTree*
-BoostInfoParser::read(const std::string& fileName, BoostInfoTree* ctx)
+BoostInfoParser::read(const string& fileName, BoostInfoTree* ctx)
 {
   ifstream stream(fileName.c_str());
 
