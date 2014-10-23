@@ -50,7 +50,24 @@ public:
   {
   }
 
+  // TODO: Implement clone.
+
+  /**
+   * Insert a BoostInfoTree as a sub-tree with the given name.
+   * @param treeName The name of the new sub-tree.
+   * @param newTree The sub-tree to add.
+   */
   void
+  addSubtree
+    (const std::string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree);
+
+  /**
+   * Create a new BoostInfo and insert it as a sub-tree with the given name.
+   * @param treeName The name of the new sub-tree.
+   * @param value The value associated with the new sub-tree.
+   * @return The created sub-tree.
+   */
+  const BoostInfoTree&
   createSubtree(const std::string& treeName, const std::string& value = "");
 
   /**
@@ -81,7 +98,8 @@ public:
 private:
   /**
    * Use treeName to find the vector of BoostInfoTree in subTrees_.
-   * @param value The key in subTrees_ to search for.
+   * @param value The key in subTrees_ to search for.  This does a flat search
+   * in subTrees_.  It does not split by '/' into a path.
    * @return A pointer to the vector of BoostInfoTree, or 0 if not found.
    */
   std::vector<ptr_lib::shared_ptr<BoostInfoTree> >*
@@ -121,7 +139,7 @@ public:
   const BoostInfoTree&
   read(const std::string& fileName);
 
-  // TODO: readPropertyList
+  // TODO: Implement readPropertyList.
 
   /**
    * Write the root tree of this BoostInfoParser as file in Boost's INFO format.

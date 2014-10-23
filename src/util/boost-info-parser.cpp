@@ -79,10 +79,9 @@ trim(string& str)
 }
 
 void
-BoostInfoTree::createSubtree(const string& treeName, const string& value)
+BoostInfoTree::addSubtree
+  (const std::string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree)
 {
-  ptr_lib::shared_ptr<BoostInfoTree> newTree(new BoostInfoTree(value, this));
-
   vector<ptr_lib::shared_ptr<BoostInfoTree> >* subTreeList = find(treeName);
   if (subTreeList)
     subTreeList->push_back(newTree);
@@ -92,7 +91,16 @@ BoostInfoTree::createSubtree(const string& treeName, const string& value)
     subTrees_.back().second.push_back(newTree);
   }
 
+  newTree->parent_ = this;
   lastChild_ = newTree.get();
+}
+
+const BoostInfoTree&
+BoostInfoTree::createSubtree(const string& treeName, const string& value)
+{
+  ptr_lib::shared_ptr<BoostInfoTree> newTree(new BoostInfoTree(value, this));
+  addSubtree(treeName, newTree);
+  return *newTree;
 }
 
 vector<ptr_lib::shared_ptr<BoostInfoTree> >*
