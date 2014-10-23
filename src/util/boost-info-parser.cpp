@@ -267,7 +267,12 @@ BoostInfoParser::parseLine(const string& lineIn, BoostInfoTree* context)
     string val;
     if (strings.size() > 1)
       val = strings[1];
-    context->createSubtree(key, val);
+
+    // If it is an "#include", load the new file instead of inserting keys.
+    if (key == "#include")
+      context = read(val, context);
+    else
+      context->createSubtree(key, val);
 
     return context;
   }

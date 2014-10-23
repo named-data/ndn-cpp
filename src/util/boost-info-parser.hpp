@@ -121,6 +121,8 @@ public:
   const BoostInfoTree&
   read(const std::string& fileName);
 
+  // TODO: readPropertyList
+
   /**
    * Write the root tree of this BoostInfoParser as file in Boost's INFO format.
    * @param fileName The output path.
@@ -157,6 +159,9 @@ private:
   BoostInfoTree*
   read(const std::string& fileName, BoostInfoTree* ctx);
 
+  /**
+   * Internal helper method for parsing INFO files line by line.
+   */
   BoostInfoTree*
   parseLine(const std::string& line, BoostInfoTree* context);
 
