@@ -70,10 +70,32 @@ public:
   const BoostInfoTree&
   createSubtree(const std::string& treeName, const std::string& value = "");
 
+  /**
+   * Look up using the key and return a list of the subtrees.
+   * @param key The key which may be a path separated with '/'.
+   * @return A new vector with pointers to the subtrees.
+   */
   std::vector<const BoostInfoTree*>
   operator [] (const std::string& key) const;
 
-  const std::string& getValue() const { return value_; }
+  /**
+   * Look up using the key and return string value of the first subtree.
+   * @param key The key which may be a path separated with '/'.
+   * @return A pointer to the string value or 0 if not found.  Note that this
+   * pointer may no longer be valid after this BoostInfoTree is modified.
+   */
+  const std::string*
+  getFirstValue(const std::string& key) const
+  {
+    std::vector<const BoostInfoTree*> list = (*this)[key];
+    if (list.size() >= 1)
+      return &list[0]->value_;
+    else
+      return 0;
+  }
+
+  const std::string&
+  getValue() const { return value_; }
 
   BoostInfoTree*
   getParent() { return parent_; }
