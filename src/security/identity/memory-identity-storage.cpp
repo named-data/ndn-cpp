@@ -146,15 +146,15 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   certificateStore_[certificateName.toUri()] = certificate.wireEncode();
 }
 
-ptr_lib::shared_ptr<Data>
+ptr_lib::shared_ptr<IdentityCertificate>
 MemoryIdentityStorage::getCertificate(const Name& certificateName, bool allowAny)
 {
   map<string, Blob>::iterator record = certificateStore_.find(certificateName.toUri());
   if (record == certificateStore_.end())
     // Not found.  Silently return null.
-    return ptr_lib::shared_ptr<Data>();
+    return ptr_lib::shared_ptr<IdentityCertificate>();
 
-  ptr_lib::shared_ptr<Data> data(new Data());
+  ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
   data->wireDecode(*record->second);
   return data;
 }

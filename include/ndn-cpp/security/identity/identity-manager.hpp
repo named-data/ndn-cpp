@@ -206,7 +206,7 @@ public:
   ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name& certificateName)
   {
-    return ptr_lib::make_shared<IdentityCertificate>(*identityStorage_->getCertificate(certificateName, false));
+    return identityStorage_->getCertificate(certificateName, false);
   }
 
   /**
@@ -217,7 +217,7 @@ public:
   ptr_lib::shared_ptr<IdentityCertificate>
   getAnyCertificate(const Name& certificateName)
   {
-    return ptr_lib::make_shared<IdentityCertificate>(*identityStorage_->getCertificate(certificateName, true));
+    return identityStorage_->getCertificate(certificateName, true);
   }
 
   /**

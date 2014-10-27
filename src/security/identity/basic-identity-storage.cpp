@@ -478,7 +478,7 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   sqlite3_finalize(statement);
 }
 
-ptr_lib::shared_ptr<Data>
+ptr_lib::shared_ptr<IdentityCertificate>
 BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
 {
   if (doesCertificateExist(certificateName)) {
@@ -502,7 +502,7 @@ BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
 
     int res = sqlite3_step(statement);
 
-    ptr_lib::shared_ptr<Data> data(new Data());
+    ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
 
     if (res == SQLITE_ROW)
       data->wireDecode((const uint8_t*)sqlite3_column_blob(statement, 0), sqlite3_column_bytes(statement, 0));
@@ -511,7 +511,7 @@ BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
     return data;
   }
   else
-    return ptr_lib::shared_ptr<Data>();
+    return ptr_lib::shared_ptr<IdentityCertificate>();
 }
 
 Name
