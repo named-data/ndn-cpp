@@ -194,7 +194,7 @@ public:
    * @param certificateName The name of the requested certificate.
    * @return The requested certificate.
    */
-  ptr_lib::shared_ptr<Certificate>
+  ptr_lib::shared_ptr<IdentityCertificate>
   getAnyCertificate(const Name& certificateName)
   {
     return identityManager_->getAnyCertificate(certificateName);
