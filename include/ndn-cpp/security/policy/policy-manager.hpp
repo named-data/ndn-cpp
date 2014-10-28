@@ -29,6 +29,7 @@
 namespace ndn {
 
 class ValidationRequest;
+class Sha256WithRsaSignature;
 
 /**
  * A PolicyManager is an abstract base class to represent the policy for verifying data packets.
@@ -122,6 +123,19 @@ public:
    */
   virtual Name
   inferSigningIdentity(const Name& dataName) = 0;
+
+protected:
+  /**
+   * Verify the RSA signature on the SignedBlob using the given public key.
+   * @param signature The Sha256WithRsaSignature.
+   * @param signedBlob the SignedBlob with the signed portion to verify.
+   * @param publicKeyDer The DER-encoded public key used to verify the signature.
+   * @return true if the signature verifies, false if not.
+   */
+  static bool
+  verifySha256WithRsaSignature
+    (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
+     const Blob& publicKeyDer);
 };
 
 }

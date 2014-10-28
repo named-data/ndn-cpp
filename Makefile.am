@@ -188,6 +188,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/identity/memory-private-key-storage.cpp \
   src/security/identity/osx-private-key-storage.cpp \
   src/security/policy/no-verify-policy-manager.cpp \
+  src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
   src/security/signature/sha256-with-rsa-handler.cpp \
   src/sync/chrono-sync2013.cpp \

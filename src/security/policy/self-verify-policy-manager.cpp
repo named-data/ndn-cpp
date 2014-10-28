@@ -31,41 +31,6 @@ using namespace std;
 namespace ndn {
 
 /**
- * Verify the RSA signature on the SignedBlob using the given public key.
- * TODO: Move this general verification code to a more central location.
- * @param signature The Sha256WithRsaSignature.
- * @param signedBlob the SignedBlob with the signed portion to verify.
- * @param publicKeyDer The DER-encoded public key used to verify the signature.
- * @return true if the signature verifies, false if not.
- */
-static bool
-verifySha256WithRsaSignature
-  (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
-   const Blob& publicKeyDer)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  // wireEncode returns the cached encoding if available.
-  ndn_digestSha256
-    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer.buf();
-  RSA *rsaPublicKey = d2i_RSA_PUBKEY(NULL, &derPointer, publicKeyDer.size());
-  if (!rsaPublicKey)
-    throw UnrecognizedKeyFormatException("Error decoding public key in d2i_RSAPublicKey");
-  int success = RSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), (uint8_t *)signature->getSignature().buf(),
-     signature->getSignature().size(), rsaPublicKey);
-  // Free the public key before checking for success.
-  RSA_free(rsaPublicKey);
-
-  // RSA_verify returns 1 for a valid signature.
-  return (success == 1);
-}
-
-/**
  * Verify the ECDSA signature on the SignedBlob using the given public key.
  * TODO: Move this general verification code to a more central location.
  * @param signature The Sha256WithEcdsaSignature.
