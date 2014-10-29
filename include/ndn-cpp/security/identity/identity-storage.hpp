@@ -212,6 +212,31 @@ public:
    */
   virtual void
   setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName) = 0;
+
+  /*****************************************
+   *            Delete Methods             *
+   *****************************************/
+
+  /**
+   * Delete a certificate.
+   * @param certificateName The certificate name.
+   */
+  virtual void
+  deleteCertificateInfo(const Name& certificateName) = 0;
+
+  /**
+   * Delete a public key and related certificates.
+   * @param keyName The key name.
+   */
+  virtual void
+  deletePublicKeyInfo(const Name& keyName) = 0;
+
+  /**
+   * Delete an identity and related public keys and certificates.
+   * @param identity The identity name.
+   */
+  virtual void
+  deleteIdentityInfo(const Name& identity) = 0;
 };
 
 }

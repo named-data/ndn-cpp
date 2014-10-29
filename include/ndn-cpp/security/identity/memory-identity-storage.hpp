@@ -191,6 +191,31 @@ public:
   virtual void
   setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName);
 
+  /*****************************************
+   *            Delete Methods             *
+   *****************************************/
+
+  /**
+   * Delete a certificate.
+   * @param certificateName The certificate name.
+   */
+  virtual void
+  deleteCertificateInfo(const Name& certificateName);
+
+  /**
+   * Delete a public key and related certificates.
+   * @param keyName The key name.
+   */
+  virtual void
+  deletePublicKeyInfo(const Name& keyName);
+
+  /**
+   * Delete an identity and related public keys and certificates.
+   * @param identity The identity name.
+   */
+  virtual void
+  deleteIdentityInfo(const Name& identity);
+
 private:
   class KeyRecord {
   public:

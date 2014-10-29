@@ -24,6 +24,9 @@
 #include <ndn-cpp/ndn-cpp-config.h>
 #ifdef NDN_CPP_HAVE_SQLITE3
 
+#if 1
+#include <stdexcept>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
@@ -672,6 +675,30 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
   sqlite3_step(statement);
 
   sqlite3_finalize(statement);
+}
+
+void
+BasicIdentityStorage::deleteCertificateInfo(const Name& certificateName)
+{
+#if 1
+  throw runtime_error("BasicIdentityStorage::deleteCertificateInfo is not implemented");
+#endif
+}
+
+void
+BasicIdentityStorage::deletePublicKeyInfo(const Name& keyName)
+{
+#if 1
+  throw runtime_error("BasicIdentityStorage::deletePublicKeyInfo is not implemented");
+#endif
+}
+
+void
+BasicIdentityStorage::deleteIdentityInfo(const Name& identity)
+{
+#if 1
+  throw runtime_error("BasicIdentityStorage::deleteIdentityInfo is not implemented");
+#endif
 }
 
 }

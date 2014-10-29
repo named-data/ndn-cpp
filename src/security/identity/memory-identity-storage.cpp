@@ -211,4 +211,28 @@ MemoryIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, cons
 #endif
 }
 
+void
+MemoryIdentityStorage::deleteCertificateInfo(const Name& certificateName)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::deleteCertificateInfo is not implemented");
+#endif
+}
+
+void
+MemoryIdentityStorage::deletePublicKeyInfo(const Name& keyName)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::deletePublicKeyInfo is not implemented");
+#endif
+}
+
+void
+MemoryIdentityStorage::deleteIdentityInfo(const Name& identity)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::deleteIdentityInfo is not implemented");
+#endif
+}
+
 }
