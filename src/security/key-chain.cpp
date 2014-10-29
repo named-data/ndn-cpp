@@ -162,15 +162,11 @@ KeyChain::verifyInterest
       policyManager_->checkVerificationPolicy
         (interest, stepCount, onVerified, onVerifyFailed, wireFormat);
     if (nextStep)
-#if 0
       face_->expressInterest
         (*nextStep->interest_,
          bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
-         bind(&KeyChain::onCertificateInterestTimeout, this, _1,
-              nextStep->retry_, onVerifyFailed, data, nextStep));
-#else
-    throw SecurityException("verifyInterest: ValidationRequest not implemented yet");
-#endif
+         bind(&KeyChain::onCertificateInterestTimeoutForVerifyInterest, this,
+              _1, nextStep->retry_, onVerifyFailed, interest, nextStep));
   }
   else if (policyManager_->skipVerifyAndTrust(*interest))
     onVerified(interest);
@@ -198,6 +194,24 @@ KeyChain::onCertificateInterestTimeout
        bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, onVerifyFailed, data, nextStep));
   else
     onVerifyFailed(data);
+}
+
+void
+KeyChain::onCertificateInterestTimeoutForVerifyInterest
+  (const ptr_lib::shared_ptr<const Interest> &interest, int retry,
+   const OnVerifyInterestFailed& onVerifyFailed,
+   const ptr_lib::shared_ptr<Interest>& originalInterest,
+   ptr_lib::shared_ptr<ValidationRequest> nextStep)
+{
+  if (retry > 0)
+    // Issue the same expressInterest as in verifyInterest except decrement retry.
+    face_->expressInterest
+      (*interest,
+       bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
+       bind(&KeyChain::onCertificateInterestTimeoutForVerifyInterest, this,
+            _1, retry - 1, onVerifyFailed, originalInterest, nextStep));
+  else
+    onVerifyFailed(originalInterest);
 }
 
 }

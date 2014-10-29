@@ -435,6 +435,17 @@ private:
     (const ptr_lib::shared_ptr<const Interest> &interest, int retry, const OnVerifyFailed& onVerifyFailed,
      const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep);
 
+  /**
+   * This is the same as onCertificateInterestTimeout, but we call
+   * onVerifyFailed(originalInterest) if we have too many retries.
+   */
+  void
+  onCertificateInterestTimeoutForVerifyInterest
+    (const ptr_lib::shared_ptr<const Interest> &interest, int retry, 
+     const OnVerifyInterestFailed& onVerifyFailed,
+     const ptr_lib::shared_ptr<Interest>& originalInterest,
+     ptr_lib::shared_ptr<ValidationRequest> nextStep);
+
   ptr_lib::shared_ptr<IdentityManager> identityManager_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;
   ptr_lib::shared_ptr<EncryptionManager> encryptionManager_;
