@@ -32,14 +32,14 @@ namespace ndn {
 
 using namespace regex_lib;
 
-sregex_iterator
-NdnRegexMatcher::match(const string& patternIn, const Name& name)
+NdnRegexMatcher::NdnRegexMatcher(const string& patternIn, const Name& name)
 {
   string pattern = patternIn;
   
   // nameParts = [name.get(i).getValue().toRawStr() for i in range(name.size())]
   // nameUri = '/'+'/'.join(nameParts)
-  string nameUri = name.toUri();
+  source_.reset(new string(name.toUri()));
+  string &nameUri = *source_;
 
   pattern = sanitizeSets(pattern);
 
@@ -48,7 +48,7 @@ NdnRegexMatcher::match(const string& patternIn, const Name& name)
   pattern = regex_replace(pattern, regex(">"), "");
   pattern = regex_replace(pattern, regex("<(?!!)"), "/");
 
-  return sregex_iterator(nameUri.begin(), nameUri.end(), regex(pattern));
+  iterator = sregex_iterator(nameUri.begin(), nameUri.end(), regex(pattern));
 }
 
 string

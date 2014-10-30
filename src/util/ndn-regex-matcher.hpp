@@ -52,25 +52,33 @@ namespace ndn {
 /**
  * Convert an NDN regex (http://redmine.named-data.net/projects/ndn-css/wiki/Regex)
  * to a std::regex that can match against URIs.
+ * Note that in PyNDN, etc. this has a static member called match, but here
+ * we construct an NdnRegexMatcher object so that it can carry the internal
+ * source string used for the match. This is necessary because the
+ * sregex_iterator uses pointers and we have to keep the string they point into.
  */
 class NdnRegexMatcher {
 public:
   /**
-   * Determine if the provided NDN regex pattern matches the given Name.
+   * Create a new NdnRegexMatcher to determine if the provided NDN regex pattern
+   * matches the given Name.  The member iterator has the sregex_iterator for
+   * the pattern. It is sregex_iterator() if pattern does not match.
    * @param pattern The NDN regex.
    * @param name The Name to match against the regex.
-   * @return The sregex_iterator for the pattern, or sregex_iterator() if not
-   * found.
    */
-  static regex_lib::sregex_iterator
-  match(const std::string& pattern, const Name& name);
+  NdnRegexMatcher(const std::string& pattern, const Name& name);
 
+  regex_lib::sregex_iterator iterator;
+  
 private:
   static std::string
   sanitizeSets(const std::string& pattern);
   
   static std::string
   escapeComponents(const std::string& pattern);
+
+  // This keeps the source string that for the pointers in iterator.
+  ptr_lib::shared_ptr<std::string> source_;
 };
 
 }
