@@ -20,19 +20,20 @@
  */
 
 #include <stdexcept>
-#include "c/name.h"
-#include "c/interest.h"
-#include "c/util/crypto.h"
-#include "c/util/time.h"
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
-#include "encoding/tlv-decoder.hpp"
-#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
-#include "c/encoding/binary-xml.h"
-#include "encoding/binary-xml-decoder.hpp"
 #include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/control-parameters.hpp>
+#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
+#include "c/name.h"
+#include "c/interest.h"
+#include "c/util/crypto.h"
+#include "c/util/time.h"
+#include "encoding/tlv-decoder.hpp"
+#include "c/encoding/binary-xml.h"
+#include "encoding/binary-xml-decoder.hpp"
+#include "util/logging.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -277,6 +278,8 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
   // Assume that the content is a DER encoded public key of the ndnd.  Do a quick check that the first byte is for DER encoding.
   if (ndndIdData->getContent().size() < 1 ||
       ndndIdData->getContent().buf()[0] != 0x30) {
+    _LOG_DEBUG
+      ("Register prefix failed: The content returned when fetching the NDNx ID does not appear to be a public key");
     info_->onRegisterFailed_(info_->prefix_);
     return;
   }
@@ -296,6 +299,7 @@ Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& inter
 void
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
+  _LOG_DEBUG("Register prefix failed: Timeout fetching the NDNx ID");
   info_->onRegisterFailed_(info_->prefix_);
 }
 
@@ -309,24 +313,35 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     ndn_TlvDecoder_initialize
       (&decoder, responseData->getContent().buf(),
        responseData->getContent().size());
+    ndn_Error error;
     size_t endOffset;
-    if (ndn_TlvDecoder_readNestedTlvsStart
-        (&decoder, ndn_Tlv_NfdCommand_ControlResponse, &endOffset)) {
+    if ((error = ndn_TlvDecoder_readNestedTlvsStart
+        (&decoder, ndn_Tlv_NfdCommand_ControlResponse, &endOffset))) {
+      _LOG_DEBUG
+        ("Register prefix failed: Error decoding the NFD response: " <<
+         ndn_getErrorString(error));
       info_->onRegisterFailed_(info_->prefix_);
       return;
     }
     uint64_t statusCode;
-    if (ndn_TlvDecoder_readNonNegativeIntegerTlv
-         (&decoder, ndn_Tlv_NfdCommand_StatusCode, &statusCode)) {
+    if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+         (&decoder, ndn_Tlv_NfdCommand_StatusCode, &statusCode))) {
+      _LOG_DEBUG
+        ("Register prefix failed: Error decoding the NFD response: " <<
+         ndn_getErrorString(error));
       info_->onRegisterFailed_(info_->prefix_);
       return;
     }
 
     // Status code 200 is "OK".
-    if (statusCode != 200)
+    if (statusCode != 200) {
+      _LOG_DEBUG
+        ("Register prefix failed: Expected NFD status code 200, got: " <<
+         statusCode);
       info_->onRegisterFailed_(info_->prefix_);
+    }
 
-    // Otherwise, silently succeed.
+    _LOG_DEBUG("Register prefix succeeded with the NFD forwarder.");
   }
   else {
     Name expectedName("/ndnx/.../selfreg");
@@ -334,11 +349,14 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     if (responseData->getName().size() < 4 ||
         responseData->getName()[0] != expectedName[0] ||
         responseData->getName()[2] != expectedName[2]) {
+      _LOG_DEBUG
+        ("Register prefix failed: Unexpected name in NDNx response: " <<
+         responseData->getName().toUri());
       info_->onRegisterFailed_(info_->prefix_);
       return;
     }
 
-    // Otherwise, silently succeed.
+    _LOG_DEBUG("Register prefix succeeded with the NDNx forwarder.");
   }
 }
 
@@ -346,6 +364,8 @@ void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
   if (info_->isNfdCommand_) {
+    _LOG_DEBUG
+      ("Timeout for NFD register prefix command. Attempting an NDNx command...");
     // The application set the commandKeyChain, but we may be connected to NDNx.
     if (info_->node_.ndndId_.size() == 0) {
       // First fetch the ndndId of the connected hub.
@@ -368,11 +388,14 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
         (0, info_->prefix_, info_->onInterest_, info_->onRegisterFailed_,
          info_->flags_, info_->wireFormat_);
   }
-  else
+  else {
     // An NDNx command was sent because there is no commandKeyChain, so we
     //   can't try an NFD command. Or it was sent from this callback after
     //   trying an NFD command. Fail.
+    _LOG_DEBUG
+      ("Register prefix failed: Timeout waiting for the response from the register prefix interest");
     info_->onRegisterFailed_(info_->prefix_);
+  }
 }
 
 void
