@@ -76,6 +76,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/identity/memory-private-key-storage.hpp \
   include/ndn-cpp/security/identity/osx-private-key-storage.hpp \
   include/ndn-cpp/security/identity/private-key-storage.hpp \
+  include/ndn-cpp/security/policy/config-policy-manager.hpp \
   include/ndn-cpp/security/policy/no-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
@@ -187,6 +188,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/identity/memory-identity-storage.cpp \
   src/security/identity/memory-private-key-storage.cpp \
   src/security/identity/osx-private-key-storage.cpp \
+  src/security/policy/config-policy-manager.cpp \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
