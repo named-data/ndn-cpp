@@ -63,15 +63,15 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
   //   as the onDataNotFound fallback.
   contentCache_.registerPrefix
     (applicationBroadcastPrefix_, onRegisterFailed,
-     bind(&ChronoSync2013::Impl::onInterest, this, _1, _2, _3, _4));
+     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-     bind(&ChronoSync2013::Impl::initialTimeOut, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::initialTimeOut, shared_from_this(), _1));
   _LOG_DEBUG("initial sync expressed");
   _LOG_DEBUG(interest.getName().toUri());
 }
@@ -148,8 +148,8 @@ ChronoSync2013::Impl::publishNextSequenceNo()
   interest.getName().append(digest_tree_->getRoot());
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-     bind(&ChronoSync2013::Impl::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
 }
 
 void
@@ -188,7 +188,7 @@ ChronoSync2013::Impl::onInterest
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
-           bind(&ChronoSync2013::Impl::judgeRecovery, this, _1, syncdigest, &transport));
+           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, syncdigest, &transport));
         _LOG_DEBUG("set timer recover");
       }
       else
@@ -239,8 +239,8 @@ ChronoSync2013::Impl::onData
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-     bind(&ChronoSync2013::Impl::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
@@ -353,8 +353,8 @@ ChronoSync2013::Impl::sendRecovery(const string& syncdigest_t)
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-     bind(&ChronoSync2013::Impl::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Recovery Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
@@ -385,8 +385,8 @@ ChronoSync2013::Impl::syncTimeout(const ptr_lib::shared_ptr<const Interest>& int
     Interest retryInterest(interest->getName());
     retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
     face_.expressInterest
-      (retryInterest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-       bind(&ChronoSync2013::Impl::syncTimeout, this, _1));
+      (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+       bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
      _LOG_DEBUG("Syncinterest expressed:");
      _LOG_DEBUG(n.toUri());
   }
@@ -474,8 +474,8 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (retryInterest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
-     bind(&ChronoSync2013::Impl::syncTimeout, this, _1));
+    (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
