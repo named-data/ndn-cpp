@@ -48,7 +48,7 @@ ChronoSync2013::Impl::Impl
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
   sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
-  contentCache_(&face)
+  contentCache_(&face), enabled_(true)
 {
 }
 
@@ -158,6 +158,10 @@ ChronoSync2013::Impl::onInterest
    const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
    uint64_t registerPrefixId)
 {
+  if (!enabled_)
+    // Ignore callbacks after the application calls shutdown().
+    return;
+
   // Search if the digest already exists in the digest log.
    _LOG_DEBUG("Sync Interest received in callback.");
    _LOG_DEBUG(inst->getName().toUri());
@@ -203,6 +207,10 @@ ChronoSync2013::Impl::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
+  if (!enabled_)
+    // Ignore callbacks after the application calls shutdown().
+    return;
+
   _LOG_DEBUG("Sync ContentObject received in callback");
   _LOG_DEBUG("name: " + co->getName().toUri());
   Sync::SyncStateMsg content_t;
@@ -376,6 +384,10 @@ ChronoSync2013::Impl::judgeRecovery
 void
 ChronoSync2013::Impl::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
+  if (!enabled_)
+    // Ignore callbacks after the application calls shutdown().
+    return;
+
    _LOG_DEBUG("Sync Interest time out.");
    _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
   string component = interest->getName().get
@@ -451,6 +463,10 @@ ChronoSync2013::Impl::initialOndata
 void
 ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
+  if (!enabled_)
+    // Ignore callbacks after the application calls shutdown().
+    return;
+
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
   ++usrseq_;

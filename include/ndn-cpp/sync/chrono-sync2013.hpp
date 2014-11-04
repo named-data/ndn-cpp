@@ -332,6 +332,7 @@ private:
     void
     shutdown()
     {
+      enabled_ = false;
       contentCache_.unregisterAll();
     }
 
@@ -449,6 +450,7 @@ private:
     int usrseq_;
     MemoryContentCache contentCache_;
     std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+    bool enabled_;
   };
 
   ptr_lib::shared_ptr<Impl> impl_;
