@@ -374,7 +374,8 @@ ChronoSync2013::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
    _LOG_DEBUG("Sync Interest time out.");
    _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
-  string component = interest->getName().get(4).toEscapedString();
+  string component = interest->getName().get
+    (applicationBroadcastPrefix_.size()).toEscapedString();
   if (component == digest_tree_->getRoot()) {
     Name n(interest->getName());
     Interest retryInterest(interest->getName());
