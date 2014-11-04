@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.5 (2014-10-21)
+Interim changes since NDN-CPP v0.5 (2014-11-04)
 -----------------------------------------------
 
 Changes
@@ -14,6 +14,7 @@ Deprecated
 Bug fixes
 * http://redmine.named-data.net/issues/2083 Fix Name::append(string) calls the URI Name(string) constructor.
 * http://redmine.named-data.net/issues/2017 Support older versions of Protobuf.
+* http://redmine.named-data.net/issues/2134 ChronoSync2013 shared_ptr for callbacks.
 
 NDN-CPP v0.5 (2014-08-27)
 -------------------------
