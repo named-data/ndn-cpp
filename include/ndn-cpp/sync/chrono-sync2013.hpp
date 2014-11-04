@@ -170,6 +170,22 @@ public:
   int
   getSequenceNo() const { return usrseq_; }
 
+  /**
+   * Unregister callbacks so that this does not respond to interests anymore.
+   * If you will delete this ChronoSync2013 object while your application is
+   * still running, you should call shutdown() first.  After calling this, you
+   * should not call publishNextSequenceNo() again since the behavior will be
+   * undefined.
+   * @note Because this modifies internal ChronoSync data structures, your
+   * application should make sure that it calls processEvents in the same
+   * thread as shutdown() (which also modifies the data structures).
+   */
+  void
+  shutdown()
+  {
+    contentCache_.unregisterAll();
+  }
+
 private:
   class DigestLogEntry {
   public:
