@@ -54,8 +54,12 @@ using namespace ndn::func_lib;
 
 // Define the Chat class here so that the ChronoChat demo is self-contained.
 
-class Chat {
+class Chat : public ptr_lib::enable_shared_from_this<Chat> {
 public:
+  /**
+   * Create a new Chat, which should belong to a shared_ptr. Then you must
+   * call initialize().
+   */
   Chat
     (const string& screenName, const string& chatRoom,
      const Name& hubPrefix, Face& face, KeyChain& keyChain,
@@ -66,17 +70,30 @@ public:
   {
     // This should only be called once, so get the random string here.
     chat_prefix_ = Name(hubPrefix).append(chatroom_).append(Chat::getRandomString());
+  }
+
+  /**
+   * Create the ChronoSync2013 and call registerPrefix for chat interests. You
+   * must call this after creating this Chat and making it belong to a
+   * shared_ptr. This is a separate method from the constructor because we need
+   * to call shared_from_this(), but in the constructor this object does not yet
+   * belong to a shared_ptr.
+   */
+  void
+  initialize()
+  {
     int session = (int)::round(getNowMilliseconds()  / 1000.0);
     ostringstream tempStream;
     tempStream << screen_name_ << session;
     usrname_ = tempStream.str();
+
     sync_.reset(new ChronoSync2013
       (bind(&Chat::sendInterest, this, _1, _2),
        bind(&Chat::initial, this), chat_prefix_,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
-       face, keyChain, certificateName, sync_lifetime_, onRegisterFailed));
+       face_, keyChain_, certificateName_, sync_lifetime_, onRegisterFailed));
 
-    face.registerPrefix
+    face_.registerPrefix
       (chat_prefix_, bind(&Chat::onInterest, this, _1, _2, _3, _4),
        onRegisterFailed);
   }
@@ -735,8 +752,9 @@ int main(int argc, char** argv)
        DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
     face.setCommandSigningInfo(keyChain, certificateName);
 
-    Chat chat
-      (screenName, chatRoom, Name(hubPrefix), face, keyChain, certificateName);
+    ptr_lib::shared_ptr<Chat> chat(new Chat
+      (screenName, chatRoom, Name(hubPrefix), face, keyChain, certificateName));
+    chat->initialize();
 
     // The main loop to process Chat while checking stdin to send a message.
     cout << "Enter your chat message. To quit, enter \"leave\" or \"exit\"." << endl;
@@ -747,7 +765,7 @@ int main(int argc, char** argv)
           // We will send the leave message below.
           break;
 
-        chat.sendMessage(input);
+        chat->sendMessage(input);
       }
 
       face.processEvents();
@@ -756,7 +774,7 @@ int main(int argc, char** argv)
     }
 
     // The user entered the command to leave.
-    chat.leave();
+    chat->leave();
     // Wait a little bit to allow other applications to fetch the leave message.
     ndn_MillisecondsSince1970 startTime = Chat::getNowMilliseconds();
     while (true)
