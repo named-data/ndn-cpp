@@ -36,11 +36,12 @@ namespace ndn { namespace ptr_lib = std; }
 #elif NDN_CPP_HAVE_BOOST_SHARED_PTR && NDN_CPP_WITH_BOOST_SHARED_PTR
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/enable_shared_from_this.hpp>
 namespace ndn { namespace ptr_lib = boost; }
 #else
 /* Use the boost header files in this distribution that were extracted with:
 cd <BOOST DEVELOPMENT DIRECTORY WITH boost SUBDIRECTORY>
-dist/bin/bcp --namespace=ndnboost shared_ptr make_shared weak_ptr function bind any iostreams <NDN-CPP ROOT>/include
+dist/bin/bcp --namespace=ndnboost shared_ptr make_shared enable_shared_from_this weak_ptr function bind any iostreams <NDN-CPP ROOT>/include
 cd <NDN-CPP ROOT>/include
 rm -rf boost.css boost.png Jamroot libs
 mv boost ndnboost
@@ -61,6 +62,7 @@ cd ndnboost
  */
 #include <ndnboost/shared_ptr.hpp>
 #include <ndnboost/make_shared.hpp>
+#include <ndnboost/enable_shared_from_this.hpp>
 namespace ndn { namespace ptr_lib = ndnboost; }
 #endif
 
