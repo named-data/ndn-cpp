@@ -38,18 +38,22 @@ using namespace ndn::func_lib;
 
 namespace ndn {
 
-ChronoSync2013::ChronoSync2013
+ChronoSync2013::Impl::Impl
   (const OnReceivedSyncState& onReceivedSyncState,
    const OnInitialized& onInitialized, const Name& applicationDataPrefix,
    const Name& applicationBroadcastPrefix, int sessionNo, Face& face, 
-   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime,
-   const OnRegisterFailed& onRegisterFailed)
+   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
   sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
   contentCache_(&face)
+{
+}
+
+void
+ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
@@ -59,21 +63,21 @@ ChronoSync2013::ChronoSync2013
   //   as the onDataNotFound fallback.
   contentCache_.registerPrefix
     (applicationBroadcastPrefix_, onRegisterFailed,
-     bind(&ChronoSync2013::onInterest, this, _1, _2, _3, _4));
+     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
-  face.expressInterest
-    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
-     bind(&ChronoSync2013::initialTimeOut, this, _1));
+  face_.expressInterest
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::initialTimeOut, shared_from_this(), _1));
   _LOG_DEBUG("initial sync expressed");
   _LOG_DEBUG(interest.getName().toUri());
 }
 
 int
-ChronoSync2013::logfind(const std::string& digest) const
+ChronoSync2013::Impl::logfind(const std::string& digest) const
 {
   for (size_t i = 0; i < digest_log_.size(); ++i) {
     if (digest == digest_log_[i]->getDigest())
@@ -84,7 +88,7 @@ ChronoSync2013::logfind(const std::string& digest) const
 };
 
 bool
-ChronoSync2013::update
+ChronoSync2013::Impl::update
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   for (size_t i = 0; i < content.size(); ++i) {
@@ -109,7 +113,7 @@ ChronoSync2013::update
 }
 
 int
-ChronoSync2013::getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
+ChronoSync2013::Impl::getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
 {
   int index = digest_tree_->find(dataPrefix, sessionNo);
   if (index < 0)
@@ -119,7 +123,7 @@ ChronoSync2013::getProducerSequenceNo(const std::string& dataPrefix, int session
 }
 
 void
-ChronoSync2013::publishNextSequenceNo()
+ChronoSync2013::Impl::publishNextSequenceNo()
 {
   ++usrseq_;
 
@@ -144,12 +148,12 @@ ChronoSync2013::publishNextSequenceNo()
   interest.getName().append(digest_tree_->getRoot());
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
-     bind(&ChronoSync2013::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
 }
 
 void
-ChronoSync2013::onInterest
+ChronoSync2013::Impl::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
    uint64_t registerPrefixId)
@@ -184,7 +188,7 @@ ChronoSync2013::onInterest
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
-           bind(&ChronoSync2013::judgeRecovery, this, _1, syncdigest, &transport));
+           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, syncdigest, &transport));
         _LOG_DEBUG("set timer recover");
       }
       else
@@ -195,7 +199,7 @@ ChronoSync2013::onInterest
 }
 
 void
-ChronoSync2013::onData
+ChronoSync2013::Impl::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
    const ptr_lib::shared_ptr<Data>& co)
 {
@@ -235,14 +239,14 @@ ChronoSync2013::onData
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
-     bind(&ChronoSync2013::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync2013::processRecoveryInst
+ChronoSync2013::Impl::processRecoveryInst
   (const Interest& inst, const string& syncdigest, Transport& transport)
 {
   _LOG_DEBUG("processRecoveryInst");
@@ -275,7 +279,7 @@ ChronoSync2013::processRecoveryInst
 }
 
 bool
-ChronoSync2013::processSyncInst
+ChronoSync2013::Impl::processSyncInst
   (int index, const string& syncdigest_t, Transport& transport)
 {
   vector<string> data_name;
@@ -341,7 +345,7 @@ ChronoSync2013::processSyncInst
 }
 
 void
-ChronoSync2013::sendRecovery(const string& syncdigest_t)
+ChronoSync2013::Impl::sendRecovery(const string& syncdigest_t)
 {
   _LOG_DEBUG("unknown digest: ");
   Name n(applicationBroadcastPrefix_);
@@ -349,14 +353,14 @@ ChronoSync2013::sendRecovery(const string& syncdigest_t)
   Interest interest(n);
   interest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::onData, this, _1, _2),
-     bind(&ChronoSync2013::syncTimeout, this, _1));
+    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Recovery Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync2013::judgeRecovery
+ChronoSync2013::Impl::judgeRecovery
   (const ptr_lib::shared_ptr<const Interest> &interest,
    const string& syncdigest_t, Transport* transport)
 {
@@ -370,7 +374,7 @@ ChronoSync2013::judgeRecovery
 }
 
 void
-ChronoSync2013::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
+ChronoSync2013::Impl::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
    _LOG_DEBUG("Sync Interest time out.");
    _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
@@ -381,15 +385,15 @@ ChronoSync2013::syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
     Interest retryInterest(interest->getName());
     retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
     face_.expressInterest
-      (retryInterest, bind(&ChronoSync2013::onData, this, _1, _2),
-       bind(&ChronoSync2013::syncTimeout, this, _1));
+      (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+       bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
      _LOG_DEBUG("Syncinterest expressed:");
      _LOG_DEBUG(n.toUri());
   }
 }
 
 void
-ChronoSync2013::initialOndata
+ChronoSync2013::Impl::initialOndata
   (const google::protobuf::RepeatedPtrField<Sync::SyncState >& content)
 {
   // The user is a new comer and receive data of all other people in the group.
@@ -445,7 +449,7 @@ ChronoSync2013::initialOndata
 }
 
 void
-ChronoSync2013::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
+ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest)
 {
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
@@ -470,14 +474,14 @@ ChronoSync2013::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& intere
   Interest retryInterest(n);
   retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
   face_.expressInterest
-    (retryInterest, bind(&ChronoSync2013::onData, this, _1, _2),
-     bind(&ChronoSync2013::syncTimeout, this, _1));
+    (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+     bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
   _LOG_DEBUG(n.toUri());
 }
 
 void
-ChronoSync2013::broadcastSyncState
+ChronoSync2013::Impl::broadcastSyncState
   (const string& digest, const Sync::SyncStateMsg& syncMessage)
 {
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
@@ -490,7 +494,7 @@ ChronoSync2013::broadcastSyncState
 }
 
 void
-ChronoSync2013::contentCacheAdd(const Data& data)
+ChronoSync2013::Impl::contentCacheAdd(const Data& data)
 {
   contentCache_.add(data);
 
@@ -542,7 +546,7 @@ ChronoSync2013::PendingInterest::PendingInterest
 }
 
 void
-ChronoSync2013::dummyOnData
+ChronoSync2013::Impl::dummyOnData
   (const ptr_lib::shared_ptr<const Interest>& interest,
    const ptr_lib::shared_ptr<Data>& data)
 {

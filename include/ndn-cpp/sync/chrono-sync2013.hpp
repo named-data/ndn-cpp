@@ -98,7 +98,14 @@ public:
      const OnInitialized& onInitialized, const Name& applicationDataPrefix, 
      const Name& applicationBroadcastPrefix, int sessionNo,
      Face& face, KeyChain& keyChain, const Name& certificateName,
-     Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed);
+     Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
+  : impl_(new Impl
+      (onReceivedSyncState, onInitialized, applicationDataPrefix,
+       applicationBroadcastPrefix, sessionNo, face, keyChain, certificateName,
+       syncLifetime))
+  {
+    impl_->initialize(onRegisterFailed);
+  }
 
   /**
    * A SyncState holds the values of a sync state message which is passed to the
@@ -151,7 +158,10 @@ public:
    * namePrefix and sessionNo are not in the digest tree.
    */
   int
-  getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const;
+  getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
+  {
+    return impl_->getProducerSequenceNo(dataPrefix, sessionNo);
+  }
 
   /**
    * Increment the sequence number, create a sync message with the new
@@ -168,7 +178,10 @@ public:
    * publishNextSequenceNo() (which also modifies the data structures).
    */
   void
-  publishNextSequenceNo();
+  publishNextSequenceNo()
+  {
+    return impl_->publishNextSequenceNo();
+  }
 
   /**
    * Get the sequence number of the latest data published by this application
@@ -176,7 +189,10 @@ public:
    * @return The sequence number.
    */
   int
-  getSequenceNo() const { return usrseq_; }
+  getSequenceNo() const
+  {
+    return impl_->getSequenceNo();
+  }
 
   /**
    * Unregister callbacks so that this does not respond to interests anymore.
@@ -191,7 +207,7 @@ public:
   void
   shutdown()
   {
-    contentCache_.unregisterAll();
+    impl_->shutdown();
   }
 
 private:
@@ -262,118 +278,180 @@ private:
   };
 
   /**
-   * Make a data packet with the syncMessage and with name 
-   * applicationBroadcastPrefix_ + digest. Sign and send.
-   * @param digest The root digest as a hex string for the data packet name.
-   * @param syncMessage The SyncStateMsg which updates the digest tree state
-   * with the given digest.
+   * ChronoSync2013::Impl does the work of ChronoSync2013. It is a separate
+   * class so that ChronoSync2013 can create an instance in a shared_ptr to
+   * use in callbacks.
    */
-  void
-  broadcastSyncState
-    (const std::string& digest, const Sync::SyncStateMsg& syncMessage);
+  class Impl : public ptr_lib::enable_shared_from_this<Impl> {
+  public:
+    /**
+     * Create a new Impl, which should belong to a shared_ptr. Then you must
+     * call initialize().  See the ChronoSync2013 constructor for parameter
+     * documentation.
+     */
+    Impl
+      (const OnReceivedSyncState& onReceivedSyncState,
+       const OnInitialized& onInitialized, const Name& applicationDataPrefix,
+       const Name& applicationBroadcastPrefix, int sessionNo,
+       Face& face, KeyChain& keyChain, const Name& certificateName,
+       Milliseconds syncLifetime);
 
-  /**
-   * Update the digest tree with the messages in content. If the digest tree
-   * root is not in the digest log, also add a log entry with the content.
-   * @param content The sync state messages.
-   * @return True if added a digest log entry (because the updated digest
-   * tree root was not in the log), false if didn't add a log entry.
-   */
-  bool
-  update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+    /**
+     * Initialize the digest log with a digest of "00" and and empty content.
+     * Register the applicationBroadcastPrefix to receive interests for sync
+     * state messages and express an interest for the initial root digest "00".
+     * You must call this after creating this Impl and making it belong to
+     * a shared_ptr. This is a separate method from the constructor because
+     * we need to call shared_from_this(), but in the constructor this object
+     * does not yet belong to a shared_ptr.
+     */
+    void
+    initialize(const OnRegisterFailed& onRegisterFailed);
+    
+    /**
+     * See ChronoSync2013::getProducerSequenceNo.
+     */
+    int
+    getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const;
 
-  // Search the digest log by digest.
-  int
-  logfind(const std::string& digest) const;
+    /**
+     * See ChronoSync2013::publishNextSequenceNo.
+     */
+    void
+    publishNextSequenceNo();
 
-  /**
-   * Process the sync interest from the applicationBroadcastPrefix. If we can't
-   * satisfy the interest, add it to the pendingInterestTable_ so that a
-   * future call to contentCacheAdd may satisfy it.
-   */
-  void
-  onInterest
-    (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
-     uint64_t registerPrefixId);
+    /**
+     * See ChronoSync2013::getSequenceNo.
+     */
+    int
+    getSequenceNo() const { return usrseq_; }
 
-  // Process Sync Data.
-  void
-  onData
-    (const ptr_lib::shared_ptr<const Interest>& inst,
-     const ptr_lib::shared_ptr<Data>& co);
+    /**
+     * See ChronoSync2013::shutdown.
+     */
+    void
+    shutdown()
+    {
+      contentCache_.unregisterAll();
+    }
 
-  // Initial sync interest timeout, which means there are no other publishers yet.
-  void
-  initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
+  private:
+    /**
+     * Make a data packet with the syncMessage and with name
+     * applicationBroadcastPrefix_ + digest. Sign and send.
+     * @param digest The root digest as a hex string for the data packet name.
+     * @param syncMessage The SyncStateMsg which updates the digest tree state
+     * with the given digest.
+     */
+    void
+    broadcastSyncState
+      (const std::string& digest, const Sync::SyncStateMsg& syncMessage);
 
-  void
-  processRecoveryInst
-    (const Interest& inst, const std::string& syncdigest, Transport& transport);
+    /**
+     * Update the digest tree with the messages in content. If the digest tree
+     * root is not in the digest log, also add a log entry with the content.
+     * @param content The sync state messages.
+     * @return True if added a digest log entry (because the updated digest
+     * tree root was not in the log), false if didn't add a log entry.
+     */
+    bool
+    update(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
-  /**
-   * Common interest processing, using digest log to find the difference after
-   * syncdigest_t. Return true if sent a data packet to satisfy the interest,
-   * otherwise false.
-   */
-  bool
-  processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
+    // Search the digest log by digest.
+    int
+    logfind(const std::string& digest) const;
 
-  // Send Recovery Interest.
-  void
-  sendRecovery(const std::string& syncdigest_t);
+    /**
+     * Process the sync interest from the applicationBroadcastPrefix. If we can't
+     * satisfy the interest, add it to the pendingInterestTable_ so that a
+     * future call to contentCacheAdd may satisfy it.
+     */
+    void
+    onInterest
+      (const ptr_lib::shared_ptr<const Name>& prefix,
+       const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+       uint64_t registerPrefixId);
 
-  /**
-   * This is called by onInterest after a timeout to check if a recovery is needed.
-   * This method has an "interest" argument because we use it as the onTimeout
-   * for Face.expressInterest.
-   */
-  void
-  judgeRecovery
-    (const ptr_lib::shared_ptr<const Interest> &interest,
-     const std::string& syncdigest_t, Transport* transport);
+    // Process Sync Data.
+    void
+    onData
+      (const ptr_lib::shared_ptr<const Interest>& inst,
+       const ptr_lib::shared_ptr<Data>& co);
 
-  // Sync interest time out, if the interest is the static one send again.
-  void
-  syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
+    // Initial sync interest timeout, which means there are no other publishers yet.
+    void
+    initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
-  // Process initial data which usually includes all other publisher's info, and send back the new comer's own info.
-  void
-  initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+    void
+    processRecoveryInst
+      (const Interest& inst, const std::string& syncdigest, Transport& transport);
 
-  /**
-   * Add the data packet to the contentCache_. Remove timed-out entries
-   * from pendingInterestTable_. If the data packet satisfies any pending
-   * interest, then send the data packet to the pending interest's transport
-   * and remove from the pendingInterestTable_.
-   * @param data
-   */
-  void
-  contentCacheAdd(const Data& data);
+    /**
+     * Common interest processing, using digest log to find the difference after
+     * syncdigest_t. Return true if sent a data packet to satisfy the interest,
+     * otherwise false.
+     */
+    bool
+    processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
 
-  /**
-   * This is a do-nothing onData for using expressInterest for timeouts.
-   * This should never be called.
-   */
-  static void
-  dummyOnData
-    (const ptr_lib::shared_ptr<const Interest>& interest,
-     const ptr_lib::shared_ptr<Data>& data);
+    // Send Recovery Interest.
+    void
+    sendRecovery(const std::string& syncdigest_t);
 
-  Face& face_;
-  KeyChain& keyChain_;
-  Name certificateName_;
-  Milliseconds sync_lifetime_;
-  OnReceivedSyncState onReceivedSyncState_;
-  OnInitialized onInitialized_;
-  std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
-  ptr_lib::shared_ptr<DigestTree> digest_tree_;
-  std::string applicationDataPrefixUri_;
-  const Name applicationBroadcastPrefix_;
-  int session_;
-  int usrseq_;
-  MemoryContentCache contentCache_;
-  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+    /**
+     * This is called by onInterest after a timeout to check if a recovery is needed.
+     * This method has an "interest" argument because we use it as the onTimeout
+     * for Face.expressInterest.
+     */
+    void
+    judgeRecovery
+      (const ptr_lib::shared_ptr<const Interest> &interest,
+       const std::string& syncdigest_t, Transport* transport);
+
+    // Sync interest time out, if the interest is the static one send again.
+    void
+    syncTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
+
+    // Process initial data which usually includes all other publisher's info, and send back the new comer's own info.
+    void
+    initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
+
+    /**
+     * Add the data packet to the contentCache_. Remove timed-out entries
+     * from pendingInterestTable_. If the data packet satisfies any pending
+     * interest, then send the data packet to the pending interest's transport
+     * and remove from the pendingInterestTable_.
+     * @param data
+     */
+    void
+    contentCacheAdd(const Data& data);
+
+    /**
+     * This is a do-nothing onData for using expressInterest for timeouts.
+     * This should never be called.
+     */
+    static void
+    dummyOnData
+      (const ptr_lib::shared_ptr<const Interest>& interest,
+       const ptr_lib::shared_ptr<Data>& data);
+
+    Face& face_;
+    KeyChain& keyChain_;
+    Name certificateName_;
+    Milliseconds sync_lifetime_;
+    OnReceivedSyncState onReceivedSyncState_;
+    OnInitialized onInitialized_;
+    std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
+    ptr_lib::shared_ptr<DigestTree> digest_tree_;
+    std::string applicationDataPrefixUri_;
+    const Name applicationBroadcastPrefix_;
+    int session_;
+    int usrseq_;
+    MemoryContentCache contentCache_;
+    std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+  };
+
+  ptr_lib::shared_ptr<Impl> impl_;
 };
 
 }
