@@ -58,6 +58,10 @@ public:
    * the digest log with a digest of "00" and and empty content. Register the
    * applicationBroadcastPrefix to receive interests for sync state messages and
    * express an interest for the initial root digest "00".
+   * @note Your application must call processEvents. Since processEvents
+   * modifies the internal ChronoSync data structures, your application should
+   * make sure that it calls processEvents in the same thread as this
+   * constructor (which also modifies the data structures).
    * @param onReceivedSyncState When ChronoSync receives a sync state message,
    * this calls onReceivedSyncState(syncStates, isRecovery) where syncStates is the
    * list of SyncState messages and isRecovery is true if this is the initial
@@ -158,6 +162,10 @@ public:
    * update with the name applicationBroadcastPrefix + the new root digest.
    * After this, your application should publish the content for the new
    * sequence number. You can get the new sequence number with getSequenceNo().
+   * @note Your application must call processEvents. Since processEvents
+   * modifies the internal ChronoSync data structures, your application should
+   * make sure that it calls processEvents in the same thread as
+   * publishNextSequenceNo() (which also modifies the data structures).
    */
   void
   publishNextSequenceNo();
