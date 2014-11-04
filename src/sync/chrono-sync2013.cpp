@@ -42,14 +42,18 @@ ChronoSync2013::Impl::Impl
   (const OnReceivedSyncState& onReceivedSyncState,
    const OnInitialized& onInitialized, const Name& applicationDataPrefix,
    const Name& applicationBroadcastPrefix, int sessionNo, Face& face, 
-   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime,
-   const OnRegisterFailed& onRegisterFailed)
+   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
   sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
   contentCache_(&face)
+{
+}
+
+void
+ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
 {
   Sync::SyncStateMsg emptyContent;
   digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
@@ -65,7 +69,7 @@ ChronoSync2013::Impl::Impl
   interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
   interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
-  face.expressInterest
+  face_.expressInterest
     (interest, bind(&ChronoSync2013::Impl::onData, this, _1, _2),
      bind(&ChronoSync2013::Impl::initialTimeOut, this, _1));
   _LOG_DEBUG("initial sync expressed");

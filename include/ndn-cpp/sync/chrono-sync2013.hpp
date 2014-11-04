@@ -99,11 +99,12 @@ public:
      const Name& applicationBroadcastPrefix, int sessionNo,
      Face& face, KeyChain& keyChain, const Name& certificateName,
      Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
-  {
-    impl_.reset(new Impl
+  : impl_(new Impl
       (onReceivedSyncState, onInitialized, applicationDataPrefix,
        applicationBroadcastPrefix, sessionNo, face, keyChain, certificateName,
-       syncLifetime, onRegisterFailed));
+       syncLifetime))
+  {
+    impl_->initialize(onRegisterFailed);
   }
 
   /**
@@ -284,16 +285,29 @@ private:
   class Impl : public ptr_lib::enable_shared_from_this<Impl> {
   public:
     /**
-     * Create a new Impl, which should belong to a shared_ptr. See the
-     * ChronoSync2013 constructor for parameter documentation.
+     * Create a new Impl, which should belong to a shared_ptr. Then you must
+     * call initialize().  See the ChronoSync2013 constructor for parameter
+     * documentation.
      */
     Impl
       (const OnReceivedSyncState& onReceivedSyncState,
        const OnInitialized& onInitialized, const Name& applicationDataPrefix,
        const Name& applicationBroadcastPrefix, int sessionNo,
        Face& face, KeyChain& keyChain, const Name& certificateName,
-       Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed);
+       Milliseconds syncLifetime);
 
+    /**
+     * Initialize the digest log with a digest of "00" and and empty content.
+     * Register the applicationBroadcastPrefix to receive interests for sync
+     * state messages and express an interest for the initial root digest "00".
+     * You must call this after creating this Impl and making it belong to
+     * a shared_ptr. This is a separate method from the constructor because
+     * we need to call shared_from_this(), but in the constructor this object
+     * does not yet belong to a shared_ptr.
+     */
+    void
+    initialize(const OnRegisterFailed& onRegisterFailed);
+    
     /**
      * See ChronoSync2013::getProducerSequenceNo.
      */
