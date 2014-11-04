@@ -13,20 +13,14 @@
 #include <cstddef>
 #include <ndnboost/detail/workaround.hpp>
 
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-#include <ndnboost/type_traits/msvc/remove_bounds.hpp>
-#endif
-
 // should be the last #include
 #include <ndnboost/type_traits/detail/type_trait_def.hpp>
-
-#if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
 
 namespace ndnboost {
 
 NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_bounds,T,T)
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) && !defined(NDNBOOST_NO_ARRAY_TYPE_SPECIALIZATIONS)
+#if !defined(NDNBOOST_NO_ARRAY_TYPE_SPECIALIZATIONS)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,remove_bounds,T[N],T type)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,remove_bounds,T const[N],T const type)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,remove_bounds,T volatile[N],T volatile type)
@@ -40,8 +34,6 @@ NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_bounds,T const vola
 #endif
 
 } // namespace ndnboost
-
-#endif
 
 #include <ndnboost/type_traits/detail/type_trait_undef.hpp>
 

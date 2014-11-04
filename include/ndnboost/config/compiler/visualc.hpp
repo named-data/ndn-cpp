@@ -1,11 +1,11 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Darin Adler 2001 - 2002. 
-//  (C) Copyright Peter Dimov 2001. 
-//  (C) Copyright Aleksey Gurtovoy 2002. 
-//  (C) Copyright David Abrahams 2002 - 2003. 
-//  (C) Copyright Beman Dawes 2002 - 2003. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
+//  (C) Copyright John Maddock 2001 - 2003.
+//  (C) Copyright Darin Adler 2001 - 2002.
+//  (C) Copyright Peter Dimov 2001.
+//  (C) Copyright Aleksey Gurtovoy 2002.
+//  (C) Copyright David Abrahams 2002 - 2003.
+//  (C) Copyright Beman Dawes 2002 - 2003.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org for most recent version.
@@ -34,67 +34,20 @@
 // Attempt to suppress VC6 warnings about the length of decorated names (obsolete):
 #pragma warning( disable : 4503 ) // warning: decorated name length exceeded
 
+#define NDNBOOST_HAS_PRAGMA_ONCE
+
 //
 // versions check:
-// we don't support Visual C++ prior to version 6:
-#if _MSC_VER < 1200
+// we don't support Visual C++ prior to version 7.1:
+#if _MSC_VER < 1310
 #  error "Compiler not supported or configured - please reconfigure"
 #endif
 
-#if _MSC_VER < 1300  // 1200 == VC++ 6.0, 1200-1202 == eVC++4
-#  pragma warning( disable : 4786 ) // ident trunc to '255' chars in debug info
-#  define NDNBOOST_NO_DEPENDENT_TYPES_IN_TEMPLATE_VALUE_PARAMETERS
-#  define NDNBOOST_NO_VOID_RETURNS
-#  define NDNBOOST_NO_EXCEPTION_STD_NAMESPACE
-
-#  if _MSC_VER == 1202
-#    define NDNBOOST_NO_STD_TYPEINFO
-#  endif
-
+#if _MSC_FULL_VER < 180020827
+#  define NDNBOOST_NO_FENV_H
 #endif
 
-/// Visual Studio has no fenv.h
-#define NDNBOOST_NO_FENV_H
-
-#if (_MSC_VER < 1310)  // 130X == VC++ 7.0
-
-#  if !defined(_MSC_EXTENSIONS) && !defined(NDNBOOST_NO_DEPENDENT_TYPES_IN_TEMPLATE_VALUE_PARAMETERS)      // VC7 bug with /Za
-#    define NDNBOOST_NO_DEPENDENT_TYPES_IN_TEMPLATE_VALUE_PARAMETERS
-#  endif
-
-#  define NDNBOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
-#  define NDNBOOST_NO_INCLASS_MEMBER_INITIALIZATION
-#  define NDNBOOST_NO_PRIVATE_IN_AGGREGATE
-#  define NDNBOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
-#  define NDNBOOST_NO_INTEGRAL_INT64_T
-#  define NDNBOOST_NO_DEDUCED_TYPENAME
-#  define NDNBOOST_NO_USING_DECLARATION_OVERLOADS_FROM_TYPENAME_BASE
-
-//    VC++ 6/7 has member templates but they have numerous problems including
-//    cases of silent failure, so for safety we define:
-#  define NDNBOOST_NO_MEMBER_TEMPLATES
-//    For VC++ experts wishing to attempt workarounds, we define:
-#  define NDNBOOST_MSVC6_MEMBER_TEMPLATES
-
-#  define NDNBOOST_NO_MEMBER_TEMPLATE_FRIENDS
-#  define NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#  define NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
-#  define NDNBOOST_NO_FUNCTION_TEMPLATE_ORDERING
-#  define NDNBOOST_NO_USING_TEMPLATE
-#  define NDNBOOST_NO_SWPRINTF
-#  define NDNBOOST_NO_TEMPLATE_TEMPLATES
-#  define NDNBOOST_NO_SFINAE
-#  define NDNBOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS
-#  define NDNBOOST_NO_IS_ABSTRACT
-#  define NDNBOOST_NO_FUNCTION_TYPE_SPECIALIZATIONS
-// TODO: what version is meant here? Have there really been any fixes in cl 12.01 (as e.g. shipped with eVC4)?
-#  if (_MSC_VER >= 1300)
-#     define NDNBOOST_NO_MEMBER_FUNCTION_SPECIALIZATIONS
-#  endif
-
-#endif
-
-#if _MSC_VER < 1400 
+#if _MSC_VER < 1400
 // although a conforming signature for swprint exists in VC7.1
 // it appears not to actually work:
 #  define NDNBOOST_NO_SWPRINTF
@@ -102,11 +55,6 @@
 #  define NDNBOOST_NO_CXX11_EXTERN_TEMPLATE
 // Variadic macros do not exist for VC7.1 and lower
 #  define NDNBOOST_NO_CXX11_VARIADIC_MACROS
-#endif
-
-#if defined(UNDER_CE)
-// Windows CE does not have a conforming signature for swprintf
-#  define NDNBOOST_NO_SWPRINTF
 #endif
 
 #if _MSC_VER < 1500  // 140X == VC++ 8.0
@@ -119,9 +67,9 @@
 #endif
 
 
-// MSVC (including the latest checked version) has not yet completely 
+// MSVC (including the latest checked version) has not yet completely
 // implemented value-initialization, as is reported:
-// "VC++ does not value-initialize members of derived classes without 
+// "VC++ does not value-initialize members of derived classes without
 // user-declared constructor", reported in 2009 by Sylvester Hesp:
 // https://connect.microsoft.com/VisualStudio/feedback/details/484295
 // "Presence of copy constructor breaks member class initialization",
@@ -138,29 +86,17 @@
 #  define NDNBOOST_NO_INTRINSIC_WCHAR_T
 #endif
 
-#if defined(_WIN32_WCE) || defined(UNDER_CE)
-#  define NDNBOOST_NO_SWPRINTF
-#endif
-
-// we have ThreadEx or GetSystemTimeAsFileTime unless we're running WindowsCE
-#if !defined(_WIN32_WCE) && !defined(UNDER_CE)
-#  define NDNBOOST_HAS_THREADEX
-#  define NDNBOOST_HAS_GETSYSTEMTIMEASFILETIME
-#endif
-
-//   
-// check for exception handling support:   
+//
+// check for exception handling support:
 #if !defined(_CPPUNWIND) && !defined(NDNBOOST_NO_EXCEPTIONS)
-#  define NDNBOOST_NO_EXCEPTIONS   
-#endif 
+#  define NDNBOOST_NO_EXCEPTIONS
+#endif
 
 //
 // __int64 support:
 //
-#if (_MSC_VER >= 1200)
-#   define NDNBOOST_HAS_MS_INT64
-#endif
-#if (_MSC_VER >= 1310) && (defined(_MSC_EXTENSIONS) || (_MSC_VER >= 1400))
+#define NDNBOOST_HAS_MS_INT64
+#if defined(_MSC_EXTENSIONS) || (_MSC_VER >= 1400)
 #   define NDNBOOST_HAS_LONG_LONG
 #else
 #   define NDNBOOST_NO_LONG_LONG
@@ -169,7 +105,7 @@
 #   define NDNBOOST_HAS_NRVO
 #endif
 //
-// disable Win32 API's if compiler extentions are
+// disable Win32 API's if compiler extensions are
 // turned off:
 //
 #if !defined(_MSC_EXTENSIONS) && !defined(NDNBOOST_DISABLE_WIN32)
@@ -210,38 +146,40 @@
 #  define NDNBOOST_HAS_STDINT_H
 #endif
 
-// C++ features supported by VC++ 11 (aka 2012)
+// C++11 features supported by VC++ 11 (aka 2012)
 //
 #if _MSC_VER < 1700
 #  define NDNBOOST_NO_CXX11_RANGE_BASED_FOR
 #  define NDNBOOST_NO_CXX11_SCOPED_ENUMS
 #endif // _MSC_VER < 1700
 
-// C++11 features supported by VC++ 11 (aka 2012) November 2012 CTP
-// Because the CTP is unsupported, unrelease, and only alpha quality,
-// it is only supported if NDNBOOST_MSVC_ENABLE_2012_NOV_CTP is defined.
+// C++11 features supported by VC++ 12 (aka 2013).
 //
-#if _MSC_FULL_VER < 170051025 || !defined(NDNBOOST_MSVC_ENABLE_2012_NOV_CTP)
+#if _MSC_FULL_VER < 180020827
+#  define NDNBOOST_NO_CXX11_DEFAULTED_FUNCTIONS
+#  define NDNBOOST_NO_CXX11_DELETED_FUNCTIONS
 #  define NDNBOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
 #  define NDNBOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS
 #  define NDNBOOST_NO_CXX11_RAW_LITERALS
+#  define NDNBOOST_NO_CXX11_TEMPLATE_ALIASES
+#  define NDNBOOST_NO_CXX11_TRAILING_RESULT_TYPES
 #  define NDNBOOST_NO_CXX11_VARIADIC_TEMPLATES
 #  define NDNBOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
+#  define NDNBOOST_NO_CXX11_DECLTYPE_N3276
 #endif
 
 // C++11 features not supported by any versions
 #define NDNBOOST_NO_CXX11_CHAR16_T
 #define NDNBOOST_NO_CXX11_CHAR32_T
 #define NDNBOOST_NO_CXX11_CONSTEXPR
-#define NDNBOOST_NO_CXX11_DECLTYPE_N3276
-#define NDNBOOST_NO_CXX11_DEFAULTED_FUNCTIONS
-#define NDNBOOST_NO_CXX11_DELETED_FUNCTIONS
 #define NDNBOOST_NO_CXX11_NOEXCEPT
-#define NDNBOOST_NO_CXX11_TEMPLATE_ALIASES
+#define NDNBOOST_NO_CXX11_REF_QUALIFIERS
 #define NDNBOOST_NO_CXX11_UNICODE_LITERALS
 #define NDNBOOST_NO_SFINAE_EXPR
 #define NDNBOOST_NO_TWO_PHASE_NAME_LOOKUP
 #define NDNBOOST_NO_CXX11_USER_DEFINED_LITERALS
+#define NDNBOOST_NO_CXX11_ALIGNAS
+#define NDNBOOST_NO_CXX11_INLINE_NAMESPACES
 
 //
 // prefix and suffix headers:
@@ -255,17 +193,13 @@
 
 #ifndef NDNBOOST_COMPILER
 // TODO:
-// these things are mostly bogus. 1200 means version 12.0 of the compiler. The 
+// these things are mostly bogus. 1200 means version 12.0 of the compiler. The
 // artificial versions assigned to them only refer to the versions of some IDE
 // these compilers have been shipped with, and even that is not all of it. Some
 // were shipped with freely downloadable SDKs, others as crosscompilers in eVC.
 // IOW, you can't use these 'versions' in any sensible way. Sorry.
 # if defined(UNDER_CE)
-#   if _MSC_VER < 1200
-      // Note: these are so far off, they are not really supported
-#   elif _MSC_VER < 1300 // eVC++ 4 comes with 1200-1202
-#     define NDNBOOST_COMPILER_VERSION evc4.0
-#   elif _MSC_VER < 1400
+#   if _MSC_VER < 1400
       // Note: I'm not aware of any CE compiler with version 13xx
 #      if defined(NDNBOOST_ASSERT_CONFIG)
 #         error "Unknown EVC++ compiler version - please run the configure tests and report the results"
@@ -280,6 +214,8 @@
 #     define NDNBOOST_COMPILER_VERSION evc10
 #   elif _MSC_VER < 1800 
 #     define NDNBOOST_COMPILER_VERSION evc11 
+#   elif _MSC_VER < 1900 
+#     define NDNBOOST_COMPILER_VERSION evc12
 #   else
 #      if defined(NDNBOOST_ASSERT_CONFIG)
 #         error "Unknown EVC++ compiler version - please run the configure tests and report the results"
@@ -288,11 +224,11 @@
 #      endif
 #   endif
 # else
-#   if _MSC_VER < 1200
-      // Note: these are so far off, they are not really supported
+#   if _MSC_VER < 1310
+      // Note: Versions up to 7.0 aren't supported.
 #     define NDNBOOST_COMPILER_VERSION 5.0
 #   elif _MSC_VER < 1300
-#       define NDNBOOST_COMPILER_VERSION 6.0
+#     define NDNBOOST_COMPILER_VERSION 6.0
 #   elif _MSC_VER < 1310
 #     define NDNBOOST_COMPILER_VERSION 7.0
 #   elif _MSC_VER < 1400
@@ -304,7 +240,9 @@
 #   elif _MSC_VER < 1700
 #     define NDNBOOST_COMPILER_VERSION 10.0
 #   elif _MSC_VER < 1800 
-#     define NDNBOOST_COMPILER_VERSION 11.0 
+#     define NDNBOOST_COMPILER_VERSION 11.0
+#   elif _MSC_VER < 1900
+#     define NDNBOOST_COMPILER_VERSION 12.0
 #   else
 #     define NDNBOOST_COMPILER_VERSION _MSC_VER
 #   endif
@@ -314,8 +252,8 @@
 #endif
 
 //
-// last known and checked version is 1700 (VC11, aka 2011):
-#if (_MSC_VER > 1700)
+// last known and checked version is 18.00.20827.3 (VC12 RC, aka 2013 RC):
+#if (_MSC_VER > 1800 && _MSC_FULL_VER > 180020827)
 #  if defined(NDNBOOST_ASSERT_CONFIG)
 #     error "Unknown compiler version - please run the configure tests and report the results"
 #  else

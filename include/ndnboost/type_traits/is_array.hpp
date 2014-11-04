@@ -16,10 +16,6 @@
 
 #include <ndnboost/type_traits/config.hpp>
 
-#ifdef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#   include <ndnboost/type_traits/detail/yes_no_type.hpp>
-#   include <ndnboost/type_traits/detail/wrap.hpp>
-#endif
 
 #include <cstddef>
 
@@ -30,7 +26,7 @@ namespace ndnboost {
 
 #if defined( __CODEGEARC__ )
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_array,T,__is_array(T))
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_array,T,false)
 #if !defined(NDNBOOST_NO_ARRAY_TYPE_SPECIALIZATIONS)
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,is_array,T[N],true)
@@ -45,44 +41,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_array,T const volatile[
 #endif
 #endif
 
-#else // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
-namespace detail {
-
-using ::ndnboost::type_traits::yes_type;
-using ::ndnboost::type_traits::no_type;
-using ::ndnboost::type_traits::wrap;
-
-template< typename T > T(* is_array_tester1(wrap<T>) )(wrap<T>);
-char NDNBOOST_TT_DECL is_array_tester1(...);
-
-template< typename T> no_type is_array_tester2(T(*)(wrap<T>));
-yes_type NDNBOOST_TT_DECL is_array_tester2(...);
-
-template< typename T >
-struct is_array_impl
-{ 
-    NDNBOOST_STATIC_CONSTANT(bool, value = 
-        sizeof(::ndnboost::detail::is_array_tester2(
-            ::ndnboost::detail::is_array_tester1(
-                ::ndnboost::type_traits::wrap<T>()
-                )
-        )) == 1
-    );
-};
-
-#ifndef NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_array,void,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_array,void const,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_array,void volatile,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_array,void const volatile,false)
 #endif
-
-} // namespace detail
-
-NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_array,T,::ndnboost::detail::is_array_impl<T>::value)
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace ndnboost
 

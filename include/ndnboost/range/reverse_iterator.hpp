@@ -11,12 +11,13 @@
 #ifndef NDNBOOST_RANGE_REVERSE_ITERATOR_HPP
 #define NDNBOOST_RANGE_REVERSE_ITERATOR_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
 #include <ndnboost/range/config.hpp>
 #include <ndnboost/range/iterator.hpp>
+#include <ndnboost/type_traits/remove_reference.hpp>
 #include <ndnboost/iterator/reverse_iterator.hpp>
 
 
@@ -26,11 +27,12 @@ namespace ndnboost
     // default
     //////////////////////////////////////////////////////////////////////////
     
-    template< typename C >
+    template< typename T >
     struct range_reverse_iterator
     {
         typedef reverse_iterator< 
-            NDNBOOST_DEDUCED_TYPENAME range_iterator<C>::type > type;
+            NDNBOOST_DEDUCED_TYPENAME range_iterator<
+                NDNBOOST_DEDUCED_TYPENAME remove_reference<T>::type>::type > type;
     };
     
 

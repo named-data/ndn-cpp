@@ -38,11 +38,9 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_DEF2(
     , Derived
     , (::ndnboost::detail::is_base_of_imp<Base, Derived>::value))
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC2_2(typename Base,typename Derived,is_base_of,Base&,Derived,false)
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC2_2(typename Base,typename Derived,is_base_of,Base,Derived&,false)
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC2_2(typename Base,typename Derived,is_base_of,Base&,Derived&,false)
-#endif
 
 } // namespace ndnboost
 

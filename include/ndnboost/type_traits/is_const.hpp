@@ -24,7 +24,6 @@
 #include <ndnboost/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 #   include <ndnboost/type_traits/detail/cv_traits_impl.hpp>
 #   ifdef __GNUC__
 #       include <ndnboost/type_traits/is_reference.hpp>
@@ -32,12 +31,6 @@
 #   if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1400)
 #       include <ndnboost/type_traits/remove_bounds.hpp>
 #   endif
-#else
-#   include <ndnboost/type_traits/is_reference.hpp>
-#   include <ndnboost/type_traits/is_array.hpp>
-#   include <ndnboost/type_traits/detail/yes_no_type.hpp>
-#   include <ndnboost/type_traits/detail/false_result.hpp>
-#endif
 
 // should be the last #include
 #include <ndnboost/type_traits/detail/bool_trait_def.hpp>
@@ -48,7 +41,7 @@ namespace ndnboost {
 
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_const,T,__is_const(T))
 
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 
 namespace detail{
 //
@@ -61,7 +54,7 @@ struct is_const_rvalue_filter
 #if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1400)
    NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<typename ndnboost::remove_bounds<T>::type*>::is_const);
 #else
-   NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<T*>::is_const);
+   NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<NDNBOOST_TT_AUX_CV_TRAITS_IMPL_PARAM(T)>::is_const);
 #endif
 };
 #ifndef NDNBOOST_NO_CXX11_RVALUE_REFERENCES
@@ -87,75 +80,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_const,T& volatile,false
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_const,T& const volatile,false)
 #endif
 
-#if defined(__GNUC__) && (__GNUC__ < 3)
-// special case for gcc where illegally cv-qualified reference types can be
-// generated in some corner cases:
-NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_const,T const,!(::ndnboost::is_reference<T>::value))
-NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_const,T volatile const,!(::ndnboost::is_reference<T>::value))
 #endif
-
-#else
-
-namespace detail {
-
-using ::ndnboost::type_traits::yes_type;
-using ::ndnboost::type_traits::no_type;
-
-yes_type is_const_tester(const volatile void*);
-no_type is_const_tester(volatile void *);
-
-template <bool is_ref, bool array>
-struct is_const_helper
-    : public ::ndnboost::type_traits::false_result
-{
-};
-
-template <>
-struct is_const_helper<false,false>
-{
-    template <typename T> struct result_
-    {
-        static T* t;
-        NDNBOOST_STATIC_CONSTANT(bool, value = (
-            sizeof(ndnboost::detail::yes_type) == sizeof(ndnboost::detail::is_const_tester(t))
-            ));
-    };
-};
-
-template <>
-struct is_const_helper<false,true>
-{
-    template <typename T> struct result_
-    {
-        static T t;
-        NDNBOOST_STATIC_CONSTANT(bool, value = (
-            sizeof(ndnboost::detail::yes_type) == sizeof(ndnboost::detail::is_const_tester(&t))
-            ));
-    };
-};
-
-template <typename T>
-struct is_const_impl
-    : public is_const_helper<
-          is_reference<T>::value
-        , is_array<T>::value
-        >::template result_<T>
-{
-};
-
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_const,void,false)
-#ifndef NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_const,void const,true)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_const,void volatile,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_const,void const volatile,true)
-#endif
-
-} // namespace detail
-
-//* is a type T  declared const - is_const<T>
-NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_const,T,::ndnboost::detail::is_const_impl<T>::value)
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace ndnboost
 

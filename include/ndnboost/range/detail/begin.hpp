@@ -15,9 +15,6 @@
 #include <ndnboost/detail/workaround.hpp>
 #include <ndnboost/range/iterator.hpp>
 #include <ndnboost/range/detail/common.hpp>
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1310)
-# include <ndnboost/range/value_type.hpp>
-#endif
 
 namespace ndnboost
 {
@@ -62,19 +59,11 @@ namespace ndnboost
         template<>
         struct range_begin<array_>
         {
-        #if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1310)
-            template< typename T, std::size_t sz >
-            static T* fun( T NDNBOOST_RANGE_ARRAY_REF()[sz] )
-            {
-                return boost_range_array;
-            }
-        #else
             template<typename T>
             static NDNBOOST_RANGE_DEDUCED_TYPENAME range_value<T>::type* fun(T& t)
             {
                 return t;
             }
-        #endif
         };
 
     } // namespace 'range_detail'

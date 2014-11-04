@@ -93,7 +93,6 @@ struct is_class_impl
 template <typename T>
 struct is_class_impl
 {
-#   ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     NDNBOOST_STATIC_CONSTANT(bool, value =
     (::ndnboost::type_traits::ice_and<
         ::ndnboost::type_traits::ice_not< ::ndnboost::is_union<T>::value >::value,
@@ -103,16 +102,6 @@ struct is_class_impl
         ::ndnboost::type_traits::ice_not< ::ndnboost::is_void<T>::value >::value,
         ::ndnboost::type_traits::ice_not< ::ndnboost::is_function<T>::value >::value
         >::value));
-#   else
-    NDNBOOST_STATIC_CONSTANT(bool, value =
-    (::ndnboost::type_traits::ice_and<
-        ::ndnboost::type_traits::ice_not< ::ndnboost::is_union<T>::value >::value,
-        ::ndnboost::type_traits::ice_not< ::ndnboost::is_scalar<T>::value >::value,
-        ::ndnboost::type_traits::ice_not< ::ndnboost::is_array<T>::value >::value,
-        ::ndnboost::type_traits::ice_not< ::ndnboost::is_reference<T>::value>::value,
-        ::ndnboost::type_traits::ice_not< ::ndnboost::is_void<T>::value >::value
-        >::value));
-#   endif
 };
 
 # endif // NDNBOOST_TT_HAS_CONFORMING_IS_CLASS_IMPLEMENTATION

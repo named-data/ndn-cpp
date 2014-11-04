@@ -19,8 +19,7 @@ namespace ndnboost { namespace python { namespace objects {
 }}}
 #endif
 
-#if defined (NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)                    \
- || defined(NDNBOOST_BCB_PARTIAL_SPECIALIZATION_BUG)                         \
+#if defined(NDNBOOST_BCB_PARTIAL_SPECIALIZATION_BUG)                         \
  || !(defined(NDNBOOST_STRICT_CONFIG) || !defined(__SUNPRO_CC) || __SUNPRO_CC > 0x540)
 #  define NDNBOOST_FUNCTION_NO_FUNCTION_TYPE_SYNTAX
 #endif

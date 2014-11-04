@@ -11,18 +11,24 @@
 #ifndef NDNBOOST_RANGE_DIFFERENCE_TYPE_HPP
 #define NDNBOOST_RANGE_DIFFERENCE_TYPE_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
 #include <ndnboost/range/config.hpp>
 #include <ndnboost/range/iterator.hpp>
 #include <ndnboost/iterator/iterator_traits.hpp>
+#include <ndnboost/type_traits/remove_reference.hpp>
 
 namespace ndnboost
 {
     template< class T >
-    struct range_difference : iterator_difference< typename range_iterator<T>::type >
+    struct range_difference
+            : iterator_difference<
+                NDNBOOST_DEDUCED_TYPENAME range_iterator<
+                    NDNBOOST_DEDUCED_TYPENAME remove_reference<T>::type
+                >::type
+            >
     { };
 }
 

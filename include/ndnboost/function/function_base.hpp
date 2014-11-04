@@ -56,7 +56,7 @@
 // need to use std::type_info::name to compare instead of operator==.
 #if defined( NDNBOOST_NO_TYPEID )
 #  define NDNBOOST_FUNCTION_COMPARE_TYPE_ID(X,Y) ((X)==(Y))
-#elif (defined(__GNUC__) && __GNUC__ >= 3) \
+#elif defined(__GNUC__) \
  || defined(_AIX) \
  || (   defined(__sgi) && defined(__host_mips))
 #  include <cstring>
@@ -66,11 +66,11 @@
 #  define NDNBOOST_FUNCTION_COMPARE_TYPE_ID(X,Y) ((X)==(Y))
 #endif
 
-#if defined(NDNBOOST_MSVC) && NDNBOOST_MSVC <= 1300 || defined(__ICL) && __ICL <= 600 || defined(__MWERKS__) && __MWERKS__ < 0x2406 && !defined(NDNBOOST_STRICT_CONFIG)
+#if defined(__ICL) && __ICL <= 600 || defined(__MWERKS__) && __MWERKS__ < 0x2406 && !defined(NDNBOOST_STRICT_CONFIG)
 #  define NDNBOOST_FUNCTION_TARGET_FIX(x) x
 #else
 #  define NDNBOOST_FUNCTION_TARGET_FIX(x)
-#endif // not MSVC
+#endif // __ICL etc
 
 #if !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x5A0)
 #  define NDNBOOST_FUNCTION_ENABLE_IF_NOT_INTEGRAL(Functor,Type)              \
@@ -661,11 +661,7 @@ public:
     }
 
   template<typename Functor>
-#if defined(NDNBOOST_MSVC) && NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)
-    const Functor* target( Functor * = 0 ) const
-#else
     const Functor* target() const
-#endif
     {
       if (!vtable) return 0;
 
@@ -683,11 +679,7 @@ public:
   template<typename F>
     bool contains(const F& f) const
     {
-#if defined(NDNBOOST_MSVC) && NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)
-      if (const F* fp = this->target( (F*)0 ))
-#else
       if (const F* fp = this->template target<F>())
-#endif
       {
         return function_equal(*fp, f);
       } else {

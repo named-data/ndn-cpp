@@ -151,10 +151,15 @@ NDNBOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x
      // vc10:
 #    define NDNBOOST_LIB_TOOLSET "vc100"
 
-#  elif defined(NDNBOOST_MSVC)
+#  elif defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC < 1800)
 
      // vc11:
 #    define NDNBOOST_LIB_TOOLSET "vc110"
+
+#  elif defined(NDNBOOST_MSVC)
+
+     // vc12:
+#    define NDNBOOST_LIB_TOOLSET "vc120"
 
 #  elif defined(__BORLANDC__)
 
@@ -420,4 +425,5 @@ NDNBOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x
 #if defined(NDNBOOST_DYN_LINK)
 #  undef NDNBOOST_DYN_LINK
 #endif
+
 

@@ -15,13 +15,8 @@
 
 #include "ndnboost/config.hpp"
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 #   include "ndnboost/mpl/bool.hpp"
 #   include "ndnboost/type_traits/has_nothrow_copy.hpp"
-#else
-#   include "ndnboost/mpl/if.hpp"
-#   include "ndnboost/type_traits/is_reference.hpp"
-#endif
 
 #include "ndnboost/mpl/void.hpp"
 
@@ -78,7 +73,6 @@ public: // queries
 
 template <typename T = mpl::void_> struct make_reference_content;
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 template <typename T>
 struct make_reference_content
@@ -92,19 +86,6 @@ struct make_reference_content< T& >
     typedef reference_content<T&> type;
 };
 
-#else // defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-
-template <typename T>
-struct make_reference_content
-    : mpl::if_<
-          is_reference<T>
-        , reference_content<T>
-        , T
-        >
-{
-};
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION workaround
 
 template <>
 struct make_reference_content< mpl::void_ >
@@ -124,7 +105,6 @@ struct make_reference_content< mpl::void_ >
 // reference_content<T&> type traits specializations
 //
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 template <typename T>
 struct has_nothrow_copy<
@@ -134,7 +114,6 @@ struct has_nothrow_copy<
 {
 };
 
-#endif // !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 } // namespace ndnboost
 

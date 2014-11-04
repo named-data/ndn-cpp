@@ -399,7 +399,6 @@ typename w32_regex_traits_implementation<charT>::string_type
          return pos->second;
    }
 #if !defined(NDNBOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)\
-               && !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)\
                && !NDNBOOST_WORKAROUND(__BORLANDC__, <= 0x0551)
    std::string name(p1, p2);
 #else
@@ -410,7 +409,6 @@ typename w32_regex_traits_implementation<charT>::string_type
 #endif
    name = lookup_default_collate_name(name);
 #if !defined(NDNBOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)\
-               && !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)\
                && !NDNBOOST_WORKAROUND(__BORLANDC__, <= 0x0551)
    if(name.size())
       return string_type(name.begin(), name.end());
@@ -552,7 +550,7 @@ typename w32_regex_traits_implementation<charT>::char_class_type
 
 
 template <class charT>
-ndnboost::shared_ptr<const w32_regex_traits_implementation<charT> > create_w32_regex_traits(::ndnboost::re_detail::lcid_type l NDNBOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(charT))
+ndnboost::shared_ptr<const w32_regex_traits_implementation<charT> > create_w32_regex_traits(::ndnboost::re_detail::lcid_type l)
 {
    // TODO: create a cache for previously constructed objects.
    return ndnboost::object_cache< ::ndnboost::re_detail::lcid_type, w32_regex_traits_implementation<charT> >::get(l, 5);

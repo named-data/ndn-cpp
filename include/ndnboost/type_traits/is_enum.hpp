@@ -55,13 +55,12 @@ struct is_class_or_union
 template <typename T>
 struct is_class_or_union
 {
-# if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300) || NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x581))// we simply can't detect it this way.
+# if NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x581))// we simply can't detect it this way.
     NDNBOOST_STATIC_CONSTANT(bool, value = false);
 # else
     template <class U> static ::ndnboost::type_traits::yes_type is_class_or_union_tester(void(U::*)(void));
 
-#  if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, == 1300)                 \
-    || NDNBOOST_WORKAROUND(__MWERKS__, <= 0x3000) // no SFINAE
+#  if NDNBOOST_WORKAROUND(__MWERKS__, <= 0x3000) // no SFINAE
     static ::ndnboost::type_traits::no_type is_class_or_union_tester(...);
     NDNBOOST_STATIC_CONSTANT(
         bool, value = sizeof(is_class_or_union_tester(0)) == sizeof(::ndnboost::type_traits::yes_type));

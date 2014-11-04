@@ -15,9 +15,9 @@
 #include <ndnboost/detail/sp_typeinfo.hpp>
 #include <ndnboost/current_function.hpp>
 #include <ndnboost/config.hpp>
-#ifndef NDNBOOST_NO_TYPEID
-#include <ndnboost/units/detail/utility.hpp>
-#endif
+//#ifndef NDNBOOST_NO_TYPEID
+//#include <ndnboost/units/detail/utility.hpp>
+//#endif
 #include <string>
 
 namespace
@@ -31,7 +31,7 @@ ndnboost
 #ifdef NDNBOOST_NO_TYPEID
         return NDNBOOST_CURRENT_FUNCTION;
 #else
-        return units::detail::demangle(typeid(T*).name());
+        return /*units::detail::demangle*/(typeid(T*).name());
 #endif
         }
 
@@ -43,7 +43,7 @@ ndnboost
 #ifdef NDNBOOST_NO_TYPEID
         return NDNBOOST_CURRENT_FUNCTION;
 #else
-        return units::detail::demangle(typeid(T).name());
+        return /*units::detail::demangle*/(typeid(T).name());
 #endif
         }
 

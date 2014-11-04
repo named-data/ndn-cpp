@@ -10,12 +10,6 @@
 
 namespace ndnboost { namespace concepts { 
 
-# if NDNBOOST_WORKAROUND(__GNUC__, == 2)
-
-#  define NDNBOOST_CONCEPT_USAGE(model) ~model()
-
-# else 
-
 template <class Model>
 struct usage_requirements
 {
@@ -36,8 +30,6 @@ struct usage_requirements
       ~model()
 
 #  endif
-
-# endif 
 
 }} // namespace ndnboost::concepts
 

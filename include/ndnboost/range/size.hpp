@@ -11,7 +11,7 @@
 #ifndef NDNBOOST_RANGE_SIZE_HPP
 #define NDNBOOST_RANGE_SIZE_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
@@ -19,24 +19,39 @@
 #include <ndnboost/range/begin.hpp>
 #include <ndnboost/range/end.hpp>
 #include <ndnboost/range/size_type.hpp>
+#include <ndnboost/range/detail/has_member_size.hpp>
 #include <ndnboost/assert.hpp>
+#include <ndnboost/cstdint.hpp>
+#include <ndnboost/utility.hpp>
 
 namespace ndnboost
 {
     namespace range_detail
     {
+
         template<class SinglePassRange>
-        inline NDNBOOST_DEDUCED_TYPENAME range_size<const SinglePassRange>::type
+        inline typename ::ndnboost::enable_if<
+            has_member_size<SinglePassRange>,
+            typename range_size<const SinglePassRange>::type
+        >::type
         range_calculate_size(const SinglePassRange& rng)
         {
-            NDNBOOST_ASSERT( (ndnboost::end(rng) - ndnboost::begin(rng)) >= 0 &&
-                          "reachability invariant broken!" );
-            return ndnboost::end(rng) - ndnboost::begin(rng);
+            return rng.size();
+        }
+
+        template<class SinglePassRange>
+        inline typename disable_if<
+            has_member_size<SinglePassRange>,
+            typename range_size<const SinglePassRange>::type
+        >::type
+        range_calculate_size(const SinglePassRange& rng)
+        {
+            return std::distance(ndnboost::begin(rng), ndnboost::end(rng));
         }
     }
 
     template<class SinglePassRange>
-    inline NDNBOOST_DEDUCED_TYPENAME range_size<const SinglePassRange>::type
+    inline typename range_size<const SinglePassRange>::type
     size(const SinglePassRange& rng)
     {
 #if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564)) && \

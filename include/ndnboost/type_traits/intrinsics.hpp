@@ -109,8 +109,8 @@
 //  #   define NDNBOOST_ALIGNMENT_OF(T) __alignof(T)
 
 #   if defined(_MSC_VER) && (_MSC_VER >= 1700)
-#       define NDNBOOST_HAS_TRIVIAL_MOVE_CONSTRUCTOR(T) ((__has_trivial_move_constructor(T) || ::ndnboost::is_pod<T>::value) && !::ndnboost::is_volatile<T>::value)
-#       define NDNBOOST_HAS_TRIVIAL_MOVE_ASSIGN(T) ((__has_trivial_move_assign(T) || ::ndnboost::is_pod<T>::value) && ! ::ndnboost::is_const<T>::value && !::ndnboost::is_volatile<T>::value)
+#       define NDNBOOST_HAS_TRIVIAL_MOVE_CONSTRUCTOR(T) ((__has_trivial_move_constructor(T) || ::ndnboost::is_pod<T>::value) && !::ndnboost::is_volatile<T>::value && !::ndnboost::is_reference<T>::value)
+#       define NDNBOOST_HAS_TRIVIAL_MOVE_ASSIGN(T) ((__has_trivial_move_assign(T) || ::ndnboost::is_pod<T>::value) && ! ::ndnboost::is_const<T>::value && !::ndnboost::is_volatile<T>::value && !::ndnboost::is_reference<T>::value)
 #   endif
 
 #   define NDNBOOST_HAS_TYPE_TRAITS_INTRINSICS

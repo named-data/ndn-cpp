@@ -9,20 +9,14 @@
 #ifndef NDNBOOST_TT_REMOVE_REFERENCE_HPP_INCLUDED
 #define NDNBOOST_TT_REMOVE_REFERENCE_HPP_INCLUDED
 
-#include <ndnboost/type_traits/broken_compiler_spec.hpp>
 #include <ndnboost/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
-
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-#include <ndnboost/type_traits/msvc/remove_reference.hpp>
-#endif
 
 // should be the last #include
 #include <ndnboost/type_traits/detail/type_trait_def.hpp>
 
 namespace ndnboost {
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 namespace detail{
 //
@@ -57,11 +51,6 @@ NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_reference,T& volati
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_reference,T& const volatile,T)
 #endif
 
-#elif !NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-
-NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_reference,T,typename ndnboost::detail::remove_reference_impl<T>::type)
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace ndnboost
 

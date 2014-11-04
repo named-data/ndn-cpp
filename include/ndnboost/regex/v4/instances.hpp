@@ -92,9 +92,7 @@ template class NDNBOOST_REGEX_DECL ::ndnboost::re_detail::perl_matcher<NDNBOOST_
 
 template class NDNBOOST_REGEX_TEMPLATE_DECL basic_regex< NDNBOOST_REGEX_CHAR_T NDNBOOST_REGEX_TRAITS_T >;
 
-#if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)
 template class NDNBOOST_REGEX_TEMPLATE_DECL match_results< const NDNBOOST_REGEX_CHAR_T* >;
-#endif
 #ifndef NDNBOOST_NO_STD_ALLOCATOR
 template class NDNBOOST_REGEX_TEMPLATE_DECL ::ndnboost::re_detail::perl_matcher<NDNBOOST_REGEX_CHAR_T const *, match_results< const NDNBOOST_REGEX_CHAR_T* >::allocator_type NDNBOOST_REGEX_TRAITS_T >;
 #endif
@@ -102,9 +100,7 @@ template class NDNBOOST_REGEX_TEMPLATE_DECL ::ndnboost::re_detail::perl_matcher<
    && !(defined(NDNBOOST_INTEL_CXX_VERSION) && (NDNBOOST_INTEL_CXX_VERSION <= 800))\
    && !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))\
    && !defined(NDNBOOST_REGEX_ICU_INSTANCES)
-#if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)
 template class NDNBOOST_REGEX_TEMPLATE_DECL match_results< std::basic_string<NDNBOOST_REGEX_CHAR_T>::const_iterator >;
-#endif
 #ifndef NDNBOOST_NO_STD_ALLOCATOR
 template class NDNBOOST_REGEX_TEMPLATE_DECL ::ndnboost::re_detail::perl_matcher< std::basic_string<NDNBOOST_REGEX_CHAR_T>::const_iterator, match_results< std::basic_string<NDNBOOST_REGEX_CHAR_T>::const_iterator >::allocator_type, ndnboost::regex_traits<NDNBOOST_REGEX_CHAR_T > >;
 #endif

@@ -24,17 +24,10 @@
 #include <ndnboost/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 #   include <ndnboost/type_traits/detail/cv_traits_impl.hpp>
 #   if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1400)
 #       include <ndnboost/type_traits/remove_bounds.hpp>
 #   endif
-#else
-#   include <ndnboost/type_traits/is_reference.hpp>
-#   include <ndnboost/type_traits/is_array.hpp>
-#   include <ndnboost/type_traits/detail/yes_no_type.hpp>
-#   include <ndnboost/type_traits/detail/false_result.hpp>
-#endif
 
 // should be the last #include
 #include <ndnboost/type_traits/detail/bool_trait_def.hpp>
@@ -48,7 +41,7 @@ struct is_volatile_rval_filter
 #if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1400)
    NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<typename ndnboost::remove_bounds<T>::type*>::is_volatile);
 #else
-   NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<T*>::is_volatile);
+   NDNBOOST_STATIC_CONSTANT(bool, value = ::ndnboost::detail::cv_traits_imp<NDNBOOST_TT_AUX_CV_TRAITS_IMPL_PARAM(T)>::is_volatile);
 #endif
 };
 #ifndef NDNBOOST_NO_CXX11_RVALUE_REFERENCES
@@ -66,7 +59,7 @@ struct is_volatile_rval_filter<T&&>
 
 #if defined( __CODEGEARC__ )
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_volatile,T,__is_volatile(T))
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 
 //* is a type T declared volatile - is_volatile<T>
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_volatile,T,::ndnboost::detail::is_volatile_rval_filter<T>::value)
@@ -82,68 +75,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_volatile,T& volatile,fa
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_volatile,T& const volatile,false)
 #endif
 
-#else
-
-namespace detail {
-
-using ::ndnboost::type_traits::yes_type;
-using ::ndnboost::type_traits::no_type;
-
-yes_type is_volatile_tester(void const volatile*);
-no_type is_volatile_tester(void const*);
-
-template <bool is_ref, bool array>
-struct is_volatile_helper
-    : public ::ndnboost::type_traits::false_result
-{
-};
-
-template <>
-struct is_volatile_helper<false,false>
-{
-    template <typename T> struct result_
-    {
-        static T* t;
-        NDNBOOST_STATIC_CONSTANT(bool, value = (
-            sizeof(ndnboost::detail::yes_type) == sizeof(ndnboost::detail::is_volatile_tester(t))
-            ));
-    };
-};
-
-template <>
-struct is_volatile_helper<false,true>
-{
-    template <typename T> struct result_
-    {
-        static T t;
-        NDNBOOST_STATIC_CONSTANT(bool, value = (
-            sizeof(ndnboost::detail::yes_type) == sizeof(ndnboost::detail::is_volatile_tester(&t))
-            ));
-    };
-};
-
-template <typename T>
-struct is_volatile_impl
-    : public is_volatile_helper<
-          is_reference<T>::value
-        , is_array<T>::value
-        >::template result_<T>
-{
-};
-
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_volatile,void,false)
-#ifndef NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_volatile,void const,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_volatile,void volatile,true)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_volatile,void const volatile,true)
 #endif
-
-} // namespace detail
-
-//* is a type T declared volatile - is_volatile<T>
-NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_volatile,T,::ndnboost::detail::is_volatile_impl<T>::value)
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace ndnboost
 

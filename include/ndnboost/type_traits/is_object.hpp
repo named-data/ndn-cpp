@@ -26,20 +26,12 @@ namespace detail {
 template <typename T>
 struct is_object_impl
 {
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
    NDNBOOST_STATIC_CONSTANT(bool, value =
       (::ndnboost::type_traits::ice_and<
          ::ndnboost::type_traits::ice_not< ::ndnboost::is_reference<T>::value>::value,
          ::ndnboost::type_traits::ice_not< ::ndnboost::is_void<T>::value>::value,
          ::ndnboost::type_traits::ice_not< ::ndnboost::is_function<T>::value>::value
       >::value));
-#else
-   NDNBOOST_STATIC_CONSTANT(bool, value =
-      (::ndnboost::type_traits::ice_and<
-         ::ndnboost::type_traits::ice_not< ::ndnboost::is_reference<T>::value>::value,
-         ::ndnboost::type_traits::ice_not< ::ndnboost::is_void<T>::value>::value
-      >::value));
-#endif
 };
 
 } // namespace detail

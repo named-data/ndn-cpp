@@ -10,8 +10,6 @@
 #ifndef NDNBOOST_VISIT_EACH_HPP
 #define NDNBOOST_VISIT_EACH_HPP
 
-#include <ndnboost/config.hpp>
-
 namespace ndnboost {
   template<typename Visitor, typename T>
   inline void visit_each(Visitor& visitor, const T& t, long)

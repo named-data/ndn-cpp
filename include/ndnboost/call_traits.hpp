@@ -5,7 +5,7 @@
 //
 //  See http://www.boost.org/libs/utility for most recent version including documentation.
 
-//  See ndnboost/detail/call_traits.hpp and ndnboost/detail/ob_call_traits.hpp
+//  See ndnboost/detail/call_traits.hpp
 //  for full copyright notices.
 
 #ifndef NDNBOOST_CALL_TRAITS_HPP
@@ -15,10 +15,6 @@
 #include <ndnboost/config.hpp>
 #endif
 
-#ifdef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#include <ndnboost/detail/ob_call_traits.hpp>
-#else
 #include <ndnboost/detail/call_traits.hpp>
-#endif
 
 #endif // NDNBOOST_CALL_TRAITS_HPP

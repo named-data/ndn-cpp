@@ -1,7 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2002. 
-//  (C) Copyright Aleksey Gurtovoy 2002. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
+//  (C) Copyright John Maddock 2001 - 2002.
+//  (C) Copyright Aleksey Gurtovoy 2002.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org for most recent version.
@@ -69,7 +69,10 @@
 #define NDNBOOST_NO_CXX11_VARIADIC_MACROS
 #define NDNBOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
 #define NDNBOOST_NO_CXX11_USER_DEFINED_LITERALS
-
+#define NDNBOOST_NO_CXX11_ALIGNAS
+#define NDNBOOST_NO_CXX11_TRAILING_RESULT_TYPES
+#define NDNBOOST_NO_CXX11_INLINE_NAMESPACES
+#define NDNBOOST_NO_CXX11_REF_QUALIFIERS
 //
 // versions check:
 // we don't support MPW prior to version 8.9:

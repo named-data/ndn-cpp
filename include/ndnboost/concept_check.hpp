@@ -32,6 +32,12 @@
 # include <ndnboost/concept/usage.hpp>
 # include <ndnboost/concept/detail/concept_def.hpp>
 
+#if (defined _MSC_VER)
+# pragma warning( push )
+# pragma warning( disable : 4510 ) // default constructor could not be generated
+# pragma warning( disable : 4610 ) // object 'class' can never be instantiated - user-defined constructor required
+#endif
+
 namespace ndnboost
 {
 
@@ -175,11 +181,6 @@ namespace ndnboost
     TT b;
   };
 
-#if (defined _MSC_VER)
-# pragma warning( push )
-# pragma warning( disable : 4510 ) // default constructor could not be generated
-# pragma warning( disable : 4610 ) // object 'class' can never be instantiated - user-defined constructor required
-#endif
   // The SGI STL version of Assignable requires copy constructor and operator=
   NDNBOOST_concept(SGIAssignable,(TT))
   {
@@ -202,9 +203,6 @@ namespace ndnboost
     TT a;
     TT b;
   };
-#if (defined _MSC_VER)
-# pragma warning( pop )
-#endif
 
   NDNBOOST_concept(Convertible,(X)(Y))
   {
@@ -562,10 +560,10 @@ namespace ndnboost
     : ForwardIterator<TT>
   {
       NDNBOOST_CONCEPT_USAGE(Mutable_ForwardIterator) {
-        *i++ = *i;         // require postincrement and assignment
+        *i++ = *j;         // require postincrement and assignment
       }
    private:
-      TT i;
+      TT i, j;
   };
 
   NDNBOOST_concept(BidirectionalIterator,(TT))
@@ -591,10 +589,10 @@ namespace ndnboost
   {
       NDNBOOST_CONCEPT_USAGE(Mutable_BidirectionalIterator)
       {
-          *i-- = *i;                  // require postdecrement and assignment
+          *i-- = *j;                  // require postdecrement and assignment
       }
    private:
-      TT i;
+      TT i, j;
   };
 
   NDNBOOST_concept(RandomAccessIterator,(TT))
@@ -880,7 +878,7 @@ namespace ndnboost
           typename BackInsertionSequence::const_reference
               r = cc.back();
           ignore_unused_variable_warning(r);
-      };
+      }
       S c;
       typename S::value_type t;
   };
@@ -1076,6 +1074,10 @@ namespace ndnboost
       size_type n;
   };
 } // namespace ndnboost
+
+#if (defined _MSC_VER)
+# pragma warning( pop )
+#endif
 
 # include <ndnboost/concept/detail/concept_undef.hpp>
 

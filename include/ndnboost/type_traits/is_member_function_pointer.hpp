@@ -14,8 +14,7 @@
 #include <ndnboost/type_traits/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
-   && !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600) && !defined(NDNBOOST_TT_TEST_MS_FUNC_SIGS)
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600) && !defined(NDNBOOST_TT_TEST_MS_FUNC_SIGS)
    //
    // Note: we use the "workaround" version for MSVC because it works for 
    // __stdcall etc function types, where as the partial specialisation
@@ -39,7 +38,7 @@ namespace ndnboost {
 
 #if defined( __CODEGEARC__ )
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_function_pointer,T,__is_member_function_pointer( T ))
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) && !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600) && !defined(NDNBOOST_TT_TEST_MS_FUNC_SIGS)
+#elif !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600) && !defined(NDNBOOST_TT_TEST_MS_FUNC_SIGS)
 
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(
       is_member_function_pointer
@@ -92,10 +91,8 @@ struct is_member_function_pointer_impl
 {
 };
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <typename T>
 struct is_member_function_pointer_impl<T&> : public false_type{};
-#endif
 
 #else // Borland C++
 
@@ -127,7 +124,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_member_function_pointer,void const vola
 
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_function_pointer,T,::ndnboost::detail::is_member_function_pointer_impl<T>::value)
 
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#endif
 
 } // namespace ndnboost
 

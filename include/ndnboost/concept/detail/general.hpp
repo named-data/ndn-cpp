@@ -65,10 +65,19 @@ struct requirement_<void(*)(Model)>
   
 # endif
 
+// Version check from https://svn.boost.org/trac/boost/changeset/82886
+// (ndnboost/static_assert.hpp)
+#if defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7))) 
+#define NDNBOOST_CONCEPT_UNUSED_TYPEDEF __attribute__((unused))
+#else
+#define NDNBOOST_CONCEPT_UNUSED_TYPEDEF /**/
+#endif
+
 #  define NDNBOOST_CONCEPT_ASSERT_FN( ModelFnPtr )             \
     typedef ::ndnboost::concepts::detail::instantiate<          \
     &::ndnboost::concepts::requirement_<ModelFnPtr>::failed>    \
-      NDNBOOST_PP_CAT(boost_concept_check,__LINE__)
+      NDNBOOST_PP_CAT(boost_concept_check,__LINE__)             \
+      NDNBOOST_CONCEPT_UNUSED_TYPEDEF
 
 }}
 

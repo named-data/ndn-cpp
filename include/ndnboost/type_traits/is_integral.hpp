@@ -46,8 +46,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,wchar_t,true)
 
 // Same set of integral types as in ndnboost/type_traits/integral_promotion.hpp.
 // Please, keep in sync. -- Alexander Nasonov
-#if (defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC < 1300)) \
-    || (defined(NDNBOOST_INTEL_CXX_VERSION) && defined(_MSC_VER) && (NDNBOOST_INTEL_CXX_VERSION <= 600)) \
+#if (defined(NDNBOOST_INTEL_CXX_VERSION) && defined(_MSC_VER) && (NDNBOOST_INTEL_CXX_VERSION <= 600)) \
     || (defined(__BORLANDC__) && (__BORLANDC__ == 0x600) && (_MSC_VER < 1300))
 NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,unsigned __int8,true)
 NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,__int8,true)
@@ -72,6 +71,12 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,__int64,true)
 #ifdef NDNBOOST_HAS_INT128
 NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,ndnboost::int128_type,true)
 NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,ndnboost::uint128_type,true)
+#endif
+#ifndef NDNBOOST_NO_CXX11_CHAR16_T
+NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,char16_t,true)
+#endif
+#ifndef NDNBOOST_NO_CXX11_CHAR32_T
+NDNBOOST_TT_AUX_BOOL_TRAIT_CV_SPEC1(is_integral,char32_t,true)
 #endif
 
 #endif  // non-CodeGear implementation

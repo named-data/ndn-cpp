@@ -101,5 +101,29 @@
 
 #endif
 
+#if 0
+//
+// This section allows dependency scanners to find all the files we *might* include:
+//
+#  include "ndnboost/config/platform/linux.hpp"
+#  include "ndnboost/config/platform/bsd.hpp"
+#  include "ndnboost/config/platform/solaris.hpp"
+#  include "ndnboost/config/platform/irix.hpp"
+#  include "ndnboost/config/platform/hpux.hpp"
+#  include "ndnboost/config/platform/cygwin.hpp"
+#  include "ndnboost/config/platform/win32.hpp"
+#  include "ndnboost/config/platform/beos.hpp"
+#  include "ndnboost/config/platform/macos.hpp"
+#  include "ndnboost/config/platform/aix.hpp"
+#  include "ndnboost/config/platform/amigaos.hpp"
+#  include "ndnboost/config/platform/qnxnto.hpp"
+#  include "ndnboost/config/platform/vxworks.hpp"
+#  include "ndnboost/config/platform/symbian.hpp" 
+#  include "ndnboost/config/platform/cray.hpp" 
+#  include "ndnboost/config/platform/vms.hpp" 
+#  include <ndnboost/config/posix_features.hpp>
 
+
+
+#endif
 

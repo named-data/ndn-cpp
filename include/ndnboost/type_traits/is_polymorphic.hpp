@@ -17,6 +17,11 @@
 #include <ndnboost/type_traits/detail/bool_trait_def.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
+#if defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC >= 1700)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#endif
+
 namespace ndnboost{
 
 #ifndef NDNBOOST_IS_POLYMORPHIC
@@ -110,5 +115,9 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_polymorphic,T,NDNBOOST_IS_POLYMORPHIC(T))
 } // namespace ndnboost
 
 #include <ndnboost/type_traits/detail/bool_trait_undef.hpp>
+
+#if defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC >= 1700)
+#pragma warning(pop)
+#endif
 
 #endif

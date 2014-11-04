@@ -13,12 +13,16 @@
 #include <ndnboost/config.hpp>
 #include <ndnboost/cstdint.hpp> // for ndnboost::uintmax_t
 #include <ndnboost/detail/workaround.hpp>
+#include <ndnboost/type_traits/is_integral.hpp>
 #include <algorithm>  // for min and max
 #include <ndnboost/config/no_tr1/cmath.hpp>
 #include <climits>
 #include <cfloat>
 #if (defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__))
 #  include <math.h>
+#endif
+#ifndef NDNBOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+#  include <limits>
 #endif
 
 #include <ndnboost/math/tools/user.hpp>
@@ -109,7 +113,7 @@
 #  define NDNBOOST_MATH_NO_NATIVE_LONG_DOUBLE_FP_CLASSIFY
 #endif
 
-#if defined(NDNBOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS) || NDNBOOST_WORKAROUND(__SUNPRO_CC, <= 0x590)
+#if NDNBOOST_WORKAROUND(__SUNPRO_CC, <= 0x590)
 
 #  include "ndnboost/type.hpp"
 #  include "ndnboost/non_type.hpp"
@@ -143,12 +147,12 @@
 #  define NDNBOOST_MATH_APPEND_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
 
 
-#endif // defined NDNBOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
+#endif // __SUNPRO_CC
 
 #if (defined(__SUNPRO_CC) || defined(__hppa) || defined(__GNUC__)) && !defined(NDNBOOST_MATH_SMALL_CONSTANT)
 // Sun's compiler emits a hard error if a constant underflows,
 // as does aCC on PA-RISC, while gcc issues a large number of warnings:
-#  define NDNBOOST_MATH_SMALL_CONSTANT(x) 0
+#  define NDNBOOST_MATH_SMALL_CONSTANT(x) 0.0
 #else
 #  define NDNBOOST_MATH_SMALL_CONSTANT(x) x
 #endif
@@ -210,12 +214,27 @@
 //
 // Test whether to support __float128:
 //
-#if defined(_GLIBCXX_USE_FLOAT128) && defined(NDNBOOST_GCC) && !defined(__STRICT_ANSI__)
+#if defined(_GLIBCXX_USE_FLOAT128) && defined(NDNBOOST_GCC) && !defined(__STRICT_ANSI__) \
+   && !defined(NDNBOOST_MATH_DISABLE_FLOAT128) || defined(NDNBOOST_MATH_USE_FLOAT128)
 //
 // Only enable this when the compiler really is GCC as clang and probably 
 // intel too don't support __float128 yet :-(
 //
+#ifndef NDNBOOST_MATH_USE_FLOAT128
 #  define NDNBOOST_MATH_USE_FLOAT128
+#endif
+
+#  if defined(NDNBOOST_INTEL) && defined(NDNBOOST_INTEL_CXX_VERSION) && (NDNBOOST_INTEL_CXX_VERSION >= 1310) && defined(__GNUC__)
+#    if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#      define NDNBOOST_MATH_FLOAT128_TYPE __float128
+#    endif
+#  elif defined(__GNUC__)
+#      define NDNBOOST_MATH_FLOAT128_TYPE __float128
+#  endif
+
+#  ifndef NDNBOOST_MATH_FLOAT128_TYPE
+#      define NDNBOOST_MATH_FLOAT128_TYPE _Quad
+#  endif
 #endif
 //
 // Check for WinCE with no iostream support:
@@ -283,9 +302,35 @@ void suppress_unused_variable_warning(const T&)
 {
 }
 
+namespace detail{
+
+template <class T>
+struct is_integer_for_rounding
+{
+   static const bool value = ndnboost::is_integral<T>::value
+#ifndef NDNBOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+      || (std::numeric_limits<T>::is_specialized && std::numeric_limits<T>::is_integer)
+#endif
+      ;
+};
+
+}
+
 }} // namespace ndnboost namespace math
 
-#if ((defined(__linux__) && !defined(__UCLIBC__)) || defined(__QNX__) || defined(__IBMCPP__)) && !defined(NDNBOOST_NO_FENV_H)
+#ifdef __GLIBC_PREREQ
+#  if __GLIBC_PREREQ(2,14)
+#     define NDNBOOST_MATH_HAVE_FIXED_GLIBC
+#  endif
+#endif
+
+#if ((defined(__linux__) && !defined(__UCLIBC__) && !defined(NDNBOOST_MATH_HAVE_FIXED_GLIBC)) || defined(__QNX__) || defined(__IBMCPP__)) && !defined(NDNBOOST_NO_FENV_H)
+//
+// This code was introduced in response to this glibc bug: http://sourceware.org/bugzilla/show_bug.cgi?id=2445
+// Basically powl and expl can return garbage when the result is small and certain exception flags are set
+// on entrance to these functions.  This appears to have been fixed in Glibc 2.14 (May 2011).
+// Much more information in this message thread: https://groups.google.com/forum/#!topic/boost-list/ZT99wtIFlb4
+//
 
    #include <ndnboost/detail/fenv.hpp>
 

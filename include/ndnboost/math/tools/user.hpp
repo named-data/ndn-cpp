@@ -91,6 +91,14 @@
 // Maximum root finding steps permitted:
 //
 // define NDNBOOST_MATH_MAX_ROOT_ITERATION_POLICY 200
+//
+// Enable use of __float128 in numeric constants:
+//
+// #define NDNBOOST_MATH_USE_FLOAT128
+//
+// Disable use of __float128 in numeric_constants even if the compiler looks to support it:
+//
+// #define NDNBOOST_MATH_DISABLE_FLOAT128
 
 #endif // NDNBOOST_MATH_TOOLS_USER_HPP
 

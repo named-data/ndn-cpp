@@ -23,6 +23,7 @@
 #include <ndnboost/range/iterator.hpp>
 #include <ndnboost/range/value_type.hpp>
 #include <ndnboost/range/detail/misc_concept.hpp>
+#include <ndnboost/type_traits/remove_reference.hpp>
 
 /*!
  * \file
@@ -63,6 +64,7 @@ namespace ndnboost {
 #ifndef NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT
 
 // List broken compiler versions here:
+#ifndef __clang__
     #ifdef __GNUC__
         // GNUC 4.2 has strange issues correctly detecting compliance with the Concepts
         // hence the least disruptive approach is to turn-off the concept checking for
@@ -71,6 +73,14 @@ namespace ndnboost {
             #define NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
         #endif
     #endif
+
+    #ifdef __GCCXML__
+        // GCC XML, unsurprisingly, has the same issues
+        #if __GCCXML_GNUC__ == 4 && __GCCXML_GNUC_MINOR__ == 2
+            #define NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
+        #endif
+    #endif
+#endif
 
     #ifdef __BORLANDC__
         #define NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
@@ -253,41 +263,51 @@ namespace ndnboost {
     struct SinglePassRangeConcept
     {
 #if NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT
-         typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<T const>::type  const_iterator;
-         typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<T>::type        iterator;
+        // A few compilers don't like the rvalue reference T types so just
+        // remove it.
+        typedef NDNBOOST_DEDUCED_TYPENAME remove_reference<T>::type Rng;
 
-         NDNBOOST_RANGE_CONCEPT_ASSERT((range_detail::SinglePassIteratorConcept<iterator>));
-         NDNBOOST_RANGE_CONCEPT_ASSERT((range_detail::SinglePassIteratorConcept<const_iterator>));
+        typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<
+            Rng const
+        >::type const_iterator;
 
-         NDNBOOST_CONCEPT_USAGE(SinglePassRangeConcept)
-         {
+        typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<Rng>::type iterator;
+
+        NDNBOOST_RANGE_CONCEPT_ASSERT((
+                range_detail::SinglePassIteratorConcept<iterator>));
+
+        NDNBOOST_RANGE_CONCEPT_ASSERT((
+                range_detail::SinglePassIteratorConcept<const_iterator>));
+
+        NDNBOOST_CONCEPT_USAGE(SinglePassRangeConcept)
+        {
             // This has been modified from assigning to this->i
             // (where i was a member variable) to improve
             // compatibility with Boost.Lambda
             iterator i1 = ndnboost::begin(*m_range);
             iterator i2 = ndnboost::end(*m_range);
 
-            ignore_unused_variable_warning(i1);
-            ignore_unused_variable_warning(i2);
+            ndnboost::ignore_unused_variable_warning(i1);
+            ndnboost::ignore_unused_variable_warning(i2);
 
             const_constraints(*m_range);
         }
 
     private:
-        void const_constraints(const T& const_range)
+        void const_constraints(const Rng& const_range)
         {
             const_iterator ci1 = ndnboost::begin(const_range);
             const_iterator ci2 = ndnboost::end(const_range);
 
-            ignore_unused_variable_warning(ci1);
-            ignore_unused_variable_warning(ci2);
+            ndnboost::ignore_unused_variable_warning(ci1);
+            ndnboost::ignore_unused_variable_warning(ci2);
         }
 
        // Rationale:
        // The type of m_range is T* rather than T because it allows
        // T to be an abstract class. The other obvious alternative of
        // T& produces a warning on some compilers.
-       T* m_range;
+       Rng* m_range;
 #endif
     };
 
@@ -301,11 +321,11 @@ namespace ndnboost {
 #endif
     };
 
-    template<class Range>
+    template<class T>
     struct WriteableRangeConcept
     {
 #if NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT
-        typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<Range>::type iterator;
+        typedef NDNBOOST_DEDUCED_TYPENAME range_iterator<T>::type iterator;
 
         NDNBOOST_CONCEPT_USAGE(WriteableRangeConcept)
         {
@@ -313,7 +333,7 @@ namespace ndnboost {
         }
     private:
         iterator i;
-        NDNBOOST_DEDUCED_TYPENAME range_value<Range>::type v;
+        NDNBOOST_DEDUCED_TYPENAME range_value<T>::type v;
 #endif
     };
 

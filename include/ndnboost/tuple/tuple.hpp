@@ -23,16 +23,10 @@ namespace ndnboost { namespace python { class tuple; }}
 #include "ndnboost/config.hpp"
 #include "ndnboost/static_assert.hpp"
 
-#if defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-// The MSVC version
-#include "ndnboost/tuple/detail/tuple_basic_no_partial_spec.hpp"
-
-#else
 // other compilers
 #include "ndnboost/ref.hpp"
 #include "ndnboost/tuple/detail/tuple_basic.hpp"
 
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 namespace ndnboost {    
 
@@ -41,7 +35,7 @@ using tuples::make_tuple;
 using tuples::tie;
 #if !defined(NDNBOOST_NO_USING_TEMPLATE)
 using tuples::get;
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 //
 // The "using tuples::get" statement causes the
 // Borland compiler to ICE, use forwarding
@@ -64,24 +58,7 @@ inline typename tuples::access_traits<
 get(const tuples::cons<HT, TT>& c) {
   return tuples::get<N,HT,TT>(c);
 }
-#else  // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-//
-// MSVC, using declarations don't mix with templates well,
-// so use forwarding functions instead:
-//
-template<int N, typename Head, typename Tail>
-typename tuples::detail::element_ref<N, tuples::cons<Head, Tail> >::RET
-get(tuples::cons<Head, Tail>& t, tuples::detail::workaround_holder<N>* = 0)
-{
-   return tuples::detail::get_class<N>::get(t);
-}
 
-template<int N, typename Head, typename Tail>
-typename tuples::detail::element_const_ref<N, tuples::cons<Head, Tail> >::RET
-get(const tuples::cons<Head, Tail>& t, tuples::detail::workaround_holder<N>* = 0)
-{
-   return tuples::detail::get_class<N>::get(t);
-}
 #endif // NDNBOOST_NO_USING_TEMPLATE
    
 } // end namespace ndnboost

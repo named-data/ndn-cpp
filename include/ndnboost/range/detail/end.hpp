@@ -14,15 +14,9 @@
 #include <ndnboost/config.hpp> // NDNBOOST_MSVC
 #include <ndnboost/detail/workaround.hpp>
 
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1300)
-# include <ndnboost/range/detail/vc6/end.hpp>
-#else
-# include <ndnboost/range/detail/implementation_help.hpp>
-# include <ndnboost/range/iterator.hpp>
-# include <ndnboost/range/detail/common.hpp>
-# if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1310)
-#  include <ndnboost/range/detail/remove_extent.hpp>
-# endif
+#include <ndnboost/range/detail/implementation_help.hpp>
+#include <ndnboost/range/iterator.hpp>
+#include <ndnboost/range/detail/common.hpp>
 
 namespace ndnboost
 {
@@ -68,19 +62,11 @@ namespace ndnboost
         template<>
         struct range_end<array_>
         {
-        #if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1310)
-            template< typename T, std::size_t sz >
-            static T* fun( T NDNBOOST_RANGE_ARRAY_REF()[sz] )
-            {
-                return ndnboost::range_detail::array_end( boost_range_array );
-            }
-        #else
             template<typename T>
             static NDNBOOST_RANGE_DEDUCED_TYPENAME remove_extent<T>::type* fun(T& t)
             {
                 return t + remove_extent<T>::size;
             }
-        #endif
         };
 
     } // namespace 'range_detail'
@@ -97,5 +83,4 @@ namespace ndnboost
 
 } // namespace 'boost'
 
-# endif // VC6
 #endif

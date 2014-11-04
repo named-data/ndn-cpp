@@ -231,6 +231,9 @@ namespace ndnboost { using std::min; using std::max; }
 #  define NDNBOOST_NO_CXX11_ATOMIC_SMART_PTR
 #  define NDNBOOST_NO_CXX11_SMART_PTR
 #  define NDNBOOST_NO_CXX11_HDR_FUNCTIONAL
+#  define NDNBOOST_NO_CXX11_HDR_ATOMIC
+#  define NDNBOOST_NO_CXX11_STD_ALIGN
+#  define NDNBOOST_NO_CXX11_ADDRESSOF
 
 #define NDNBOOST_STDLIB "STLPort standard library version " NDNBOOST_STRINGIZE(__SGI_STL_PORT)
 

@@ -18,6 +18,7 @@
 # include <ndnboost/preprocessor/cat.hpp>
 # include <ndnboost/preprocessor/config/config.hpp>
 # include <ndnboost/preprocessor/facilities/overload.hpp>
+# include <ndnboost/preprocessor/tuple/size.hpp>
 # include <ndnboost/preprocessor/variadic/size.hpp>
 #
 # /* NDNBOOST_PP_TUPLE_TO_LIST */
@@ -27,10 +28,11 @@
 #        define NDNBOOST_PP_TUPLE_TO_LIST(...) NDNBOOST_PP_TUPLE_TO_LIST_I(NDNBOOST_PP_OVERLOAD(NDNBOOST_PP_TUPLE_TO_LIST_O_, __VA_ARGS__), (__VA_ARGS__))
 #        define NDNBOOST_PP_TUPLE_TO_LIST_I(m, args) NDNBOOST_PP_TUPLE_TO_LIST_II(m, args)
 #        define NDNBOOST_PP_TUPLE_TO_LIST_II(m, args) NDNBOOST_PP_CAT(m ## args,)
+#    	 define NDNBOOST_PP_TUPLE_TO_LIST_O_1(tuple) NDNBOOST_PP_CAT(NDNBOOST_PP_TUPLE_TO_LIST_, NDNBOOST_PP_TUPLE_SIZE(tuple)) tuple
 #    else
 #        define NDNBOOST_PP_TUPLE_TO_LIST(...) NDNBOOST_PP_OVERLOAD(NDNBOOST_PP_TUPLE_TO_LIST_O_, __VA_ARGS__)(__VA_ARGS__)
+#    	 define NDNBOOST_PP_TUPLE_TO_LIST_O_1(tuple) NDNBOOST_PP_CAT(NDNBOOST_PP_TUPLE_TO_LIST_, NDNBOOST_PP_VARIADIC_SIZE tuple) tuple
 #    endif
-#    define NDNBOOST_PP_TUPLE_TO_LIST_O_1(tuple) NDNBOOST_PP_CAT(NDNBOOST_PP_TUPLE_TO_LIST_, NDNBOOST_PP_VARIADIC_SIZE tuple) tuple
 #    define NDNBOOST_PP_TUPLE_TO_LIST_O_2(size, tuple) NDNBOOST_PP_TUPLE_TO_LIST_O_1(tuple)
 # else
 #    if ~NDNBOOST_PP_CONFIG_FLAGS() & NDNBOOST_PP_CONFIG_MWCC()

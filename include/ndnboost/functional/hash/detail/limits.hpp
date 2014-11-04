@@ -9,8 +9,9 @@
 #if !defined(NDNBOOST_FUNCTIONAL_HASH_DETAIL_LIMITS_HEADER)
 #define NDNBOOST_FUNCTIONAL_HASH_DETAIL_LIMITS_HEADER
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#include <ndnboost/config.hpp>
+#if defined(NDNBOOST_HAS_PRAGMA_ONCE)
+#pragma once
 #endif
 
 #include <ndnboost/limits.hpp>

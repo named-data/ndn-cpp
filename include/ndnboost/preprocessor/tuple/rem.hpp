@@ -1,7 +1,7 @@
 # /* **************************************************************************
 #  *                                                                          *
 #  *     (C) Copyright Paul Mensonides 2002-2011.                             *
-#  *     (C) Copyright Edward Diener 2011.                                    *
+#  *     (C) Copyright Edward Diener 2011,2013.                               *
 #  *     Distributed under the Boost Software License, Version 1.0. (See      *
 #  *     accompanying file LICENSE_1_0.txt or copy at                         *
 #  *     http://www.boost.org/LICENSE_1_0.txt)                                *
@@ -27,7 +27,10 @@
 #
 # /* NDNBOOST_PP_TUPLE_REM */
 #
-# if NDNBOOST_PP_VARIADICS
+/*
+  VC++8.0 cannot handle the variadic version of NDNBOOST_PP_TUPLE_REM(size)
+*/
+# if NDNBOOST_PP_VARIADICS && !(NDNBOOST_PP_VARIADICS_MSVC && _MSC_VER == 1400)
 #    define NDNBOOST_PP_TUPLE_REM(size) NDNBOOST_PP_REM
 # else
 #    if ~NDNBOOST_PP_CONFIG_FLAGS() & NDNBOOST_PP_CONFIG_MWCC()
@@ -38,6 +41,7 @@
 #    endif
 #    define NDNBOOST_PP_TUPLE_REM_I(size) NDNBOOST_PP_TUPLE_REM_ ## size
 # endif
+# define NDNBOOST_PP_TUPLE_REM_0()
 # define NDNBOOST_PP_TUPLE_REM_1(e0) e0
 # define NDNBOOST_PP_TUPLE_REM_2(e0, e1) e0, e1
 # define NDNBOOST_PP_TUPLE_REM_3(e0, e1, e2) e0, e1, e2

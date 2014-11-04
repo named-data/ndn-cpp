@@ -11,13 +11,8 @@
 
 #include <ndnboost/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
-#ifdef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#include <ndnboost/type_traits/broken_compiler_spec.hpp>
-#endif
 
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-#include <ndnboost/type_traits/msvc/remove_pointer.hpp>
-#elif defined(NDNBOOST_MSVC)
+#if defined(NDNBOOST_MSVC)
 #include <ndnboost/type_traits/remove_cv.hpp>
 #include <ndnboost/type_traits/is_pointer.hpp>
 #endif
@@ -71,17 +66,13 @@ namespace detail{
 
 NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_pointer,T,typename ndnboost::detail::remove_pointer_imp2<T>::type)
 
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 
 NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_pointer,T,T)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_pointer,T*,T)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_pointer,T* const,T)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_pointer,T* volatile,T)
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,remove_pointer,T* const volatile,T)
-
-#elif !NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-
-NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_pointer,T,typename ndnboost::detail::remove_pointer_impl<T>::type)
 
 #endif
 

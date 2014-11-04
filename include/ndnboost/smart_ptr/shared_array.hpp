@@ -16,10 +16,6 @@
 
 #include <ndnboost/config.hpp>   // for broken compiler workarounds
 
-#if defined(NDNBOOST_NO_MEMBER_TEMPLATES) && !defined(NDNBOOST_MSVC6_MEMBER_TEMPLATES)
-#include <ndnboost/smart_ptr/detail/shared_array_nmt.hpp>
-#else
-
 #include <memory>             // TR1 cyclic inclusion fix
 
 #include <ndnboost/assert.hpp>
@@ -60,6 +56,14 @@ public:
     shared_array() NDNBOOST_NOEXCEPT : px( 0 ), pn()
     {
     }
+
+#if !defined( NDNBOOST_NO_CXX11_NULLPTR )
+
+    shared_array( ndnboost::detail::sp_nullptr_t ) NDNBOOST_NOEXCEPT : px( 0 ), pn()
+    {
+    }
+
+#endif
 
     template<class Y>
     explicit shared_array( Y * p ): px( p ), pn( p, checked_array_deleter<Y>() )
@@ -284,7 +288,5 @@ template< class D, class T > D * get_deleter( shared_array<T> const & p )
 }
 
 } // namespace ndnboost
-
-#endif  // #if defined(NDNBOOST_NO_MEMBER_TEMPLATES) && !defined(NDNBOOST_MSVC6_MEMBER_TEMPLATES)
 
 #endif  // #ifndef NDNBOOST_SMART_PTR_SHARED_ARRAY_HPP_INCLUDED

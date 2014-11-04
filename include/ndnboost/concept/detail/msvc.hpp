@@ -6,12 +6,17 @@
 
 # include <ndnboost/preprocessor/cat.hpp>
 # include <ndnboost/concept/detail/backward_compatibility.hpp>
+# include <ndnboost/config.hpp>
 
 # ifdef NDNBOOST_OLD_CONCEPT_SUPPORT
 #  include <ndnboost/concept/detail/has_constraints.hpp>
 #  include <ndnboost/mpl/if.hpp>
 # endif
 
+# ifdef NDNBOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable:4100)
+# endif
 
 namespace ndnboost { namespace concepts {
 
@@ -110,5 +115,9 @@ enum                                                    \
   
 # endif
 }}
+
+# ifdef NDNBOOST_MSVC
+#  pragma warning(pop)
+# endif
 
 #endif // NDNBOOST_CONCEPT_CHECK_MSVC_NDNBOOST_DWA2006429_HPP

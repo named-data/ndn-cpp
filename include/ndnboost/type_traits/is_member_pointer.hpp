@@ -24,7 +24,7 @@
 #include <ndnboost/type_traits/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
-#if !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) && !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600)
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, < 0x600)
 #   include <ndnboost/type_traits/is_member_function_pointer.hpp>
 #else
 #   include <ndnboost/type_traits/is_reference.hpp>
@@ -46,7 +46,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_pointer,T,__is_member_pointer(T))
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_pointer,T,false)
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_2(typename T,typename U,is_member_pointer,U T::*,true)
 
-#elif !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_pointer,T,::ndnboost::is_member_function_pointer<T>::value)
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_2(typename T,typename U,is_member_pointer,U T::*,true)
 
@@ -56,58 +56,7 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_2(typename T,typename U,is_member_point
 NDNBOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_2(typename T,typename U,is_member_pointer,U T::*const volatile,true)
 #endif
 
-#else // no partial template specialization
-
-namespace detail {
-
-template <typename R, typename T>
-::ndnboost::type_traits::yes_type NDNBOOST_TT_DECL is_member_pointer_tester(R T::*const volatile*);
-::ndnboost::type_traits::no_type NDNBOOST_TT_DECL is_member_pointer_tester(...);
-
-template <bool>
-struct is_member_pointer_select
-    : public ::ndnboost::type_traits::false_result
-{
-};
-
-template <>
-struct is_member_pointer_select<false>
-{
-    template <typename T> struct result_
-    {
-        static T* make_t();
-        NDNBOOST_STATIC_CONSTANT(
-            bool, value =
-            (::ndnboost::type_traits::ice_or<
-                (1 == sizeof(::ndnboost::type_traits::is_mem_fun_pointer_tester(make_t()))),
-                (1 == sizeof(is_member_pointer_tester(make_t())))
-            >::value) );
-    };
-};
-
-template <typename T>
-struct is_member_pointer_impl
-    : public is_member_pointer_select<
-          ::ndnboost::type_traits::ice_or<
-              ::ndnboost::is_reference<T>::value
-            , ::ndnboost::is_array<T>::value
-            >::value
-        >::template result_<T>
-{
-};
-
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_member_pointer,void,false)
-#ifndef NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_member_pointer,void const,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_member_pointer,void volatile,false)
-NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_member_pointer,void const volatile,false)
 #endif
-
-} // namespace detail
-
-NDNBOOST_TT_AUX_BOOL_TRAIT_DEF1(is_member_pointer,T,::ndnboost::detail::is_member_pointer_impl<T>::value)
-
-#endif // __BORLANDC__
 
 } // namespace ndnboost
 

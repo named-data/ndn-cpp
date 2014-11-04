@@ -4,7 +4,7 @@
 //  Copyright (c) 2001-2003 John Maddock
 //  Copyright (c) 2001 Darin Adler
 //  Copyright (c) 2001 Peter Dimov
-//  Copyright (c) 2002 Bill Kempf 
+//  Copyright (c) 2002 Bill Kempf
 //  Copyright (c) 2002 Jens Maurer
 //  Copyright (c) 2002-2003 David Abrahams
 //  Copyright (c) 2003 Gennaro Prota
@@ -146,7 +146,7 @@
 #  endif
 
 //
-// Without partial specialization, partial 
+// Without partial specialization, partial
 // specialization with default args won't work either:
 //
 #  if defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
@@ -503,69 +503,8 @@ namespace ndnboost{
 #endif
 
 // NDNBOOST_[APPEND_]EXPLICIT_TEMPLATE_[NON_]TYPE macros --------------------------//
-//
-// Some compilers have problems with function templates whose template
-// parameters don't appear in the function parameter list (basically
-// they just link one instantiation of the template in the final
-// executable). These macros provide a uniform way to cope with the
-// problem with no effects on the calling syntax.
 
-// Example:
-//
-//  #include <iostream>
-//  #include <ostream>
-//  #include <typeinfo>
-//
-//  template <int n>
-//  void f() { std::cout << n << ' '; }
-//
-//  template <typename T>
-//  void g() { std::cout << typeid(T).name() << ' '; }
-//
-//  int main() {
-//    f<1>();
-//    f<2>();
-//
-//    g<int>();
-//    g<double>();
-//  }
-//
-// With VC++ 6.0 the output is:
-//
-//   2 2 double double
-//
-// To fix it, write
-//
-//   template <int n>
-//   void f(NDNBOOST_EXPLICIT_TEMPLATE_NON_TYPE(int, n)) { ... }
-//
-//   template <typename T>
-//   void g(NDNBOOST_EXPLICIT_TEMPLATE_TYPE(T)) { ... }
-//
-
-
-#if defined(NDNBOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS) && defined(__cplusplus)
-
-#  include "ndnboost/type.hpp"
-#  include "ndnboost/non_type.hpp"
-
-#  define NDNBOOST_EXPLICIT_TEMPLATE_TYPE(t)              ndnboost::type<t>* = 0
-#  define NDNBOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(t)         ndnboost::type<t>*
-#  define NDNBOOST_EXPLICIT_TEMPLATE_NON_TYPE(t, v)       ndnboost::non_type<t, v>* = 0
-#  define NDNBOOST_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)  ndnboost::non_type<t, v>*
-
-#  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(t)        \
-             , NDNBOOST_EXPLICIT_TEMPLATE_TYPE(t)
-#  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(t)   \
-             , NDNBOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
-#  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(t, v) \
-             , NDNBOOST_EXPLICIT_TEMPLATE_NON_TYPE(t, v)
-#  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)    \
-             , NDNBOOST_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
-
-#else
-
-// no workaround needed: expand to nothing
+// These macros are obsolete. Port away and remove.
 
 #  define NDNBOOST_EXPLICIT_TEMPLATE_TYPE(t)
 #  define NDNBOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
@@ -576,9 +515,6 @@ namespace ndnboost{
 #  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
 #  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(t, v)
 #  define NDNBOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
-
-
-#endif // defined NDNBOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
 
 // When NDNBOOST_NO_STD_TYPEINFO is defined, we can just import
 // the global definition into std namespace:
@@ -632,7 +568,7 @@ namespace std{ using ::type_info; }
 // Set some default values GPU support
 //
 #  ifndef NDNBOOST_GPU_ENABLED
-#  define NDNBOOST_GPU_ENABLED 
+#  define NDNBOOST_GPU_ENABLED
 #  endif
 
 // NDNBOOST_FORCEINLINE ---------------------------------------------//
@@ -646,6 +582,99 @@ namespace std{ using ::type_info; }
 #  else
 #    define NDNBOOST_FORCEINLINE inline
 #  endif
+#endif
+
+// NDNBOOST_NOINLINE ---------------------------------------------//
+// Macro to use in place of 'inline' to prevent a function to be inlined
+#if !defined(NDNBOOST_NOINLINE)
+#  if defined(_MSC_VER)
+#    define NDNBOOST_NOINLINE __declspec(noinline)
+#  elif defined(__GNUC__) && __GNUC__ > 3
+     // Clang also defines __GNUC__ (as 4)
+#    if defined(__CUDACC__)
+       // nvcc doesn't always parse __noinline__, 
+       // see: https://svn.boost.org/trac/boost/ticket/9392
+#      define NDNBOOST_NOINLINE __attribute__ ((noinline))
+#    else
+#      define NDNBOOST_NOINLINE __attribute__ ((__noinline__))
+#    endif
+#  else
+#    define NDNBOOST_NOINLINE
+#  endif
+#endif
+
+// NDNBOOST_NORETURN ---------------------------------------------//
+// Macro to use before a function declaration/definition to designate
+// the function as not returning normally (i.e. with a return statement
+// or by leaving the function scope, if the function return type is void).
+#if !defined(NDNBOOST_NORETURN)
+#  if defined(_MSC_VER)
+#    define NDNBOOST_NORETURN __declspec(noreturn)
+#  elif defined(__GNUC__)
+#    define NDNBOOST_NORETURN __attribute__ ((__noreturn__))
+#  else
+#    define NDNBOOST_NO_NORETURN
+#    define NDNBOOST_NORETURN
+#  endif
+#endif
+
+// Branch prediction hints
+// These macros are intended to wrap conditional expressions that yield true or false
+//
+//  if (NDNBOOST_LIKELY(var == 10))
+//  {
+//     // the most probable code here
+//  }
+//
+#if !defined(NDNBOOST_LIKELY)
+#  define NDNBOOST_LIKELY(x) x
+#endif
+#if !defined(NDNBOOST_UNLIKELY)
+#  define NDNBOOST_UNLIKELY(x) x
+#endif
+
+// Type and data alignment specification
+//
+#if !defined(NDNBOOST_NO_CXX11_ALIGNAS)
+#  define NDNBOOST_ALIGNMENT(x) alignas(x)
+#elif defined(_MSC_VER)
+#  define NDNBOOST_ALIGNMENT(x) __declspec(align(x))
+#elif defined(__GNUC__)
+#  define NDNBOOST_ALIGNMENT(x) __attribute__ ((__aligned__(x)))
+#else
+#  define NDNBOOST_NO_ALIGNMENT
+#  define NDNBOOST_ALIGNMENT(x)
+#endif
+
+// Defaulted and deleted function declaration helpers
+// These macros are intended to be inside a class definition.
+// NDNBOOST_DEFAULTED_FUNCTION accepts the function declaration and its
+// body, which will be used if the compiler doesn't support defaulted functions.
+// NDNBOOST_DELETED_FUNCTION only accepts the function declaration. It
+// will expand to a private function declaration, if the compiler doesn't support
+// deleted functions. Because of this it is recommended to use NDNBOOST_DELETED_FUNCTION
+// in the end of the class definition.
+//
+//  class my_class
+//  {
+//  public:
+//      // Default-constructible
+//      NDNBOOST_DEFAULTED_FUNCTION(my_class(), {})
+//      // Copying prohibited
+//      NDNBOOST_DELETED_FUNCTION(my_class(my_class const&))
+//      NDNBOOST_DELETED_FUNCTION(my_class& operator= (my_class const&))
+//  };
+//
+#if !(defined(NDNBOOST_NO_CXX11_DEFAULTED_FUNCTIONS) || defined(NDNBOOST_NO_CXX11_NON_PUBLIC_DEFAULTED_FUNCTIONS))
+#   define NDNBOOST_DEFAULTED_FUNCTION(fun, body) fun = default;
+#else
+#   define NDNBOOST_DEFAULTED_FUNCTION(fun, body) fun body
+#endif
+
+#if !defined(NDNBOOST_NO_CXX11_DELETED_FUNCTIONS)
+#   define NDNBOOST_DELETED_FUNCTION(fun) fun = delete;
+#else
+#   define NDNBOOST_DELETED_FUNCTION(fun) private: fun;
 #endif
 
 //
@@ -696,7 +725,7 @@ namespace std{ using ::type_info; }
 #  define NDNBOOST_NO_0X_HDR_FUTURE
 #endif
 
-//  Use NDNBOOST_NO_CXX11_HDR_INITIALIZER_LIST 
+//  Use NDNBOOST_NO_CXX11_HDR_INITIALIZER_LIST
 //  instead of NDNBOOST_NO_0X_HDR_INITIALIZER_LIST or NDNBOOST_NO_INITIALIZER_LISTS
 #ifdef NDNBOOST_NO_CXX11_HDR_INITIALIZER_LIST
 # ifndef NDNBOOST_NO_0X_HDR_INITIALIZER_LIST
@@ -885,19 +914,19 @@ namespace std{ using ::type_info; }
 #  define NDNBOOST_NOEXCEPT_EXPR(Expression) noexcept((Expression))
 #endif
 //
-// Helper macro NDNBOOST_FALLTHROUGH 
-// Fallback definition of NDNBOOST_FALLTHROUGH macro used to mark intended 
-// fall-through between case labels in a switch statement. We use a definition 
-// that requires a semicolon after it to avoid at least one type of misuse even 
-// on unsupported compilers. 
-// 
-#ifndef NDNBOOST_FALLTHROUGH 
-#  define NDNBOOST_FALLTHROUGH ((void)0) 
-#endif 
+// Helper macro NDNBOOST_FALLTHROUGH
+// Fallback definition of NDNBOOST_FALLTHROUGH macro used to mark intended
+// fall-through between case labels in a switch statement. We use a definition
+// that requires a semicolon after it to avoid at least one type of misuse even
+// on unsupported compilers.
+//
+#ifndef NDNBOOST_FALLTHROUGH
+#  define NDNBOOST_FALLTHROUGH ((void)0)
+#endif
 
 //
 // constexpr workarounds
-// 
+//
 #if defined(NDNBOOST_NO_CXX11_CONSTEXPR)
 #define NDNBOOST_CONSTEXPR
 #define NDNBOOST_CONSTEXPR_OR_CONST const
@@ -929,5 +958,14 @@ namespace std{ using ::type_info; }
 #define NDNBOOST_HAS_VARIADIC_TMPL
 #endif
 
+//
+// Finish off with checks for macros that are depricated / no longer supported,
+// if any of these are set then it's very likely that much of Boost will no
+// longer work.  So stop with a #error for now, but give the user a chance
+// to continue at their own risk if they really want to:
+//
+#if defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) && !defined(NDNBOOST_CONFIG_ALLOW_DEPRECATED)
+#  error "You are using a compiler which lacks features which are now a minimum requirement in order to use Boost, define NDNBOOST_CONFIG_ALLOW_DEPRECATED if you want to continue at your own risk!!!"
+#endif
 
 #endif

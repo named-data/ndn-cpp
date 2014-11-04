@@ -11,15 +11,13 @@
 #ifndef NDNBOOST_RANGE_SIZE_TYPE_HPP
 #define NDNBOOST_RANGE_SIZE_TYPE_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
 #include <ndnboost/range/config.hpp>
 #include <ndnboost/range/difference_type.hpp>
-#ifdef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#include <ndnboost/range/detail/size_type.hpp>
-#else
+#include <ndnboost/range/concepts.hpp>
 
 #include <ndnboost/utility/enable_if.hpp>
 #include <ndnboost/type_traits/make_unsigned.hpp>
@@ -45,8 +43,8 @@ namespace ndnboost
             template<typename C>
             static yes_type test(NDNBOOST_DEDUCED_TYPENAME C::size_type x);
 
-            template<typename C, typename Arg>
-            static no_type test(Arg x);
+            template<typename C>
+            static no_type test(...);
 
         public:
             static const bool value = sizeof(test<T>(0)) == sizeof(yes_type);
@@ -63,7 +61,7 @@ namespace ndnboost
         template<typename C>
         struct range_size<
             C,
-            NDNBOOST_DEDUCED_TYPENAME enable_if<has_size_type<C>, void>::type
+            NDNBOOST_DEDUCED_TYPENAME ::ndnboost::enable_if<has_size_type<C>, void>::type
         >
         {
             typedef NDNBOOST_DEDUCED_TYPENAME C::size_type type;
@@ -74,16 +72,27 @@ namespace ndnboost
     template< class T >
     struct range_size :
         detail::range_size<T>
-    { };
+    {
+// Very strange things happen on some compilers that have the range concept
+// asserts disabled. This preprocessor condition is clearly redundant on a
+// working compiler but is vital for at least some compilers such as clang 4.2
+// but only on the Mac!
+#if NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT == 1
+        NDNBOOST_RANGE_CONCEPT_ASSERT((ndnboost::SinglePassRangeConcept<T>));
+#endif
+    };
 
     template< class T >
     struct range_size<const T >
         : detail::range_size<T>
-    { };
+    {
+#if NDNBOOST_RANGE_ENABLE_CONCEPT_ASSERT == 1        
+        NDNBOOST_RANGE_CONCEPT_ASSERT((ndnboost::SinglePassRangeConcept<T>));
+#endif
+    };
 
 } // namespace ndnboost
 
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 
 #endif

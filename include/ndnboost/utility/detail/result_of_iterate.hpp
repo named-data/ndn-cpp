@@ -38,10 +38,25 @@ struct tr1_result_of<F(NDNBOOST_RESULT_OF_ARGS)>
 #endif
 
 #ifdef NDNBOOST_RESULT_OF_USE_DECLTYPE
-
-// Uses declval following N3225 20.7.7.6 when F is not a pointer.
 template<typename F NDNBOOST_PP_ENUM_TRAILING_PARAMS(NDNBOOST_PP_ITERATION(),typename T)>
-struct result_of<F(NDNBOOST_PP_ENUM_PARAMS(NDNBOOST_PP_ITERATION(),T))>
+struct result_of<F(NDNBOOST_RESULT_OF_ARGS)>
+    : detail::cpp0x_result_of<F(NDNBOOST_RESULT_OF_ARGS)> { };
+#endif // NDNBOOST_RESULT_OF_USE_DECLTYPE
+
+#ifdef NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK
+template<typename F NDNBOOST_PP_ENUM_TRAILING_PARAMS(NDNBOOST_PP_ITERATION(),typename T)>
+struct result_of<F(NDNBOOST_RESULT_OF_ARGS)>
+    : mpl::if_<mpl::or_<detail::has_result_type<F>, detail::has_result<F> >,
+               tr1_result_of<F(NDNBOOST_RESULT_OF_ARGS)>,
+               detail::cpp0x_result_of<F(NDNBOOST_RESULT_OF_ARGS)> >::type { };
+#endif // NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK
+
+#if defined(NDNBOOST_RESULT_OF_USE_DECLTYPE) || defined(NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK)
+
+namespace detail {
+
+template<typename F NDNBOOST_PP_ENUM_TRAILING_PARAMS(NDNBOOST_PP_ITERATION(),typename T)>
+struct cpp0x_result_of<F(NDNBOOST_PP_ENUM_PARAMS(NDNBOOST_PP_ITERATION(),T))>
     : mpl::if_<
           is_member_function_pointer<F>
         , detail::tr1_result_of_impl<
@@ -53,8 +68,6 @@ struct result_of<F(NDNBOOST_PP_ENUM_PARAMS(NDNBOOST_PP_ITERATION(),T))>
           >
       >::type
 {};
-
-namespace detail {
 
 #ifdef NDNBOOST_NO_SFINAE_EXPR
 
@@ -139,7 +152,7 @@ struct cpp0x_result_of_impl<F(NDNBOOST_PP_ENUM_PARAMS(NDNBOOST_PP_ITERATION(),T)
 
 } // namespace detail
 
-#else // defined(NDNBOOST_RESULT_OF_USE_DECLTYPE)
+#else // defined(NDNBOOST_RESULT_OF_USE_DECLTYPE) || defined(NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK)
 
 #if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x551))
 template<typename F NDNBOOST_PP_ENUM_TRAILING_PARAMS(NDNBOOST_PP_ITERATION(),typename T)>

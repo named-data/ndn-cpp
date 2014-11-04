@@ -125,12 +125,15 @@ private:
 // Since this preprocessor path is almost never taken, we hide these header
 // dependencies so that build tools don't find them.
 //
-#define B1 <ndnboost/thread/once.hpp>
-#define B2 <ndnboost/thread/recursive_mutex.hpp>
-#include B1
-#include B2
-#undef B1
-#undef B2
+#define NDNBOOST_REGEX_H1 <ndnboost/thread/once.hpp>
+#define NDNBOOST_REGEX_H2 <ndnboost/thread/recursive_mutex.hpp>
+#define NDNBOOST_REGEX_H3 <ndnboost/thread/lock_types.hpp>
+#include NDNBOOST_REGEX_H1
+#include NDNBOOST_REGEX_H2
+#include NDNBOOST_REGEX_H3
+#undef NDNBOOST_REGEX_H1
+#undef NDNBOOST_REGEX_H2
+#undef NDNBOOST_REGEX_H3
 
 namespace ndnboost{
 
@@ -158,7 +161,7 @@ public:
    void lock();
    void unlock();
 private:
-   ndnboost::recursive_mutex::scoped_lock* m_plock;
+   ndnboost::unique_lock<ndnboost::recursive_mutex>* m_plock;
    bool m_have_lock;
 };
 

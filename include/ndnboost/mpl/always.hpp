@@ -10,11 +10,11 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id: always.hpp 49267 2008-10-11 06:19:02Z agurtovoy $
-// $Date: 2008-10-10 23:19:02 -0700 (Fri, 10 Oct 2008) $
-// $Revision: 49267 $
+// $Id$
+// $Date$
+// $Revision$
 
-#include <ndnboost/mpl/aux_/preprocessor/def_params_tail.hpp>
+#include <ndnboost/mpl/aux_/preprocessor/default_params.hpp>
 #include <ndnboost/mpl/aux_/na.hpp>
 #include <ndnboost/mpl/aux_/arity_spec.hpp>
 
@@ -23,8 +23,7 @@ namespace ndnboost { namespace mpl {
 template< typename Value > struct always
 {
     template<
-          typename T
-        NDNBOOST_MPL_PP_NESTED_DEF_PARAMS_TAIL(1, typename T, na)
+        NDNBOOST_MPL_PP_DEFAULT_PARAMS(NDNBOOST_MPL_LIMIT_METAFUNCTION_ARITY, typename T, na)
         >
     struct apply
     {
@@ -32,7 +31,7 @@ template< typename Value > struct always
     };
 };
 
-NDNBOOST_MPL_AUX_ARITY_SPEC(1, always)
+NDNBOOST_MPL_AUX_ARITY_SPEC(0, always)
 
 }}
 

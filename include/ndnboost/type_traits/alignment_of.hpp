@@ -90,13 +90,11 @@ NDNBOOST_TT_AUX_SIZE_T_TRAIT_DEF1(alignment_of,T,::ndnboost::detail::alignment_o
 
 // references have to be treated specially, assume
 // that a reference is just a special pointer:
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <typename T>
 struct alignment_of<T&>
     : public alignment_of<T*>
 {
 };
-#endif
 #ifdef __BORLANDC__
 // long double gives an incorrect value of 10 (!)
 // unless we do this...

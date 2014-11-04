@@ -16,6 +16,8 @@
 
 #include <ndnboost/move/detail/config_begin.hpp>
 #include <ndnboost/type_traits/has_trivial_destructor.hpp>
+#include <ndnboost/type_traits/is_nothrow_move_constructible.hpp>
+#include <ndnboost/type_traits/is_nothrow_move_assignable.hpp>
 #include <ndnboost/move/detail/meta_utils.hpp>
 
 #ifndef NDNBOOST_NO_CXX11_RVALUE_REFERENCES
@@ -38,11 +40,17 @@ struct has_trivial_destructor_after_move
    : ::ndnboost::has_trivial_destructor<T>
 {};
 
-//! By default this traits returns false. Classes with non-throwing move constructor
+//! By default this traits returns
+//! <pre>ndnboost::is_nothrow_move_constructible<T>::value && ndnboost::is_nothrow_move_assignable<T>::value </pre>.
+//! Classes with non-throwing move constructor
 //! and assignment can specialize this trait to obtain some performance improvements.
 template <class T>
 struct has_nothrow_move
-   : public ::ndnboost::move_detail::integral_constant<bool, false>
+   : public ::ndnboost::move_detail::integral_constant
+      < bool
+      , ndnboost::is_nothrow_move_constructible<T>::value &&
+        ndnboost::is_nothrow_move_assignable<T>::value
+      >
 {};
 
 namespace move_detail {

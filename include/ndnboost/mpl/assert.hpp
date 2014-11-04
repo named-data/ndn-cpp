@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id: assert.hpp 84442 2013-05-23 14:38:22Z steven_watanabe $
-// $Date: 2013-05-23 07:38:22 -0700 (Thu, 23 May 2013) $
-// $Revision: 84442 $
+// $Id$
+// $Date$
+// $Revision$
 
 #include <ndnboost/mpl/not.hpp>
 #include <ndnboost/mpl/aux_/value_wknd.hpp>
@@ -25,6 +25,7 @@
 #include <ndnboost/mpl/aux_/config/dtp.hpp>
 #include <ndnboost/mpl/aux_/config/gcc.hpp>
 #include <ndnboost/mpl/aux_/config/msvc.hpp>
+#include <ndnboost/mpl/aux_/config/gpu.hpp>
 #include <ndnboost/mpl/aux_/config/static_constant.hpp>
 #include <ndnboost/mpl/aux_/config/pp_counter.hpp>
 #include <ndnboost/mpl/aux_/config/workaround.hpp>
@@ -55,7 +56,7 @@
 // and GCC (which issues "unused variable" warnings when static constants are used 
 // at a function scope)
 #if NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x610)) \
-    || (NDNBOOST_MPL_CFG_GCC != 0)
+    || (NDNBOOST_MPL_CFG_GCC != 0) || (NDNBOOST_MPL_CFG_GPU != 0)
 #   define NDNBOOST_MPL_AUX_ASSERT_CONSTANT(T, expr) enum { expr }
 #else
 #   define NDNBOOST_MPL_AUX_ASSERT_CONSTANT(T, expr) NDNBOOST_STATIC_CONSTANT(T, expr)
@@ -134,7 +135,7 @@ template< assert_::relations r, long x, long y > struct assert_relation {};
 
 #endif 
 
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, >= 1700)
+#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC, == 1700)
 
 template<class Pred>
 struct extract_assert_pred;

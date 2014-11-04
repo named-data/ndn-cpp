@@ -81,5 +81,19 @@
 
 #endif
 
-
+#if 0
+//
+// This section allows dependency scanners to find all the files we *might* include:
+//
+#  include "ndnboost/config/stdlib/stlport.hpp"
+#  include "ndnboost/config/stdlib/libcomo.hpp"
+#  include "ndnboost/config/stdlib/roguewave.hpp"
+#  include "ndnboost/config/stdlib/libcpp.hpp"
+#  include "ndnboost/config/stdlib/libstdcpp3.hpp"
+#  include "ndnboost/config/stdlib/sgi.hpp"
+#  include "ndnboost/config/stdlib/msl.hpp"
+#  include "ndnboost/config/stdlib/vacpp.hpp"
+#  include "ndnboost/config/stdlib/modena.hpp"
+#  include "ndnboost/config/stdlib/dinkumware.hpp"
+#endif
 

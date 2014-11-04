@@ -14,7 +14,6 @@
 #include <ndnboost/system/config.hpp>
 #include <ndnboost/cstdint.hpp>
 #include <ndnboost/assert.hpp>
-#include <ndnboost/operators.hpp>
 #include <ndnboost/noncopyable.hpp>
 #include <ndnboost/utility/enable_if.hpp>
 #include <ostream>
@@ -513,7 +512,7 @@ namespace ndnboost
 #include <ndnboost/config/abi_suffix.hpp> // pops abi_prefix.hpp pragmas
 
 # ifdef NDNBOOST_ERROR_CODE_HEADER_ONLY
-#   include <ndnboost/../libs/system/src/error_code.cpp>
+#   include <ndnboost/system/detail/error_code.ipp>
 # endif
 
 #endif // NDNBOOST_ERROR_CODE_HPP

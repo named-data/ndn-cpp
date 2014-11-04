@@ -76,11 +76,7 @@ struct is_signed_imp
    > selector;
    typedef typename selector::template rebind<T> binder;
    typedef typename binder::type type;
-#if defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC < 1300)
-   NDNBOOST_STATIC_CONSTANT(bool, value = is_signed_imp<T>::type::value);
-#else
    NDNBOOST_STATIC_CONSTANT(bool, value = type::value);
-#endif
 };
 
 #else

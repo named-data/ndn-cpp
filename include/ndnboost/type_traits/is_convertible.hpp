@@ -30,7 +30,9 @@
 #if defined(__MWERKS__)
 #include <ndnboost/type_traits/remove_reference.hpp>
 #endif
-
+#if !defined(NDNBOOST_NO_SFINAE_EXPR) && !defined(NDNBOOST_NO_CXX11_RVALUE_REFERENCES)
+#  include <ndnboost/utility/declval.hpp>
+#endif
 #endif // NDNBOOST_IS_CONVERTIBLE
 
 // should be always the last #include directive
@@ -52,42 +54,43 @@ namespace ndnboost {
 
 namespace detail {
 
-// MS specific version:
+#if !defined(NDNBOOST_NO_SFINAE_EXPR) && !defined(NDNBOOST_NO_CXX11_RVALUE_REFERENCES)
 
-#if defined(NDNBOOST_MSVC) && (NDNBOOST_MSVC <= 1300)
+   // This is a C++11 conforming version, place this first and use it wherever possible:
 
-// This workaround is necessary to handle when From is void
-// which is normally taken care of by the partial specialization
-// of the is_convertible typename.
-using ::ndnboost::type_traits::yes_type;
-using ::ndnboost::type_traits::no_type;
+#  define NDNBOOST_TT_CXX11_IS_CONVERTIBLE
 
-template< typename From >
-struct does_conversion_exist
-{
-    template< typename To > struct result_
-    {
-        static no_type NDNBOOST_TT_DECL _m_check(...);
-        static yes_type NDNBOOST_TT_DECL _m_check(To);
-        static typename add_lvalue_reference<From>::type  _m_from;
-        enum { value = sizeof( _m_check(_m_from) ) == sizeof(yes_type) };
-    };
-};
+   template <class A, class B, class C>
+   struct or_helper
+   {
+      static const bool value = (A::value || B::value || C::value);
+   };
 
-template<>
-struct does_conversion_exist<void>
-{
-    template< typename To > struct result_
-    {
-        enum { value = ::ndnboost::is_void<To>::value };
-    };
-};
+   template<typename From, typename To, bool b = or_helper<ndnboost::is_void<From>, ndnboost::is_function<To>, ndnboost::is_array<To> >::value>
+   struct is_convertible_basic_impl
+   {
+      // Nothing converts to function or array, but void converts to void:
+      static const bool value = is_void<To>::value; 
+   };
 
-template <typename From, typename To>
-struct is_convertible_basic_impl
-    : public does_conversion_exist<From>::template result_<To>
-{
-};
+   template<typename From, typename To>
+   class is_convertible_basic_impl<From, To, false>
+   {
+      typedef char one;
+      typedef int  two;
+
+      template<typename To1>
+      static void test_aux(To1);
+
+      template<typename From1, typename To1>
+      static decltype(test_aux<To1>(ndnboost::declval<From1>()), one()) test(int);
+
+      template<typename, typename>
+      static two test(...);
+
+   public:
+      static const bool value = sizeof(test<From, To>(0)) == 1;
+   };
 
 #elif defined(__BORLANDC__) && (__BORLANDC__ < 0x560)
 //
@@ -415,7 +418,8 @@ struct is_convertible_impl_dispatch_base
    typedef is_convertible_impl_select< 
       ::ndnboost::is_arithmetic<From>::value, 
       ::ndnboost::is_arithmetic<To>::value,
-#ifndef NDNBOOST_NO_IS_ABSTRACT
+#if !defined(NDNBOOST_NO_IS_ABSTRACT) && !defined(NDNBOOST_TT_CXX11_IS_CONVERTIBLE)
+      // We need to filter out abstract types, only if we don't have a strictly conforming C++11 version:
       ::ndnboost::is_abstract<To>::value
 #else
       false
@@ -462,7 +466,6 @@ struct is_convertible_impl_dispatch
     NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC2(is_convertible,void,void,true)
 #endif // NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_PARTIAL_SPEC2_1(typename To,is_convertible,void,To,false)
 NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_PARTIAL_SPEC2_1(typename From,is_convertible,From,void,false)
 #ifndef NDNBOOST_NO_CV_VOID_SPECIALIZATIONS
@@ -473,7 +476,6 @@ NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_PARTIAL_SPEC2_1(typename From,is_convertible,Fro
 NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_PARTIAL_SPEC2_1(typename From,is_convertible,From,void volatile,false)
 NDNBOOST_TT_AUX_BOOL_TRAIT_IMPL_PARTIAL_SPEC2_1(typename From,is_convertible,From,void const volatile,false)
 #endif
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace detail
 

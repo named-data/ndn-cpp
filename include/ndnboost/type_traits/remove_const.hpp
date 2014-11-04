@@ -12,23 +12,17 @@
 #define NDNBOOST_TT_REMOVE_CONST_HPP_INCLUDED
 
 #include <ndnboost/type_traits/is_volatile.hpp>
-#include <ndnboost/type_traits/broken_compiler_spec.hpp>
 #include <ndnboost/type_traits/detail/cv_traits_impl.hpp>
 #include <ndnboost/config.hpp>
 #include <ndnboost/detail/workaround.hpp>
 
 #include <cstddef>
 
-#if NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-#include <ndnboost/type_traits/msvc/remove_const.hpp>
-#endif
-
 // should be the last #include
 #include <ndnboost/type_traits/detail/type_trait_def.hpp>
 
 namespace ndnboost {
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 namespace detail {
 
@@ -49,7 +43,7 @@ template <typename T>
 struct remove_const_impl
 {
     typedef typename remove_const_helper<
-          typename cv_traits_imp<T*>::unqualified_type
+       typename cv_traits_imp<NDNBOOST_TT_AUX_CV_TRAITS_IMPL_PARAM(T)>::unqualified_type
         , ::ndnboost::is_volatile<T>::value
         >::type type;
 };
@@ -77,11 +71,6 @@ NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,remove_const
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_2(typename T,std::size_t N,remove_const,T const volatile[N],T volatile type[N])
 #endif
 
-#elif !NDNBOOST_WORKAROUND(NDNBOOST_MSVC,<=1300)
-
-NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(remove_const,T,typename ndnboost::detail::remove_const_impl<T>::type)
-
-#endif // NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 } // namespace ndnboost
 

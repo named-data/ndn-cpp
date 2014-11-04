@@ -18,8 +18,7 @@
 # if !defined(NDNBOOST_NO_OLD_CONCEPT_SUPPORT)                                         \
     && !defined(NDNBOOST_NO_SFINAE)                                                    \
                                                                                     \
-    && !(NDNBOOST_WORKAROUND(__GNUC__, == 3) && NDNBOOST_WORKAROUND(__GNUC_MINOR__, < 4)) \
-    && !(NDNBOOST_WORKAROUND(__GNUC__, == 2))
+    && !(NDNBOOST_WORKAROUND(__GNUC__, == 3) && NDNBOOST_WORKAROUND(__GNUC_MINOR__, < 4))
 
 // Note: gcc-2.96 through 3.3.x have some SFINAE, but no ability to
 // check for the presence of particularmember functions.

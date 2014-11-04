@@ -15,7 +15,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <ndnboost/detail/interlocked.hpp>
+#include <ndnboost/smart_ptr/detail/sp_interlocked.hpp>
 #include <ndnboost/smart_ptr/detail/yield_k.hpp>
 
 // NDNBOOST_COMPILER_FENCE
@@ -59,7 +59,7 @@ public:
 
     bool try_lock()
     {
-        long r = NDNBOOST_INTERLOCKED_EXCHANGE( &v_, 1 );
+        long r = NDNBOOST_SP_INTERLOCKED_EXCHANGE( &v_, 1 );
 
         NDNBOOST_COMPILER_FENCE
 

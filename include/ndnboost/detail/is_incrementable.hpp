@@ -55,8 +55,7 @@ namespace is_incrementable_
   
 # endif 
 
-# if NDNBOOST_WORKAROUND(__MWERKS__, NDNBOOST_TESTED_AT(0x3202)) \
-    || NDNBOOST_WORKAROUND(NDNBOOST_MSVC, <= 1300)
+# if NDNBOOST_WORKAROUND(__MWERKS__, NDNBOOST_TESTED_AT(0x3202)) 
 #  define NDNBOOST_comma(a,b) (a)
 # else 
   // In case an operator++ is found that returns void, we'll use ++x,0

@@ -11,7 +11,7 @@
 #ifndef NDNBOOST_RANGE_BEGIN_HPP
 #define NDNBOOST_RANGE_BEGIN_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
@@ -26,9 +26,7 @@
 namespace ndnboost
 {
 
-#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564)) && \
-    !NDNBOOST_WORKAROUND(__GNUC__, < 3) \
-    /**/
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564))
 namespace range_detail
 {
 #endif
@@ -85,9 +83,7 @@ namespace range_detail
     }
 
 
-#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564)) && \
-    !NDNBOOST_WORKAROUND(__GNUC__, < 3) \
-    /**/
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564))
 } // namespace 'range_detail'
 #endif
 
@@ -100,9 +96,7 @@ namespace range_adl_barrier
 template< class T >
 inline NDNBOOST_DEDUCED_TYPENAME range_iterator<T>::type begin( T& r )
 {
-#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564)) && \
-    !NDNBOOST_WORKAROUND(__GNUC__, < 3) \
-    /**/
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564))
     using namespace range_detail;
 #endif
     return range_begin( r );
@@ -111,9 +105,7 @@ inline NDNBOOST_DEDUCED_TYPENAME range_iterator<T>::type begin( T& r )
 template< class T >
 inline NDNBOOST_DEDUCED_TYPENAME range_iterator<const T>::type begin( const T& r )
 {
-#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564)) && \
-    !NDNBOOST_WORKAROUND(__GNUC__, < 3) \
-    /**/
+#if !NDNBOOST_WORKAROUND(__BORLANDC__, NDNBOOST_TESTED_AT(0x564))
     using namespace range_detail;
 #endif
     return range_begin( r );

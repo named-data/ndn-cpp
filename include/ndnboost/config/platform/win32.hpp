@@ -55,14 +55,21 @@
 // all translation units (needed for shared_ptr etc).
 //
 
-#ifdef _WIN32_WCE
-#  define NDNBOOST_NO_ANSI_APIS
-#else
-#  define NDNBOOST_HAS_GETSYSTEMTIMEASFILETIME
-#endif
-
 #ifndef NDNBOOST_HAS_PTHREADS
 #  define NDNBOOST_HAS_WINTHREADS
+#endif
+
+//
+// WinCE configuration:
+//
+#if defined(_WIN32_WCE) || defined(UNDER_CE)
+#  define NDNBOOST_NO_ANSI_APIS
+// Windows CE does not have a conforming signature for swprintf
+#  define NDNBOOST_NO_SWPRINTF
+#else
+#  define NDNBOOST_HAS_GETSYSTEMTIMEASFILETIME
+#  define NDNBOOST_HAS_THREADEX
+#  define NDNBOOST_HAS_GETSYSTEMTIMEASFILETIME
 #endif
 
 #ifndef NDNBOOST_DISABLE_WIN32

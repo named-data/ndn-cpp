@@ -27,8 +27,6 @@
 #endif
 
 # if (NDNBOOST_WORKAROUND(__MWERKS__, < 0x3000)                         \
-    || NDNBOOST_WORKAROUND(NDNBOOST_MSVC, <= 1301)                        \
-    || !defined(__EDG_VERSION__) && NDNBOOST_WORKAROUND(__GNUC__, < 3) \
     || NDNBOOST_WORKAROUND(__IBMCPP__, < 600 )                         \
     || NDNBOOST_WORKAROUND(__BORLANDC__, < 0x5A0)                      \
     || defined(__ghs)                                               \
@@ -43,14 +41,6 @@
 
 #ifndef NDNBOOST_TT_NO_CONFORMING_IS_CLASS_IMPLEMENTATION
 # define NDNBOOST_TT_HAS_CONFORMING_IS_CLASS_IMPLEMENTATION 1
-#endif
-
-//
-// Define NDNBOOST_TT_NO_ELLIPSIS_IN_FUNC_TESTING 
-// when we can't test for function types with elipsis:
-//
-#if NDNBOOST_WORKAROUND(__GNUC__, < 3)
-#  define NDNBOOST_TT_NO_ELLIPSIS_IN_FUNC_TESTING
 #endif
 
 //
@@ -70,6 +60,12 @@
 #if NDNBOOST_WORKAROUND(__MWERKS__, < 0x3000) || NDNBOOST_WORKAROUND(__IBMCPP__, <= 600)
 #  define NDNBOOST_TT_NO_CV_FUNC_TEST
 #endif
+
+//
+// Macros that have been deprecated, defined here for backwards compatibility:
+//
+#define NDNBOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(x)
+#define NDNBOOST_TT_BROKEN_COMPILER_SPEC(x)
 
 #endif // NDNBOOST_TT_CONFIG_HPP_INCLUDED
 

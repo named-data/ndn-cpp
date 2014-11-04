@@ -18,7 +18,6 @@
 
 #include <ndnboost/move/utility.hpp>
 #include <ndnboost/move/iterator.hpp>
-#include <ndnboost/move/algorithm.hpp>
 #include <ndnboost/detail/no_exceptions_support.hpp>
 
 #include <algorithm> //copy, copy_backward

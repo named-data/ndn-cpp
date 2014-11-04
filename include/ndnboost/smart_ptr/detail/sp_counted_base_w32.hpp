@@ -24,7 +24,7 @@
 //  formulation
 //
 
-#include <ndnboost/detail/interlocked.hpp>
+#include <ndnboost/smart_ptr/detail/sp_interlocked.hpp>
 #include <ndnboost/detail/workaround.hpp>
 #include <ndnboost/detail/sp_typeinfo.hpp>
 
@@ -71,7 +71,7 @@ public:
 
     void add_ref_copy()
     {
-        NDNBOOST_INTERLOCKED_INCREMENT( &use_count_ );
+        NDNBOOST_SP_INTERLOCKED_INCREMENT( &use_count_ );
     }
 
     bool add_ref_lock() // true on success
@@ -86,11 +86,11 @@ public:
             // work around a code generation bug
 
             long tmp2 = tmp + 1;
-            if( NDNBOOST_INTERLOCKED_COMPARE_EXCHANGE( &use_count_, tmp2, tmp ) == tmp2 - 1 ) return true;
+            if( NDNBOOST_SP_INTERLOCKED_COMPARE_EXCHANGE( &use_count_, tmp2, tmp ) == tmp2 - 1 ) return true;
 
 #else
 
-            if( NDNBOOST_INTERLOCKED_COMPARE_EXCHANGE( &use_count_, tmp + 1, tmp ) == tmp ) return true;
+            if( NDNBOOST_SP_INTERLOCKED_COMPARE_EXCHANGE( &use_count_, tmp + 1, tmp ) == tmp ) return true;
 
 #endif
         }
@@ -98,7 +98,7 @@ public:
 
     void release() // nothrow
     {
-        if( NDNBOOST_INTERLOCKED_DECREMENT( &use_count_ ) == 0 )
+        if( NDNBOOST_SP_INTERLOCKED_DECREMENT( &use_count_ ) == 0 )
         {
             dispose();
             weak_release();
@@ -107,12 +107,12 @@ public:
 
     void weak_add_ref() // nothrow
     {
-        NDNBOOST_INTERLOCKED_INCREMENT( &weak_count_ );
+        NDNBOOST_SP_INTERLOCKED_INCREMENT( &weak_count_ );
     }
 
     void weak_release() // nothrow
     {
-        if( NDNBOOST_INTERLOCKED_DECREMENT( &weak_count_ ) == 0 )
+        if( NDNBOOST_SP_INTERLOCKED_DECREMENT( &weak_count_ ) == 0 )
         {
             destroy();
         }

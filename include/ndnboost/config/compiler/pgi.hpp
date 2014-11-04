@@ -41,6 +41,9 @@
 #define NDNBOOST_HAS_THREADS
 #define NDNBOOST_HAS_NRVO
 #define NDNBOOST_HAS_LONG_LONG
+#if defined(linux) || defined(__linux) || defined(__linux__)
+#  define NDNBOOST_HAS_STDINT_H
+#endif
 
 // options --enable-test wants undefined
 #undef NDNBOOST_NO_STDC_NAMESPACE
@@ -112,6 +115,10 @@
 #define NDNBOOST_NO_CXX11_HDR_CHRONO
 #define NDNBOOST_NO_CXX11_HDR_ARRAY
 #define NDNBOOST_NO_CXX11_USER_DEFINED_LITERALS
+#define NDNBOOST_NO_CXX11_ALIGNAS
+#define NDNBOOST_NO_CXX11_TRAILING_RESULT_TYPES
+#define NDNBOOST_NO_CXX11_INLINE_NAMESPACES
+#define NDNBOOST_NO_CXX11_REF_QUALIFIERS
 
 //
 // version check:

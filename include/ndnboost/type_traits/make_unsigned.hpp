@@ -37,11 +37,9 @@ struct make_unsigned_imp
 {
    NDNBOOST_STATIC_ASSERT(
       (::ndnboost::type_traits::ice_or< ::ndnboost::is_integral<T>::value, ::ndnboost::is_enum<T>::value>::value));
-#if !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, <=1300)
    NDNBOOST_STATIC_ASSERT(
       (::ndnboost::type_traits::ice_not< ::ndnboost::is_same<
          typename remove_cv<T>::type, bool>::value>::value));
-#endif
 
    typedef typename remove_cv<T>::type t_no_cv;
    typedef typename mpl::if_c<

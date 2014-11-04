@@ -37,9 +37,7 @@ NDNBOOST_TT_AUX_TYPE_TRAIT_DEF1(add_cv,T,T const volatile)
 #   pragma warning(pop)
 #endif 
 
-#ifndef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 NDNBOOST_TT_AUX_TYPE_TRAIT_PARTIAL_SPEC1_1(typename T,add_cv,T&,T&)
-#endif
 
 } // namespace ndnboost
 

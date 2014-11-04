@@ -36,7 +36,7 @@ template <class BidiIterator>
 struct sub_match : public std::pair<BidiIterator, BidiIterator>
 {
    typedef typename re_detail::regex_iterator_traits<BidiIterator>::value_type       value_type;
-#if defined(NDNBOOST_NO_STD_ITERATOR_TRAITS) || defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#if defined(NDNBOOST_NO_STD_ITERATOR_TRAITS)
    typedef          std::ptrdiff_t                                                   difference_type;
 #else
    typedef typename re_detail::regex_iterator_traits<BidiIterator>::difference_type  difference_type;
@@ -50,7 +50,6 @@ struct sub_match : public std::pair<BidiIterator, BidiIterator>
    sub_match() : std::pair<BidiIterator, BidiIterator>(), matched(false) {}
    sub_match(BidiIterator i) : std::pair<BidiIterator, BidiIterator>(i, i), matched(false) {}
 #if !defined(NDNBOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)\
-               && !NDNBOOST_WORKAROUND(NDNBOOST_MSVC, < 1310)\
                && !NDNBOOST_WORKAROUND(__BORLANDC__, <= 0x0551)\
                && !NDNBOOST_WORKAROUND(__DECCXX_VER, NDNBOOST_TESTED_AT(60590042))
    template <class T, class A>

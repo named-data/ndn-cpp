@@ -15,22 +15,6 @@
 //
 // Also defines an equivalent SomeNameConcept for backward compatibility.
 // Maybe in the next release we can kill off the "Concept" suffix for good.
-#if NDNBOOST_WORKAROUND(__GNUC__, <= 3)
-# define NDNBOOST_concept(name, params)                                            \
-    template < NDNBOOST_PP_SEQ_FOR_EACH_I(NDNBOOST_CONCEPT_typename,~,params) >       \
-    struct name; /* forward declaration */                                      \
-                                                                                \
-    template < NDNBOOST_PP_SEQ_FOR_EACH_I(NDNBOOST_CONCEPT_typename,~,params) >       \
-    struct NDNBOOST_PP_CAT(name,Concept)                                           \
-      : name< NDNBOOST_PP_SEQ_ENUM(params) >                                       \
-    {                                                                           \
-        /* at least 2.96 and 3.4.3 both need this */                            \
-        NDNBOOST_PP_CAT(name,Concept)();                                           \
-    };                                                                          \
-                                                                                \
-    template < NDNBOOST_PP_SEQ_FOR_EACH_I(NDNBOOST_CONCEPT_typename,~,params) >       \
-    struct name                                                                
-#else
 # define NDNBOOST_concept(name, params)                                            \
     template < NDNBOOST_PP_SEQ_FOR_EACH_I(NDNBOOST_CONCEPT_typename,~,params) >       \
     struct name; /* forward declaration */                                      \
@@ -43,7 +27,6 @@
                                                                                 \
     template < NDNBOOST_PP_SEQ_FOR_EACH_I(NDNBOOST_CONCEPT_typename,~,params) >       \
     struct name                                                                
-#endif
     
 // Helper for NDNBOOST_concept, above.
 # define NDNBOOST_CONCEPT_typename(r, ignored, index, t) \

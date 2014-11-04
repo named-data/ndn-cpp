@@ -38,18 +38,27 @@
 
 // Use the decltype-based version of result_of by default if the compiler
 // supports N3276 <http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2011/n3276.pdf>.
-// The user can force the choice by defining either NDNBOOST_RESULT_OF_USE_DECLTYPE or
-// NDNBOOST_RESULT_OF_USE_TR1, but not both!
-#if defined(NDNBOOST_RESULT_OF_USE_DECLTYPE) && defined(NDNBOOST_RESULT_OF_USE_TR1)
-#  error Both NDNBOOST_RESULT_OF_USE_DECLTYPE and NDNBOOST_RESULT_OF_USE_TR1 cannot be defined at the same time.
+// The user can force the choice by defining NDNBOOST_RESULT_OF_USE_DECLTYPE,
+// NDNBOOST_RESULT_OF_USE_TR1, or NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK but not more than one!
+#if (defined(NDNBOOST_RESULT_OF_USE_DECLTYPE) && defined(NDNBOOST_RESULT_OF_USE_TR1)) || \
+    (defined(NDNBOOST_RESULT_OF_USE_DECLTYPE) && defined(NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK)) || \
+    (defined(NDNBOOST_RESULT_OF_USE_TR1) && defined(NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK))
+#  error More than one of NDNBOOST_RESULT_OF_USE_DECLTYPE, NDNBOOST_RESULT_OF_USE_TR1 and \
+  NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK cannot be defined at the same time.
+#endif
+
+#if defined(NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK) && defined(NDNBOOST_MPL_CFG_NO_HAS_XXX_TEMPLATE)
+#  error Cannot fallback to decltype if NDNBOOST_MPL_CFG_NO_HAS_XXX_TEMPLATE is not defined.
 #endif
 
 #ifndef NDNBOOST_RESULT_OF_USE_TR1
 #  ifndef NDNBOOST_RESULT_OF_USE_DECLTYPE
-#    ifndef NDNBOOST_NO_CXX11_DECLTYPE_N3276 // this implies !defined(NDNBOOST_NO_CXX11_DECLTYPE)
-#      define NDNBOOST_RESULT_OF_USE_DECLTYPE
-#    else
-#      define NDNBOOST_RESULT_OF_USE_TR1
+#    ifndef NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK
+#      ifndef NDNBOOST_NO_CXX11_DECLTYPE_N3276 // this implies !defined(NDNBOOST_NO_CXX11_DECLTYPE)
+#        define NDNBOOST_RESULT_OF_USE_DECLTYPE
+#      else
+#        define NDNBOOST_RESULT_OF_USE_TR1
+#      endif
 #    endif
 #  endif
 #endif
@@ -59,12 +68,19 @@ namespace ndnboost {
 template<typename F> struct result_of;
 template<typename F> struct tr1_result_of; // a TR1-style implementation of result_of
 
-#if !defined(NDNBOOST_NO_SFINAE) && !defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#if !defined(NDNBOOST_NO_SFINAE)
 namespace detail {
 
 NDNBOOST_MPL_HAS_XXX_TRAIT_DEF(result_type)
 
+// Work around a nvcc bug by only defining has_result when it's needed.
+#ifdef NDNBOOST_RESULT_OF_USE_TR1_WITH_DECLTYPE_FALLBACK
+NDNBOOST_MPL_HAS_XXX_TEMPLATE_DEF(result)
+#endif
+
 template<typename F, typename FArgs, bool HasResultType> struct tr1_result_of_impl;
+
+template<typename F> struct cpp0x_result_of;
 
 #ifdef NDNBOOST_NO_SFINAE_EXPR
 

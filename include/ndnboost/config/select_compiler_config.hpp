@@ -13,6 +13,12 @@
 // locate which compiler we are using and define
 // NDNBOOST_COMPILER_CONFIG as needed: 
 
+#if defined __CUDACC__
+//  NVIDIA CUDA C++ compiler for GPU
+#   include "ndnboost/config/compiler/nvcc.hpp"
+
+#endif
+
 #if defined(__GCCXML__)
 // GCC-XML emulates other compilers, it has to appear first here!
 #   define NDNBOOST_COMPILER_CONFIG "ndnboost/config/compiler/gcc_xml.hpp"
@@ -20,10 +26,6 @@
 #elif defined(_CRAYC)
 // EDG based Cray compiler:
 #   define NDNBOOST_COMPILER_CONFIG "ndnboost/config/compiler/cray.hpp"
-
-#elif defined __CUDACC__
-//  NVIDIA CUDA C++ compiler for GPU
-#   define NDNBOOST_COMPILER_CONFIG "ndnboost/config/compiler/nvcc.hpp"
 
 #elif defined __COMO__
 //  Comeau C++
@@ -110,3 +112,32 @@
 #  error "Unknown compiler - please configure (http://www.boost.org/libs/config/config.htm#configuring) and report the results to the main boost mailing list (http://www.boost.org/more/mailing_lists.htm#main)"
 
 #endif
+
+#if 0
+//
+// This section allows dependency scanners to find all the headers we *might* include:
+//
+#include "ndnboost/config/compiler/gcc_xml.hpp"
+#include "ndnboost/config/compiler/cray.hpp"
+#include "ndnboost/config/compiler/comeau.hpp"
+#include "ndnboost/config/compiler/pathscale.hpp"
+#include "ndnboost/config/compiler/intel.hpp"
+#include "ndnboost/config/compiler/clang.hpp"
+#include "ndnboost/config/compiler/digitalmars.hpp"
+#include "ndnboost/config/compiler/gcc.hpp"
+#include "ndnboost/config/compiler/kai.hpp"
+#include "ndnboost/config/compiler/sgi_mipspro.hpp"
+#include "ndnboost/config/compiler/compaq_cxx.hpp"
+#include "ndnboost/config/compiler/greenhills.hpp"
+#include "ndnboost/config/compiler/codegear.hpp"
+#include "ndnboost/config/compiler/borland.hpp"
+#include "ndnboost/config/compiler/metrowerks.hpp"
+#include "ndnboost/config/compiler/sunpro_cc.hpp"
+#include "ndnboost/config/compiler/hp_acc.hpp"
+#include "ndnboost/config/compiler/mpw.hpp"
+#include "ndnboost/config/compiler/vacpp.hpp"
+#include "ndnboost/config/compiler/pgi.hpp"
+#include "ndnboost/config/compiler/visualc.hpp"
+
+#endif
+

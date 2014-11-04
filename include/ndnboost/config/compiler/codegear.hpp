@@ -72,6 +72,12 @@
 #  endif
 
 #endif
+
+// Reportedly, #pragma once is supported since C++ Builder 2010
+#if (__CODEGEARC__ >= 0x620)
+#  define NDNBOOST_HAS_PRAGMA_ONCE
+#endif
+
 //
 // C++0x macros:
 //
@@ -111,6 +117,10 @@
 #define NDNBOOST_NO_CXX11_VARIADIC_TEMPLATES
 #define NDNBOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
 #define NDNBOOST_NO_CXX11_USER_DEFINED_LITERALS
+#define NDNBOOST_NO_CXX11_ALIGNAS
+#define NDNBOOST_NO_CXX11_TRAILING_RESULT_TYPES
+#define NDNBOOST_NO_CXX11_INLINE_NAMESPACES
+#define NDNBOOST_NO_CXX11_REF_QUALIFIERS
 
 //
 // TR1 macros:
@@ -151,7 +161,7 @@
 // all versions support __declspec:
 //
 #if defined(__STRICT_ANSI__)
-// config/platform/win32.hpp will define NDNBOOST_SYMBOL_EXPORT, etc., unless already defined  
+// config/platform/win32.hpp will define NDNBOOST_SYMBOL_EXPORT, etc., unless already defined
 #  define NDNBOOST_SYMBOL_EXPORT
 #endif
 //

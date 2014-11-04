@@ -7,7 +7,7 @@
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: large_arithmetic.hpp 71018 2011-04-05 21:27:52Z steven_watanabe $
+ * $Id$
  */
 
 #ifndef NDNBOOST_RANDOM_DETAIL_LARGE_ARITHMETIC_HPP
@@ -31,9 +31,9 @@ struct div_t {
 
 inline div_t muldivmod(ndnboost::uintmax_t a, ndnboost::uintmax_t b, ndnboost::uintmax_t m)
 {
-    static const int bits =
+    const int bits =
         ::std::numeric_limits< ::ndnboost::uintmax_t>::digits / 2;
-    static const ::ndnboost::uintmax_t mask = (::ndnboost::uintmax_t(1) << bits) - 1;
+    const ::ndnboost::uintmax_t mask = (::ndnboost::uintmax_t(1) << bits) - 1;
     typedef ::ndnboost::uint_t<bits>::fast digit_t;
 
     int shift = std::numeric_limits< ::ndnboost::uintmax_t>::digits - 1
@@ -96,8 +96,8 @@ inline div_t muldivmod(ndnboost::uintmax_t a, ndnboost::uintmax_t b, ndnboost::u
 
         quotient[i - 2] = q;
         product[i] = 0;
-        product[i-1] = (rem >> bits) & mask;
-        product[i-2] = rem & mask;
+        product[i-1] = static_cast<digit_t>((rem >> bits) & mask);
+        product[i-2] = static_cast<digit_t>(rem & mask);
     }
 
     div_t result = {

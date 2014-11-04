@@ -21,6 +21,7 @@
 
 #include <ndnboost/config.hpp>
 #include <ndnboost/is_placeholder.hpp>
+#include <ndnboost/static_assert.hpp>
 
 namespace ndnboost
 {
@@ -33,8 +34,7 @@ template< int I > struct arg
 
     template< class T > arg( T const & /* t */ )
     {
-        // static assert I == is_placeholder<T>::value
-        typedef char T_must_be_placeholder[ I == is_placeholder<T>::value? 1: -1 ];
+        NDNBOOST_STATIC_ASSERT( I == is_placeholder<T>::value );
     }
 };
 

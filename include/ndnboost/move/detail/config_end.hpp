@@ -9,11 +9,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #if defined NDNBOOST_MSVC
    #pragma warning (pop)
-   #ifdef NDNBOOST_MOVE_DETAIL_CRT_SECURE_NO_DEPRECATE
-      #undef NDNBOOST_MOVE_DETAIL_CRT_SECURE_NO_DEPRECATE
+   #ifdef NDNBOOST_MOVE_CRT_SECURE_NO_DEPRECATE
+      #undef  NDNBOOST_MOVE_CRT_SECURE_NO_DEPRECATE
       #undef _CRT_SECURE_NO_DEPRECATE
    #endif
-   #ifndef NDNBOOST_MOVE_SCL_SECURE_NO_WARNINGS
+   #ifdef NDNBOOST_MOVE_SCL_SECURE_NO_WARNINGS
       #undef  NDNBOOST_MOVE_SCL_SECURE_NO_WARNINGS
       #undef _SCL_SECURE_NO_WARNINGS
    #endif

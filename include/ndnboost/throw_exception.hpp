@@ -1,6 +1,6 @@
 #ifndef NDNBOOST_UUID_AA15E74A856F11E08B8D93F24824019B
 #define NDNBOOST_UUID_AA15E74A856F11E08B8D93F24824019B
-#if defined(__GNUC__) && !defined(NDNBOOST_EXCEPTION_ENABLE_WARNINGS)
+#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(NDNBOOST_EXCEPTION_ENABLE_WARNINGS)
 #pragma GCC system_header
 #endif
 #if defined(_MSC_VER) && !defined(NDNBOOST_EXCEPTION_ENABLE_WARNINGS)
@@ -26,7 +26,6 @@
 //  http://www.boost.org/libs/utility/throw_exception.html
 //
 
-#include <ndnboost/exception/detail/attribute_noreturn.hpp>
 #include <ndnboost/detail/workaround.hpp>
 #include <ndnboost/config.hpp>
 #include <exception>
@@ -41,8 +40,11 @@
 
 #if !defined( NDNBOOST_EXCEPTION_DISABLE )
 # include <ndnboost/exception/exception.hpp>
+#if !defined(NDNBOOST_THROW_EXCEPTION_CURRENT_FUNCTION)
 # include <ndnboost/current_function.hpp>
-# define NDNBOOST_THROW_EXCEPTION(x) ::ndnboost::exception_detail::throw_exception_(x,NDNBOOST_CURRENT_FUNCTION,__FILE__,__LINE__)
+# define NDNBOOST_THROW_EXCEPTION_CURRENT_FUNCTION NDNBOOST_CURRENT_FUNCTION
+#endif
+# define NDNBOOST_THROW_EXCEPTION(x) ::ndnboost::exception_detail::throw_exception_(x,NDNBOOST_THROW_EXCEPTION_CURRENT_FUNCTION,__FILE__,__LINE__)
 #else
 # define NDNBOOST_THROW_EXCEPTION(x) ::ndnboost::throw_exception(x)
 #endif
@@ -57,7 +59,7 @@ void throw_exception( std::exception const & e ); // user defined
 
 inline void throw_exception_assert_compatibility( std::exception const & ) { }
 
-template<class E> NDNBOOST_ATTRIBUTE_NORETURN inline void throw_exception( E const & e )
+template<class E> NDNBOOST_NORETURN inline void throw_exception( E const & e )
 {
     //All boost exceptions are required to derive from std::exception,
     //to ensure compatibility with NDNBOOST_NO_EXCEPTIONS.
@@ -77,7 +79,7 @@ template<class E> NDNBOOST_ATTRIBUTE_NORETURN inline void throw_exception( E con
     exception_detail
     {
         template <class E>
-        NDNBOOST_ATTRIBUTE_NORETURN
+        NDNBOOST_NORETURN
         void
         throw_exception_( E const & x, char const * current_function, char const * file, int line )
         {

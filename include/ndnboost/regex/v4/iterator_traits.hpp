@@ -33,7 +33,7 @@
 namespace ndnboost{
 namespace re_detail{
 
-#if defined(NDNBOOST_NO_STD_ITERATOR_TRAITS) || defined(NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#if defined(NDNBOOST_NO_STD_ITERATOR_TRAITS)
 
 template <class T>
 struct regex_iterator_traits 

@@ -11,16 +11,12 @@
 #ifndef NDNBOOST_RANGE_VALUE_TYPE_HPP
 #define NDNBOOST_RANGE_VALUE_TYPE_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
 #include <ndnboost/range/config.hpp>
 #include <ndnboost/range/iterator.hpp>
-
-//#ifdef NDNBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-//#include <ndnboost/range/detail/value_type.hpp>
-//#else
 
 #include <ndnboost/iterator/iterator_traits.hpp>
 

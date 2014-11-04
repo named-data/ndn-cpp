@@ -11,6 +11,7 @@
 #define NDNBOOST_SYSTEM_CONFIG_HPP
 
 #include <ndnboost/config.hpp>
+#include <ndnboost/predef/platform.h>
 #include <ndnboost/system/api_config.hpp>  // for NDNBOOST_POSIX_API or NDNBOOST_WINDOWS_API
 
 // This header implements separate compilation features as described in
