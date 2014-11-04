@@ -88,13 +88,13 @@ public:
     usrname_ = tempStream.str();
 
     sync_.reset(new ChronoSync2013
-      (bind(&Chat::sendInterest, this, _1, _2),
-       bind(&Chat::initial, this), chat_prefix_,
+      (bind(&Chat::sendInterest, shared_from_this(), _1, _2),
+       bind(&Chat::initial, shared_from_this()), chat_prefix_,
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
        face_, keyChain_, certificateName_, sync_lifetime_, onRegisterFailed));
 
     face_.registerPrefix
-      (chat_prefix_, bind(&Chat::onInterest, this, _1, _2, _3, _4),
+      (chat_prefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4),
        onRegisterFailed);
   }
 
@@ -245,7 +245,7 @@ Chat::initial()
   // TODO: Are we sure using a "/timeout" interest is the best future call approach?
   Interest timeout("/timeout");
   timeout.setInterestLifetimeMilliseconds(60000);
-  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
+  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, shared_from_this(), _1));
 
   if (rosterFind(usrname_) < 0) {
     roster_.push_back(usrname_);
@@ -295,8 +295,8 @@ Chat::sendInterest
     Interest interest(uri.str());
     interest.setInterestLifetimeMilliseconds(sync_lifetime_);
     face_.expressInterest
-      (interest, bind(&Chat::onData, this, _1, _2),
-       bind(&Chat::chatTimeout, this, _1));
+      (interest, bind(&Chat::onData, shared_from_this(), _1, _2),
+       bind(&Chat::chatTimeout, shared_from_this(), _1));
   }
 }
 
@@ -383,7 +383,7 @@ Chat::onData
     timeout.setInterestLifetimeMilliseconds(120000);
     face_.expressInterest
       (timeout, dummyOnData,
-       bind(&Chat::alive, this, _1, seqno, name, session, prefix));
+       bind(&Chat::alive, shared_from_this(), _1, seqno, name, session, prefix));
 
     // isRecoverySyncState_ was set by sendInterest.
     // TODO: If isRecoverySyncState_ changed, this assumes that we won't get
@@ -421,7 +421,7 @@ Chat::heartbeat(const ptr_lib::shared_ptr<const Interest> &interest)
   // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
   Interest timeout("/local/timeout");
   timeout.setInterestLifetimeMilliseconds(60000);
-  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, this, _1));
+  face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, shared_from_this(), _1));
 }
 
 void
