@@ -84,9 +84,9 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(dist_noinst_SCRIPTS) depcomp \
-	test-driver COPYING ar-lib compile config.guess config.sub \
-	install-sh missing ltmain.sh
+	$(am__configure_deps) $(srcdir)/libndn-cpp.pc.in \
+	$(dist_noinst_SCRIPTS) depcomp test-driver COPYING ar-lib \
+	compile config.guess config.sub install-sh missing ltmain.sh
 check_PROGRAMS = bin/test-data-methods$(EXEEXT) \
 	bin/test-face-methods$(EXEEXT) \
 	bin/test-interest-methods$(EXEEXT) \
@@ -120,7 +120,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = libndn-cpp.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -1115,6 +1115,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
+libndn-cpp.pc: $(top_builddir)/config.status $(srcdir)/libndn-cpp.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -2724,6 +2726,17 @@ uninstall-am: uninstall-libLTLIBRARIES
 @DX_COND_doc_TRUE@@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
 @DX_COND_doc_TRUE@	rm -rf @DX_DOCDIR@
 @DX_COND_doc_TRUE@	$(DX_ENV) $(DX_DOXYGEN) $(srcdir)/$(DX_CONFIG)
+
+#pkgconfigdir = $(libdir)/pkgconfig
+#nodist_pkgconfig_DATA = libndn-cpp.pc
+#
+#libndn-cpp.pc: libndn-cpp.pc.in
+#	sed -e 's![@]prefix[@]!$(prefix)!g' \
+#	-e 's![@]exec_prefix[@]!$(exec_prefix)!g' \
+#	-e 's![@]includedir[@]!$(includedir)!g' \
+#	-e 's![@]libdir[@]!$(libdir)!g' \
+#	-e 's![@]PACKAGE_VERSION[@]!$(PACKAGE_VERSION)!g' \
+#	libndn-cpp.pc.in > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -35,6 +35,7 @@ config.log
 .deps
 .dirstamp
 *.tar.gz
+/*.pc
 # Let autoconf automatically copy these files
 /m4/libtool.m4
 /m4/ltoptions.m4
