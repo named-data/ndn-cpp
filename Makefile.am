@@ -17,7 +17,7 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
-check_PROGRAMS = bin/test-data-methods bin/test-face-methods \
+check_PROGRAMS = bin/test-data-methods bin/test-der-encode-decode bin/test-face-methods \
   bin/test-interest-methods bin/test-name-conventions bin/test-name-methods
 
 noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
@@ -242,6 +242,10 @@ bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 bin_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_test_data_methods_LDADD = libndn-cpp.la
+
+bin_test_der_encode_decode_SOURCES = tests/unit-tests/test-der-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_test_der_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_test_der_encode_decode_LDADD = libndn-cpp.la
 
 bin_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
