@@ -341,7 +341,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
       info_->onRegisterFailed_(info_->prefix_);
     }
 
-    _LOG_DEBUG("Register prefix succeeded with the NFD forwarder.");
+    _LOG_DEBUG("Register prefix succeeded with the NFD forwarder for prefix " <<
+               info_->prefix_->toUri());
   }
   else {
     Name expectedName("/ndnx/.../selfreg");
@@ -356,7 +357,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
       return;
     }
 
-    _LOG_DEBUG("Register prefix succeeded with the NDNx forwarder.");
+    _LOG_DEBUG("Register prefix succeeded with the NDNx forwarder for prefix " <<
+               info_->prefix_->toUri());
   }
 }
 
