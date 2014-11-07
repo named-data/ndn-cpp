@@ -50,7 +50,7 @@
 namespace ndn {
 
 /**
- * Convert an NDN regex (http://redmine.named-data.net/projects/ndn-css/wiki/Regex)
+ * Convert an NDN regex (http://redmine.named-data.net/projects/ndn-cxx/wiki/Regex)
  * to a std::regex that can match against URIs.
  * Note that in PyNDN, etc. this has a static member called match, but here
  * we construct an NdnRegexMatcher object so that it can carry the internal
