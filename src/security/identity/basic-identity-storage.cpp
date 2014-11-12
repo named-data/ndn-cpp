@@ -24,9 +24,6 @@
 #include <ndn-cpp/ndn-cpp-config.h>
 #ifdef NDN_CPP_HAVE_SQLITE3
 
-#if 1
-#include <stdexcept>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
@@ -680,25 +677,69 @@ BasicIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const
 void
 BasicIdentityStorage::deleteCertificateInfo(const Name& certificateName)
 {
-#if 1
-  throw runtime_error("BasicIdentityStorage::deleteCertificateInfo is not implemented");
-#endif
+  if (certificateName.size() == 0)
+    return;
+
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "DELETE FROM Certificate WHERE cert_name=?", -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
 }
 
 void
 BasicIdentityStorage::deletePublicKeyInfo(const Name& keyName)
 {
-#if 1
-  throw runtime_error("BasicIdentityStorage::deletePublicKeyInfo is not implemented");
-#endif
+  if (keyName.size() == 0)
+    return;
+
+  string keyId = keyName.get(-1).toEscapedString();
+  Name identityName = keyName.getPrefix(-1);
+  
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_,
+     "DELETE FROM Certificate WHERE identity_name=? and key_identifier=?",
+     -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
+  sqlite3_bind_text(statement, 2, keyId, SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
+
+  sqlite3_prepare_v2
+    (database_,
+     "DELETE FROM Key WHERE identity_name=? and key_identifier=?",
+     -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
+  sqlite3_bind_text(statement, 2, keyId, SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
 }
 
 void
-BasicIdentityStorage::deleteIdentityInfo(const Name& identity)
+BasicIdentityStorage::deleteIdentityInfo(const Name& identityName)
 {
-#if 1
-  throw runtime_error("BasicIdentityStorage::deleteIdentityInfo is not implemented");
-#endif
+  string identity = identityName.toUri();
+
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "DELETE FROM Certificate WHERE identity_name=?", -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, identity, SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
+
+  sqlite3_prepare_v2
+    (database_, "DELETE FROM Key WHERE identity_name=?", -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, identity, SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
+
+  sqlite3_prepare_v2
+    (database_, "DELETE FROM Identity WHERE identity_name=?", -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, identity, SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
 }
 
 }
