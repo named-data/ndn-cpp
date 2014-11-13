@@ -351,9 +351,9 @@ Chat::onData
   content.ParseFromArray(co->getContent().buf(), co->getContent().size());
   if (getNowMilliseconds() - content.timestamp() * 1000.0 < 120000.0) {
     string name = content.from();
-    string prefix = co->getName().getPrefix(chat_prefix_.size()).toUri();
-    int session = ::atoi(co->getName().get(chat_prefix_.size() + 0).toEscapedString().c_str());
-    int seqno = ::atoi(co->getName().get(chat_prefix_.size() + 1).toEscapedString().c_str());
+    string prefix = co->getName().getPrefix(-2).toUri();
+    int session = ::atoi(co->getName().get(-2).toEscapedString().c_str());
+    int seqno = ::atoi(co->getName().get(-1).toEscapedString().c_str());
     ostringstream tempStream;
     tempStream << name << session;
     string nameAndSession = tempStream.str();
