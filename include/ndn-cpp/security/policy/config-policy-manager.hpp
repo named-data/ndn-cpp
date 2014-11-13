@@ -179,7 +179,7 @@ public:
 
 private:
   // Allow the unit tests to call private members.
-  friend TestVerificationRulesFriend;
+  friend class ::TestVerificationRulesFriend;
   
   /**
    * TrustAnchorRefreshManager manages the trust-anchor certificates, including 
