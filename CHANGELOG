@@ -1,12 +1,13 @@
-Interim changes since NDN-CPP v0.5 (2014-11-04)
+Interim changes since NDN-CPP v0.5 (2014-11-14)
 -----------------------------------------------
 
 Changes
 * In MetaInfo, added get/setFinalBlockId (replaces the deprecated get/setFinalBlockID).
 * In Name, added wireEncode and wireDecode.
-* In unit tests, added test-name-conventions.
 * In MemoryContentCache, added unregisterAll.
 * In unit-tests test-name-methods, fixed bug for "make check" on Ubuntu.
+* In unit tests, added test-name-conventions.
+* In unit-tests, added test-verification-rules to test NdnRegexMatcher.
 
 Deprecated
 * In MetaInfo, deprecated get/setFinalBlockID. Use get/setFinalBlockId.
