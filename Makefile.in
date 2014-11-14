@@ -87,12 +87,12 @@ DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 	$(am__configure_deps) $(srcdir)/libndn-cpp.pc.in \
 	$(dist_noinst_SCRIPTS) depcomp test-driver COPYING ar-lib \
 	compile config.guess config.sub install-sh missing ltmain.sh
-check_PROGRAMS = bin/test-data-methods$(EXEEXT) \
-	bin/test-der-encode-decode$(EXEEXT) \
-	bin/test-face-methods$(EXEEXT) \
-	bin/test-interest-methods$(EXEEXT) \
-	bin/test-name-conventions$(EXEEXT) \
-	bin/test-name-methods$(EXEEXT)
+check_PROGRAMS = bin/unit-tests/test-data-methods$(EXEEXT) \
+	bin/unit-tests/test-der-encode-decode$(EXEEXT) \
+	bin/unit-tests/test-face-methods$(EXEEXT) \
+	bin/unit-tests/test-interest-methods$(EXEEXT) \
+	bin/unit-tests/test-name-conventions$(EXEEXT) \
+	bin/unit-tests/test-name-methods$(EXEEXT)
 noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
 	bin/test-chrono-chat$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
@@ -259,15 +259,6 @@ am_bin_test_chrono_chat_OBJECTS = tests/test-chrono-chat.$(OBJEXT) \
 	tests/chatbuf.pb.$(OBJEXT)
 bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
 bin_test_chrono_chat_DEPENDENCIES = libndn-cpp.la
-am_bin_test_data_methods_OBJECTS = tests/unit-tests/bin_test_data_methods-test-data-methods.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT)
-bin_test_data_methods_OBJECTS = $(am_bin_test_data_methods_OBJECTS)
-bin_test_data_methods_DEPENDENCIES = libndn-cpp.la
-am_bin_test_der_encode_decode_OBJECTS = tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.$(OBJEXT)
-bin_test_der_encode_decode_OBJECTS =  \
-	$(am_bin_test_der_encode_decode_OBJECTS)
-bin_test_der_encode_decode_DEPENDENCIES = libndn-cpp.la
 am_bin_test_echo_consumer_OBJECTS =  \
 	tests/test-echo-consumer.$(OBJEXT)
 bin_test_echo_consumer_OBJECTS = $(am_bin_test_echo_consumer_OBJECTS)
@@ -298,27 +289,9 @@ am_bin_test_encode_decode_interest_OBJECTS =  \
 bin_test_encode_decode_interest_OBJECTS =  \
 	$(am_bin_test_encode_decode_interest_OBJECTS)
 bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
-am_bin_test_face_methods_OBJECTS = tests/unit-tests/bin_test_face_methods-test-face-methods.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.$(OBJEXT)
-bin_test_face_methods_OBJECTS = $(am_bin_test_face_methods_OBJECTS)
-bin_test_face_methods_DEPENDENCIES = libndn-cpp.la
 am_bin_test_get_async_OBJECTS = tests/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
-am_bin_test_interest_methods_OBJECTS = tests/unit-tests/bin_test_interest_methods-test-interest-methods.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.$(OBJEXT)
-bin_test_interest_methods_OBJECTS =  \
-	$(am_bin_test_interest_methods_OBJECTS)
-bin_test_interest_methods_DEPENDENCIES = libndn-cpp.la
-am_bin_test_name_conventions_OBJECTS = tests/unit-tests/bin_test_name_conventions-test-name-conventions.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.$(OBJEXT)
-bin_test_name_conventions_OBJECTS =  \
-	$(am_bin_test_name_conventions_OBJECTS)
-bin_test_name_conventions_DEPENDENCIES = libndn-cpp.la
-am_bin_test_name_methods_OBJECTS = tests/unit-tests/bin_test_name_methods-test-name-methods.$(OBJEXT) \
-	contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.$(OBJEXT)
-bin_test_name_methods_OBJECTS = $(am_bin_test_name_methods_OBJECTS)
-bin_test_name_methods_DEPENDENCIES = libndn-cpp.la
 am_bin_test_publish_async_ndnx_OBJECTS =  \
 	tests/test-publish-async-ndnx.$(OBJEXT)
 bin_test_publish_async_ndnx_OBJECTS =  \
@@ -329,6 +302,36 @@ am_bin_test_publish_async_nfd_OBJECTS =  \
 bin_test_publish_async_nfd_OBJECTS =  \
 	$(am_bin_test_publish_async_nfd_OBJECTS)
 bin_test_publish_async_nfd_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_data_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT)
+bin_unit_tests_test_data_methods_OBJECTS =  \
+	$(am_bin_unit_tests_test_data_methods_OBJECTS)
+bin_unit_tests_test_data_methods_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_der_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.$(OBJEXT)
+bin_unit_tests_test_der_encode_decode_OBJECTS =  \
+	$(am_bin_unit_tests_test_der_encode_decode_OBJECTS)
+bin_unit_tests_test_der_encode_decode_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_face_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.$(OBJEXT)
+bin_unit_tests_test_face_methods_OBJECTS =  \
+	$(am_bin_unit_tests_test_face_methods_OBJECTS)
+bin_unit_tests_test_face_methods_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_interest_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.$(OBJEXT)
+bin_unit_tests_test_interest_methods_OBJECTS =  \
+	$(am_bin_unit_tests_test_interest_methods_OBJECTS)
+bin_unit_tests_test_interest_methods_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_name_conventions_OBJECTS = tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.$(OBJEXT)
+bin_unit_tests_test_name_conventions_OBJECTS =  \
+	$(am_bin_unit_tests_test_name_conventions_OBJECTS)
+bin_unit_tests_test_name_conventions_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_name_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.$(OBJEXT)
+bin_unit_tests_test_name_methods_OBJECTS =  \
+	$(am_bin_unit_tests_test_name_methods_OBJECTS)
+bin_unit_tests_test_name_methods_DEPENDENCIES = libndn-cpp.la
 SCRIPTS = $(dist_noinst_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -384,36 +387,38 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
-	$(bin_test_data_methods_SOURCES) \
-	$(bin_test_der_encode_decode_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_face_methods_SOURCES) $(bin_test_get_async_SOURCES) \
-	$(bin_test_interest_methods_SOURCES) \
-	$(bin_test_name_conventions_SOURCES) \
-	$(bin_test_name_methods_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
-	$(bin_test_publish_async_nfd_SOURCES)
+	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_unit_tests_test_data_methods_SOURCES) \
+	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
+	$(bin_unit_tests_test_face_methods_SOURCES) \
+	$(bin_unit_tests_test_interest_methods_SOURCES) \
+	$(bin_unit_tests_test_name_conventions_SOURCES) \
+	$(bin_unit_tests_test_name_methods_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
-	$(bin_test_data_methods_SOURCES) \
-	$(bin_test_der_encode_decode_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_face_methods_SOURCES) $(bin_test_get_async_SOURCES) \
-	$(bin_test_interest_methods_SOURCES) \
-	$(bin_test_name_conventions_SOURCES) \
-	$(bin_test_name_methods_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
-	$(bin_test_publish_async_nfd_SOURCES)
+	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_unit_tests_test_data_methods_SOURCES) \
+	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
+	$(bin_unit_tests_test_face_methods_SOURCES) \
+	$(bin_unit_tests_test_interest_methods_SOURCES) \
+	$(bin_unit_tests_test_name_conventions_SOURCES) \
+	$(bin_unit_tests_test_name_methods_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -1068,24 +1073,24 @@ bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
-bin_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_data_methods_LDADD = libndn-cpp.la
-bin_test_der_encode_decode_SOURCES = tests/unit-tests/test-der-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_der_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_der_encode_decode_LDADD = libndn-cpp.la
-bin_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_face_methods_LDADD = libndn-cpp.la
-bin_test_interest_methods_SOURCES = tests/unit-tests/test-interest-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_interest_methods_LDADD = libndn-cpp.la
-bin_test_name_conventions_SOURCES = tests/unit-tests/test-name-conventions.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_name_conventions_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_name_conventions_LDADD = libndn-cpp.la
-bin_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_test_name_methods_LDADD = libndn-cpp.la
+bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
+bin_unit_tests_test_der_encode_decode_SOURCES = tests/unit-tests/test-der-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_der_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_der_encode_decode_LDADD = libndn-cpp.la
+bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_face_methods_LDADD = libndn-cpp.la
+bin_unit_tests_test_interest_methods_SOURCES = tests/unit-tests/test-interest-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
+bin_unit_tests_test_name_conventions_SOURCES = tests/unit-tests/test-name-conventions.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_name_conventions_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_name_conventions_LDADD = libndn-cpp.la
+bin_unit_tests_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
 dist_noinst_SCRIPTS = autogen.sh
 all: all-recursive
 
@@ -1510,38 +1515,6 @@ bin/$(am__dirstamp):
 bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-chrono-chat$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_LDADD) $(LIBS)
-tests/unit-tests/$(am__dirstamp):
-	@$(MKDIR_P) tests/unit-tests
-	@: > tests/unit-tests/$(am__dirstamp)
-tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
-	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-tests/unit-tests/bin_test_data_methods-test-data-methods.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
-	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest
-	@: > contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
-	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-data-methods$(EXEEXT): $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_DEPENDENCIES) $(EXTRA_bin_test_data_methods_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-data-methods$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_data_methods_OBJECTS) $(bin_test_data_methods_LDADD) $(LIBS)
-tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-der-encode-decode$(EXEEXT): $(bin_test_der_encode_decode_OBJECTS) $(bin_test_der_encode_decode_DEPENDENCIES) $(EXTRA_bin_test_der_encode_decode_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-der-encode-decode$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_der_encode_decode_OBJECTS) $(bin_test_der_encode_decode_LDADD) $(LIBS)
 tests/test-echo-consumer.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1580,52 +1553,12 @@ tests/test-encode-decode-interest.$(OBJEXT): tests/$(am__dirstamp) \
 bin/test-encode-decode-interest$(EXEEXT): $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_interest_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-interest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_LDADD) $(LIBS)
-tests/unit-tests/bin_test_face_methods-test-face-methods.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-face-methods$(EXEEXT): $(bin_test_face_methods_OBJECTS) $(bin_test_face_methods_DEPENDENCIES) $(EXTRA_bin_test_face_methods_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-face-methods$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_face_methods_OBJECTS) $(bin_test_face_methods_LDADD) $(LIBS)
 tests/test-get-async.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
-tests/unit-tests/bin_test_interest_methods-test-interest-methods.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-interest-methods$(EXEEXT): $(bin_test_interest_methods_OBJECTS) $(bin_test_interest_methods_DEPENDENCIES) $(EXTRA_bin_test_interest_methods_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-interest-methods$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_interest_methods_OBJECTS) $(bin_test_interest_methods_LDADD) $(LIBS)
-tests/unit-tests/bin_test_name_conventions-test-name-conventions.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-name-conventions$(EXEEXT): $(bin_test_name_conventions_OBJECTS) $(bin_test_name_conventions_DEPENDENCIES) $(EXTRA_bin_test_name_conventions_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-name-conventions$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_name_conventions_OBJECTS) $(bin_test_name_conventions_LDADD) $(LIBS)
-tests/unit-tests/bin_test_name_methods-test-name-methods.$(OBJEXT):  \
-	tests/unit-tests/$(am__dirstamp) \
-	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.$(OBJEXT):  \
-	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
-	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-name-methods$(EXEEXT): $(bin_test_name_methods_OBJECTS) $(bin_test_name_methods_DEPENDENCIES) $(EXTRA_bin_test_name_methods_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-name-methods$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_name_methods_OBJECTS) $(bin_test_name_methods_LDADD) $(LIBS)
 tests/test-publish-async-ndnx.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -1638,6 +1571,81 @@ tests/test-publish-async-nfd.$(OBJEXT): tests/$(am__dirstamp) \
 bin/test-publish-async-nfd$(EXEEXT): $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-nfd$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_LDADD) $(LIBS)
+tests/unit-tests/$(am__dirstamp):
+	@$(MKDIR_P) tests/unit-tests
+	@: > tests/unit-tests/$(am__dirstamp)
+tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
+	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
+	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest
+	@: > contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
+	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+bin/unit-tests/$(am__dirstamp):
+	@$(MKDIR_P) bin/unit-tests
+	@: > bin/unit-tests/$(am__dirstamp)
+
+bin/unit-tests/test-data-methods$(EXEEXT): $(bin_unit_tests_test_data_methods_OBJECTS) $(bin_unit_tests_test_data_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_data_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-data-methods$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_data_methods_OBJECTS) $(bin_unit_tests_test_data_methods_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-der-encode-decode$(EXEEXT): $(bin_unit_tests_test_der_encode_decode_OBJECTS) $(bin_unit_tests_test_der_encode_decode_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_der_encode_decode_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-der-encode-decode$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_der_encode_decode_OBJECTS) $(bin_unit_tests_test_der_encode_decode_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-face-methods$(EXEEXT): $(bin_unit_tests_test_face_methods_OBJECTS) $(bin_unit_tests_test_face_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_face_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-face-methods$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_face_methods_OBJECTS) $(bin_unit_tests_test_face_methods_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-interest-methods$(EXEEXT): $(bin_unit_tests_test_interest_methods_OBJECTS) $(bin_unit_tests_test_interest_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_interest_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-interest-methods$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_interest_methods_OBJECTS) $(bin_unit_tests_test_interest_methods_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-name-conventions$(EXEEXT): $(bin_unit_tests_test_name_conventions_OBJECTS) $(bin_unit_tests_test_name_conventions_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_name_conventions_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-name-conventions$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_name_conventions_OBJECTS) $(bin_unit_tests_test_name_conventions_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-name-methods$(EXEEXT): $(bin_unit_tests_test_name_methods_OBJECTS) $(bin_unit_tests_test_name_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_name_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-name-methods$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_name_methods_OBJECTS) $(bin_unit_tests_test_name_methods_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1682,12 +1690,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
@@ -1792,12 +1800,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-get-async.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1847,173 +1855,173 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-tests/unit-tests/bin_test_data_methods-test-data-methods.o: tests/unit-tests/test-data-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_data_methods-test-data-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_test_data_methods-test-data-methods.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o: tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
 
-tests/unit-tests/bin_test_data_methods-test-data-methods.obj: tests/unit-tests/test-data-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_data_methods-test-data-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_data_methods-test-data-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_test_data_methods-test-data-methods.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.obj: tests/unit-tests/test-data-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-data-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.obj `if test -f 'tests/unit-tests/test-data-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-data-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-data-methods.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_data_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
-tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.o: tests/unit-tests/test-der-encode-decode.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Tpo -c -o tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.o `test -f 'tests/unit-tests/test-der-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-der-encode-decode.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-der-encode-decode.cpp' object='tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.o: tests/unit-tests/test-der-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.o `test -f 'tests/unit-tests/test-der-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-der-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-der-encode-decode.cpp' object='tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.o `test -f 'tests/unit-tests/test-der-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-der-encode-decode.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.o `test -f 'tests/unit-tests/test-der-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-der-encode-decode.cpp
 
-tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.obj: tests/unit-tests/test-der-encode-decode.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Tpo -c -o tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.obj `if test -f 'tests/unit-tests/test-der-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-der-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-der-encode-decode.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_test_der_encode_decode-test-der-encode-decode.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-der-encode-decode.cpp' object='tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.obj: tests/unit-tests/test-der-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.obj `if test -f 'tests/unit-tests/test-der-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-der-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-der-encode-decode.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-der-encode-decode.cpp' object='tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_der_encode_decode-test-der-encode-decode.obj `if test -f 'tests/unit-tests/test-der-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-der-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-der-encode-decode.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.obj `if test -f 'tests/unit-tests/test-der-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-der-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-der-encode-decode.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_der_encode_decode-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_der_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
-tests/unit-tests/bin_test_face_methods-test-face-methods.o: tests/unit-tests/test-face-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_face_methods-test-face-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Tpo -c -o tests/unit-tests/bin_test_face_methods-test-face-methods.o `test -f 'tests/unit-tests/test-face-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-face-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-face-methods.cpp' object='tests/unit-tests/bin_test_face_methods-test-face-methods.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o: tests/unit-tests/test-face-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o `test -f 'tests/unit-tests/test-face-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-face-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-face-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_face_methods-test-face-methods.o `test -f 'tests/unit-tests/test-face-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-face-methods.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o `test -f 'tests/unit-tests/test-face-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-face-methods.cpp
 
-tests/unit-tests/bin_test_face_methods-test-face-methods.obj: tests/unit-tests/test-face-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_face_methods-test-face-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Tpo -c -o tests/unit-tests/bin_test_face_methods-test-face-methods.obj `if test -f 'tests/unit-tests/test-face-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-face-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-face-methods.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_face_methods-test-face-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-face-methods.cpp' object='tests/unit-tests/bin_test_face_methods-test-face-methods.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.obj: tests/unit-tests/test-face-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.obj `if test -f 'tests/unit-tests/test-face-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-face-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-face-methods.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-face-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_face_methods-test-face-methods.obj `if test -f 'tests/unit-tests/test-face-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-face-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-face-methods.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.obj `if test -f 'tests/unit-tests/test-face-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-face-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-face-methods.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_face_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_face_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
-tests/unit-tests/bin_test_interest_methods-test-interest-methods.o: tests/unit-tests/test-interest-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_interest_methods-test-interest-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Tpo -c -o tests/unit-tests/bin_test_interest_methods-test-interest-methods.o `test -f 'tests/unit-tests/test-interest-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-interest-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-interest-methods.cpp' object='tests/unit-tests/bin_test_interest_methods-test-interest-methods.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.o: tests/unit-tests/test-interest-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.o `test -f 'tests/unit-tests/test-interest-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-interest-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-interest-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_interest_methods-test-interest-methods.o `test -f 'tests/unit-tests/test-interest-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-interest-methods.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.o `test -f 'tests/unit-tests/test-interest-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-interest-methods.cpp
 
-tests/unit-tests/bin_test_interest_methods-test-interest-methods.obj: tests/unit-tests/test-interest-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_interest_methods-test-interest-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Tpo -c -o tests/unit-tests/bin_test_interest_methods-test-interest-methods.obj `if test -f 'tests/unit-tests/test-interest-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-interest-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-interest-methods.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_interest_methods-test-interest-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-interest-methods.cpp' object='tests/unit-tests/bin_test_interest_methods-test-interest-methods.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.obj: tests/unit-tests/test-interest-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.obj `if test -f 'tests/unit-tests/test-interest-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-interest-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-interest-methods.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-interest-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_interest_methods-test-interest-methods.obj `if test -f 'tests/unit-tests/test-interest-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-interest-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-interest-methods.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_interest_methods-test-interest-methods.obj `if test -f 'tests/unit-tests/test-interest-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-interest-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-interest-methods.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_interest_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_interest_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interest_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interest_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
-tests/unit-tests/bin_test_name_conventions-test-name-conventions.o: tests/unit-tests/test-name-conventions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_name_conventions-test-name-conventions.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Tpo -c -o tests/unit-tests/bin_test_name_conventions-test-name-conventions.o `test -f 'tests/unit-tests/test-name-conventions.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-conventions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Tpo tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-conventions.cpp' object='tests/unit-tests/bin_test_name_conventions-test-name-conventions.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.o: tests/unit-tests/test-name-conventions.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Tpo -c -o tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.o `test -f 'tests/unit-tests/test-name-conventions.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-conventions.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-conventions.cpp' object='tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_name_conventions-test-name-conventions.o `test -f 'tests/unit-tests/test-name-conventions.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-conventions.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.o `test -f 'tests/unit-tests/test-name-conventions.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-conventions.cpp
 
-tests/unit-tests/bin_test_name_conventions-test-name-conventions.obj: tests/unit-tests/test-name-conventions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_name_conventions-test-name-conventions.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Tpo -c -o tests/unit-tests/bin_test_name_conventions-test-name-conventions.obj `if test -f 'tests/unit-tests/test-name-conventions.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-conventions.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-conventions.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Tpo tests/unit-tests/$(DEPDIR)/bin_test_name_conventions-test-name-conventions.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-conventions.cpp' object='tests/unit-tests/bin_test_name_conventions-test-name-conventions.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.obj: tests/unit-tests/test-name-conventions.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Tpo -c -o tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.obj `if test -f 'tests/unit-tests/test-name-conventions.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-conventions.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-conventions.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-conventions.cpp' object='tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_name_conventions-test-name-conventions.obj `if test -f 'tests/unit-tests/test-name-conventions.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-conventions.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-conventions.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_name_conventions-test-name-conventions.obj `if test -f 'tests/unit-tests/test-name-conventions.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-conventions.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-conventions.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_conventions-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_conventions-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_conventions_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_conventions-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
-tests/unit-tests/bin_test_name_methods-test-name-methods.o: tests/unit-tests/test-name-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_name_methods-test-name-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Tpo -c -o tests/unit-tests/bin_test_name_methods-test-name-methods.o `test -f 'tests/unit-tests/test-name-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-methods.cpp' object='tests/unit-tests/bin_test_name_methods-test-name-methods.o' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.o: tests/unit-tests/test-name-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.o `test -f 'tests/unit-tests/test-name-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_name_methods-test-name-methods.o `test -f 'tests/unit-tests/test-name-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-methods.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.o `test -f 'tests/unit-tests/test-name-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-name-methods.cpp
 
-tests/unit-tests/bin_test_name_methods-test-name-methods.obj: tests/unit-tests/test-name-methods.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_test_name_methods-test-name-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Tpo -c -o tests/unit-tests/bin_test_name_methods-test-name-methods.obj `if test -f 'tests/unit-tests/test-name-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-methods.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_test_name_methods-test-name-methods.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-methods.cpp' object='tests/unit-tests/bin_test_name_methods-test-name-methods.obj' libtool=no @AMDEPBACKSLASH@
+tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.obj: tests/unit-tests/test-name-methods.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.obj `if test -f 'tests/unit-tests/test-name-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-methods.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-name-methods.cpp' object='tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_test_name_methods-test-name-methods.obj `if test -f 'tests/unit-tests/test-name-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-methods.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_name_methods-test-name-methods.obj `if test -f 'tests/unit-tests/test-name-methods.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-name-methods.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-name-methods.cpp'; fi`
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
-contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_test_name_methods-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_test_name_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2045,6 +2053,7 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf bin/.libs bin/_libs
+	-rm -rf bin/unit-tests/.libs bin/unit-tests/_libs
 	-rm -rf src/.libs src/_libs
 	-rm -rf src/c/.libs src/c/_libs
 	-rm -rf src/c/encoding/.libs src/c/encoding/_libs
@@ -2313,44 +2322,44 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-bin/test-data-methods.log: bin/test-data-methods$(EXEEXT)
-	@p='bin/test-data-methods$(EXEEXT)'; \
-	b='bin/test-data-methods'; \
+bin/unit-tests/test-data-methods.log: bin/unit-tests/test-data-methods$(EXEEXT)
+	@p='bin/unit-tests/test-data-methods$(EXEEXT)'; \
+	b='bin/unit-tests/test-data-methods'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bin/test-der-encode-decode.log: bin/test-der-encode-decode$(EXEEXT)
-	@p='bin/test-der-encode-decode$(EXEEXT)'; \
-	b='bin/test-der-encode-decode'; \
+bin/unit-tests/test-der-encode-decode.log: bin/unit-tests/test-der-encode-decode$(EXEEXT)
+	@p='bin/unit-tests/test-der-encode-decode$(EXEEXT)'; \
+	b='bin/unit-tests/test-der-encode-decode'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bin/test-face-methods.log: bin/test-face-methods$(EXEEXT)
-	@p='bin/test-face-methods$(EXEEXT)'; \
-	b='bin/test-face-methods'; \
+bin/unit-tests/test-face-methods.log: bin/unit-tests/test-face-methods$(EXEEXT)
+	@p='bin/unit-tests/test-face-methods$(EXEEXT)'; \
+	b='bin/unit-tests/test-face-methods'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bin/test-interest-methods.log: bin/test-interest-methods$(EXEEXT)
-	@p='bin/test-interest-methods$(EXEEXT)'; \
-	b='bin/test-interest-methods'; \
+bin/unit-tests/test-interest-methods.log: bin/unit-tests/test-interest-methods$(EXEEXT)
+	@p='bin/unit-tests/test-interest-methods$(EXEEXT)'; \
+	b='bin/unit-tests/test-interest-methods'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bin/test-name-conventions.log: bin/test-name-conventions$(EXEEXT)
-	@p='bin/test-name-conventions$(EXEEXT)'; \
-	b='bin/test-name-conventions'; \
+bin/unit-tests/test-name-conventions.log: bin/unit-tests/test-name-conventions$(EXEEXT)
+	@p='bin/unit-tests/test-name-conventions$(EXEEXT)'; \
+	b='bin/unit-tests/test-name-conventions'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bin/test-name-methods.log: bin/test-name-methods$(EXEEXT)
-	@p='bin/test-name-methods$(EXEEXT)'; \
-	b='bin/test-name-methods'; \
+bin/unit-tests/test-name-methods.log: bin/unit-tests/test-name-methods$(EXEEXT)
+	@p='bin/unit-tests/test-name-methods$(EXEEXT)'; \
+	b='bin/unit-tests/test-name-methods'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2598,6 +2607,7 @@ distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f bin/$(am__dirstamp)
+	-rm -f bin/unit-tests/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
 	-rm -f src/$(DEPDIR)/$(am__dirstamp)
