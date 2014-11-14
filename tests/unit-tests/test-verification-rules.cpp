@@ -21,6 +21,8 @@
 
 #include "gtest/gtest.h"
 #include <algorithm>
+#include <fstream>
+#include <stdexcept>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
@@ -166,6 +168,18 @@ public:
       (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage)),
     identityName("/SecurityTestSecRule/Basic/Longer")
   {
+    policyConfigDirectory = "policy_config";
+    // Check if expected files are in this directory.
+    if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
+      // Maybe we are running "make check" from the ndn-cpp root.  There may be
+      //   a way to tell "make check" to run from tests/unit-tests, but for
+      //   now just set policyConfigDirectory explicitly.
+      policyConfigDirectory = "tests/unit-tests/policy_config";
+
+      if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
+        throw runtime_error("Cannot find the directory for policy-config");
+    }
+    
     Name keyName = Name(identityName).append("ksk-2439872");
     defaultCertName = certNameFromKeyName(keyName);
     identityStorage->addKey
@@ -197,6 +211,16 @@ public:
       (keyName.getSubName(keyIdx)).append("ID-CERT").append("0");
   }
 
+  static bool
+  fileExists(const string& filePath)
+  {
+    ifstream stream(filePath.c_str());
+    bool result = (bool)stream;
+    stream.close();
+    return result;
+  }
+
+  string policyConfigDirectory;
   ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage;
   ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage;
   KeyChain keyChain;
@@ -208,11 +232,11 @@ public:
 TEST_F(TestVerificationRules, NameRelation)
 {  
   ConfigPolicyManager policyManagerPrefix(identityStorage.get(),
-    "policy_config/relation_ruleset_prefix.conf");
+    policyConfigDirectory + "/relation_ruleset_prefix.conf");
   ConfigPolicyManager policyManagerStrict(identityStorage.get(),
-    "policy_config/relation_ruleset_strict.conf");
+    policyConfigDirectory + "/relation_ruleset_strict.conf");
   ConfigPolicyManager policyManagerEqual(identityStorage.get(),
-    "policy_config/relation_ruleset_equal.conf");
+    policyConfigDirectory + "/relation_ruleset_equal.conf");
 
   Name dataName("/TestRule1");
   ASSERT_TRUE
@@ -251,7 +275,7 @@ TEST_F(TestVerificationRules, NameRelation)
 TEST_F(TestVerificationRules, SimpleRegex)
 {
   ConfigPolicyManager policyManager(identityStorage.get(),
-    "policy_config/regex_ruleset.conf");
+    policyConfigDirectory + "/regex_ruleset.conf");
   Name dataName1("/SecurityTestSecRule/Basic");
   Name dataName2("/SecurityTestSecRule/Basic/More");
   Name dataName3("/SecurityTestSecRule/");
@@ -284,7 +308,7 @@ TEST_F(TestVerificationRules, SimpleRegex)
 TEST_F(TestVerificationRules, CheckerHierarchical)
 {
   ConfigPolicyManager policyManager(identityStorage.get(),
-    "policy_config/hierarchical_ruleset.conf");
+    policyConfigDirectory + "/hierarchical_ruleset.conf");
 
   Name dataName1("/SecurityTestSecRule/Basic/Data1");
   Name dataName2("/SecurityTestSecRule/Basic/Longer/Data2");
@@ -329,7 +353,7 @@ TEST_F(TestVerificationRules, CheckerHierarchical)
 TEST_F(TestVerificationRules, HyperRelation)
 {
   ConfigPolicyManager policyManager(identityStorage.get(),
-    "policy_config/hyperrelation_ruleset.conf");
+    policyConfigDirectory + "/hyperrelation_ruleset.conf");
 
   Name dataName("/SecurityTestSecRule/Basic/Longer/Data2");
   Data data1(dataName);
