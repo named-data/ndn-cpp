@@ -23,6 +23,7 @@
 #define NDN_DYNAMIC_UCHAR_VECTOR_HPP
 
 #include <vector>
+#include <stdexcept>
 #include <ndn-cpp/common.hpp>
 #include "../c/util/dynamic-uint8-array.h"
 
@@ -41,11 +42,78 @@ public:
   DynamicUInt8Vector(size_t initialLength);
 
   /**
+   * Ensure that the vector size is greater than or equal to length.  If it is,
+   * just return. Otherwise, resize the vector (copying as needed).
+   * (The new vector size may be greater than length.)
+   * @param length The minimum size of the vector.
+   */
+  void
+  ensureLength(size_t length)
+  {
+    ndn_Error error;
+    if ((error = ndn_DynamicUInt8Array_ensureLength(this, length)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+
+  /**
+   * Copy value into the vector at offset, using ensureLength to make sure
+   * the vector has enough size.
+   * @param value The buffer to copy from.
+   * @param valueLength The length of the value buffer.
+   * @param offset The offset in the vector to copy to.
+   * @return The new offset which is offset + valueLength.
+   */
+  size_t
+  copy(uint8_t *value, size_t valueLength, size_t offset)
+  {
+    ndn_Error error;
+    if ((error = ndn_DynamicUInt8Array_copy(this, value, valueLength, offset)))
+      throw std::runtime_error(ndn_getErrorString(error));
+
+    return offset + valueLength;
+  }
+
+  /**
+   * Ensure that the vector size is greater than or equal to length.  If it is,
+   * just return. Otherwise, resize the vector and shift existing data to the
+   * back. (The new vector size may be greater than length.)
+   * @param length The minimum size of the vector.
+   */
+  void
+  ensureLengthFromBack(size_t length)
+  {
+    ndn_Error error;
+    if ((error = ndn_DynamicUInt8Array_ensureLengthFromBack(this, length)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+
+  /**
+   * First call ensureLengthFromBack to make sure the vector has offsetFromBack
+   * bytes. Then copy value into the vector starting offsetFromBack bytes from
+   * the back of the vector.
+   * @param value The buffer to copy from.
+   * @param valueLength The length of the value buffer.
+   * @param offsetFromBack The offset from the back of the array to start
+   * copying.
+   */
+  void
+  copyFromBack(uint8_t *value, size_t valueLength, size_t offsetFromBack)
+  {
+    ndn_Error error;
+    if ((error = ndn_DynamicUInt8Array_copyFromBack
+         (this, value, valueLength, offsetFromBack)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+
+  /**
    * Get the shared_ptr to the allocated vector.
    * @return The shared_ptr to the allocated vector.
    */
   ptr_lib::shared_ptr<std::vector<uint8_t> >&
   get() { return vector_; }
+
+  uint8_t&
+  operator [] (size_t i) { return (*vector_)[i]; }
 
 private:
   /**
