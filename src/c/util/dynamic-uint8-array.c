@@ -43,3 +43,25 @@ ndn_Error ndn_DynamicUInt8Array_reallocArray(struct ndn_DynamicUInt8Array *self,
 
   return NDN_ERROR_success;
 }
+
+ndn_Error ndn_DynamicUInt8Array_reallocArrayFromBack
+  (struct ndn_DynamicUInt8Array *self, size_t length)
+{
+  size_t initialLength = self->length;
+  
+  ndn_Error error;
+  if ((error = ndn_DynamicUInt8Array_reallocArray(self, length)))
+    return error;
+
+  // Shift to the back.
+  // TODO: We should use ndn_memmove, but we need to add support in ndn_memory.h.
+  if (initialLength > 0) {
+    uint8_t *to = self->array + self->length;
+    uint8_t *from = self->array + initialLength;
+    do {
+      *(--to) = *(--from);
+    } while (from != self->array);
+  }
+  
+  return NDN_ERROR_success;
+}
