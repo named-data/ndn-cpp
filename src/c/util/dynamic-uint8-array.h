@@ -111,7 +111,7 @@ static __inline ndn_Error ndn_DynamicUInt8Array_ensureLength
  * @return 0 for success, else an error code if need to reallocate the array but can't
  */
 static __inline ndn_Error ndn_DynamicUInt8Array_copy
-  (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength,
+  (struct ndn_DynamicUInt8Array *self, const uint8_t *value, size_t valueLength,
    size_t offset)
 {
   ndn_Error error;
@@ -153,7 +153,7 @@ static __inline ndn_Error ndn_DynamicUInt8Array_ensureLengthFromBack
  * can't.
  */
 static __inline ndn_Error ndn_DynamicUInt8Array_copyFromBack
-  (struct ndn_DynamicUInt8Array *self, uint8_t *value, size_t valueLength,
+  (struct ndn_DynamicUInt8Array *self, const uint8_t *value, size_t valueLength,
    size_t offsetFromBack)
 {
   ndn_Error error;
