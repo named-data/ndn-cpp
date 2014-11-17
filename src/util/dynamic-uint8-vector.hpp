@@ -74,6 +74,19 @@ public:
   }
 
   /**
+   * Copy value into the vector at offset, using ensureLength to make sure
+   * the vector has enough size.
+   * @param value The buffer to copy from.
+   * @param offset The offset in the vector to copy to.
+   * @return The new offset which is offset + value.size().
+   */
+  size_t
+  copy(const std::vector<uint8_t>& value, size_t offset)
+  {
+    return copy(&value[0], value.size(), offset);
+  }
+
+  /**
    * Ensure that the vector size is greater than or equal to length.  If it is,
    * just return. Otherwise, resize the vector and shift existing data to the
    * back. (The new vector size may be greater than length.)
