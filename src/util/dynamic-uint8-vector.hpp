@@ -64,7 +64,7 @@ public:
    * @return The new offset which is offset + valueLength.
    */
   size_t
-  copy(uint8_t *value, size_t valueLength, size_t offset)
+  copy(const uint8_t *value, size_t valueLength, size_t offset)
   {
     ndn_Error error;
     if ((error = ndn_DynamicUInt8Array_copy(this, value, valueLength, offset)))
@@ -97,7 +97,7 @@ public:
    * copying.
    */
   void
-  copyFromBack(uint8_t *value, size_t valueLength, size_t offsetFromBack)
+  copyFromBack(const uint8_t *value, size_t valueLength, size_t offsetFromBack)
   {
     ndn_Error error;
     if ((error = ndn_DynamicUInt8Array_copyFromBack
