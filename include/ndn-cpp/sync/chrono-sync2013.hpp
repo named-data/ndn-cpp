@@ -324,7 +324,7 @@ private:
      * See ChronoSync2013::getSequenceNo.
      */
     int
-    getSequenceNo() const { return usrseq_; }
+    getSequenceNo() const { return sequenceNo_; }
 
     /**
      * See ChronoSync2013::shutdown.
@@ -447,7 +447,7 @@ private:
     std::string applicationDataPrefixUri_;
     const Name applicationBroadcastPrefix_;
     int session_;
-    int usrseq_;
+    int sequenceNo_;
     MemoryContentCache contentCache_;
     std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
     bool enabled_;

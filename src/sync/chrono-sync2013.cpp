@@ -47,7 +47,7 @@ ChronoSync2013::Impl::Impl
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
-  sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
+  sync_lifetime_(syncLifetime), sequenceNo_(-1), digest_tree_(new DigestTree()),
   contentCache_(&face), enabled_(true)
 {
 }
@@ -98,7 +98,7 @@ ChronoSync2013::Impl::update
            content.Get(i).seqno().seq())) {
         // The digest tree was updated.
         if (applicationDataPrefixUri_ == content.Get(i).name())
-          usrseq_ = content.Get(i).seqno().seq();
+          sequenceNo_ = content.Get(i).seqno().seq();
       }
     }
   }
@@ -125,13 +125,13 @@ ChronoSync2013::Impl::getProducerSequenceNo(const std::string& dataPrefix, int s
 void
 ChronoSync2013::Impl::publishNextSequenceNo()
 {
-  ++usrseq_;
+  ++sequenceNo_;
 
   Sync::SyncStateMsg syncMessage;
   Sync::SyncState* content = syncMessage.add_ss();
   content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(usrseq_);
+  content->mutable_seqno()->set_seq(sequenceNo_);
   content->mutable_seqno()->set_session(session_);
 
   broadcastSyncState(digest_tree_->getRoot(), syncMessage);
@@ -426,12 +426,12 @@ ChronoSync2013::Impl::initialOndata
   }
 
   Sync::SyncStateMsg content2_t;
-  if (usrseq_ >= 0) {
+  if (sequenceNo_ >= 0) {
     // Send the data packet with the new seqno back.
     Sync::SyncState* content2 = content2_t.add_ss();
     content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
-    content2->mutable_seqno()->set_seq(usrseq_);
+    content2->mutable_seqno()->set_seq(sequenceNo_);
     content2->mutable_seqno()->set_session(session_);
   }
   else {
@@ -447,12 +447,12 @@ ChronoSync2013::Impl::initialOndata
   if (digest_tree_->find(applicationDataPrefixUri_, session_) == -1) {
     // the user hasn't put himself in the digest tree.
     _LOG_DEBUG("initial state");
-    ++usrseq_;
+    ++sequenceNo_;
     Sync::SyncStateMsg content_t;
     Sync::SyncState* content2 = content_t.add_ss();
     content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
-    content2->mutable_seqno()->set_seq(usrseq_);
+    content2->mutable_seqno()->set_seq(sequenceNo_);
     content2->mutable_seqno()->set_session(session_);
 
     if (update(content_t.ss()))
@@ -469,8 +469,8 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
 
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
-  ++usrseq_;
-  if (usrseq_ != 0)
+  ++sequenceNo_;
+  if (sequenceNo_ != 0)
     // Since there were no other users, we expect sequence no 0.
     throw runtime_error
       ("ChronoSync: usrseq_ is not the expected value of 0 for first use.");
@@ -479,7 +479,7 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
   Sync::SyncState* content = content_t.add_ss();
   content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(usrseq_);
+  content->mutable_seqno()->set_seq(sequenceNo_);
   content->mutable_seqno()->set_session(session_);
   update(content_t.ss());
 
