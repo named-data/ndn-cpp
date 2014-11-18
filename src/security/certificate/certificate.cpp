@@ -21,13 +21,8 @@
  */
 
 #include <float.h>
-// We can use ndnboost::iostreams because this is internal and will not conflict with the application if it uses boost::iostreams.
-#include <ndnboost/iostreams/stream.hpp>
-#include <ndnboost/iostreams/device/array.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include "../../encoding/der/der.hpp"
-#include "../../encoding/der/visitor/certificate-data-visitor.hpp"
-#include "../../encoding/der/visitor/print-visitor.hpp"
+#include "../../encoding/der/der-node.hpp"
 #include "../../encoding/base64.hpp"
 #include "../../util/blob-stream.hpp"
 #include "../../c/util/time.h"
@@ -36,6 +31,9 @@
 using namespace std;
 
 namespace ndn {
+
+typedef DerNode::DerSequence DerSequence;
+typedef DerNode::DerGeneralizedTime DerGeneralizedTime;
 
 Certificate::Certificate()
   : notBefore_(DBL_MAX)
@@ -77,59 +75,96 @@ Certificate::isTooLate() const
 void
 Certificate::encode()
 {
-  ptr_lib::shared_ptr<der::DerSequence> root(new der::DerSequence());
+  ptr_lib::shared_ptr<DerNode> root = toDer();
+  setContent(root->encode());
+  getMetaInfo().setType(ndn_ContentType_KEY);
+}
 
-  ptr_lib::shared_ptr<der::DerSequence> validity(new der::DerSequence());
-  ptr_lib::shared_ptr<der::DerGtime> notBefore(new der::DerGtime(notBefore_));
-  ptr_lib::shared_ptr<der::DerGtime> notAfter(new der::DerGtime(notAfter_));
+ptr_lib::shared_ptr<DerNode>
+Certificate::toDer()
+{
+  ptr_lib::shared_ptr<DerSequence> root(new DerSequence());
+  ptr_lib::shared_ptr<DerSequence> validity(new DerSequence());
+  ptr_lib::shared_ptr<DerGeneralizedTime> notBefore(new DerGeneralizedTime(notBefore_));
+  ptr_lib::shared_ptr<DerGeneralizedTime> notAfter(new DerGeneralizedTime(notAfter_));
+
   validity->addChild(notBefore);
   validity->addChild(notAfter);
+
   root->addChild(validity);
 
-  ptr_lib::shared_ptr<der::DerSequence> subjectList(new der::DerSequence());
-  SubjectDescriptionList::iterator it = subjectDescriptionList_.begin();
-  for(; it != subjectDescriptionList_.end(); it++)
-    {
-      ptr_lib::shared_ptr<der::DerNode> child = it->toDer();
-      subjectList->addChild(child);
-    }
-  root->addChild(subjectList);
+  ptr_lib::shared_ptr<DerSequence> subjectList(new DerSequence());
+  for (int i = 0; i < subjectDescriptionList_.size(); ++i)
+    subjectList->addChild(subjectDescriptionList_[i].toDer());
 
+  root->addChild(subjectList);
   root->addChild(key_.toDer());
 
-  if(!extensionList_.empty())
-    {
-      ptr_lib::shared_ptr<der::DerSequence> extnList(new der::DerSequence());
-      ExtensionList::iterator it = extensionList_.begin();
-      for(; it != extensionList_.end(); it++)
-        extnList->addChild(it->toDer());
-      root->addChild(extnList);
-    }
+  if (extensionList_.size() > 0) {
+    ptr_lib::shared_ptr<DerSequence> extensionList(new DerSequence());
+    for (int i = 0; i < extensionList_.size(); ++i)
+      subjectList->addChild(extensionList_[i].toDer());
+    root->addChild(extensionList);
+  }
 
-  blob_stream blobStream;
-  der::OutputIterator& start = reinterpret_cast<der::OutputIterator&>(blobStream);
-
-  root->encode(start);
-
-  ptr_lib::shared_ptr<vector<uint8_t> > blob = blobStream.buf();
-  setContent(Blob(blob, false));
-  getMetaInfo().setType(ndn_ContentType_KEY);
+  return root;
 }
 
 void
 Certificate::decode()
 {
-  Blob blob = getContent();
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(getContent().buf());
+  DerSequence& root = dynamic_cast<DerSequence&>(*parsedNode);
 
-  ndnboost::iostreams::stream<ndnboost::iostreams::array_source> is((const char*)blob.buf(), blob.size());
+  // We need to ensure that there are:
+  //   validity (notBefore, notAfter)
+  //   subject list
+  //   public key
+  //   (optional) extension list
 
-  ptr_lib::shared_ptr<der::DerNode> node = der::DerNode::parse(reinterpret_cast<der::InputIterator&>(is));
+  const std::vector<ptr_lib::shared_ptr<DerNode> >& rootChildren =
+    root.getChildren();
+  // 1st: validity info
+  const std::vector<ptr_lib::shared_ptr<DerNode> >& validityChildren =
+    dynamic_cast<DerSequence&>(*rootChildren[0]).getChildren();
+  notBefore_ = dynamic_cast<DerGeneralizedTime&>
+    (*validityChildren[0]).toMillisecondsSince1970();
+  notAfter_ = dynamic_cast<DerGeneralizedTime&>
+    (*validityChildren[1]).toMillisecondsSince1970();
 
-  // der::PrintVisitor printVisitor;
-  // node->accept(printVisitor, string(""));
+  // 2nd: subjectList
+  const std::vector<ptr_lib::shared_ptr<DerNode> >& subjectChildren =
+    dynamic_cast<DerSequence&>(*rootChildren[1]).getChildren();
+  for (int i = 0; i < subjectChildren.size(); ++i) {
+    DerSequence& sd = dynamic_cast<DerSequence&>(*subjectChildren[i]);
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& descriptionChildren =
+      sd.getChildren();
+    string oidStr = descriptionChildren[0]->toVal().toRawStr();
+    string value = descriptionChildren[1]->toVal().toRawStr();
 
-  der::CertificateDataVisitor certDataVisitor;
-  node->accept(certDataVisitor, this);
+    addSubjectDescription(CertificateSubjectDescription(oidStr, value));
+  }
+
+  // 3rd: public key
+  Blob publicKeyInfo = rootChildren[2]->encode();
+  // TODO: Handle key types other than RSA.
+  key_ = PublicKey(KEY_TYPE_RSA, publicKeyInfo);
+
+  if (rootChildren.size() > 3) {
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& extensionChildren =
+      dynamic_cast<DerSequence&>(*rootChildren[3]).getChildren();
+    for (int i = 0; i < extensionChildren.size(); ++i) {
+      DerSequence& extInfo =
+        dynamic_cast<DerSequence&>(*extensionChildren[i]);
+
+      const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
+        extInfo.getChildren();
+      string oidStr = children[0]->toVal().toRawStr();
+      bool isCritical = children[1]->toVal().buf()[0] != 0;
+      Blob value = children[2]->encode();
+      addExtension(CertificateExtension(oidStr, isCritical, value));
+    }
+  }
 }
 
 void
@@ -138,8 +173,8 @@ Certificate::printCertificate(ostream& os) const
   os << "Certificate name:" << endl;
   os << "  " << getName() << endl;
   os << "Validity:" << endl;
-  os << "  NotBefore: " << der::DerGtime::toIsoString(notBefore_) << endl;
-  os << "  NotAfter: "  << der::DerGtime::toIsoString(notAfter_)  << endl;
+  os << "  NotBefore: " << DerGeneralizedTime::toIsoString(notBefore_) << endl;
+  os << "  NotAfter: "  << DerGeneralizedTime::toIsoString(notAfter_)  << endl;
 
   os << "Subject Description:" << endl;
   vector<CertificateSubjectDescription>::const_iterator it = subjectDescriptionList_.begin();

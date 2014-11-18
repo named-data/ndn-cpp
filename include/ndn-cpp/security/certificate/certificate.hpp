@@ -55,7 +55,8 @@ public:
   ~Certificate();
 
   /**
-   * encode certificate info into content
+   * Encode the contents of the certificate in DER format and set the Content
+   * and MetaInfo fields.
    */
   void
   encode();
@@ -137,12 +138,15 @@ protected:
   void
   decode();
 
-protected:
   SubjectDescriptionList subjectDescriptionList_;
   MillisecondsSince1970 notBefore_;
   MillisecondsSince1970 notAfter_;
   PublicKey key_;
   ExtensionList extensionList_;
+
+private:
+  ptr_lib::shared_ptr<DerNode>
+  toDer();
 };
 
 }
