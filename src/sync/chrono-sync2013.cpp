@@ -205,16 +205,16 @@ ChronoSync2013::Impl::onInterest
 void
 ChronoSync2013::Impl::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
-   const ptr_lib::shared_ptr<Data>& co)
+   const ptr_lib::shared_ptr<Data>& data)
 {
   if (!enabled_)
     // Ignore callbacks after the application calls shutdown().
     return;
 
   _LOG_DEBUG("Sync ContentObject received in callback");
-  _LOG_DEBUG("name: " + co->getName().toUri());
+  _LOG_DEBUG("name: " + data->getName().toUri());
   Sync::SyncStateMsg content_t;
-  content_t.ParseFromArray(co->getContent().buf(), co->getContent().size());
+  content_t.ParseFromArray(data->getContent().buf(), data->getContent().size());
   const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = content_t.ss();
   bool isRecovery;
   if (digest_tree_->getRoot() == "00") {
@@ -271,11 +271,11 @@ ChronoSync2013::Impl::processRecoveryInst
     if (content_t.ss_size() != 0) {
       ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
       content_t.SerializeToArray(&array->front(), array->size());
-      Data co(inst.getName());
-      co.setContent(Blob(array, false));
-      keyChain_.sign(co, certificateName_);
+      Data data(inst.getName());
+      data.setContent(Blob(array, false));
+      keyChain_.sign(data, certificateName_);
       try {
-        transport.send(*co.wireEncode());
+        transport.send(*data.wireEncode());
         _LOG_DEBUG("send recovery data back");
         _LOG_DEBUG(inst.getName().toUri());
       }
@@ -336,11 +336,11 @@ ChronoSync2013::Impl::processSyncInst
     n.append(syncdigest_t);
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
     content_t.SerializeToArray(&array->front(), array->size());
-    Data co(n);
-    co.setContent(Blob(array, false));
-    keyChain_.sign(co, certificateName_);
+    Data data(n);
+    data.setContent(Blob(array, false));
+    keyChain_.sign(data, certificateName_);
     try {
-      transport.send(*co.wireEncode());
+      transport.send(*data.wireEncode());
       sent = true;
       _LOG_DEBUG("Sync Data send");
       _LOG_DEBUG(n.toUri());

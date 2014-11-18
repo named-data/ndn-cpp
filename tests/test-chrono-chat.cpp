@@ -135,7 +135,7 @@ private:
   void
   onData
     (const ptr_lib::shared_ptr<const Interest>& inst,
-     const ptr_lib::shared_ptr<Data>& co);
+     const ptr_lib::shared_ptr<Data>& data);
 
   void
   chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
@@ -330,11 +330,11 @@ Chat::onInterest
   if (content.from().size() != 0) {
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content.ByteSize()));
     content.SerializeToArray(&array->front(), array->size());
-    Data co(inst->getName());
-    co.setContent(Blob(array, false));
-    keyChain_.sign(co, certificateName_);
+    Data data(inst->getName());
+    data.setContent(Blob(array, false));
+    keyChain_.sign(data, certificateName_);
     try {
-      transport.send(*co.wireEncode());
+      transport.send(*data.wireEncode());
     }
     catch (std::exception& e) {
       cout << "Error sending the chat data " << e.what() << endl;
@@ -345,15 +345,15 @@ Chat::onInterest
 void
 Chat::onData
   (const ptr_lib::shared_ptr<const Interest>& inst,
-   const ptr_lib::shared_ptr<Data>& co)
+   const ptr_lib::shared_ptr<Data>& data)
 {
   SyncDemo::ChatMessage content;
-  content.ParseFromArray(co->getContent().buf(), co->getContent().size());
+  content.ParseFromArray(data->getContent().buf(), data->getContent().size());
   if (getNowMilliseconds() - content.timestamp() * 1000.0 < 120000.0) {
     string name = content.from();
-    string prefix = co->getName().getPrefix(-2).toUri();
-    int session = ::atoi(co->getName().get(-2).toEscapedString().c_str());
-    int seqno = ::atoi(co->getName().get(-1).toEscapedString().c_str());
+    string prefix = data->getName().getPrefix(-2).toUri();
+    int session = ::atoi(data->getName().get(-2).toEscapedString().c_str());
+    int seqno = ::atoi(data->getName().get(-1).toEscapedString().c_str());
     ostringstream tempStream;
     tempStream << name << session;
     string nameAndSession = tempStream.str();

@@ -377,7 +377,7 @@ private:
     void
     onData
       (const ptr_lib::shared_ptr<const Interest>& inst,
-       const ptr_lib::shared_ptr<Data>& co);
+       const ptr_lib::shared_ptr<Data>& data);
 
     // Initial sync interest timeout, which means there are no other publishers yet.
     void
