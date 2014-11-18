@@ -167,15 +167,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/tlv-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
-  src/encoding/der/der.cpp src/encoding/der/der.hpp \
-  src/encoding/der/visitor/certificate-data-visitor.cpp src/encoding/der/visitor/certificate-data-visitor.hpp \
-  src/encoding/der/visitor/no-arguments-visitor.cpp src/encoding/der/visitor/no-arguments-visitor.hpp \
-  src/encoding/der/visitor/print-visitor.cpp src/encoding/der/visitor/print-visitor.hpp \
-  src/encoding/der/visitor/public-key-visitor.cpp src/encoding/der/visitor/public-key-visitor.hpp \
-  src/encoding/der/visitor/simple-visitor.cpp src/encoding/der/visitor/simple-visitor.hpp \
-  src/encoding/der/visitor/visitor.hpp \
-  src/encoding/der/visitor/void-no-arguments-visitor.hpp \
-  src/encoding/der/visitor/void-visitor.cpp src/encoding/der/visitor/void-visitor.hpp \
+  src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
