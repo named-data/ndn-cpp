@@ -45,9 +45,9 @@ ChronoSync2013::Impl::Impl
    KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
-  applicationBroadcastPrefix_(applicationBroadcastPrefix), session_(sessionNo),
+  applicationBroadcastPrefix_(applicationBroadcastPrefix), sessionNo_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
-  sync_lifetime_(syncLifetime), usrseq_(-1), digest_tree_(new DigestTree()),
+  syncLifetime_(syncLifetime), sequenceNo_(-1), digestTree_(new DigestTree()),
   contentCache_(&face), enabled_(true)
 {
 }
@@ -56,7 +56,7 @@ void
 ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
 {
   Sync::SyncStateMsg emptyContent;
-  digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
+  digestLog_.push_back(ptr_lib::make_shared<DigestLogEntry>
     ("00", emptyContent.ss()));
 
   // Register the prefix with the contentCache_ and use our own onInterest
@@ -77,10 +77,10 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
 }
 
 int
-ChronoSync2013::Impl::logfind(const std::string& digest) const
+ChronoSync2013::Impl::logFind(const std::string& digest) const
 {
-  for (size_t i = 0; i < digest_log_.size(); ++i) {
-    if (digest == digest_log_[i]->getDigest())
+  for (size_t i = 0; i < digestLog_.size(); ++i) {
+    if (digest == digestLog_[i]->getDigest())
       return i;
   }
 
@@ -93,19 +93,19 @@ ChronoSync2013::Impl::update
 {
   for (size_t i = 0; i < content.size(); ++i) {
     if (content.Get(i).type() == Sync::SyncState_ActionType_UPDATE) {
-      if (digest_tree_->update
+      if (digestTree_->update
           (content.Get(i).name(), content.Get(i).seqno().session(),
            content.Get(i).seqno().seq())) {
         // The digest tree was updated.
         if (applicationDataPrefixUri_ == content.Get(i).name())
-          usrseq_ = content.Get(i).seqno().seq();
+          sequenceNo_ = content.Get(i).seqno().seq();
       }
     }
   }
 
-  if (logfind(digest_tree_->getRoot()) == -1) {
-    digest_log_.push_back(ptr_lib::make_shared<DigestLogEntry>
-      (digest_tree_->getRoot(), content));
+  if (logFind(digestTree_->getRoot()) == -1) {
+    digestLog_.push_back(ptr_lib::make_shared<DigestLogEntry>
+      (digestTree_->getRoot(), content));
     return true;
   }
   else
@@ -115,26 +115,26 @@ ChronoSync2013::Impl::update
 int
 ChronoSync2013::Impl::getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
 {
-  int index = digest_tree_->find(dataPrefix, sessionNo);
+  int index = digestTree_->find(dataPrefix, sessionNo);
   if (index < 0)
     return -1;
   else
-    return digest_tree_->get(index).getSequenceNo();
+    return digestTree_->get(index).getSequenceNo();
 }
 
 void
 ChronoSync2013::Impl::publishNextSequenceNo()
 {
-  ++usrseq_;
+  ++sequenceNo_;
 
   Sync::SyncStateMsg syncMessage;
   Sync::SyncState* content = syncMessage.add_ss();
   content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(usrseq_);
-  content->mutable_seqno()->set_session(session_);
+  content->mutable_seqno()->set_seq(sequenceNo_);
+  content->mutable_seqno()->set_session(sessionNo_);
 
-  broadcastSyncState(digest_tree_->getRoot(), syncMessage);
+  broadcastSyncState(digestTree_->getRoot(), syncMessage);
 
   if (!update(syncMessage.ss()))
     // Since we incremented the sequence number, we expect there to be a
@@ -145,8 +145,8 @@ ChronoSync2013::Impl::publishNextSequenceNo()
   // TODO: Should we have an option to not express an interest if this is the
   //   final publish of the session?
   Interest interest(applicationBroadcastPrefix_);
-  interest.getName().append(digest_tree_->getRoot());
-  interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+  interest.getName().append(digestTree_->getRoot());
+  interest.setInterestLifetimeMilliseconds(syncLifetime_);
   face_.expressInterest
     (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
      bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
@@ -155,7 +155,7 @@ ChronoSync2013::Impl::publishNextSequenceNo()
 void
 ChronoSync2013::Impl::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+   const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
    uint64_t registerPrefixId)
 {
   if (!enabled_)
@@ -164,26 +164,26 @@ ChronoSync2013::Impl::onInterest
 
   // Search if the digest already exists in the digest log.
    _LOG_DEBUG("Sync Interest received in callback.");
-   _LOG_DEBUG(inst->getName().toUri());
+   _LOG_DEBUG(interest->getName().toUri());
 
-  string syncdigest = inst->getName().get
+  string syncDigest = interest->getName().get
     (applicationBroadcastPrefix_.size()).toEscapedString();
-  if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2)
+  if (interest->getName().size() == applicationBroadcastPrefix_.size() + 2)
     // Assume this is a recovery interest.
-    syncdigest = inst->getName().get
+    syncDigest = interest->getName().get
       (applicationBroadcastPrefix_.size() + 1).toEscapedString();
-   _LOG_DEBUG("syncdigest: " + syncdigest);
-  if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
-      syncdigest == "00")
+   _LOG_DEBUG("syncdigest: " + syncDigest);
+  if (interest->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
+      syncDigest == "00")
     // Recovery interest or newcomer interest.
-    processRecoveryInst(*inst, syncdigest, transport);
+    processRecoveryInterest(*interest, syncDigest, transport);
   else {
     // Save the unanswered interest in our local pending interest table.
     pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>
-      (new PendingInterest(inst, transport)));
+      (new PendingInterest(interest, transport)));
 
-    if (syncdigest != digest_tree_->getRoot()) {
-      size_t index = logfind(syncdigest);
+    if (syncDigest != digestTree_->getRoot()) {
+      size_t index = logFind(syncDigest);
       if (index == -1) {
         // To see whether there is any data packet coming back, wait 2 seconds 
         // using the Interest timeout mechanism.
@@ -192,39 +192,39 @@ ChronoSync2013::Impl::onInterest
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
-           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, syncdigest, &transport));
+           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, syncDigest, &transport));
         _LOG_DEBUG("set timer recover");
       }
       else
         // common interest processing
-        processSyncInst(index, syncdigest, transport);
+        processSyncInterest(index, syncDigest, transport);
     }
   }
 }
 
 void
 ChronoSync2013::Impl::onData
-  (const ptr_lib::shared_ptr<const Interest>& inst,
-   const ptr_lib::shared_ptr<Data>& co)
+  (const ptr_lib::shared_ptr<const Interest>& interest,
+   const ptr_lib::shared_ptr<Data>& data)
 {
   if (!enabled_)
     // Ignore callbacks after the application calls shutdown().
     return;
 
   _LOG_DEBUG("Sync ContentObject received in callback");
-  _LOG_DEBUG("name: " + co->getName().toUri());
-  Sync::SyncStateMsg content_t;
-  content_t.ParseFromArray(co->getContent().buf(), co->getContent().size());
-  const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = content_t.ss();
+  _LOG_DEBUG("name: " + data->getName().toUri());
+  Sync::SyncStateMsg tempContent;
+  tempContent.ParseFromArray(data->getContent().buf(), data->getContent().size());
+  const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = tempContent.ss();
   bool isRecovery;
-  if (digest_tree_->getRoot() == "00") {
+  if (digestTree_->getRoot() == "00") {
     isRecovery = true;
     //processing initial sync data
     initialOndata(content);
   }
   else {
     update(content);
-    if (inst->getName().size() == applicationBroadcastPrefix_.size() + 2)
+    if (interest->getName().size() == applicationBroadcastPrefix_.size() + 2)
       // Assume this is a recovery interest.
       isRecovery = true;
     else
@@ -242,42 +242,42 @@ ChronoSync2013::Impl::onData
   }
   onReceivedSyncState_(syncStates, isRecovery);
 
-  Name n(applicationBroadcastPrefix_);
-  n.append(digest_tree_->getRoot());
-  Interest interest(n);
-  interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+  Name name(applicationBroadcastPrefix_);
+  name.append(digestTree_->getRoot());
+  Interest syncInterest(name);
+  syncInterest.setInterestLifetimeMilliseconds(syncLifetime_);
   face_.expressInterest
-    (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
+    (syncInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
      bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
-  _LOG_DEBUG(n.toUri());
+  _LOG_DEBUG(name.toUri());
 }
 
 void
-ChronoSync2013::Impl::processRecoveryInst
-  (const Interest& inst, const string& syncdigest, Transport& transport)
+ChronoSync2013::Impl::processRecoveryInterest
+  (const Interest& interest, const string& syncdigest, Transport& transport)
 {
   _LOG_DEBUG("processRecoveryInst");
-  if (logfind(syncdigest) != -1) {
+  if (logFind(syncdigest) != -1) {
     Sync::SyncStateMsg content_t;
-    for (size_t i = 0; i < digest_tree_->size(); ++i) {
+    for (size_t i = 0; i < digestTree_->size(); ++i) {
       Sync::SyncState* content = content_t.add_ss();
-      content->set_name(digest_tree_->get(i).getDataPrefix());
+      content->set_name(digestTree_->get(i).getDataPrefix());
       content->set_type(Sync::SyncState_ActionType_UPDATE);
-      content->mutable_seqno()->set_seq(digest_tree_->get(i).getSequenceNo());
-      content->mutable_seqno()->set_session(digest_tree_->get(i).getSessionNo());
+      content->mutable_seqno()->set_seq(digestTree_->get(i).getSequenceNo());
+      content->mutable_seqno()->set_session(digestTree_->get(i).getSessionNo());
     }
 
     if (content_t.ss_size() != 0) {
       ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
       content_t.SerializeToArray(&array->front(), array->size());
-      Data co(inst.getName());
-      co.setContent(Blob(array, false));
-      keyChain_.sign(co, certificateName_);
+      Data data(interest.getName());
+      data.setContent(Blob(array, false));
+      keyChain_.sign(data, certificateName_);
       try {
-        transport.send(*co.wireEncode());
+        transport.send(*data.wireEncode());
         _LOG_DEBUG("send recovery data back");
-        _LOG_DEBUG(inst.getName().toUri());
+        _LOG_DEBUG(interest.getName().toUri());
       }
       catch (std::exception& e) {
         _LOG_DEBUG(e.what());
@@ -287,63 +287,63 @@ ChronoSync2013::Impl::processRecoveryInst
 }
 
 bool
-ChronoSync2013::Impl::processSyncInst
-  (int index, const string& syncdigest_t, Transport& transport)
+ChronoSync2013::Impl::processSyncInterest
+  (int index, const string& syncDigest, Transport& transport)
 {
-  vector<string> data_name;
-  vector<int> data_seq;
-  vector<int> data_ses;
-  for (size_t j = index + 1; j < digest_log_.size(); ++j) {
+  vector<string> nameList;
+  vector<int> sequenceNoList;
+  vector<int> sessionNoList;
+  for (size_t j = index + 1; j < digestLog_.size(); ++j) {
     const google::protobuf::RepeatedPtrField<Sync::SyncState>& temp =
-      digest_log_[j]->getData();
+      digestLog_[j]->getData();
     for (size_t i = 0; i < temp.size(); ++i) {
       if (temp.Get(i).type() != Sync::SyncState_ActionType_UPDATE)
         continue;
 
-      if (digest_tree_->find(temp.Get(i).name(), temp.Get(i).seqno().session()) != -1) {
+      if (digestTree_->find(temp.Get(i).name(), temp.Get(i).seqno().session()) != -1) {
         int n = -1;
-        for (size_t k = 0; k < data_name.size(); ++k) {
-          if (data_name[k] == temp.Get(i).name()) {
+        for (size_t k = 0; k < nameList.size(); ++k) {
+          if (nameList[k] == temp.Get(i).name()) {
             n = k;
             break;
           }
         }
         if (n == -1) {
-          data_name.push_back(temp.Get(i).name());
-          data_seq.push_back(temp.Get(i).seqno().seq());
-          data_ses.push_back(temp.Get(i).seqno().session());
+          nameList.push_back(temp.Get(i).name());
+          sequenceNoList.push_back(temp.Get(i).seqno().seq());
+          sessionNoList.push_back(temp.Get(i).seqno().session());
         }
         else {
-          data_seq[n] = temp.Get(i).seqno().seq();
-          data_ses[n] = temp.Get(i).seqno().session();
+          sequenceNoList[n] = temp.Get(i).seqno().seq();
+          sessionNoList[n] = temp.Get(i).seqno().session();
         }
       }
     }
   }
 
-  Sync::SyncStateMsg content_t;
-  for (size_t i = 0; i < data_name.size(); ++i) {
-    Sync::SyncState* content = content_t.add_ss();
-    content->set_name(data_name[i]);
+  Sync::SyncStateMsg tempContent;
+  for (size_t i = 0; i < nameList.size(); ++i) {
+    Sync::SyncState* content = tempContent.add_ss();
+    content->set_name(nameList[i]);
     content->set_type(Sync::SyncState_ActionType_UPDATE);
-    content->mutable_seqno()->set_seq(data_seq[i]);
-    content->mutable_seqno()->set_session(data_ses[i]);
+    content->mutable_seqno()->set_seq(sequenceNoList[i]);
+    content->mutable_seqno()->set_session(sessionNoList[i]);
   }
 
   bool sent = false;
-  if (content_t.ss_size() != 0) {
-    Name n(applicationBroadcastPrefix_);
-    n.append(syncdigest_t);
-    ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
-    content_t.SerializeToArray(&array->front(), array->size());
-    Data co(n);
-    co.setContent(Blob(array, false));
-    keyChain_.sign(co, certificateName_);
+  if (tempContent.ss_size() != 0) {
+    Name name(applicationBroadcastPrefix_);
+    name.append(syncDigest);
+    ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(tempContent.ByteSize()));
+    tempContent.SerializeToArray(&array->front(), array->size());
+    Data data(name);
+    data.setContent(Blob(array, false));
+    keyChain_.sign(data, certificateName_);
     try {
-      transport.send(*co.wireEncode());
+      transport.send(*data.wireEncode());
       sent = true;
       _LOG_DEBUG("Sync Data send");
-      _LOG_DEBUG(n.toUri());
+      _LOG_DEBUG(name.toUri());
     } catch (std::exception& e) {
       _LOG_DEBUG(e.what());
     }
@@ -356,29 +356,29 @@ void
 ChronoSync2013::Impl::sendRecovery(const string& syncdigest_t)
 {
   _LOG_DEBUG("unknown digest: ");
-  Name n(applicationBroadcastPrefix_);
-  n.append("recovery").append(syncdigest_t);
-  Interest interest(n);
-  interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+  Name name(applicationBroadcastPrefix_);
+  name.append("recovery").append(syncdigest_t);
+  Interest interest(name);
+  interest.setInterestLifetimeMilliseconds(syncLifetime_);
   face_.expressInterest
     (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
      bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Recovery Syncinterest expressed:");
-  _LOG_DEBUG(n.toUri());
+  _LOG_DEBUG(name.toUri());
 }
 
 void
 ChronoSync2013::Impl::judgeRecovery
   (const ptr_lib::shared_ptr<const Interest> &interest,
-   const string& syncdigest_t, Transport* transport)
+   const string& syncDigest, Transport* transport)
 {
-  int index2 = logfind(syncdigest_t);
+  int index2 = logFind(syncDigest);
   if (index2 != -1) {
-    if (syncdigest_t != digest_tree_->getRoot())
-      processSyncInst(index2, syncdigest_t, *transport);
+    if (syncDigest != digestTree_->getRoot())
+      processSyncInterest(index2, syncDigest, *transport);
   }
   else
-    sendRecovery(syncdigest_t);
+    sendRecovery(syncDigest);
 }
 
 void
@@ -392,15 +392,15 @@ ChronoSync2013::Impl::syncTimeout(const ptr_lib::shared_ptr<const Interest>& int
    _LOG_DEBUG("Sync Interest name: " + interest->getName().toUri());
   string component = interest->getName().get
     (applicationBroadcastPrefix_.size()).toEscapedString();
-  if (component == digest_tree_->getRoot()) {
-    Name n(interest->getName());
+  if (component == digestTree_->getRoot()) {
+    Name name(interest->getName());
     Interest retryInterest(interest->getName());
-    retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
+    retryInterest.setInterestLifetimeMilliseconds(syncLifetime_);
     face_.expressInterest
       (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
        bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
      _LOG_DEBUG("Syncinterest expressed:");
-     _LOG_DEBUG(n.toUri());
+     _LOG_DEBUG(name.toUri());
   }
 }
 
@@ -410,52 +410,52 @@ ChronoSync2013::Impl::initialOndata
 {
   // The user is a new comer and receive data of all other people in the group.
   update(content);
-  string digest_t = digest_tree_->getRoot();
+  string digest = digestTree_->getRoot();
   for (size_t i = 0; i < content.size(); ++i) {
-    if (content.Get(i).name() == applicationDataPrefixUri_ && content.Get(i).seqno().session() == session_) {
+    if (content.Get(i).name() == applicationDataPrefixUri_ && content.Get(i).seqno().session() == sessionNo_) {
       // If the user was an old comer, after add the static log he needs to increase his seqno by 1.
-      Sync::SyncStateMsg content_t;
-      Sync::SyncState* content2 = content_t.add_ss();
+      Sync::SyncStateMsg tempContent;
+      Sync::SyncState* content2 = tempContent.add_ss();
       content2->set_name(applicationDataPrefixUri_);
       content2->set_type(Sync::SyncState_ActionType_UPDATE);
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
-      content2->mutable_seqno()->set_session(session_);
-      if (update(content_t.ss()))
+      content2->mutable_seqno()->set_session(sessionNo_);
+      if (update(tempContent.ss()))
         onInitialized_();
     }
   }
 
-  Sync::SyncStateMsg content2_t;
-  if (usrseq_ >= 0) {
+  Sync::SyncStateMsg tempContent2;
+  if (sequenceNo_ >= 0) {
     // Send the data packet with the new seqno back.
-    Sync::SyncState* content2 = content2_t.add_ss();
+    Sync::SyncState* content2 = tempContent2.add_ss();
     content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
-    content2->mutable_seqno()->set_seq(usrseq_);
-    content2->mutable_seqno()->set_session(session_);
+    content2->mutable_seqno()->set_seq(sequenceNo_);
+    content2->mutable_seqno()->set_session(sessionNo_);
   }
   else {
-    Sync::SyncState* content2 = content2_t.add_ss();
+    Sync::SyncState* content2 = tempContent2.add_ss();
     content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
     content2->mutable_seqno()->set_seq(0);
-    content2->mutable_seqno()->set_session(session_);
+    content2->mutable_seqno()->set_session(sessionNo_);
   }
 
-  broadcastSyncState(digest_t, content2_t);
+  broadcastSyncState(digest, tempContent2);
 
-  if (digest_tree_->find(applicationDataPrefixUri_, session_) == -1) {
+  if (digestTree_->find(applicationDataPrefixUri_, sessionNo_) == -1) {
     // the user hasn't put himself in the digest tree.
     _LOG_DEBUG("initial state");
-    ++usrseq_;
-    Sync::SyncStateMsg content_t;
-    Sync::SyncState* content2 = content_t.add_ss();
+    ++sequenceNo_;
+    Sync::SyncStateMsg tempContent;
+    Sync::SyncState* content2 = tempContent.add_ss();
     content2->set_name(applicationDataPrefixUri_);
     content2->set_type(Sync::SyncState_ActionType_UPDATE);
-    content2->mutable_seqno()->set_seq(usrseq_);
-    content2->mutable_seqno()->set_session(session_);
+    content2->mutable_seqno()->set_seq(sequenceNo_);
+    content2->mutable_seqno()->set_session(sessionNo_);
 
-    if (update(content_t.ss()))
+    if (update(tempContent.ss()))
       onInitialized_();
   }
 }
@@ -469,31 +469,31 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
 
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
-  ++usrseq_;
-  if (usrseq_ != 0)
+  ++sequenceNo_;
+  if (sequenceNo_ != 0)
     // Since there were no other users, we expect sequence no 0.
     throw runtime_error
       ("ChronoSync: usrseq_ is not the expected value of 0 for first use.");
 
-  Sync::SyncStateMsg content_t;
-  Sync::SyncState* content = content_t.add_ss();
+  Sync::SyncStateMsg tempContent;
+  Sync::SyncState* content = tempContent.add_ss();
   content->set_name(applicationDataPrefixUri_);
   content->set_type(Sync::SyncState_ActionType_UPDATE);
-  content->mutable_seqno()->set_seq(usrseq_);
-  content->mutable_seqno()->set_session(session_);
-  update(content_t.ss());
+  content->mutable_seqno()->set_seq(sequenceNo_);
+  content->mutable_seqno()->set_session(sessionNo_);
+  update(tempContent.ss());
 
   onInitialized_();
 
-  Name n(applicationBroadcastPrefix_);
-  n.append(digest_tree_->getRoot());
-  Interest retryInterest(n);
-  retryInterest.setInterestLifetimeMilliseconds(sync_lifetime_);
+  Name name(applicationBroadcastPrefix_);
+  name.append(digestTree_->getRoot());
+  Interest retryInterest(name);
+  retryInterest.setInterestLifetimeMilliseconds(syncLifetime_);
   face_.expressInterest
     (retryInterest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
      bind(&ChronoSync2013::Impl::syncTimeout, shared_from_this(), _1));
   _LOG_DEBUG("Syncinterest expressed:");
-  _LOG_DEBUG(n.toUri());
+  _LOG_DEBUG(name.toUri());
 }
 
 void
