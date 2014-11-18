@@ -360,7 +360,7 @@ private:
 
     // Search the digest log by digest.
     int
-    logfind(const std::string& digest) const;
+    logFind(const std::string& digest) const;
 
     /**
      * Process the sync interest from the applicationBroadcastPrefix. If we can't
@@ -370,13 +370,13 @@ private:
     void
     onInterest
       (const ptr_lib::shared_ptr<const Name>& prefix,
-       const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+       const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
        uint64_t registerPrefixId);
 
     // Process Sync Data.
     void
     onData
-      (const ptr_lib::shared_ptr<const Interest>& inst,
+      (const ptr_lib::shared_ptr<const Interest>& interest,
        const ptr_lib::shared_ptr<Data>& data);
 
     // Initial sync interest timeout, which means there are no other publishers yet.
@@ -384,20 +384,20 @@ private:
     initialTimeOut(const ptr_lib::shared_ptr<const Interest>& interest);
 
     void
-    processRecoveryInst
-      (const Interest& inst, const std::string& syncdigest, Transport& transport);
+    processRecoveryInterest
+      (const Interest& interest, const std::string& syncDigest, Transport& transport);
 
     /**
      * Common interest processing, using digest log to find the difference after
-     * syncdigest_t. Return true if sent a data packet to satisfy the interest,
+     * syncDigest. Return true if sent a data packet to satisfy the interest,
      * otherwise false.
      */
     bool
-    processSyncInst(int index, const std::string& syncdigest_t, Transport& transport);
+    processSyncInterest(int index, const std::string& syncDigest, Transport& transport);
 
     // Send Recovery Interest.
     void
-    sendRecovery(const std::string& syncdigest_t);
+    sendRecovery(const std::string& syncDigest);
 
     /**
      * This is called by onInterest after a timeout to check if a recovery is needed.
@@ -407,7 +407,7 @@ private:
     void
     judgeRecovery
       (const ptr_lib::shared_ptr<const Interest> &interest,
-       const std::string& syncdigest_t, Transport* transport);
+       const std::string& syncDigest, Transport* transport);
 
     // Sync interest time out, if the interest is the static one send again.
     void
@@ -439,14 +439,14 @@ private:
     Face& face_;
     KeyChain& keyChain_;
     Name certificateName_;
-    Milliseconds sync_lifetime_;
+    Milliseconds syncLifetime_;
     OnReceivedSyncState onReceivedSyncState_;
     OnInitialized onInitialized_;
-    std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digest_log_;
-    ptr_lib::shared_ptr<DigestTree> digest_tree_;
+    std::vector<ptr_lib::shared_ptr<DigestLogEntry> > digestLog_;
+    ptr_lib::shared_ptr<DigestTree> digestTree_;
     std::string applicationDataPrefixUri_;
     const Name applicationBroadcastPrefix_;
-    int session_;
+    int sessionNo_;
     int sequenceNo_;
     MemoryContentCache contentCache_;
     std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;

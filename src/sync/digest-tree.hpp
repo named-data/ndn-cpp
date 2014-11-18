@@ -39,13 +39,13 @@ public:
     /**
      * Create a new DigestTree::Node with the given fields and compute the digest.
      * @param dataPrefix
-     * @param seqno_seq
-     * @param seqno_session
+     * @param sequenceNo
+     * @param sessionNo
      */
     Node
-      (const std::string& dataPrefix, int seqno_seq, int seqno_session)
-    : dataPrefix_(dataPrefix), seqno_seq_(seqno_seq),
-      seqno_session_(seqno_session)
+      (const std::string& dataPrefix, int sequenceNo, int sessionNo)
+    : dataPrefix_(dataPrefix), sequenceNo_(sequenceNo),
+      sessionNo_(sessionNo)
     {
       recomputeDigest();
     }
@@ -54,10 +54,10 @@ public:
     getDataPrefix() const { return dataPrefix_; }
 
     int
-    getSequenceNo() const { return seqno_seq_; }
+    getSequenceNo() const { return sequenceNo_; }
 
     int
-    getSessionNo() const { return seqno_session_; }
+    getSessionNo() const { return sessionNo_; }
 
     /**
      * Get the digest.
@@ -73,7 +73,7 @@ public:
     void
     setSequenceNo(int sequenceNo)
     {
-      seqno_seq_ = sequenceNo;
+      sequenceNo_ = sequenceNo;
       recomputeDigest();
     }
 
@@ -91,7 +91,7 @@ public:
         if (nameComparison != 0)
           return nameComparison < 0;
 
-        return node1->seqno_session_ < node2->seqno_session_;
+        return node1->sessionNo_ < node2->sessionNo_;
       }
     };
 
@@ -106,8 +106,8 @@ public:
     int32ToLittleEndian(uint32_t value, uint8_t* result);
 
     std::string dataPrefix_;
-    int seqno_seq_;
-    int seqno_session_;
+    int sequenceNo_;
+    int sessionNo_;
     std::string digest_;
   };
 
@@ -128,10 +128,10 @@ public:
   find(const std::string& dataPrefix, int sessionNo) const;
 
   size_t
-  size() const { return digestnode_.size(); }
+  size() const { return digestNode_.size(); }
 
   const DigestTree::Node&
-  get(size_t i) const { return *digestnode_[i]; }
+  get(size_t i) const { return *digestNode_[i]; }
 
   /**
    * Get the root digest.
@@ -142,13 +142,13 @@ public:
 
 private:
   /**
-   * Set root_ to the digest of all digests in digestnode_. This sets root_
+   * Set root_ to the digest of all digests in digestNode_. This sets root_
    * to the hex value of the digest.
    */
   void
   recomputeRoot();
 
-  std::vector<ptr_lib::shared_ptr<DigestTree::Node> > digestnode_;
+  std::vector<ptr_lib::shared_ptr<DigestTree::Node> > digestNode_;
   std::string root_;
   Node::Compare nodeCompare_;
 };

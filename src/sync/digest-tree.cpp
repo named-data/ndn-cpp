@@ -68,13 +68,13 @@ SHA256_UpdateHex(SHA256_CTX *context, const string& hex)
 bool
 DigestTree::update(const std::string& dataPrefix, int sessionNo, int sequenceNo)
 {
-  int n_index = find(dataPrefix, sessionNo);
+  int index = find(dataPrefix, sessionNo);
   _LOG_DEBUG(dataPrefix << ", " << sessionNo);
-  _LOG_DEBUG("DigestTree::update session " << sessionNo << ", n_index " << n_index);
-  if (n_index >= 0) {
+  _LOG_DEBUG("DigestTree::update session " << sessionNo << ", index " << index);
+  if (index >= 0) {
     // only update the newer status
-    if (digestnode_[n_index]->getSequenceNo() < sequenceNo)
-      digestnode_[n_index]->setSequenceNo(sequenceNo);
+    if (digestNode_[index]->getSequenceNo() < sequenceNo)
+      digestNode_[index]->setSequenceNo(sequenceNo);
     else
       return false;
   }
@@ -83,8 +83,8 @@ DigestTree::update(const std::string& dataPrefix, int sessionNo, int sequenceNo)
                sessionNo);
     // Insert into digestnode_ sorted.
     ptr_lib::shared_ptr<Node> temp(new Node(dataPrefix, sequenceNo, sessionNo));
-    digestnode_.insert
-      (std::lower_bound(digestnode_.begin(), digestnode_.end(), temp, nodeCompare_),
+    digestNode_.insert
+      (std::lower_bound(digestNode_.begin(), digestNode_.end(), temp, nodeCompare_),
        temp);
   }
 
@@ -98,8 +98,8 @@ DigestTree::recomputeRoot()
   SHA256_CTX sha256;
 
   SHA256_Init(&sha256);
-  for (size_t i = 0; i < digestnode_.size(); ++i)
-    SHA256_UpdateHex(&sha256, digestnode_[i]->getDigest());
+  for (size_t i = 0; i < digestNode_.size(); ++i)
+    SHA256_UpdateHex(&sha256, digestNode_[i]->getDigest());
   uint8_t digest_root[SHA256_DIGEST_LENGTH];
   SHA256_Final(&digest_root[0], &sha256);
   root_ = toHex(digest_root, sizeof(digest_root));
@@ -109,9 +109,9 @@ DigestTree::recomputeRoot()
 int
 DigestTree::find(const string& dataPrefix, int sessionNo) const
 {
-  for (size_t i = 0; i < digestnode_.size(); ++i) {
-    if (digestnode_[i]->getDataPrefix() == dataPrefix &&
-        digestnode_[i]->getSessionNo() == sessionNo)
+  for (size_t i = 0; i < digestNode_.size(); ++i) {
+    if (digestNode_[i]->getDataPrefix() == dataPrefix &&
+        digestNode_[i]->getSessionNo() == sessionNo)
       return i;
   }
 
@@ -125,24 +125,24 @@ DigestTree::Node::recomputeDigest()
 
   SHA256_Init(&sha256);
   uint8_t number[4];
-  int32ToLittleEndian(seqno_session_, number);
+  int32ToLittleEndian(sessionNo_, number);
   SHA256_Update(&sha256, number, sizeof(number));
-  int32ToLittleEndian(seqno_seq_, number);
+  int32ToLittleEndian(sequenceNo_, number);
   SHA256_Update(&sha256, number, sizeof(number));
-  uint8_t digest_seq[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_seq, &sha256);
+  uint8_t sequenceDigest[SHA256_DIGEST_LENGTH];
+  SHA256_Final(sequenceDigest, &sha256);
 
   SHA256_Init(&sha256);
   SHA256_Update(&sha256, &dataPrefix_[0], dataPrefix_.size());
-  uint8_t digest_name[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_name, &sha256);
+  uint8_t nameDigest[SHA256_DIGEST_LENGTH];
+  SHA256_Final(nameDigest, &sha256);
 
   SHA256_Init(&sha256);
-  SHA256_Update(&sha256, digest_name, sizeof(digest_name));
-  SHA256_Update(&sha256, digest_seq, sizeof(digest_seq));
-  uint8_t digest_node[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest_node, &sha256);
-  digest_ = toHex(digest_node, sizeof(digest_node));
+  SHA256_Update(&sha256, nameDigest, sizeof(nameDigest));
+  SHA256_Update(&sha256, sequenceDigest, sizeof(sequenceDigest));
+  uint8_t nodeDigest[SHA256_DIGEST_LENGTH];
+  SHA256_Final(nodeDigest, &sha256);
+  digest_ = toHex(nodeDigest, sizeof(nodeDigest));
 }
 
 void
@@ -151,7 +151,7 @@ DigestTree::Node::int32ToLittleEndian(uint32_t value, uint8_t* result)
   for (size_t i = 0; i < 4; i++) {
     result[i] = value % 256;
     value = value / 256;
-   }
+  }
 }
 
 }

@@ -64,12 +64,12 @@ public:
     (const string& screenName, const string& chatRoom,
      const Name& hubPrefix, Face& face, KeyChain& keyChain,
      const Name& certificateName)
-    : screen_name_(screenName), chatroom_(chatRoom), maxmsgcachelength_(100),
-      isRecoverySyncState_(true), sync_lifetime_(5000.0), face_(face),
+    : screenName_(screenName), chatRoom_(chatRoom), maxMessageCacheLength_(100),
+      isRecoverySyncState_(true), syncLifetime_(5000.0), face_(face),
       keyChain_(keyChain), certificateName_(certificateName)
   {
     // This should only be called once, so get the random string here.
-    chat_prefix_ = Name(hubPrefix).append(chatroom_).append(Chat::getRandomString());
+    chatPrefix_ = Name(hubPrefix).append(chatRoom_).append(Chat::getRandomString());
   }
 
   /**
@@ -82,19 +82,19 @@ public:
   void
   initialize()
   {
-    int session = (int)::round(getNowMilliseconds()  / 1000.0);
+    int sessionNo = (int)::round(getNowMilliseconds()  / 1000.0);
     ostringstream tempStream;
-    tempStream << screen_name_ << session;
-    usrname_ = tempStream.str();
+    tempStream << screenName_ << sessionNo;
+    userName_ = tempStream.str();
 
     sync_.reset(new ChronoSync2013
       (bind(&Chat::sendInterest, shared_from_this(), _1, _2),
-       bind(&Chat::initial, shared_from_this()), chat_prefix_,
-       Name("/ndn/broadcast/ChronoChat-0.3").append(chatroom_), session,
-       face_, keyChain_, certificateName_, sync_lifetime_, onRegisterFailed));
+       bind(&Chat::initial, shared_from_this()), chatPrefix_,
+       Name("/ndn/broadcast/ChronoChat-0.3").append(chatRoom_), sessionNo,
+       face_, keyChain_, certificateName_, syncLifetime_, onRegisterFailed));
 
     face_.registerPrefix
-      (chat_prefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4),
+      (chatPrefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4),
        onRegisterFailed);
   }
 
@@ -128,13 +128,13 @@ private:
   void
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
      uint64_t registeredPrefixId);
 
   // Processing the incoming Chat data.
   void
   onData
-    (const ptr_lib::shared_ptr<const Interest>& inst,
+    (const ptr_lib::shared_ptr<const Interest>& interest,
      const ptr_lib::shared_ptr<Data>& data);
 
   void
@@ -151,15 +151,15 @@ private:
 
   /**
    * This is called after a timeout to check if the user with prefix has a newer
-   * sequence number than the given temp_seq. If not, assume the user is idle and
+   * sequence number than the given tempSequenceNo. If not, assume the user is idle and
    * remove from the roster and print a leave message.
    * This method has an "interest" argument because we use it as the onTimeout
    * for Face.expressInterest.
    */
   void
   alive
-    (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
-     const string& name, int session, const string& prefix);
+    (const ptr_lib::shared_ptr<const Interest> &interest, int tempSequenceNo,
+     const string& name, int sessionNo, const string& prefix);
 
   /**
    * Append a new CachedMessage to msgcache, using given messageType and message,
@@ -197,40 +197,40 @@ private:
   class CachedMessage {
   public:
     CachedMessage
-      (int seqno, int msgtype, const string& msg, MillisecondsSince1970 time)
-    : seqno_(seqno), msgtype_(msgtype), msg_(msg), time_(time)
+      (int sequenceNo, int messageType, const string& message, MillisecondsSince1970 time)
+    : sequenceNo_(sequenceNo), messageType_(messageType), message_(message), time_(time)
     {}
 
     int
-    getSequenceNo() const { return seqno_; }
+    getSequenceNo() const { return sequenceNo_; }
 
     int
-    getMessageType() const { return msgtype_; }
+    getMessageType() const { return messageType_; }
 
     const string&
-    getMessage() const { return msg_; }
+    getMessage() const { return message_; }
 
     MillisecondsSince1970
     getTime() const { return time_; }
 
   private:
-    int seqno_;
+    int sequenceNo_;
     // This is really enum SyncDemo::ChatMessage_ChatMessageType, but make it
     //   in int so that the head doesn't need to include the protobuf header.
-    int msgtype_;
-    string msg_;
+    int messageType_;
+    string message_;
     MillisecondsSince1970 time_;
   };
 
-  vector<ptr_lib::shared_ptr<CachedMessage> > msgcache_;
+  vector<ptr_lib::shared_ptr<CachedMessage> > messageCache_;
   vector<string> roster_;
-  size_t maxmsgcachelength_;
+  size_t maxMessageCacheLength_;
   bool isRecoverySyncState_;
-  string screen_name_;
-  string chatroom_;
-  string usrname_;
-  Name chat_prefix_;
-  Milliseconds sync_lifetime_;
+  string screenName_;
+  string chatRoom_;
+  string userName_;
+  Name chatPrefix_;
+  Milliseconds syncLifetime_;
   ptr_lib::shared_ptr<ChronoSync2013> sync_;
   Face& face_;
   KeyChain& keyChain_;
@@ -247,10 +247,10 @@ Chat::initial()
   timeout.setInterestLifetimeMilliseconds(60000);
   face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, shared_from_this(), _1));
 
-  if (rosterFind(usrname_) < 0) {
-    roster_.push_back(usrname_);
-    cout << "Member: " << screen_name_ << endl;
-    cout << screen_name_ << ": Join" << endl;
+  if (rosterFind(userName_) < 0) {
+    roster_.push_back(userName_);
+    cout << "Member: " << screenName_ << endl;
+    cout << screenName_ << ": Join" << endl;
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
   }
 }
@@ -262,38 +262,38 @@ Chat::sendInterest
   // This is used by onData to decide whether to display the chat messages.
   isRecoverySyncState_ = isRecovery;
 
-  vector<string> sendlist;
-  vector<int> sessionlist;
-  vector<int> seqlist;
+  vector<string> sendList;
+  vector<int> sessionNoList;
+  vector<int> sequenceNoList;
   for (size_t j = 0; j < syncStates.size(); ++j) {
-    Name name_components(syncStates[j].getDataPrefix());
-    string name_t = name_components.get(-1).toEscapedString();
-    int session = syncStates[j].getSessionNo();
-    if (name_t != screen_name_) {
-      int index_n = -1;
-      for (size_t k = 0; k < sendlist.size(); ++k) {
-        if (sendlist[k] == syncStates[j].getDataPrefix()) {
-          index_n = k;
+    Name nameComponents(syncStates[j].getDataPrefix());
+    string tempName = nameComponents.get(-1).toEscapedString();
+    int sessionNo = syncStates[j].getSessionNo();
+    if (tempName != screenName_) {
+      int index = -1;
+      for (size_t k = 0; k < sendList.size(); ++k) {
+        if (sendList[k] == syncStates[j].getDataPrefix()) {
+          index = k;
           break;
         }
       }
-      if (index_n != -1) {
-        sessionlist[index_n] = session;
-        seqlist[index_n] = syncStates[j].getSequenceNo();
+      if (index != -1) {
+        sessionNoList[index] = sessionNo;
+        sequenceNoList[index] = syncStates[j].getSequenceNo();
       }
       else{
-        sendlist.push_back(syncStates[j].getDataPrefix());
-        sessionlist.push_back(session);
-        seqlist.push_back(syncStates[j].getSequenceNo());
+        sendList.push_back(syncStates[j].getDataPrefix());
+        sessionNoList.push_back(sessionNo);
+        sequenceNoList.push_back(syncStates[j].getSequenceNo());
       }
     }
   }
 
-  for (size_t i = 0; i < sendlist.size(); ++i) {
+  for (size_t i = 0; i < sendList.size(); ++i) {
     ostringstream uri;
-    uri << sendlist[i] << "/" << sessionlist[i] << "/" << seqlist[i];
+    uri << sendList[i] << "/" << sessionNoList[i] << "/" << sequenceNoList[i];
     Interest interest(uri.str());
-    interest.setInterestLifetimeMilliseconds(sync_lifetime_);
+    interest.setInterestLifetimeMilliseconds(syncLifetime_);
     face_.expressInterest
       (interest, bind(&Chat::onData, shared_from_this(), _1, _2),
        bind(&Chat::chatTimeout, shared_from_this(), _1));
@@ -303,25 +303,25 @@ Chat::sendInterest
 void
 Chat::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& inst, Transport& transport,
+   const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
    uint64_t registeredPrefixId)
 {
   SyncDemo::ChatMessage content;
-  int seq = ::atoi(inst->getName().get(chat_prefix_.size() + 1).toEscapedString().c_str());
-  for (int i = msgcache_.size() - 1; i >= 0; --i) {
-    if (msgcache_[i]->getSequenceNo() == seq) {
-      if (msgcache_[i]->getMessageType() != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
-        content.set_from(screen_name_);
-        content.set_to(chatroom_);
-        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->getMessageType());
-        content.set_timestamp(::round(msgcache_[i]->getTime() / 1000.0));
+  int sequenceNo = ::atoi(interest->getName().get(chatPrefix_.size() + 1).toEscapedString().c_str());
+  for (int i = messageCache_.size() - 1; i >= 0; --i) {
+    if (messageCache_[i]->getSequenceNo() == sequenceNo) {
+      if (messageCache_[i]->getMessageType() != SyncDemo::ChatMessage_ChatMessageType_CHAT) {
+        content.set_from(screenName_);
+        content.set_to(chatRoom_);
+        content.set_type((SyncDemo::ChatMessage_ChatMessageType)messageCache_[i]->getMessageType());
+        content.set_timestamp(::round(messageCache_[i]->getTime() / 1000.0));
       }
       else {
-        content.set_from(screen_name_);
-        content.set_to(chatroom_);
-        content.set_type((SyncDemo::ChatMessage_ChatMessageType)msgcache_[i]->getMessageType());
-        content.set_data(msgcache_[i]->getMessage());
-        content.set_timestamp(::round(msgcache_[i]->getTime() / 1000.0));
+        content.set_from(screenName_);
+        content.set_to(chatRoom_);
+        content.set_type((SyncDemo::ChatMessage_ChatMessageType)messageCache_[i]->getMessageType());
+        content.set_data(messageCache_[i]->getMessage());
+        content.set_timestamp(::round(messageCache_[i]->getTime() / 1000.0));
       }
       break;
     }
@@ -330,7 +330,7 @@ Chat::onInterest
   if (content.from().size() != 0) {
     ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content.ByteSize()));
     content.SerializeToArray(&array->front(), array->size());
-    Data data(inst->getName());
+    Data data(interest->getName());
     data.setContent(Blob(array, false));
     keyChain_.sign(data, certificateName_);
     try {
@@ -344,7 +344,7 @@ Chat::onInterest
 
 void
 Chat::onData
-  (const ptr_lib::shared_ptr<const Interest>& inst,
+  (const ptr_lib::shared_ptr<const Interest>& interest,
    const ptr_lib::shared_ptr<Data>& data)
 {
   SyncDemo::ChatMessage content;
@@ -352,21 +352,21 @@ Chat::onData
   if (getNowMilliseconds() - content.timestamp() * 1000.0 < 120000.0) {
     string name = content.from();
     string prefix = data->getName().getPrefix(-2).toUri();
-    int session = ::atoi(data->getName().get(-2).toEscapedString().c_str());
-    int seqno = ::atoi(data->getName().get(-1).toEscapedString().c_str());
+    int sessionNo = ::atoi(data->getName().get(-2).toEscapedString().c_str());
+    int sequenceNo = ::atoi(data->getName().get(-1).toEscapedString().c_str());
     ostringstream tempStream;
-    tempStream << name << session;
+    tempStream << name << sessionNo;
     string nameAndSession = tempStream.str();
 
     size_t l = 0;
     //update roster
     while (l < roster_.size()) {
-      string name_t2 = roster_[l].substr(0, roster_[l].size() - 10);
-      int session_t = ::atoi(roster_[l].substr(roster_[l].size() - 10, 10).c_str());
-      if (name != name_t2 && content.type() != SyncDemo::ChatMessage_ChatMessageType_LEAVE)
+      string tempName2 = roster_[l].substr(0, roster_[l].size() - 10);
+      int tempSessionNo = ::atoi(roster_[l].substr(roster_[l].size() - 10, 10).c_str());
+      if (name != tempName2 && content.type() != SyncDemo::ChatMessage_ChatMessageType_LEAVE)
         ++l;
       else {
-        if (name == name_t2 && session > session_t)
+        if (name == tempName2 && sessionNo > tempSessionNo)
           roster_[l] = nameAndSession;
         break;
       }
@@ -383,18 +383,18 @@ Chat::onData
     timeout.setInterestLifetimeMilliseconds(120000);
     face_.expressInterest
       (timeout, dummyOnData,
-       bind(&Chat::alive, shared_from_this(), _1, seqno, name, session, prefix));
+       bind(&Chat::alive, shared_from_this(), _1, sequenceNo, name, sessionNo, prefix));
 
     // isRecoverySyncState_ was set by sendInterest.
     // TODO: If isRecoverySyncState_ changed, this assumes that we won't get
     //   data from an interest sent before it changed.
     if (content.type() == SyncDemo::ChatMessage_ChatMessageType_CHAT &&
-        !isRecoverySyncState_ && content.from() != screen_name_)
+        !isRecoverySyncState_ && content.from() != screenName_)
       cout << content.from() << ": " << content.data() << endl;
     else if (content.type() == SyncDemo::ChatMessage_ChatMessageType_LEAVE) {
       // leave message
       int n = rosterFind(nameAndSession);
-      if (n >= 0 && name != screen_name_) {
+      if (n >= 0 && name != screenName_) {
         roster_.erase(roster_.begin() + n);
         cout << name << ": Leave" << endl;
       }
@@ -411,7 +411,7 @@ Chat::chatTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 void
 Chat::heartbeat(const ptr_lib::shared_ptr<const Interest> &interest)
 {
-  if (msgcache_.size() == 0)
+  if (messageCache_.size() == 0)
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
   sync_->publishNextSequenceNo();
@@ -425,17 +425,17 @@ Chat::heartbeat(const ptr_lib::shared_ptr<const Interest> &interest)
 }
 
 void
-Chat::sendMessage(const string& chatmsg)
+Chat::sendMessage(const string& chatMessage)
 {
-  if (msgcache_.size() == 0)
+  if (messageCache_.size() == 0)
     messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_JOIN, "xxx");
 
   // Ignore an empty message.
   // forming Sync Data Packet.
-  if (chatmsg != "") {
+  if (chatMessage != "") {
     sync_->publishNextSequenceNo();
-    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_CHAT, chatmsg);
-    cout << screen_name_ << ": " << chatmsg << endl;
+    messageCacheAppend(SyncDemo::ChatMessage_ChatMessageType_CHAT, chatMessage);
+    cout << screenName_ << ": " << chatMessage << endl;
   }
 }
 
@@ -448,16 +448,16 @@ Chat::leave()
 
 void
 Chat::alive
-  (const ptr_lib::shared_ptr<const Interest> &interest, int temp_seq,
-   const string& name, int session, const string& prefix)
+  (const ptr_lib::shared_ptr<const Interest> &interest, int tempSequenceNo,
+   const string& name, int sessionNo, const string& prefix)
 {
-  int seq = sync_->getProducerSequenceNo(prefix, session);
+  int sequenceNo = sync_->getProducerSequenceNo(prefix, sessionNo);
   ostringstream tempStream;
-  tempStream << name << session;
+  tempStream << name << sessionNo;
   string nameAndSession = tempStream.str();
   int n = rosterFind(nameAndSession);
-  if (seq != -1 && n >= 0) {
-    if (temp_seq == seq){
+  if (sequenceNo != -1 && n >= 0) {
+    if (tempSequenceNo == sequenceNo){
       roster_.erase(roster_.begin() + n);
       cout << name << ": Leave" << endl;
     }
@@ -467,10 +467,10 @@ Chat::alive
 void
 Chat::messageCacheAppend(int messageType, const string& message)
 {
-  msgcache_.push_back(ptr_lib::make_shared<CachedMessage>
+  messageCache_.push_back(ptr_lib::make_shared<CachedMessage>
     (sync_->getSequenceNo(), messageType, message, getNowMilliseconds()));
-  while (msgcache_.size() > maxmsgcachelength_)
-    msgcache_.erase(msgcache_.begin());
+  while (messageCache_.size() > maxMessageCacheLength_)
+    messageCache_.erase(messageCache_.begin());
 }
 
 int
