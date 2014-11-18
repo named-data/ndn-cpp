@@ -20,22 +20,24 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../encoding/der/der.hpp"
-#include "../../util/blob-stream.hpp"
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/certificate/certificate-extension.hpp>
 
 using namespace std;
 
 namespace ndn {
 
-ptr_lib::shared_ptr<der::DerNode>
+ptr_lib::shared_ptr<DerNode>
 CertificateExtension::toDer() const
 {
-  ptr_lib::shared_ptr<der::DerSequence> root(new der::DerSequence);
+  ptr_lib::shared_ptr<DerNode::DerSequence> root(new DerNode::DerSequence);
 
-  ptr_lib::shared_ptr<der::DerOid> extensionId(new der::DerOid(extensionId_));
-  ptr_lib::shared_ptr<der::DerBool> isCritical(new der::DerBool(isCritical_));
-  ptr_lib::shared_ptr<der::DerOctetString> extensionValue(new der::DerOctetString(*extensionValue_));
+  ptr_lib::shared_ptr<DerNode::DerOid> extensionId
+    (new DerNode::DerOid(extensionId_));
+  ptr_lib::shared_ptr<DerNode::DerBoolean> isCritical
+    (new DerNode::DerBoolean(isCritical_));
+  ptr_lib::shared_ptr<DerNode::DerOctetString> extensionValue
+    (new DerNode::DerOctetString(extensionValue_.buf(), extensionValue_.size()));
 
   root->addChild(extensionId);
   root->addChild(isCritical);
@@ -49,13 +51,6 @@ CertificateExtension::toDer() const
 Blob
 CertificateExtension::toDerBlob() const
 {
-  blob_stream blobStream;
-  der::OutputIterator& start = reinterpret_cast<der::OutputIterator&>(blobStream);
-
-  toDer()->encode(start);
-
-  return Blob(blobStream.buf(), false);
+  return toDer()->encode();
 }
-
-
 }

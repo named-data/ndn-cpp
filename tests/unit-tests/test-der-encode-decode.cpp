@@ -20,9 +20,10 @@
  */
 
 #include "gtest/gtest.h"
-#include "ndn-cpp/security/certificate/certificate.hpp"
 #include <algorithm>
 #include <sstream>
+#include <ndn-cpp/security/certificate/certificate.hpp>
+#include "../../src/encoding/der/der-node.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -196,18 +197,18 @@ TEST_F(TestCertificate, Decode)
     "Certificate representation changed after decoding";
 }
 
-#if 0 // TODO: Implement when we change from visitors to use the DerOid class directly.
 TEST_F(TestCertificate, Oid)
 {
-  oidString = "1.2.840.113549.1.1.11"
-  derOid = DerOid(oidString)
-  expectedEncoding = "06092a864886f70d01010b"
+  string oidString = "1.2.840.113549.1.1.11";
+  DerNode::DerOid derOid(oidString);
+  string expectedEncoding = "06092a864886f70d01010b";
 
-  self.assertEqual(expectedEncoding, derOid.encode().toHex(),
-                   "Incorrect OID encoding")
-  self.assertEqual(oidString, derOid.toVal(), "Incorrect decoded OID")
+  ASSERT_EQ(expectedEncoding, derOid.encode().toHex()) <<
+    "Incorrect OID encoding";
+  Blob value = derOid.toVal();
+  ASSERT_EQ(oidString, string((const char*)value.buf(), value.size())) <<
+    "Incorrect decoded OID";
 }
-#endif
 
 int
 main(int argc, char **argv)

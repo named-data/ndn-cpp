@@ -28,8 +28,6 @@
 
 namespace ndn {
 
-namespace der {
-
 class DerException : public std::exception {
 public:
   DerException(const std::string& errorMessage) throw();
@@ -67,8 +65,6 @@ public:
   : DerException(errorMessage)
   {}
 };
-
-} // der
 
 }
 

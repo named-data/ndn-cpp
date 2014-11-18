@@ -159,6 +159,18 @@ public:
   toHex() const { return (*this) ? ndn::toHex(**this) : std::string(); }
 
   /**
+   * Return the bytes of the byte array as a raw str of the same length. This
+   * does not do any character encoding such as UTF-8.
+   * @return The buffer as a string, or "" if isNull().
+   */
+  std::string
+  toRawStr() const
+  {
+    return (*this) ? std::string((const char*)(&(*this)->front()), (*this)->size())
+                   : std::string();
+  }
+  
+  /**
    * Check if the value of this Blob equals the other blob.
    * @param other The other Blob to check.
    * @return True if this isNull and other isNull or if the bytes of this

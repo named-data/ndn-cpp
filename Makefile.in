@@ -221,13 +221,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/protobuf-tlv.lo \
 	src/encoding/tlv-0_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
-	src/encoding/der/der-exception.lo src/encoding/der/der.lo \
-	src/encoding/der/visitor/certificate-data-visitor.lo \
-	src/encoding/der/visitor/no-arguments-visitor.lo \
-	src/encoding/der/visitor/print-visitor.lo \
-	src/encoding/der/visitor/public-key-visitor.lo \
-	src/encoding/der/visitor/simple-visitor.lo \
-	src/encoding/der/visitor/void-visitor.lo \
+	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
@@ -1017,15 +1011,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/tlv-wire-format.cpp \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
-  src/encoding/der/der.cpp src/encoding/der/der.hpp \
-  src/encoding/der/visitor/certificate-data-visitor.cpp src/encoding/der/visitor/certificate-data-visitor.hpp \
-  src/encoding/der/visitor/no-arguments-visitor.cpp src/encoding/der/visitor/no-arguments-visitor.hpp \
-  src/encoding/der/visitor/print-visitor.cpp src/encoding/der/visitor/print-visitor.hpp \
-  src/encoding/der/visitor/public-key-visitor.cpp src/encoding/der/visitor/public-key-visitor.hpp \
-  src/encoding/der/visitor/simple-visitor.cpp src/encoding/der/visitor/simple-visitor.hpp \
-  src/encoding/der/visitor/visitor.hpp \
-  src/encoding/der/visitor/void-no-arguments-visitor.hpp \
-  src/encoding/der/visitor/void-visitor.cpp src/encoding/der/visitor/void-visitor.hpp \
+  src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -1331,32 +1317,8 @@ src/encoding/der/$(DEPDIR)/$(am__dirstamp):
 	@: > src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 src/encoding/der/der-exception.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/der.lo: src/encoding/der/$(am__dirstamp) \
+src/encoding/der/der-node.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/$(am__dirstamp):
-	@$(MKDIR_P) src/encoding/der/visitor
-	@: > src/encoding/der/visitor/$(am__dirstamp)
-src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/encoding/der/visitor/$(DEPDIR)
-	@: > src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/certificate-data-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/no-arguments-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/print-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/public-key-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/simple-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-src/encoding/der/visitor/void-visitor.lo:  \
-	src/encoding/der/visitor/$(am__dirstamp) \
-	src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
 src/security/$(am__dirstamp):
 	@$(MKDIR_P) src/security
 	@: > src/security/$(am__dirstamp)
@@ -1687,8 +1649,6 @@ mostlyclean-compile:
 	-rm -f src/encoding/*.lo
 	-rm -f src/encoding/der/*.$(OBJEXT)
 	-rm -f src/encoding/der/*.lo
-	-rm -f src/encoding/der/visitor/*.$(OBJEXT)
-	-rm -f src/encoding/der/visitor/*.lo
 	-rm -f src/security/*.$(OBJEXT)
 	-rm -f src/security/*.lo
 	-rm -f src/security/certificate/*.$(OBJEXT)
@@ -1770,13 +1730,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/certificate-data-visitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/no-arguments-visitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/print-visitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/public-key-visitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/simple-visitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/visitor/$(DEPDIR)/void-visitor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
@@ -2113,7 +2067,6 @@ clean-libtool:
 	-rm -rf src/c/util/.libs src/c/util/_libs
 	-rm -rf src/encoding/.libs src/encoding/_libs
 	-rm -rf src/encoding/der/.libs src/encoding/der/_libs
-	-rm -rf src/encoding/der/visitor/.libs src/encoding/der/visitor/_libs
 	-rm -rf src/security/.libs src/security/_libs
 	-rm -rf src/security/certificate/.libs src/security/certificate/_libs
 	-rm -rf src/security/identity/.libs src/security/identity/_libs
@@ -2684,8 +2637,6 @@ distclean-generic:
 	-rm -f src/encoding/$(am__dirstamp)
 	-rm -f src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/encoding/der/$(am__dirstamp)
-	-rm -f src/encoding/der/visitor/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/encoding/der/visitor/$(am__dirstamp)
 	-rm -f src/security/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/$(am__dirstamp)
 	-rm -f src/security/certificate/$(DEPDIR)/$(am__dirstamp)
@@ -2717,7 +2668,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -2765,7 +2716,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encoding/der/visitor/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/signature/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

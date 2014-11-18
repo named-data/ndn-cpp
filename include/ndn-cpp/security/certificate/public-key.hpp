@@ -29,7 +29,7 @@
 
 namespace ndn {
 
-  namespace der { class DerNode; }
+class DerNode;
 
 class PublicKey {
 public:
@@ -52,7 +52,7 @@ public:
    * Encode the public key into DER.
    * @return the encoded DER syntax tree.
    */
-  ptr_lib::shared_ptr<der::DerNode>
+  ptr_lib::shared_ptr<DerNode>
   toDer();
 
   /**

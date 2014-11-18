@@ -20,20 +20,21 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../encoding/der/der.hpp"
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/certificate/certificate-subject-description.hpp>
 
 using namespace std;
 
 namespace ndn {
 
-ptr_lib::shared_ptr<der::DerNode>
+ptr_lib::shared_ptr<DerNode>
 CertificateSubjectDescription::toDer() const
 {
-  ptr_lib::shared_ptr<der::DerSequence> root(new der::DerSequence());
+  ptr_lib::shared_ptr<DerNode::DerSequence> root(new DerNode::DerSequence());
 
-  ptr_lib::shared_ptr<der::DerOid> oid(new der::DerOid(oid_));
-  ptr_lib::shared_ptr<der::DerPrintableString> value(new der::DerPrintableString(value_));
+  ptr_lib::shared_ptr<DerNode::DerOid> oid(new DerNode::DerOid(oid_));
+  ptr_lib::shared_ptr<DerNode::DerPrintableString> value
+    (new DerNode::DerPrintableString((const uint8_t*)&value_[0], value_.size()));
 
   root->addChild(oid);
   root->addChild(value);

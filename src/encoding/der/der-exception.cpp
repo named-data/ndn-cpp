@@ -26,9 +26,6 @@ using namespace std;
 
 namespace ndn {
 
-namespace der
-{
-
 DerException::DerException(const string& errorMessage) throw()
   : errorMessage_(errorMessage)
 {
@@ -37,7 +34,5 @@ DerException::DerException(const string& errorMessage) throw()
 DerException::~DerException() throw()
 {
 }
-
-} // der
 
 }
