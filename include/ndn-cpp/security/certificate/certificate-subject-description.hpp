@@ -28,7 +28,7 @@
 
 namespace ndn {
 
-namespace der { class DerNode; }
+class DerNode;
 
 /**
  * A CertificateSubjectDescription represents the SubjectDescription entry in a Certificate.
@@ -59,7 +59,7 @@ public:
    * Encode the object into a DER syntax tree.
    * @return The encoded DER syntax tree.
    */
-  ptr_lib::shared_ptr<der::DerNode>
+  ptr_lib::shared_ptr<DerNode>
   toDer() const;
 
   std::string

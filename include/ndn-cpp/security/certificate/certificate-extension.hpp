@@ -29,7 +29,7 @@
 
 namespace ndn {
 
-namespace der { class DerNode; }
+class DerNode;
 
 /**
  * A CertificateExtension represents the Extension entry in a certificate.
@@ -69,19 +69,19 @@ public:
    * encode the object into DER syntax tree
    * @return the encoded DER syntax tree
    */
-  ptr_lib::shared_ptr<der::DerNode>
+  ptr_lib::shared_ptr<DerNode>
   toDer() const;
 
   Blob
   toDerBlob() const;
 
-  inline const OID&
+  const OID&
   getOid() const { return extensionId_; }
 
-  inline const bool
+  bool
   getIsCritical() const { return isCritical_; }
 
-  inline const Blob&
+  const Blob&
   getValue() const { return extensionValue_; }
 
 protected:

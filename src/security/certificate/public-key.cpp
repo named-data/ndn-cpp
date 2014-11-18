@@ -20,25 +20,20 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-// We can use ndnboost::iostreams because this is internal and will not conflict with the application if it uses boost::iostreams.
-#include <ndnboost/iostreams/stream.hpp>
-#include <ndnboost/iostreams/device/array.hpp>
 #include <openssl/ec.h>
 #include <ndn-cpp/security//security-exception.hpp>
 #include "../../c/util/crypto.h"
-#include "../../encoding/der/der.hpp"
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/certificate/public-key.hpp>
 
 using namespace std;
 
 namespace ndn {
 
-ptr_lib::shared_ptr<der::DerNode>
+ptr_lib::shared_ptr<DerNode>
 PublicKey::toDer()
 {
-  ndnboost::iostreams::stream<ndnboost::iostreams::array_source> is((const char*)keyDer_.buf (), keyDer_.size ());
-
-  return der::DerNode::parse(reinterpret_cast<der::InputIterator&> (is));
+  return DerNode::parse(keyDer_.buf());
 }
 
 static int RSA_OID[] = { 1, 2, 840, 113549, 1, 1, 1 };
