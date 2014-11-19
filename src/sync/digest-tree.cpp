@@ -100,9 +100,9 @@ DigestTree::recomputeRoot()
   SHA256_Init(&sha256);
   for (size_t i = 0; i < digestNode_.size(); ++i)
     SHA256_UpdateHex(&sha256, digestNode_[i]->getDigest());
-  uint8_t digest_root[SHA256_DIGEST_LENGTH];
-  SHA256_Final(&digest_root[0], &sha256);
-  root_ = toHex(digest_root, sizeof(digest_root));
+  uint8_t digestRoot[SHA256_DIGEST_LENGTH];
+  SHA256_Final(&digestRoot[0], &sha256);
+  root_ = toHex(digestRoot, sizeof(digestRoot));
   _LOG_DEBUG("update root to: " + root_);
 }
 
