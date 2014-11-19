@@ -38,14 +38,14 @@ public:
   public:
     /**
      * Create a new DigestTree::Node with the given fields and compute the digest.
-     * @param dataPrefix
-     * @param sequenceNo
-     * @param sessionNo
+     * @param dataPrefix The data prefix.
+     * @param sessionNo The sequence number.
+     * @param sequenceNo The session number.
      */
-    Node
-      (const std::string& dataPrefix, int sequenceNo, int sessionNo)
-    : dataPrefix_(dataPrefix), sequenceNo_(sequenceNo),
-      sessionNo_(sessionNo)
+    Node(const std::string& dataPrefix, int sessionNo, int sequenceNo)
+    : dataPrefix_(dataPrefix),
+      sessionNo_(sessionNo),
+      sequenceNo_(sequenceNo)
     {
       recomputeDigest();
     }
@@ -54,10 +54,10 @@ public:
     getDataPrefix() const { return dataPrefix_; }
 
     int
-    getSequenceNo() const { return sequenceNo_; }
+    getSessionNo() const { return sessionNo_; }
 
     int
-    getSessionNo() const { return sessionNo_; }
+    getSequenceNo() const { return sequenceNo_; }
 
     /**
      * Get the digest.
@@ -106,8 +106,8 @@ public:
     int32ToLittleEndian(uint32_t value, uint8_t* result);
 
     std::string dataPrefix_;
-    int sequenceNo_;
     int sessionNo_;
+    int sequenceNo_;
     std::string digest_;
   };
 

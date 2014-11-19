@@ -79,10 +79,10 @@ DigestTree::update(const std::string& dataPrefix, int sessionNo, int sequenceNo)
       return false;
   }
   else {
-    _LOG_DEBUG("new comer " << dataPrefix << "," << sequenceNo << "," <<
-               sessionNo);
+    _LOG_DEBUG("new comer " << dataPrefix << ", session " << sessionNo <<
+               ", sequence " << sequenceNo);
     // Insert into digestnode_ sorted.
-    ptr_lib::shared_ptr<Node> temp(new Node(dataPrefix, sequenceNo, sessionNo));
+    ptr_lib::shared_ptr<Node> temp(new Node(dataPrefix, sessionNo, sequenceNo));
     digestNode_.insert
       (std::lower_bound(digestNode_.begin(), digestNode_.end(), temp, nodeCompare_),
        temp);
