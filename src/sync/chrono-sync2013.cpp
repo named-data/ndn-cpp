@@ -259,18 +259,18 @@ ChronoSync2013::Impl::processRecoveryInterest
 {
   _LOG_DEBUG("processRecoveryInst");
   if (logFind(syncdigest) != -1) {
-    Sync::SyncStateMsg content_t;
+    Sync::SyncStateMsg tempContent;
     for (size_t i = 0; i < digestTree_->size(); ++i) {
-      Sync::SyncState* content = content_t.add_ss();
+      Sync::SyncState* content = tempContent.add_ss();
       content->set_name(digestTree_->get(i).getDataPrefix());
       content->set_type(Sync::SyncState_ActionType_UPDATE);
       content->mutable_seqno()->set_seq(digestTree_->get(i).getSequenceNo());
       content->mutable_seqno()->set_session(digestTree_->get(i).getSessionNo());
     }
 
-    if (content_t.ss_size() != 0) {
-      ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(content_t.ByteSize()));
-      content_t.SerializeToArray(&array->front(), array->size());
+    if (tempContent.ss_size() != 0) {
+      ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(tempContent.ByteSize()));
+      tempContent.SerializeToArray(&array->front(), array->size());
       Data data(interest.getName());
       data.setContent(Blob(array, false));
       keyChain_.sign(data, certificateName_);
