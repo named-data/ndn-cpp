@@ -115,7 +115,7 @@ public:
   getNowMilliseconds();
 
 private:
-  // Initialization: push the JOIN message in to the msgcache, update roster and start heartbeat.
+  // Initialization: push the JOIN message in to the messageCache_, update roster and start heartbeat.
   void
   initial();
 
@@ -162,10 +162,10 @@ private:
      const string& name, int sessionNo, const string& prefix);
 
   /**
-   * Append a new CachedMessage to msgcache, using given messageType and message,
+   * Append a new CachedMessage to messageCache_, using given messageType and message,
    * the sequence number from sync_->getSequenceNo() and the current time. Also
    * remove elements from the front of the cache as needed to keep
-   * the size to maxmsgcachelength_.
+   * the size to maxMessageCacheLength_.
    */
   void
   messageCacheAppend(int messageType, const string& message);
