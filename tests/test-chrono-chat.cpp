@@ -242,8 +242,8 @@ Chat::initial()
 {
   // Set the heartbeat timeout using the Interest timeout mechanism. The
   // heartbeat() function will call itself again after a timeout.
-  // TODO: Are we sure using a "/timeout" interest is the best future call approach?
-  Interest timeout("/timeout");
+  // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
+  Interest timeout("/local/timeout");
   timeout.setInterestLifetimeMilliseconds(60000);
   face_.expressInterest(timeout, dummyOnData, bind(&Chat::heartbeat, shared_from_this(), _1));
 
