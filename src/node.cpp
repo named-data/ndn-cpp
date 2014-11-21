@@ -36,6 +36,8 @@
 #include "util/logging.hpp"
 #include "node.hpp"
 
+INIT_LOGGER("ndn.Node");
+
 using namespace std;
 
 namespace ndn {
