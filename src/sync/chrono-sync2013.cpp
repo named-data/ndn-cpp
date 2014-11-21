@@ -372,6 +372,10 @@ ChronoSync2013::Impl::judgeRecovery
   (const ptr_lib::shared_ptr<const Interest> &interest,
    const string& syncDigest, Transport* transport)
 {
+  if (!enabled_)
+    // Ignore callbacks after the application calls shutdown().
+    return;
+
   int index2 = logFind(syncDigest);
   if (index2 != -1) {
     if (syncDigest != digestTree_->getRoot())
