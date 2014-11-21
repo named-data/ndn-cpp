@@ -172,7 +172,7 @@ ChronoSync2013::Impl::onInterest
     // Assume this is a recovery interest.
     syncDigest = interest->getName().get
       (applicationBroadcastPrefix_.size() + 1).toEscapedString();
-   _LOG_DEBUG("syncdigest: " + syncDigest);
+   _LOG_DEBUG("syncDigest: " + syncDigest);
   if (interest->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
       syncDigest == "00")
     // Recovery interest or newcomer interest.
@@ -255,10 +255,10 @@ ChronoSync2013::Impl::onData
 
 void
 ChronoSync2013::Impl::processRecoveryInterest
-  (const Interest& interest, const string& syncdigest, Transport& transport)
+  (const Interest& interest, const string& syncDigest, Transport& transport)
 {
   _LOG_DEBUG("processRecoveryInst");
-  if (logFind(syncdigest) != -1) {
+  if (logFind(syncDigest) != -1) {
     Sync::SyncStateMsg tempContent;
     for (size_t i = 0; i < digestTree_->size(); ++i) {
       Sync::SyncState* content = tempContent.add_ss();
