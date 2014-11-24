@@ -92,7 +92,12 @@ public:
    * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void
-  wireDecode(const uint8_t* input, size_t inputLength, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+  wireDecode
+    (const uint8_t* input, size_t inputLength,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(Blob(input, inputLength), wireFormat);
+  }
 
   /**
    * Decode the input using a particular wire format and update this Data. If wireFormat is the default wire format, also
