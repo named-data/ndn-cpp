@@ -27,13 +27,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <ndn-cpp/security/policy/certificate-cache.hpp>
 #include "policy-manager.hpp"
 
 class TestVerificationRulesFriend;
 
 namespace ndn {
 
-class IdentityStorage;
 class BoostInfoTree;
 class BoostInfoParser;
 class IdentityCertificate;
@@ -44,7 +44,7 @@ class IdentityCertificate;
  * (http://redmine.named-data.net/projects/ndn-cxx/wiki/CommandValidatorConf)
  *
  * Once a rule is matched, the ConfigPolicyManager looks in the
- * IdentityStorage for the IdentityCertificate matching the name in the KeyLocator
+ * CertificateCache for the IdentityCertificate matching the name in the KeyLocator
  * and uses its public key to verify the data packet or signed interest. If the
  * certificate can't be found, it is downloaded, verified and installed. A chain
  * of certificates will be followed to a maximum depth.
@@ -58,20 +58,27 @@ public:
   /**
    * Create a new ConfigPolicyManager which acts on the rules specified in the
    * configuration file and downloads unknown certificates when necessary.
-   * @param identityStorage The IdentityStorage for looking up the public key.
-   * This object must remain valid during the life of this ConfigPolicyManager.
    * @param configFileName The path to the configuration file containing
    * verification rules.
+   * @param certificateCache (optional) A CertificateCache to hold known
+   * certificates. If this is null or omitted, then create an internal
+   * CertificateCache.
    * @param searchDepth (optional) The maximum number of links to follow when
    * verifying a certificate chain.
-   * @param graceInterval
-   * @param keyTimestampTtl
-   * @param maxTrackedKeys
+   * @param graceInterval (optional) The window of time difference (in seconds)
+   * allowed between the timestamp of the first interest signed with a new
+   * public key and the validation time.
+   * @param keyTimestampTtl (optional) How long a public key's last-used
+   * timestamp is kept in the store.
+   * @param maxTrackedKeys The maximum number of public key use timestamps to
+   * track.
    */
   ConfigPolicyManager
-    (IdentityStorage* identityStorage, const std::string& configFileName,
-     int searchDepth = 5, Milliseconds graceInterval = 3000,
-     Milliseconds keyTimestampTtl = 3600000, int maxTrackedKeys = 1000);
+    (const std::string& configFileName,
+     const ptr_lib::shared_ptr<CertificateCache>& certificateCache =
+     ptr_lib::shared_ptr<CertificateCache>(), int searchDepth = 5,
+     Milliseconds graceInterval = 3000, Milliseconds keyTimestampTtl = 3600000,
+     int maxTrackedKeys = 1000);
 
   /**
    * The virtual destructor.
@@ -187,13 +194,19 @@ private:
    */
   class TrustAnchorRefreshManager {
   public:
-    TrustAnchorRefreshManager(IdentityStorage* identityStorage)
-    : identityStorage_(identityStorage)
+    TrustAnchorRefreshManager()
     {
     }
 
     ptr_lib::shared_ptr<IdentityCertificate>
     loadIdentityCertificateFromFile(const std::string& filename);
+
+    ptr_lib::shared_ptr<IdentityCertificate>
+    getCertificate(Name certificateName) const
+    {
+      // Assume the timestamp is already removed.
+      return certificateCache_.getCertificate(certificateName);
+    }
 
     void
     addDirectory(const std::string& directoryName, Milliseconds refreshPeriod);
@@ -209,7 +222,7 @@ private:
       Milliseconds refreshPeriod_;
     };
     
-    IdentityStorage* identityStorage_;
+    CertificateCache certificateCache_;
     // refreshDirectories_ maps the directory name to certificate names so they
     //   can be deleted when necessary, and the next refresh time.
     std::map<std::string, ptr_lib::shared_ptr<DirectoryInfo> > refreshDirectories_;
@@ -341,14 +354,14 @@ private:
      const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
      const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
 
-  IdentityStorage* identityStorage_;
+  ptr_lib::shared_ptr<CertificateCache> certificateCache_;
   int maxDepth_;
   Milliseconds keyGraceInterval_;
   Milliseconds keyTimestampTtl_;
   int maxTrackedKeys_;
-  // certificateCache_ stores the fixed-signer certificate name associated with
+  // fixedCertificateCache_ stores the fixed-signer certificate name associated with
   //    validation rules so we don't keep loading from files.
-  std::map<std::string, std::string> certificateCache_;
+  std::map<std::string, std::string> fixedCertificateCache_;
   // keyTimestamps_ stores the timestamps for each public key used in command
   //   interests to avoid replay attacks.
   // key is the public key name, value is the last timestamp.

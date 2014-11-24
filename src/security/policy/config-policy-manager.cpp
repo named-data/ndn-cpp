@@ -43,18 +43,22 @@ namespace ndn {
 using namespace regex_lib;
 
 ConfigPolicyManager::ConfigPolicyManager
-  (IdentityStorage* identityStorage, const string& configFileName,
+  (const string& configFileName,
+   const ptr_lib::shared_ptr<CertificateCache>& certificateCache,
    int searchDepth, Milliseconds graceInterval, Milliseconds keyTimestampTtl,
    int maxTrackedKeys)
-  : identityStorage_(identityStorage),
-    maxDepth_(searchDepth),
+  : maxDepth_(searchDepth),
     keyGraceInterval_(graceInterval),
     keyTimestampTtl_(keyTimestampTtl),
     maxTrackedKeys_(1000),
     config_(new BoostInfoParser()),
-    requiresVerification_(true),
-    refreshManager_(identityStorage)
+    requiresVerification_(true)
 {
+  if (!certificateCache)
+    certificateCache_.reset(new CertificateCache());
+  else
+    certificateCache_ = certificateCache;
+
   config_->read(configFileName);
   loadTrustAnchorCertificates();
 }
@@ -144,7 +148,11 @@ ConfigPolicyManager::checkVerificationPolicy
   // Now finally check that the object was signed correctly.
   // If we don't actually have the certificate yet, create a
   //   ValidationRequest for it.
-  if (!identityStorage_->doesCertificateExist(signatureName)) {
+  ptr_lib::shared_ptr<IdentityCertificate> foundCert =
+    refreshManager_.getCertificate(signatureName);
+  if (!foundCert)
+    foundCert = certificateCache_->getCertificate(signatureName);
+  if (!foundCert) {
     ptr_lib::shared_ptr<Interest> certificateInterest(new Interest(signatureName));
     return ptr_lib::make_shared<ValidationRequest>
       (certificateInterest, 
@@ -188,7 +196,8 @@ ConfigPolicyManager::onCertificateDownloadComplete
    const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
   IdentityCertificate certificate(*data);
-  identityStorage_->addCertificate(certificate);
+  certificateCache_->insertCertificate(certificate);
+
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
   checkVerificationPolicy(originalData, stepCount + 1, onVerified, onVerifyFailed);
@@ -361,8 +370,8 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
 {
   ptr_lib::shared_ptr<IdentityCertificate> cert;
 
-  map<string, string>::iterator certUri = certificateCache_.find(certID);
-  if (certUri == certificateCache_.end()) {
+  map<string, string>::iterator certUri = fixedCertificateCache_.find(certID);
+  if (certUri == fixedCertificateCache_.end()) {
     if (isPath)
       // Load the certificate data (base64 encoded IdentityCertificate)
       cert = refreshManager_.loadIdentityCertificateFromFile(certID);
@@ -372,17 +381,13 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
       cert.reset(new IdentityCertificate());
       cert->wireDecode(certData);
     }
-    
-    certificateCache_[certID] = cert->getName().toUri();
-    try {
-      identityStorage_->addCertificate(*cert);
-    }
-    catch (const SecurityException& ex) {
-      // Already exists? It's okay.
-    }
+
+    string certUri = cert->getName().getPrefix(-1).toUri();
+    fixedCertificateCache_[certID] = certUri;
+    certificateCache_->insertCertificate(*cert);
   }
   else
-    cert = identityStorage_->getCertificate(Name(certUri->second));
+    cert = certificateCache_->getCertificate(Name(certUri->second));
 
   return cert;
 }
@@ -534,13 +539,18 @@ ConfigPolicyManager::verify
     throw SecurityException
       ("ConfigPolicyManager: Signature is not Sha256WithRsaSignature.");
 
-  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME &&
-      identityStorage_) {
+  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME) {
     // Assume the key name is a certificate name.
-    Blob publicKeyDer = identityStorage_->getKey
-      (IdentityCertificate::certificateNameToPublicKeyName
-       (signature->getKeyLocator().getKeyName()));
-    if (!publicKeyDer)
+    Name signatureName = signature->getKeyLocator().getKeyName();
+    ptr_lib::shared_ptr<IdentityCertificate> certificate =
+      refreshManager_.getCertificate(signatureName);
+    if (!certificate)
+      certificate = certificateCache_->getCertificate(signatureName);
+    if (!certificate)
+        return false;
+
+    Blob publicKeyDer = certificate->getPublicKeyInfo().getKeyDer();
+    if (publicKeyDer.isNull())
       // Can't find the public key with the name.
       return false;
 
@@ -598,18 +608,8 @@ ConfigPolicyManager::TrustAnchorRefreshManager::refreshAnchors()
       // Delete the certificates associated with this directory if possible
       //   then re-import.
       // IdentityStorage subclasses may not support deletion.
-      for (size_t i = 0; i < certificateList.size(); ++i) {
-        try {
-          identityStorage_->deleteCertificateInfo(Name(certificateList[i]));
-        }
-        catch (const SecurityException& ex) {
-          // Was already removed? Not supported?
-        }
-        catch (const std::exception& ex) {
-          // Not implemented.
-          break;
-        }
-      }
+      for (size_t i = 0; i < certificateList.size(); ++i)
+        certificateCache_.deleteCertificate(Name(certificateList[i]));
 
       directoriesToAdd.push_back(directory);
       refreshPeriodsToAdd.push_back(info.refreshPeriod_);

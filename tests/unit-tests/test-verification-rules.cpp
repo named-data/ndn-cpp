@@ -231,12 +231,12 @@ public:
 
 TEST_F(TestVerificationRules, NameRelation)
 {  
-  ConfigPolicyManager policyManagerPrefix(identityStorage.get(),
-    policyConfigDirectory + "/relation_ruleset_prefix.conf");
-  ConfigPolicyManager policyManagerStrict(identityStorage.get(),
-    policyConfigDirectory + "/relation_ruleset_strict.conf");
-  ConfigPolicyManager policyManagerEqual(identityStorage.get(),
-    policyConfigDirectory + "/relation_ruleset_equal.conf");
+  ConfigPolicyManager policyManagerPrefix
+    (policyConfigDirectory + "/relation_ruleset_prefix.conf");
+  ConfigPolicyManager policyManagerStrict
+    (policyConfigDirectory + "/relation_ruleset_strict.conf");
+  ConfigPolicyManager policyManagerEqual
+    (policyConfigDirectory + "/relation_ruleset_equal.conf");
 
   Name dataName("/TestRule1");
   ASSERT_TRUE
@@ -274,8 +274,8 @@ TEST_F(TestVerificationRules, NameRelation)
 
 TEST_F(TestVerificationRules, SimpleRegex)
 {
-  ConfigPolicyManager policyManager(identityStorage.get(),
-    policyConfigDirectory + "/regex_ruleset.conf");
+  ConfigPolicyManager policyManager
+    (policyConfigDirectory + "/regex_ruleset.conf");
   Name dataName1("/SecurityTestSecRule/Basic");
   Name dataName2("/SecurityTestSecRule/Basic/More");
   Name dataName3("/SecurityTestSecRule/");
@@ -307,8 +307,8 @@ TEST_F(TestVerificationRules, SimpleRegex)
 
 TEST_F(TestVerificationRules, CheckerHierarchical)
 {
-  ConfigPolicyManager policyManager(identityStorage.get(),
-    policyConfigDirectory + "/hierarchical_ruleset.conf");
+  ConfigPolicyManager policyManager
+    (policyConfigDirectory + "/hierarchical_ruleset.conf");
 
   Name dataName1("/SecurityTestSecRule/Basic/Data1");
   Name dataName2("/SecurityTestSecRule/Basic/Longer/Data2");
@@ -352,8 +352,8 @@ TEST_F(TestVerificationRules, CheckerHierarchical)
 
 TEST_F(TestVerificationRules, HyperRelation)
 {
-  ConfigPolicyManager policyManager(identityStorage.get(),
-    policyConfigDirectory + "/hyperrelation_ruleset.conf");
+  ConfigPolicyManager policyManager
+    (policyConfigDirectory + "/hyperrelation_ruleset.conf");
 
   Name dataName("/SecurityTestSecRule/Basic/Longer/Data2");
   Data data1(dataName);
