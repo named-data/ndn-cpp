@@ -62,6 +62,18 @@ public:
   encode();
 
   /**
+   * Override to call the base class wireDecode then populate the certificate
+   * fields.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat A WireFormat object used to decode the input. If omitted,
+   * use WireFormat getDefaultWireFormat().
+   */
+  virtual void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Add a subject description.
    * @param description The description to be added.
    */

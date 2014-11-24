@@ -80,6 +80,13 @@ Certificate::encode()
   getMetaInfo().setType(ndn_ContentType_KEY);
 }
 
+void
+Certificate::wireDecode(const Blob& input, WireFormat& wireFormat)
+{
+  Data::wireDecode(input, wireFormat);
+  decode();
+}
+
 ptr_lib::shared_ptr<DerNode>
 Certificate::toDer()
 {

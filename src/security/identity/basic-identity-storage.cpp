@@ -504,7 +504,9 @@ BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
     ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
 
     if (res == SQLITE_ROW)
-      data->wireDecode((const uint8_t*)sqlite3_column_blob(statement, 0), sqlite3_column_bytes(statement, 0));
+      data->wireDecode
+        (Blob((const uint8_t*)sqlite3_column_blob(statement, 0),
+              sqlite3_column_bytes(statement, 0)));
     sqlite3_finalize(statement);
 
     return data;
