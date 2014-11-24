@@ -81,7 +81,7 @@ public:
    * @param input The input byte array to be decoded as an immutable Blob.
    * @param wireFormat A WireFormat object used to decode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
-  void
+  virtual void
   wireDecode(const Blob& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
