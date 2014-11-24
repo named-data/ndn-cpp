@@ -64,6 +64,17 @@ public:
   virtual Data &
   setName(const Name& name);
 
+  /**
+   * Override to call the base class wireDecode then update the public key name.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat A WireFormat object used to decode the input. If omitted,
+   * use WireFormat getDefaultWireFormat().
+   */
+  virtual void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
   Name
   getPublicKeyName () const { return publicKeyName_; }
 

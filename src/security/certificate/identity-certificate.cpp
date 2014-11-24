@@ -116,4 +116,11 @@ IdentityCertificate::certificateNameToPublicKeyName(const Name& certificateName)
   return tmpName.getSubName(0, i).append(tmpName.getSubName(i + 1, tmpName.size() - i - 1));
 }
 
+void
+IdentityCertificate::wireDecode(const Blob& input, WireFormat& wireFormat)
+{
+  Certificate::wireDecode(input, wireFormat);
+  setPublicKeyName();
+}
+
 }
