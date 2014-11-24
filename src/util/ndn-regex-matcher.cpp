@@ -90,31 +90,6 @@ NdnRegexMatcher::sanitizeSets(const string& pattern)
   return newPattern;
 }
 
-string
-NdnRegexMatcher::escapeComponents(const string& pattern)
-{
-  // Escape all the components in the pattern to match the toUri format.
-  string componentPattern = "<(.*?)>(.*?)(?=<|$)";
-
-  string modifiedStr = pattern;
-
-  regex regex1(componentPattern);
-  const sregex_iterator iEnd;
-  for (sregex_iterator i(pattern.begin(), pattern.end(), regex1); i != iEnd; ++i) {
-    smatch match = *i;
-
-    int start = match.position(1);
-    int end = start + match.length(1);
-    if (end - start == 0)
-        continue;
-    string oldStr = match.str(2);
-    string newStr = Name::Component(oldStr).toEscapedString();
-    modifiedStr = modifiedStr.substr(0, start) + newStr + modifiedStr.substr(end);
-  }
-  
-  return modifiedStr;
-}
-
 }
 
 #endif // NDN_CPP_HAVE_REGEX_LIB

@@ -73,9 +73,6 @@ public:
 private:
   static std::string
   sanitizeSets(const std::string& pattern);
-  
-  static std::string
-  escapeComponents(const std::string& pattern);
 
   // This keeps the source string that for the pointers in iterator.
   ptr_lib::shared_ptr<std::string> source_;
