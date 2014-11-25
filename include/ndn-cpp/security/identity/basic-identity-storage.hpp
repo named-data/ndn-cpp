@@ -57,7 +57,7 @@ public:
   doesIdentityExist(const Name& identityName);
 
   /**
-   * Add a new identity. An exception will be thrown if the identity already exists.
+   * Add a new identity. Do nothing if the identity already exists.
    * @param identityName The identity name to be added.
    */
   virtual void

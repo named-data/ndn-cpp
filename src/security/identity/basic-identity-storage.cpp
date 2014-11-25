@@ -214,7 +214,7 @@ void
 BasicIdentityStorage::addIdentity(const Name& identityName)
 {
   if (doesIdentityExist(identityName))
-    throw SecurityException("Identity already exists");
+    return;
 
   sqlite3_stmt *statement;
 

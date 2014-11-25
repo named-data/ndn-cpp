@@ -47,7 +47,7 @@ MemoryIdentityStorage::addIdentity(const Name& identityName)
 {
   string identityUri = identityName.toUri();
   if (find(identityStore_.begin(), identityStore_.end(), identityUri) != identityStore_.end())
-    throw SecurityException("Identity already exists: " + identityUri);
+    return;
 
   identityStore_.push_back(identityUri);
 }
