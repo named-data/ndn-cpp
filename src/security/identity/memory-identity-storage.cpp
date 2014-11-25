@@ -71,8 +71,7 @@ MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& 
 {
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
 
-  if (!doesIdentityExist(identityName))
-    addIdentity(identityName);
+  addIdentity(identityName);
 
   if (doesKeyExist(keyName))
     throw SecurityException("a key with the same name already exists!");

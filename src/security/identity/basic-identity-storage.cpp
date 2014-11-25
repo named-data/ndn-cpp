@@ -272,6 +272,8 @@ BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& p
   string keyId = keyName.get(-1).toEscapedString();
   Name identityName = keyName.getPrefix(-1);
 
+  addIdentity(identityName);
+
   sqlite3_stmt *statement;
   sqlite3_prepare_v2(database_, "INSERT INTO Key (identity_name, key_identifier, key_type, public_key) values (?, ?, ?, ?)", -1, &statement, 0);
 
