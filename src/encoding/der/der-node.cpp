@@ -243,11 +243,15 @@ DerNode::DerInteger::DerInteger(int integer)
   DynamicUInt8Vector temp(10);
   // We encode backwards from the back.
   size_t length = 0;
-  while (integer > 0) {
+  while (true) {
     ++length;
     temp.ensureLengthFromBack(length);
     temp[temp.get()->size() - length] = integer & 0xff;
     integer >>= 8;
+
+    if (integer <= 0)
+      // We check for 0 at the end so we encode one byte if it is 0.
+      break;
   }
 
   payloadAppend(&temp[temp.get()->size() - length], length);
