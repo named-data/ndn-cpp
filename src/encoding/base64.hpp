@@ -46,7 +46,7 @@ toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines = false);
  * writing to a file).  If omitted, do not add newlines.
  * @return The base64 string.
  */
-static inline std::string
+static std::string
 toBase64(const std::vector<uint8_t>& array, bool addNewlines = false)
 {
   return toBase64(&array[0], array.size(), addNewlines);
