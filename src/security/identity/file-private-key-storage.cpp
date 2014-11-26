@@ -25,10 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <algorithm>
 #include <fstream>
 #include "../../c/util/crypto.h"
 #include "../../encoding/base64.hpp"
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
@@ -36,7 +38,10 @@ using namespace std;
 
 namespace ndn {
 
+typedef DerNode::DerSequence DerSequence;
+
 static const char *WHITESPACE_CHARS = " \n\r\t";
+static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 
 /**
  * Modify str in place to erase whitespace on the left.
@@ -110,9 +115,55 @@ void
 FilePrivateKeyStorage::generateKeyPair
   (const Name& keyName, KeyType keyType, int keySize)
 {
-#if 1
-  throw runtime_error("FilePrivateKeyStorage::generateKeyPair not implemented");
-#endif
+  if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
+    throw SecurityException("Public Key does already exists");
+  if (doesKeyExist(keyName, KEY_CLASS_PRIVATE))
+    throw SecurityException("Private Key does already exists");
+
+  Blob publicKeyDer;
+  Blob privateKeyDer;
+
+  if (keyType == KEY_TYPE_RSA) {
+    BIGNUM* exponent = 0;
+    RSA* rsa = 0;
+
+    exponent = BN_new();
+    if (BN_set_word(exponent, RSA_F4) == 1) {
+      rsa = RSA_new();
+      if (RSA_generate_key_ex(rsa, keySize, exponent, NULL) == 1) {
+        // Encode the public key.
+        int length = i2d_RSA_PUBKEY(rsa, NULL);
+        publicKeyDer = Blob(make_shared<vector<uint8_t> >(length), false);
+        uint8_t* derPointer = const_cast<uint8_t*>(publicKeyDer.buf());
+        i2d_RSA_PUBKEY(rsa, &derPointer);
+
+        // Encode the private key.
+        length = i2d_RSAPrivateKey(rsa, NULL);
+        vector<uint8_t> pkcs1PrivateKeyDer(length);
+        derPointer = &pkcs1PrivateKeyDer[0];
+        i2d_RSAPrivateKey(rsa, &derPointer);
+        privateKeyDer = encodePkcs8PrivateKey
+          (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID));
+      }
+    }
+
+    BN_free(exponent);
+    RSA_free(rsa);
+  }
+  else
+    throw SecurityException("Unsupported key type");
+
+  string keyUri = keyName.toUri();
+  string publicKeyFilePath = nameTransform(keyUri, ".pub");
+  string privateKeyFilePath = nameTransform(keyUri, ".pri");
+
+  ofstream publicKeyFile(publicKeyFilePath);
+  publicKeyFile << toBase64(publicKeyDer.buf(), publicKeyDer.size(), true);
+  ofstream privateKeyFile(privateKeyFilePath);
+  privateKeyFile << toBase64(privateKeyDer.buf(), privateKeyDer.size(), true);
+
+  ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
+  ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
 }
 
 ptr_lib::shared_ptr<PublicKey>
@@ -241,6 +292,23 @@ FilePrivateKeyStorage::nameTransform
   std::replace(digest.begin(), digest.end(), '/', '%');
 
   return keyStorePath_ + "/" + digest + extension;
+}
+
+Blob
+FilePrivateKeyStorage::encodePkcs8PrivateKey
+  (const std::vector<uint8_t>& privateKeyDer, const OID& oid)
+{
+  ptr_lib::shared_ptr<DerSequence> algorithmIdentifier(new DerSequence());
+  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerOid>(oid));
+  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerNull>());
+
+  DerSequence result;
+  result.addChild(ptr_lib::make_shared<DerNode::DerInteger>(0));
+  result.addChild(algorithmIdentifier);
+  result.addChild(ptr_lib::make_shared<DerNode::DerOctetString>
+    (&privateKeyDer[0], privateKeyDer.size()));
+
+  return result.encode();
 }
 
 }

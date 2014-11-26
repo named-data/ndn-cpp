@@ -24,6 +24,7 @@
 #define NDN_FILE_PRIVATE_KEY_STORAGE_HPP
 
 #include <string>
+#include <ndn-cpp/encoding/oid.hpp>
 #include "private-key-storage.hpp"
 
 namespace ndn {
@@ -116,6 +117,16 @@ public:
 private:
   std::string
   nameTransform(const std::string& keyName, const std::string& extension);
+
+  /**
+   * Encode the private key to a PKCS #8 private key.
+   * @param privateKeyDer The input private key DER.
+   * @param oid The OID of the privateKey.
+   * @return The PKCS #8 private key DER.
+   */
+  Blob
+  encodePkcs8PrivateKey
+    (const std::vector<uint8_t>& privateKeyDer, const OID& oid);
 
   std::string keyStorePath_;
 };
