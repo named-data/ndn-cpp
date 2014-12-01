@@ -83,13 +83,13 @@ void
 BoostInfoTree::addSubtree
   (const string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree)
 {
-  vector<ptr_lib::shared_ptr<BoostInfoTree> >* subTreeList = find(treeName);
-  if (subTreeList)
-    subTreeList->push_back(newTree);
+  vector<ptr_lib::shared_ptr<BoostInfoTree> >* subtreeList = find(treeName);
+  if (subtreeList)
+    subtreeList->push_back(newTree);
   else {
-    subTrees_.push_back(make_pair
+    subtrees_.push_back(make_pair
       (treeName, vector<ptr_lib::shared_ptr<BoostInfoTree> >()));
-    subTrees_.back().second.push_back(newTree);
+    subtrees_.back().second.push_back(newTree);
   }
 
   newTree->parent_ = this;
@@ -119,15 +119,15 @@ BoostInfoTree::operator [] (const string& keyIn) const
   }
   vector<string> path = split(key, '/');
 
-  const vector<ptr_lib::shared_ptr<BoostInfoTree> >* subTrees =
+  const vector<ptr_lib::shared_ptr<BoostInfoTree> >* subtrees =
     const_cast<BoostInfoTree*>(this)->find(path[0]);
-  if (!subTrees)
+  if (!subtrees)
     return foundVals;
 
   if (path.size() == 1) {
     // Copy the pointers.
-    for (int i = 0; i < (*subTrees).size(); ++i)
-      foundVals.push_back((*subTrees)[i].get());
+    for (int i = 0; i < (*subtrees).size(); ++i)
+      foundVals.push_back((*subtrees)[i].get());
     return foundVals;
   }
 
@@ -139,8 +139,8 @@ BoostInfoTree::operator [] (const string& keyIn) const
     newPath += path[i];
   }
 
-  for (int i = 0; i < (*subTrees).size(); ++i) {
-    const BoostInfoTree& t = *(*subTrees)[i];
+  for (int i = 0; i < (*subtrees).size(); ++i) {
+    const BoostInfoTree& t = *(*subtrees)[i];
     vector<const BoostInfoTree*> partial = t[newPath];
     foundVals.insert(foundVals.end(), partial.begin(), partial.end());
   }
@@ -151,9 +151,9 @@ BoostInfoTree::operator [] (const string& keyIn) const
 vector<ptr_lib::shared_ptr<BoostInfoTree> >*
 BoostInfoTree::find(const string& treeName)
 {
-  for (size_t i = 0; i < subTrees_.size(); ++i) {
-    if (subTrees_[i].first == treeName)
-      return &subTrees_[i].second;
+  for (size_t i = 0; i < subtrees_.size(); ++i) {
+    if (subtrees_[i].first == treeName)
+      return &subtrees_[i].second;
   }
 
   return 0;
@@ -171,14 +171,14 @@ BoostInfoTree::prettyPrint(int indentLevel) const
     s += "\n";
   }
 
-  if (subTrees_.size() > 0) {
+  if (subtrees_.size() > 0) {
     if (parent_)
       s += prefix+ "{\n";
     string nextLevel(indentLevel + 2, ' ');
-    for (size_t i = 0; i < subTrees_.size(); ++i) {
-      for (size_t iSubTree = 0; iSubTree < subTrees_[i].second.size(); ++iSubTree)
-        s += nextLevel + subTrees_[i].first + " " + 
-             subTrees_[i].second[iSubTree]->prettyPrint(indentLevel + 2);
+    for (size_t i = 0; i < subtrees_.size(); ++i) {
+      for (size_t iSubTree = 0; iSubTree < subtrees_[i].second.size(); ++iSubTree)
+        s += nextLevel + subtrees_[i].first + " " +
+             subtrees_[i].second[iSubTree]->prettyPrint(indentLevel + 2);
     }
     
     if (parent_)
