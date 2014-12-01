@@ -50,7 +50,7 @@ ConfigPolicyManager::ConfigPolicyManager
   : maxDepth_(searchDepth),
     keyGraceInterval_(graceInterval),
     keyTimestampTtl_(keyTimestampTtl),
-    maxTrackedKeys_(1000),
+    maxTrackedKeys_(maxTrackedKeys),
     config_(new BoostInfoParser()),
     requiresVerification_(true)
 {
