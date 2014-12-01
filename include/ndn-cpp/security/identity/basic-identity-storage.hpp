@@ -40,7 +40,12 @@ namespace ndn
  */
 class BasicIdentityStorage : public IdentityStorage {
 public:
-  BasicIdentityStorage();
+  /**
+   * Create a new BasicIdentityStorage to work with an SQLite file.
+   * @param databaseFilePath (optional) The path of the SQLite file. If empty or
+      omitted, use the default location.
+   */
+  BasicIdentityStorage(const std::string& databaseFilePath = "");
 
   /**
    * The virtual Destructor.

@@ -100,24 +100,30 @@ static int sqlite3_bind_text(sqlite3_stmt* statement, int index, const string& v
   return sqlite3_bind_text(statement, index, value.c_str(), value.size(), destructor);
 }
 
-BasicIdentityStorage::BasicIdentityStorage()
+BasicIdentityStorage::BasicIdentityStorage(const std::string& databaseFilePath)
 {
-  // Note: We don't use <filesystem> support because it is not "header-only" and require linking to libraries.
-  // TODO: Handle non-unix file system paths which don't use '/'.
-  const char* home = getenv("HOME");
-  if (!home || *home == '\0')
-    // Don't expect this to happen;
-    home = ".";
-  string homeDir(home);
-  if (homeDir[homeDir.size() - 1] == '/')
-    // Strip the ending '/'.
-    homeDir.erase(homeDir.size() - 1);
+  int res;
+  if (databaseFilePath == "") {
+    // Note: We don't use <filesystem> support because it is not "header-only" and require linking to libraries.
+    // TODO: Handle non-unix file system paths which don't use '/'.
+    const char* home = getenv("HOME");
+    if (!home || *home == '\0')
+      // Don't expect this to happen;
+      home = ".";
+    string homeDir(home);
+    if (homeDir[homeDir.size() - 1] == '/')
+      // Strip the ending '/'.
+      homeDir.erase(homeDir.size() - 1);
 
-  string identityDir = homeDir + '/' + ".ndn";
-  // TODO: Handle non-unix file systems which don't have "mkdir -p".
-  ::system(("mkdir -p " + identityDir).c_str());
+    string identityDir = homeDir + '/' + ".ndn";
+    // TODO: Handle non-unix file systems which don't have "mkdir -p".
+    ::system(("mkdir -p " + identityDir).c_str());
 
-  int res = sqlite3_open((identityDir + '/' + "ndnsec-public-info.db").c_str(), &database_);
+    res = sqlite3_open
+      ((identityDir + '/' + "ndnsec-public-info.db").c_str(), &database_);
+  }
+  else
+    res = sqlite3_open(databaseFilePath.c_str(), &database_);
 
   if (res != SQLITE_OK)
     throw SecurityException("identity DB cannot be opened/created");
