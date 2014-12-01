@@ -374,7 +374,7 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
   if (certUri == fixedCertificateCache_.end()) {
     if (isPath)
       // Load the certificate data (base64 encoded IdentityCertificate)
-      cert = refreshManager_.loadIdentityCertificateFromFile(certID);
+      cert = TrustAnchorRefreshManager::loadIdentityCertificateFromFile(certID);
     else {
       vector<uint8_t> certData;
       fromBase64(certID.c_str(), certData);

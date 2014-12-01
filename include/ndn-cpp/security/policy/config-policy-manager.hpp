@@ -198,7 +198,7 @@ private:
     {
     }
 
-    ptr_lib::shared_ptr<IdentityCertificate>
+    static ptr_lib::shared_ptr<IdentityCertificate>
     loadIdentityCertificateFromFile(const std::string& filename);
 
     ptr_lib::shared_ptr<IdentityCertificate>
