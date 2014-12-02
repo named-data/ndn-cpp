@@ -162,7 +162,7 @@ public:
   TestVerificationRules()
   : identityStorage(new MemoryIdentityStorage()),
     privateKeyStorage(new MemoryPrivateKeyStorage()),
-    // Not using keychain for verification so we don't neet to set the
+    // Not using keychain for verification so we don't need to set the
     //   policy manager.
     keyChain
       (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage)),
@@ -305,7 +305,7 @@ TEST_F(TestVerificationRules, SimpleRegex)
   ASSERT_FALSE(matchedRule5);
 }
 
-TEST_F(TestVerificationRules, CheckerHierarchical)
+TEST_F(TestVerificationRules, Hierarchical)
 {
   ConfigPolicyManager policyManager
     (policyConfigDirectory + "/hierarchical_ruleset.conf");
