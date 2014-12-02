@@ -255,7 +255,7 @@ ConfigPolicyManager::loadTrustAnchorCertificates()
 
         regex regex1("(\\d+)([hms])");
         smatch refreshMatch;
-        if (regex_match(refreshPeriodStr, refreshMatch, regex1))
+        if (!regex_match(refreshPeriodStr, refreshMatch, regex1))
           refreshPeriod = 0;
         else {
           refreshPeriod = ::atoi(refreshMatch[1].str().c_str());
