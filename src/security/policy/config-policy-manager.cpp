@@ -370,8 +370,8 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
 {
   ptr_lib::shared_ptr<IdentityCertificate> cert;
 
-  map<string, string>::iterator certUri = fixedCertificateCache_.find(certID);
-  if (certUri == fixedCertificateCache_.end()) {
+  map<string, string>::iterator iCertUri = fixedCertificateCache_.find(certID);
+  if (iCertUri == fixedCertificateCache_.end()) {
     if (isPath)
       // Load the certificate data (base64 encoded IdentityCertificate)
       cert = TrustAnchorRefreshManager::loadIdentityCertificateFromFile(certID);
@@ -387,7 +387,7 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
     certificateCache_->insertCertificate(*cert);
   }
   else
-    cert = certificateCache_->getCertificate(Name(certUri->second));
+    cert = certificateCache_->getCertificate(Name(iCertUri->second));
 
   return cert;
 }
