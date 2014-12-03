@@ -315,7 +315,9 @@ private:
 
   /**
    * Trim the table size down if necessary, and insert/update the latest 
-   * interest signing timestamp for the key. 
+   * interest signing timestamp for the key. Any key which has not been used
+   * within the TTL period is purged. If the table is still too large, the
+   * oldest key is purged.
    * @param keyName The name of the public key used to sign the interest.
    * @param timestamp The timestamp extracted from the interest name.
    */
