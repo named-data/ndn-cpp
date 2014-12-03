@@ -89,10 +89,7 @@ namespace ndn
     CFDictionaryAddValue(searchDict.get(), kSecClass, kSecClassKey);
     CFDictionaryAddValue(searchDict.get(), kSecAttrLabel, keyLabel.get());
     CFDictionaryAddValue(searchDict.get(), kSecMatchLimit, kSecMatchLimitAll);
-    OSStatus res = SecItemDelete(searchDict.get());
-
-    if (res != errSecSuccess)
-      throw SecurityException("Fail to create a key pair");
+    SecItemDelete(searchDict.get());
   }
 
   void
