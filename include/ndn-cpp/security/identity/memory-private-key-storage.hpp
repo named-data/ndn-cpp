@@ -131,6 +131,13 @@ public:
   generateKeyPair(const Name& keyName, KeyType keyType, int keySize);
 
   /**
+   * Delete a pair of asymmetric keys. If the key doesn't exist, do nothing.
+   * @param keyName The name of the key pair.
+   */
+  virtual void
+  deleteKeyPair(const Name& keyName);
+
+  /**
    * Get the public key
    * @param keyName The name of public key.
    * @return The public key.
@@ -211,7 +218,7 @@ private:
     struct ec_key_st* ecPrivateKey_;
   };
 
-  std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;      /**< The map key is the keyName.toUri() */
+  std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;   /**< The map key is the keyName.toUri() */
   std::map<std::string, ptr_lib::shared_ptr<PrivateKey> > privateKeyStore_; /**< The map key is the keyName.toUri() */
 };
 

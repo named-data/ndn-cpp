@@ -164,6 +164,13 @@ public:
   generateKeyPair(const Name& keyName, KeyType keyType = KEY_TYPE_RSA, int keySize = 2048);
 
   /**
+   * Delete a pair of asymmetric keys. If the key doesn't exist, do nothing.
+   * @param keyName The name of the key pair.
+   */
+  virtual void
+  deleteKeyPair(const Name& keyName);
+
+  /**
    * Get the public key
    * @param keyName The name of public key.
    * @return The public key.

@@ -166,6 +166,15 @@ FilePrivateKeyStorage::generateKeyPair
   ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
 }
 
+void
+FilePrivateKeyStorage::deleteKeyPair(const Name& keyName)
+{
+  string keyUri = keyName.toUri();
+
+  remove(nameTransform(keyUri, ".pub").c_str());
+  remove(nameTransform(keyUri, ".pri").c_str());
+}
+
 ptr_lib::shared_ptr<PublicKey>
 FilePrivateKeyStorage::getPublicKey(const Name& keyName)
 {

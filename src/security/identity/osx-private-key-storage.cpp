@@ -74,6 +74,28 @@ namespace ndn
   }
 
   void
+  OSXPrivateKeyStorage::deleteKeyPair(const Name& keyName)
+  {
+    CFReleaser<CFStringRef> keyLabel =
+      CFStringCreateWithCString(0,
+                                keyName.toUri().c_str(),
+                                kCFStringEncodingUTF8);
+
+    CFReleaser<CFMutableDictionaryRef> searchDict =
+      CFDictionaryCreateMutable(0, 5,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks);
+
+    CFDictionaryAddValue(searchDict.get(), kSecClass, kSecClassKey);
+    CFDictionaryAddValue(searchDict.get(), kSecAttrLabel, keyLabel.get());
+    CFDictionaryAddValue(searchDict.get(), kSecMatchLimit, kSecMatchLimitAll);
+    OSStatus res = SecItemDelete(searchDict.get());
+
+    if (res != errSecSuccess)
+      throw SecurityException("Fail to create a key pair");
+  }
+
+  void
   OSXPrivateKeyStorage::generateKey(const Name & keyName, KeyType keyType, int keySize)
   {
     throw SecurityException("OSXPrivateKeyStorage::generateKey is not supported");

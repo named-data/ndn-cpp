@@ -60,6 +60,15 @@ MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, i
 #endif
 }
 
+void
+MemoryPrivateKeyStorage::deleteKeyPair(const Name& keyName)
+{
+  string keyUri = keyName.toUri();
+
+  publicKeyStore_.erase(keyUri);
+  privateKeyStore_.erase(keyUri);
+}
+
 ptr_lib::shared_ptr<PublicKey>
 MemoryPrivateKeyStorage::getPublicKey(const Name& keyName)
 {
