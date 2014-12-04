@@ -246,7 +246,7 @@ public:
    * Get the identity manager given to or created by the constructor.
    * @return The identity manager.
    */
-  ptr_lib::shared_ptr<IdentityManager>
+  const ptr_lib::shared_ptr<IdentityManager>&
   getIdentityManager() { return identityManager_; }
 
   /*****************************************
