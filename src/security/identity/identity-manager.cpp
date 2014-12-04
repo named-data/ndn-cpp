@@ -308,10 +308,6 @@ IdentityManager::selfSign(const Name& keyName)
 {
   ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
 
-  Name certificateName = keyName.getSubName(0, keyName.size() - 1);
-  certificateName.append("KEY").append(keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
-  certificate->setName(certificateName);
-
   Blob keyBlob = identityStorage_->getKey(keyName);
   ptr_lib::shared_ptr<PublicKey> publicKey = PublicKey::fromDer(KEY_TYPE_RSA, keyBlob);
 
@@ -322,7 +318,7 @@ IdentityManager::selfSign(const Name& keyName)
   current.tm_min  = 0;
   current.tm_sec  = 0;
   MillisecondsSince1970 notBefore = timegm(&current) * 1000.0;
-  current.tm_year = current.tm_year + 20;
+  current.tm_year = current.tm_year + 2;
   MillisecondsSince1970 notAfter = timegm(&current) * 1000.0;
 
   certificate->setNotBefore(notBefore);
@@ -331,6 +327,12 @@ IdentityManager::selfSign(const Name& keyName)
   // Don't really expect this to happen.
   throw SecurityException("selfSign: Can't set certificate validity because time functions are not supported by the standard library.");
 #endif
+
+  Name certificateName = keyName.getPrefix(-1).append("KEY").append
+    (keyName.get(-1)).append("ID-CERT").append
+    (Name::Component::fromNumber((uint64_t)certificate->getNotBefore()));
+  certificate->setName(certificateName);
+
   certificate->setPublicKeyInfo(*publicKey);
   certificate->addSubjectDescription(CertificateSubjectDescription("2.5.4.41", keyName.toUri()));
   certificate->encode();
