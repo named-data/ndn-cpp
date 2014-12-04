@@ -346,9 +346,10 @@ IdentityManager::selfSign(const Name& keyName)
 
   certificate->setSignature(*sha256Sig);
 
-  Blob unsignedData = certificate->wireEncode();
+  SignedBlob unsignedData = certificate->wireEncode();
 
-  Blob sigBits = privateKeyStorage_->sign(unsignedData, keyName.toUri());
+  Blob sigBits = privateKeyStorage_->sign
+    (unsignedData.signedBuf(), unsignedData.signedSize(), keyName);
 
   sha256Sig->setSignature(sigBits);
 
