@@ -337,23 +337,7 @@ IdentityManager::selfSign(const Name& keyName)
   certificate->addSubjectDescription(CertificateSubjectDescription("2.5.4.41", keyName.toUri()));
   certificate->encode();
 
-  ptr_lib::shared_ptr<Sha256WithRsaSignature> sha256Sig(new Sha256WithRsaSignature());
-
-  KeyLocator keyLocator;
-  keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
-  keyLocator.setKeyName(certificateName);
-
-  sha256Sig->setKeyLocator(keyLocator);
-  sha256Sig->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
-
-  certificate->setSignature(*sha256Sig);
-
-  SignedBlob unsignedData = certificate->wireEncode();
-
-  Blob sigBits = privateKeyStorage_->sign
-    (unsignedData.signedBuf(), unsignedData.signedSize(), keyName);
-
-  sha256Sig->setSignature(sigBits);
+  signByCertificate(*certificate, certificate->getName());
 
   return certificate;
 }

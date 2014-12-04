@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.5 (2014-11-14)
+Interim changes since NDN-CPP v0.5 (2014-12-04)
 -----------------------------------------------
 
 Changes
@@ -16,6 +16,7 @@ Bug fixes
 * http://redmine.named-data.net/issues/2083 Fix Name::append(string) calls the URI Name(string) constructor.
 * http://redmine.named-data.net/issues/2017 Support older versions of Protobuf.
 * http://redmine.named-data.net/issues/2134 ChronoSync2013 shared_ptr for callbacks.
+* In KeyChain::createIdentity, fix certificate's KeyLocator name to be certificateName.getPrefix(-1).
 
 NDN-CPP v0.5 (2014-08-27)
 -------------------------
