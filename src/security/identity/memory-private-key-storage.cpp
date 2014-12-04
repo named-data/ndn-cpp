@@ -24,6 +24,7 @@
 #endif
 #include "../../c/util/crypto.h"
 #include <openssl/ec.h>
+#include <ndn-cpp/encoding/oid.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
@@ -55,9 +56,45 @@ MemoryPrivateKeyStorage::setPrivateKeyForKeyName
 void
 MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, int keySize)
 {
-#if 1
-  throw runtime_error("MemoryPrivateKeyStorage::generateKeyPair not implemented");
-#endif
+  if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
+    throw SecurityException("Public Key does already exists");
+  if (doesKeyExist(keyName, KEY_CLASS_PRIVATE))
+    throw SecurityException("Private Key does already exists");
+
+  vector<uint8_t> publicKeyDer;
+  vector<uint8_t> privateKeyDer;
+
+  if (keyType == KEY_TYPE_RSA) {
+    BIGNUM* exponent = 0;
+    RSA* rsa = 0;
+
+    exponent = BN_new();
+    if (BN_set_word(exponent, RSA_F4) == 1) {
+      rsa = RSA_new();
+      if (RSA_generate_key_ex(rsa, keySize, exponent, NULL) == 1) {
+        // Encode the public key.
+        int length = i2d_RSA_PUBKEY(rsa, NULL);
+        publicKeyDer.resize(length);
+        uint8_t* derPointer = &publicKeyDer[0];
+        i2d_RSA_PUBKEY(rsa, &derPointer);
+
+        // Encode the private key.
+        length = i2d_RSAPrivateKey(rsa, NULL);
+        privateKeyDer.resize(length);
+        derPointer = &privateKeyDer[0];
+        i2d_RSAPrivateKey(rsa, &derPointer);
+      }
+    }
+
+    BN_free(exponent);
+    RSA_free(rsa);
+  }
+  else
+    throw SecurityException("Unsupported key type");
+
+  setKeyPairForKeyName
+    (keyName, keyType, &publicKeyDer[0], publicKeyDer.size(),
+     &privateKeyDer[0], privateKeyDer.size());
 }
 
 void
