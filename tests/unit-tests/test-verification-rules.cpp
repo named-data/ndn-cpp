@@ -157,10 +157,38 @@ public:
   }
 };
 
+static bool
+fileExists(const string& filePath)
+{
+  ifstream stream(filePath.c_str());
+  bool result = (bool)stream;
+  stream.close();
+  return result;
+}
+
+static string
+getPolicyConfigDirectory()
+{
+  string policyConfigDirectory = "policy_config";
+  // Check if expected files are in this directory.
+  if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
+    // Maybe we are running "make check" from the ndn-cpp root.  There may be
+    //   a way to tell "make check" to run from tests/unit-tests, but for
+    //   now just set policyConfigDirectory explicitly.
+    policyConfigDirectory = "tests/unit-tests/policy_config";
+
+    if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
+      throw runtime_error("Cannot find the directory for policy-config");
+  }
+
+  return policyConfigDirectory;
+}
+
 class TestVerificationRules : public ::testing::Test {
 public:
   TestVerificationRules()
-  : identityStorage(new MemoryIdentityStorage()),
+  : policyConfigDirectory(getPolicyConfigDirectory()),
+    identityStorage(new MemoryIdentityStorage()),
     privateKeyStorage(new MemoryPrivateKeyStorage()),
     // Not using keychain for verification so we don't need to set the
     //   policy manager.
@@ -168,18 +196,6 @@ public:
       (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage)),
     identityName("/SecurityTestSecRule/Basic/Longer")
   {
-    policyConfigDirectory = "policy_config";
-    // Check if expected files are in this directory.
-    if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
-      // Maybe we are running "make check" from the ndn-cpp root.  There may be
-      //   a way to tell "make check" to run from tests/unit-tests, but for
-      //   now just set policyConfigDirectory explicitly.
-      policyConfigDirectory = "tests/unit-tests/policy_config";
-
-      if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
-        throw runtime_error("Cannot find the directory for policy-config");
-    }
-    
     Name keyName = Name(identityName).append("ksk-2439872");
     defaultCertName = certNameFromKeyName(keyName);
     identityStorage->addKey
@@ -209,15 +225,6 @@ public:
       keyIdx = keyName.size() + keyIdx;
     return keyName.getPrefix(keyIdx).append("KEY").append
       (keyName.getSubName(keyIdx)).append("ID-CERT").append("0");
-  }
-
-  static bool
-  fileExists(const string& filePath)
-  {
-    ifstream stream(filePath.c_str());
-    bool result = (bool)stream;
-    stream.close();
-    return result;
   }
 
   string policyConfigDirectory;
