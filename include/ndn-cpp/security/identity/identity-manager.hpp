@@ -70,6 +70,15 @@ public:
   createIdentity(const Name& identityName);
 
   /**
+   * Delete the identity from the public and private key storage. If the
+   * identity to be deleted is the current default system default, this will not
+   * delete the identity and will return immediately.
+   * @param identityName The name of the identity.
+   */
+  void
+  deleteIdentity(const Name& identityName);
+
+  /**
    * Set the default identity.  If the identityName does not exist, then clear
    * the default identity so that getDefaultIdentity() throws an exception.
    * @param identityName The default identity name.

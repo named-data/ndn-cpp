@@ -128,6 +128,28 @@ IdentityManager::createIdentity(const Name& identityName)
     throw SecurityException("Identity has already been created!");
 }
 
+void
+IdentityManager::deleteIdentity(const Name& identityName)
+{
+  try {
+    if (identityStorage_->getDefaultIdentity() == identityName)
+      // Don't delete the default identity!
+      return;
+  }
+  catch (SecurityException& ex) {
+    // There is no default identity to check.
+  }
+
+  vector<Name> keysToDelete;
+  identityStorage_->getAllKeyNamesOfIdentity(identityName, keysToDelete, true);
+  identityStorage_->getAllKeyNamesOfIdentity(identityName, keysToDelete, false);
+
+  identityStorage_->deleteIdentityInfo(identityName);
+
+  for (size_t i = 0; i < keysToDelete.size(); ++i)
+    privateKeyStorage_->deleteKeyPair(keysToDelete[i]);
+}
+
 Name
 IdentityManager::generateKeyPair(const Name& identityName, bool isKsk, KeyType keyType, int keySize)
 {
