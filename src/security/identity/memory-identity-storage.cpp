@@ -184,6 +184,15 @@ MemoryIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 }
 
 void
+MemoryIdentityStorage::getAllKeyNamesOfIdentity
+  (const Name& identityName, std::vector<Name>& nameList, bool isDefault)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::getAllKeyNamesOfIdentity not implemented");
+#endif
+}
+
+void
 MemoryIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   string identityUri = identityName.toUri();

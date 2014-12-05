@@ -598,6 +598,38 @@ BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 }
 
 void
+BasicIdentityStorage::getAllKeyNamesOfIdentity
+  (const Name& identityName, vector<Name>& nameList, bool isDefault)
+{
+  sqlite3_stmt* statement;
+
+  if (isDefault)
+    sqlite3_prepare_v2
+      (database_,
+       "SELECT key_identifier FROM Key WHERE default_key=1 and identity_name=?",
+       -1, &statement, 0);
+  else
+    sqlite3_prepare_v2
+      (database_,
+       "SELECT key_identifier FROM Key WHERE default_key=0 and identity_name=?",
+       -1, &statement, 0);
+
+  string identityUri = identityName.toUri();
+  sqlite3_bind_text
+    (statement, 1, identityUri.c_str(), identityUri.size(), SQLITE_TRANSIENT);
+
+  while (sqlite3_step(statement) == SQLITE_ROW) {
+    Name keyName(identityName);
+    keyName.append
+      (string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
+       sqlite3_column_bytes(statement, 0)));
+    nameList.push_back(keyName);
+  }
+  
+  sqlite3_finalize(statement);
+}
+
+void
 BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   sqlite3_stmt *statement;
