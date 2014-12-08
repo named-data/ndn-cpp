@@ -352,7 +352,7 @@ IdentityManager::selfSign(const Name& keyName)
 
   Name certificateName = keyName.getPrefix(-1).append("KEY").append
     (keyName.get(-1)).append("ID-CERT").append
-    (Name::Component::fromNumber((uint64_t)certificate->getNotBefore()));
+    (Name::Component::fromNumber((uint64_t)ndn_getNowMilliseconds()));
   certificate->setName(certificateName);
 
   certificate->setPublicKeyInfo(*publicKey);
