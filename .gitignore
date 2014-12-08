@@ -47,6 +47,9 @@ config.log
 /doc/html
 /doc/latex
 
+# unit_test temporary files
+tests/unit-tests/policy_config/test-public-info.db
+
 # Skip all gtest files except fused-src and LICENSE, etc.
 /contrib/gtest-1.7.0/aclocal.m4
 /contrib/gtest-1.7.0/CMakeLists.txt

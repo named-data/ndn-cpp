@@ -19,8 +19,9 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/unit-tests/test-data-methods \
   bin/unit-tests/test-der-encode-decode bin/unit-tests/test-face-methods \
-  bin/unit-tests/test-interest-methods bin/unit-tests/test-name-conventions \
-  bin/unit-tests/test-name-methods bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
+  bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
+  bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
@@ -244,6 +245,10 @@ bin_unit_tests_test_der_encode_decode_LDADD = libndn-cpp.la
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_face_methods_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_identity_methods_SOURCES = tests/unit-tests/test-identity-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_identity_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_identity_methods_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_interest_methods_SOURCES = tests/unit-tests/test-interest-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
