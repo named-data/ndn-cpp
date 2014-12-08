@@ -57,9 +57,9 @@ void
 MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, int keySize)
 {
   if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
-    throw SecurityException("Public Key does already exists");
+    throw SecurityException("Public Key already exists");
   if (doesKeyExist(keyName, KEY_CLASS_PRIVATE))
-    throw SecurityException("Private Key does already exists");
+    throw SecurityException("Private Key already exists");
 
   vector<uint8_t> publicKeyDer;
   vector<uint8_t> privateKeyDer;
