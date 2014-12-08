@@ -65,11 +65,12 @@ public:
    * CertificateCache.
    * @param searchDepth (optional) The maximum number of links to follow when
    * verifying a certificate chain.
-   * @param graceInterval (optional) The window of time difference (in seconds)
+   * @param graceInterval (optional) The window of time difference (in milliseconds)
    * allowed between the timestamp of the first interest signed with a new
-   * public key and the validation time.
+   * public key and the validation time. If omitted, use a default value.
    * @param keyTimestampTtl (optional) How long a public key's last-used
-   * timestamp is kept in the store.
+   * timestamp is kept in the store (milliseconds). If omitted, use a default
+   * value.
    * @param maxTrackedKeys The maximum number of public key use timestamps to
    * track.
    */
