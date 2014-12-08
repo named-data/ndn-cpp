@@ -35,7 +35,7 @@ IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
   MillisecondsSince1970 ti = ::ndn_getNowMilliseconds();
   // Get the number of seconds.
   ostringstream oss;
-  oss << floor(ti / 1000.0);
+  oss << (uint64_t)floor(ti / 1000.0);
 
   string keyIdStr;
 
