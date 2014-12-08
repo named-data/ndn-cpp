@@ -21,6 +21,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdexcept>
 #include <fstream>
 #include <ndn-cpp/security/security-exception.hpp>
@@ -583,8 +587,43 @@ void
 ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
   (const string& directoryName, Milliseconds refreshPeriod)
 {
-  // TODO: Implement.
-  throw runtime_error("ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory is not implemented");
+  DIR *directory = ::opendir(directoryName.c_str());
+  if (directory == NULL)
+    throw SecurityException
+      ("ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory: Cannot open the directory.");
+
+  vector<string> certificateNames;
+  struct dirent *entry;
+  while ((entry = ::readdir(directory)) != NULL) {
+    // TODO: Handle non-unix file system paths which don't use '/' or have stat.
+    string fullPath = directoryName + '/' + entry->d_name;
+    struct stat fileStat;
+    if (::stat(fullPath.c_str(), &fileStat) == -1)
+      throw SecurityException
+        ("ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory: Cannot stat the file.");
+    if (!S_ISREG(fileStat.st_mode))
+      continue;
+
+    ptr_lib::shared_ptr<IdentityCertificate> cert;
+    try {
+      cert = loadIdentityCertificateFromFile(fullPath);
+    }
+    catch (SecurityException& ex) {
+      // Allow files that are not certificates.
+      continue;
+    }
+
+    // Cut off the timestamp so it matches KeyLocator Name format.
+    string certUri = cert->getName().getPrefix(-1).toUri();
+    certificateCache_.insertCertificate(*cert);
+    certificateNames.push_back(certUri);
+  }
+  
+  ::closedir(directory);
+
+  refreshDirectories_[directoryName] = ptr_lib::make_shared<DirectoryInfo>
+    (certificateNames, ndn_getNowMilliseconds() + refreshPeriod,
+     refreshPeriod);
 }
 
 void

@@ -218,6 +218,14 @@ private:
   private:
     class DirectoryInfo {
     public:
+      DirectoryInfo
+        (const std::vector<std::string>& certificateNames,
+         MillisecondsSince1970 nextRefresh, Milliseconds refreshPeriod)
+      : certificateNames_(certificateNames), nextRefresh_(nextRefresh),
+        refreshPeriod_(refreshPeriod)
+      {
+      }
+      
       std::vector<std::string> certificateNames_;
       MillisecondsSince1970 nextRefresh_;
       Milliseconds refreshPeriod_;
