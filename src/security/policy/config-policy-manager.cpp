@@ -166,7 +166,7 @@ ConfigPolicyManager::checkVerificationPolicy
     // I do this after (possibly) downloading the certificate to avoid filling
     // the cache with bad keys.
     keyName = IdentityCertificate.certificateNameToPublicKeyName(signatureName);
-    timestamp = dataOrInterest.getName().get(-4).toNumber() / 1000;
+    timestamp = dataOrInterest.getName().get(-4).toNumber();
 
     if (!interestTimestampIsFresh(keyName, timestamp)) {
       onVerifyFailed(dataOrInterest);

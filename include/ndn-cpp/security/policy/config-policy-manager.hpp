@@ -53,7 +53,7 @@ class IdentityCertificate;
  * The KeyLocators of data packets and signed interests MUST contain a name for
  * verification to succeed.
  */
-class ConfigPolicyManager : PolicyManager {
+class ConfigPolicyManager : public PolicyManager {
 public:
   /**
    * Create a new ConfigPolicyManager which acts on the rules specified in the
