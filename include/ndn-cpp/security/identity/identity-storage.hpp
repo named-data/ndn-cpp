@@ -38,6 +38,8 @@ class Data;
  */
 class IdentityStorage {
 public:
+  IdentityStorage();
+  
   /**
    * The virtual Destructor.
    */
@@ -249,6 +251,10 @@ public:
    */
   virtual void
   deleteIdentityInfo(const Name& identity) = 0;
+
+private:
+  static bool lastTimestampIsInitialized_;
+  static uint64_t lastTimestamp_;
 };
 
 }

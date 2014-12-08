@@ -29,13 +29,26 @@ using namespace std;
 
 namespace ndn {
 
+IdentityStorage::IdentityStorage()
+{
+  if (!lastTimestampIsInitialized_) {
+    lastTimestampIsInitialized_ = true;
+    lastTimestamp_ = ::floor(ndn_getNowMilliseconds() / 1000.0);
+  }
+}
+
 Name
 IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
 {
-  MillisecondsSince1970 ti = ::ndn_getNowMilliseconds();
-  // Get the number of seconds.
+  uint64_t timestamp = ::floor(ndn_getNowMilliseconds() / 1000.0);
+  while (timestamp <= lastTimestamp_)
+    // Make the timestamp unique.
+    timestamp += 1;
+  lastTimestamp_ = timestamp;
+
+  // Get the number of seconds as a string.
   ostringstream oss;
-  oss << (uint64_t)floor(ti / 1000.0);
+  oss << timestamp;
 
   string keyIdStr;
 
@@ -58,5 +71,8 @@ IdentityStorage::getDefaultCertificateNameForIdentity (const Name& identityName)
   Name keyName = getDefaultKeyNameForIdentity(identityName);
   return getDefaultCertificateNameForKey(keyName);
 }
+
+bool IdentityStorage::lastTimestampIsInitialized_ = false;
+uint64_t IdentityStorage::lastTimestamp_;
 
 }
