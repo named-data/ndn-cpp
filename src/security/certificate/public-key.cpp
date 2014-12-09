@@ -36,8 +36,6 @@ PublicKey::toDer()
   return DerNode::parse(keyDer_.buf());
 }
 
-static int RSA_OID[] = { 1, 2, 840, 113549, 1, 1, 1 };
-
 ptr_lib::shared_ptr<PublicKey>
 PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
 {
