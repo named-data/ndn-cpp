@@ -30,49 +30,6 @@ using namespace std;
 
 namespace ndn {
 
-/**
- * Verify the ECDSA signature on the SignedBlob using the given public key.
- * TODO: Move this general verification code to a more central location.
- * @param signature The Sha256WithEcdsaSignature.
- * @param signedBlob the SignedBlob with the signed portion to verify.
- * @param publicKeyDer The DER-encoded public key used to verify the signature.
- * @return true if the signature verifies, false if not.
- * @throw SecurityException if data does not have a Sha256WithEcdsaSignature.
- */
-static bool
-verifySha256WithEcdsaSignature
-  (
-#if 0
-   const Sha256WithEcdsaSignature* signature,
-#else
-   const Sha256WithRsaSignature* signature,
-#endif
-   const SignedBlob& signedBlob, const Blob& publicKeyDer)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  // wireEncode returns the cached encoding if available.
-  ndn_digestSha256
-    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer.buf();
-  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDer.size());
-  if (!ecPublicKey)
-    throw UnrecognizedKeyFormatException
-      ("Error decoding public key in d2i_EC_PUBKEY");
-  int success = ECDSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest),
-     (uint8_t *)signature->getSignature().buf(),signature->getSignature().size(),
-      ecPublicKey);
-  // Free the public key before checking for success.
-  EC_KEY_free(ecPublicKey);
-
-  // RSA_verify returns 1 for a valid signature.
-  return (success == 1);
-}
-
 SelfVerifyPolicyManager::~SelfVerifyPolicyManager()
 {
 }
