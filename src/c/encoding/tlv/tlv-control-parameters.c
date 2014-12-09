@@ -40,10 +40,12 @@ encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
   struct ndn_ForwardingFlags defaultFlags;
   int flags;
 
-  if ((error = ndn_encodeTlvName
-       (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset,
-        encoder)))
-    return error;
+  if (controlParameters->name.nComponents > 0) {
+    if ((error = ndn_encodeTlvName
+         (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset,
+          encoder)))
+      return error;
+  }
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
        (encoder, ndn_Tlv_ControlParameters_FaceId,
         controlParameters->faceId)))
