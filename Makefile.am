@@ -21,7 +21,7 @@ check_PROGRAMS = bin/unit-tests/test-data-methods \
   bin/unit-tests/test-der-encode-decode bin/unit-tests/test-face-methods \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
-  bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-policy-manager bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
@@ -261,6 +261,10 @@ bin_unit_tests_test_name_conventions_LDADD = libndn-cpp.la
 bin_unit_tests_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
