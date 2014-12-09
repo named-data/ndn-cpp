@@ -56,7 +56,7 @@ PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
   else
     throw SecurityException("PublicKey::fromDer: Unrecognized keyType");
 
-  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(KEY_TYPE_RSA, keyDer));
+  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(keyType, keyDer));
 }
 
 Blob
