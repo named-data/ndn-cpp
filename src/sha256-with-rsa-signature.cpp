@@ -32,6 +32,19 @@ Sha256WithRsaSignature::clone() const
   return ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature(*this));
 }
 
+const Blob&
+Sha256WithRsaSignature::getSignature() const
+{
+  return signature_;
+}
+
+void
+Sha256WithRsaSignature::setSignature(const Blob& signature)
+{
+  signature_ = signature;
+  ++changeCount_;
+}
+
 void
 Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 {

@@ -23,6 +23,7 @@
 #define NDN_SIGNATURE_HPP
 
 #include "common.hpp"
+#include "util/blob.hpp"
 
 struct ndn_Signature;
 
@@ -35,6 +36,12 @@ namespace ndn {
 class Signature {
 public:
   /**
+   * The virtual destructor.
+   */
+  virtual
+  ~Signature();
+
+  /**
    * Return a pointer to a new Signature which is a copy of this signature.
    * This is pure virtual, the subclass must implement it.
    */
@@ -42,12 +49,20 @@ public:
   clone() const = 0;
 
   /**
-   * The virtual destructor.
+   * Get the signature bytes.
+   * @return The signature bytes. If not specified, the value isNull().
    */
-  virtual
-  ~Signature();
+  virtual const Blob&
+  getSignature() const = 0;
 
-    /**
+  /**
+   * Set the signature bytes to the given value.
+   * @param signature A Blob with the signature bytes.
+   */
+  virtual void
+  setSignature(const Blob& signature) = 0;
+
+  /**
    * Set the signatureStruct to point to the values in this signature object, without copying any memory.
    * WARNING: The resulting pointers in signatureStruct are invalid after a further use of this object which could reallocate memory.
    * This is pure virtual, the subclass must implement it.

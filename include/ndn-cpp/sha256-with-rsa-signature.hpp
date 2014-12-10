@@ -25,7 +25,6 @@
 #include "signature.hpp"
 #include "key-locator.hpp"
 #include "publisher-public-key-digest.hpp"
-#include "signature.hpp"
 #include "util/change-counter.hpp"
 
 namespace ndn {
@@ -74,8 +73,12 @@ public:
   const Blob&
   DEPRECATED_IN_NDN_CPP getWitness() const { return witness_; }
 
-  const Blob&
-  getSignature() const { return signature_; }
+  /**
+   * Get the signature bytes.
+   * @return The signature bytes. If not specified, the value isNull().
+   */
+  virtual const Blob&
+  getSignature() const;
 
   /**
    * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
@@ -117,12 +120,12 @@ public:
     ++changeCount_;
   }
 
-  void
-  setSignature(const Blob& signature)
-  {
-    signature_ = signature;
-    ++changeCount_;
-  }
+  /**
+   * Set the signature bytes to the given value.
+   * @param signature A Blob with the signature bytes.
+   */
+  virtual void
+  setSignature(const Blob& signature);
 
   /**
    * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,

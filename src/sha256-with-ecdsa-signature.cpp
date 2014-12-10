@@ -32,6 +32,19 @@ Sha256WithEcdsaSignature::clone() const
   return ptr_lib::shared_ptr<Signature>(new Sha256WithEcdsaSignature(*this));
 }
 
+const Blob&
+Sha256WithEcdsaSignature::getSignature() const
+{
+  return signature_;
+}
+
+void
+Sha256WithEcdsaSignature::setSignature(const Blob& signature)
+{
+  signature_ = signature;
+  ++changeCount_;
+}
+
 void
 Sha256WithEcdsaSignature::get(struct ndn_Signature& signatureStruct) const
 {
