@@ -42,6 +42,7 @@ typedef DerNode::DerSequence DerSequence;
 
 static const char *WHITESPACE_CHARS = " \n\r\t";
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
+static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
 /**
  * Modify str in place to erase whitespace on the left.
@@ -149,6 +150,44 @@ FilePrivateKeyStorage::generateKeyPair
 
     BN_free(exponent);
     RSA_free(rsa);
+  }
+  else if (keyType == KEY_TYPE_EC) {
+    int curveId;
+    if (keySize == 112)
+      curveId = NID_secp112r1;
+    else if (keySize == 128)
+      curveId = NID_secp128r1;
+    else if (keySize == 160)
+      curveId = NID_secp160r1;
+    else if (keySize == 224)
+      curveId = NID_secp224r1;
+    else if (keySize == 384)
+      curveId = NID_secp384r1;
+    else if (keySize == 521)
+      curveId = NID_secp521r1;
+    else
+      throw SecurityException("Unsupported keySize for KEY_TYPE_EC");
+
+    EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
+    if (ecKey != NULL) {
+      if (EC_KEY_generate_key(ecKey) == 1) {
+        // Encode the public key.
+        int length = i2d_EC_PUBKEY(ecKey, NULL);
+        publicKeyDer = Blob(make_shared<vector<uint8_t> >(length), false);
+        uint8_t* derPointer = const_cast<uint8_t*>(publicKeyDer.buf());
+        i2d_EC_PUBKEY(ecKey, &derPointer);
+
+        // Encode the private key.
+        length = i2d_ECPrivateKey(ecKey, NULL);
+        vector<uint8_t> pkcs1PrivateKeyDer(length);
+        derPointer = &pkcs1PrivateKeyDer[0];
+        i2d_ECPrivateKey(ecKey, &derPointer);
+        privateKeyDer = encodePkcs8PrivateKey
+          (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID));
+      }
+    }
+
+    EC_KEY_free(ecKey);
   }
   else
     throw SecurityException("Unsupported key type");
