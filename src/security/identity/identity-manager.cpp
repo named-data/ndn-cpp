@@ -312,6 +312,30 @@ IdentityManager::signByCertificate(Data &data, const Name &certificateName, Wire
   data.wireEncode(wireFormat);
 }
 
+void
+IdentityManager::signInterestByCertificate
+  (Interest& interest, const Name& certificateName, WireFormat& wireFormat)
+{
+  // TODO: Handle signature algorithms other than Sha256WithRsa.
+  Sha256WithRsaSignature signature;
+  signature.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature.getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+
+  // Append the encoded SignatureInfo.
+  interest.getName().append(wireFormat.encodeSignatureInfo(signature));
+
+  // Append an empty signature so that the "signedPortion" is correct.
+  interest.getName().append(Name::Component());
+  // Encode once to get the signed portion, and sign.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+  ptr_lib::shared_ptr<Signature> signedSignature = signByCertificate
+    (encoding.signedBuf(), encoding.signedSize(), certificateName);
+
+  // Remove the empty signature and append the real one.
+  interest.setName(interest.getName().getPrefix(-1).append
+    (wireFormat.encodeSignatureValue(*signedSignature)));
+}
+
 ptr_lib::shared_ptr<IdentityCertificate>
 IdentityManager::selfSign(const Name& keyName)
 {

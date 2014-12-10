@@ -24,6 +24,7 @@
 #define NDN_IDENTITY_MANAGER_HPP
 
 #include "../certificate/identity-certificate.hpp"
+#include "../../interest.hpp"
 #include "identity-storage.hpp"
 #include "../certificate/public-key.hpp"
 #include "private-key-storage.hpp"
@@ -297,6 +298,20 @@ public:
    */
   void
   signByCertificate(Data& data, const Name& certificateName, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Append a SignatureInfo to the Interest name, sign the name components and
+   * append a final name component with the signature bits.
+   * @param interest The Interest object to be signed. This appends name
+   * components of SignatureInfo and the signature bits.
+   * @param certificateName The certificate name of the key to use for signing.
+   * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted,
+   * use WireFormat getDefaultWireFormat().
+   */
+  void
+  signInterestByCertificate
+    (Interest& interest, const Name& certificateName,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Generate a self-signed certificate for a public key.
