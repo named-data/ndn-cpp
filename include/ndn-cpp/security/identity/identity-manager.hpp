@@ -321,6 +321,18 @@ private:
   static Name
   getKeyNameFromCertificatePrefix(const Name& certificatePrefix);
 
+  /**
+   * Return a new Signature object based on the signature algorithm of the
+   * public key with keyName (derived from certificateName).
+   * @param certificateName The certificate name.
+   * @param digestAlgorithm Set digestAlgorithm to the signature algorithm's
+   * digest algorithm, e.g. DIGEST_ALGORITHM_SHA256.
+   * @return A new object of the correct subclass of Signature.
+   */
+  ptr_lib::shared_ptr<Signature>
+  makeSignatureByCertificate
+    (const Name& certificateName, DigestAlgorithm& digestAlgorithm);
+
   ptr_lib::shared_ptr<IdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<PrivateKeyStorage> privateKeyStorage_;
 };

@@ -280,20 +280,14 @@ IdentityManager::setDefaultCertificateForKey(const IdentityCertificate& certific
 ptr_lib::shared_ptr<Signature>
 IdentityManager::signByCertificate(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
 {
-  Name keyName = IdentityCertificate::certificateNameToPublicKeyName(certificateName);
-  ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey(keyName);
-
-  //For temporary usage, we support RSA + SHA256 only, but will support more.
-  ptr_lib::shared_ptr<Sha256WithRsaSignature> signature(new Sha256WithRsaSignature());
-  DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256;
-
-  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-  signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
-  // Ignore witness and leave the digestAlgorithm as the default.
-  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
+  DigestAlgorithm digestAlgorithm;
+  ptr_lib::shared_ptr<Signature> signature = makeSignatureByCertificate
+    (certificateName, digestAlgorithm);
 
   signature->setSignature
-    (privateKeyStorage_->sign(buffer, bufferLength, keyName, digestAlgorithm));
+    (privateKeyStorage_->sign(buffer, bufferLength, 
+     IdentityCertificate::certificateNameToPublicKeyName(certificateName),
+     digestAlgorithm));
 
   return signature;
 }
@@ -301,25 +295,18 @@ IdentityManager::signByCertificate(const uint8_t* buffer, size_t bufferLength, c
 void
 IdentityManager::signByCertificate(Data &data, const Name &certificateName, WireFormat& wireFormat)
 {
-  Name keyName = IdentityCertificate::certificateNameToPublicKeyName(certificateName);
-  ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey(keyName);
+  DigestAlgorithm digestAlgorithm;
+  ptr_lib::shared_ptr<Signature> signature = makeSignatureByCertificate
+    (certificateName, digestAlgorithm);
 
-  // For temporary usage, we support RSA + SHA256 only, but will support more.
-  data.setSignature(Sha256WithRsaSignature());
-  // Get a pointer to the clone which Data made.
-  Sha256WithRsaSignature *signature = dynamic_cast<Sha256WithRsaSignature*>(data.getSignature());
-  DigestAlgorithm digestAlgorithm = DIGEST_ALGORITHM_SHA256;
-
-  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-  signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
-  // Ignore witness and leave the digestAlgorithm as the default.
-  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey->getDigest());
-
+  data.setSignature(*signature);
   // Encode once to get the signed portion.
   SignedBlob encoding = data.wireEncode(wireFormat);
 
-  signature->setSignature
-    (privateKeyStorage_->sign(encoding.signedBuf(), encoding.signedSize(), keyName, digestAlgorithm));
+  data.getSignature()->setSignature
+    (privateKeyStorage_->sign(encoding.signedBuf(), encoding.signedSize(), 
+     IdentityCertificate::certificateNameToPublicKeyName(certificateName),
+     digestAlgorithm));
 
   // Encode again to include the signature.
   data.wireEncode(wireFormat);
@@ -383,6 +370,29 @@ IdentityManager::getKeyNameFromCertificatePrefix(const Name & certificatePrefix)
   result.append(certificatePrefix.getSubName(i + 1, certificatePrefix.size()-i-1));
 
   return result;
+}
+
+ptr_lib::shared_ptr<Signature>
+IdentityManager::makeSignatureByCertificate
+  (const Name& certificateName, DigestAlgorithm& digestAlgorithm)
+{
+  Name keyName = IdentityCertificate::certificateNameToPublicKeyName
+    (certificateName);
+  ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey
+    (keyName);
+
+  //For temporary usage, we support RSA + SHA256 only, but will support more.
+  ptr_lib::shared_ptr<Sha256WithRsaSignature> signature
+    (new Sha256WithRsaSignature());
+  digestAlgorithm = DIGEST_ALGORITHM_SHA256;
+
+  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+  // Ignore witness and leave the digestAlgorithm as the default.
+  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
+    (publicKey->getDigest());
+
+  return signature;
 }
 
 }
