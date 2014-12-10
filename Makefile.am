@@ -85,7 +85,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
-  include/ndn-cpp/security/signature/sha256-with-rsa-handler.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
   include/ndn-cpp/transport/transport.hpp \
@@ -189,7 +188,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
-  src/security/signature/sha256-with-rsa-handler.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
