@@ -32,6 +32,7 @@
 #include <math.h>
 #include <ndn-cpp/key-locator.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
@@ -405,19 +406,33 @@ IdentityManager::makeSignatureByCertificate
     (certificateName);
   ptr_lib::shared_ptr<PublicKey> publicKey = privateKeyStorage_->getPublicKey
     (keyName);
+  KeyType keyType = publicKey->getKeyType();
 
-  //For temporary usage, we support RSA + SHA256 only, but will support more.
-  ptr_lib::shared_ptr<Sha256WithRsaSignature> signature
-    (new Sha256WithRsaSignature());
-  digestAlgorithm = DIGEST_ALGORITHM_SHA256;
+  if (keyType == KEY_TYPE_RSA) {
+    ptr_lib::shared_ptr<Sha256WithRsaSignature> signature
+      (new Sha256WithRsaSignature());
+    digestAlgorithm = DIGEST_ALGORITHM_SHA256;
 
-  signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-  signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
-  // Ignore witness and leave the digestAlgorithm as the default.
-  signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
-    (publicKey->getDigest());
+    signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+    signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+    // Ignore witness and leave the digestAlgorithm as the default.
+    signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
+      (publicKey->getDigest());
 
-  return signature;
+    return signature;
+  }
+  else if (keyType == KEY_TYPE_EC) {
+    ptr_lib::shared_ptr<Sha256WithEcdsaSignature> signature
+      (new Sha256WithEcdsaSignature());
+    digestAlgorithm = DIGEST_ALGORITHM_SHA256;
+
+    signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+    signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
+
+    return signature;
+  }
+  else
+    throw SecurityException("Key type is not recognized");
 }
 
 }
