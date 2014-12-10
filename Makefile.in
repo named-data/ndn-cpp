@@ -217,8 +217,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/forwarding-entry.lo src/interest.lo src/key-locator.lo \
 	src/meta-info.lo src/name.lo src/node.lo \
 	src/control-parameters.lo src/publisher-public-key-digest.lo \
-	src/signature.lo src/sha256-with-rsa-signature.lo \
-	src/encoding/base64.lo src/encoding/binary-xml-wire-format.lo \
+	src/signature.lo src/sha256-with-ecdsa-signature.lo \
+	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
+	src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
 	src/encoding/protobuf-tlv.lo \
 	src/encoding/tlv-0_1-wire-format.lo \
@@ -912,6 +913,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/control-parameters.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
   include/ndn-cpp/signature.hpp \
+  include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
@@ -1013,6 +1015,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/control-parameters.cpp \
   src/publisher-public-key-digest.cpp \
   src/signature.cpp \
+  src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \
@@ -1307,6 +1310,8 @@ src/control-parameters.lo: src/$(am__dirstamp) \
 src/publisher-public-key-digest.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/signature.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/sha256-with-ecdsa-signature.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/sha256-with-rsa-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/encoding/$(am__dirstamp):
@@ -1734,6 +1739,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/publisher-public-key-digest.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-ecdsa-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-rsa-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/errors.Plo@am__quote@

@@ -21,6 +21,7 @@
 
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
@@ -30,13 +31,7 @@ namespace ndn {
 
 bool
 PolicyManager::verifySha256WithEcdsaSignature
-  (
-#if 0
-   const Sha256WithEcdsaSignature* signature,
-#else
-   const Sha256WithRsaSignature* signature,
-#endif
-   const SignedBlob& signedBlob,
+  (const Sha256WithEcdsaSignature* signature, const SignedBlob& signedBlob,
    const Blob& publicKeyDer)
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.

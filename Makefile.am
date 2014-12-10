@@ -55,6 +55,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/control-parameters.hpp \
   include/ndn-cpp/publisher-public-key-digest.hpp \
   include/ndn-cpp/signature.hpp \
+  include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
@@ -154,6 +155,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/control-parameters.cpp \
   src/publisher-public-key-digest.cpp \
   src/signature.cpp \
+  src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \

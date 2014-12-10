@@ -30,6 +30,7 @@ namespace ndn {
 
 class ValidationRequest;
 class Sha256WithRsaSignature;
+class Sha256WithEcdsaSignature;
 
 /**
  * A PolicyManager is an abstract base class to represent the policy for verifying data packets.
@@ -136,7 +137,7 @@ protected:
    */
   static bool
   verifySha256WithEcdsaSignature
-    (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
+    (const Sha256WithEcdsaSignature* signature, const SignedBlob& signedBlob,
      const Blob& publicKeyDer);
 
   /**
