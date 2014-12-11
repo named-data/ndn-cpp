@@ -87,6 +87,32 @@ encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;
 }
 
+/**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * in the body of the SignatureSha256WithEcdsa value.
+ * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error
+encodeSignatureSha256WithEcdsaValue(void *context, struct ndn_TlvEncoder *encoder)
+{
+  struct ndn_Signature *signature = (struct ndn_Signature *)context;
+  ndn_Error error;
+  size_t saveOffset;
+
+  if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
+       (encoder, ndn_Tlv_SignatureType,
+        ndn_Tlv_SignatureType_SignatureSha256WithEcdsa)))
+    return error;
+  if ((error = ndn_TlvEncoder_writeNestedTlv
+       (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue,
+        &signature->keyLocator, 1)))
+    return error;
+
+  return NDN_ERROR_success;
+}
+
 ndn_Error
 ndn_encodeTlvSignatureInfo
   (struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
@@ -94,6 +120,10 @@ ndn_encodeTlvSignatureInfo
   if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature)
     return ndn_TlvEncoder_writeNestedTlv
       (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithRsaValue,
+       signatureInfo, 0);
+  else if (signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature)
+    return ndn_TlvEncoder_writeNestedTlv
+      (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithEcdsaValue,
        signatureInfo, 0);
   else
     return NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType;
@@ -106,6 +136,8 @@ ndn_decodeTlvSignatureInfo
   ndn_Error error;
   size_t endOffset;
   uint64_t signatureType;
+
+  ndn_Signature_clear(signatureInfo);
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
        (decoder, ndn_Tlv_SignatureInfo, &endOffset)))
@@ -129,12 +161,14 @@ ndn_decodeTlvSignatureInfo
       ndn_Blob_initialize
         (&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
   }
+  else if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa) {
+    signatureInfo->type = ndn_SignatureType_Sha256WithEcdsaSignature;
+    if ((error = ndn_decodeTlvKeyLocator
+         (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
+      return error;
+  }
   else
     return NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type;
-
-  // Set fields not used by NDN-TLV to none.
-  ndn_Blob_initialize(&signatureInfo->digestAlgorithm, 0, 0);
-  ndn_Blob_initialize(&signatureInfo->witness, 0, 0);
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
