@@ -304,7 +304,7 @@ static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Data>& 
 
 int main(int argc, char** argv)
 {
-  //try {
+  try {
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
@@ -332,8 +332,8 @@ int main(int argc, char** argv)
     dumpData(*freshData);
 
     keyChain.verifyData(freshData, bind(&onVerified, "Freshly-signed Data", _1), bind(&onVerifyFailed, "Freshly-signed Data", _1));
-  //} catch (std::exception& e) {
-  //  cout << "exception: " << e.what() << endl;
-  //}
+  } catch (std::exception& e) {
+    cout << "exception: " << e.what() << endl;
+  }
   return 0;
 }
