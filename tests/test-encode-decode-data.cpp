@@ -321,11 +321,11 @@ int main(int argc, char** argv)
     Name keyName("/testname/DSK-123");
     Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
            (keyName[-1]).append("ID-CERT").append("0");
-    identityStorage->addKey(keyName, KEY_TYPE_EC, Blob(DEFAULT_EC_PUBLIC_KEY_DER, sizeof(DEFAULT_EC_PUBLIC_KEY_DER)));
+    identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
     privateKeyStorage->setKeyPairForKeyName
-      (keyName, KEY_TYPE_EC, DEFAULT_EC_PUBLIC_KEY_DER,
-       sizeof(DEFAULT_EC_PUBLIC_KEY_DER), DEFAULT_EC_PRIVATE_KEY_DER,
-       sizeof(DEFAULT_EC_PRIVATE_KEY_DER));
+      (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER,
+       sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
+       sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
     keyChain.sign(*freshData, certificateName);
     cout << endl << "Freshly-signed Data:" << endl;
