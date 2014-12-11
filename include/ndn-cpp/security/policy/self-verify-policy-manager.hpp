@@ -157,6 +157,16 @@ private:
   bool
   verify(const Signature* signatureInfo, const SignedBlob& signedBlob);
 
+  /**
+   * Return the public key DER in the KeyLocator (if available) or look in the
+   * IdentityStorage for the public key with the name in the KeyLocator
+   * (if available). If the public key can't be found, return and empty Blob.
+   * @param keyLocator The KeyLocator.
+   * @return The public key DER or an empty Blob if not found.
+   */
+  Blob
+  getPublicKeyDer(const KeyLocator& keyLocator);
+
   IdentityStorage* identityStorage_;
 };
 

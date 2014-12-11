@@ -21,6 +21,7 @@
  */
 
 #include "../../c/util/crypto.h"
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/identity-storage.hpp>
@@ -112,36 +113,50 @@ bool
 SelfVerifyPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob)
 {
-  const KeyLocator* keyLocator;
-  const Sha256WithRsaSignature *signature =
-    dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
-  if (signature)
-    keyLocator = &signature->getKeyLocator();
-  else
-    // We don't expect this to happen.
-    throw SecurityException
-      ("SelfVerifyPolicyManager: Signature type is unknown");
+  {
+    const Sha256WithRsaSignature *signature =
+      dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
+    if (signature) {
+      Blob publicKeyDer = getPublicKeyDer(signature->getKeyLocator());
+      if (!publicKeyDer)
+        return false;
+      return verifySha256WithRsaSignature
+        (signature->getSignature(), signedBlob, publicKeyDer);
+    }
+  }
+  {
+    const Sha256WithEcdsaSignature *signature =
+      dynamic_cast<const Sha256WithEcdsaSignature *>(signatureInfo);
+    if (signature) {
+      Blob publicKeyDer = getPublicKeyDer(signature->getKeyLocator());
+      if (!publicKeyDer)
+        return false;
+      return verifySha256WithEcdsaSignature
+        (signature->getSignature(), signedBlob, publicKeyDer);
+    }
+  }
 
-  if (keyLocator->getType() == ndn_KeyLocatorType_KEY)
+  // We don't expect this to happen.
+  throw SecurityException
+    ("SelfVerifyPolicyManager: Signature type is unknown");
+}
+
+Blob
+SelfVerifyPolicyManager::getPublicKeyDer(const KeyLocator& keyLocator)
+{
+  if (keyLocator.getType() == ndn_KeyLocatorType_KEY)
     // Use the public key DER directly.
-    return verifySha256WithRsaSignature
-      (signature->getSignature(), signedBlob, keyLocator->getKeyData());
-  else if (keyLocator->getType() == ndn_KeyLocatorType_KEYNAME &&
+    return keyLocator.getKeyData();
+  else if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME &&
            identityStorage_) {
     // Assume the key name is a certificate name.
-    Blob publicKeyDer = identityStorage_->getKey
+    return identityStorage_->getKey
       (IdentityCertificate::certificateNameToPublicKeyName
-       (keyLocator->getKeyName()));
-    if (!publicKeyDer)
-      // Can't find the public key with the name.
-      return false;
-
-    return verifySha256WithRsaSignature
-      (signature->getSignature(), signedBlob, publicKeyDer);
+       (keyLocator.getKeyName()));
   }
   else
     // Can't find a key to verify.
-    return false;
+    return Blob();
 }
 
 }
