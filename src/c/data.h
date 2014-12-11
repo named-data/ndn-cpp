@@ -61,7 +61,7 @@ struct ndn_Signature {
 
 /**
  * Initialize the ndn_Signature struct with values for none and the default digestAlgorithm.
- * @param self A pointer to the ndn_MetaInfo struct.
+ * @param self A pointer to the ndn_Signature struct.
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the keyLocator.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
@@ -72,6 +72,18 @@ static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct
   ndn_Blob_initialize(&self->signature, 0, 0);
   ndn_PublisherPublicKeyDigest_initialize(&self->publisherPublicKeyDigest);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
+}
+
+/**
+ * Set the fields of the ndn_Signature struct to the values from
+ * ndn_Signature_initialize.
+ * @param self A pointer to the ndn_Signature struct.
+ */
+static __inline void ndn_Signature_clear(struct ndn_Signature *self)
+{
+  ndn_Signature_initialize
+    (self, self->keyLocator.keyName.components,
+     self->keyLocator.keyName.maxComponents);
 }
 
 /**
