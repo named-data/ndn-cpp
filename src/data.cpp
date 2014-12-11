@@ -20,6 +20,7 @@
  */
 
 #include <ndn-cpp/common.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "c/data.h"
 #include <ndn-cpp/data.hpp>
@@ -81,7 +82,16 @@ Data::get(struct ndn_Data& dataStruct) const
 void
 Data::set(const struct ndn_Data& dataStruct)
 {
+  if (dataStruct.signature.type == ndn_SignatureType_Sha256WithRsaSignature)
+    signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature()));
+  else if (dataStruct.signature.type == ndn_SignatureType_Sha256WithEcdsaSignature)
+    signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithEcdsaSignature()));
+  else
+    // We don't expect this to happen.
+    throw runtime_error("dataStruct.signature.type has an unrecognized value");
+  
   signature_.get()->set(dataStruct.signature);
+
   name_.get().set(dataStruct.name);
   metaInfo_.get().set(dataStruct.metaInfo);
   setContent(Blob(dataStruct.content));
