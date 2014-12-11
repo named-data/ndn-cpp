@@ -48,6 +48,7 @@ Sha256WithRsaSignature::setSignature(const Blob& signature)
 void
 Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 {
+  signatureStruct.type = ndn_SignatureType_Sha256WithRsaSignature;
   digestAlgorithm_.get(signatureStruct.digestAlgorithm);
   witness_.get(signatureStruct.witness);
   signature_.get(signatureStruct.signature);
@@ -58,6 +59,10 @@ Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 void
 Sha256WithRsaSignature::set(const struct ndn_Signature& signatureStruct)
 {
+  // The caller should already have checked the type, but check again.
+  if (signatureStruct.type != ndn_SignatureType_Sha256WithRsaSignature)
+    throw runtime_error("signatureStruct is not the expected type Sha256WithRsaSignature");
+
   digestAlgorithm_ = Blob(signatureStruct.digestAlgorithm);
   witness_ = Blob(signatureStruct.witness);
   setSignature(Blob(signatureStruct.signature));

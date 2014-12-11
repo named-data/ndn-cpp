@@ -91,10 +91,12 @@ ndn_Error
 ndn_encodeTlvSignatureInfo
   (struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
 {
-  // TODO: The library needs to handle other signature types than Sha256WithRsa.
-  return ndn_TlvEncoder_writeNestedTlv
-    (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithRsaValue,
-     signatureInfo, 0);
+  if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature)
+    return ndn_TlvEncoder_writeNestedTlv
+      (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithRsaValue,
+       signatureInfo, 0);
+  else
+    return NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType;
 }
 
 ndn_Error
@@ -112,9 +114,9 @@ ndn_decodeTlvSignatureInfo
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (decoder, ndn_Tlv_SignatureType, &signatureType)))
     return error;
-  // TODO: The library needs to handle other signature types than
-  //   SignatureSha256WithRsa.
+
   if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa) {
+    signatureInfo->type = ndn_SignatureType_Sha256WithRsaSignature;
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
       return error;

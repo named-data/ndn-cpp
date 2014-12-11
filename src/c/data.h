@@ -31,10 +31,24 @@
 extern "C" {
 #endif
 
+/** ndn_SignatureType defines constants for the Signature "type" field.
+ * Note that the constants are the same as defined in the NDN-TLV spec, but we
+ * keep a separate enum so that we aren't directly tied to the TLV code.
+ */
+typedef enum {
+  ndn_SignatureType_Sha256WithRsaSignature = 1,
+  ndn_SignatureType_Sha256WithEcdsaSignature = 3
+} ndn_SignatureType;
+
 /**
- * An ndn_Signature struct holds the signature bits and other info representing the signature in a data packet.
+ * An ndn_Signature struct holds the signature bits and other info representing 
+ * the signature in a data packet or signed interest. We use one structure which
+ * is a union of all the fields from the different known signature types. This
+ * lets us avoid the infrastructure to simulate an abstract base class with
+ * subclasses and virtual methods.
  */
 struct ndn_Signature {
+  ndn_SignatureType type;          /**< -1 for none */
   struct ndn_Blob digestAlgorithm; /**< A Blob whose value is a pointer to a pre-allocated buffer.  0 for none.
                                     *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
   struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
@@ -52,6 +66,7 @@ struct ndn_Signature {
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
 static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
+  self->type = (ndn_SignatureType)-1;
   ndn_Blob_initialize(&self->digestAlgorithm, 0, 0);
   ndn_Blob_initialize(&self->witness, 0, 0);
   ndn_Blob_initialize(&self->signature, 0, 0);

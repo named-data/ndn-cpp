@@ -27,6 +27,10 @@
 static ndn_Error encodeSignature(struct ndn_Signature *signature, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
+
+  if (signature->type != ndn_SignatureType_Sha256WithRsaSignature)
+    return NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType;
+
   if ((error = ndn_BinaryXmlEncoder_writeElementStartDTag(encoder, ndn_BinaryXml_DTag_Signature)))
     return error;
 
@@ -65,12 +69,17 @@ static ndn_Error decodeSignature(struct ndn_Signature *signature, struct ndn_Bin
   if ((error = ndn_BinaryXmlDecoder_readElementClose(decoder)))
     return error;
 
+  signature->type = ndn_SignatureType_Sha256WithRsaSignature;
+  
   return NDN_ERROR_success;
 }
 
 static ndn_Error encodeSignedInfo(struct ndn_Signature *signature, struct ndn_MetaInfo *metaInfo, struct ndn_BinaryXmlEncoder *encoder)
 {
   ndn_Error error;
+
+  if (signature->type != ndn_SignatureType_Sha256WithRsaSignature)
+    return NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType;
 
   if ((int)metaInfo->type < 0)
     return NDN_ERROR_success;
