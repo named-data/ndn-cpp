@@ -103,6 +103,8 @@ char *ndn_getErrorString(int error)
     return      "TLV length does not equal total length of nested TLVs";
   case NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type:
     return      "decodeSignatureInfo unrecognized SignatureInfo type";
+  case NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType:
+    return      "encodeSignatureInfo unrecognized SignatureType";
   case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:
     return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
   default:

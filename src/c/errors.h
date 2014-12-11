@@ -67,6 +67,7 @@ typedef enum {
   NDN_ERROR_TLV_length_exceeds_buffer_length,
   NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs,
   NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type,
+  NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType,
   NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh
 } ndn_Error;
 
