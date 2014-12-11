@@ -26,7 +26,6 @@
 #include "signature.hpp"
 #include "meta-info.hpp"
 #include "util/signed-blob.hpp"
-#include "c/data-types.h"
 #include "encoding/wire-format.hpp"
 #include "util/change-counter.hpp"
 
