@@ -305,6 +305,24 @@ static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Data>& 
 int main(int argc, char** argv)
 {
   try {
+    ptr_lib::shared_ptr<Data> data(new Data());
+    // Note: While we transition to the TLV wire format, check if it has been made the default.
+    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
+      data->wireDecode(TlvData, sizeof(TlvData));
+    else
+      data->wireDecode(BinaryXmlData, sizeof(BinaryXmlData));
+    cout << "Decoded Data:" << endl;
+    dumpData(*data);
+
+    // Set the content again to clear the cached encoding so we encode again.
+    data->setContent(data->getContent());
+    Blob encoding = data->wireEncode();
+
+    ptr_lib::shared_ptr<Data> reDecodedData(new Data());
+    reDecodedData->wireDecode(*encoding);
+    cout << endl << "Re-decoded Data:" << endl;
+    dumpData(*reDecodedData);
+
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
