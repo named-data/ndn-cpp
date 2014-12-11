@@ -128,7 +128,7 @@ public:
 protected:
   /**
    * Verify the ECDSA signature on the SignedBlob using the given public key.
-   * @param signature The Sha256WithEcdsaSignature.
+   * @param signature The signature bits.
    * @param signedBlob the SignedBlob with the signed portion to verify.
    * @param publicKeyDer The DER-encoded public key used to verify the signature.
    * @return true if the signature verifies, false if not.
@@ -137,12 +137,12 @@ protected:
    */
   static bool
   verifySha256WithEcdsaSignature
-    (const Sha256WithEcdsaSignature* signature, const SignedBlob& signedBlob,
+    (const Blob& signature, const SignedBlob& signedBlob,
      const Blob& publicKeyDer);
 
   /**
    * Verify the RSA signature on the SignedBlob using the given public key.
-   * @param signature The Sha256WithRsaSignature.
+   * @param signature The signature bits.
    * @param signedBlob the SignedBlob with the signed portion to verify.
    * @param publicKeyDer The DER-encoded public key used to verify the signature.
    * @return true if the signature verifies, false if not.
@@ -151,7 +151,7 @@ protected:
    */
   static bool
   verifySha256WithRsaSignature
-    (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
+    (const Blob& signature, const SignedBlob& signedBlob,
      const Blob& publicKeyDer);
 };
 

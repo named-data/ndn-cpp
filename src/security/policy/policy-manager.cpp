@@ -31,8 +31,7 @@ namespace ndn {
 
 bool
 PolicyManager::verifySha256WithEcdsaSignature
-  (const Sha256WithEcdsaSignature* signature, const SignedBlob& signedBlob,
-   const Blob& publicKeyDer)
+  (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
@@ -49,8 +48,7 @@ PolicyManager::verifySha256WithEcdsaSignature
       ("Error decoding public key in d2i_EC_PUBKEY");
   int success = ECDSA_verify
     (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest),
-     (uint8_t *)signature->getSignature().buf(),signature->getSignature().size(),
-      ecPublicKey);
+     (uint8_t *)signature.buf(),signature.size(), ecPublicKey);
   // Free the public key before checking for success.
   EC_KEY_free(ecPublicKey);
 
@@ -60,8 +58,7 @@ PolicyManager::verifySha256WithEcdsaSignature
 
 bool
 PolicyManager::verifySha256WithRsaSignature
-  (const Sha256WithRsaSignature* signature, const SignedBlob& signedBlob,
-   const Blob& publicKeyDer)
+  (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
@@ -76,8 +73,8 @@ PolicyManager::verifySha256WithRsaSignature
   if (!rsaPublicKey)
     throw UnrecognizedKeyFormatException("Error decoding public key in d2i_RSAPublicKey");
   int success = RSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), (uint8_t *)signature->getSignature().buf(),
-     signature->getSignature().size(), rsaPublicKey);
+    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest),
+     (uint8_t *)signature.buf(), signature.size(), rsaPublicKey);
   // Free the public key before checking for success.
   RSA_free(rsaPublicKey);
 

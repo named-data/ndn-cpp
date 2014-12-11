@@ -558,7 +558,8 @@ ConfigPolicyManager::verify
       // Can't find the public key with the name.
       return false;
 
-    return verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer);
+    return verifySha256WithRsaSignature
+      (signature->getSignature(), signedBlob, publicKeyDer);
   }
   else
     // Can't find a key to verify.

@@ -112,27 +112,32 @@ bool
 SelfVerifyPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob)
 {
+  const KeyLocator* keyLocator;
   const Sha256WithRsaSignature *signature =
     dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
-  if (!signature)
+  if (signature)
+    keyLocator = &signature->getKeyLocator();
+  else
+    // We don't expect this to happen.
     throw SecurityException
-      ("SelfVerifyPolicyManager: Signature is not Sha256WithRsaSignature.");
+      ("SelfVerifyPolicyManager: Signature type is unknown");
 
-  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
+  if (keyLocator->getType() == ndn_KeyLocatorType_KEY)
     // Use the public key DER directly.
     return verifySha256WithRsaSignature
-      (signature, signedBlob, signature->getKeyLocator().getKeyData());
-  else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME &&
+      (signature->getSignature(), signedBlob, keyLocator->getKeyData());
+  else if (keyLocator->getType() == ndn_KeyLocatorType_KEYNAME &&
            identityStorage_) {
     // Assume the key name is a certificate name.
     Blob publicKeyDer = identityStorage_->getKey
       (IdentityCertificate::certificateNameToPublicKeyName
-       (signature->getKeyLocator().getKeyName()));
+       (keyLocator->getKeyName()));
     if (!publicKeyDer)
       // Can't find the public key with the name.
       return false;
 
-    return verifySha256WithRsaSignature(signature, signedBlob, publicKeyDer);
+    return verifySha256WithRsaSignature
+      (signature->getSignature(), signedBlob, publicKeyDer);
   }
   else
     // Can't find a key to verify.
