@@ -26,6 +26,7 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 
@@ -243,25 +244,51 @@ static void dumpData(const Data& data)
        << (data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?
            data.getMetaInfo().getFinalBlockId().getValue().toHex().c_str() : "<none>") << endl;
 
-  const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
-  if (signature) {
-    cout << "signature.signature: "
-         << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
-    cout << "signature.keyLocator: ";
-    if ((int)signature->getKeyLocator().getType() >= 0) {
-      if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-        cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-      else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-        cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-      else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-        cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-      else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
-        cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
+  // Try different subclasses of Signature.
+  {
+    const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
+    if (signature) {
+      cout << "Sha256WithRsa signature.signature: "
+           << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+      cout << "signature.keyLocator: ";
+      if ((int)signature->getKeyLocator().getType() >= 0) {
+        if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
+          cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
+          cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+          cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
+          cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
+        else
+          cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
+      }
       else
-        cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
+        cout << "<none>" << endl;
     }
-    else
-      cout << "<none>" << endl;
+  }
+  {
+    const Sha256WithEcdsaSignature *signature =
+      dynamic_cast<const Sha256WithEcdsaSignature*>(data.getSignature());
+    if (signature) {
+      cout << "Sha256WithEcdsa signature.signature: "
+           << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+      cout << "signature.keyLocator: ";
+      if ((int)signature->getKeyLocator().getType() >= 0) {
+        if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
+          cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
+          cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+          cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
+        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
+          cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
+        else
+          cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
+      }
+      else
+        cout << "<none>" << endl;
+    }
   }
 }
 
@@ -277,25 +304,7 @@ static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Data>& 
 
 int main(int argc, char** argv)
 {
-  try {
-    ptr_lib::shared_ptr<Data> data(new Data());
-    // Note: While we transition to the TLV wire format, check if it has been made the default.
-    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
-      data->wireDecode(TlvData, sizeof(TlvData));
-    else
-      data->wireDecode(BinaryXmlData, sizeof(BinaryXmlData));
-    cout << "Decoded Data:" << endl;
-    dumpData(*data);
-
-    // Set the content again to clear the cached encoding so we encode again.
-    data->setContent(data->getContent());
-    Blob encoding = data->wireEncode();
-
-    ptr_lib::shared_ptr<Data> reDecodedData(new Data());
-    reDecodedData->wireDecode(*encoding);
-    cout << endl << "Re-decoded Data:" << endl;
-    dumpData(*reDecodedData);
-
+  //try {
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
     freshData->setContent(freshContent, sizeof(freshContent) - 1);
@@ -312,19 +321,19 @@ int main(int argc, char** argv)
     Name keyName("/testname/DSK-123");
     Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
            (keyName[-1]).append("ID-CERT").append("0");
-    identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
+    identityStorage->addKey(keyName, KEY_TYPE_EC, Blob(DEFAULT_EC_PUBLIC_KEY_DER, sizeof(DEFAULT_EC_PUBLIC_KEY_DER)));
     privateKeyStorage->setKeyPairForKeyName
-      (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER,
-       sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
-       sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+      (keyName, KEY_TYPE_EC, DEFAULT_EC_PUBLIC_KEY_DER,
+       sizeof(DEFAULT_EC_PUBLIC_KEY_DER), DEFAULT_EC_PRIVATE_KEY_DER,
+       sizeof(DEFAULT_EC_PRIVATE_KEY_DER));
 
     keyChain.sign(*freshData, certificateName);
     cout << endl << "Freshly-signed Data:" << endl;
     dumpData(*freshData);
 
     keyChain.verifyData(freshData, bind(&onVerified, "Freshly-signed Data", _1), bind(&onVerifyFailed, "Freshly-signed Data", _1));
-  } catch (std::exception& e) {
-    cout << "exception: " << e.what() << endl;
-  }
+  //} catch (std::exception& e) {
+  //  cout << "exception: " << e.what() << endl;
+  //}
   return 0;
 }
