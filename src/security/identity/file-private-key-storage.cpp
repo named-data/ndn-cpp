@@ -161,6 +161,8 @@ FilePrivateKeyStorage::generateKeyPair
       curveId = NID_secp160r1;
     else if (keySize == 224)
       curveId = NID_secp224r1;
+    else if (keySize == 256)
+      curveId = NID_X9_62_prime256v1;
     else if (keySize == 384)
       curveId = NID_secp384r1;
     else if (keySize == 521)
