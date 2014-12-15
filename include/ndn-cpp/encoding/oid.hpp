@@ -41,6 +41,11 @@ public:
   {
   }
 
+  OID(const int* integerList, size_t integerListLength)
+  {
+    setIntegerList(integerList, integerListLength);
+  }
+
   const std::vector<int> &
   getIntegerList() const
   {
@@ -48,9 +53,13 @@ public:
   }
 
   void
-  setIntegerList(const std::vector<int>& value){
+  setIntegerList(const std::vector<int>& value)
+  {
     oid_ = value;
   }
+
+  void
+  setIntegerList(const int* value, size_t valueLength);
 
   std::string
   toString() const;

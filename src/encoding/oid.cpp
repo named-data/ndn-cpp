@@ -48,6 +48,14 @@ OID::OID(const string& oid)
   }
 }
 
+void
+OID::setIntegerList(const int* value, size_t valueLength)
+{
+  oid_.clear();
+  for (size_t i = 0; i < valueLength; ++i)
+    oid_.push_back(value[i]);
+}
+
 string OID::toString() const
 {
   ostringstream convert;
