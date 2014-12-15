@@ -183,9 +183,18 @@ FilePrivateKeyStorage::generateKeyPair
       if (EC_KEY_generate_key(ecKey) == 1) {
         // Encode the public key.
         int length = i2d_EC_PUBKEY(ecKey, NULL);
-        publicKeyDer = Blob(make_shared<vector<uint8_t> >(length), false);
-        uint8_t* derPointer = const_cast<uint8_t*>(publicKeyDer.buf());
+        vector<uint8_t> opensslPublicKeyDer(length);
+        uint8_t* derPointer = &opensslPublicKeyDer[0];
         i2d_EC_PUBKEY(ecKey, &derPointer);
+        // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
+        // Find the bit string which is the second child.
+        ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+          (&opensslPublicKeyDer[0], 0);
+        const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
+          dynamic_cast<DerSequence&>(*parsedNode).getChildren();
+        publicKeyDer = encodeSubjectPublicKeyInfo
+          (OID(EC_ENCRYPTION_OID),
+           ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
 
         // Encode the private key.
         EC_KEY_set_enc_flags(ecKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
@@ -371,6 +380,22 @@ FilePrivateKeyStorage::encodePkcs8PrivateKey
   result.addChild(algorithmIdentifier);
   result.addChild(ptr_lib::make_shared<DerNode::DerOctetString>
     (&privateKeyDer[0], privateKeyDer.size()));
+
+  return result.encode();
+}
+
+Blob
+FilePrivateKeyStorage::encodeSubjectPublicKeyInfo
+  (const OID& oid, const ptr_lib::shared_ptr<DerNode>& parameters,
+   const ptr_lib::shared_ptr<DerNode>& bitString)
+{
+  ptr_lib::shared_ptr<DerSequence> algorithmIdentifier(new DerSequence());
+  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerOid>(oid));
+  algorithmIdentifier->addChild(parameters);
+
+  DerSequence result;
+  result.addChild(algorithmIdentifier);
+  result.addChild(bitString);
 
   return result.encode();
 }

@@ -29,6 +29,8 @@
 
 namespace ndn {
 
+class DerNode;
+
 /**
  * FilePrivateKeyStorage extends PrivateKeyStorage to implement private key
  * storage using files.
@@ -137,6 +139,19 @@ private:
   encodePkcs8PrivateKey
     (const std::vector<uint8_t>& privateKeyDer, const OID& oid,
      const ptr_lib::shared_ptr<DerNode>& parameters);
+
+  /**
+   * Encode the bitString into a SubjectPublicKeyInfo.
+   * @param oid The OID of the privateKey.
+   * @param parameters The DerNode of the parameters for the OID.
+   * @param bitstring The public key bitString which is already in a
+   * DerNode::DerBitString.
+   * @return The subject public key info DER.
+   */
+  Blob
+  encodeSubjectPublicKeyInfo
+    (const OID& oid, const ptr_lib::shared_ptr<DerNode>& parameters,
+     const ptr_lib::shared_ptr<DerNode>& bitString);
 
   std::string keyStorePath_;
 };
