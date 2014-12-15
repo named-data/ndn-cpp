@@ -148,12 +148,11 @@ SelfVerifyPolicyManager::getPublicKeyDer(const KeyLocator& keyLocator)
     // Use the public key DER directly.
     return keyLocator.getKeyData();
   else if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME &&
-           identityStorage_) {
+           identityStorage_)
     // Assume the key name is a certificate name.
     return identityStorage_->getKey
       (IdentityCertificate::certificateNameToPublicKeyName
        (keyLocator.getKeyName()));
-  }
   else
     // Can't find a key to verify.
     return Blob();
