@@ -144,7 +144,8 @@ FilePrivateKeyStorage::generateKeyPair
         derPointer = &pkcs1PrivateKeyDer[0];
         i2d_RSAPrivateKey(rsa, &derPointer);
         privateKeyDer = encodePkcs8PrivateKey
-          (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID));
+          (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
+           ptr_lib::make_shared<DerNode::DerNull>());
       }
     }
 
@@ -152,21 +153,28 @@ FilePrivateKeyStorage::generateKeyPair
     RSA_free(rsa);
   }
   else if (keyType == KEY_TYPE_EC) {
+    OID parametersOid;
     int curveId;
-    if (keySize == 112)
-      curveId = NID_secp112r1;
-    else if (keySize == 128)
-      curveId = NID_secp128r1;
-    else if (keySize == 160)
-      curveId = NID_secp160r1;
-    else if (keySize == 224)
+    if (keySize == 224) {
       curveId = NID_secp224r1;
-    else if (keySize == 256)
+      int curveOid[] = { OBJ_secp224r1 };
+      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
+    }
+    else if (keySize == 256) {
       curveId = NID_X9_62_prime256v1;
-    else if (keySize == 384)
+      int curveOid[] = { OBJ_X9_62_prime256v1 };
+      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
+    }
+    else if (keySize == 384) {
       curveId = NID_secp384r1;
-    else if (keySize == 521)
+      int curveOid[] = { OBJ_secp384r1 };
+      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
+    }
+    else if (keySize == 521) {
       curveId = NID_secp521r1;
+      int curveOid[] = { OBJ_secp521r1 };
+      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
+    }
     else
       throw SecurityException("Unsupported keySize for KEY_TYPE_EC");
 
@@ -180,12 +188,14 @@ FilePrivateKeyStorage::generateKeyPair
         i2d_EC_PUBKEY(ecKey, &derPointer);
 
         // Encode the private key.
+        EC_KEY_set_enc_flags(ecKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
         length = i2d_ECPrivateKey(ecKey, NULL);
         vector<uint8_t> pkcs1PrivateKeyDer(length);
         derPointer = &pkcs1PrivateKeyDer[0];
         i2d_ECPrivateKey(ecKey, &derPointer);
         privateKeyDer = encodePkcs8PrivateKey
-          (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID));
+          (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
+           ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
       }
     }
 
@@ -349,11 +359,12 @@ FilePrivateKeyStorage::nameTransform
 
 Blob
 FilePrivateKeyStorage::encodePkcs8PrivateKey
-  (const vector<uint8_t>& privateKeyDer, const OID& oid)
+  (const vector<uint8_t>& privateKeyDer, const OID& oid,
+   const ptr_lib::shared_ptr<DerNode>& parameters)
 {
   ptr_lib::shared_ptr<DerSequence> algorithmIdentifier(new DerSequence());
   algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerOid>(oid));
-  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerNull>());
+  algorithmIdentifier->addChild(parameters);
 
   DerSequence result;
   result.addChild(ptr_lib::make_shared<DerNode::DerInteger>(0));

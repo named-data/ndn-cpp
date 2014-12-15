@@ -126,14 +126,17 @@ private:
   nameTransform(const std::string& keyName, const std::string& extension);
 
   /**
-   * Encode the private key to a PKCS #8 private key.
+   * Encode the private key to a PKCS #8 private key. We do this explicitly here
+   * to avoid linking to extra OpenSSL libraries.
    * @param privateKeyDer The input private key DER.
    * @param oid The OID of the privateKey.
+   * @param parameters The DerNode of the parameters for the OID.
    * @return The PKCS #8 private key DER.
    */
   Blob
   encodePkcs8PrivateKey
-    (const std::vector<uint8_t>& privateKeyDer, const OID& oid);
+    (const std::vector<uint8_t>& privateKeyDer, const OID& oid,
+     const ptr_lib::shared_ptr<DerNode>& parameters);
 
   std::string keyStorePath_;
 };
