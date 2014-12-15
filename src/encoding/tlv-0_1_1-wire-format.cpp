@@ -31,14 +31,14 @@
 #include "../c/encoding/tlv/tlv-signature-info.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
-#include <ndn-cpp/encoding/tlv-0_1-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
 
 using namespace std;
 
 namespace ndn {
 
 Blob
-Tlv0_1WireFormat::encodeName(const Name& name)
+Tlv0_1_1WireFormat::encodeName(const Name& name)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_Name nameStruct;
@@ -57,7 +57,7 @@ Tlv0_1WireFormat::encodeName(const Name& name)
 }
 
 void
-Tlv0_1WireFormat::decodeName
+Tlv0_1_1WireFormat::decodeName
   (Name& name, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -76,7 +76,7 @@ Tlv0_1WireFormat::decodeName
 }
 
 Blob
-Tlv0_1WireFormat::encodeInterest
+Tlv0_1_1WireFormat::encodeInterest
   (const Interest& interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset)
 {
@@ -101,7 +101,7 @@ Tlv0_1WireFormat::encodeInterest
 }
 
 void
-Tlv0_1WireFormat::decodeInterest
+Tlv0_1_1WireFormat::decodeInterest
   (Interest& interest, const uint8_t *input, size_t inputLength,
    size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
@@ -125,7 +125,7 @@ Tlv0_1WireFormat::decodeInterest
 }
 
 Blob
-Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
+Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
@@ -144,7 +144,7 @@ Tlv0_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset,
 }
 
 void
-Tlv0_1WireFormat::decodeData
+Tlv0_1_1WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -163,7 +163,7 @@ Tlv0_1WireFormat::decodeData
 }
 
 Blob
-Tlv0_1WireFormat::encodeControlParameters
+Tlv0_1_1WireFormat::encodeControlParameters
   (const ControlParameters& controlParameters)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -183,7 +183,7 @@ Tlv0_1WireFormat::encodeControlParameters
 }
 
 Blob
-Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
+Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
 {
   struct ndn_Signature signatureStruct;
   struct ndn_NameComponent nameComponents[100];
@@ -201,7 +201,7 @@ Tlv0_1WireFormat::encodeSignatureInfo(const Signature& signature)
 }
 
 ptr_lib::shared_ptr<Signature>
-Tlv0_1WireFormat::decodeSignatureInfoAndValue
+Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
   (const uint8_t *signatureInfo, size_t signatureInfoLength,
    const uint8_t *signatureValue, size_t signatureValueLength)
 {
@@ -232,7 +232,7 @@ Tlv0_1WireFormat::decodeSignatureInfoAndValue
 }
 
 Blob
-Tlv0_1WireFormat::encodeSignatureValue(const Signature& signature)
+Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
 {
   // TODO: Handle signature algorithms other than Sha256WithRsa.
   const Sha256WithRsaSignature& sha256WithRsaSignature =
