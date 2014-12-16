@@ -133,7 +133,7 @@ Certificate::decode()
     root.getChildren();
   // 1st: validity info
   const std::vector<ptr_lib::shared_ptr<DerNode> >& validityChildren =
-    dynamic_cast<DerSequence&>(*rootChildren[0]).getChildren();
+    DerNode::getSequence(rootChildren, 0).getChildren();
   notBefore_ = dynamic_cast<DerGeneralizedTime&>
     (*validityChildren[0]).toMillisecondsSince1970();
   notAfter_ = dynamic_cast<DerGeneralizedTime&>
@@ -141,9 +141,9 @@ Certificate::decode()
 
   // 2nd: subjectList
   const std::vector<ptr_lib::shared_ptr<DerNode> >& subjectChildren =
-    dynamic_cast<DerSequence&>(*rootChildren[1]).getChildren();
+    DerNode::getSequence(rootChildren, 1).getChildren();
   for (int i = 0; i < subjectChildren.size(); ++i) {
-    DerSequence& sd = dynamic_cast<DerSequence&>(*subjectChildren[i]);
+    DerSequence& sd = DerNode::getSequence(subjectChildren, i);
     const std::vector<ptr_lib::shared_ptr<DerNode> >& descriptionChildren =
       sd.getChildren();
     string oidStr = descriptionChildren[0]->toVal().toRawStr();
@@ -159,10 +159,9 @@ Certificate::decode()
 
   if (rootChildren.size() > 3) {
     const std::vector<ptr_lib::shared_ptr<DerNode> >& extensionChildren =
-      dynamic_cast<DerSequence&>(*rootChildren[3]).getChildren();
+      DerNode::getSequence(rootChildren, 3).getChildren();
     for (int i = 0; i < extensionChildren.size(); ++i) {
-      DerSequence& extInfo =
-        dynamic_cast<DerSequence&>(*extensionChildren[i]);
+      DerSequence& extInfo = DerNode::getSequence(extensionChildren, i);
 
       const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
         extInfo.getChildren();

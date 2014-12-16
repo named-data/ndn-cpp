@@ -87,6 +87,21 @@ DerNode::toVal()
   return encode();
 }
 
+DerNode::DerSequence&
+DerNode::getSequence
+  (const std::vector<ptr_lib::shared_ptr<DerNode> >&outerChildren, size_t index)
+{
+  if (index >= outerChildren.size())
+    throw DerDecodingException("getChildren: Child index is out of bounds");
+
+  try {
+    return dynamic_cast<DerSequence&>(*outerChildren[index]);
+  }
+  catch (exception& e) {
+    throw DerDecodingException("getChildren: Parent DerNode is not DerSequence");
+  }
+}
+
 void
 DerNode::encodeHeader(size_t size)
 {

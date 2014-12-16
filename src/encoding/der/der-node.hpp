@@ -83,6 +83,20 @@ public:
   class DerPrintableString;
   class DerGeneralizedTime;
 
+  /**
+   * Check that index is in bounds for the outerChildren list, cast
+   * outerChildren[index] to DerSequence and return it.
+   * @param outerChildren The list of DerNode, usually returned by another
+   * call to getChildren.
+   * @param index The index of the outerChildren.
+   * @return outerChildren[index] cast to DerSequence.
+   * @throw DerDecodingException if index is out of bounds or if
+   * outerChildren[index] is not a DerSequence.
+   */
+  static DerNode::DerSequence&
+  getSequence
+    (const std::vector<ptr_lib::shared_ptr<DerNode> >&outerChildren, size_t index);
+
 protected:
   /**
    * Create a generic DER node with the given nodeType. This is a private
