@@ -329,7 +329,7 @@ FilePrivateKeyStorage::sign
     if (!success)
       throw SecurityException("FilePrivateKeyStorage::sign: Error in RSA_sign");
   }
-  if (oidString == EC_ENCRYPTION_OID) {
+  else if (oidString == EC_ENCRYPTION_OID) {
     ec_key_st* privateKey = decodeEcPrivateKey(algorithmParameters, privateKeyDer);
     int success = ECDSA_sign
       (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength,
