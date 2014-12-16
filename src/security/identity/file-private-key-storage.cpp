@@ -44,6 +44,29 @@ static const char *WHITESPACE_CHARS = " \n\r\t";
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
+static int CURVE_OID_224[] = { OBJ_secp224r1 };
+static int CURVE_OID_256[] = { OBJ_X9_62_prime256v1 };
+static int CURVE_OID_384[] = { OBJ_secp384r1 };
+static int CURVE_OID_521[] = { OBJ_secp521r1 };
+
+/**
+ * The EcKeyInfo struct has fields used by the EC_KEY_INFO array to relate EC
+ * key size and OIDs.
+ */
+struct EcKeyInfo {
+  int keySize;
+  int curveId;
+  int *oidIntegerList;
+  size_t oidIntegerListLength;
+};
+
+static struct EcKeyInfo EC_KEY_INFO[] {
+  { 224, NID_secp224r1, CURVE_OID_224, sizeof(CURVE_OID_224) / sizeof(CURVE_OID_224[0]) },
+  { 256, NID_X9_62_prime256v1, CURVE_OID_256, sizeof(CURVE_OID_256) / sizeof(CURVE_OID_256[0]) },
+  { 384, NID_secp384r1, CURVE_OID_384, sizeof(CURVE_OID_384) / sizeof(CURVE_OID_384[0]) },
+  { 521, NID_secp521r1, CURVE_OID_521, sizeof(CURVE_OID_521) / sizeof(CURVE_OID_521[0]) }
+};
+
 /**
  * Modify str in place to erase whitespace on the left.
  * @param str
@@ -154,28 +177,19 @@ FilePrivateKeyStorage::generateKeyPair
   }
   else if (keyType == KEY_TYPE_EC) {
     OID parametersOid;
-    int curveId;
-    if (keySize == 224) {
-      curveId = NID_secp224r1;
-      int curveOid[] = { OBJ_secp224r1 };
-      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
+    int curveId = -1;
+
+    // Find the entry in EC_KEY_INFO.
+    for (size_t i = 0 ; i < sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); ++i) {
+      if (EC_KEY_INFO[i].keySize == keySize) {
+        curveId = EC_KEY_INFO[i].curveId;
+        parametersOid.setIntegerList
+          (EC_KEY_INFO[i].oidIntegerList, EC_KEY_INFO[i].oidIntegerListLength);
+
+        break;
+      }
     }
-    else if (keySize == 256) {
-      curveId = NID_X9_62_prime256v1;
-      int curveOid[] = { OBJ_X9_62_prime256v1 };
-      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
-    }
-    else if (keySize == 384) {
-      curveId = NID_secp384r1;
-      int curveOid[] = { OBJ_secp384r1 };
-      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
-    }
-    else if (keySize == 521) {
-      curveId = NID_secp521r1;
-      int curveOid[] = { OBJ_secp521r1 };
-      parametersOid.setIntegerList(curveOid, sizeof(curveOid) / sizeof(curveOid[0]));
-    }
-    else
+    if (curveId == -1)
       throw SecurityException("Unsupported keySize for KEY_TYPE_EC");
 
     EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
