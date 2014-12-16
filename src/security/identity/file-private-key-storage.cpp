@@ -301,12 +301,9 @@ FilePrivateKeyStorage::sign
     DerNode::getSequence(pkcs8Children, 1).getChildren();
   string oidString
     (dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr());
-  ptr_lib::shared_ptr<DerNode> algrithmParameters = algorithmIdChildren[1];
+  ptr_lib::shared_ptr<DerNode> algorithmParameters = algorithmIdChildren[1];
   // Get the value of the 3rd child which is the octet string.
   Blob privateKeyDer = pkcs8Children[2]->toVal();
-
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t* derPointer = privateKeyDer.buf();
 
   // Get the digest to sign.
   uint8_t digest[SHA256_DIGEST_LENGTH];
@@ -315,12 +312,14 @@ FilePrivateKeyStorage::sign
   uint8_t signatureBits[1000];
   unsigned int signatureBitsLength;
 
+  // Decode the private key and sign.
   if (oidString == RSA_ENCRYPTION_OID) {
-    // Decode the private key and sign.
+    // Use a temporary pointer since d2i updates it.
+    const uint8_t* derPointer = privateKeyDer.buf();
     rsa_st* privateKey = d2i_RSAPrivateKey(NULL, &derPointer, privateKeyDer.size());
     if (!privateKey)
       throw SecurityException
-        ("FilePrivateKeyStorage::sign: Error decoding private key DER");
+        ("FilePrivateKeyStorage::sign: Error decoding the RSA private key DER");
 
     int success = RSA_sign
       (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength,
@@ -329,6 +328,16 @@ FilePrivateKeyStorage::sign
     RSA_free(privateKey);
     if (!success)
       throw SecurityException("FilePrivateKeyStorage::sign: Error in RSA_sign");
+  }
+  if (oidString == EC_ENCRYPTION_OID) {
+    ec_key_st* privateKey = decodeEcPrivateKey(algorithmParameters, privateKeyDer);
+    int success = ECDSA_sign
+      (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength,
+       privateKey);
+    // Free the private key before checking for success.
+    EC_KEY_free(privateKey);
+    if (!success)
+      throw SecurityException("FilePrivateKeyStorage::sign: Error in ECDSA_sign");
   }
   else
     throw SecurityException
@@ -426,6 +435,53 @@ FilePrivateKeyStorage::encodeSubjectPublicKeyInfo
   result.addChild(bitString);
 
   return result.encode();
+}
+
+ec_key_st*
+FilePrivateKeyStorage::decodeEcPrivateKey
+  (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
+   const Blob& privateKeyDer)
+{
+  // Find the curveId in EC_KEY_INFO.
+  int curveId = -1;
+  string oidString = algorithmParameters->toVal().toRawStr();
+  for (size_t i = 0 ; i < sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); ++i) {
+    OID curveOid(EC_KEY_INFO[i].oidIntegerList, EC_KEY_INFO[i].oidIntegerListLength);
+    if (curveOid.toString() == oidString) {
+      curveId = EC_KEY_INFO[i].curveId;
+      break;
+    }
+  }
+  if (curveId == -1)
+    throw SecurityException
+      ("FilePrivateKeyStorage::decodeEcPrivateKey: Unrecognized EC algorithm parameters");
+
+  // Get the value in the octet string.
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(privateKeyDer.buf(), 0);
+  DerNode::DerOctetString* octetString = dynamic_cast<DerNode::DerOctetString*>
+    (parsedNode->getChildren()[1].get());
+  if (!octetString)
+    throw SecurityException
+      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't get the private key octet string");
+  Blob octetStringValue = octetString->toVal();
+  
+  BIGNUM* keyBignum = BN_bin2bn(octetStringValue.buf(), octetStringValue.size(), NULL);
+  if (!keyBignum) {
+    // We don't expect this to happen.
+    throw SecurityException
+      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create a BIGNUM for the private key value");
+  }
+  EC_KEY* privateKey = EC_KEY_new_by_curve_name(curveId);
+  if (!privateKey) {
+    // We don't expect this to happen.
+    BN_free(keyBignum);
+    throw SecurityException
+      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create an EC key for the curve ID");
+  }
+  EC_KEY_set_private_key(privateKey, keyBignum);
+  BN_free(keyBignum);
+
+  return privateKey;
 }
 
 }
