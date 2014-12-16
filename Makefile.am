@@ -60,6 +60,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
+  include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
@@ -163,6 +164,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/element-listener.cpp src/encoding/element-listener.hpp \
   src/encoding/oid.cpp \
   src/encoding/protobuf-tlv.cpp \
+  src/encoding/tlv-0_1-wire-format.cpp \
   src/encoding/tlv-0_1_1-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
