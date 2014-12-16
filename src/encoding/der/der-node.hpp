@@ -65,6 +65,16 @@ public:
   virtual Blob
   toVal();
 
+  /**
+   * If this object is a DerStructure, get the children of this node. Otherwise,
+   * throw an exception.
+   * (DerStructure overrides to implement this method.)
+   * @return The children as an array of shared_ptr<DerNode>.
+   * @throw DerDecodingException if this object is not a DerSequence.
+   */
+  virtual const std::vector<ptr_lib::shared_ptr<DerNode> >&
+  getChildren();
+
   class DerStructure;
 
   ////////
@@ -170,11 +180,8 @@ public:
    * Get the children of this node.
    * @return The children as an array of shared_ptr<DerNode>.
    */
-  const std::vector<ptr_lib::shared_ptr<DerNode> >&
-  getChildren()
-  {
-    return nodeList_;
-  }
+  virtual const std::vector<ptr_lib::shared_ptr<DerNode> >&
+  getChildren();
 
   void
   addChild(const ptr_lib::shared_ptr<DerNode>& node, bool notifyParent = false)

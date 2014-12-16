@@ -87,18 +87,24 @@ DerNode::toVal()
   return encode();
 }
 
+const std::vector<ptr_lib::shared_ptr<DerNode> >&
+DerNode::getChildren()
+{
+  throw DerDecodingException("getChildren: This DerNode is not DerSequence");
+}
+
 DerNode::DerSequence&
 DerNode::getSequence
   (const std::vector<ptr_lib::shared_ptr<DerNode> >&outerChildren, size_t index)
 {
   if (index >= outerChildren.size())
-    throw DerDecodingException("getChildren: Child index is out of bounds");
+    throw DerDecodingException("getSequence: Child index is out of bounds");
 
   try {
     return dynamic_cast<DerSequence&>(*outerChildren[index]);
   }
   catch (exception& e) {
-    throw DerDecodingException("getChildren: Parent DerNode is not DerSequence");
+    throw DerDecodingException("getSequence: Parent DerNode is not DerSequence");
   }
 }
 
@@ -192,6 +198,12 @@ DerNode::DerStructure::getSize()
 
   encodeHeader(size_);
   return size_ + header_.size();
+}
+
+const std::vector<ptr_lib::shared_ptr<DerNode> >&
+DerNode::DerStructure::getChildren()
+{
+  return nodeList_;
 }
 
 Blob

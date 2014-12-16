@@ -121,7 +121,6 @@ void
 Certificate::decode()
 {
   ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(getContent().buf());
-  DerSequence& root = dynamic_cast<DerSequence&>(*parsedNode);
 
   // We need to ensure that there are:
   //   validity (notBefore, notAfter)
@@ -130,7 +129,7 @@ Certificate::decode()
   //   (optional) extension list
 
   const std::vector<ptr_lib::shared_ptr<DerNode> >& rootChildren =
-    root.getChildren();
+    parsedNode->getChildren();
   // 1st: validity info
   const std::vector<ptr_lib::shared_ptr<DerNode> >& validityChildren =
     DerNode::getSequence(rootChildren, 0).getChildren();

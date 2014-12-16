@@ -50,7 +50,7 @@ PublicKey::decodeKeyType(const Blob& keyDer)
     ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
       (keyDer.buf(), 0);
     const std::vector<ptr_lib::shared_ptr<DerNode> >& rootChildren =
-      dynamic_cast<DerSequence&>(*parsedNode).getChildren();
+      parsedNode->getChildren();
     const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
       DerNode::getSequence(rootChildren, 0).getChildren();
     oidStr = algorithmIdChildren[0]->toVal().toRawStr();

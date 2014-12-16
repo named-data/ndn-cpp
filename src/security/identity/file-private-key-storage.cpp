@@ -191,7 +191,7 @@ FilePrivateKeyStorage::generateKeyPair
         ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
           (&opensslPublicKeyDer[0], 0);
         const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
-          dynamic_cast<DerSequence&>(*parsedNode).getChildren();
+          parsedNode->getChildren();
         publicKeyDer = encodeSubjectPublicKeyInfo
           (OID(EC_ENCRYPTION_OID),
            ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
@@ -281,7 +281,7 @@ FilePrivateKeyStorage::sign
   // to find the inner private key DER.
   ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(&pkcs8Der[0], 0);
   const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
-    dynamic_cast<DerSequence&>(*parsedNode).getChildren();
+    parsedNode->getChildren();
   // Get the value of the 3rd child which is the octet string.
   Blob privateKeyDer = pkcs8Children[2]->toVal();
 
