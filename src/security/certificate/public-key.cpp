@@ -24,16 +24,49 @@
 #include <ndn-cpp/security//security-exception.hpp>
 #include "../../c/util/crypto.h"
 #include "../../encoding/der/der-node.hpp"
+#include "../../encoding/der/der-exception.hpp"
 #include <ndn-cpp/security/certificate/public-key.hpp>
 
 using namespace std;
 
 namespace ndn {
 
+typedef DerNode::DerSequence DerSequence;
+
+static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
+static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
+
 ptr_lib::shared_ptr<DerNode>
 PublicKey::toDer()
 {
   return DerNode::parse(keyDer_.buf());
+}
+
+KeyType
+PublicKey::decodeKeyType(const Blob& keyDer)
+{
+  string oidStr;
+  try {
+    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+      (keyDer.buf(), 0);
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& rootChildren =
+      dynamic_cast<DerSequence&>(*parsedNode).getChildren();
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
+      dynamic_cast<DerSequence&>(*rootChildren[0]).getChildren();
+    oidStr = algorithmIdChildren[0]->toVal().toRawStr();
+  }
+  catch (DerDecodingException& ex) {
+    throw UnrecognizedKeyFormatException
+      (string("PublicKey::decodeKeyType: Error decoding the public key") +
+       ex.what());
+  }
+
+  if (oidStr == RSA_ENCRYPTION_OID)
+    return KEY_TYPE_RSA;
+  else if (oidStr == EC_ENCRYPTION_OID)
+    return KEY_TYPE_EC;
+  else
+    throw UnrecognizedKeyFormatException("PublicKey::decodeKeyType: Unrecognized OID");
 }
 
 ptr_lib::shared_ptr<PublicKey>

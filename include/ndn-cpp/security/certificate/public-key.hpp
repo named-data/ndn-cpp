@@ -56,6 +56,16 @@ public:
   toDer();
 
   /**
+   * Decode the OID beginning of the public key in the DER blob and return the
+   * key type.
+   * @param keyDer The DER blob.
+   * @return The decoded KeyType, such as KEY_TYPE_RSA.
+   * @throw UnrecognizedKeyFormatException if can't decode or for an unrecognized OID.
+   */
+  static KeyType
+  decodeKeyType(const Blob& keyDer);
+
+  /**
    * Decode the public key from DER blob.
    * @param keyType The KeyType, such as KEY_TYPE_RSA.
    * @param keyDer The DER blob.
