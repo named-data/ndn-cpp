@@ -95,16 +95,16 @@ DerNode::getChildren()
 
 DerNode::DerSequence&
 DerNode::getSequence
-  (const std::vector<ptr_lib::shared_ptr<DerNode> >&outerChildren, size_t index)
+  (const std::vector<ptr_lib::shared_ptr<DerNode> >&children, size_t index)
 {
-  if (index >= outerChildren.size())
+  if (index >= children.size())
     throw DerDecodingException("getSequence: Child index is out of bounds");
 
   try {
-    return dynamic_cast<DerSequence&>(*outerChildren[index]);
+    return dynamic_cast<DerSequence&>(*children[index]);
   }
   catch (exception& e) {
-    throw DerDecodingException("getSequence: Parent DerNode is not DerSequence");
+    throw DerDecodingException("getSequence: Child DerNode is not a DerSequence");
   }
 }
 

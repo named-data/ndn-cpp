@@ -94,18 +94,18 @@ public:
   class DerGeneralizedTime;
 
   /**
-   * Check that index is in bounds for the outerChildren list, cast
-   * outerChildren[index] to DerSequence and return it.
-   * @param outerChildren The list of DerNode, usually returned by another
+   * Check that index is in bounds for the children list, cast children[index]
+   * to DerSequence and return it.
+   * @param children The list of DerNode, usually returned by another
    * call to getChildren.
-   * @param index The index of the outerChildren.
-   * @return outerChildren[index] cast to DerSequence.
+   * @param index The index of the children.
+   * @return children[index] cast to DerSequence.
    * @throw DerDecodingException if index is out of bounds or if
-   * outerChildren[index] is not a DerSequence.
+   * children[index] is not a DerSequence.
    */
   static DerNode::DerSequence&
   getSequence
-    (const std::vector<ptr_lib::shared_ptr<DerNode> >&outerChildren, size_t index);
+    (const std::vector<ptr_lib::shared_ptr<DerNode> >&children, size_t index);
 
 protected:
   /**
