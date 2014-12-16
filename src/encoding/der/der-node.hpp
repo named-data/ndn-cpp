@@ -66,9 +66,9 @@ public:
   toVal();
 
   /**
-   * If this object is a DerStructure, get the children of this node. Otherwise,
+   * If this object is a DerSequence, get the children of this node. Otherwise,
    * throw an exception.
-   * (DerStructure overrides to implement this method.)
+   * (DerSequence overrides to implement this method.)
    * @return The children as an array of shared_ptr<DerNode>.
    * @throw DerDecodingException if this object is not a DerSequence.
    */
