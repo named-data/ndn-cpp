@@ -250,8 +250,9 @@ FilePrivateKeyStorage::getPublicKey(const Name& keyName)
   // Use a vector in a shared_ptr so we can make it a Blob without copying.
   ptr_lib::shared_ptr<vector<uint8_t> > der(new vector<uint8_t>());
   fromBase64(base64.str(), *der);
-  // TODO: Need to get the correct keyType.
-  return PublicKey::fromDer(KEY_TYPE_RSA, Blob(der, false));
+
+  Blob derBlob(der, false);
+  return PublicKey::fromDer(PublicKey::decodeKeyType(derBlob), derBlob);
 }
 
 Blob
