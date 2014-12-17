@@ -24,6 +24,7 @@
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/control-parameters.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include "../c/encoding/tlv/tlv-name.h"
 #include "../c/encoding/tlv/tlv-interest.h"
 #include "../c/encoding/tlv/tlv-data.h"
@@ -224,9 +225,15 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
       throw runtime_error(ndn_getErrorString(error));
   }
 
-  // TODO: The library needs to handle other signature types than
-  //   SignatureSha256WithRsa.
-  ptr_lib::shared_ptr<Sha256WithRsaSignature> result(new Sha256WithRsaSignature());
+  ptr_lib::shared_ptr<Signature> result;
+  if (signatureStruct.type == ndn_SignatureType_Sha256WithRsaSignature)
+    result.reset(new Sha256WithRsaSignature());
+  else if (signatureStruct.type == ndn_SignatureType_Sha256WithEcdsaSignature)
+    result.reset(new Sha256WithEcdsaSignature());
+  else
+    // We don't expect this to happen.
+    throw runtime_error("signatureStruct.type has an unrecognized value");
+  
   result->set(signatureStruct);
   return result;
 }
@@ -234,11 +241,8 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
 Blob
 Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
 {
-  // TODO: Handle signature algorithms other than Sha256WithRsa.
-  const Sha256WithRsaSignature& sha256WithRsaSignature =
-    dynamic_cast<const Sha256WithRsaSignature&>(signature);
   struct ndn_Blob signatureStruct;
-  sha256WithRsaSignature.getSignature().get(signatureStruct);
+  signature.getSignature().get(signatureStruct);
 
   TlvEncoder encoder(256);
   ndn_Error error;
