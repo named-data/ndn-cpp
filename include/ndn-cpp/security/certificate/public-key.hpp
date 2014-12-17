@@ -36,17 +36,17 @@ public:
   /**
    * The default constructor.
    */
-  PublicKey() {}
+  PublicKey() 
+  : keyType_((KeyType)-1)
+  {}
 
   /**
-   * Create a new PublicKey with the given values.
-   * @param keyType The KeyType, such as KEY_TYPE_RSA.
-   * @param keyDer The blob of the PublicKeyInfo in terms of DER.
+   * Create a new PublicKey by decoding the keyDer. Set the key type from the
+   * decoding.
+   * @param keyDer The blob of the SubjectPublicKeyInfo DER.
+   * @throws UnrecognizedKeyFormatException if can't decode the key DER.
    */
-  PublicKey(KeyType keyType, const Blob& keyDer)
-  : keyType_(keyType), keyDer_(keyDer)
-  {
-  }
+  PublicKey(const Blob& keyDer);
 
   /**
    * Encode the public key into DER.
@@ -54,25 +54,6 @@ public:
    */
   ptr_lib::shared_ptr<DerNode>
   toDer();
-
-  /**
-   * Decode the OID beginning of the public key in the DER blob and return the
-   * key type.
-   * @param keyDer The DER blob.
-   * @return The decoded KeyType, such as KEY_TYPE_RSA.
-   * @throw UnrecognizedKeyFormatException if can't decode or for an unrecognized OID.
-   */
-  static KeyType
-  decodeKeyType(const Blob& keyDer);
-
-  /**
-   * Decode the public key from DER blob.
-   * @param keyType The KeyType, such as KEY_TYPE_RSA.
-   * @param keyDer The DER blob.
-   * @return The decoded public key.
-   */
-  static ptr_lib::shared_ptr<PublicKey>
-  fromDer(KeyType keyType, const Blob& keyDer);
 
   KeyType getKeyType() const { return keyType_; }
 

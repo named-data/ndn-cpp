@@ -36,16 +36,12 @@ typedef DerNode::DerSequence DerSequence;
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
-ptr_lib::shared_ptr<DerNode>
-PublicKey::toDer()
+PublicKey::PublicKey(const Blob& keyDer)
 {
-  return DerNode::parse(keyDer_.buf());
-}
+  keyDer_ = keyDer;
 
-KeyType
-PublicKey::decodeKeyType(const Blob& keyDer)
-{
-  string oidStr;
+  // Get the public key OID.
+  string oidString;
   try {
     ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
       (keyDer.buf(), 0);
@@ -53,43 +49,40 @@ PublicKey::decodeKeyType(const Blob& keyDer)
       parsedNode->getChildren();
     const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
       DerNode::getSequence(rootChildren, 0).getChildren();
-    oidStr = algorithmIdChildren[0]->toVal().toRawStr();
+    oidString = algorithmIdChildren[0]->toVal().toRawStr();
   }
   catch (DerDecodingException& ex) {
     throw UnrecognizedKeyFormatException
-      (string("PublicKey::decodeKeyType: Error decoding the public key") +
-       ex.what());
+      (string("PublicKey: Error decoding the public key") + ex.what());
   }
 
-  if (oidStr == RSA_ENCRYPTION_OID)
-    return KEY_TYPE_RSA;
-  else if (oidStr == EC_ENCRYPTION_OID)
-    return KEY_TYPE_EC;
-  else
-    throw UnrecognizedKeyFormatException("PublicKey::decodeKeyType: Unrecognized OID");
-}
-
-ptr_lib::shared_ptr<PublicKey>
-PublicKey::fromDer(KeyType keyType, const Blob& keyDer)
-{
+  // Verify that the we can decode.
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer.buf();
-  if (keyType == KEY_TYPE_RSA) {
+  if (oidString == RSA_ENCRYPTION_OID) {
+    keyType_ = KEY_TYPE_RSA;
+
     RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)
       throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");
     RSA_free(publicKey);
   }
-  else if (keyType == KEY_TYPE_EC) {
+  else if (oidString == EC_ENCRYPTION_OID) {
+    keyType_ = KEY_TYPE_EC;
+
     EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)
       throw UnrecognizedKeyFormatException("Error decoding EC public key DER");
     EC_KEY_free(publicKey);
   }
   else
-    throw SecurityException("PublicKey::fromDer: Unrecognized keyType");
+    throw UnrecognizedKeyFormatException("PublicKey: Unrecognized OID");
+}
 
-  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(keyType, keyDer));
+ptr_lib::shared_ptr<DerNode>
+PublicKey::toDer()
+{
+  return DerNode::parse(keyDer_.buf());
 }
 
 Blob
