@@ -118,13 +118,13 @@ public:
   getNotAfter() const { return notAfter_; }
 
   void
-  setPublicKeyInfo(const PublicKey& key) { key_.reset(new PublicKey(key)); }
+  setPublicKeyInfo(const PublicKey& key) { key_ = key; }
 
   PublicKey&
-  getPublicKeyInfo() { return *key_; }
+  getPublicKeyInfo() { return key_; }
 
   const PublicKey&
-  getPublicKeyInfo() const { return *key_; }
+  getPublicKeyInfo() const { return key_; }
 
   /**
    * Check if the certificate is valid.
@@ -153,7 +153,7 @@ protected:
   SubjectDescriptionList subjectDescriptionList_;
   MillisecondsSince1970 notBefore_;
   MillisecondsSince1970 notAfter_;
-  ptr_lib::shared_ptr<PublicKey> key_;
+  PublicKey key_;
   ExtensionList extensionList_;
 
 private:

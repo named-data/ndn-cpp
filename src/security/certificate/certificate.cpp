@@ -105,7 +105,7 @@ Certificate::toDer()
     subjectList->addChild(subjectDescriptionList_[i].toDer());
 
   root->addChild(subjectList);
-  root->addChild(key_->toDer());
+  root->addChild(key_.toDer());
 
   if (extensionList_.size() > 0) {
     ptr_lib::shared_ptr<DerSequence> extensionList(new DerSequence());
@@ -154,7 +154,7 @@ Certificate::decode()
   // 3rd: public key
   Blob publicKeyInfo = rootChildren[2]->encode();
   // TODO: Handle key types other than RSA.
-  key_ = PublicKey::fromDer(KEY_TYPE_RSA, publicKeyInfo);
+  key_ = *PublicKey::fromDer(KEY_TYPE_RSA, publicKeyInfo);
 
   if (rootChildren.size() > 3) {
     const std::vector<ptr_lib::shared_ptr<DerNode> >& extensionChildren =
@@ -187,7 +187,7 @@ Certificate::printCertificate(ostream& os) const
     os << "  " << it->getOidString() << ": " << it->getValue() << endl;
 
   os << "Public key bits:" << endl;
-  os << toBase64(key_->getKeyDer().buf(), key_->getKeyDer().size(), true);
+  os << toBase64(key_.getKeyDer().buf(), key_.getKeyDer().size(), true);
 }
 
 void
