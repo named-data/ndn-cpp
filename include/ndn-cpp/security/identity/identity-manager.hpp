@@ -114,6 +114,18 @@ public:
   generateRSAKeyPair(const Name& identityName, bool isKsk = false, int keySize = 2048);
 
   /**
+   * Generate a pair of ECDSA keys for the specified identity.
+   * @param identityName The name of the identity.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
+   * @return The generated key name.
+   */
+  Name
+  generateEcdsaKeyPair(const Name& identityName, bool isKsk = false, int keySize = 256);
+
+  /**
    * Set a key as the default key of an identity.
    * @param keyName The name of the key.
    * @param identityName (optional) the name of the identity. If not specified,
@@ -148,6 +160,18 @@ public:
    */
   Name
   generateRSAKeyPairAsDefault(const Name& identityName, bool isKsk = false, int keySize = 2048);
+
+  /**
+   * Generate a pair of ECDSA keys for the specified identity and set it as default key for the identity.
+   * @param identityName The name of the identity.
+   * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
+   * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
+   * @param keySize (optional) The size of the key. If omitted, use a default
+   * secure key size.
+   * @return The generated key name.
+   */
+  Name
+  generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk = false, int keySize = 256);
 
   /**
    * Get the public key with the specified name.

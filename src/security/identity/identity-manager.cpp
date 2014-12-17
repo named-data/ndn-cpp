@@ -171,12 +171,27 @@ IdentityManager::generateRSAKeyPair(const Name& identityName, bool isKsk, int ke
 }
 
 Name
+IdentityManager::generateEcdsaKeyPair(const Name& identityName, bool isKsk, int keySize)
+{
+  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_EC, keySize);
+  return keyName;
+}
+
+Name
 IdentityManager::generateRSAKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
 {
   Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_RSA, keySize);
 
   identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
 
+  return keyName;
+}
+
+Name
+IdentityManager::generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
+{
+  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_EC, keySize);
+  identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
   return keyName;
 }
 
