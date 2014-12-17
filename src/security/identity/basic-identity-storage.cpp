@@ -319,32 +319,6 @@ BasicIdentityStorage::getKey(const Name& keyName)
   return result;
 }
 
-KeyType
-BasicIdentityStorage::getKeyType(const Name& keyName)
-{
-  string keyId = keyName.get(-1).toEscapedString();
-  Name identityName = keyName.getPrefix(-1);
-
-  sqlite3_stmt *statement;
-  sqlite3_prepare_v2(database_, "SELECT key_type FROM Key WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
-
-  sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
-  sqlite3_bind_text(statement, 2, keyId, SQLITE_TRANSIENT);
-
-  int res = sqlite3_step(statement);
-
-  int keyType = -1;
-  if (res == SQLITE_ROW)
-    keyType = sqlite3_column_int(statement, 0);
-
-  sqlite3_finalize(statement);
-
-  if (keyType < 0)
-    throw SecurityException("Cannot get public key type because the keyName doesn't exist");
-  else
-    return (KeyType)keyType;
-}
-
 void
 BasicIdentityStorage::activateKey(const Name& keyName)
 {

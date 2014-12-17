@@ -90,16 +90,6 @@ MemoryIdentityStorage::getKey(const Name& keyName)
   return record->second->getKeyDer();
 }
 
-KeyType
-MemoryIdentityStorage::getKeyType(const Name& keyName)
-{
-  map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record = keyStore_.find(keyName.toUri());
-  if (record == keyStore_.end())
-     throw SecurityException("Cannot get public key type because the keyName doesn't exist");
-
-  return record->second->getKeyType();
-}
-
 void
 MemoryIdentityStorage::activateKey(const Name& keyName)
 {

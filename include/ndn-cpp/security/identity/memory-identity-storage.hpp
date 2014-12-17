@@ -90,14 +90,6 @@ public:
   getKey(const Name& keyName);
 
   /**
-   * Get the KeyType of the public key with the given keyName.
-   * @param keyName The name of the requested public key.
-   * @return The KeyType, for example KEY_TYPE_RSA.
-   */
-  virtual KeyType
-  getKeyType(const Name& keyName);
-
-  /**
    * Activate a key.  If a key is marked as inactive, its private part will not be used in packet signing.
    * @param keyName name of the key
    */
