@@ -137,7 +137,9 @@ public:
     cert.setNotAfter(1388100174000L);
 
     cert.addSubjectDescription(CertificateSubjectDescription(TEST_OID, "TEST NAME"));
-    cert.setPublicKeyInfo(PublicKey(KEY_TYPE_RSA, Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY))));
+    ptr_lib::shared_ptr<PublicKey> tempPublicKey(new PublicKey
+      (Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY))));
+    cert.setPublicKeyInfo(*tempPublicKey);
 
     toyCert = cert;
   }

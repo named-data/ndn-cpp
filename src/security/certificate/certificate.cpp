@@ -153,8 +153,8 @@ Certificate::decode()
 
   // 3rd: public key
   Blob publicKeyInfo = rootChildren[2]->encode();
-  // TODO: Handle key types other than RSA.
-  key_ = *PublicKey::fromDer(KEY_TYPE_RSA, publicKeyInfo);
+  ptr_lib::shared_ptr<PublicKey> tempPublicKey(new PublicKey(publicKeyInfo));
+  key_ = *tempPublicKey;
 
   if (rootChildren.size() > 3) {
     const std::vector<ptr_lib::shared_ptr<DerNode> >& extensionChildren =

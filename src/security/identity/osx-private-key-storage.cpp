@@ -146,8 +146,7 @@ namespace ndn
 
     Blob blob(CFDataGetBytePtr(exportedKey.get()), CFDataGetLength(exportedKey.get()));
 
-    // TODO: Need to get the correct KeyType.
-    return PublicKey::fromDer(KEY_TYPE_RSA, blob);
+    return ptr_lib::shared_ptr<PublicKey>(new PublicKey(blob));
   }
 
   Blob OSXPrivateKeyStorage::sign(const uint8_t *data, size_t dataLength, const Name & keyName, DigestAlgorithm digestAlgo)

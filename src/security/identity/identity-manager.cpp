@@ -204,7 +204,7 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   Name keyName = getKeyNameFromCertificatePrefix(certificatePrefix);
 
   Blob keyBlob = identityStorage_->getKey(keyName);
-  ptr_lib::shared_ptr<PublicKey> publicKey = PublicKey::fromDer(KEY_TYPE_RSA, keyBlob);
+  ptr_lib::shared_ptr<PublicKey> publicKey(new PublicKey(keyBlob));
 
   ptr_lib::shared_ptr<IdentityCertificate> certificate = createIdentityCertificate
     (certificatePrefix, *publicKey,  signerCertificateName, notBefore, notAfter);
@@ -359,7 +359,7 @@ IdentityManager::selfSign(const Name& keyName)
   ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
 
   Blob keyBlob = identityStorage_->getKey(keyName);
-  ptr_lib::shared_ptr<PublicKey> publicKey = PublicKey::fromDer(KEY_TYPE_RSA, keyBlob);
+  ptr_lib::shared_ptr<PublicKey> publicKey(new PublicKey(keyBlob));
 
 #if NDN_CPP_HAVE_GMTIME_SUPPORT
   time_t nowSeconds = time(NULL);

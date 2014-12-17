@@ -41,7 +41,8 @@ MemoryPrivateKeyStorage::setPublicKeyForKeyName
   (const Name& keyName, KeyType keyType, const uint8_t* publicKeyDer,
    size_t publicKeyDerLength)
 {
-  publicKeyStore_[keyName.toUri()] = PublicKey::fromDer(keyType, Blob(publicKeyDer, publicKeyDerLength));
+  publicKeyStore_[keyName.toUri()] = ptr_lib::shared_ptr<PublicKey>(new PublicKey
+    (Blob(publicKeyDer, publicKeyDerLength)));
 }
 
 void

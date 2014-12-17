@@ -266,7 +266,7 @@ FilePrivateKeyStorage::getPublicKey(const Name& keyName)
   fromBase64(base64.str(), *der);
 
   Blob derBlob(der, false);
-  return PublicKey::fromDer(PublicKey::decodeKeyType(derBlob), derBlob);
+  return ptr_lib::shared_ptr<PublicKey>(new PublicKey(derBlob));
 }
 
 Blob
