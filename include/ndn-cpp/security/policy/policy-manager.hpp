@@ -127,6 +127,22 @@ public:
 
 protected:
   /**
+   * Check the type of signature and use the publicKeyDer to verify the
+   * signedBlob using the appropriate signature algorithm.
+   * @param signature An object of a subclass of Signature, e.g.
+   * Sha256WithRsaSignature.
+   * @param signedBlob the SignedBlob with the signed portion to verify.
+   * @param publicKeyDer The DER-encoded public key used to verify the signature.
+   * @return True if the signature is verified, false if failed.
+   * @throws SecurityException if the signature type is not recognized or if
+   * publicKeyDer can't be decoded.
+   */
+  static bool
+  verifySignature
+    (const Signature* signature, const SignedBlob& signedBlob,
+     const Blob& publicKeyDer);
+
+  /**
    * Verify the ECDSA signature on the SignedBlob using the given public key.
    * @param signature The signature bits.
    * @param signedBlob the SignedBlob with the signed portion to verify.

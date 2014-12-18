@@ -30,6 +30,21 @@ using namespace std;
 namespace ndn {
 
 bool
+PolicyManager::verifySignature
+  (const Signature* signature, const SignedBlob& signedBlob,
+   const Blob& publicKeyDer)
+{
+  if (dynamic_cast<const Sha256WithRsaSignature *>(signature))
+    return verifySha256WithRsaSignature
+      (signature->getSignature(), signedBlob, publicKeyDer);
+  else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature))
+    return verifySha256WithEcdsaSignature
+      (signature->getSignature(), signedBlob, publicKeyDer);
+  else
+    throw SecurityException("PolicyManager::verify: Signature type is unknown");
+}
+
+bool
 PolicyManager::verifySha256WithEcdsaSignature
   (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
