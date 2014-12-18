@@ -108,7 +108,7 @@ ConfigPolicyManager::checkVerificationPolicy
   try {
     keyLocator = &KeyLocator::getFromSignature(data->getSignature());
   }
-  catch (exception& ex) {
+  catch (std::exception& ex) {
     // No signature -> fail.
     onVerifyFailed(data);
     return ptr_lib::shared_ptr<ValidationRequest>();
