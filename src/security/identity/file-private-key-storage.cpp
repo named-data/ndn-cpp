@@ -157,7 +157,7 @@ FilePrivateKeyStorage::generateKeyPair
       if (RSA_generate_key_ex(rsa, keySize, exponent, NULL) == 1) {
         // Encode the public key.
         int length = i2d_RSA_PUBKEY(rsa, NULL);
-        publicKeyDer = Blob(make_shared<vector<uint8_t> >(length), false);
+        publicKeyDer = Blob(ptr_lib::make_shared<vector<uint8_t> >(length), false);
         uint8_t* derPointer = const_cast<uint8_t*>(publicKeyDer.buf());
         i2d_RSA_PUBKEY(rsa, &derPointer);
 
