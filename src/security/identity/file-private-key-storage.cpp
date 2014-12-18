@@ -231,9 +231,9 @@ FilePrivateKeyStorage::generateKeyPair
   string publicKeyFilePath = nameTransform(keyUri, ".pub");
   string privateKeyFilePath = nameTransform(keyUri, ".pri");
 
-  ofstream publicKeyFile(publicKeyFilePath);
+  ofstream publicKeyFile(publicKeyFilePath.c_str());
   publicKeyFile << toBase64(publicKeyDer.buf(), publicKeyDer.size(), true);
-  ofstream privateKeyFile(privateKeyFilePath);
+  ofstream privateKeyFile(privateKeyFilePath.c_str());
   privateKeyFile << toBase64(privateKeyDer.buf(), privateKeyDer.size(), true);
 
   ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
