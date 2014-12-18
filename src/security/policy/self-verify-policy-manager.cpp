@@ -21,8 +21,6 @@
  */
 
 #include "../../c/util/crypto.h"
-#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
-#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/identity-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
