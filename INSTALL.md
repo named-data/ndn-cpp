@@ -24,7 +24,7 @@ In a new terminal, enter:
 
     sudo port install protobuf-cpp
 
-Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+Optional: To install log4cxx, install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:
 
     sudo port install log4cxx
@@ -42,7 +42,7 @@ In a new terminal, enter:
 
     sudo port install protobuf-cpp
 
-Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
+Optional: To install log4cxx, install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:
 
     sudo port install log4cxx
