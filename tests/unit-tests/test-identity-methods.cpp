@@ -36,6 +36,7 @@
 
 using namespace std;
 using namespace ndn;
+using namespace ndn::func_lib;
 
 static double
 getNowSeconds()
@@ -80,6 +81,31 @@ zL+zWT/WYemLq/8A1/hHWiwCtfOH1xQhGqWHJzeSgwIgOOrzxTbRaCjhAb1u2TeV\
 yx/I9H/DV+AqSHCaYbB92HDcDN0kqwSnUf5H1+osE9MR5DLBLhXdSiULSgxT3Or/\
 y2QgsgUK59WrjhlVMPEiHHRs15NZJbL1uQFXjgScdEarohcY3dilqotineFZCeN8\
 DwIDAQAB";
+
+class VerifyCounter
+{
+public:
+  VerifyCounter()
+  {
+    onVerifiedCallCount_ = 0;
+    onVerifyFailedCallCount_ = 0;
+  }
+
+  void
+  onVerified(const ptr_lib::shared_ptr<Data>& data)
+  {
+    ++onVerifiedCallCount_;
+  }
+
+  void
+  onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+  {
+    ++onVerifyFailedCallCount_;
+  }
+
+  int onVerifiedCallCount_;
+  int onVerifyFailedCallCount_;
+};
 
 class TestSqlIdentityStorage : public ::testing::Test {
 public:
@@ -290,6 +316,26 @@ TEST_F(TestSqlIdentityStorage, Stress)
   ASSERT_FALSE(identityStorage->doesCertificateExist(certName1));
   ASSERT_FALSE(identityStorage->doesKeyExist(keyName1));
   ASSERT_FALSE(identityStorage->doesIdentityExist(identityName));
+}
+
+TEST_F(TestSqlIdentityStorage, EcdsaIdentity)
+{
+  Name identityName("/TestSqlIdentityStorage/KeyType/ECDSA");
+  Name keyName = identityManager->generateEcdsaKeyPairAsDefault(identityName);
+  ptr_lib::shared_ptr<IdentityCertificate> cert =
+    identityManager->selfSign(keyName);
+  identityManager->addCertificateAsIdentityDefault(*cert);
+
+  // Check the self-signature.
+  VerifyCounter counter;
+  Name certName = identityStorage->getDefaultCertificateNameForKey(keyName);
+  keyChain->verifyData
+    (cert, bind(&VerifyCounter::onVerified, &counter, _1),
+     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
+  ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
+
+  keyChain->deleteIdentity(identityName);
+  ASSERT_FALSE(identityStorage->doesKeyExist(keyName));
 }
 
 int
