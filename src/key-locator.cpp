@@ -20,6 +20,8 @@
  */
 
 #include <ndn-cpp/common.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/key-locator.hpp>
 #include "c/key-locator.h"
 
@@ -49,6 +51,26 @@ KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
     keyName_.get().clear();
     keyNameType_ = (ndn_KeyNameType)-1;
   }
+}
+
+const KeyLocator&
+KeyLocator::getFromSignature(const Signature* signature)
+{
+  {
+    const Sha256WithRsaSignature *castSignature =
+      dynamic_cast<const Sha256WithRsaSignature *>(signature);
+    if (castSignature)
+      return castSignature->getKeyLocator();
+  }
+  {
+    const Sha256WithEcdsaSignature *castSignature =
+      dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+    if (castSignature)
+      return castSignature->getKeyLocator();
+  }
+
+  throw runtime_error
+    ("KeyLocator::getFromSignature: Signature type does not have a KeyLocator");
 }
 
 }

@@ -31,6 +31,8 @@ struct ndn_KeyLocator;
 
 namespace ndn {
 
+class Signature;
+
 class KeyLocator {
 public:
   KeyLocator()
@@ -117,6 +119,16 @@ public:
     keyNameType_ = keyNameType;
     ++changeCount_;
   }
+
+  /**
+   * If the signature is a type that has a KeyLocator, then return it. Otherwise
+   * throw an error.
+   * @param signature An object of a subclass of Signature.
+   * @return The signature's KeyLocator. It is an error if signature doesn't
+   * have a KeyLocator.
+   */
+  static const KeyLocator&
+  getFromSignature(const Signature* signature);
 
   /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.
