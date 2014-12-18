@@ -411,6 +411,8 @@ namespace ndn
     switch(keyType){
     case KEY_TYPE_RSA:
       return kSecAttrKeyTypeRSA;
+    case KEY_TYPE_EC:
+      return kSecAttrKeyTypeECDSA;
     default:
       return NULL;
     }
