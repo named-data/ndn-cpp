@@ -29,13 +29,13 @@
 #include <sstream>
 #include <fstream>
 #include <math.h>
-#include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include "../../util/logging.hpp"
-#include <ndn-cpp/security/security-exception.hpp>
-#include "ndn-cpp/data.hpp"
-#include <ndn-cpp/security/certificate/identity-certificate.hpp>
 #include "../../c/util/time.h"
-#include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/data.hpp>
+#include <ndn-cpp/key-locator.hpp>
+#include <ndn-cpp/security/certificate/identity-certificate.hpp>
+#include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 
 INIT_LOGGER("ndn.BasicIdentityStorage");
 
@@ -389,8 +389,7 @@ BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
 
   sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
-  const Sha256WithRsaSignature* signature = dynamic_cast<const Sha256WithRsaSignature*>(certificate.getSignature());
-  const Name& signerName = signature->getKeyLocator().getKeyName();
+  const Name& signerName = KeyLocator::getFromSignature(certificate.getSignature()).getKeyName();
   sqlite3_bind_text(statement, 2, signerName.toUri(), SQLITE_TRANSIENT);
 
   sqlite3_bind_text(statement, 3, identityName.toUri(), SQLITE_TRANSIENT);
@@ -440,8 +439,7 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 
   sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
-  const Sha256WithRsaSignature* signature = dynamic_cast<const Sha256WithRsaSignature*>(certificate.getSignature());
-  const Name & signerName = signature->getKeyLocator().getKeyName();
+  const Name& signerName = KeyLocator::getFromSignature(certificate.getSignature()).getKeyName();
   sqlite3_bind_text(statement, 2, signerName.toUri(), SQLITE_TRANSIENT);
 
   sqlite3_bind_text(statement, 3, identity.toUri(), SQLITE_TRANSIENT);
