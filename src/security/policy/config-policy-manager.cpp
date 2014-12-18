@@ -29,7 +29,6 @@
 #include <fstream>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/certificate/identity-certificate.hpp>
-#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../util/ndn-regex-matcher.hpp"
 #include "../../util/boost-info-parser.hpp"
 #include "../../c/util/time.h"
@@ -105,15 +104,17 @@ ConfigPolicyManager::checkVerificationPolicy
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
-  const Sha256WithRsaSignature *signature =
-    dynamic_cast<const Sha256WithRsaSignature *>(data->getSignature());
-  // No signature -> fail.
-  if (!signature) {
+  const KeyLocator* keyLocator;
+  try {
+    keyLocator = &KeyLocator::getFromSignature(data->getSignature());
+  }
+  catch (exception& ex) {
+    // No signature -> fail.
     onVerifyFailed(data);
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
-  const Name& signatureName = signature->getKeyLocator().getKeyName();
+  const Name& signatureName = keyLocator->getKeyName();
   // No key name in KeyLocator -> fail.
   if (signatureName.size() == 0) {
     onVerifyFailed(data);
@@ -180,7 +181,7 @@ ConfigPolicyManager::checkVerificationPolicy
 
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
-    if (verify(signature, data->wireEncode())) {
+    if (verify(data->getSignature(), data->wireEncode())) {
       onVerified(data);
 #if 0 // for checkVerificationPolicy(Interest)
       updateTimestampForKey(keyName, timestamp);
@@ -537,15 +538,12 @@ bool
 ConfigPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob) const
 {
-  const Sha256WithRsaSignature *signature =
-    dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
-  if (!signature)
-    throw SecurityException
-      ("ConfigPolicyManager: Signature is not Sha256WithRsaSignature.");
+  // We have already checked once that there is a key locator.
+  const KeyLocator& keyLocator = KeyLocator::getFromSignature(signatureInfo);
 
-  if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME) {
+  if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME) {
     // Assume the key name is a certificate name.
-    Name signatureName = signature->getKeyLocator().getKeyName();
+    Name signatureName = keyLocator.getKeyName();
     ptr_lib::shared_ptr<IdentityCertificate> certificate =
       refreshManager_.getCertificate(signatureName);
     if (!certificate)
@@ -558,8 +556,7 @@ ConfigPolicyManager::verify
       // Can't find the public key with the name.
       return false;
 
-    return verifySha256WithRsaSignature
-      (signature->getSignature(), signedBlob, publicKeyDer);
+    return verifySignature(signatureInfo, signedBlob, publicKeyDer);
   }
   else
     // Can't find a key to verify.
