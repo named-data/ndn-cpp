@@ -113,32 +113,11 @@ bool
 SelfVerifyPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob)
 {
-  {
-    const Sha256WithRsaSignature *signature =
-      dynamic_cast<const Sha256WithRsaSignature *>(signatureInfo);
-    if (signature) {
-      Blob publicKeyDer = getPublicKeyDer(signature->getKeyLocator());
-      if (!publicKeyDer)
-        return false;
-      return verifySha256WithRsaSignature
-        (signature->getSignature(), signedBlob, publicKeyDer);
-    }
-  }
-  {
-    const Sha256WithEcdsaSignature *signature =
-      dynamic_cast<const Sha256WithEcdsaSignature *>(signatureInfo);
-    if (signature) {
-      Blob publicKeyDer = getPublicKeyDer(signature->getKeyLocator());
-      if (!publicKeyDer)
-        return false;
-      return verifySha256WithEcdsaSignature
-        (signature->getSignature(), signedBlob, publicKeyDer);
-    }
-  }
+  Blob publicKeyDer = getPublicKeyDer(KeyLocator::getFromSignature(signatureInfo));
+  if (!publicKeyDer)
+    return false;
 
-  // We don't expect this to happen.
-  throw SecurityException
-    ("SelfVerifyPolicyManager: Signature type is unknown");
+  return verifySignature(signatureInfo, signedBlob, publicKeyDer);
 }
 
 Blob
