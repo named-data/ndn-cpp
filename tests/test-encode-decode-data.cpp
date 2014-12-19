@@ -26,6 +26,7 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
@@ -244,27 +245,14 @@ static void dumpData(const Data& data)
        << (data.getMetaInfo().getFinalBlockId().getValue().size() > 0 ?
            data.getMetaInfo().getFinalBlockId().getValue().toHex().c_str() : "<none>") << endl;
 
+  const KeyLocator* keyLocator = 0;
   // Try different subclasses of Signature.
   {
     const Sha256WithRsaSignature *signature = dynamic_cast<const Sha256WithRsaSignature*>(data.getSignature());
     if (signature) {
       cout << "Sha256WithRsa signature.signature: "
            << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
-      cout << "signature.keyLocator: ";
-      if ((int)signature->getKeyLocator().getType() >= 0) {
-        if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-          cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-          cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-          cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
-          cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
-        else
-          cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
-      }
-      else
-        cout << "<none>" << endl;
+      keyLocator = &signature->getKeyLocator();
     }
   }
   {
@@ -273,22 +261,33 @@ static void dumpData(const Data& data)
     if (signature) {
       cout << "Sha256WithEcdsa signature.signature: "
            << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
-      cout << "signature.keyLocator: ";
-      if ((int)signature->getKeyLocator().getType() >= 0) {
-        if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-          cout << "Key: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-          cout << "Certificate: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-          cout << "KeyLocatorDigest: " << signature->getKeyLocator().getKeyData().toHex() << endl;
-        else if (signature->getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
-          cout << "KeyName: " << signature->getKeyLocator().getKeyName().toUri() << endl;
-        else
-          cout << "<unrecognized ndn_KeyLocatorType " << signature->getKeyLocator().getType() << ">" << endl;
-      }
-      else
-        cout << "<none>" << endl;
+      keyLocator = &signature->getKeyLocator();
     }
+  }
+  {
+    const DigestSha256Signature *signature =
+      dynamic_cast<const DigestSha256Signature*>(data.getSignature());
+    if (signature) {
+      cout << "DigestSha256 signature.signature: "
+           << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+    }
+  }
+  if (keyLocator) {
+    cout << "signature.keyLocator: ";
+    if ((int)keyLocator->getType() >= 0) {
+      if (keyLocator->getType() == ndn_KeyLocatorType_KEY)
+        cout << "Key: " << keyLocator->getKeyData().toHex() << endl;
+      else if (keyLocator->getType() == ndn_KeyLocatorType_CERTIFICATE)
+        cout << "Certificate: " << keyLocator->getKeyData().toHex() << endl;
+      else if (keyLocator->getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+        cout << "KeyLocatorDigest: " << keyLocator->getKeyData().toHex() << endl;
+      else if (keyLocator->getType() == ndn_KeyLocatorType_KEYNAME)
+        cout << "KeyName: " << keyLocator->getKeyName().toUri() << endl;
+      else
+        cout << "<unrecognized ndn_KeyLocatorType " << keyLocator->getType() << ">" << endl;
+    }
+    else
+      cout << "<none>" << endl;
   }
 }
 
