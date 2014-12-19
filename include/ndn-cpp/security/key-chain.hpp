@@ -313,7 +313,11 @@ public:
    * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void
-  sign(Data& data, const Name& certificateName, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+  sign(Data& data, const Name& certificateName, 
+       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signByCertificate(data, certificateName, wireFormat);
+  }
 
   /**
    * Append a SignatureInfo to the Interest name, sign the name components and
@@ -327,7 +331,11 @@ public:
   void
   sign
     (Interest& interest, const Name& certificateName,
-     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signInterestByCertificate
+      (interest, certificateName, wireFormat);
+  }
 
   /**
    * Sign the byte array using a certificate name and return a Signature object.
@@ -337,7 +345,11 @@ public:
    * @return The Signature.
    */
   ptr_lib::shared_ptr<Signature>
-  sign(const uint8_t* buffer, size_t bufferLength, const Name& certificateName);
+  sign(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
+  {
+    return identityManager_->signByCertificate
+      (buffer, bufferLength, certificateName);
+  }
 
   /**
    * Sign the byte array using a certificate name and return a Signature object.
@@ -380,6 +392,37 @@ public:
   signByIdentity(const std::vector<uint8_t>& buffer, const Name& identityName)
   {
     return signByIdentity(&buffer[0], buffer.size(), identityName);
+  }
+
+  /**
+   * Wire encode the Data object, digest it and set its SignatureInfo to
+   * a DigestSha256.
+   * @param data The Data object to be signed. This updates its signature and 
+   * wireEncoding, and sets the key locator to not specified.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  signWithSha256
+    (Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signWithSha256(data, wireFormat);
+  }
+
+  /**
+   * Append a SignatureInfo for DigestSha256 to the Interest name, digest the
+   * name components and append a final name component with the signature bits
+   * (which is the digest).
+   * @param interest The Interest object to be signed. This appends name
+   * components of SignatureInfo and the signature bits.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  signWithSha256
+    (Interest& interest, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signInterestWithSha256(interest, wireFormat);
   }
 
   /**

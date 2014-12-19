@@ -21,6 +21,7 @@
 
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "c/data.h"
@@ -87,6 +88,8 @@ Data::set(const struct ndn_Data& dataStruct)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature()));
   else if (dataStruct.signature.type == ndn_SignatureType_Sha256WithEcdsaSignature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithEcdsaSignature()));
+  else if (dataStruct.signature.type == ndn_SignatureType_DigestSha256Signature)
+    signature_.set(ptr_lib::shared_ptr<Signature>(new DigestSha256Signature()));
   else
     // We don't expect this to happen.
     throw runtime_error("dataStruct.signature.type has an unrecognized value");

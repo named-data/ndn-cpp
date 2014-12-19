@@ -104,6 +104,12 @@ ConfigPolicyManager::checkVerificationPolicy
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
+  if (!KeyLocator::canGetFromSignature(data->getSignature())) {
+    // We only support signature types with key locators.
+    onVerifyFailed(data);
+    return ptr_lib::shared_ptr<ValidationRequest>();
+  }
+
   const KeyLocator* keyLocator;
   try {
     keyLocator = &KeyLocator::getFromSignature(data->getSignature());

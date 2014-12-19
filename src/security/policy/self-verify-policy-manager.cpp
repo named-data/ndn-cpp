@@ -111,10 +111,13 @@ bool
 SelfVerifyPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob)
 {
-  Blob publicKeyDer = getPublicKeyDer(KeyLocator::getFromSignature(signatureInfo));
-  if (!publicKeyDer)
-    return false;
-
+  Blob publicKeyDer;
+  if (KeyLocator::canGetFromSignature(signatureInfo)) {
+    publicKeyDer = getPublicKeyDer(KeyLocator::getFromSignature(signatureInfo));
+    if (!publicKeyDer)
+      return false;
+  }
+  
   return verifySignature(signatureInfo, signedBlob, publicKeyDer);
 }
 

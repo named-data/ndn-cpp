@@ -213,11 +213,12 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
-	src/common.lo src/data.lo src/exclude.lo src/face.lo \
-	src/forwarding-entry.lo src/interest.lo src/key-locator.lo \
-	src/meta-info.lo src/name.lo src/node.lo \
-	src/control-parameters.lo src/publisher-public-key-digest.lo \
-	src/signature.lo src/sha256-with-ecdsa-signature.lo \
+	src/common.lo src/data.lo src/digest-sha256-signature.lo \
+	src/exclude.lo src/face.lo src/forwarding-entry.lo \
+	src/interest.lo src/key-locator.lo src/meta-info.lo \
+	src/name.lo src/node.lo src/control-parameters.lo \
+	src/publisher-public-key-digest.lo src/signature.lo \
+	src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
 	src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
@@ -902,6 +903,7 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/data.hpp \
+  include/ndn-cpp/digest-sha256-signature.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
@@ -1004,6 +1006,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
 libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
   src/data.cpp \
+  src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
@@ -1296,6 +1299,8 @@ src/$(DEPDIR)/$(am__dirstamp):
 	@: > src/$(DEPDIR)/$(am__dirstamp)
 src/common.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/data.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/digest-sha256-signature.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/forwarding-entry.lo: src/$(am__dirstamp) \
@@ -1721,6 +1726,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/digest-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-entry.Plo@am__quote@

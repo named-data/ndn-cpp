@@ -20,10 +20,15 @@
  */
 
 #include "gtest/gtest.h"
+#include <ndn-cpp/security/identity/memory-identity-storage.hpp>
+#include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
+#include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
+#include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
 using namespace ndn;
+using namespace ndn::func_lib;
 
 static const uint8_t codedInterest[] = {
 0x05, 0x53, // Interest
@@ -166,6 +171,31 @@ createFreshInterest()
   return freshInterest;
 }
 
+class VerifyCounter
+{
+public:
+  VerifyCounter()
+  {
+    onVerifiedCallCount_ = 0;
+    onVerifyFailedCallCount_ = 0;
+  }
+
+  void
+  onVerified(const ptr_lib::shared_ptr<Interest>& interest)
+  {
+    ++onVerifiedCallCount_;
+  }
+
+  void
+  onVerifyFailed(const ptr_lib::shared_ptr<Interest>& interest)
+  {
+    ++onVerifyFailedCallCount_;
+  }
+
+  int onVerifiedCallCount_;
+  int onVerifyFailedCallCount_;
+};
+
 class TestInterestDump : public ::testing::Test {
 public:
   TestInterestDump()
@@ -245,6 +275,30 @@ TEST_F(TestInterestMethods, SetRemovesNonce)
   // Change a child object.
   interest.getExclude().clear();
   ASSERT_TRUE(interest.getNonce().isNull()) << "Interest should not have a nonce after changing fields";
+}
+
+TEST_F(TestInterestMethods, VerifyDigestSha256)
+{
+  // Create a KeyChain but we don't need to add keys.
+  ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
+    (new MemoryIdentityStorage());
+  ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage
+    (new MemoryPrivateKeyStorage());
+  KeyChain keyChain
+    (ptr_lib::make_shared<IdentityManager>
+      (ptr_lib::make_shared<MemoryIdentityStorage>(),
+       ptr_lib::make_shared<MemoryPrivateKeyStorage>()),
+     ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
+
+  ptr_lib::shared_ptr<Interest> interest(new Interest(Name("/test/signed-interest")));
+  keyChain.signWithSha256(*interest);
+
+  VerifyCounter counter;
+  keyChain.verifyInterest
+    (interest, bind(&VerifyCounter::onVerified, &counter, _1),
+     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
+  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+  ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
 
 int

@@ -36,6 +36,7 @@ extern "C" {
  * keep a separate enum so that we aren't directly tied to the TLV code.
  */
 typedef enum {
+  ndn_SignatureType_DigestSha256Signature = 0,
   ndn_SignatureType_Sha256WithRsaSignature = 1,
   ndn_SignatureType_Sha256WithEcdsaSignature = 3
 } ndn_SignatureType;

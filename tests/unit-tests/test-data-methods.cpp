@@ -328,6 +328,12 @@ public:
   }
 
   void
+  signDataWithSha256(Data& data)
+  {
+    keyChain_.signWithSha256(data);
+  }
+
+  void
   verifyData
     (const ptr_lib::shared_ptr<Data>& data, const OnVerified& verifiedCallback,
      const OnVerifyFailed& failedCallback)
@@ -454,6 +460,19 @@ TEST_F(TestDataMethods, VerifyEcdsa)
   VerifyCounter counter;
 
   credentials.signData(*freshData, credentials.getEcdsaCertName());
+
+  credentials.verifyData
+    (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
+     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
+  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+  ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
+}
+
+TEST_F(TestDataMethods, VerifyDigestSha256)
+{
+  VerifyCounter counter;
+
+  credentials.signDataWithSha256(*freshData);
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
