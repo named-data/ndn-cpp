@@ -341,7 +341,7 @@ public:
    * Wire encode the Data object, digest it and set its SignatureInfo to
    * a DigestSha256.
    * @param data The Data object to be signed. This updates its signature and
-   * wireEncoding, and sets the key locator to not specified.
+   * wireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
    */
