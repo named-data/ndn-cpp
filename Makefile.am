@@ -44,6 +44,7 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/data.hpp \
+  include/ndn-cpp/digest-sha256-signature.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
@@ -144,6 +145,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
 libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
   src/data.cpp \
+  src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
