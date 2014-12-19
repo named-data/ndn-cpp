@@ -57,26 +57,6 @@ KeyChain::KeyChain()
 }
 
 void
-KeyChain::sign(Data& data, const Name& certificateName, WireFormat& wireFormat)
-{
-  identityManager_->signByCertificate(data, certificateName, wireFormat);
-}
-
-void
-KeyChain::sign
-  (Interest& interest, const Name& certificateName, WireFormat& wireFormat)
-{
-  identityManager_->signInterestByCertificate
-    (interest, certificateName, wireFormat);
-}
-
-ptr_lib::shared_ptr<Signature>
-KeyChain::sign(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
-{
-  return identityManager_->signByCertificate(buffer, bufferLength, certificateName);
-}
-
-void
 KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireFormat)
 {
   Name signingCertificateName;

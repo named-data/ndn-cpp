@@ -31,6 +31,7 @@
 #include <fstream>
 #include <math.h>
 #include <ndn-cpp/key-locator.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
@@ -38,6 +39,7 @@
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
 #include "../../c/util/time.h"
+#include "../../c/util/crypto.h"
 #include <ndn-cpp/security/identity/identity-manager.hpp>
 
 using namespace std;
@@ -351,6 +353,49 @@ IdentityManager::signInterestByCertificate
   // Remove the empty signature and append the real one.
   interest.setName(interest.getName().getPrefix(-1).append
     (wireFormat.encodeSignatureValue(*signature)));
+}
+
+void
+IdentityManager::signWithSha256(Data &data, WireFormat& wireFormat)
+{
+  data.setSignature(DigestSha256Signature());
+
+  // Encode once to get the signed portion.
+  SignedBlob encoding = data.wireEncode(wireFormat);
+
+  // Digest and set the signature.
+  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256
+    (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
+  data.getSignature()->setSignature
+    (Blob(signedPortionDigest, sizeof(signedPortionDigest)));
+
+  // Encode again to include the signature.
+  data.wireEncode(wireFormat);
+}
+
+void
+IdentityManager::signInterestWithSha256
+  (Interest& interest, WireFormat& wireFormat)
+{
+  DigestSha256Signature signature;
+  // Append the encoded SignatureInfo.
+  interest.getName().append(wireFormat.encodeSignatureInfo(signature));
+
+  // Append an empty signature so that the "signedPortion" is correct.
+  interest.getName().append(Name::Component());
+  // Encode once to get the signed portion.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+
+  // Digest and set the signature.
+  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256
+    (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
+  signature.setSignature(Blob(signedPortionDigest, sizeof(signedPortionDigest)));
+
+  // Remove the empty signature and append the real one.
+  interest.setName(interest.getName().getPrefix(-1).append
+    (wireFormat.encodeSignatureValue(signature)));
 }
 
 ptr_lib::shared_ptr<IdentityCertificate>

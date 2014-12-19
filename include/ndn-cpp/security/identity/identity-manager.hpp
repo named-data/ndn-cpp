@@ -338,6 +338,31 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
+   * Wire encode the Data object, digest it and set its SignatureInfo to
+   * a DigestSha256.
+   * @param data The Data object to be signed. This updates its signature and
+   * wireEncoding, and sets the key locator to not specified.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  signWithSha256
+    (Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Append a SignatureInfo for DigestSha256 to the Interest name, digest the
+   * name components and append a final name component with the signature bits
+   * (which is the digest).
+   * @param interest The Interest object to be signed. This appends name
+   * components of SignatureInfo and the signature bits.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  signInterestWithSha256
+    (Interest& interest, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Generate a self-signed certificate for a public key.
    * @param keyName The name of the public key.
    * @return The generated certificate.
