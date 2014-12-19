@@ -58,6 +58,10 @@ In a terminal, enter:
     sudo apt-get install build-essential
     sudo apt-get install libssl-dev
 
+Optional: To install libsqlite3, in a terminal, enter:
+
+    sudo apt-get install libsqlite3-dev
+
 Optional: To install Protobuf, in a terminal, enter:
 
     sudo apt-get install libprotobuf-dev
