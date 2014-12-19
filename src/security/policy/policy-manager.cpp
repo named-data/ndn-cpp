@@ -20,7 +20,9 @@
  */
 
 #include "../../c/util/crypto.h"
+#include "../../c/util/ndn_memory.h"
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
@@ -40,6 +42,8 @@ PolicyManager::verifySignature
   else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature))
     return verifySha256WithEcdsaSignature
       (signature->getSignature(), signedBlob, publicKeyDer);
+  else if (dynamic_cast<const DigestSha256Signature *>(signature))
+    return verifyDigestSha256Signature(signature->getSignature(), signedBlob);
   else
     throw SecurityException("PolicyManager::verify: Signature type is unknown");
 }
@@ -48,9 +52,8 @@ bool
 PolicyManager::verifySha256WithEcdsaSignature
   (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
+  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  // wireEncode returns the cached encoding if available.
   ndn_digestSha256
     (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
@@ -75,9 +78,8 @@ bool
 PolicyManager::verifySha256WithRsaSignature
   (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
+  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  // wireEncode returns the cached encoding if available.
   ndn_digestSha256
     (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
@@ -97,5 +99,17 @@ PolicyManager::verifySha256WithRsaSignature
   return (success == 1);
 }
 
+bool
+PolicyManager::verifyDigestSha256Signature
+  (const Blob& signature, const SignedBlob& signedBlob)
+{
+  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
+  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256
+    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
+
+  return signature.size() == sizeof(signedPortionDigest) && ndn_memcmp
+    (signature.buf(), signedPortionDigest, sizeof(signedPortionDigest)) == 0;
+}
 
 }
