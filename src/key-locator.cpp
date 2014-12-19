@@ -54,6 +54,13 @@ KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
   }
 }
 
+bool
+KeyLocator::canGetFromSignature(const Signature* signature)
+{
+  return dynamic_cast<const Sha256WithRsaSignature *>(signature) ||
+         dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+}
+
 const KeyLocator&
 KeyLocator::getFromSignature(const Signature* signature)
 {
