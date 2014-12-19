@@ -23,6 +23,7 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/control-parameters.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include "../c/encoding/tlv/tlv-name.h"
@@ -230,6 +231,8 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
     result.reset(new Sha256WithRsaSignature());
   else if (signatureStruct.type == ndn_SignatureType_Sha256WithEcdsaSignature)
     result.reset(new Sha256WithEcdsaSignature());
+  else if (signatureStruct.type == ndn_SignatureType_DigestSha256Signature)
+    result.reset(new DigestSha256Signature());
   else
     // We don't expect this to happen.
     throw runtime_error("signatureStruct.type has an unrecognized value");
