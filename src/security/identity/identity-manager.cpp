@@ -93,9 +93,9 @@ IdentityManager::IdentityManager
 }
 
 IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::shared_ptr<IdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
 {
+  throw SecurityException
+    ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
 }
 #else
 IdentityManager::IdentityManager
@@ -106,9 +106,9 @@ IdentityManager::IdentityManager
 }
 
 IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::shared_ptr<IdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
 {
+  throw SecurityException
+    ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
 }
 #endif
 
