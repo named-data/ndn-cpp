@@ -256,4 +256,6 @@ Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
   return Blob(encoder.getOutput(), false);
 }
 
+Tlv0_1_1WireFormat* Tlv0_1_1WireFormat::instance_ = 0;
+
 }
