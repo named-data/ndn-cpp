@@ -282,12 +282,9 @@ TEST_F(TestInterestMethods, VerifyDigestSha256)
   // Create a KeyChain but we don't need to add keys.
   ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
     (new MemoryIdentityStorage());
-  ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage
-    (new MemoryPrivateKeyStorage());
   KeyChain keyChain
     (ptr_lib::make_shared<IdentityManager>
-      (ptr_lib::make_shared<MemoryIdentityStorage>(),
-       ptr_lib::make_shared<MemoryPrivateKeyStorage>()),
+      (identityStorage, ptr_lib::make_shared<MemoryPrivateKeyStorage>()),
      ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
 
   ptr_lib::shared_ptr<Interest> interest(new Interest(Name("/test/signed-interest")));
