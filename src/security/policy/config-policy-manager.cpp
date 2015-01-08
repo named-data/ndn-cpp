@@ -99,37 +99,6 @@ ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount,
    const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
-  if (stepCount > maxDepth_) {
-    onVerifyFailed(data);
-    return ptr_lib::shared_ptr<ValidationRequest>();
-  }
-
-  if (!KeyLocator::canGetFromSignature(data->getSignature())) {
-    // We only support signature types with key locators.
-    onVerifyFailed(data);
-    return ptr_lib::shared_ptr<ValidationRequest>();
-  }
-
-  const KeyLocator* keyLocator;
-  try {
-    keyLocator = &KeyLocator::getFromSignature(data->getSignature());
-  }
-  catch (std::exception& ex) {
-    // No signature -> fail.
-    onVerifyFailed(data);
-    return ptr_lib::shared_ptr<ValidationRequest>();
-  }
-
-  const Name& signatureName = keyLocator->getKeyName();
-  // No key name in KeyLocator -> fail.
-  if (signatureName.size() == 0) {
-    onVerifyFailed(data);
-    return ptr_lib::shared_ptr<ValidationRequest>();
-  }
-
-  const Name& objectName = data->getName();
-  string matchType = "data";
-
 #if 0 // for checkVerificationPolicy(Interest)
   // For command interests, we need to ignore the last 4 components when
   //   matching the name
@@ -137,40 +106,19 @@ ConfigPolicyManager::checkVerificationPolicy
   matchType = "interest";
 #endif
 
-  // first see if we can find a rule to match this packet
-  const BoostInfoTree* matchedRule = findMatchingRule(objectName, matchType);
-
-  // No matching rule -> fail.
-  if (!matchedRule) {
+  ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
+    (stepCount, "data", data->getName(), data->getSignature());
+  if (!certificateInterest) {
     onVerifyFailed(data);
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
-  bool signatureMatches = checkSignatureMatch
-    (signatureName, objectName, *matchedRule);
-  if (!signatureMatches) {
-    onVerifyFailed(data);
-    return ptr_lib::shared_ptr<ValidationRequest>();
-  }
-
-  // Before we look up keys, refresh any certificate directories.
-  refreshManager_.refreshAnchors();
-
-  // Now finally check that the object was signed correctly.
-  // If we don't actually have the certificate yet, create a
-  //   ValidationRequest for it.
-  ptr_lib::shared_ptr<IdentityCertificate> foundCert =
-    refreshManager_.getCertificate(signatureName);
-  if (!foundCert)
-    foundCert = certificateCache_->getCertificate(signatureName);
-  if (!foundCert) {
-    ptr_lib::shared_ptr<Interest> certificateInterest(new Interest(signatureName));
+  if (certificateInterest->getName().size() > 0)
     return ptr_lib::make_shared<ValidationRequest>
       (certificateInterest, 
        bind(&ConfigPolicyManager::onCertificateDownloadComplete, this, _1,
             data, stepCount, onVerified, onVerifyFailed),
        onVerifyFailed, 2, stepCount + 1);
-  }
   else {
 #if 0 // for checkVerificationPolicy(Interest)
     // For interests, we must check that the timestamp is fresh enough.
@@ -187,17 +135,78 @@ ConfigPolicyManager::checkVerificationPolicy
 
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
-    if (verify(data->getSignature(), data->wireEncode())) {
+    if (verify(data->getSignature(), data->wireEncode()))
       onVerified(data);
 #if 0 // for checkVerificationPolicy(Interest)
       updateTimestampForKey(keyName, timestamp);
 #endif
-    }
     else
       onVerifyFailed(data);
 
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
+}
+
+ptr_lib::shared_ptr<ValidationRequest>
+ConfigPolicyManager::checkVerificationPolicy
+  (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+{
+  throw runtime_error("ConfigPolicyManager::checkVerificationPolicy(Interest) is not implemented");
+}
+
+ptr_lib::shared_ptr<Interest>
+ConfigPolicyManager::getCertificateInterest
+  (int stepCount, const string& matchType, const Name& objectName,
+   const Signature* signature)
+{
+  if (stepCount > maxDepth_)
+    return ptr_lib::shared_ptr<Interest>();
+
+  if (!KeyLocator::canGetFromSignature(signature))
+    // We only support signature types with key locators.
+    return ptr_lib::shared_ptr<Interest>();
+
+  const KeyLocator* keyLocator;
+  try {
+    keyLocator = &KeyLocator::getFromSignature(signature);
+  }
+  catch (std::exception& ex) {
+    // No signature -> fail.
+    return ptr_lib::shared_ptr<Interest>();
+  }
+
+  const Name& signatureName = keyLocator->getKeyName();
+  // No key name in KeyLocator -> fail.
+  if (signatureName.size() == 0)
+    return ptr_lib::shared_ptr<Interest>();
+
+  // first see if we can find a rule to match this packet
+  const BoostInfoTree* matchedRule = findMatchingRule(objectName, matchType);
+
+  // No matching rule -> fail.
+  if (!matchedRule)
+    return ptr_lib::shared_ptr<Interest>();
+
+  bool signatureMatches = checkSignatureMatch
+    (signatureName, objectName, *matchedRule);
+  if (!signatureMatches)
+    return ptr_lib::shared_ptr<Interest>();
+
+  // Before we look up keys, refresh any certificate directories.
+  refreshManager_.refreshAnchors();
+
+  // If we don't actually have the certificate yet, return a certificateInterest
+  //   for it.
+  ptr_lib::shared_ptr<IdentityCertificate> foundCert =
+    refreshManager_.getCertificate(signatureName);
+  if (!foundCert)
+    foundCert = certificateCache_->getCertificate(signatureName);
+  if (!foundCert)
+    return ptr_lib::make_shared<Interest>(signatureName);
+  else
+    return ptr_lib::make_shared<Interest>();
 }
 
 void
@@ -212,15 +221,6 @@ ConfigPolicyManager::onCertificateDownloadComplete
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
   checkVerificationPolicy(originalData, stepCount + 1, onVerified, onVerifyFailed);
-}
-
-ptr_lib::shared_ptr<ValidationRequest>
-ConfigPolicyManager::checkVerificationPolicy
-  (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
-   const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
-{
-  throw runtime_error("ConfigPolicyManager::checkVerificationPolicy(Interest) is not implemented");
 }
 
 bool

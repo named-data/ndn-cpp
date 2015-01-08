@@ -348,6 +348,25 @@ private:
   verify(const Signature* signatureInfo, const SignedBlob& signedBlob) const;
 
   /**
+   * This is a helper for checkVerificationPolicy to verify the rule and return
+   * a certificate interest to fetch the next certificate in the hierarchy if
+   * needed.
+   * @param stepCount The number of verification steps that have been done, used
+   * to track the verification progress.
+   * @param matchType Either "data" or "interest".
+   * @param objectName The name of the data or interest packet.
+   * @param signature The Signature object for the data or interest packet.
+   * @return A null object if validation failed, otherwise the interest for the
+   * ValidationRequest to fetch the next certificate. However, if the interest
+   * has an empty name, the validation succeeded and no need to fetch a
+   * certificate.
+   */
+  ptr_lib::shared_ptr<Interest>
+  getCertificateInterest
+    (int stepCount, const std::string& matchType, const Name& objectName,
+     const Signature* signature);
+
+  /**
    * This is called by KeyChain::verifyData because checkVerificationPolicy
    * returned a ValidationRequest to fetch a certificate and verify
    * a certificate, through a separate call to KeyChain::verifyData. When
