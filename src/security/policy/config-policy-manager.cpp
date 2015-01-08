@@ -45,6 +45,19 @@ namespace ndn {
 
 using namespace regex_lib;
 
+/**
+ * Ignore data and call onVerifyFailed(interest). This is so that an
+ * OnVerifyInterestFailed can be passed as an OnVerifyFailed.
+ */
+static void
+onVerifyInterestFailedWrapper
+  (const ptr_lib::shared_ptr<Data>& data, 
+   const OnVerifyInterestFailed& onVerifyFailed,
+   const ptr_lib::shared_ptr<Interest>& interest)
+{
+  onVerifyFailed(interest);
+}
+
 ConfigPolicyManager::ConfigPolicyManager
   (const string& configFileName,
    const ptr_lib::shared_ptr<CertificateCache>& certificateCache,
@@ -99,13 +112,6 @@ ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount,
    const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
-#if 0 // for checkVerificationPolicy(Interest)
-  // For command interests, we need to ignore the last 4 components when
-  //   matching the name
-  objectName = objectName.getPrefix(-4);
-  matchType = "interest";
-#endif
-
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
     (stepCount, "data", data->getName(), data->getSignature());
   if (!certificateInterest) {
@@ -120,26 +126,10 @@ ConfigPolicyManager::checkVerificationPolicy
             data, stepCount, onVerified, onVerifyFailed),
        onVerifyFailed, 2, stepCount + 1);
   else {
-#if 0 // for checkVerificationPolicy(Interest)
-    // For interests, we must check that the timestamp is fresh enough.
-    // I do this after (possibly) downloading the certificate to avoid filling
-    // the cache with bad keys.
-    keyName = IdentityCertificate.certificateNameToPublicKeyName(signatureName);
-    timestamp = dataOrInterest.getName().get(-4).toNumber();
-
-    if (!interestTimestampIsFresh(keyName, timestamp)) {
-      onVerifyFailed(dataOrInterest);
-      return ptr_lib::shared_ptr<ValidationRequest>();
-    }
-#endif
-
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
     if (verify(data->getSignature(), data->wireEncode()))
       onVerified(data);
-#if 0 // for checkVerificationPolicy(Interest)
-      updateTimestampForKey(keyName, timestamp);
-#endif
     else
       onVerifyFailed(data);
 
@@ -153,7 +143,54 @@ ConfigPolicyManager::checkVerificationPolicy
    const OnVerifiedInterest& onVerified,
    const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
 {
-  throw runtime_error("ConfigPolicyManager::checkVerificationPolicy(Interest) is not implemented");
+  ptr_lib::shared_ptr<Signature> signature = extractSignature
+    (*interest, wireFormat);
+  if (!signature) {
+    // Can't get the signature from the interest name.
+    onVerifyFailed(interest);
+    return ptr_lib::shared_ptr<ValidationRequest>();
+  }
+
+  // For command interests, we need to ignore the last 4 components when
+  //   matching the name.
+  ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
+    (stepCount, "interest", interest->getName().getPrefix(-4), signature.get());
+  if (!certificateInterest) {
+    onVerifyFailed(interest);
+    return ptr_lib::shared_ptr<ValidationRequest>();
+  }
+
+  if (certificateInterest->getName().size() > 0)
+    return ptr_lib::make_shared<ValidationRequest>
+      (certificateInterest,
+       bind(&ConfigPolicyManager::onCertificateDownloadCompleteForInterest, this, _1,
+            interest, stepCount, onVerified, onVerifyFailed, wireFormat),
+       bind(&onVerifyInterestFailedWrapper, _1, onVerifyFailed, interest),
+       2, stepCount + 1);
+  else {
+    // For interests, we must check that the timestamp is fresh enough.
+    // This is done after (possibly) downloading the certificate to avoid filling
+    // the cache with bad keys.
+    const Name& signatureName = KeyLocator::getFromSignature(signature.get()).getKeyName();
+    Name keyName = IdentityCertificate::certificateNameToPublicKeyName(signatureName);
+    MillisecondsSince1970 timestamp = interest->getName().get(-4).toNumber();
+
+    if (!interestTimestampIsFresh(keyName, timestamp)) {
+      onVerifyFailed(interest);
+      return ptr_lib::shared_ptr<ValidationRequest>();
+    }
+
+    // Certificate is known. Verify the signature.
+    // wireEncode returns the cached encoding if available.
+    if (verify(signature.get(), interest->wireEncode())) {
+      onVerified(interest);
+      updateTimestampForKey(keyName, timestamp);
+    }
+    else
+      onVerifyFailed(interest);
+
+    return ptr_lib::shared_ptr<ValidationRequest>();
+  }
 }
 
 ptr_lib::shared_ptr<Interest>
@@ -221,6 +258,22 @@ ConfigPolicyManager::onCertificateDownloadComplete
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
   checkVerificationPolicy(originalData, stepCount + 1, onVerified, onVerifyFailed);
+}
+
+void
+ConfigPolicyManager::onCertificateDownloadCompleteForInterest
+  (const ptr_lib::shared_ptr<Data> &data,
+   const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+{
+  IdentityCertificate certificate(*data);
+  certificateCache_->insertCertificate(certificate);
+
+  // Now that we stored the needed certificate, increment stepCount and try again
+  //   to verify the originalData.
+  checkVerificationPolicy
+    (originalInterest, stepCount + 1, onVerified, onVerifyFailed, wireFormat);
 }
 
 bool
@@ -479,10 +532,8 @@ ConfigPolicyManager::extractSignature
 
   try {
     return wireFormat.decodeSignatureInfoAndValue
-      (interest.getName().get(-2).getValue().buf(),
-       interest.getName().get(-2).getValue().size(),
-       interest.getName().get(-1).getValue().buf(),
-       interest.getName().get(-1).getValue().size());
+      (interest.getName().get(-2).getValue(),
+       interest.getName().get(-1).getValue());
   } catch (std::exception& e) {
     return ptr_lib::shared_ptr<Signature>();
   }

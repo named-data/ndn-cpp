@@ -307,7 +307,7 @@ private:
    * @param interest The interest whose signature is needed.
    * @param wireFormat The wire format used to decode signature information 
    * from the interest name. 
-   * @return A shared_ptr for the Signature object. This isNull() if can't decode.
+   * @return A shared_ptr for the Signature object. This is null if can't decode.
    */
   static ptr_lib::shared_ptr<Signature>
   extractSignature(const Interest& interest, WireFormat& wireFormat);
@@ -383,6 +383,25 @@ private:
     (const ptr_lib::shared_ptr<Data> &data,
      const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
      const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+
+  /**
+   * This is called by KeyChain::verifyData because checkVerificationPolicy
+   * returned a ValidationRequest to fetch a certificate and verify
+   * a certificate, through a separate call to KeyChain::verifyData. When
+   * it verifies the data, it calls onVerified which is this method.
+   * @param data The fetched data packet containing the certificate which has
+   * already been verified.
+   * @param originalInterest The original interest from checkVerificationPolicy.
+   * @param stepCount The value from checkVerificationPolicy.
+   * @param onVerified The value from checkVerificationPolicy.
+   * @param onVerifyFailed The value from checkVerificationPolicy.
+   */
+  void
+  onCertificateDownloadCompleteForInterest
+    (const ptr_lib::shared_ptr<Data> &data,
+     const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
+     const OnVerifiedInterest& onVerified,
+     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat);
 
   ptr_lib::shared_ptr<CertificateCache> certificateCache_;
   int maxDepth_;
