@@ -370,7 +370,6 @@ TEST_F(TestConfigPolicyManager, SelfVerification)
     "Verification failure callback called " << vr.failureCount_ << " times instead of 1";
 }
 
-#if 0
 TEST_F(TestConfigPolicyManager, InterestTimestamp)
 {
   Name interestName = Name("/ndn/ucla/edu/something");
@@ -404,7 +403,6 @@ TEST_F(TestConfigPolicyManager, InterestTimestamp)
   ASSERT_EQ(vr.failureCount_, 1) <<
     "Verification failure callback called " << vr.failureCount_ << " times instead of 1";
 }
-#endif
 
 TEST_F(TestConfigPolicyManager, Refresh10s)
 {
