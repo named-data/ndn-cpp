@@ -50,8 +50,6 @@ public:
   {
   }
 
-  // TODO: Implement clone.
-
   /**
    * Insert a BoostInfoTree as a sub-tree with the given name.
    * @param treeName The name of the new sub-tree.
