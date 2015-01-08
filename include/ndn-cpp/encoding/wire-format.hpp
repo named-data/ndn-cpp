@@ -247,6 +247,22 @@ public:
      const uint8_t *signatureValue, size_t signatureValueLength);
 
   /**
+   * Decode signatureInfo as a signature info and signatureValue as the related
+   * SignatureValue, and return a new object which is a subclass of Signature.
+   * @param signatureInfo The signature input buffer to decode.
+   * @param signatureValue The signature value input buffer to decode.
+   * @return A new object which is a subclass of Signature.
+   */
+  virtual ptr_lib::shared_ptr<Signature>
+  decodeSignatureInfoAndValue
+    (const Blob& signatureInfo, const Blob& signatureValue)
+  {
+    return decodeSignatureInfoAndValue
+      (signatureInfo.buf(), signatureInfo.size(), signatureValue.buf(),
+       signatureValue.size());
+  }
+
+  /**
    * Encode the signatureValue in the Signature object as a SignatureValue (the
    * signature bits) and return the encoding.
    * Your derived class should override.

@@ -80,10 +80,8 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   // Decode the last two name components of the signed interest
   ptr_lib::shared_ptr<Signature> signature =
     wireFormat.decodeSignatureInfoAndValue
-      (interest->getName().get(-2).getValue().buf(),
-       interest->getName().get(-2).getValue().size(),
-       interest->getName().get(-1).getValue().buf(),
-       interest->getName().get(-1).getValue().size());
+      (interest->getName().get(-2).getValue(),
+       interest->getName().get(-1).getValue());
 
   // wireEncode returns the cached encoding if available.
   if (verify(signature.get(), interest->wireEncode()))
