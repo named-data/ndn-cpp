@@ -74,6 +74,11 @@ Optional: To install Doxygen, in a terminal, enter:
 
     sudo apt-get install doxygen
 
+### Odroid Ubuntu
+
+Optional: To use boost, you may need to manually install it since apt-get doesn't seem
+to install the library files.
+
 ## Windows Cygwin
 Cygwin is tested on Windows 7 64-bit.
 
