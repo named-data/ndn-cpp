@@ -298,9 +298,9 @@ private:
       "equal" - passes if the two names are equal
    * @return True if matches.
    */
-  bool
+  static bool
   matchesRelation
-    (const Name& name, const Name& matchName, const std::string& matchRelation) const;
+    (const Name& name, const Name& matchName, const std::string& matchRelation);
 
   /**
    * Extract the signature information from the interest name.

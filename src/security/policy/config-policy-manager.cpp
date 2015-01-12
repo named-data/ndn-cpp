@@ -502,7 +502,7 @@ ConfigPolicyManager::findMatchingRule
 
 bool
 ConfigPolicyManager::matchesRelation
-  (const Name& name, const Name& matchName, const string& matchRelation) const
+  (const Name& name, const Name& matchName, const string& matchRelation)
 {
   bool passed = false;
   if (matchRelation == "is-strict-prefix-of") {
