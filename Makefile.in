@@ -254,50 +254,50 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
-am_bin_test_chrono_chat_OBJECTS = tests/test-chrono-chat.$(OBJEXT) \
-	tests/chatbuf.pb.$(OBJEXT)
+am_bin_test_chrono_chat_OBJECTS = examples/test-chrono-chat.$(OBJEXT) \
+	examples/chatbuf.pb.$(OBJEXT)
 bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
 bin_test_chrono_chat_DEPENDENCIES = libndn-cpp.la
 am_bin_test_echo_consumer_OBJECTS =  \
-	tests/test-echo-consumer.$(OBJEXT)
+	examples/test-echo-consumer.$(OBJEXT)
 bin_test_echo_consumer_OBJECTS = $(am_bin_test_echo_consumer_OBJECTS)
 bin_test_echo_consumer_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_benchmark_OBJECTS =  \
-	tests/test-encode-decode-benchmark.$(OBJEXT)
+	examples/test-encode-decode-benchmark.$(OBJEXT)
 bin_test_encode_decode_benchmark_OBJECTS =  \
 	$(am_bin_test_encode_decode_benchmark_OBJECTS)
 bin_test_encode_decode_benchmark_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_data_OBJECTS =  \
-	tests/test-encode-decode-data.$(OBJEXT)
+	examples/test-encode-decode-data.$(OBJEXT)
 bin_test_encode_decode_data_OBJECTS =  \
 	$(am_bin_test_encode_decode_data_OBJECTS)
 bin_test_encode_decode_data_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_fib_entry_OBJECTS =  \
-	tests/test-encode-decode-fib-entry.$(OBJEXT) \
-	tests/fib-entry.pb.$(OBJEXT)
+	examples/test-encode-decode-fib-entry.$(OBJEXT) \
+	examples/fib-entry.pb.$(OBJEXT)
 bin_test_encode_decode_fib_entry_OBJECTS =  \
 	$(am_bin_test_encode_decode_fib_entry_OBJECTS)
 bin_test_encode_decode_fib_entry_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_forwarding_entry_OBJECTS =  \
-	tests/test-encode-decode-forwarding-entry.$(OBJEXT)
+	examples/test-encode-decode-forwarding-entry.$(OBJEXT)
 bin_test_encode_decode_forwarding_entry_OBJECTS =  \
 	$(am_bin_test_encode_decode_forwarding_entry_OBJECTS)
 bin_test_encode_decode_forwarding_entry_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_interest_OBJECTS =  \
-	tests/test-encode-decode-interest.$(OBJEXT)
+	examples/test-encode-decode-interest.$(OBJEXT)
 bin_test_encode_decode_interest_OBJECTS =  \
 	$(am_bin_test_encode_decode_interest_OBJECTS)
 bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
-am_bin_test_get_async_OBJECTS = tests/test-get-async.$(OBJEXT)
+am_bin_test_get_async_OBJECTS = examples/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
 am_bin_test_publish_async_ndnx_OBJECTS =  \
-	tests/test-publish-async-ndnx.$(OBJEXT)
+	examples/test-publish-async-ndnx.$(OBJEXT)
 bin_test_publish_async_ndnx_OBJECTS =  \
 	$(am_bin_test_publish_async_ndnx_OBJECTS)
 bin_test_publish_async_ndnx_DEPENDENCIES = libndn-cpp.la
 am_bin_test_publish_async_nfd_OBJECTS =  \
-	tests/test-publish-async-nfd.$(OBJEXT)
+	examples/test-publish-async-nfd.$(OBJEXT)
 bin_test_publish_async_nfd_OBJECTS =  \
 	$(am_bin_test_publish_async_nfd_OBJECTS)
 bin_test_publish_async_nfd_DEPENDENCIES = libndn-cpp.la
@@ -1069,25 +1069,25 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/memory-content-cache.cpp \
   src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp
 
-bin_test_chrono_chat_SOURCES = tests/test-chrono-chat.cpp tests/chatbuf.pb.cc
+bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
-bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
+bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
-bin_test_encode_decode_benchmark_SOURCES = tests/test-encode-decode-benchmark.cpp
+bin_test_encode_decode_benchmark_SOURCES = examples/test-encode-decode-benchmark.cpp
 bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
-bin_test_encode_decode_data_SOURCES = tests/test-encode-decode-data.cpp
+bin_test_encode_decode_data_SOURCES = examples/test-encode-decode-data.cpp
 bin_test_encode_decode_data_LDADD = libndn-cpp.la
-bin_test_encode_decode_fib_entry_SOURCES = tests/test-encode-decode-fib-entry.cpp tests/fib-entry.pb.cc
+bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
-bin_test_encode_decode_forwarding_entry_SOURCES = tests/test-encode-decode-forwarding-entry.cpp
+bin_test_encode_decode_forwarding_entry_SOURCES = examples/test-encode-decode-forwarding-entry.cpp
 bin_test_encode_decode_forwarding_entry_LDADD = libndn-cpp.la
-bin_test_encode_decode_interest_SOURCES = tests/test-encode-decode-interest.cpp
+bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
-bin_test_get_async_SOURCES = tests/test-get-async.cpp
+bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
-bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
+bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
-bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
+bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
@@ -1496,16 +1496,16 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-tests/$(am__dirstamp):
-	@$(MKDIR_P) tests
-	@: > tests/$(am__dirstamp)
-tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) tests/$(DEPDIR)
-	@: > tests/$(DEPDIR)/$(am__dirstamp)
-tests/test-chrono-chat.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
-tests/chatbuf.pb.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/$(am__dirstamp):
+	@$(MKDIR_P) examples
+	@: > examples/$(am__dirstamp)
+examples/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) examples/$(DEPDIR)
+	@: > examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-chrono-chat.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/chatbuf.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 bin/$(am__dirstamp):
 	@$(MKDIR_P) bin
 	@: > bin/$(am__dirstamp)
@@ -1513,58 +1513,58 @@ bin/$(am__dirstamp):
 bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-chrono-chat$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_LDADD) $(LIBS)
-tests/test-echo-consumer.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-echo-consumer.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-echo-consumer$(EXEEXT): $(bin_test_echo_consumer_OBJECTS) $(bin_test_echo_consumer_DEPENDENCIES) $(EXTRA_bin_test_echo_consumer_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-echo-consumer$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_echo_consumer_OBJECTS) $(bin_test_echo_consumer_LDADD) $(LIBS)
-tests/test-encode-decode-benchmark.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-benchmark.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-benchmark$(EXEEXT): $(bin_test_encode_decode_benchmark_OBJECTS) $(bin_test_encode_decode_benchmark_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_benchmark_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-benchmark$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_benchmark_OBJECTS) $(bin_test_encode_decode_benchmark_LDADD) $(LIBS)
-tests/test-encode-decode-data.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-data.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-data$(EXEEXT): $(bin_test_encode_decode_data_OBJECTS) $(bin_test_encode_decode_data_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_data_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-data$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_data_OBJECTS) $(bin_test_encode_decode_data_LDADD) $(LIBS)
-tests/test-encode-decode-fib-entry.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
-tests/fib-entry.pb.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-fib-entry.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
+examples/fib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-fib-entry$(EXEEXT): $(bin_test_encode_decode_fib_entry_OBJECTS) $(bin_test_encode_decode_fib_entry_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_fib_entry_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-fib-entry$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_fib_entry_OBJECTS) $(bin_test_encode_decode_fib_entry_LDADD) $(LIBS)
-tests/test-encode-decode-forwarding-entry.$(OBJEXT):  \
-	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-forwarding-entry.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-forwarding-entry$(EXEEXT): $(bin_test_encode_decode_forwarding_entry_OBJECTS) $(bin_test_encode_decode_forwarding_entry_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_forwarding_entry_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-forwarding-entry$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_forwarding_entry_OBJECTS) $(bin_test_encode_decode_forwarding_entry_LDADD) $(LIBS)
-tests/test-encode-decode-interest.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-interest.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-interest$(EXEEXT): $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_interest_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-interest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_LDADD) $(LIBS)
-tests/test-get-async.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-get-async.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
-tests/test-publish-async-ndnx.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-publish-async-ndnx.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-publish-async-ndnx$(EXEEXT): $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_DEPENDENCIES) $(EXTRA_bin_test_publish_async_ndnx_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-ndnx$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_LDADD) $(LIBS)
-tests/test-publish-async-nfd.$(OBJEXT): tests/$(am__dirstamp) \
-	tests/$(DEPDIR)/$(am__dirstamp)
+examples/test-publish-async-nfd.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-publish-async-nfd$(EXEEXT): $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-nfd$(EXEEXT)
@@ -1678,6 +1678,7 @@ bin/unit-tests/test-verification-rules$(EXEEXT): $(bin_unit_tests_test_verificat
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/*.$(OBJEXT)
+	-rm -f examples/*.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
 	-rm -f src/*.lo
 	-rm -f src/c/*.$(OBJEXT)
@@ -1708,7 +1709,6 @@ mostlyclean-compile:
 	-rm -f src/transport/*.lo
 	-rm -f src/util/*.$(OBJEXT)
 	-rm -f src/util/*.lo
-	-rm -f tests/*.$(OBJEXT)
 	-rm -f tests/unit-tests/*.$(OBJEXT)
 
 distclean-compile:
@@ -1723,6 +1723,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/fib-entry.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-echo-consumer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
@@ -1811,18 +1823,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/chatbuf.pb.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/fib-entry.pb.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-chrono-chat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-echo-consumer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-get-async.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po@am__quote@
@@ -2739,6 +2739,8 @@ distclean-generic:
 	-rm -f bin/unit-tests/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
+	-rm -f examples/$(DEPDIR)/$(am__dirstamp)
+	-rm -f examples/$(am__dirstamp)
 	-rm -f src/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/$(am__dirstamp)
 	-rm -f src/c/$(DEPDIR)/$(am__dirstamp)
@@ -2769,8 +2771,6 @@ distclean-generic:
 	-rm -f src/transport/$(am__dirstamp)
 	-rm -f src/util/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/util/$(am__dirstamp)
-	-rm -f tests/$(DEPDIR)/$(am__dirstamp)
-	-rm -f tests/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(am__dirstamp)
 
@@ -2784,7 +2784,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -2832,7 +2832,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
