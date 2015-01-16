@@ -110,7 +110,7 @@ Certificate::toDer()
   if (extensionList_.size() > 0) {
     ptr_lib::shared_ptr<DerSequence> extensionList(new DerSequence());
     for (int i = 0; i < extensionList_.size(); ++i)
-      subjectList->addChild(extensionList_[i].toDer());
+      extensionList->addChild(extensionList_[i].toDer());
     root->addChild(extensionList);
   }
 
