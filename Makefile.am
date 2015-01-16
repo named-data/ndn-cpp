@@ -208,34 +208,34 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/memory-content-cache.cpp \
   src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp
 
-bin_test_chrono_chat_SOURCES = tests/test-chrono-chat.cpp tests/chatbuf.pb.cc
+bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
 
-bin_test_echo_consumer_SOURCES = tests/test-echo-consumer.cpp
+bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_benchmark_SOURCES = tests/test-encode-decode-benchmark.cpp
+bin_test_encode_decode_benchmark_SOURCES = examples/test-encode-decode-benchmark.cpp
 bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_data_SOURCES = tests/test-encode-decode-data.cpp
+bin_test_encode_decode_data_SOURCES = examples/test-encode-decode-data.cpp
 bin_test_encode_decode_data_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_fib_entry_SOURCES = tests/test-encode-decode-fib-entry.cpp tests/fib-entry.pb.cc
+bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_forwarding_entry_SOURCES = tests/test-encode-decode-forwarding-entry.cpp
+bin_test_encode_decode_forwarding_entry_SOURCES = examples/test-encode-decode-forwarding-entry.cpp
 bin_test_encode_decode_forwarding_entry_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_interest_SOURCES = tests/test-encode-decode-interest.cpp
+bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 
-bin_test_get_async_SOURCES = tests/test-get-async.cpp
+bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
 
-bin_test_publish_async_ndnx_SOURCES = tests/test-publish-async-ndnx.cpp
+bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
-bin_test_publish_async_nfd_SOURCES = tests/test-publish-async-nfd.cpp
+bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc

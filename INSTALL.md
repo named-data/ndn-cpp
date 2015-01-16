@@ -119,7 +119,7 @@ This makes the following libraries:
 * .libs/libndn-c.a: The core C code for encoding and communication.
 * .libs/libndn-cpp.a: The C++ library API.  (If linking to libndn-cpp, don't link to libndn-c since it is included.)
 
-This makes the following test files:
+This makes the following example programs:
 
 * bin/test-get-async: Connect to one of the NDN testbed hubs, express an interest and display the received data.
 * bin/test-publish-async-ndnx: Connect to the local NDNx hub, accept interests with prefix /testecho and echo back a data packet. See test-echo-consumer.
