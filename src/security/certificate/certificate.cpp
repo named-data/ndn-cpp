@@ -166,7 +166,7 @@ Certificate::decode()
         extInfo.getChildren();
       string oidStr = children[0]->toVal().toRawStr();
       bool isCritical = children[1]->toVal().buf()[0] != 0;
-      Blob value = children[2]->encode();
+      Blob value = children[2]->toVal();
       addExtension(CertificateExtension(oidStr, isCritical, value));
     }
   }
