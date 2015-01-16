@@ -1,5 +1,11 @@
-NDN-CPP v0.6 (2014-12-23)
+Interim changes since NDN-CPP v0.6 (2015-01-16)
 -----------------------------------------------
+
+Changes
+* http://redmine.named-data.net/issues/2388 Moved example programs from "tests" to "examples".
+
+NDN-CPP v0.6 (2014-12-23)
+-------------------------
 
 Changes
 * In MetaInfo, added get/setFinalBlockId (replaces the deprecated get/setFinalBlockID).
