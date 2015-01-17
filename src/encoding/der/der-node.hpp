@@ -316,6 +316,14 @@ public:
   DerInteger(int integer);
 
   DerInteger();
+
+  /**
+   * Parse the payload as an integer and return the value.  We don't override
+   * toVal() because that wants to return a Blob.
+   * @return the payload as an integer.
+   */
+  int
+  toIntegerVal() const;
 };
 
 /**

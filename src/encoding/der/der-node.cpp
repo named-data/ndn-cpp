@@ -290,6 +290,18 @@ DerNode::DerInteger::DerInteger()
 {
 }
 
+int
+DerNode::DerInteger::toIntegerVal() const
+{
+  int result = 0;
+  for (int i = 0; i < payloadPosition_; ++i) {
+    result <<= 8;
+    result += payload_[i];
+  }
+
+  return result;
+}
+
 Blob
 DerNode::DerOid::toVal()
 {
