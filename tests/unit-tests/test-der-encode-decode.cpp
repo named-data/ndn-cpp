@@ -28,6 +28,10 @@
 using namespace std;
 using namespace ndn;
 
+typedef DerNode::DerSequence DerSequence;
+typedef DerNode::DerOctetString DerOctetString;
+typedef DerNode::DerInteger DerInteger;
+
 static const uint8_t PUBLIC_KEY[] = {
 0x30, 0x81, 0x9d, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
 0x01, 0x05, 0x00, 0x03, 0x81, 0x8b, 0x00, 0x30, 0x81, 0x87, 0x02, 0x81, 0x81, 0x00, 0x9e,
@@ -166,27 +170,66 @@ TEST_F(TestCertificate, EncodeDecode)
     "Certificate representation changed after encoding";
 }
 
-#if 0 // TODO: Implement when we change from visitors to use the DerSequence class, etc. directly.
 TEST_F(TestCertificate, Extension)
 {
   // Now add an extension.
+  string name("/hello/kitty");
+  int trustClass = 0;
+  int trustLevel = 10;
+
+  ptr_lib::shared_ptr<DerSequence> extValueRoot(new DerSequence());
+  ptr_lib::shared_ptr<DerOctetString> extValueName
+    (new DerOctetString((uint8_t*)&name[0], name.size()));
+  ptr_lib::shared_ptr<DerInteger> extValueTrustClass(new DerInteger(trustClass));
+  ptr_lib::shared_ptr<DerInteger> extValueTrustLevel(new DerInteger(trustLevel));
+
+  extValueRoot->addChild(extValueName);
+  extValueRoot->addChild(extValueTrustClass);
+  extValueRoot->addChild(extValueTrustLevel);
+
+  Blob extValueData = extValueRoot->encode();
+
+  string oidString = "1.3.6.1.5.32.1";
+  bool isCritical = true;
+  CertificateExtension certExtension(oidString, isCritical, extValueData);
   toyCert.encode();
-  extValueRoot = DerSequence();
-  extValueName = DerOctetString("/hello/kitty");
-  extValueTrustClass = DerInteger(0);
-  extValueTrustLevel = DerInteger(10);
-
-  extValueRoot.addChild(extValueName);
-  extValueRoot.addChild(extValueTrustClass);
-  extValueRoot.addChild(extValueTrustLevel);
-
-  extValueData = extValueRoot.encode();
-
-  certExtension = CertificateExtension("1.3.6.1.5.32.1", True, extValueData);
-  cert = Certificate(self.toyCert);
+  Certificate cert(toyCert);
   cert.addExtension(certExtension);
+
+  cert.encode();
+  Blob certData = cert.getContent();
+  Data plainData;
+  plainData.setContent(certData);
+  // The constructor Certificate(Data) calls decode().
+  Certificate decodedCert(plainData);
+  ASSERT_EQ(1, decodedCert.getExtensionList().size()) <<
+    "Wrong number of certificate extensions after decoding";
+
+  CertificateExtension& decodedExtension = decodedCert.getExtensionList()[0];
+  ASSERT_EQ(oidString, decodedExtension.getOid().toString()) <<
+    "Certificate extension has the wrong OID after decoding";
+  ASSERT_EQ(isCritical, decodedExtension.getIsCritical()) <<
+    "Certificate extension has the wrong isCritical value after decoding";
+
+  // Decode and check the extension value.
+  ptr_lib::shared_ptr<DerNode> parsedExtValue = DerNode::parse
+    (decodedExtension.getValue().buf());
+  const std::vector<ptr_lib::shared_ptr<DerNode> >& decodedExtValueRoot =
+    parsedExtValue->getChildren();
+  ASSERT_EQ(3, decodedExtValueRoot.size()) <<
+    "Wrong number of certificate extension value items after decoding";
+  
+  DerOctetString& decodedName = dynamic_cast<DerOctetString&>(*decodedExtValueRoot[0]);
+  DerInteger& decodedTrustClass = dynamic_cast<DerInteger&>(*decodedExtValueRoot[1]);
+  DerInteger& decodedTrustLevel = dynamic_cast<DerInteger&>(*decodedExtValueRoot[2]);
+  ASSERT_TRUE(Blob((const uint8_t *)&name[0], name.size()).equals
+              (decodedName.toVal())) <<
+    "Wrong extension value name after decoding";
+  ASSERT_EQ(trustClass, decodedTrustClass.toIntegerVal()) <<
+    "Wrong extension value trust class after decoding";
+  ASSERT_EQ(trustLevel, decodedTrustLevel.toIntegerVal()) <<
+    "Wrong extension value trust level after decoding";
 }
-#endif
 
 TEST_F(TestCertificate, Decode)
 {
