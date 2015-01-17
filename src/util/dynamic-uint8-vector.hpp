@@ -128,6 +128,9 @@ public:
   uint8_t&
   operator [] (size_t i) { return (*vector_)[i]; }
 
+  const uint8_t&
+  operator [] (size_t i) const { return (*vector_)[i]; }
+
 private:
   /**
    * Implement the static realloc function using vector resize.
