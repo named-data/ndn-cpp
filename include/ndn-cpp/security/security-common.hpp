@@ -42,16 +42,7 @@ enum KeyClass {
 };
 
 enum DigestAlgorithm {
-  // DIGEST_ALGORITHM_MD2,
-  // DIGEST_ALGORITHM_MD5,
-  // DIGEST_ALGORITHM_SHA1,
   DIGEST_ALGORITHM_SHA256
-};
-
-enum EncryptMode {
-  ENCRYPT_MODE_DEFAULT,
-  ENCRYPT_MODE_CFB_AES,
-  // ENCRYPT_MODE_CBC_AES
 };
 
 }
