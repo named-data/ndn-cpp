@@ -175,7 +175,7 @@ TEST_F(TestCertificate, Extension)
   // Now add an extension.
   string name("/hello/kitty");
   int trustClass = 0;
-  int trustLevel = 10;
+  int trustLevel = 300;
 
   ptr_lib::shared_ptr<DerSequence> extValueRoot(new DerSequence());
   ptr_lib::shared_ptr<DerOctetString> extValueName
