@@ -932,7 +932,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/certificate/certificate.hpp \
   include/ndn-cpp/security/certificate/identity-certificate.hpp \
   include/ndn-cpp/security/certificate/public-key.hpp \
-  include/ndn-cpp/security/encryption/encryption-manager.hpp \
   include/ndn-cpp/security/identity/basic-identity-storage.hpp \
   include/ndn-cpp/security/identity/file-private-key-storage.hpp \
   include/ndn-cpp/security/identity/identity-manager.hpp \
