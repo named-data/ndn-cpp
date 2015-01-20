@@ -27,7 +27,6 @@
 #include "../interest.hpp"
 #include "../face.hpp"
 #include "identity/identity-manager.hpp"
-#include "encryption/encryption-manager.hpp"
 #include "policy/validation-request.hpp"
 
 namespace ndn {
@@ -451,58 +450,6 @@ public:
      const OnVerifyInterestFailed& onVerifyFailed, int stepCount = 0,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
-  /*****************************************
-   *           Encrypt/Decrypt             *
-   *****************************************/
-
-  /**
-   * Generate a symmetric key.
-   * @param keyName The name of the generated key.
-   * @param keyType The type of the key, e.g. KEY_TYPE_AES
-   */
-  void
-  generateSymmetricKey(const Name& keyName, KeyType keyType)
-  {
-    encryptionManager_->createSymmetricKey(keyName, keyType);
-  }
-
-  /**
-   * Encrypt a byte array.
-   * @param keyName The name of the encrypting key.
-   * @param data The byte array that will be encrypted.
-   * @param dataLength The length of data.
-   * @param useSymmetric (optional) If true then symmetric encryption is used,
-   * otherwise asymmetric encryption is used. If omitted, use symmetric
-   * encryption.
-   * @param encryptMode (optional) The encryption mode. If omitted, use
-   * ENCRYPT_MODE_DEFAULT.
-   * @return The encrypted data as an immutable Blob.
-   */
-  Blob
-  encrypt(const Name &keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = true,
-          EncryptMode encryptMode = ENCRYPT_MODE_DEFAULT)
-  {
-    return encryptionManager_->encrypt(keyName, data, dataLength, useSymmetric, encryptMode);
-  }
-
-  /**
-   * Decrypt a byte array.
-   * @param keyName The name of the decrypting key.
-   * @param data The byte array that will be decrypted.
-   * @param dataLength The length of data.
-   * @param useSymmetric (optional) If true then symmetric encryption is used,
-   * otherwise asymmetric encryption is used. If omitted, use symmetric
-   * encryption.
-   * @param encryptMode (optional) The encryption mode. If omitted, use
-   * @return The decrypted data as an immutable Blob.
-   */
-  Blob
-  decrypt(const Name &keyName, const uint8_t* data, size_t dataLength, bool useSymmetric = true,
-          EncryptMode encryptMode = ENCRYPT_MODE_DEFAULT)
-  {
-     return encryptionManager_->decrypt(keyName, data, dataLength, useSymmetric, encryptMode);
-  }
-
   /**
    * Set the Face which will be used to fetch required certificates.
    * @param face A pointer to the Face object.
@@ -533,7 +480,6 @@ private:
 
   ptr_lib::shared_ptr<IdentityManager> identityManager_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;
-  ptr_lib::shared_ptr<EncryptionManager> encryptionManager_;
   Face* face_;
   const int maxSteps_;
 };
