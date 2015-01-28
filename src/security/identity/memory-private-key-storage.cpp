@@ -120,7 +120,8 @@ Blob
 MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm)
 {
   if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
-    return Blob();
+    throw SecurityException
+      ("MemoryPrivateKeyStorage::sign: Unsupported digest algorithm");
 
   uint8_t digest[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(data, dataLength, digest);
