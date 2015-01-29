@@ -68,7 +68,7 @@ PublicKey::PublicKey(const Blob& keyDer)
     RSA_free(publicKey);
   }
   else if (oidString == EC_ENCRYPTION_OID) {
-    keyType_ = KEY_TYPE_EC;
+    keyType_ = KEY_TYPE_ECDSA;
 
     EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
     if (!publicKey)

@@ -483,7 +483,7 @@ IdentityManager::makeSignatureByCertificate
 
     return signature;
   }
-  else if (keyType == KEY_TYPE_EC) {
+  else if (keyType == KEY_TYPE_ECDSA) {
     ptr_lib::shared_ptr<Sha256WithEcdsaSignature> signature
       (new Sha256WithEcdsaSignature());
     digestAlgorithm = DIGEST_ALGORITHM_SHA256;

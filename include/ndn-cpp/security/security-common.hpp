@@ -32,7 +32,7 @@ enum KeyType {
   // KEY_TYPE_DES,
   // KEY_TYPE_RC4,
   // KEY_TYPE_RC2
-  KEY_TYPE_EC = 2
+  KEY_TYPE_ECDSA = 2
 };
 
 enum KeyClass {

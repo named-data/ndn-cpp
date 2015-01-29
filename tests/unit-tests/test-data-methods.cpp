@@ -311,10 +311,10 @@ public:
       ("KEY").append(ecdsaKeyName[-1]).append("ID-CERT").append("0");
 
     identityStorage_->addKey
-      (ecdsaKeyName, KEY_TYPE_EC, Blob(DEFAULT_EC_PUBLIC_KEY_DER,
+      (ecdsaKeyName, KEY_TYPE_ECDSA, Blob(DEFAULT_EC_PUBLIC_KEY_DER,
        sizeof(DEFAULT_EC_PUBLIC_KEY_DER)));
     privateKeyStorage_->setKeyPairForKeyName
-      (ecdsaKeyName, KEY_TYPE_EC, DEFAULT_EC_PUBLIC_KEY_DER,
+      (ecdsaKeyName, KEY_TYPE_ECDSA, DEFAULT_EC_PUBLIC_KEY_DER,
        sizeof(DEFAULT_EC_PUBLIC_KEY_DER), DEFAULT_EC_PRIVATE_KEY_DER,
        sizeof(DEFAULT_EC_PRIVATE_KEY_DER));
   }

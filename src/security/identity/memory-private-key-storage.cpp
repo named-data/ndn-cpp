@@ -140,7 +140,7 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
                   &signatureBitsLength, privateKey->second->getRsaPrivateKey()))
       throw SecurityException("Error in RSA_sign");
   }
-  else if (privateKey->second->getKeyType() == KEY_TYPE_EC) {
+  else if (privateKey->second->getKeyType() == KEY_TYPE_ECDSA) {
     if (!ECDSA_sign(NID_sha256, digest, sizeof(digest), signatureBits,
                   &signatureBitsLength, privateKey->second->getEcPrivateKey()))
       throw SecurityException("Error in RSA_sign");
@@ -202,7 +202,7 @@ MemoryPrivateKeyStorage::PrivateKey::PrivateKey
     if (!rsaPrivateKey_)
       throw SecurityException("PrivateKey constructor: Error decoding RSA private key DER");
   }
-  else if (keyType == KEY_TYPE_EC) {
+  else if (keyType == KEY_TYPE_ECDSA) {
     ecPrivateKey_ = d2i_ECPrivateKey(NULL, &derPointer, keyDerLength);
     if (!ecPrivateKey_)
       throw SecurityException("PrivateKey constructor: Error decoding EC private key DER");

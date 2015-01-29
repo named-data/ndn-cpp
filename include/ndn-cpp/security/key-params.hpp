@@ -98,7 +98,7 @@ private:
   getDefaultSize() { return 256; }
 
   static KeyType
-  getType() { return KEY_TYPE_EC; }
+  getType() { return KEY_TYPE_ECDSA; }
 
   uint32_t size_;
 };

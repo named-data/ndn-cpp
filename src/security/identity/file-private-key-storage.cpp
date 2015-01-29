@@ -177,7 +177,7 @@ FilePrivateKeyStorage::generateKeyPair
     BN_free(exponent);
     RSA_free(rsa);
   }
-  else if (params.getKeyType() == KEY_TYPE_EC) {
+  else if (params.getKeyType() == KEY_TYPE_ECDSA) {
     const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
 
     OID parametersOid;
@@ -194,7 +194,7 @@ FilePrivateKeyStorage::generateKeyPair
       }
     }
     if (curveId == -1)
-      throw SecurityException("Unsupported keySize for KEY_TYPE_EC");
+      throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
 
     EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
     if (ecKey != NULL) {
