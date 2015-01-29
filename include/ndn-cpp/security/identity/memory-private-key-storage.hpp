@@ -124,11 +124,10 @@ public:
   /**
    * Generate a pair of asymmetric keys.
    * @param keyName The name of the key pair.
-   * @param keyType The type of the key pair, e.g. KEY_TYPE_RSA.
-   * @param keySize The size of the key pair.
+   * @param params The parameters of the key.
    */
   virtual void
-  generateKeyPair(const Name& keyName, KeyType keyType, int keySize);
+  generateKeyPair(const Name& keyName, const KeyParams& params);
 
   /**
    * Delete a pair of asymmetric keys. If the key doesn't exist, do nothing.
@@ -181,11 +180,10 @@ public:
   /**
    * @brief Generate a symmetric key.
    * @param keyName The name of the key.
-   * @param keyType The type of the key, e.g. KEY_TYPE_AES.
-   * @param keySize The size of the key.
+   * @param params The parameters of the key.
    */
   virtual void
-  generateKey(const Name& keyName, KeyType keyType, int keySize);
+  generateKey(const Name& keyName, const KeyParams& params);
 
   /**
    * Check if a particular key exists.

@@ -55,7 +55,8 @@ MemoryPrivateKeyStorage::setPrivateKeyForKeyName
 }
 
 void
-MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, int keySize)
+MemoryPrivateKeyStorage::generateKeyPair
+  (const Name& keyName, const KeyParams& params)
 {
   if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
     throw SecurityException("Public Key already exists");
@@ -65,14 +66,15 @@ MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, i
   vector<uint8_t> publicKeyDer;
   vector<uint8_t> privateKeyDer;
 
-  if (keyType == KEY_TYPE_RSA) {
+  if (params.getKeyType() == KEY_TYPE_RSA) {
+    const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
     BIGNUM* exponent = 0;
     RSA* rsa = 0;
 
     exponent = BN_new();
     if (BN_set_word(exponent, RSA_F4) == 1) {
       rsa = RSA_new();
-      if (RSA_generate_key_ex(rsa, keySize, exponent, NULL) == 1) {
+      if (RSA_generate_key_ex(rsa, rsaParams.getKeySize(), exponent, NULL) == 1) {
         // Encode the public key.
         int length = i2d_RSA_PUBKEY(rsa, NULL);
         publicKeyDer.resize(length);
@@ -94,7 +96,7 @@ MemoryPrivateKeyStorage::generateKeyPair(const Name& keyName, KeyType keyType, i
     throw SecurityException("Unsupported key type");
 
   setKeyPairForKeyName
-    (keyName, keyType, &publicKeyDer[0], publicKeyDer.size(),
+    (keyName, params.getKeyType(), &publicKeyDer[0], publicKeyDer.size(),
      &privateKeyDer[0], privateKeyDer.size());
 }
 
@@ -167,7 +169,7 @@ MemoryPrivateKeyStorage::encrypt(const Name& keyName, const uint8_t* data, size_
 }
 
 void
-MemoryPrivateKeyStorage::generateKey(const Name& keyName, KeyType keyType, int keySize)
+MemoryPrivateKeyStorage::generateKey(const Name& keyName, const KeyParams& params)
 {
 #if 1
   throw runtime_error("MemoryPrivateKeyStorage::generateKey not implemented");

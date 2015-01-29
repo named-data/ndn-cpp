@@ -137,7 +137,7 @@ FilePrivateKeyStorage::~FilePrivateKeyStorage()
 
 void
 FilePrivateKeyStorage::generateKeyPair
-  (const Name& keyName, KeyType keyType, int keySize)
+  (const Name& keyName, const KeyParams& params)
 {
   if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
     throw SecurityException("Public Key already exists");
@@ -147,14 +147,16 @@ FilePrivateKeyStorage::generateKeyPair
   Blob publicKeyDer;
   Blob privateKeyDer;
 
-  if (keyType == KEY_TYPE_RSA) {
+  if (params.getKeyType() == KEY_TYPE_RSA) {
+    const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
+    
     BIGNUM* exponent = 0;
     RSA* rsa = 0;
 
     exponent = BN_new();
     if (BN_set_word(exponent, RSA_F4) == 1) {
       rsa = RSA_new();
-      if (RSA_generate_key_ex(rsa, keySize, exponent, NULL) == 1) {
+      if (RSA_generate_key_ex(rsa, rsaParams.getKeySize(), exponent, NULL) == 1) {
         // Encode the public key.
         int length = i2d_RSA_PUBKEY(rsa, NULL);
         publicKeyDer = Blob(ptr_lib::make_shared<vector<uint8_t> >(length), false);
@@ -175,13 +177,15 @@ FilePrivateKeyStorage::generateKeyPair
     BN_free(exponent);
     RSA_free(rsa);
   }
-  else if (keyType == KEY_TYPE_EC) {
+  else if (params.getKeyType() == KEY_TYPE_EC) {
+    const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
+
     OID parametersOid;
     int curveId = -1;
 
     // Find the entry in EC_KEY_INFO.
     for (size_t i = 0 ; i < sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); ++i) {
-      if (EC_KEY_INFO[i].keySize == keySize) {
+      if (EC_KEY_INFO[i].keySize == ecdsaParams.getKeySize()) {
         curveId = EC_KEY_INFO[i].curveId;
         parametersOid.setIntegerList
           (EC_KEY_INFO[i].oidIntegerList, EC_KEY_INFO[i].oidIntegerListLength);
@@ -367,8 +371,7 @@ FilePrivateKeyStorage::encrypt
 }
 
 void
-FilePrivateKeyStorage::generateKey
-  (const Name& keyName, KeyType keyType, int keySize)
+FilePrivateKeyStorage::generateKey(const Name& keyName, const KeyParams& params)
 {
 #if 1
   throw runtime_error("FilePrivateKeyStorage::generateKey not implemented");

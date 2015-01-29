@@ -42,7 +42,8 @@ namespace ndn
   }
 
   void
-  OSXPrivateKeyStorage::generateKeyPair(const Name & keyName, KeyType keyType, int keySize)
+  OSXPrivateKeyStorage::generateKeyPair
+    (const Name & keyName, const KeyParams& params)
   {
 
     if (doesKeyExist(keyName, KEY_CLASS_PUBLIC))
@@ -59,9 +60,18 @@ namespace ndn
                                                              &kCFTypeDictionaryKeyCallBacks,
                                                              NULL);
 
+    uint32_t keySize;
+    if (params.getKeyType() == KEY_TYPE_RSA)
+      keySize = static_cast<const RsaKeyParams&>(params).getKeySize();
+    else if (params.getKeyType() == KEY_TYPE_EC)
+      keySize = static_cast<const EcdsaKeyParams&>(params).getKeySize();
+    else
+      throw SecurityException("generateKeyPair: Unsupported key type");
+
     CFReleaser<CFNumberRef> cfKeySize = CFNumberCreate(0, kCFNumberIntType, &keySize);
 
-    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyType, getAsymmetricKeyType(keyType));
+    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyType, getAsymmetricKeyType
+      (params.getKeyType()));
     CFDictionaryAddValue(attrDict.get(), kSecAttrKeySizeInBits, cfKeySize.get());
     CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
 
@@ -93,7 +103,7 @@ namespace ndn
   }
 
   void
-  OSXPrivateKeyStorage::generateKey(const Name & keyName, KeyType keyType, int keySize)
+  OSXPrivateKeyStorage::generateKey(const Name & keyName, const KeyParams& params)
   {
     throw SecurityException("OSXPrivateKeyStorage::generateKey is not supported");
 #if 0
