@@ -235,7 +235,7 @@ TEST_F(TestSqlIdentityStorage, CertificateAddDelete)
   Name identityName = Name("/TestIdentityStorage/Identity").appendVersion
     ((uint64_t)getNowSeconds());
 
-  identityManager->createIdentity(identityName);
+  identityManager->createIdentity(identityName, KeyChain::DEFAULT_KEY_PARAMS);
   Name keyName1 = identityManager->getDefaultKeyNameForIdentity(identityName);
   ptr_lib::shared_ptr<IdentityCertificate> cert2 =
     identityManager->selfSign(keyName1);

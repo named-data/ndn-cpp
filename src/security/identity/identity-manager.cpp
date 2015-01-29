@@ -117,11 +117,12 @@ IdentityManager::IdentityManager()
 #endif
 
 Name
-IdentityManager::createIdentity(const Name& identityName)
+IdentityManager::createIdentity(const Name& identityName, const KeyParams& params)
 {
   if (!identityStorage_->doesIdentityExist(identityName)) {
     identityStorage_->addIdentity(identityName);
-    Name keyName = generateRSAKeyPairAsDefault(identityName, true);
+    Name keyName = generateKeyPair(identityName, true, params);
+    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
     ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
     addCertificateAsDefault(*selfCert);
 
@@ -154,12 +155,13 @@ IdentityManager::deleteIdentity(const Name& identityName)
 }
 
 Name
-IdentityManager::generateKeyPair(const Name& identityName, bool isKsk, KeyType keyType, int keySize)
+IdentityManager::generateKeyPair
+  (const Name& identityName, bool isKsk, const KeyParams& params)
 {
   Name keyName = identityStorage_->getNewKeyName(identityName, isKsk);
-  privateKeyStorage_->generateKeyPair(keyName, keyType, keySize);
+  privateKeyStorage_->generateKeyPair(keyName, params);
   ptr_lib::shared_ptr<PublicKey> pubKey = privateKeyStorage_->getPublicKey(keyName);
-  identityStorage_->addKey(keyName, keyType, pubKey->getKeyDer());
+  identityStorage_->addKey(keyName, params.getKeyType(), pubKey->getKeyDer());
 
   return keyName;
 }
@@ -167,7 +169,7 @@ IdentityManager::generateKeyPair(const Name& identityName, bool isKsk, KeyType k
 Name
 IdentityManager::generateRSAKeyPair(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_RSA, keySize);
+  Name keyName = generateKeyPair(identityName, isKsk, RsaKeyParams(keySize));
 
   return keyName;
 }
@@ -175,14 +177,14 @@ IdentityManager::generateRSAKeyPair(const Name& identityName, bool isKsk, int ke
 Name
 IdentityManager::generateEcdsaKeyPair(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_EC, keySize);
+  Name keyName = generateKeyPair(identityName, isKsk, EcdsaKeyParams(keySize));
   return keyName;
 }
 
 Name
 IdentityManager::generateRSAKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_RSA, keySize);
+  Name keyName = generateKeyPair(identityName, isKsk, RsaKeyParams(keySize));
 
   identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
 
@@ -192,7 +194,7 @@ IdentityManager::generateRSAKeyPairAsDefault(const Name& identityName, bool isKs
 Name
 IdentityManager::generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, KEY_TYPE_EC, keySize);
+  Name keyName = generateKeyPair(identityName, isKsk, EcdsaKeyParams(keySize));
   identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
   return keyName;
 }

@@ -65,10 +65,11 @@ public:
   /**
    * Create an identity by creating a pair of Key-Signing-Key (KSK) for this identity and a self-signed certificate of the KSK.
    * @param identityName The name of the identity.
+   * @param params The key parameters if a key needs to be generated for the identity.
    * @return The key name of the auto-generated KSK of the identity.
    */
   Name
-  createIdentity(const Name& identityName);
+  createIdentity(const Name& identityName, const KeyParams& params);
 
   /**
    * Delete the identity from the public and private key storage. If the
@@ -375,12 +376,11 @@ private:
    * Generate a key pair for the specified identity.
    * @param identityName The name of the specified identity.
    * @param isKsk true for generating a Key-Signing-Key (KSK), false for a Data-Signing-Key (KSK).
-   * @param keyType The type of the key pair, e.g. KEY_TYPE_RSA.
-   * @param keySize The size of the key pair.
+   * @param params The parameters of the key.
    * @return The name of the generated key.
    */
   Name
-  generateKeyPair(const Name& identityName, bool isKsk, KeyType keyType, int keySize);
+  generateKeyPair(const Name& identityName, bool isKsk, const KeyParams& params);
 
   static Name
   getKeyNameFromCertificatePrefix(const Name& certificatePrefix);
