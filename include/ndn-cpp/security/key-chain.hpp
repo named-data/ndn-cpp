@@ -28,6 +28,7 @@
 #include "../face.hpp"
 #include "identity/identity-manager.hpp"
 #include "policy/validation-request.hpp"
+#include "key-params.hpp"
 
 namespace ndn {
 
@@ -72,12 +73,14 @@ public:
   /**
    * Create an identity by creating a pair of Key-Signing-Key (KSK) for this identity and a self-signed certificate of the KSK.
    * @param identityName The name of the identity.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use DEFAULT_KEY_PARAMS.
    * @return The key name of the auto-generated KSK of the identity.
    */
   Name
-  createIdentity(const Name& identityName)
+  createIdentity(const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
   {
-    return identityManager_->createIdentity(identityName);
+    return identityManager_->createIdentity(identityName, params);
   }
 
   /**
@@ -456,6 +459,8 @@ public:
    */
   void
   setFace(Face* face) { face_ = face; }
+
+  static const RsaKeyParams DEFAULT_KEY_PARAMS;
 
 private:
   void

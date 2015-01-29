@@ -34,6 +34,8 @@ using namespace ndn::func_lib;
 
 namespace ndn {
 
+const RsaKeyParams KeyChain::DEFAULT_KEY_PARAMS;
+
 KeyChain::KeyChain
   (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
    const ptr_lib::shared_ptr<PolicyManager>& policyManager)
