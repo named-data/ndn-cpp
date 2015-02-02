@@ -138,7 +138,7 @@ runExpressNameTest(Face& face, const string& interestName, Milliseconds timeout 
 class TestFaceInterestMethods : public ::testing::Test {
 public:
   TestFaceInterestMethods()
-  : face("aleph.ndn.ucla.edu")
+  : face("localhost")
   {
   }
 
