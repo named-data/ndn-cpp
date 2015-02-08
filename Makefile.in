@@ -103,7 +103,7 @@ noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-forwarding-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
-	bin/test-get-async$(EXEEXT) \
+	bin/test-get-async$(EXEEXT) bin/test-list-rib$(EXEEXT) \
 	bin/test-publish-async-ndnx$(EXEEXT) \
 	bin/test-publish-async-nfd$(EXEEXT)
 TESTS = $(check_PROGRAMS)
@@ -291,6 +291,10 @@ bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
 am_bin_test_get_async_OBJECTS = examples/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
+am_bin_test_list_rib_OBJECTS = examples/test-list-rib.$(OBJEXT) \
+	examples/rib-entry.pb.$(OBJEXT)
+bin_test_list_rib_OBJECTS = $(am_bin_test_list_rib_OBJECTS)
+bin_test_list_rib_DEPENDENCIES = libndn-cpp.la
 am_bin_test_publish_async_ndnx_OBJECTS =  \
 	examples/test-publish-async-ndnx.$(OBJEXT)
 bin_test_publish_async_ndnx_OBJECTS =  \
@@ -407,7 +411,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) \
+	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -427,7 +431,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) \
+	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -1084,6 +1088,8 @@ bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.c
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
+bin_test_list_rib_LDADD = libndn-cpp.la
 bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
@@ -1556,6 +1562,14 @@ examples/test-get-async.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
+examples/test-list-rib.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/rib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-list-rib$(EXEEXT): $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_DEPENDENCIES) $(EXTRA_bin_test_list_rib_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-list-rib$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_LDADD) $(LIBS)
 examples/test-publish-async-ndnx.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -1724,6 +1738,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/fib-entry.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-echo-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
@@ -1732,6 +1747,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
