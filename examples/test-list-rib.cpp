@@ -39,10 +39,10 @@ using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
 
-class Counter
+class DataCallbacks
 {
 public:
-  Counter() {
+  DataCallbacks() {
     callbackCount_ = 0;
   }
 
@@ -95,16 +95,16 @@ int main(int argc, char** argv)
     Face face("localhost");
 
     // Counter holds data used by the callbacks.
-    Counter counter;
+    DataCallbacks callbacks;
 
     // Use bind to pass the counter object to the callbacks.
     Interest interest(Name("/localhost/nfd/rib/list"));
     interest.setChildSelector(1);
     cout << "Express request " << interest.getName().toUri() << endl;
-    face.expressInterest(interest, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
+    face.expressInterest(interest, bind(&DataCallbacks::onData, &callbacks, _1, _2), bind(&DataCallbacks::onTimeout, &callbacks, _1));
 
     // The main event loop.
-    while (counter.callbackCount_ < 1) {
+    while (callbacks.callbackCount_ < 1) {
       face.processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
