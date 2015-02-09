@@ -92,7 +92,8 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    Face face("localhost");
+    // The default Face connects to the local NFD.
+    Face face;
 
     // Counter holds data used by the callbacks.
     DataCallbacks callbacks;
