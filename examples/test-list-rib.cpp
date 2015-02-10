@@ -43,16 +43,32 @@ class DataCallbacks
 {
 public:
   DataCallbacks() {
-    callbackCount_ = 0;
+    enabled_ = true;
   }
 
-  void onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
+  void
+  onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
   {
-    ++callbackCount_;
+    enabled_ = false;
+    printRibEntry(data->getContent());
+  }
 
-    // Decode the RibEntry and print the values.
+  void
+  onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
+  {
+    enabled_ = false;
+    cout << "Time out for interest " << interest->getName().toUri() << endl;
+  }
+
+  /**
+   * Decode the encodedMessage as a TLV RibEntry message and display the values.
+   * @param encodedMessage The TLV-encoded RibEntry.
+   */
+  static void
+  printRibEntry(const Blob& encodedMessage)
+  {
     ndn_message::RibEntryMessage ribEntryMessage;
-    ProtobufTlv::decode(ribEntryMessage, data->getContent());
+    ProtobufTlv::decode(ribEntryMessage, encodedMessage);
 
     cout << "RIB:" << endl;
     for (int iEntry = 0; iEntry < ribEntryMessage.rib_entry_size(); ++iEntry) {
@@ -67,7 +83,7 @@ public:
       for (int iRoute = 0; iRoute < ribEntry.routes_size(); ++iRoute) {
         const ndn_message::RibEntryMessage_Route& route = ribEntry.routes(iRoute);
 
-        cout << " route={faceId=" << route.face_id() << " (origin=" << 
+        cout << " route={faceId=" << route.face_id() << " (origin=" <<
           route.origin() << " cost=" << route.cost();
         if (route.flags() & 1)
           cout << " ChildInherit";
@@ -80,13 +96,7 @@ public:
     }
   }
 
-  void onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
-  {
-    ++callbackCount_;
-    cout << "Time out for interest " << interest->getName().toUri() << endl;
-  }
-
-  int callbackCount_;
+  bool enabled_;
 };
 
 int main(int argc, char** argv)
@@ -104,8 +114,8 @@ int main(int argc, char** argv)
     cout << "Express request " << interest.getName().toUri() << endl;
     face.expressInterest(interest, bind(&DataCallbacks::onData, &callbacks, _1, _2), bind(&DataCallbacks::onTimeout, &callbacks, _1));
 
-    // The main event loop.
-    while (callbacks.callbackCount_ < 1) {
+    // Loop calling processEvents until callbacks is finished and sets enabled_ false.
+    while (callbacks.enabled_) {
       face.processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
