@@ -39,18 +39,83 @@ using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
 
+/**
+ * DataCallbacks handles the onData event to fetch multiple segments. When the
+ * final segment is fetched, pass the result to printRibEntry.
+ */
 class DataCallbacks
 {
 public:
-  DataCallbacks() {
-    enabled_ = true;
+  /**
+   * Create a new DataCallbacks to use the Face.
+   * @param face This calls face.expressInterest to fetch more segments.
+   */
+  DataCallbacks(Face& face)
+  : face_(face),
+    enabled_(true)
+  {
   }
 
   void
-  onData(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& data)
+  onData
+    (const ptr_lib::shared_ptr<const Interest>& interest,
+     const ptr_lib::shared_ptr<Data>& data)
   {
-    enabled_ = false;
-    printRibEntry(data->getContent());
+    if (!endsWithSegmentNumber(data->getName())) {
+      // We don't expect a name without a segment number.  Treat it as a bad packet.
+      cout << "Got an unexpected packet without a segment number";
+      enabled_ = false;
+    }
+    else {
+      uint64_t segmentNumber = data->getName().get(-1).toSegment();
+
+      uint64_t expectedSegmentNumber = contentParts_.size();
+      if (segmentNumber != expectedSegmentNumber)
+        // Try again to get the expected segment.  This also includes the case
+        //   where the first segment is not segment 0.
+        face_.expressInterest
+          (data->getName().getPrefix(-1).appendSegment(expectedSegmentNumber),
+           bind(&DataCallbacks::onData, this, _1, _2),
+           bind(&DataCallbacks::onTimeout, this, _1));
+      else {
+        // Save the content and check if we are finished.
+        contentParts_.push_back(data->getContent());
+
+        if (data->getMetaInfo().getFinalBlockId().getValue().size() > 0) {
+          uint64_t finalSegmentNumber =
+            data->getMetaInfo().getFinalBlockId().toSegment();
+
+          if (segmentNumber == finalSegmentNumber) {
+            // We are finished.
+            enabled_ = false;
+
+            // Get the total size and concatenate to get encodedContent.
+            int totalSize = 0;
+            for (int i = 0; i < contentParts_.size(); ++i)
+              totalSize += contentParts_[i].size();
+            ptr_lib::shared_ptr<vector<uint8_t> > encodedMessage
+              (new std::vector<uint8_t>(totalSize));
+            int offset = 0;
+            for (size_t i = 0; i < contentParts_.size(); ++i) {
+              const Blob& content = contentParts_[i];
+              // Use an explicit loop to copy since not all platforms have memcpy.
+              for (size_t j = 0; j < content.size(); ++j)
+                encodedMessage->at(offset + j) = content.buf()[j];
+              offset += content.size();
+            }
+
+            printRibEntry(Blob(encodedMessage, false));
+            return;
+          }
+        }
+
+        // Fetch the next segment.
+        face_.expressInterest
+          (data->getName().getPrefix(-1).appendSegment(expectedSegmentNumber + 1),
+           bind(&DataCallbacks::onData, this, _1, _2),
+           bind(&DataCallbacks::onTimeout, this, _1));
+      }
+    }
   }
 
   void
@@ -96,7 +161,26 @@ public:
     }
   }
 
+  bool 
+  getEnabled() { return enabled_; }
+  
+private:
+  /**
+   * Check if the last component in the name is a segment number.
+   * @param name The name to check.
+   * @return True if the name ends with a segment number, otherwise false.
+   */
+  static bool
+  endsWithSegmentNumber(Name name)
+  {
+    return name.size() >= 1 &&
+           name.get(-1).getValue().size() >= 1 &&
+           name.get(-1).getValue().buf()[0] == 0;
+  }
+
   bool enabled_;
+  vector<Blob> contentParts_;
+  Face& face_;
 };
 
 int main(int argc, char** argv)
@@ -106,16 +190,18 @@ int main(int argc, char** argv)
     Face face;
 
     // Counter holds data used by the callbacks.
-    DataCallbacks callbacks;
+    DataCallbacks callbacks(face);
 
     // Use bind to pass the counter object to the callbacks.
     Interest interest(Name("/localhost/nfd/rib/list"));
     interest.setChildSelector(1);
     cout << "Express request " << interest.getName().toUri() << endl;
-    face.expressInterest(interest, bind(&DataCallbacks::onData, &callbacks, _1, _2), bind(&DataCallbacks::onTimeout, &callbacks, _1));
+    face.expressInterest
+      (interest, bind(&DataCallbacks::onData, &callbacks, _1, _2),
+       bind(&DataCallbacks::onTimeout, &callbacks, _1));
 
     // Loop calling processEvents until callbacks is finished and sets enabled_ false.
-    while (callbacks.enabled_) {
+    while (callbacks.getEnabled()) {
       face.processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
