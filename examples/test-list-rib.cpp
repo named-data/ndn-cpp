@@ -98,9 +98,7 @@ public:
             int offset = 0;
             for (size_t i = 0; i < contentParts_.size(); ++i) {
               const Blob& content = contentParts_[i];
-              // Use an explicit loop to copy since not all platforms have memcpy.
-              for (size_t j = 0; j < content.size(); ++j)
-                encodedMessage->at(offset + j) = content.buf()[j];
+              myMemcpy(&encodedMessage->at(offset), content.buf(), content.size());
               offset += content.size();
             }
 
@@ -176,6 +174,16 @@ private:
     return name.size() >= 1 &&
            name.get(-1).getValue().size() >= 1 &&
            name.get(-1).getValue().buf()[0] == 0;
+  }
+
+  /**
+   * Use a local implementation of memcpy since not all platforms have it.
+   */
+  static void
+  myMemcpy(uint8_t *dest, const uint8_t *src, size_t len)
+  {
+    for (size_t i = 0; i < len; i++)
+      dest[i] = src[i];
   }
 
   bool enabled_;
