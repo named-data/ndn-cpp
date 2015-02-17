@@ -73,14 +73,15 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
 
 int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
 {
-  size_t i;
+  int i;
 
   // This name is longer than the name we are checking it against.
   if (self->nComponents > name->nComponents)
     return 0;
 
-  // Check if at least one of given components doesn't match.
-  for (i = 0; i < self->nComponents; ++i) {
+  // Check if at least one of given components doesn't match. Check from last to
+  // first since the last components are more likely to differ.
+  for (i = self->nComponents - 1; i >= 0; --i) {
     struct ndn_NameComponent *selfComponent = self->components + i;
     struct ndn_NameComponent *nameComponent = name->components + i;
 

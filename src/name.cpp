@@ -385,8 +385,9 @@ Name::match(const Name& name) const
   if (components_.size() > name.components_.size())
     return false;
 
-  // Check if at least one of given components doesn't match.
-  for (size_t i = 0; i < components_.size(); ++i) {
+  // Check if at least one of given components doesn't match. Check from last to
+  // first since the last components are more likely to differ.
+  for (int i = components_.size() - 1; i >= 0; --i) {
     if (*components_[i].getValue() != *name.components_[i].getValue())
       return false;
   }
