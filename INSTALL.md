@@ -15,7 +15,7 @@ Prerequisites
 
 Following are the detailed steps for each platform to install the prerequisites.
 
-## Mac OS X 10.7.3, Mac OS X 10.8.4
+## OS X 10.8.4
 Install Xcode.
 In Xcode Preferences > Downloads, install "Command Line Tools".
 
@@ -34,7 +34,7 @@ In a new terminal, enter:
 
     sudo port install doxygen
 
-## Mac OS X 10.9
+## OS X 10.9.5, OS X 10.10.2
 Install Xcode.  (Xcode on OS X 10.9 seems to already have the Command Line Tools.)
 
 Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
