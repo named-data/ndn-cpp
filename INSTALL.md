@@ -35,7 +35,7 @@ In a new terminal, enter:
     sudo port install doxygen
 
 ## OS X 10.9.5, OS X 10.10.2
-Install Xcode.  (Xcode on OS X 10.9 seems to already have the Command Line Tools.)
+Install Xcode.  (Xcode seems to already have the Command Line Tools.)
 
 Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:
