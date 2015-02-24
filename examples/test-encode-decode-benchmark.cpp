@@ -421,6 +421,8 @@ benchmarkEncodeDataSecondsC
     data.signature.keyLocator.keyNameType = (ndn_KeyNameType)-1;
     data.signature.publisherPublicKeyDigest.publisherPublicKeyDigest = publisherPublicKeyDigest;
     if (useCrypto) {
+      data.signature.type = ndn_SignatureType_Sha256WithRsaSignature;
+
       // Encode once to get the signed portion.
       ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
       if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
@@ -450,9 +452,11 @@ benchmarkEncodeDataSecondsC
 
       ndn_Blob_initialize(&data.signature.signature, signatureBitsArray, signatureBitsLength);
     }
-    else
+    else {
       // Set up the signature, but don't sign.
       ndn_Blob_initialize(&data.signature.signature, signatureBitsArray, sizeof(signatureBitsArray));
+      data.signature.type = ndn_SignatureType_Sha256WithRsaSignature;
+    }
 
     // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
     ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
@@ -577,7 +581,7 @@ benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
   }
   {
-    int nIterations = useCrypto ? 50000 : 15000000;
+    int nIterations = useCrypto ? 100000 : 25000000;
     double duration = benchmarkDecodeDataSecondsC(nIterations, useCrypto, encoding, encodingLength);
     cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ")
          << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
