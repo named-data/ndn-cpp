@@ -48,4 +48,44 @@ static __inline void ndn_PublisherPublicKeyDigest_initialize(struct ndn_Publishe
 }
 #endif
 
+#ifdef __cplusplus
+namespace ndn {
+
+class PublisherPublicKeyDigestLite : private ndn_PublisherPublicKeyDigest {
+public:
+  PublisherPublicKeyDigestLite()
+  {
+    ndn_PublisherPublicKeyDigest_initialize(this);
+  }
+
+  const BlobLite&
+  getPublisherPublicKeyDigest() const { return BlobLite::upCast(publisherPublicKeyDigest); }
+
+  void
+  setPublisherPublicKeyDigest(const BlobLite& publisherPublicKeyDigest)
+  {
+    BlobLite::upCast(this->publisherPublicKeyDigest) = publisherPublicKeyDigest;
+  }
+
+  /**
+   * Upcast the reference to the ndn_PublisherPublicKeyDigest struct to a PublisherPublicKeyDigestLite.
+   * @param publisherPublicKeyDigest A reference to the ndn_PublisherPublicKeyDigest struct.
+   * @return The same reference as PublisherPublicKeyDigestLite.
+   */
+  static PublisherPublicKeyDigestLite&
+  upCast(ndn_PublisherPublicKeyDigest& publisherPublicKeyDigest)
+  {
+    return *(PublisherPublicKeyDigestLite*)&publisherPublicKeyDigest;
+  }
+
+  static const PublisherPublicKeyDigestLite&
+  upCast(const ndn_PublisherPublicKeyDigest& publisherPublicKeyDigest)
+  {
+    return *(PublisherPublicKeyDigestLite*)&publisherPublicKeyDigest;
+  }
+};
+
+}
+#endif
+
 #endif
