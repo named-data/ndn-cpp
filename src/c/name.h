@@ -136,5 +136,112 @@ ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char * value);
 }
 #endif
 
+#ifdef __cplusplus
+namespace ndn {
+
+class NameLite : private ndn_Name {
+public:
+  class Component : private ndn_NameComponent {
+  public:
+    Component()
+    {
+      ndn_NameComponent_initialize(this, 0, 0);
+    }
+
+    Component(const uint8_t* value, size_t valueLength)
+    {
+      ndn_NameComponent_initialize(this, value, valueLength);
+    }
+
+    const BlobLite&
+    getValue() const { return *(BlobLite*)&value; }
+
+    uint64_t
+    toNumber() const { return ndn_NameComponent_toNumber(const_cast<Component*>(this)); }
+
+    ndn_Error 
+    toNumberWithMarker(uint8_t marker, uint64_t& result) const
+    {
+      return ndn_NameComponent_toNumberWithMarker(const_cast<Component*>(this), marker, &result);
+    }
+
+    ndn_Error
+    toNumberWithPrefix
+      (const uint8_t* prefix, size_t prefixLength, uint64_t& result)
+    {
+      return ndn_NameComponent_toNumberWithPrefix
+        (this, prefix, prefixLength, &result);
+    }
+
+    /**
+     * Upcast the reference to the ndn_NameComponent struct to a NameLite::Component.
+     * @param component A reference to the ndn_NameComponent struct.
+     * @return The same reference as NameLite::Component.
+     */
+    static Component&
+    upCast(ndn_NameComponent& component) { return *(Component*)&component; }
+
+    static const Component&
+    upCast(const ndn_NameComponent& component) { return *(Component*)&component; }
+  };
+
+  NameLite(ndn_NameComponent* components, size_t maxComponents)
+  {
+    ndn_Name_initialize(this, components, maxComponents);
+  }
+
+  const Component&
+  get(int i) const
+  {
+    // TODO: Range check.
+    if (i >= 0)
+      return Component::upCast(components[i]);
+    else
+      // Negative index.
+      return Component::upCast(components[nComponents - (-i)]);
+  }
+
+  size_t
+  size() const { return nComponents; }
+
+  bool
+  match(const NameLite& name) const
+  {
+    return ndn_Name_match(const_cast<NameLite*>(this), const_cast<NameLite*>(&name)) != 0;
+  }
+
+  ndn_Error
+  append(const uint8_t* value, size_t valueLength)
+  {
+    return ndn_Name_appendComponent(this, value, valueLength);
+  }
+
+  ndn_Error
+  append(const NameLite::Component& component)
+  {
+    return append(component.getValue().buf(), component.getValue().size());
+  }
+
+  ndn_Error
+  append(const BlobLite& value) { return append(value.buf(), value.size()); }
+
+  ndn_Error
+  append(const char *value) { return ndn_Name_appendString(this, value); }
+
+  /**
+   * Upcast the reference to the ndn_Name struct to a NameLite.
+   * @param name A reference to the ndn_Name struct.
+   * @return The same reference as NameLite.
+   */
+  static NameLite&
+  upCast(ndn_Name& name) { return *(NameLite*)&name; }
+
+  static const NameLite&
+  upCast(const ndn_Name& name) { return *(NameLite*)&name; }
+};
+
+}
+#endif
+
 #endif
 
