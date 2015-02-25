@@ -155,4 +155,179 @@ static __inline void ndn_Data_initialize
 }
 #endif
 
+#ifdef __cplusplus
+namespace ndn {
+
+class SignatureLite : private ndn_Signature {
+public:
+  SignatureLite(ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents)
+  {
+    ndn_Signature_initialize(this, keyNameComponents, maxKeyNameComponents);
+  }
+
+  void
+  clear() { ndn_Signature_clear(this); }
+
+  ndn_SignatureType
+  getType() const { return type; }
+
+  const BlobLite&
+  getDigestAlgorithm() const { return BlobLite::upCast(digestAlgorithm); }
+
+  const BlobLite&
+  getWitness() const { return BlobLite::upCast(witness); }
+
+  const BlobLite&
+  getSignature() const { return BlobLite::upCast(signature); }
+
+  const PublisherPublicKeyDigestLite&
+  getPublisherPublicKeyDigest() const { return PublisherPublicKeyDigestLite::upCast(publisherPublicKeyDigest); }
+
+  PublisherPublicKeyDigestLite&
+  getPublisherPublicKeyDigest() { return PublisherPublicKeyDigestLite::upCast(publisherPublicKeyDigest); }
+
+  const KeyLocatorLite&
+  getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }
+
+  KeyLocatorLite&
+  getKeyLocator() { return KeyLocatorLite::upCast(keyLocator); }
+
+  void
+  setType(ndn_SignatureType type) { this->type = type; }
+
+  void
+  setDigestAlgorithm(const BlobLite& digestAlgorithm)
+  {
+    BlobLite::upCast(this->digestAlgorithm) = digestAlgorithm;
+  }
+
+  void
+  setWitness(const BlobLite& witness)
+  {
+    BlobLite::upCast(this->witness) = witness;
+  }
+
+  void
+  setSignature(const BlobLite& signature)
+  {
+    BlobLite::upCast(this->signature) = signature;
+  }
+
+  /**
+   * Upcast the reference to the ndn_Signature struct to a SignatureLite.
+   * @param signature A reference to the ndn_Signature struct.
+   * @return The same reference as SignatureLite.
+   */
+  static SignatureLite&
+  upCast(ndn_Signature& signature) { return *(SignatureLite*)&signature; }
+
+  static const SignatureLite&
+  upCast(const ndn_Signature& signature) { return *(SignatureLite*)&signature; }
+};
+
+class MetaInfoLite : private ndn_MetaInfo {
+public:
+  MetaInfoLite()
+  {
+    ndn_MetaInfo_initialize(this);
+  }
+
+  ndn_MillisecondsSince1970
+  getTimestampMilliseconds() const { return timestampMilliseconds; }
+  
+  ndn_ContentType 
+  getType() const { return type; }
+  
+  ndn_Milliseconds
+  getFreshnessPeriod() const { return freshnessPeriod; }
+  
+  const NameLite::Component
+  getFinalBlockId() const { return NameLite::Component::upCast(finalBlockId); }
+
+  void
+  setTimestampMilliseconds(ndn_MillisecondsSince1970 timestampMilliseconds)
+  {
+    this->timestampMilliseconds = timestampMilliseconds;
+  }
+
+  void
+  setType(ndn_ContentType type) { this->type = type; }
+
+  void
+  setFreshnessPeriod(ndn_Milliseconds freshnessPeriod)
+  {
+    this->freshnessPeriod = freshnessPeriod;
+  }
+
+  void
+  setFinalBlockId(const NameLite::Component& finalBlockId)
+  {
+    NameLite::Component::upCast(this->finalBlockId) = finalBlockId;
+  }
+
+  /**
+   * Upcast the reference to the ndn_MetaInfo struct to a MetaInfoLite.
+   * @param metaInfo A reference to the ndn_MetaInfo struct.
+   * @return The same reference as MetaInfoLite.
+   */
+  static MetaInfoLite&
+  upCast(ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
+
+  static const MetaInfoLite&
+  upCast(const ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
+};
+
+
+class DataLite : private ndn_Data {
+public:
+  DataLite(ndn_NameComponent* nameComponents, size_t maxNameComponents,
+   ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents)
+  {
+    ndn_Data_initialize
+      (this, nameComponents, maxNameComponents, keyNameComponents,
+       maxKeyNameComponents);
+  }
+
+  const SignatureLite&
+  getSignature() const { return SignatureLite::upCast(signature); }
+
+  SignatureLite&
+  getSignature() { return SignatureLite::upCast(signature); }
+
+  const NameLite&
+  getName() const { return NameLite::upCast(name); }
+
+  NameLite&
+  getName() { return NameLite::upCast(name); }
+
+  const MetaInfoLite&
+  getMetaInfo() const { return MetaInfoLite::upCast(metaInfo); }
+
+  MetaInfoLite&
+  getMetaInfo() { return MetaInfoLite::upCast(metaInfo); }
+
+  const BlobLite&
+  getContent() const { return BlobLite::upCast(content); }
+
+  void
+  setContent(const BlobLite& content)
+  {
+    BlobLite::upCast(this->content) = content;
+  }
+
+  /**
+   * Upcast the reference to the ndn_Data struct to a DataLite.
+   * @param data A reference to the ndn_Data struct.
+   * @return The same reference as DataLite.
+   */
+  static DataLite&
+  upCast(ndn_Data& data) { return *(DataLite*)&data; }
+
+  static const DataLite&
+  upCast(const ndn_Data& data) { return *(DataLite*)&data; }
+};
+
+}
+#endif
+
 #endif
