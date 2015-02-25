@@ -65,4 +65,59 @@ static __inline void ndn_KeyLocator_initialize
 }
 #endif
 
+#ifdef __cplusplus
+namespace ndn {
+
+class KeyLocatorLite : private ndn_KeyLocator {
+public:
+  KeyLocatorLite(ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents)
+  {
+    ndn_KeyLocator_initialize(this, keyNameComponents, maxKeyNameComponents);
+  }
+
+  ndn_KeyLocatorType
+  getType() const { return type; }
+
+  BlobLite&
+  getKeyData() { return BlobLite::upCast(keyData); }
+
+  const BlobLite&
+  getKeyData() const { return BlobLite::upCast(keyData); }
+
+  NameLite&
+  getKeyName() { return NameLite::upCast(keyName); }
+
+  const NameLite&
+  getKeyName() const { return NameLite::upCast(keyName); }
+
+  ndn_KeyNameType
+  getKeyNameType() const { return keyNameType; }
+
+  void
+  setType(ndn_KeyLocatorType type) { this->type = type; }
+
+  void
+  setKeyData(const BlobLite& keyData)
+  {
+    BlobLite::upCast(this->keyData) = keyData;
+  }
+
+  void
+  setKeyNameType(ndn_KeyNameType keyNameType) { this->keyNameType = keyNameType; }
+
+  /**
+   * Upcast the reference to the ndn_KeyLocator struct to a KeyLocatorLite.
+   * @param keyLocator A reference to the ndn_KeyLocator struct.
+   * @return The same reference as KeyLocatorLite.
+   */
+  static KeyLocatorLite&
+  upCast(ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
+
+  static const KeyLocatorLite&
+  upCast(const ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
+};
+
+}
+#endif
+
 #endif
