@@ -51,4 +51,40 @@ static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *v
 }
 #endif
 
+#ifdef __cplusplus
+namespace ndn {
+
+class BlobLite : private ndn_Blob {
+public:
+  BlobLite()
+  {
+    ndn_Blob_initialize(this, 0, 0);
+  }
+
+  BlobLite(const uint8_t* value, size_t length)
+  {
+    ndn_Blob_initialize(this, value, length);
+  }
+
+  const uint8_t*
+  buf() const { return value; }
+
+  size_t
+  size() const { return length; }
+
+  /**
+   * Upcast the reference to the ndn_Blob struct to a BlobLite.
+   * @param blob A reference to the ndn_Blob struct.
+   * @return The same reference as BlobLite.
+   */
+  static BlobLite&
+  upCast(ndn_Blob& blob) { return *(BlobLite*)&blob; }
+
+  static const BlobLite&
+  upCast(const ndn_Blob& blob) { return *(BlobLite*)&blob; }
+};
+
+}
+#endif
+
 #endif
