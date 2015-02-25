@@ -336,23 +336,20 @@ static double
 benchmarkEncodeDataSecondsC
   (int nIterations, bool useComplex, bool useCrypto, uint8_t* encoding, size_t maxEncodingLength, size_t *encodingLength)
 {
-  struct ndn_Blob finalBlockId;
-  ndn_Blob_initialize(&finalBlockId, (uint8_t*)"\x00", 1);
+  NameLite::Component finalBlockId((uint8_t*)"\x00", 1);
 
-  struct ndn_NameComponent nameComponents[20];
-  struct ndn_Name name;
-  ndn_Name_initialize(&name, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+  ndn_NameComponent nameComponents[20];
+  NameLite name(nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
   Blob contentBlob;
-  struct ndn_Blob content;
   if (useComplex) {
     // Use a large name and content.
-    ndn_Name_appendString(&name, (char*)"ndn");
-    ndn_Name_appendString(&name, (char*)"ucla.edu");
-    ndn_Name_appendString(&name, (char*)"apps");
-    ndn_Name_appendString(&name, (char*)"lwndn-test");
-    ndn_Name_appendString(&name, (char*)"numbers.txt");
-    ndn_Name_appendString(&name, (char*)"\xFD\x05\x05\xE8\x0C\xCE\x1D");
-    ndn_Name_appendBlob(&name, &finalBlockId);
+    name.append("ndn");
+    name.append("ucla.edu");
+    name.append("apps");
+    name.append("lwndn-test");
+    name.append("numbers.txt");
+    name.append("\xFD\x05\x05\xE8\x0C\xCE\x1D");
+    name.append(finalBlockId);
 
     ostringstream contentStream;
     int count = 1;
@@ -363,27 +360,26 @@ benchmarkEncodeDataSecondsC
   }
   else {
     // Use a small name and content.
-    ndn_Name_appendString(&name, (char*)"test");
+    name.append("test");
     contentBlob = Blob((uint8_t*)"abc", 3);
   }
-  ndn_Blob_initialize(&content, (uint8_t*)contentBlob.buf(), contentBlob.size());
+  BlobLite content(contentBlob.buf(), contentBlob.size());
 
-  struct ndn_NameComponent certificateNameComponents[20];
-  struct ndn_Name certificateName;
-  ndn_Name_initialize(&certificateName, certificateNameComponents, sizeof(certificateNameComponents) / sizeof(certificateNameComponents[0]));
-  ndn_Name_appendString(&certificateName, (char*)"testname");
-  ndn_Name_appendString(&certificateName, (char*)"KEY");
-  ndn_Name_appendString(&certificateName, (char*)"DSK-123");
-  ndn_Name_appendString(&certificateName, (char*)"ID-CERT");
-  ndn_Name_appendString(&certificateName, (char*)"0");
+  ndn_NameComponent certificateNameComponents[20];
+  NameLite certificateName
+    (certificateNameComponents, sizeof(certificateNameComponents) / sizeof(certificateNameComponents[0]));
+  certificateName.append("testname");
+  certificateName.append("KEY");
+  certificateName.append("DSK-123");
+  certificateName.append("ID-CERT");
+  certificateName.append("0");
 
   // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
   uint8_t* publicKeyDer = DEFAULT_RSA_PUBLIC_KEY_DER;
   size_t publicKeyDerLength = sizeof(DEFAULT_RSA_PUBLIC_KEY_DER);
   uint8_t publisherPublicKeyDigestArray[SHA256_DIGEST_LENGTH];
   ndn_digestSha256(publicKeyDer, publicKeyDerLength, publisherPublicKeyDigestArray);
-  struct ndn_Blob publisherPublicKeyDigest;
-  ndn_Blob_initialize(&publisherPublicKeyDigest, publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
+  BlobLite publisherPublicKeyDigest(publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
   uint8_t signatureBitsArray[256];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
 
@@ -399,15 +395,15 @@ benchmarkEncodeDataSecondsC
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
-    struct ndn_Data data;
-    ndn_Data_initialize(&data, name.components, name.maxComponents, certificateName.components, certificateName.maxComponents);
+    // TODO: How to set name and keyName correctly?
+    DataLite data(0, 0, 0, 0);
 
-    data.name = name;
-    data.content = content;
+    data.getName() = name;
+    data.setContent(content);
     if (useComplex) {
-      data.metaInfo.timestampMilliseconds = 1.3e+12;
-      data.metaInfo.freshnessPeriod = 1000;
-      ndn_NameComponent_initialize(&data.metaInfo.finalBlockId, finalBlockId.value, finalBlockId.length);
+      data.getMetaInfo().setTimestampMilliseconds(1.3e+12);
+      data.getMetaInfo().setFreshnessPeriod(1000);
+      data.getMetaInfo().setFinalBlockId(finalBlockId);
     }
 
     struct ndn_DynamicUInt8Array output;
@@ -416,25 +412,28 @@ benchmarkEncodeDataSecondsC
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
 
-    data.signature.keyLocator.type = ndn_KeyLocatorType_KEYNAME;
-    data.signature.keyLocator.keyName = certificateName;
-    data.signature.keyLocator.keyNameType = (ndn_KeyNameType)-1;
-    data.signature.publisherPublicKeyDigest.publisherPublicKeyDigest = publisherPublicKeyDigest;
+    data.getSignature().getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+    data.getSignature().getKeyLocator().getKeyName() = certificateName;
+    data.getSignature().getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
+    data.getSignature().getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
+      (publisherPublicKeyDigest);
     if (useCrypto) {
-      data.signature.type = ndn_SignatureType_Sha256WithRsaSignature;
+      data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
 
       // Encode once to get the signed portion.
       ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
       if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
         ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);
-        if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
+        if ((error = ndn_encodeBinaryXmlData
+             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
           cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
           return 0;
         }
       }
       else {
         ndn_TlvEncoder_initialize(&tlvEncoder, &output);
-        if ((error = ndn_encodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+        if ((error = ndn_encodeTlvData
+             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
           cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
           return 0;
         }
@@ -450,19 +449,20 @@ benchmarkEncodeDataSecondsC
         return 0;
       }
 
-      ndn_Blob_initialize(&data.signature.signature, signatureBitsArray, signatureBitsLength);
+      data.getSignature().setSignature(BlobLite(signatureBitsArray, signatureBitsLength));
     }
     else {
       // Set up the signature, but don't sign.
-      ndn_Blob_initialize(&data.signature.signature, signatureBitsArray, sizeof(signatureBitsArray));
-      data.signature.type = ndn_SignatureType_Sha256WithRsaSignature;
+      data.getSignature().setSignature(BlobLite(signatureBitsArray, sizeof(signatureBitsArray)));
+      data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
     }
 
     // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
     ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
     if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
       ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);
-      if ((error = ndn_encodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
+      if ((error = ndn_encodeBinaryXmlData
+           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
         cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
@@ -470,7 +470,8 @@ benchmarkEncodeDataSecondsC
     }
     else {
       ndn_TlvEncoder_initialize(&tlvEncoder, &output);
-      if ((error = ndn_encodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+      if ((error = ndn_encodeTlvData
+           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
         cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
@@ -498,19 +499,18 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
 {
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
-    struct ndn_NameComponent nameComponents[100];
-    struct ndn_NameComponent keyNameComponents[100];
-    struct ndn_Data data;
-    ndn_Data_initialize
-      (&data, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
-       keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+    ndn_NameComponent nameComponents[100];
+    ndn_NameComponent keyNameComponents[100];
+    DataLite data(nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
     if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
       ndn_BinaryXmlDecoder decoder;
       ndn_BinaryXmlDecoder_initialize(&decoder, encoding, encodingLength);
-      if ((error = ndn_decodeBinaryXmlData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
+      if ((error = ndn_decodeBinaryXmlData
+           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
         cout << "Error in ndn_decodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
@@ -518,7 +518,8 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
     else {
       ndn_TlvDecoder decoder;
       ndn_TlvDecoder_initialize(&decoder, encoding, encodingLength);
-      if ((error = ndn_decodeTlvData(&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
+      if ((error = ndn_decodeTlvData
+           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
         cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
@@ -527,7 +528,8 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
     if (useCrypto) {
       if (!verifyRsaSignature
           (encoding + signedPortionBeginOffset, signedPortionEndOffset - signedPortionBeginOffset,
-           data.signature.signature.value, data.signature.signature.length,
+           data.getSignature().getSignature().buf(),
+           data.getSignature().getSignature().size(),
            DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)))
         cout << "Signature verification: FAILED" << endl;
     }
@@ -599,10 +601,12 @@ main(int argc, char** argv)
       else
         WireFormat::setDefaultWireFormat(TlvWireFormat::get());
 
+#if 0
       benchmarkEncodeDecodeDataCpp(false, false);
       benchmarkEncodeDecodeDataCpp(true, false);
       benchmarkEncodeDecodeDataCpp(false, true);
       benchmarkEncodeDecodeDataCpp(true, true);
+#endif
 
       benchmarkEncodeDecodeDataC(false, false);
       benchmarkEncodeDecodeDataC(true, false);
