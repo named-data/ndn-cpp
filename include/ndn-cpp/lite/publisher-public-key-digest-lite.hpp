@@ -23,6 +23,7 @@
 #define NDN_PUBLISHER_PUBLIC_KEY_DIGEST_HPP
 
 #include "util/blob-lite.hpp"
+#include "../c/publisher-public-key-digest-types.h"
 
 namespace ndn {
 

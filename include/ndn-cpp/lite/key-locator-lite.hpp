@@ -23,6 +23,7 @@
 #define NDN_KEY_LOCATOR_LITE_HPP
 
 #include "name-lite.hpp"
+#include "../c/key-types.h"
 
 namespace ndn {
 

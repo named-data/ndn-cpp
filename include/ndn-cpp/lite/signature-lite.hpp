@@ -24,6 +24,7 @@
 
 #include "publisher-public-key-digest-lite.hpp"
 #include "key-locator-lite.hpp"
+#include "../c/data-types.h"
 
 namespace ndn {
 

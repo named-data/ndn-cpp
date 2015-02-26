@@ -24,6 +24,7 @@
 
 #include "../c/errors.h"
 #include "util/blob-lite.hpp"
+#include "../c/name-types.h"
 
 namespace ndn {
 

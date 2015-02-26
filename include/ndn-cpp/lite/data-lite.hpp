@@ -24,6 +24,7 @@
 
 #include "meta-info-lite.hpp"
 #include "signature-lite.hpp"
+#include "../c/data-types.h"
 
 namespace ndn {
 

@@ -23,6 +23,7 @@
 #define NDN_META_INFO_LITE_HPP
 
 #include "name-lite.hpp"
+#include "../c/data-types.h"
 
 namespace ndn {
 
