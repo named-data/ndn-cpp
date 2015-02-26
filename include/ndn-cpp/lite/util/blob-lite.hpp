@@ -1,7 +1,8 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2013-2015 Regents of the University of California.
+ * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,29 +19,37 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_BLOB_H
-#define NDN_BLOB_H
+#ifndef NDN_BLOB_LITE_HPP
+#define NDN_BLOB_LITE_HPP
 
 #include <ndn-cpp/c/blob-types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace ndn {
 
-/**
- * Initialize the ndn_Blob struct with the given value.
- * @param self pointer to the ndn_Blob struct.
- * @param value The pre-allocated buffer for the value, or 0 for none.
- * @param length The number of bytes in value.
- */
-static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *value, size_t length)
-{
-  self->value = value;
-  self->length = length;
-}
+class BlobLite : private ndn_Blob {
+public:
+  BlobLite();
 
-#ifdef __cplusplus
+  BlobLite(const uint8_t* value, size_t length);
+
+  const uint8_t*
+  buf() const { return value; }
+
+  size_t
+  size() const { return length; }
+
+  /**
+   * Upcast the reference to the ndn_Blob struct to a BlobLite.
+   * @param blob A reference to the ndn_Blob struct.
+   * @return The same reference as BlobLite.
+   */
+  static BlobLite&
+  upCast(ndn_Blob& blob) { return *(BlobLite*)&blob; }
+
+  static const BlobLite&
+  upCast(const ndn_Blob& blob) { return *(BlobLite*)&blob; }
+};
+
 }
-#endif
 
 #endif
