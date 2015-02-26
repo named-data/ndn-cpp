@@ -29,25 +29,6 @@ extern "C" {
 #endif
 
 /**
- * An ndn_KeyLocator holds the type of key locator and related data.
- */
-struct ndn_KeyLocator {
-  ndn_KeyLocatorType type;     /**< -1 for none */
-  struct ndn_Blob keyData;            /**< A Blob whose value is a pointer to a pre-allocated buffer for the key data as follows:
-    *   If type is ndn_KeyLocatorType_KEY, the key data.
-    *   If type is ndn_KeyLocatorType_CERTIFICATE, the certificate data.
-    *   If type is ndn_KeyLocatorType_KEY_LOCATOR_DIGEST, the digest data.
-    *   If type is ndn_KeyLocatorType_KEYNAME and keyNameType is ndn_KeyNameType_PUBLISHER_PUBLIC_KEY_DIGEST, the publisher public key digest.
-    *   If type is ndn_KeyLocatorType_KEYNAME and keyNameType is ndn_KeyNameType_PUBLISHER_CERTIFICATE_DIGEST, the publisher certificate digest.
-    *   If type is ndn_KeyLocatorType_KEYNAME and keyNameType is ndn_KeyNameType_PUBLISHER_ISSUER_KEY_DIGEST, the publisher issuer key digest.
-    *   If type is ndn_KeyLocatorType_KEYNAME and keyNameType is ndn_KeyNameType_PUBLISHER_ISSUER_CERTIFICATE_DIGEST, the publisher issuer certificate digest.
-    */
-  struct ndn_Name keyName;     /**< The key name (only used if type is ndn_KeyLocatorType_KEYNAME.) */
-  /** @deprecated The use of a digest attached to the KeyName is deprecated. */
-  ndn_KeyNameType keyNameType; /**< The type of data for keyName, -1 for none. (only used if type is ndn_KeyLocatorType_KEYNAME.) */
-};
-
-/**
  * Initialize an ndn_KeyLocator struct with the pre-allocated nameComponents, and defaults for all the values.
  * @param self A pointer to the ndn_KeyLocator struct.
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent.
@@ -62,61 +43,6 @@ static __inline void ndn_KeyLocator_initialize
 }
 
 #ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-namespace ndn {
-
-class KeyLocatorLite : private ndn_KeyLocator {
-public:
-  KeyLocatorLite(ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents)
-  {
-    ndn_KeyLocator_initialize(this, keyNameComponents, maxKeyNameComponents);
-  }
-
-  ndn_KeyLocatorType
-  getType() const { return type; }
-
-  BlobLite&
-  getKeyData() { return BlobLite::upCast(keyData); }
-
-  const BlobLite&
-  getKeyData() const { return BlobLite::upCast(keyData); }
-
-  NameLite&
-  getKeyName() { return NameLite::upCast(keyName); }
-
-  const NameLite&
-  getKeyName() const { return NameLite::upCast(keyName); }
-
-  ndn_KeyNameType
-  getKeyNameType() const { return keyNameType; }
-
-  void
-  setType(ndn_KeyLocatorType type) { this->type = type; }
-
-  void
-  setKeyData(const BlobLite& keyData)
-  {
-    BlobLite::upCast(this->keyData) = keyData;
-  }
-
-  void
-  setKeyNameType(ndn_KeyNameType keyNameType) { this->keyNameType = keyNameType; }
-
-  /**
-   * Upcast the reference to the ndn_KeyLocator struct to a KeyLocatorLite.
-   * @param keyLocator A reference to the ndn_KeyLocator struct.
-   * @return The same reference as KeyLocatorLite.
-   */
-  static KeyLocatorLite&
-  upCast(ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
-
-  static const KeyLocatorLite&
-  upCast(const ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
-};
-
 }
 #endif
 
