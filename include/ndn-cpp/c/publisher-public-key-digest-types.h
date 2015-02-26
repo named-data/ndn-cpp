@@ -1,7 +1,7 @@
 /**
- * Copyright (C) 2013-2015 Regents of the University of California.
+ * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,23 +18,22 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_PUBLISHERPUBLICKEYDIGEST_H
-#define NDN_PUBLISHERPUBLICKEYDIGEST_H
+#ifndef NDN_PUBLISHER_PUBLIC_KEY_DIGEST_TYPES_H
+#define NDN_PUBLISHER_PUBLIC_KEY_DIGEST_TYPES_H
 
-#include <ndn-cpp/c/publisher-public-key-digest-types.h>
-#include "util/blob.h"
+#include "blob-types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Initialize an ndn_PublisherPublicKeyDigest struct with 0 for none.
+ * A PublisherPublicKeyDigest holds a pointer to the publisher public key digest value, if any.
+ * We make a separate struct since this is used by multiple other structs.
  */
-static __inline void ndn_PublisherPublicKeyDigest_initialize(struct ndn_PublisherPublicKeyDigest *self)
-{
-  ndn_Blob_initialize(&self->publisherPublicKeyDigest, 0, 0);
-}
+struct ndn_PublisherPublicKeyDigest {
+  struct ndn_Blob publisherPublicKeyDigest; /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none */
+};
 
 #ifdef __cplusplus
 }
