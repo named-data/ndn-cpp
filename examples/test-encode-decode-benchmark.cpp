@@ -32,6 +32,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
+#include <ndn-cpp/lite/data-lite.hpp>
 // Hack: Hook directly into non-API functions.
 #include "../src/c/encoding/binary-xml-data.h"
 #include "../src/c/encoding/tlv/tlv-data.h"
@@ -601,12 +602,10 @@ main(int argc, char** argv)
       else
         WireFormat::setDefaultWireFormat(TlvWireFormat::get());
 
-#if 0
       benchmarkEncodeDecodeDataCpp(false, false);
       benchmarkEncodeDecodeDataCpp(true, false);
       benchmarkEncodeDecodeDataCpp(false, true);
       benchmarkEncodeDecodeDataCpp(true, true);
-#endif
 
       benchmarkEncodeDecodeDataC(false, false);
       benchmarkEncodeDecodeDataC(true, false);
