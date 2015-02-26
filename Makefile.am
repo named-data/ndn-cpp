@@ -101,7 +101,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-entry.h \
-  src/c/forwarding-flags.c \
+  src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
@@ -148,6 +148,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
+  src/forwarding-flags.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
   src/meta-info.cpp \
