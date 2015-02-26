@@ -22,7 +22,7 @@
 #define NDN_BINARYXMLSTRUCTUREDECODER_H
 
 #include <ndn-cpp/c/common.h>
-#include "../errors.h"
+#include <ndn-cpp/c/errors.h>
 
 #ifdef __cplusplus
 extern "C" {

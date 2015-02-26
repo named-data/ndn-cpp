@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_CONTROL_PARAMETERS_OPTIONS_H
 #define NDN_TLV_CONTROL_PARAMETERS_OPTIONS_H
 
-#include "../../errors.h"
 #include "../../control-parameters.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"

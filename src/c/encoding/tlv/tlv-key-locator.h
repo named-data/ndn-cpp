@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_KEY_LOCATOR_H
 #define NDN_TLV_KEY_LOCATOR_H
 
-#include "../../errors.h"
 #include "../../key-locator.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"

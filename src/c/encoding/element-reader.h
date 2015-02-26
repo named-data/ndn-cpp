@@ -22,7 +22,6 @@
 #define NDN_ELEMENT_READER_H
 
 #include "element-listener.h"
-#include "../errors.h"
 #include "binary-xml-structure-decoder.h"
 #include "tlv/tlv-structure-decoder.h"
 #include "../util/dynamic-uint8-array.h"

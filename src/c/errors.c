@@ -18,7 +18,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "errors.h"
+#include <ndn-cpp/c/errors.h>
 
 char *ndn_getErrorString(int error)
 {

@@ -23,7 +23,7 @@
 #define NDN_TLV_DECODER_H
 
 #include <ndn-cpp/c/common.h>
-#include "../../errors.h"
+#include <ndn-cpp/c/errors.h>
 #include "../../util/blob.h"
 #include "tlv.h"
 

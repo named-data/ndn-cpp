@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_INTEREST_H
 #define NDN_TLV_INTEREST_H
 
-#include "../../errors.h"
 #include "../../interest.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"

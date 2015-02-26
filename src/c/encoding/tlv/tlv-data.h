@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_DATA_H
 #define NDN_TLV_DATA_H
 
-#include "../../errors.h"
 #include "../../data.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"

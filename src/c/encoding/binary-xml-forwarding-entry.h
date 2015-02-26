@@ -21,7 +21,6 @@
 #ifndef NDN_BINARY_XML_FORWARDING_ENTRY_H
 #define NDN_BINARY_XML_FORWARDING_ENTRY_H
 
-#include "../errors.h"
 #include "../forwarding-entry.h"
 #include "binary-xml-encoder.h"
 #include "binary-xml-decoder.h"

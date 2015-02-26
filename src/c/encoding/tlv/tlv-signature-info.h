@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_SIGNATURE_INFO_H
 #define NDN_TLV_SIGNATURE_INFO_H
 
-#include "../../errors.h"
 #include "../../data.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
