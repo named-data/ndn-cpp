@@ -20,6 +20,7 @@
 
 #include "forwarding-entry.h"
 #include "control-parameters.h"
+#include "forwarding-flags-impl.h"
 
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 {

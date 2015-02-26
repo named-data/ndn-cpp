@@ -22,7 +22,7 @@
 #define NDN_CONTROL_PARAMETERS_OPTIONS_H
 
 #include <ndn-cpp/c/common.h>
-#include <ndn-cpp/c/forwarding-flags.h>
+#include "forwarding-flags-impl.h"
 #include "name.h"
 
 #ifdef __cplusplus

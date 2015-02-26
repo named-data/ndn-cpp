@@ -18,7 +18,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <ndn-cpp/c/forwarding-flags.h>
+#include "../../forwarding-flags-impl.h"
 #include "tlv-name.h"
 #include "tlv-control-parameters.h"
 

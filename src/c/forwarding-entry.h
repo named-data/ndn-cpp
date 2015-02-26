@@ -23,7 +23,7 @@
 
 #include <math.h>
 #include <ndn-cpp/c/common.h>
-#include <ndn-cpp/c/forwarding-flags.h>
+#include "forwarding-flags-impl.h"
 #include "name.h"
 #include "publisher-public-key-digest.h"
 
