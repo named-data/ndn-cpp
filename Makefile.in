@@ -227,6 +227,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-0_1_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
+	src/lite/data-lite.lo src/lite/key-locator-lite.lo \
+	src/lite/meta-info-lite.lo src/lite/name-lite.lo \
+	src/lite/publisher-public-key-digest-lite.lo \
+	src/lite/signature-lite.lo src/lite/util/blob-lite.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
@@ -928,6 +932,13 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/key-locator-lite.hpp \
+  include/ndn-cpp/lite/meta-info-lite.hpp \
+  include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/publisher-public-key-digest-lite.hpp \
+  include/ndn-cpp/lite/signature-lite.hpp \
+  include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -1039,6 +1050,13 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/lite/data-lite.cpp \
+  src/lite/key-locator-lite.cpp \
+  src/lite/meta-info-lite.cpp \
+  src/lite/name-lite.cpp \
+  src/lite/publisher-public-key-digest-lite.cpp \
+  src/lite/signature-lite.cpp \
+  src/lite/util/blob-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -1361,6 +1379,32 @@ src/encoding/der/der-exception.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 src/encoding/der/der-node.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
+src/lite/$(am__dirstamp):
+	@$(MKDIR_P) src/lite
+	@: > src/lite/$(am__dirstamp)
+src/lite/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/$(DEPDIR)
+	@: > src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/data-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/key-locator-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/meta-info-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/name-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/publisher-public-key-digest-lite.lo:  \
+	src/lite/$(am__dirstamp) src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/signature-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/util
+	@: > src/lite/util/$(am__dirstamp)
+src/lite/util/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/util/$(DEPDIR)
+	@: > src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/blob-lite.lo: src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/security/$(am__dirstamp):
 	@$(MKDIR_P) src/security
 	@: > src/security/$(am__dirstamp)
@@ -1711,6 +1755,10 @@ mostlyclean-compile:
 	-rm -f src/encoding/*.lo
 	-rm -f src/encoding/der/*.$(OBJEXT)
 	-rm -f src/encoding/der/*.lo
+	-rm -f src/lite/*.$(OBJEXT)
+	-rm -f src/lite/*.lo
+	-rm -f src/lite/util/*.$(OBJEXT)
+	-rm -f src/lite/util/*.lo
 	-rm -f src/security/*.$(OBJEXT)
 	-rm -f src/security/*.lo
 	-rm -f src/security/certificate/*.$(OBJEXT)
@@ -1810,6 +1858,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/data-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/key-locator-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/meta-info-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/name-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/publisher-public-key-digest-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
@@ -2191,6 +2246,8 @@ clean-libtool:
 	-rm -rf src/c/util/.libs src/c/util/_libs
 	-rm -rf src/encoding/.libs src/encoding/_libs
 	-rm -rf src/encoding/der/.libs src/encoding/der/_libs
+	-rm -rf src/lite/.libs src/lite/_libs
+	-rm -rf src/lite/util/.libs src/lite/util/_libs
 	-rm -rf src/security/.libs src/security/_libs
 	-rm -rf src/security/certificate/.libs src/security/certificate/_libs
 	-rm -rf src/security/identity/.libs src/security/identity/_libs
@@ -2776,6 +2833,10 @@ distclean-generic:
 	-rm -f src/encoding/$(am__dirstamp)
 	-rm -f src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/encoding/der/$(am__dirstamp)
+	-rm -f src/lite/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/$(am__dirstamp)
+	-rm -f src/lite/util/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/util/$(am__dirstamp)
 	-rm -f src/security/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/$(am__dirstamp)
 	-rm -f src/security/certificate/$(DEPDIR)/$(am__dirstamp)
@@ -2803,7 +2864,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -2851,7 +2912,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

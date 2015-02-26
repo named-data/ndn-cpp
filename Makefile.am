@@ -65,6 +65,13 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/key-locator-lite.hpp \
+  include/ndn-cpp/lite/meta-info-lite.hpp \
+  include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/publisher-public-key-digest-lite.hpp \
+  include/ndn-cpp/lite/signature-lite.hpp \
+  include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -174,6 +181,13 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/lite/data-lite.cpp \
+  src/lite/key-locator-lite.cpp \
+  src/lite/meta-info-lite.cpp \
+  src/lite/name-lite.cpp \
+  src/lite/publisher-public-key-digest-lite.cpp \
+  src/lite/signature-lite.cpp \
+  src/lite/util/blob-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
