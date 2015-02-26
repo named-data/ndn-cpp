@@ -19,7 +19,9 @@
  */
 
 /*
- * Based on NDN_CPP_HAVE_MEMCPY and NDN_CPP_HAVE_MEMSET in ndn-cpp-config.h, use the library version or a local implementation of memcmp, memcpy and memset.
+ * Based on NDN_CPP_HAVE_MEMCMP, NDN_CPP_HAVE_MEMCPY and NDN_CPP_HAVE_MEMSET in
+ * ndn-cpp-config.h, use the library version or a local implementation of
+ * memcmp, memcpy and memset.
  */
 
 #ifndef NDN_MEMORY_H
@@ -32,7 +34,10 @@ extern "C" {
 #endif
 
 #if NDN_CPP_HAVE_MEMCMP
+  
+#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
 #include <memory.h>
+#endif
 /**
  * Use the library version of memcmp.
  */
@@ -45,7 +50,10 @@ int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len);
 #endif
 
 #if NDN_CPP_HAVE_MEMCPY
+
+#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
 #include <memory.h>
+#endif
 /**
  * Use the library version of memcpy.
  */
@@ -58,7 +66,10 @@ void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len);
 #endif
 
 #if NDN_CPP_HAVE_MEMSET
+
+#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
 #include <memory.h>
+#endif
 /**
  * Use the library version of memset.
  */
