@@ -26,15 +26,37 @@
 
 namespace ndn {
 
+/**
+ * A BlobLite holds a pointer to an immutable pre-allocated buffer and its length
+ * This is like a JavaScript string which is a pointer to an immutable string.
+ * It is OK to pass a pointer to the string because the new owner can't change
+ * the bytes of the string.  However, like a JavaScript string, it is possible
+ * to change the pointer, and so this does allow the copy constructor and
+ * assignment to change the pointer.  Also remember that the pointer can be null.
+ */
 class BlobLite : private ndn_Blob {
 public:
+  /**
+   * Create a BlobLite where the buf and size are 0.
+   */
   BlobLite();
 
-  BlobLite(const uint8_t* value, size_t length);
+  /**
+   * Create a BlobLite with the given buffer.
+   * @param buf The pre-allocated buffer for the value, or 0 for none.
+   * @param size The number of bytes in buf.
+   */
+  BlobLite(const uint8_t* buf, size_t size);
 
+  /**
+   * Return buf given to the constructor.
+   */
   const uint8_t*
   buf() const { return value; }
 
+  /**
+   * Return size given to the constructor.
+   */
   size_t
   size() const { return length; }
 

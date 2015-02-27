@@ -29,9 +29,9 @@ BlobLite::BlobLite()
   ndn_Blob_initialize(this, 0, 0);
 }
 
-BlobLite::BlobLite(const uint8_t* value, size_t length)
+BlobLite::BlobLite(const uint8_t* buf, size_t size)
 {
-  ndn_Blob_initialize(this, value, length);
+  ndn_Blob_initialize(this, buf, size);
 }
 
 
