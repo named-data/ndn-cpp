@@ -341,7 +341,9 @@ benchmarkEncodeDataSecondsC
 
   ndn_NameComponent nameComponents[20];
   NameLite name(nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
-  Blob contentBlob;
+  const size_t complexContentSize = 1115;
+  char contentString[complexContentSize + 10];
+  BlobLite content;
   if (useComplex) {
     // Use a large name and content.
     name.append("ndn");
@@ -352,19 +354,17 @@ benchmarkEncodeDataSecondsC
     name.append("\xFD\x05\x05\xE8\x0C\xCE\x1D");
     name.append(finalBlockId);
 
-    ostringstream contentStream;
     int count = 1;
-    contentStream << (count++);
-    while (contentStream.str().length() < 1115)
-      contentStream << " " << (count++);
-    contentBlob = Blob((uint8_t*)contentStream.str().c_str(), contentStream.str().length());
+    sprintf(contentString, "%d", count++);
+    while (strlen(contentString) < complexContentSize)
+      sprintf(contentString + strlen(contentString), " %d", count++);
+    content = BlobLite((uint8_t*)contentString, strlen(contentString));
   }
   else {
     // Use a small name and content.
     name.append("test");
-    contentBlob = Blob((uint8_t*)"abc", 3);
+    content = BlobLite((uint8_t*)"abc", 3);
   }
-  BlobLite content(contentBlob.buf(), contentBlob.size());
 
   ndn_NameComponent certificateNameComponents[20];
   NameLite certificateName
