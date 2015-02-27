@@ -397,7 +397,7 @@ benchmarkEncodeDataSecondsC
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
     // We will set the name and keyName below.
-    DataLite data(0, 0, 0, 0);
+    DataLite data;
 
     data.setName(name);
     data.setContent(content);

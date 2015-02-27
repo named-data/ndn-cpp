@@ -24,6 +24,8 @@
 
 namespace ndn {
 
+DataLite::DataLite() { ndn_Data_initialize(this, 0, 0, 0, 0); }
+
 DataLite::DataLite
   (ndn_NameComponent* nameComponents, size_t maxNameComponents,
    ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents)
