@@ -35,7 +35,7 @@
 #include <ndn-cpp/lite/data-lite.hpp>
 // Hack: Hook directly into non-API functions.
 #include "../src/c/encoding/binary-xml-data.h"
-#include "../src/c/encoding/tlv/tlv-data.h"
+#include "../src/c/encoding/tlv-0_1_1-wire-format.h"
 #include "../src/c/util/crypto.h"
 
 using namespace std;
@@ -409,7 +409,6 @@ benchmarkEncodeDataSecondsC
 
     struct ndn_DynamicUInt8Array output;
     struct ndn_BinaryXmlEncoder binaryXmlEncoder;
-    struct ndn_TlvEncoder tlvEncoder;
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
 
@@ -432,9 +431,10 @@ benchmarkEncodeDataSecondsC
         }
       }
       else {
-        ndn_TlvEncoder_initialize(&tlvEncoder, &output);
-        if ((error = ndn_encodeTlvData
-             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+        size_t dummyEncodingLength;
+        if ((error = ndn_Tlv0_1_1WireFormat_encodeData
+             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+              &output, &dummyEncodingLength))) {
           cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
           return 0;
         }
@@ -470,13 +470,12 @@ benchmarkEncodeDataSecondsC
       *encodingLength = binaryXmlEncoder.offset;
     }
     else {
-      ndn_TlvEncoder_initialize(&tlvEncoder, &output);
-      if ((error = ndn_encodeTlvData
-           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &tlvEncoder))) {
+      if ((error = ndn_Tlv0_1_1WireFormat_encodeData
+           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+            &output, encodingLength))) {
         cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
-      *encodingLength = tlvEncoder.offset;
     }
   }
   double finish = getNowSeconds();
@@ -517,10 +516,9 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
       }
     }
     else {
-      ndn_TlvDecoder decoder;
-      ndn_TlvDecoder_initialize(&decoder, encoding, encodingLength);
-      if ((error = ndn_decodeTlvData
-           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
+      if ((error = ndn_Tlv0_1_1WireFormat_decodeData
+           ((ndn_Data*)&data, encoding, encodingLength,
+            &signedPortionBeginOffset, &signedPortionEndOffset))) {
         cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
