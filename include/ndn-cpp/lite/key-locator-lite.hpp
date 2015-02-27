@@ -50,6 +50,12 @@ public:
   getKeyNameType() const { return keyNameType; }
 
   void
+  setKeyName(const NameLite& keyName)
+  {
+    NameLite::upCast(this->keyName) = keyName;
+  }
+
+  void
   setType(ndn_KeyLocatorType type) { this->type = type; }
 
   void

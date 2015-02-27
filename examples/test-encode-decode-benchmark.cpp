@@ -396,10 +396,10 @@ benchmarkEncodeDataSecondsC
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
-    // TODO: How to set name and keyName correctly?
+    // We will set the name and keyName below.
     DataLite data(0, 0, 0, 0);
 
-    data.getName() = name;
+    data.setName(name);
     data.setContent(content);
     if (useComplex) {
       data.getMetaInfo().setTimestampMilliseconds(1.3e+12);
@@ -413,7 +413,7 @@ benchmarkEncodeDataSecondsC
     ndn_Error error;
 
     data.getSignature().getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-    data.getSignature().getKeyLocator().getKeyName() = certificateName;
+    data.getSignature().getKeyLocator().setKeyName(certificateName);
     data.getSignature().getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
     data.getSignature().getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
       (publisherPublicKeyDigest);
