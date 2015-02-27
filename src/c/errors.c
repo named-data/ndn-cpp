@@ -107,6 +107,8 @@ char *ndn_getErrorString(int error)
     return      "encodeSignatureInfo unrecognized SignatureType";
   case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:
     return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
+  case NDN_ERROR_Unimplemented_operation:
+    return      "Unimplemented operation";
   default:
     return "unrecognized ndn_Error code";
   }
