@@ -55,6 +55,12 @@ public:
   getContent() const { return BlobLite::upCast(content); }
 
   void
+  setName(const NameLite& name)
+  {
+    NameLite::upCast(this->name) = name;
+  }
+
+  void
   setContent(const BlobLite& content)
   {
     BlobLite::upCast(this->content) = content;
