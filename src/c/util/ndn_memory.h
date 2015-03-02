@@ -35,7 +35,9 @@ extern "C" {
 
 #if NDN_CPP_HAVE_MEMCMP
   
-#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
+#ifdef ARDUINO
+#include <string.h>
+#else
 #include <memory.h>
 #endif
 /**
@@ -51,7 +53,9 @@ int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len);
 
 #if NDN_CPP_HAVE_MEMCPY
 
-#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
+#ifdef ARDUINO
+#include <string.h>
+#else
 #include <memory.h>
 #endif
 /**
@@ -67,7 +71,9 @@ void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len);
 
 #if NDN_CPP_HAVE_MEMSET
 
-#ifndef ARDUINO // Arduino doesn't have memory.h but we don't need it.
+#ifdef ARDUINO
+#include <string.h>
+#else
 #include <memory.h>
 #endif
 /**
