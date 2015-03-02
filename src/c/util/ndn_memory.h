@@ -34,11 +34,11 @@ extern "C" {
 #endif
 
 #if NDN_CPP_HAVE_MEMCMP
-  
-#ifdef ARDUINO
-#include <string.h>
-#else
+
+#if NDN_CPP_HAVE_MEMORY_H
 #include <memory.h>
+#else
+#include <string.h>
 #endif
 /**
  * Use the library version of memcmp.
@@ -53,10 +53,10 @@ int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len);
 
 #if NDN_CPP_HAVE_MEMCPY
 
-#ifdef ARDUINO
-#include <string.h>
-#else
+#if NDN_CPP_HAVE_MEMORY_H
 #include <memory.h>
+#else
+#include <string.h>
 #endif
 /**
  * Use the library version of memcpy.
@@ -71,10 +71,10 @@ void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len);
 
 #if NDN_CPP_HAVE_MEMSET
 
-#ifdef ARDUINO
-#include <string.h>
-#else
+#if NDN_CPP_HAVE_MEMORY_H
 #include <memory.h>
+#else
+#include <string.h>
 #endif
 /**
  * Use the library version of memset.
