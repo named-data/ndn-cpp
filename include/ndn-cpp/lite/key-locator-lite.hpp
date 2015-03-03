@@ -27,8 +27,22 @@
 
 namespace ndn {
 
+/**
+ * A KeyLocatorLite holds a type and other info to represent the key which signs
+ * a Data packet.
+ */
 class KeyLocatorLite : private ndn_KeyLocator {
 public:
+  /**
+   * Create a KeyLocatorLite with the pre-allocated nameComponents, and defaults
+   * for all the values.
+   * @param keyNameComponents The pre-allocated array of ndn_NameComponent.
+   * Instead of an array of NameLite::Component, this is an array of the underlying
+   * ndn_NameComponent struct so that it doesn't run the default constructor
+   * unnecessarily.
+   * @param maxKeyNameComponents The number of elements in the allocated
+   * keyNameComponents array.
+   */
   KeyLocatorLite(ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents);
 
   ndn_KeyLocatorType
@@ -49,6 +63,11 @@ public:
   ndn_KeyNameType
   getKeyNameType() const { return keyNameType; }
 
+  /**
+   * Set the key name.
+   * @param keyName The key name. This only copies the pointer to the name
+   * components array, but does not copy the component values.
+   */
   void
   setKeyName(const NameLite& keyName)
   {
@@ -58,6 +77,10 @@ public:
   void
   setType(ndn_KeyLocatorType type) { this->type = type; }
 
+  /**
+   * Set the key data.
+   * @param keyData The key data. This does not copy the bytes of the blob.
+   */
   void
   setKeyData(const BlobLite& keyData)
   {
