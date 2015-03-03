@@ -28,6 +28,9 @@
 
 namespace ndn {
 
+/**
+ * A DataLite holds a NameLite and other fields to represent an NDN Data packet.
+ */
 class DataLite : private ndn_Data {
 public:
   /**
@@ -36,6 +39,22 @@ public:
    */
   DataLite();
 
+  /**
+   * Create a DataLite with the pre-allocated nameComponents and
+   * keyNameComponents, and defaults for all the values.
+   * @param nameComponents The pre-allocated array of ndn_NameComponent. Instead
+   * of an array of NameLite::Component, this is an array of the underlying
+   * ndn_NameComponent struct so that it doesn't run the default constructor
+   * unnecessarily.
+   * @param maxNameComponents The number of elements in the allocated
+   * nameComponents array.
+   * @param keyNameComponents The pre-allocated array of ndn_NameComponent for
+   * the signature.keyLocator. Instead of an array of NameLite::Component, this
+   * is an array of the underlying ndn_NameComponent struct so that it doesn't
+   * run the default constructor unnecessarily.
+   * @param maxKeyNameComponents The number of elements in the allocated
+   * keyNameComponents array.
+   */
   DataLite(ndn_NameComponent* nameComponents, size_t maxNameComponents,
    ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents);
 
@@ -60,12 +79,22 @@ public:
   const BlobLite&
   getContent() const { return BlobLite::upCast(content); }
 
+  /**
+   * Set the data packet's name.
+   * @param name The data packet's name. This only copies the pointer to the name
+   * components array, but does not copy the component values.
+   */
   void
   setName(const NameLite& name)
   {
     NameLite::upCast(this->name) = name;
   }
 
+  /**
+   * Set the data packet's content.
+   * @param content The data packet's content. This does not copy the bytes of
+   * the content.
+   */
   void
   setContent(const BlobLite& content)
   {
