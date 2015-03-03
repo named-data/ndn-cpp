@@ -27,13 +27,25 @@
 
 namespace ndn {
 
+/**
+ * A PublisherPublicKeyDigestLite holds the publisher public key digest value,
+ * if any. We make a separate class since this is used by multiple other classes.
+ */
 class PublisherPublicKeyDigestLite : private ndn_PublisherPublicKeyDigest {
 public:
+  /**
+   * Create a default PublisherPublicKeyDigestLite of size 0.
+   */
   PublisherPublicKeyDigestLite();
 
   const BlobLite&
   getPublisherPublicKeyDigest() const { return BlobLite::upCast(publisherPublicKeyDigest); }
 
+  /**
+   * Set the public key digest value.
+   * @param publisherPublicKeyDigest The public key digest value. This copies
+   * the pointer but not the bytes.
+   */
   void
   setPublisherPublicKeyDigest(const BlobLite& publisherPublicKeyDigest)
   {
