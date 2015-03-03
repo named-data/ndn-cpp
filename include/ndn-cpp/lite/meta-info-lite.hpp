@@ -27,8 +27,15 @@
 
 namespace ndn {
 
+/**
+ * A MetaInfoLite holds a type and other info to represent the meta info of a
+ * Data packet.
+ */
 class MetaInfoLite : private ndn_MetaInfo {
 public:
+  /**
+   * Create a MetaInfoLite with default field values.
+   */
   MetaInfoLite();
 
   ndn_MillisecondsSince1970
@@ -58,6 +65,11 @@ public:
     this->freshnessPeriod = freshnessPeriod;
   }
 
+  /**
+   * Set the final block ID.
+   * @param finalBlockId The final block ID. This takes the pointer but does not
+   * copy the bytes of the name component.
+   */
   void
   setFinalBlockId(const NameLite::Component& finalBlockId)
   {
