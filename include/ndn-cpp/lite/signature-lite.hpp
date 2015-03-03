@@ -28,10 +28,28 @@
 
 namespace ndn {
 
+/**
+ * A SignatureLite holds a signature type, a KeyLocatorLite, the signature
+ * bytes and other fields to represent the Signature block of a Data packet. 
+ * This has the union of fields needed to represent specific types of signature
+ * such as Sha256WithRsaSignature and DigestSha256Signature.
+ */
 class SignatureLite : private ndn_Signature {
 public:
+  /**
+   * Create a SignatureLite with values for none and the default digestAlgorithm.
+   * @param keyNameComponents The pre-allocated array of ndn_NameComponent for 
+   * the keyLocatorLite. Instead of an array of NameLite::Component, this is an
+   * array of the underlying ndn_NameComponent struct so that it doesn't run the
+   * default constructor unnecessarily.
+   * @param maxKeyNameComponents The number of elements in the allocated
+   * keyNameComponents array.
+   */
   SignatureLite(ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents);
 
+  /**
+   * Set the fields the values for none as in the constructor.
+   */
   void
   clear();
 
@@ -62,18 +80,33 @@ public:
   void
   setType(ndn_SignatureType type) { this->type = type; }
 
+  /**
+   * Set the bytes of the digest algorithm.
+   * @param digestAlgorithm The bytes of the digest algorithm. This copies a
+   * pointer to the bytes, but does not copy the bytes.
+   */
   void
   setDigestAlgorithm(const BlobLite& digestAlgorithm)
   {
     BlobLite::upCast(this->digestAlgorithm) = digestAlgorithm;
   }
 
+  /**
+   * Set the witness.
+   * @param witness The witness. This copies a pointer to the bytes, but does
+   * not copy the bytes.
+   */
   void
   setWitness(const BlobLite& witness)
   {
     BlobLite::upCast(this->witness) = witness;
   }
 
+  /**
+   * Set the signature bytes.
+   * @param signature The signature bytes. This copies a pointer to the bytes,
+   * but does not copy the bytes.
+   */
   void
   setSignature(const BlobLite& signature)
   {
