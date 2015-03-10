@@ -93,6 +93,8 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
+   * @throw runtime_error If the encoded interest size exceeds 
+   * getMaxNdnPacketSize().
    */
   uint64_t
   expressInterest
@@ -110,6 +112,8 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
+   * @throw runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
    */
   uint64_t
   expressInterest
@@ -126,6 +130,7 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
+   * @throw runtime_error If the encoded interest size exceeds getMaxNdnPacketSize().
    */
   uint64_t
   expressInterest
@@ -241,6 +246,16 @@ public:
    */
   void
   shutdown();
+
+  /**
+   * Get the practical limit of the size of a network-layer packet. If a packet
+   * is larger than this, the library or application MAY drop it. This is a
+   * static inline method wrapping a const, so you can to use as a constant, e.g.:
+   * uint8_t buffer[Face::getMaxNdnPacketSize()].
+   * @return The maximum NDN packet size.
+   */
+  static size_t
+  getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
 private:
   Node *node_;
