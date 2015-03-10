@@ -94,6 +94,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
+  include/ndn-cpp/util/segment-fetcher.hpp \
   include/ndn-cpp/util/signed-blob.hpp
 
 # Just the C code.
@@ -205,7 +206,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
-  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp
+  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
+  src/util/segment-fetcher.cpp
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
