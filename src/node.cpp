@@ -208,6 +208,9 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
   // Special case: For timeoutPrefix_ we don't actually send the interest.
   if (!timeoutPrefix_.match(interest.getName())) {
     Blob encoding = interest.wireEncode(wireFormat);
+    if (encoding.size() > getMaxNdnPacketSize())
+      throw runtime_error
+        ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
     transport_->send(*encoding);
   }
 
