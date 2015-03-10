@@ -319,12 +319,14 @@ Name::append(const Name& name)
 }
 
 string
-Name::toUri() const
+Name::toUri(bool includeScheme) const
 {
   if (components_.size() == 0)
-    return "/";
+    return includeScheme ? "ndn:/" : "/";
 
   ostringstream result;
+  if (includeScheme)
+    result << "ndn:";
   for (size_t i = 0; i < components_.size(); ++i) {
     result << "/";
     toEscapedString(*components_[i].getValue(), result);
