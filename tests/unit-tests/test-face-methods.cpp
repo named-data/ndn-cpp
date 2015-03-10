@@ -220,6 +220,30 @@ TEST_F(TestFaceInterestMethods, RemovePending)
   ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
 }
 
+TEST_F(TestFaceInterestMethods, MaxNdnPacketSize)
+{
+  // Construct an interest whose encoding is one byte larger than getMaxNdnPacketSize.
+  const size_t targetSize = Face::getMaxNdnPacketSize() + 1;
+  // Start with an interest which is almost the right size.
+  uint8_t componentValue[targetSize];
+  Interest interest;
+  interest.getName().append(componentValue, targetSize);
+  size_t initialSize = interest.wireEncode().size();
+  // Now replace the component with the desired size which trims off the extra encoding.
+  interest.setName
+    (Name().append(componentValue, targetSize - (initialSize - targetSize)));
+  size_t interestSize = interest.wireEncode().size();
+  ASSERT_EQ(targetSize, interestSize) << "Wrong interest size for MaxNdnPacketSize";
+  
+  CallbackCounter counter;
+  ASSERT_THROW
+    (face.expressInterest
+     (interest, bind(&CallbackCounter::onData, &counter, _1, _2),
+      bind(&CallbackCounter::onTimeout, &counter, _1)),
+     runtime_error) <<
+    "expressInterest didn't throw an exception when the interest size exceeds getMaxNdnPacketSize()";
+}
+
 #if 0
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
