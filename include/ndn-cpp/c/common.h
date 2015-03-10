@@ -50,8 +50,11 @@ typedef double ndn_Milliseconds;
 typedef double ndn_MillisecondsSince1970;
 
 /**
- * The practical limit of a network-layer packet size. If a packet is larger
- * than this size, the library or application MAY drop it.
+ * The practical limit of the size of a network-layer packet. If a packet is
+ * larger than this, the library or application MAY drop it. This constant is
+ * defined in this low-level header file so that internal code can use it, but
+ * applications should use the static inline API method
+ * Face::getMaxNdnPacketSize() which is equivalent.
  */
 static const size_t MAX_NDN_PACKET_SIZE = 8800;
 
