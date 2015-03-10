@@ -87,7 +87,7 @@ UnixTransport::processEvents()
     if (!receiveIsReady)
       return;
 
-    uint8_t buffer[8000];
+    uint8_t buffer[MAX_NDN_PACKET_SIZE];
     size_t nBytes;
     if ((error = ndn_UnixTransport_receive
          (transport_.get(), buffer, sizeof(buffer), &nBytes)))

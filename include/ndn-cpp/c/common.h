@@ -23,7 +23,6 @@
 
 #include "../ndn-cpp-config.h"
 #include <stdint.h>
-// TODO: Is stddef.h portable?
 #include <stddef.h>
 
 #if NDN_CPP_HAVE_ATTRIBUTE_DEPRECATED
@@ -49,6 +48,12 @@ typedef double ndn_Milliseconds;
  * The calendar time represented as the number of milliseconds since 1/1/1970.
  */
 typedef double ndn_MillisecondsSince1970;
+
+/**
+ * The practical limit of a network-layer packet size. If a packet is larger
+ * than this size, the library or application MAY drop it.
+ */
+static const size_t MAX_NDN_PACKET_SIZE = 8800;
 
 #ifdef __cplusplus
 }

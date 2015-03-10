@@ -51,7 +51,8 @@ struct ndn_ElementReader {
  * Initialize an ndn_ElementReader struct with the elementListener and a buffer for saving partial data.
  * @param self pointer to the ndn_ElementReader struct
  * @param elementListener pointer to the ndn_ElementListener used by ndn_ElementReader_onReceivedData.
- * @param buffer the allocated buffer.  If reallocFunction is null, this should be large enough to save a full element, perhaps 8000 bytes.
+ * @param buffer the allocated buffer.  If reallocFunction is null, this should 
+ * be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
  * @param bufferLength the length of the buffer
  * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
  */
