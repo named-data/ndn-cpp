@@ -34,7 +34,7 @@
 #include <math.h>
 #include <ndn-cpp/util/segment-fetcher.hpp>
 #include <ndn-cpp/encoding/protobuf-tlv.hpp>
-// This include is produced by: protoc --cpp_out=. face_status.proto
+// This include is produced by: protoc --cpp_out=. face-status.proto
 #include "face-status.pb.h"
 
 using namespace std;

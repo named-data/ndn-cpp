@@ -39,7 +39,7 @@
 #include "face-query-filter.pb.h"
 // This include is produced by: protoc --cpp_out=. control-parameters.proto
 #include "control-parameters.pb.h"
-// This include is produced by: protoc --cpp_out=. face_status.proto
+// This include is produced by: protoc --cpp_out=. face-status.proto
 #include "face-status.pb.h"
 
 using namespace std;
