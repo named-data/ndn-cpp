@@ -139,7 +139,7 @@ SegmentFetcher::onSegmentReceived
           size_t offset = 0;
           for (size_t i = 0; i < contentParts_.size(); ++i) {
             const Blob& part = contentParts_[i];
-            ndn_memcpy(&content->at(offset), part.buf(), part.size());
+            ndn_memcpy(&(*content)[offset], part.buf(), part.size());
             offset += part.size();
           }
 
