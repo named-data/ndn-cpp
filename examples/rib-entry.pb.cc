@@ -10,8 +10,8 @@
 #include "rib-entry.pb.h"
 
 
-// For backwards compatibility with system that install an older Protobuf (e.g. Ubuntu 12.04)),
-//   include the older output from protoc so that the sample program compiles.
+// For backwards compatibility with systems that install an older Protobuf (e.g. Ubuntu 12.04)),
+// include the older output from protoc so that the sample program compiles.
 #if GOOGLE_PROTOBUF_VERSION < 2005000
 
 
