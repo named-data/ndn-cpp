@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include "../c/util/ndn_memory.h"
 #include <ndn-cpp/util/segment-fetcher.hpp>
 
