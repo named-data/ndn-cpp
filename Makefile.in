@@ -96,8 +96,8 @@ check_PROGRAMS = bin/unit-tests/test-data-methods$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
-noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
-	bin/test-chrono-chat$(EXEEXT) \
+noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
+	bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
@@ -105,7 +105,8 @@ noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) bin/test-list-rib$(EXEEXT) \
 	bin/test-publish-async-ndnx$(EXEEXT) \
-	bin/test-publish-async-nfd$(EXEEXT)
+	bin/test-publish-async-nfd$(EXEEXT) \
+	bin/test-register-route$(EXEEXT)
 TESTS = $(check_PROGRAMS)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -306,6 +307,14 @@ am_bin_test_publish_async_nfd_OBJECTS =  \
 bin_test_publish_async_nfd_OBJECTS =  \
 	$(am_bin_test_publish_async_nfd_OBJECTS)
 bin_test_publish_async_nfd_DEPENDENCIES = libndn-cpp.la
+am_bin_test_register_route_OBJECTS =  \
+	examples/test-register-route.$(OBJEXT) \
+	examples/control-parameters.pb.$(OBJEXT) \
+	examples/face-query-filter.pb.$(OBJEXT) \
+	examples/face-status.pb.$(OBJEXT)
+bin_test_register_route_OBJECTS =  \
+	$(am_bin_test_register_route_OBJECTS)
+bin_test_register_route_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_data_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT)
 bin_unit_tests_test_data_methods_OBJECTS =  \
@@ -415,6 +424,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -435,6 +445,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -1097,6 +1108,11 @@ bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+bin_test_register_route_SOURCES = examples/test-register-route.cpp \
+  examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc
+
+bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
@@ -1587,6 +1603,18 @@ examples/test-publish-async-nfd.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-publish-async-nfd$(EXEEXT): $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-nfd$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_LDADD) $(LIBS)
+examples/test-register-route.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/control-parameters.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/face-query-filter.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/face-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-register-route$(EXEEXT): $(bin_test_register_route_OBJECTS) $(bin_test_register_route_DEPENDENCIES) $(EXTRA_bin_test_register_route_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-register-route$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_register_route_OBJECTS) $(bin_test_register_route_LDADD) $(LIBS)
 tests/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests
 	@: > tests/unit-tests/$(am__dirstamp)
@@ -1742,6 +1770,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/control-parameters.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/face-query-filter.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/face-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/fib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
@@ -1755,6 +1786,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
