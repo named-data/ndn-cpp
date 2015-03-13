@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.6 (2015-03-10)
+Interim changes since NDN-CPP v0.6 (2015-03-12)
 -----------------------------------------------
 
 Changes
@@ -7,6 +7,7 @@ Changes
   expressInterest throws an exception if the encoded interest size exceeds it.
 * Renamed KEY_TYPE_EC to KEY_TYPE_ECDSA.
 * In KeyChain::createIdentity, added an optional KeyParams argument.
+* In Interest setter methods, return this so that you can chain calls to update values.
 * In configure, only link to the Boost regex library if HAVE_STD_REGEX==0.
 * Added class util/SegmentFetcher, ported from ndn-cxx. Use it in examples test-list-rib.
 * examples: Added test-list-rib to query NFD.

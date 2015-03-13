@@ -294,49 +294,80 @@ public:
   void
   set(const struct ndn_Interest& interestStruct);
 
-  void
+  /**
+   * Set the interest name.
+   * @note You can also call getName and change the name values directly.
+   * @param name The interest name. This makes a copy of the name.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setName(const Name& name)
   {
     name_.set(name);
     ++changeCount_;
+    return *this;
   }
 
-  void
+  /**
+   * Set the min suffix components count.
+   * @param minSuffixComponents The min suffix components count. If not
+   * specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setMinSuffixComponents(int minSuffixComponents)
   {
     minSuffixComponents_ = minSuffixComponents;
     ++changeCount_;
+    return *this;
   }
 
-  void
+  /**
+   * Set the max suffix components count.
+   * @param maxSuffixComponents The max suffix components count. If not
+   * specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setMaxSuffixComponents(int maxSuffixComponents)
   {
     maxSuffixComponents_ = maxSuffixComponents;
     ++changeCount_;
+    return *this;
   }
 
-  void
+  /**
+   * Set the child selector.
+   * @param childSelector The child selector. If not specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setChildSelector(int childSelector)
   {
     childSelector_ = childSelector;
     ++changeCount_;
+    return *this;
   }
 
   /**
    * @deprecated Use setMustBeFresh.
    */
-  void
+  Interest&
   DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind)
   {
     answerOriginKind_ = answerOriginKind;
     ++changeCount_;
+    return *this;
   }
 
   /**
    * Set the MustBeFresh flag.
-   * @param mustBeFresh True if the content must be fresh, otherwise false.
+   * @param mustBeFresh True if the content must be fresh, otherwise false. If
+   * you do not set this flag, the default value is true.
+   * @return This Interest so that you can chain calls to update values.
    */
-  void setMustBeFresh(bool mustBeFresh)
+  Interest&
+  setMustBeFresh(bool mustBeFresh)
   {
     if (answerOriginKind_ < 0) {
       // It is is already the default where MustBeFresh is true.
@@ -355,46 +386,79 @@ public:
         answerOriginKind_ |= ndn_Interest_ANSWER_STALE;
       ++changeCount_;
     }
+    return *this;
   }
 
-  void
+  /**
+   * Set the interest scope.
+   * @param scope The interest scope. If not specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setScope(int scope)
   {
     scope_ = scope;
     ++changeCount_;
+    return *this;
   }
 
-  void
+  /**
+   * Set the interest lifetime.
+   * @param interestLifetimeMilliseconds The interest lifetime in milliseconds.
+   * If not specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds)
   {
     interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
     ++changeCount_;
+    return *this;
   }
 
   /**
    * @deprecated You should let the wire encoder generate a random nonce internally before sending the interest.
    */
-  void
+  Interest&
   DEPRECATED_IN_NDN_CPP setNonce(const Blob& nonce)
   {
     nonce_ = nonce;
     // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
     ++changeCount_;
     getNonceChangeCount_ = getChangeCount();
+    return *this;
   }
 
-  void
+  /**
+   * Set this interest to use a copy of the given KeyLocator object.
+   * @note ou can also call getKeyLocator and change the key locator directly.
+   * @param keyLocator The KeyLocator object. This makes a copy of the object.
+   * If no key locator is specified, set to a new default KeyLocator(), or to a
+   * KeyLocator with an unspecified type.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setKeyLocator(const KeyLocator& keyLocator)
   {
     keyLocator_ = keyLocator;
     ++changeCount_;
+    return *this;
   }
 
-  void
+  /**
+   * Set this interest to use a copy of the given Exclude object.
+   * @note You can also call getExclude and change the exclude entries directly.
+   * @param exclude The Exclude object. This makes a copy of the object. If no
+   * exclude is specified, set to a new default Exclude(), or to an Exclude with
+   * size() 0.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
   setExclude(const Exclude& exclude)
   {
     exclude_ = exclude;
     ++changeCount_;
+    return *this;
   }
 
   /**
