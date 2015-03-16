@@ -103,8 +103,8 @@ noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-forwarding-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
-	bin/test-get-async$(EXEEXT) bin/test-list-faces$(EXEEXT) \
-	bin/test-list-rib$(EXEEXT) \
+	bin/test-get-async$(EXEEXT) bin/test-list-channels$(EXEEXT) \
+	bin/test-list-faces$(EXEEXT) bin/test-list-rib$(EXEEXT) \
 	bin/test-publish-async-ndnx$(EXEEXT) \
 	bin/test-publish-async-nfd$(EXEEXT) \
 	bin/test-register-route$(EXEEXT)
@@ -294,6 +294,11 @@ bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
 am_bin_test_get_async_OBJECTS = examples/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
+am_bin_test_list_channels_OBJECTS =  \
+	examples/test-list-channels.$(OBJEXT) \
+	examples/channel-status.pb.$(OBJEXT)
+bin_test_list_channels_OBJECTS = $(am_bin_test_list_channels_OBJECTS)
+bin_test_list_channels_DEPENDENCIES = libndn-cpp.la
 am_bin_test_list_faces_OBJECTS = examples/test-list-faces.$(OBJEXT) \
 	examples/face-status.pb.$(OBJEXT)
 bin_test_list_faces_OBJECTS = $(am_bin_test_list_faces_OBJECTS)
@@ -426,8 +431,9 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) $(bin_test_list_faces_SOURCES) \
-	$(bin_test_list_rib_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
+	$(bin_test_list_channels_SOURCES) \
+	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
@@ -448,8 +454,9 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) $(bin_test_list_faces_SOURCES) \
-	$(bin_test_list_rib_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
+	$(bin_test_list_channels_SOURCES) \
+	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
@@ -1109,6 +1116,8 @@ bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.c
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_LDADD = libndn-cpp.la
 bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
 bin_test_list_faces_LDADD = libndn-cpp.la
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
@@ -1592,6 +1601,14 @@ examples/test-get-async.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
+examples/test-list-channels.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/channel-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-list-channels$(EXEEXT): $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_DEPENDENCIES) $(EXTRA_bin_test_list_channels_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-list-channels$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_LDADD) $(LIBS)
 examples/test-list-faces.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 examples/face-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
@@ -1784,6 +1801,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/control-parameters.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/face-query-filter.pb.Po@am__quote@
@@ -1798,6 +1816,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-channels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-faces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@

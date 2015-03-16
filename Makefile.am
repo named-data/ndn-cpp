@@ -26,9 +26,9 @@ check_PROGRAMS = bin/unit-tests/test-data-methods \
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
-  bin/test-encode-decode-interest bin/test-get-async bin/test-list-faces \
-  bin/test-list-rib bin/test-publish-async-ndnx bin/test-publish-async-nfd \
-  bin/test-register-route
+  bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
+  bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
+  bin/test-publish-async-nfd bin/test-register-route
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -233,6 +233,9 @@ bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+
+bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_LDADD = libndn-cpp.la
 
 bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
 bin_test_list_faces_LDADD = libndn-cpp.la
