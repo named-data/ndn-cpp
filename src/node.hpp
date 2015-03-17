@@ -119,6 +119,17 @@ public:
   removeRegisteredPrefix(uint64_t registeredPrefixId);
 
   /**
+   * The OnInterestCallback calls this to put a Data packet which satisfies an
+   * Interest.
+   * @param data The Data packet which satisfies the interest.
+   * @param wireFormat A WireFormat object used to encode the Data packet.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  putData(const Data& data, WireFormat& wireFormat);
+
+  /**
    * Process any packets to receive and call callbacks such as onData,
    * onInterest or onTimeout. This returns immediately if there is no data to
    * receive. This blocks while calling the callbacks. You should repeatedly

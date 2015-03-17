@@ -143,6 +143,12 @@ Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
 }
 
 void
+Face::putData(const Data& data, WireFormat& wireFormat)
+{
+  node_->putData(data, wireFormat);
+}
+
+void
 Face::processEvents()
 {
   // Just call Node's processEvents.

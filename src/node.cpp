@@ -278,6 +278,17 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 }
 
 void
+Node::putData(const Data& data, WireFormat& wireFormat)
+{
+  Blob encoding = data.wireEncode(wireFormat);
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
+  transport_->send(*encoding);
+}
+
+void
 Node::NdndIdFetcher::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& ndndIdData)
 {
   // Assume that the content is a DER encoded public key of the ndnd.  Do a quick check that the first byte is for DER encoding.
