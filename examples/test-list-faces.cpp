@@ -18,8 +18,9 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* This sense a rib list request to the local NFD and prints the response.
- * This is equivalent to the NFD command line command "nfd-status -r".
+/**
+ * This sends a faces list request to the local NFD and prints the response.
+ * This is equivalent to the NFD command line command "nfd-status -f".
  * See http://redmine.named-data.net/projects/nfd/wiki/Management .
  */
 
@@ -30,18 +31,18 @@
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
+#include <math.h>
 #include <ndn-cpp/util/segment-fetcher.hpp>
 #include <ndn-cpp/encoding/protobuf-tlv.hpp>
-// This include is produced by:
-// protoc --cpp_out=. rib-entry.proto
-#include "rib-entry.pb.h"
+// This include is produced by: protoc --cpp_out=. face-status.proto
+#include "face-status.pb.h"
 
 using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
 
 static void
-printRibEntries(const Blob& encodedMessage, bool* enabled);
+printFaceStatuses(const Blob& encodedMessage, bool* enabled);
 
 static void
 onError(SegmentFetcher::ErrorCode errorCode, const string& message, bool* enabled);
@@ -52,14 +53,14 @@ int main(int argc, char** argv)
     // The default Face connects to the local NFD.
     Face face;
 
-    Interest interest(Name("/localhost/nfd/rib/list"));
+    Interest interest(Name("/localhost/nfd/faces/list"));
     interest.setInterestLifetimeMilliseconds(4000);
     cout << "Express request " << interest.getName().toUri() << endl;
 
     bool enabled = true;
     SegmentFetcher::fetch
       (face, interest, SegmentFetcher::DontVerifySegment, 
-       bind(&printRibEntries, _1, &enabled),
+       bind(&printFaceStatuses, _1, &enabled),
        bind(&onError, _1, _2, &enabled));
 
     // Loop calling processEvents until a callback sets enabled = false.
@@ -76,41 +77,40 @@ int main(int argc, char** argv)
 
 /**
  * This is called when all the segments are received to decode the
- * encodedMessage as repeated TLV RibEntry messages and display the values.
- * @param encodedMessage The repeated TLV-encoded RibEntry.
+ * encodedMessage repeated TLV FaceStatus messages and display the values.
+ * @param encodedMessage The repeated TLV-encoded FaceStatus.
  * @param enabled On success or error, set *enabled = false.
  */
 static void
-printRibEntries(const Blob& encodedMessage, bool* enabled)
+printFaceStatuses(const Blob& encodedMessage, bool* enabled)
 {
   *enabled = false;
   
-  ndn_message::RibEntryMessage ribEntryMessage;
-  ProtobufTlv::decode(ribEntryMessage, encodedMessage);
+  ndn_message::FaceStatusMessage faceStatusMessage;
+  ProtobufTlv::decode(faceStatusMessage, encodedMessage);
 
-  cout << "RIB:" << endl;
-  for (int iEntry = 0; iEntry < ribEntryMessage.rib_entry_size(); ++iEntry) {
-    const ndn_message::RibEntryMessage_RibEntry& ribEntry = ribEntryMessage.rib_entry(iEntry);
+  cout << "Faces:" << endl;
+  for (size_t iEntry = 0; iEntry < faceStatusMessage.face_status_size(); ++iEntry) {
+    const ndn_message::FaceStatusMessage_FaceStatus faceStatus =
+      faceStatusMessage.face_status(iEntry);
 
-    // Show the name.
-    cout << "  ";
-    for (int i = 0; i < ribEntry.name().component_size(); ++i)
-      cout << "/" << ribEntry.name().component(i);
-
-    // Show the routes.
-    for (int iRoute = 0; iRoute < ribEntry.routes_size(); ++iRoute) {
-      const ndn_message::RibEntryMessage_Route& route = ribEntry.routes(iRoute);
-
-      cout << " route={faceId=" << route.face_id() << " (origin=" <<
-        route.origin() << " cost=" << route.cost();
-      if (route.flags() & 1)
-        cout << " ChildInherit";
-      if (route.flags() & 2)
-        cout << " Capture";
-      if (route.has_expiration_period())
-        cout << " expirationPeriod=" << route.expiration_period();
-      cout << ")}" << endl;
-    }
+    // Format to look the same as "nfd-status -f".
+    cout << "  faceid=" << faceStatus.face_id() <<
+      " remote=" << faceStatus.uri() <<
+      " local=" << faceStatus.local_uri();
+    if (faceStatus.has_expiration_period())
+      // Convert milliseconds to seconds.
+      cout << " expires=" <<
+        ::round((double)faceStatus.expiration_period() / 1000) << "s";
+    cout << " counters={" << "in={" << faceStatus.n_in_interests() <<
+      "i " << faceStatus.n_in_datas() << "d " << faceStatus.n_in_bytes() << "B}" <<
+      " out={" << faceStatus.n_out_interests() << "i "<< faceStatus.n_out_datas() <<
+      "d " << faceStatus.n_out_bytes() << "B}" << "}" <<
+      " " << (faceStatus.face_scope() == 1 ? "local" : "non-local") <<
+      " " << (faceStatus.face_persistency() == 2 ? "permanent" :
+             faceStatus.face_persistency() == 1 ? "on-demand" : "persistent") <<
+      " " << (faceStatus.link_type() == 1 ? "multi-access" : "point-to-point") <<
+      endl;
   }
 }
 

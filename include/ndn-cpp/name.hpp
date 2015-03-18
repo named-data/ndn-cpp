@@ -640,10 +640,14 @@ public:
 
   /**
    * Encode this name as a URI.
+   * @param includeScheme (optional) If true, include the "ndn:" scheme in the
+   * URI, e.g. "ndn:/example/name". If false, just return the path, e.g.
+   *  "/example/name". If ommitted, then just return the path which is the
+   * default case where toUri() is used for display.
    * @return The encoded URI.
    */
   std::string
-  toUri() const;
+  toUri(bool includeScheme = false) const;
 
   /**
    * @deprecated Use toUri().

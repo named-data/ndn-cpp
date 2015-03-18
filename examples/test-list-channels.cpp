@@ -18,8 +18,9 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* This sense a rib list request to the local NFD and prints the response.
- * This is equivalent to the NFD command line command "nfd-status -r".
+/**
+ * This sends a faces channels request to the local NFD and prints the response.
+ * This is equivalent to the NFD command line command "nfd-status -c".
  * See http://redmine.named-data.net/projects/nfd/wiki/Management .
  */
 
@@ -30,18 +31,18 @@
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
+#include <math.h>
 #include <ndn-cpp/util/segment-fetcher.hpp>
 #include <ndn-cpp/encoding/protobuf-tlv.hpp>
-// This include is produced by:
-// protoc --cpp_out=. rib-entry.proto
-#include "rib-entry.pb.h"
+// This include is produced by: protoc --cpp_out=. channel-status.proto
+#include "channel-status.pb.h"
 
 using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
 
 static void
-printRibEntries(const Blob& encodedMessage, bool* enabled);
+printChannelStatuses(const Blob& encodedMessage, bool* enabled);
 
 static void
 onError(SegmentFetcher::ErrorCode errorCode, const string& message, bool* enabled);
@@ -52,14 +53,14 @@ int main(int argc, char** argv)
     // The default Face connects to the local NFD.
     Face face;
 
-    Interest interest(Name("/localhost/nfd/rib/list"));
+    Interest interest(Name("/localhost/nfd/faces/channels"));
     interest.setInterestLifetimeMilliseconds(4000);
     cout << "Express request " << interest.getName().toUri() << endl;
 
     bool enabled = true;
     SegmentFetcher::fetch
       (face, interest, SegmentFetcher::DontVerifySegment, 
-       bind(&printRibEntries, _1, &enabled),
+       bind(&printChannelStatuses, _1, &enabled),
        bind(&onError, _1, _2, &enabled));
 
     // Loop calling processEvents until a callback sets enabled = false.
@@ -76,41 +77,26 @@ int main(int argc, char** argv)
 
 /**
  * This is called when all the segments are received to decode the
- * encodedMessage as repeated TLV RibEntry messages and display the values.
- * @param encodedMessage The repeated TLV-encoded RibEntry.
+ * encodedMessage repeated TLV ChannelStatus messages and display the values.
+ * @param encodedMessage The repeated TLV-encoded ChannelStatus.
  * @param enabled On success or error, set *enabled = false.
  */
 static void
-printRibEntries(const Blob& encodedMessage, bool* enabled)
+printChannelStatuses(const Blob& encodedMessage, bool* enabled)
 {
   *enabled = false;
-  
-  ndn_message::RibEntryMessage ribEntryMessage;
-  ProtobufTlv::decode(ribEntryMessage, encodedMessage);
 
-  cout << "RIB:" << endl;
-  for (int iEntry = 0; iEntry < ribEntryMessage.rib_entry_size(); ++iEntry) {
-    const ndn_message::RibEntryMessage_RibEntry& ribEntry = ribEntryMessage.rib_entry(iEntry);
+  ndn_message::ChannelStatusMessage channelStatusMessage;
+  ProtobufTlv::decode(channelStatusMessage, encodedMessage);
 
-    // Show the name.
-    cout << "  ";
-    for (int i = 0; i < ribEntry.name().component_size(); ++i)
-      cout << "/" << ribEntry.name().component(i);
+  cout << "Channels:" << endl;
+  for (size_t iEntry = 0; iEntry < channelStatusMessage.channel_status_size();
+       ++iEntry) {
+    const ndn_message::ChannelStatusMessage_ChannelStatus channelStatus =
+      channelStatusMessage.channel_status(iEntry);
 
-    // Show the routes.
-    for (int iRoute = 0; iRoute < ribEntry.routes_size(); ++iRoute) {
-      const ndn_message::RibEntryMessage_Route& route = ribEntry.routes(iRoute);
-
-      cout << " route={faceId=" << route.face_id() << " (origin=" <<
-        route.origin() << " cost=" << route.cost();
-      if (route.flags() & 1)
-        cout << " ChildInherit";
-      if (route.flags() & 2)
-        cout << " Capture";
-      if (route.has_expiration_period())
-        cout << " expirationPeriod=" << route.expiration_period();
-      cout << ")}" << endl;
-    }
+    // Format to look the same as "nfd-status -c".
+    cout << "  " + channelStatus.local_uri() << endl;
   }
 }
 

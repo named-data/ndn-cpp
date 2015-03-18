@@ -54,6 +54,8 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
    * @return The pending interest ID which can be used with removePendingInterest.
+   * @throw runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
    */
   uint64_t
   expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat);
@@ -117,6 +119,17 @@ public:
   removeRegisteredPrefix(uint64_t registeredPrefixId);
 
   /**
+   * The OnInterestCallback calls this to put a Data packet which satisfies an
+   * Interest.
+   * @param data The Data packet which satisfies the interest.
+   * @param wireFormat A WireFormat object used to encode the Data packet.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  putData(const Data& data, WireFormat& wireFormat);
+
+  /**
    * Process any packets to receive and call callbacks such as onData,
    * onInterest or onTimeout. This returns immediately if there is no data to
    * receive. This blocks while calling the callbacks. You should repeatedly
@@ -142,6 +155,16 @@ public:
 
   void
   shutdown();
+
+  /**
+   * Get the practical limit of the size of a network-layer packet. If a packet
+   * is larger than this, the library or application MAY drop it. This is a
+   * static inline method wrapping a const, so you can to use as a constant, e.g.:
+   * uint8_t buffer[Face::getMaxNdnPacketSize()].
+   * @return The maximum NDN packet size.
+   */
+  static size_t
+  getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
 private:
   class PendingInterest {

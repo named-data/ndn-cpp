@@ -1,12 +1,17 @@
-Interim changes since NDN-CPP v0.6 (2015-02-04)
+Interim changes since NDN-CPP v0.6 (2015-03-13)
 -----------------------------------------------
 
 Changes
 * http://redmine.named-data.net/issues/2388 Moved example programs from "tests" to "examples".
+* http://redmine.named-data.net/issues/1921 In Face, added getMaxNdnPacketSize().
+  expressInterest throws an exception if the encoded interest size exceeds it.
 * Renamed KEY_TYPE_EC to KEY_TYPE_ECDSA.
 * In KeyChain::createIdentity, added an optional KeyParams argument.
+* In Interest setter methods, return this so that you can chain calls to update values.
 * In configure, only link to the Boost regex library if HAVE_STD_REGEX==0.
-* examples: Added test-list-rib to query NFD.
+* Added class util/SegmentFetcher, ported from ndn-cxx. Use it in examples test-list-rib.
+* examples: Added test-list-channels, test-list-faces, test-list-rib and
+  test-register-route to query NFD.
 * Unit tests: Added test-der-encode-decode tests for CertificateExtension.
 
 NDN-CPP v0.6 (2014-12-23)

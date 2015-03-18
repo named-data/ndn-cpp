@@ -96,16 +96,18 @@ check_PROGRAMS = bin/unit-tests/test-data-methods$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
-noinst_PROGRAMS = bin/test-echo-consumer$(EXEEXT) \
-	bin/test-chrono-chat$(EXEEXT) \
+noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
+	bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-forwarding-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
-	bin/test-get-async$(EXEEXT) bin/test-list-rib$(EXEEXT) \
+	bin/test-get-async$(EXEEXT) bin/test-list-channels$(EXEEXT) \
+	bin/test-list-faces$(EXEEXT) bin/test-list-rib$(EXEEXT) \
 	bin/test-publish-async-ndnx$(EXEEXT) \
-	bin/test-publish-async-nfd$(EXEEXT)
+	bin/test-publish-async-nfd$(EXEEXT) \
+	bin/test-register-route$(EXEEXT)
 TESTS = $(check_PROGRAMS)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -257,7 +259,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/boost-info-parser.lo \
 	src/util/command-interest-generator.lo \
 	src/util/dynamic-uint8-vector.lo src/util/logging.lo \
-	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo
+	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo \
+	src/util/segment-fetcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_bin_test_chrono_chat_OBJECTS = examples/test-chrono-chat.$(OBJEXT) \
@@ -297,6 +300,15 @@ bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
 am_bin_test_get_async_OBJECTS = examples/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
+am_bin_test_list_channels_OBJECTS =  \
+	examples/test-list-channels.$(OBJEXT) \
+	examples/channel-status.pb.$(OBJEXT)
+bin_test_list_channels_OBJECTS = $(am_bin_test_list_channels_OBJECTS)
+bin_test_list_channels_DEPENDENCIES = libndn-cpp.la
+am_bin_test_list_faces_OBJECTS = examples/test-list-faces.$(OBJEXT) \
+	examples/face-status.pb.$(OBJEXT)
+bin_test_list_faces_OBJECTS = $(am_bin_test_list_faces_OBJECTS)
+bin_test_list_faces_DEPENDENCIES = libndn-cpp.la
 am_bin_test_list_rib_OBJECTS = examples/test-list-rib.$(OBJEXT) \
 	examples/rib-entry.pb.$(OBJEXT)
 bin_test_list_rib_OBJECTS = $(am_bin_test_list_rib_OBJECTS)
@@ -311,6 +323,14 @@ am_bin_test_publish_async_nfd_OBJECTS =  \
 bin_test_publish_async_nfd_OBJECTS =  \
 	$(am_bin_test_publish_async_nfd_OBJECTS)
 bin_test_publish_async_nfd_DEPENDENCIES = libndn-cpp.la
+am_bin_test_register_route_OBJECTS =  \
+	examples/test-register-route.$(OBJEXT) \
+	examples/control-parameters.pb.$(OBJEXT) \
+	examples/face-query-filter.pb.$(OBJEXT) \
+	examples/face-status.pb.$(OBJEXT)
+bin_test_register_route_OBJECTS =  \
+	$(am_bin_test_register_route_OBJECTS)
+bin_test_register_route_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_data_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT)
 bin_unit_tests_test_data_methods_OBJECTS =  \
@@ -417,9 +437,12 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
+	$(bin_test_list_channels_SOURCES) \
+	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -437,9 +460,12 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_get_async_SOURCES) $(bin_test_list_rib_SOURCES) \
+	$(bin_test_get_async_SOURCES) \
+	$(bin_test_list_channels_SOURCES) \
+	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
+	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -970,6 +996,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
+  include/ndn-cpp/util/segment-fetcher.hpp \
   include/ndn-cpp/util/signed-blob.hpp
 
 
@@ -1092,7 +1119,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
-  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp
+  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
+  src/util/segment-fetcher.cpp
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
@@ -1110,12 +1138,21 @@ bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.c
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_LDADD = libndn-cpp.la
+bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
+bin_test_list_faces_LDADD = libndn-cpp.la
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
 bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+bin_test_register_route_SOURCES = examples/test-register-route.cpp \
+  examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc
+
+bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
@@ -1533,6 +1570,8 @@ src/util/memory-content-cache.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/ndn-regex-matcher.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
 
 libndn-cpp.la: $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_DEPENDENCIES) $(EXTRA_libndn_cpp_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_LIBADD) $(LIBS)
@@ -1615,6 +1654,22 @@ examples/test-get-async.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
+examples/test-list-channels.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/channel-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-list-channels$(EXEEXT): $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_DEPENDENCIES) $(EXTRA_bin_test_list_channels_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-list-channels$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_LDADD) $(LIBS)
+examples/test-list-faces.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/face-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-list-faces$(EXEEXT): $(bin_test_list_faces_OBJECTS) $(bin_test_list_faces_DEPENDENCIES) $(EXTRA_bin_test_list_faces_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-list-faces$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_faces_OBJECTS) $(bin_test_list_faces_LDADD) $(LIBS)
 examples/test-list-rib.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 examples/rib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
@@ -1635,6 +1690,16 @@ examples/test-publish-async-nfd.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-publish-async-nfd$(EXEEXT): $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-nfd$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_nfd_OBJECTS) $(bin_test_publish_async_nfd_LDADD) $(LIBS)
+examples/test-register-route.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/control-parameters.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/face-query-filter.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-register-route$(EXEEXT): $(bin_test_register_route_OBJECTS) $(bin_test_register_route_DEPENDENCIES) $(EXTRA_bin_test_register_route_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-register-route$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_register_route_OBJECTS) $(bin_test_register_route_LDADD) $(LIBS)
 tests/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests
 	@: > tests/unit-tests/$(am__dirstamp)
@@ -1793,7 +1858,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/control-parameters.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/face-query-filter.pb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/face-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/fib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
@@ -1804,9 +1873,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-channels.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-faces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
@@ -1904,6 +1976,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po@am__quote@

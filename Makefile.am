@@ -23,11 +23,12 @@ check_PROGRAMS = bin/unit-tests/test-data-methods \
   bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-verification-rules
 
-noinst_PROGRAMS = bin/test-echo-consumer bin/test-chrono-chat \
+noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
-  bin/test-encode-decode-interest bin/test-get-async bin/test-list-rib \
-  bin/test-publish-async-ndnx bin/test-publish-async-nfd
+  bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
+  bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
+  bin/test-publish-async-nfd bin/test-register-route
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -101,6 +102,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
+  include/ndn-cpp/util/segment-fetcher.hpp \
   include/ndn-cpp/util/signed-blob.hpp
 
 # Just the C code.
@@ -221,7 +223,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
-  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp
+  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
+  src/util/segment-fetcher.cpp
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
@@ -247,6 +250,12 @@ bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
 
+bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_LDADD = libndn-cpp.la
+
+bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
+bin_test_list_faces_LDADD = libndn-cpp.la
+
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
 
@@ -255,6 +264,11 @@ bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+
+bin_test_register_route_SOURCES = examples/test-register-route.cpp \
+  examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc
+bin_test_register_route_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
