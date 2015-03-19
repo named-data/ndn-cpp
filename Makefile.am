@@ -77,6 +77,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/name-lite.hpp \
   include/ndn-cpp/lite/publisher-public-key-digest-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
+  include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
   include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
@@ -195,6 +198,9 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/name-lite.cpp \
   src/lite/publisher-public-key-digest-lite.cpp \
   src/lite/signature-lite.cpp \
+  src/lite/transport/tcp-transport-lite.cpp \
+  src/lite/transport/udp-transport-lite.cpp \
+  src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
