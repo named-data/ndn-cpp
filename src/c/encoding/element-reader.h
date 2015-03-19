@@ -57,7 +57,7 @@ struct ndn_ElementReader {
  */
 static __inline void ndn_ElementReader_initialize
   (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener,
-   uint8_t *buffer, size_t bufferLength, uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t))
+   uint8_t *buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
 {
   self->elementListener = elementListener;
   ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
