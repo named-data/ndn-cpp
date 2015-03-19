@@ -220,12 +220,18 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
 void
 Node::removePendingInterest(uint64_t pendingInterestId)
 {
+  int count = 0;
   // Go backwards through the list so we can erase entries.
   // Remove all entries even though pendingInterestId should be unique.
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId)
+    if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId) {
+      ++count;
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+    }
   }
+
+  if (count == 0)
+    _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
 }
 
 uint64_t
@@ -269,12 +275,18 @@ Node::registerPrefix
 void
 Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 {
+  int count = 0;
   // Go backwards through the list so we can erase entries.
-  // Remove all entries even though pendingInterestId should be unique.
+  // Remove all entries even though registeredPrefixId should be unique.
   for (int i = (int)registeredPrefixTable_.size() - 1; i >= 0; --i) {
-    if (registeredPrefixTable_[i]->getRegisteredPrefixId() == registeredPrefixId)
+    if (registeredPrefixTable_[i]->getRegisteredPrefixId() == registeredPrefixId) {
+      ++count;
       registeredPrefixTable_.erase(registeredPrefixTable_.begin() + i);
+    }
   }
+
+  if (count == 0)
+    _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
 }
 
 void
