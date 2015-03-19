@@ -331,7 +331,8 @@ top_srcdir = @top_srcdir@
 # Public C headers.
 ndn_cpp_c_headers = \
   $(wildcard ndn-cpp/*.h) \
-  $(wildcard ndn-cpp/c/*.*)
+  $(wildcard ndn-cpp/c/*.*) \
+  $(wildcard ndn-cpp/c/transport/*.*)
 
 
 # Public C++ headers.

@@ -34,11 +34,16 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
 ndn_cpp_c_headers = \
   include/ndn-cpp/ndn-cpp-config.h \
+  include/ndn-cpp/c/blob-types.h \
   include/ndn-cpp/c/common.h \
   include/ndn-cpp/c/data-types.h \
+  include/ndn-cpp/c/errors.h \
   include/ndn-cpp/c/forwarding-flags.h \
   include/ndn-cpp/c/interest-types.h \
-  include/ndn-cpp/c/key-types.h
+  include/ndn-cpp/c/key-types.h \
+  include/ndn-cpp/c/name-types.h \
+  include/ndn-cpp/c/publisher-public-key-digest-types.h \
+  include/ndn-cpp/c/transport/transport-types.h
 
 # Public C++ headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_cpp_headers in include/Makefile.am.

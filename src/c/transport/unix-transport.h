@@ -27,10 +27,6 @@
 extern "C" {
 #endif
 
-struct ndn_UnixTransport {
-  struct ndn_SocketTransport base;
-};
-
 /**
  * Initialize the ndn_UnixTransport struct with default values for no connection yet.
  * @param self A pointer to the ndn_UnixTransport struct.

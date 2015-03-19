@@ -24,6 +24,7 @@
 #include <sys/socket.h>
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/transport/transport-types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,10 +35,6 @@ typedef enum {
   SOCKET_UDP,
   SOCKET_UNIX
 } ndn_SocketType;
-
-struct ndn_SocketTransport {
-  int socketDescriptor; /**< -1 if not connected */
-};
 
 /**
  * Initialize the ndn_SocketTransport struct with default values for no connection yet.
