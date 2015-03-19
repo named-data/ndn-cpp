@@ -21,7 +21,7 @@
 #ifndef NDN_NAME_TYPES_H
 #define NDN_NAME_TYPES_H
 
-#include "blob-types.h"
+#include "util/blob-types.h"
 
 #ifdef __cplusplus
 extern "C" {

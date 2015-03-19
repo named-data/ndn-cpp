@@ -22,7 +22,7 @@
 #ifndef NDN_BLOB_LITE_HPP
 #define NDN_BLOB_LITE_HPP
 
-#include <ndn-cpp/c/blob-types.h>
+#include <ndn-cpp/c/util/blob-types.h>
 
 namespace ndn {
 

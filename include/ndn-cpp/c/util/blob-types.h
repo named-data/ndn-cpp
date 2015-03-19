@@ -21,7 +21,7 @@
 #ifndef NDN_BLOB_TYPES_H
 #define NDN_BLOB_TYPES_H
 
-#include "common.h"
+#include "../common.h"
 
 #ifdef __cplusplus
 extern "C" {

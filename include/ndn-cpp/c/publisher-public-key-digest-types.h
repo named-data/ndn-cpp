@@ -21,7 +21,7 @@
 #ifndef NDN_PUBLISHER_PUBLIC_KEY_DIGEST_TYPES_H
 #define NDN_PUBLISHER_PUBLIC_KEY_DIGEST_TYPES_H
 
-#include "blob-types.h"
+#include "util/blob-types.h"
 
 #ifdef __cplusplus
 extern "C" {
