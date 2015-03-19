@@ -27,11 +27,15 @@
 extern "C" {
 #endif
 
+struct ndn_ElementListener;
+typedef void (*ndn_OnReceivedElement)
+  (struct ndn_ElementListener *self, uint8_t *element, size_t elementLength);
+
 /** An ndn_ElementListener struct holds a function pointer onReceivedElement.  You can extend this struct with data that
  * will be passed to onReceivedElement.
  */
 struct ndn_ElementListener {
-  void (*onReceivedElement)(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength); /**< see ndn_ElementListener_initialize */
+  ndn_OnReceivedElement onReceivedElement; /**< see ndn_ElementListener_initialize */
 };
 
 /**
@@ -41,7 +45,7 @@ struct ndn_ElementListener {
  * self is the pointer to this ndn_ElementListener struct.  See ndn_ElementReader_onReceivedData.
  */
 static __inline void ndn_ElementListener_initialize
-  (struct ndn_ElementListener *self, void (*onReceivedElement)(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength))
+  (struct ndn_ElementListener *self, ndn_OnReceivedElement onReceivedElement)
 {
   self->onReceivedElement = onReceivedElement;
 }
