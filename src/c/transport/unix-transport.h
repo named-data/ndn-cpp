@@ -28,24 +28,39 @@ extern "C" {
 #endif
 
 /**
- * Initialize the ndn_UnixTransport struct with default values for no connection yet.
+ * Initialize the ndn_UnixTransport struct with default values for no connection
+ * yet and to use the given buffer for the ElementReader. Note that
+ * the ElementReader is not valid until you call ndn_UnixTransport_connect.
  * @param self A pointer to the ndn_UnixTransport struct.
+ * @param buffer the allocated buffer used by ElementReader. If reallocFunction
+ * is 0, this should be large enough to save a full element, perhaps
+ * MAX_NDN_PACKET_SIZE bytes.
+ * @param bufferLength the length of the buffer.
+ * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength. This may be 0.
  */
-static inline void ndn_UnixTransport_initialize(struct ndn_UnixTransport *self)
+static __inline void ndn_UnixTransport_initialize
+  (struct ndn_UnixTransport *self, uint8_t *buffer, size_t bufferLength,
+   ndn_ReallocFunction reallocFunction)
 {
-  ndn_SocketTransport_initialize(&self->base);
+  ndn_SocketTransport_initialize
+    (&self->base, buffer, bufferLength, reallocFunction);
 }
 
 /**
  * Connect with a Unix Socket to the socket filePath.
  * @param self A pointer to the ndn_UnixTransport struct.
  * @param filePath The file path of the Unix socket to connect to.
+ * @param elementListener A pointer to the ndn_ElementListener used by
+ * ndn_SocketTransport_processEvents, which remain valid during the life of this
+ * object or until replaced by the next call to connect.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_UnixTransport_connect
-  (struct ndn_UnixTransport *self, char *filePath)
+static __inline ndn_Error ndn_UnixTransport_connect
+  (struct ndn_UnixTransport *self, char *filePath,
+   struct ndn_ElementListener *elementListener)
 {
-  return ndn_SocketTransport_connect(&self->base, SOCKET_UNIX, filePath, 0);
+  return ndn_SocketTransport_connect
+    (&self->base, SOCKET_UNIX, filePath, 0, elementListener);
 }
 
 /**
@@ -94,8 +109,8 @@ static inline ndn_Error ndn_UnixTransport_receive
 /**
  * Process any data to receive.  For each element received, call
  * (*elementListener->onReceivedElement)(element, elementLength) for the
- * elementListener in elementReader. This is non-blocking and will return
- * immediately if there is no data to receive.
+ * elementListener in the elementReader given to connect(). This is non-blocking
+ * and will return immediately if there is no data to receive.
  * @param self A pointer to the ndn_UnixTransport struct.
  * @param buffer A pointer to a buffer for receiving data. Note that this is
  * only for temporary use and is not the way that this function supplies data.
@@ -104,17 +119,13 @@ static inline ndn_Error ndn_UnixTransport_receive
  * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
  * however may be less efficient due to multiple calls to socket receive and
  * more processing by the ElementReader.
- * @param elementReader A pointer to the ndn_ElementReader struct which has
- * the elementListener with the onReceivedElement callback.
  * @return 0 for success, else an error code.
  */
 static inline ndn_Error
 ndn_UnixTransport_processEvents
-  (struct ndn_UnixTransport *self, uint8_t *buffer, size_t bufferLength,
-   struct ndn_ElementReader *elementReader)
+  (struct ndn_UnixTransport *self, uint8_t *buffer, size_t bufferLength)
 {
-  return ndn_SocketTransport_processEvents
-    (&self->base, buffer, bufferLength, elementReader);
+  return ndn_SocketTransport_processEvents(&self->base, buffer, bufferLength);
 }
 
 /**

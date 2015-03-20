@@ -30,17 +30,28 @@ namespace ndn {
 class UnixTransportLite : private ndn_UnixTransport {
 public:
   /**
-   * Create a UnixTransportLite with default values for no connection yet.
+   * Create an UnixTransport with default values for no connection yet and to use
+   * the given buffer for the ElementReader. Note that the ElementReader is not
+   * valid until you call connect.
+   * @param buffer the allocated buffer used by ElementReader. If reallocFunction
+   * is 0, this should be large enough to save a full element, perhaps
+   * MAX_NDN_PACKET_SIZE bytes.
+   * @param bufferLength the length of the buffer.
+   * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength. This may be 0.
    */
-  UnixTransportLite();
+  UnixTransportLite
+    (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction);
 
   /**
    * Connect with a Unix Socket to the socket filePath.
    * @param filePath The file path of the Unix socket to connect to.
+   * @param elementListener The ElementListener used by processEvents, which
+   * remain valid during the life of this object or until replaced by the next
+   * call to connect.
    * @return 0 for success, else an error code.
    */
   ndn_Error
-  connect(char* filePath);
+  connect(char* filePath, ndn_ElementListener& elementListener);
 
   /**
    * Send data to the socket.

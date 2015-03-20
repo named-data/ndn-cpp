@@ -34,9 +34,11 @@
 
 ndn_Error ndn_SocketTransport_connect
   (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host,
-   unsigned short port)
+   unsigned short port, struct ndn_ElementListener *elementListener)
 {
   int socketDescriptor;
+
+  ndn_ElementReader_reset(&self->elementReader, elementListener);
 
   if (socketType == SOCKET_UNIX) {
     struct sockaddr_un address;
@@ -167,8 +169,7 @@ ndn_Error ndn_SocketTransport_receive
 
 ndn_Error
 ndn_SocketTransport_processEvents
-  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength,
-   struct ndn_ElementReader *elementReader)
+  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength)
 {
   // Loop until there is no more data in the receive buffer.
   while(1) {
@@ -188,7 +189,7 @@ ndn_SocketTransport_processEvents
       return NDN_ERROR_success;
 
     if ((error = ndn_ElementReader_onReceivedData
-         (elementReader, buffer, nBytes)))
+         (&self->elementReader, buffer, nBytes)))
       return error;
   }
 }

@@ -24,15 +24,17 @@
 
 namespace ndn {
 
-TcpTransportLite::TcpTransportLite()
+TcpTransportLite::TcpTransportLite
+  (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
 {
-  ndn_TcpTransport_initialize(this);
+  ndn_TcpTransport_initialize(this, buffer, bufferLength, reallocFunction);
 }
 
 ndn_Error
-TcpTransportLite::connect(char* host, unsigned short port)
+TcpTransportLite::connect
+  (char* host, unsigned short port, ndn_ElementListener& elementListener)
 {
-  return ndn_TcpTransport_connect(this, host, port);
+  return ndn_TcpTransport_connect(this, host, port, &elementListener);
 }
 
 ndn_Error

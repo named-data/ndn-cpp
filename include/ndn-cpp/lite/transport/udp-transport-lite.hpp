@@ -30,18 +30,29 @@ namespace ndn {
 class UdpTransportLite : private ndn_UdpTransport {
 public:
   /**
-   * Create a UdpTransportLite with default values for no connection yet.
+   * Create an UdpTransport with default values for no connection yet and to use
+   * the given buffer for the ElementReader. Note that the ElementReader is not
+   * valid until you call connect.
+   * @param buffer the allocated buffer used by ElementReader. If reallocFunction
+   * is 0, this should be large enough to save a full element, perhaps
+   * MAX_NDN_PACKET_SIZE bytes.
+   * @param bufferLength the length of the buffer.
+   * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength. This may be 0.
    */
-  UdpTransportLite();
+  UdpTransportLite
+    (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction);
 
   /**
    * Connect with UDP to the host:port.
    * @param host The host to connect to.
    * @param port The port to connect to.
+   * @param elementListener The ElementListener used by processEvents, which
+   * remain valid during the life of this object or until replaced by the next
+   * call to connect.
    * @return 0 for success, else an error code.
    */
   ndn_Error
-  connect(char* host, unsigned short port);
+  connect(char* host, unsigned short port, ndn_ElementListener& elementListener);
 
   /**
    * Send data to the socket.

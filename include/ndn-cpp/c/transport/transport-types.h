@@ -21,12 +21,15 @@
 #ifndef NDN_TRANSPORT_TYPES_H
 #define NDN_TRANSPORT_TYPES_H
 
+#include "../encoding/element-reader-types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 struct ndn_SocketTransport {
   int socketDescriptor; /**< -1 if not connected */
+  struct ndn_ElementReader elementReader;
 };
 
 struct ndn_TcpTransport {

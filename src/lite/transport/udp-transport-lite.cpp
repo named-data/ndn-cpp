@@ -25,15 +25,17 @@
 
 namespace ndn {
 
-UdpTransportLite::UdpTransportLite()
+UdpTransportLite::UdpTransportLite
+  (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
 {
-  ndn_UdpTransport_initialize(this);
+  ndn_UdpTransport_initialize(this, buffer, bufferLength, reallocFunction);
 }
 
 ndn_Error
-UdpTransportLite::connect(char* host, unsigned short port)
+UdpTransportLite::connect
+  (char* host, unsigned short port, ndn_ElementListener& elementListener)
 {
-  return ndn_UdpTransport_connect(this, host, port);
+  return ndn_UdpTransport_connect(this, host, port, &elementListener);
 }
 
 ndn_Error

@@ -24,15 +24,16 @@
 
 namespace ndn {
 
-UnixTransportLite::UnixTransportLite()
+UnixTransportLite::UnixTransportLite
+  (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
 {
-  ndn_UnixTransport_initialize(this);
+  ndn_UnixTransport_initialize(this, buffer, bufferLength, reallocFunction);
 }
 
 ndn_Error
-UnixTransportLite::connect(char* filePath)
+UnixTransportLite::connect(char* filePath, ndn_ElementListener& elementListener)
 {
-  return ndn_UnixTransport_connect(this, filePath);
+  return ndn_UnixTransport_connect(this, filePath, &elementListener);
 }
 
 ndn_Error
