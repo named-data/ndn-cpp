@@ -37,20 +37,21 @@ extern "C" {
  * @param elementListener pointer to the ndn_ElementListener used by 
  * ndn_ElementReader_onReceivedData. If this is 0, you can set it later with
  * ndn_ElementReader_reset.
- * @param buffer the allocated buffer.  If reallocFunction is null, this should 
- * be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
- * @param bufferLength the length of the buffer
- * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
+ * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+ * save data before calling the elementListener. The struct must remain valid
+ * during the entire life of this ndn_ElementReader. If the buffer->realloc
+ * function pointer is 0, its array must be large enough to save a full element,
+ * perhaps MAX_NDN_PACKET_SIZE bytes.
  */
 static __inline void ndn_ElementReader_initialize
   (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener,
-   uint8_t *buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
+   struct ndn_DynamicUInt8Array *buffer)
 {
   self->elementListener = elementListener;
   ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
   ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
+  self->partialData = buffer;
   self->usePartialData = 0;
-  ndn_DynamicUInt8Array_initialize(&self->partialData, buffer, bufferLength, reallocFunction);
 }
 
 /**

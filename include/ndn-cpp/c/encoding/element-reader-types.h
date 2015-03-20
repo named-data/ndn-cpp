@@ -73,7 +73,7 @@ struct ndn_ElementReader {
   struct ndn_BinaryXmlStructureDecoder binaryXmlStructureDecoder;
   struct ndn_TlvStructureDecoder tlvStructureDecoder;
   int usePartialData;
-  struct ndn_DynamicUInt8Array partialData;
+  struct ndn_DynamicUInt8Array* partialData;
   size_t partialDataLength;
   int useTlv; /**< boolean */
 };
