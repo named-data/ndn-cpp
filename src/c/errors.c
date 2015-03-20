@@ -109,6 +109,8 @@ char *ndn_getErrorString(int error)
     return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
   case NDN_ERROR_Unimplemented_operation:
     return      "Unimplemented operation";
+  case NDN_ERROR_ElementReader_ElementListener_is_not_specified:
+    return      "ElementReader ElementListener is not specified";
   default:
     return "unrecognized ndn_Error code";
   }

@@ -69,7 +69,8 @@ typedef enum {
   NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type,
   NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType,
   NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh,
-  NDN_ERROR_Unimplemented_operation
+  NDN_ERROR_Unimplemented_operation,
+  NDN_ERROR_ElementReader_ElementListener_is_not_specified
 } ndn_Error;
 
 /**
