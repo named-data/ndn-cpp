@@ -42,19 +42,17 @@ typedef enum {
  * connection yet and to use the given buffer for the ElementReader. Note that
  * the ElementReader is not valid until you call ndn_SocketTransport_connect.
  * @param self A pointer to the ndn_SocketTransport struct.
- * @param buffer the allocated buffer used by ElementReader. If reallocFunction
- * is 0, this should be large enough to save a full element, perhaps
- * MAX_NDN_PACKET_SIZE bytes.
- * @param bufferLength the length of the buffer.
- * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength. This may be 0.
+ * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+ * save data before calling the elementListener (see ndn_SocketTransport_connect).
+ * The struct must remain valid during the entire life of this
+ * ndn_SocketTransport. If the buffer->realloc function pointer is 0, its array
+ * must be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
  */
 static __inline void ndn_SocketTransport_initialize
-  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength,
-   ndn_ReallocFunction reallocFunction)
+  (struct ndn_SocketTransport *self, struct ndn_DynamicUInt8Array *buffer)
 {
   self->socketDescriptor = -1;
-  ndn_ElementReader_initialize
-    (&self->elementReader, 0, buffer, bufferLength, reallocFunction);
+  ndn_ElementReader_initialize(&self->elementReader, 0, buffer);
 }
 
 /**

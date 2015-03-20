@@ -33,14 +33,13 @@ public:
    * Create an TcpTransport with default values for no connection yet and to use
    * the given buffer for the ElementReader. Note that the ElementReader is not
    * valid until you call connect.
-   * @param buffer the allocated buffer used by ElementReader. If reallocFunction
-   * is 0, this should be large enough to save a full element, perhaps
-   * MAX_NDN_PACKET_SIZE bytes.
-   * @param bufferLength the length of the buffer.
-   * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength. This may be 0.
+   * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+   * save data before calling the elementListener (see connect).
+   * The struct must remain valid during the entire life of this object.
+   * If the buffer->realloc function pointer is 0, its array must be large
+   * enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
    */
-  TcpTransportLite
-    (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction);
+  TcpTransportLite(struct ndn_DynamicUInt8Array *buffer);
 
   /**
    * Connect with TCP to the host:port.

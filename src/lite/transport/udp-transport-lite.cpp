@@ -25,10 +25,9 @@
 
 namespace ndn {
 
-UdpTransportLite::UdpTransportLite
-  (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
+UdpTransportLite::UdpTransportLite(struct ndn_DynamicUInt8Array *buffer)
 {
-  ndn_UdpTransport_initialize(this, buffer, bufferLength, reallocFunction);
+  ndn_UdpTransport_initialize(this, buffer);
 }
 
 ndn_Error

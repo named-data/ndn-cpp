@@ -24,10 +24,9 @@
 
 namespace ndn {
 
-TcpTransportLite::TcpTransportLite
-  (uint8_t* buffer, size_t bufferLength, ndn_ReallocFunction reallocFunction)
+TcpTransportLite::TcpTransportLite(struct ndn_DynamicUInt8Array *buffer)
 {
-  ndn_TcpTransport_initialize(this, buffer, bufferLength, reallocFunction);
+  ndn_TcpTransport_initialize(this, buffer);
 }
 
 ndn_Error
