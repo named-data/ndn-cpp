@@ -77,26 +77,11 @@ UnixTransport::send(const uint8_t *data, size_t dataLength)
 void
 UnixTransport::processEvents()
 {
-  // Loop until there is no more data in the receive buffer.
-  while(true) {
-    int receiveIsReady;
-    ndn_Error error;
-    if ((error = ndn_UnixTransport_receiveIsReady
-         (transport_.get(), &receiveIsReady)))
-      throw runtime_error(ndn_getErrorString(error));
-    if (!receiveIsReady)
-      return;
-
-    uint8_t buffer[MAX_NDN_PACKET_SIZE];
-    size_t nBytes;
-    if ((error = ndn_UnixTransport_receive
-         (transport_.get(), buffer, sizeof(buffer), &nBytes)))
-      throw runtime_error(ndn_getErrorString(error));
-    if (nBytes == 0)
-      return;
-
-    ndn_ElementReader_onReceivedData(elementReader_.get(), buffer, nBytes);
-  }
+  uint8_t buffer[MAX_NDN_PACKET_SIZE];
+  ndn_Error error;
+  if ((error = ndn_UnixTransport_processEvents
+       (transport_.get(), buffer, sizeof(buffer), elementReader_.get())))
+    throw runtime_error(ndn_getErrorString(error));
 }
 
 bool
