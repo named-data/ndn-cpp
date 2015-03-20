@@ -29,10 +29,13 @@ extern "C" {
 #endif
 
 /**
- * Initialize an ndn_ElementListener struct to use the onReceivedElement function pointer.
+ * Initialize an ndn_ElementListener struct to use the onReceivedElement
+ * function pointer.
  * @param self pointer to the ndn_ElementListener struct
- * @param onReceivedElement pointer to a function which is called when an entire binary XML element is received.
- * self is the pointer to this ndn_ElementListener struct.  See ndn_ElementReader_onReceivedData.
+ * @param onReceivedElement When an entire packet element is received, call
+ * onReceivedElement(self, element, elementLength) where self is the pointer to
+ * this ndn_ElementListener struct, and element is a pointer to the array of
+ * length elementLength with the bytes of the element.
  */
 static __inline void ndn_ElementListener_initialize
   (struct ndn_ElementListener *self, ndn_OnReceivedElement onReceivedElement)

@@ -343,6 +343,7 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/*.hpp) \
   $(wildcard ndn-cpp/encoding/*.*) \
   $(wildcard ndn-cpp/lite/*.*) \
+  $(wildcard ndn-cpp/lite/encoding/*.*) \
   $(wildcard ndn-cpp/lite/transport/*.*) \
   $(wildcard ndn-cpp/lite/util/*.*) \
   $(wildcard ndn-cpp/security/*.*) \
