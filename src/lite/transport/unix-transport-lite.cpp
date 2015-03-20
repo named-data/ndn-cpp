@@ -42,6 +42,12 @@ UnixTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
+UnixTransportLite::processEvents(uint8_t *buffer, size_t bufferLength)
+{
+  return ndn_UnixTransport_processEvents(this, buffer, bufferLength);
+}
+
+ndn_Error
 UnixTransportLite::close()
 {
   return ndn_UnixTransport_close(this);

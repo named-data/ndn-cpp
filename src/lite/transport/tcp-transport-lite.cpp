@@ -43,6 +43,12 @@ TcpTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
+TcpTransportLite::processEvents(uint8_t *buffer, size_t bufferLength)
+{
+  return ndn_TcpTransport_processEvents(this, buffer, bufferLength);
+}
+
+ndn_Error
 TcpTransportLite::close() { return ndn_TcpTransport_close(this); }
 
 }

@@ -44,6 +44,12 @@ UdpTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
+UdpTransportLite::processEvents(uint8_t *buffer, size_t bufferLength)
+{
+  return ndn_UdpTransport_processEvents(this, buffer, bufferLength);
+}
+
+ndn_Error
 UdpTransportLite::close()
 {
   return ndn_UdpTransport_close(this);

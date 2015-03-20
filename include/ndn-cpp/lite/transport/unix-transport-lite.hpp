@@ -62,6 +62,23 @@ public:
   send(const uint8_t* data, size_t dataLength);
 
   /**
+   * Process any data to receive.  For each element received, call
+   * (*elementListener->onReceivedElement)(element, elementLength) for the
+   * elementListener in the elementReader given to connect(). This is non-blocking
+   * and will return immediately if there is no data to receive.
+   * @param buffer A pointer to a buffer for receiving data. Note that this is
+   * only for temporary use and is not the way that this function supplies data.
+   * It supplies the data by calling the onReceivedElement callback.
+   * @param bufferLength The size of buffer. The buffer should be as large as
+   * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
+   * however may be less efficient due to multiple calls to socket receive and
+   * more processing by the ElementReader.
+   * @return 0 for success, else an error code.
+   */
+  ndn_Error
+  processEvents(uint8_t *buffer, size_t bufferLength);
+
+  /**
    * Close the socket.
    * @return 0 for success, else an error code.
    */
