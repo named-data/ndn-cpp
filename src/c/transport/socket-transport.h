@@ -25,6 +25,7 @@
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
 #include <ndn-cpp/c/transport/transport-types.h>
+#include "../encoding/element-reader.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +87,28 @@ ndn_Error ndn_SocketTransport_receiveIsReady(struct ndn_SocketTransport *self, i
  */
 ndn_Error ndn_SocketTransport_receive
   (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength, size_t *nBytes);
+
+/**
+ * Process any data to receive.  For each element received, call
+ * (*elementListener->onReceivedElement)(element, elementLength) for the
+ * elementListener in elementReader. This is non-blocking and will return
+ * immediately if there is no data to receive.
+ * @param self A pointer to the ndn_SocketTransport struct.
+ * @param buffer A pointer to a buffer for receiving data. Note that this is
+ * only for temporary use and is not the way that this function supplies data.
+ * It supplies the data by calling the onReceivedElement callback.
+ * @param bufferLength The size of buffer. The buffer should be as large as
+ * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
+ * however may be less efficient due to multiple calls to socket receive and
+ * more processing by the ElementReader.
+ * @param elementReader A pointer to the ndn_ElementReader struct which has
+ * the elementListener with the onReceivedElement callback.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_SocketTransport_processEvents
+  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength,
+   struct ndn_ElementReader *elementReader);
 
 /**
  * Close the socket.

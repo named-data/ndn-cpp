@@ -77,7 +77,7 @@ static inline ndn_Error ndn_UdpTransport_receiveIsReady
 
 /**
  * Receive data from the socket.  NOTE: This is a blocking call.
- * You should first call ndn_SocketTransport_receiveIsReady to make sure there
+ * You should first call ndn_UdpTransport_receiveIsReady to make sure there
  * is data ready to receive.
  * @param self A pointer to the ndn_UdpTransport struct.
  * @param buffer A pointer to the buffer to receive the data.
@@ -90,6 +90,32 @@ static inline ndn_Error ndn_UdpTransport_receive
    size_t *nBytes)
 {
   return ndn_SocketTransport_receive(&self->base, buffer, bufferLength, nBytes);
+}
+
+/**
+ * Process any data to receive.  For each element received, call
+ * (*elementListener->onReceivedElement)(element, elementLength) for the
+ * elementListener in elementReader. This is non-blocking and will return
+ * immediately if there is no data to receive.
+ * @param self A pointer to the ndn_UdpTransport struct.
+ * @param buffer A pointer to a buffer for receiving data. Note that this is
+ * only for temporary use and is not the way that this function supplies data.
+ * It supplies the data by calling the onReceivedElement callback.
+ * @param bufferLength The size of buffer. The buffer should be as large as
+ * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
+ * however may be less efficient due to multiple calls to socket receive and
+ * more processing by the ElementReader.
+ * @param elementReader A pointer to the ndn_ElementReader struct which has
+ * the elementListener with the onReceivedElement callback.
+ * @return 0 for success, else an error code.
+ */
+static inline ndn_Error
+ndn_UdpTransport_processEvents
+  (struct ndn_UdpTransport *self, uint8_t *buffer, size_t bufferLength,
+   struct ndn_ElementReader *elementReader)
+{
+  return ndn_SocketTransport_processEvents
+    (&self->base, buffer, bufferLength, elementReader);
 }
 
 /**
