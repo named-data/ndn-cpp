@@ -24,7 +24,7 @@
 #include "../c/transport/tcp-transport.h"
 #include "../c/encoding/element-reader.h"
 #include "../encoding/element-listener.hpp"
-#include "../c/util/ndn_realloc.h"
+#include "../util/dynamic-uint8-vector.hpp"
 #include <ndn-cpp/transport/tcp-transport.hpp>
 
 using namespace std;
@@ -36,12 +36,10 @@ TcpTransport::ConnectionInfo::~ConnectionInfo()
 }
 
 TcpTransport::TcpTransport()
-  : isConnected_(false), transport_(new struct ndn_TcpTransport)
+  : isConnected_(false), transport_(new struct ndn_TcpTransport),
+    elementBuffer_(new DynamicUInt8Vector(1000))
 {
-  const size_t initialLength = 1000;
-  ndn_TcpTransport_initialize
-    (transport_.get(), (uint8_t *)malloc(initialLength), initialLength,
-     ndn_realloc);
+  ndn_TcpTransport_initialize(transport_.get(), elementBuffer_.get());
 }
 
 void
@@ -91,15 +89,6 @@ TcpTransport::close()
   ndn_Error error;
   if ((error = ndn_TcpTransport_close(transport_.get())))
     throw runtime_error(ndn_getErrorString(error));
-}
-
-TcpTransport::~TcpTransport()
-{
-#if 0 // TODO: Use a DynamicUInt8Vector which will free the memory.
-  if (elementReader_->partialData.array)
-    // Free the memory allocated in connect.
-    free(elementReader_->partialData.array);
-#endif
 }
 
 }
