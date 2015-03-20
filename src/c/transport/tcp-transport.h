@@ -69,7 +69,7 @@ static __inline ndn_Error ndn_TcpTransport_connect
  * @param dataLength The number of bytes in data.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_send
+static __inline ndn_Error ndn_TcpTransport_send
   (struct ndn_TcpTransport *self, const uint8_t *data, size_t dataLength)
 {
   return ndn_SocketTransport_send(&self->base, data, dataLength);
@@ -90,7 +90,7 @@ static inline ndn_Error ndn_TcpTransport_send
  * more processing by the ElementReader.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error
+static __inline ndn_Error
 ndn_TcpTransport_processEvents
   (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength)
 {
@@ -102,7 +102,7 @@ ndn_TcpTransport_processEvents
  * @param self A pointer to the ndn_TcpTransport struct.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_TcpTransport_close(struct ndn_TcpTransport *self)
+static __inline ndn_Error ndn_TcpTransport_close(struct ndn_TcpTransport *self)
 {
   return ndn_SocketTransport_close(&self->base);
 }

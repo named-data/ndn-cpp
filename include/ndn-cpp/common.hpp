@@ -129,7 +129,7 @@ toHex(const uint8_t* array, size_t arrayLength);
  * @param array The array of bytes.
  * @return The hex string.
  */
-static inline std::string
+static __inline std::string
 toHex(const std::vector<uint8_t>& array)
 {
   return toHex(&array[0], array.size());

@@ -39,7 +39,7 @@ static const char *WHITESPACE_CHARS = " \n\r\t";
  * Modify str in place to erase whitespace on the left.
  * @param str
  */
-static inline void
+static __inline void
 trimLeft(string& str)
 {
   size_t found = str.find_first_not_of(WHITESPACE_CHARS);
@@ -56,7 +56,7 @@ trimLeft(string& str)
  * Modify str in place to erase whitespace on the right.
  * @param str
  */
-static inline void
+static __inline void
 trimRight(string& str)
 {
   size_t found = str.find_last_not_of(WHITESPACE_CHARS);
