@@ -23,24 +23,11 @@
 
 #include <ndn-cpp/c/errors.h>
 #include "ndn_memory.h"
+#include <ndn-cpp/c/util/dynamic-uint8-array-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct ndn_DynamicUInt8Array;
-typedef uint8_t * (*ndn_ReallocFunction)
-  (struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length);
-
-struct ndn_DynamicUInt8Array {
-  uint8_t *array; /**< the allocated array buffer */
-  size_t length;  /**< the length of the allocated array buffer */
-  ndn_ReallocFunction realloc; /**< a pointer to a function that reallocates array and returns a new pointer to a buffer of
-                                * length bytes, or 0 for error.  On success, the contents of the old buffer are copied to the new one.
-                                * On success, the original array pointer will no longer be used.
-                                * self is a pointer to the struct ndn_DynamicUInt8Array which is calling realloc.
-                                * This function pointer may be 0 (which causes an error if a reallocate is necessary). */
-};
 
 /**
  * Initialize an ndn_DynamicUInt8Array struct with the given array buffer.
