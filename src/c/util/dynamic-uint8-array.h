@@ -45,7 +45,8 @@ struct ndn_DynamicUInt8Array {
 /**
  * Initialize an ndn_DynamicUInt8Array struct with the given array buffer.
  * @param self pointer to the ndn_DynamicUInt8Array struct
- * @param array the allocated array buffer
+ * @param array The allocated array buffer. It is the caller's responsibility to
+ * free this buffer if necessary when finished with it.
  * @param length the length of the allocated array buffer
  * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
  */
