@@ -51,7 +51,7 @@ public:
     Component(const uint8_t* value, size_t valueLength);
 
     const BlobLite&
-    getValue() const { return *(BlobLite*)&value; }
+    getValue() const { return BlobLite::upCast(value); }
 
     /**
      * Interpret the name component as a network-ordered number and return an integer.

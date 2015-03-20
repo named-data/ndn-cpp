@@ -238,8 +238,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
-	src/lite/util/blob-lite.lo src/security/key-chain.lo \
-	src/security/security-exception.lo \
+	src/lite/util/blob-lite.lo \
+	src/lite/util/dynamic-uint8-array-lite.lo \
+	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
 	src/security/certificate/certificate.lo \
@@ -981,6 +982,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
   include/ndn-cpp/lite/util/blob-lite.hpp \
+  include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -1104,6 +1106,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
+  src/lite/util/dynamic-uint8-array-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -1479,6 +1482,9 @@ src/lite/util/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/util/$(DEPDIR)
 	@: > src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/lite/util/blob-lite.lo: src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/dynamic-uint8-array-lite.lo:  \
+	src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/security/$(am__dirstamp):
 	@$(MKDIR_P) src/security
@@ -1981,6 +1987,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
