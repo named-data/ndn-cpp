@@ -36,11 +36,12 @@ UdpTransport::ConnectionInfo::~ConnectionInfo()
 }
 
 UdpTransport::UdpTransport()
-  : isConnected_(false), transport_(new struct ndn_UdpTransport),
-    elementReader_(new struct ndn_ElementReader)
+  : isConnected_(false), transport_(new struct ndn_UdpTransport)
 {
-  ndn_UdpTransport_initialize(transport_.get());
-  elementReader_->partialData.array = 0;
+  const size_t initialLength = 1000;
+  ndn_UdpTransport_initialize
+    (transport_.get(), (uint8_t *)malloc(initialLength), initialLength,
+     ndn_realloc);
 }
 
 void
@@ -54,15 +55,8 @@ UdpTransport::connect
   ndn_Error error;
   if ((error = ndn_UdpTransport_connect
        (transport_.get(), (char *)udpConnectionInfo.getHost().c_str(),
-        udpConnectionInfo.getPort())))
+        udpConnectionInfo.getPort(), &elementListener)))
     throw runtime_error(ndn_getErrorString(error));
-
-  // TODO: This belongs in the socket listener.
-  const size_t initialLength = 1000;
-  // Automatically cast elementReader_ to (struct ndn_ElementListener *)
-  ndn_ElementReader_initialize
-    (elementReader_.get(), &elementListener, (uint8_t *)malloc(initialLength),
-     initialLength, ndn_realloc);
 
   isConnected_ = true;
 }
@@ -81,7 +75,7 @@ UdpTransport::processEvents()
   uint8_t buffer[MAX_NDN_PACKET_SIZE];
   ndn_Error error;
   if ((error = ndn_UdpTransport_processEvents
-       (transport_.get(), buffer, sizeof(buffer), elementReader_.get())))
+       (transport_.get(), buffer, sizeof(buffer))))
     throw runtime_error(ndn_getErrorString(error));
 }
 
@@ -101,9 +95,11 @@ UdpTransport::close()
 
 UdpTransport::~UdpTransport()
 {
+#if 0 // TODO: Use a DynamicUInt8Vector which will free the memory.
   if (elementReader_->partialData.array)
     // Free the memory allocated in connect.
     free(elementReader_->partialData.array);
+#endif
 }
 
 }

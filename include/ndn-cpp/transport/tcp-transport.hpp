@@ -114,8 +114,6 @@ public:
 private:
   ptr_lib::shared_ptr<struct ndn_TcpTransport> transport_;
   bool isConnected_;
-  // TODO: This belongs in the socket listener.
-  ptr_lib::shared_ptr<struct ndn_ElementReader> elementReader_;
 };
 
 }
