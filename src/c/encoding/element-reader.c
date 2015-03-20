@@ -65,6 +65,9 @@ ndn_Error ndn_ElementReader_onReceivedData
     }
 
     if (gotElementEnd) {
+      if (!self->elementListener)
+        return NDN_ERROR_ElementReader_ElementListener_is_not_specified;
+      
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
         // We have partial data from a previous call, so append this data and point to partialData.

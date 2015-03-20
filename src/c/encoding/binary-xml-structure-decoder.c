@@ -23,7 +23,7 @@
 #include "binary-xml-decoder.h"
 #include "binary-xml-structure-decoder.h"
 
-void ndn_BinaryXmlStructureDecoder_initialize(struct ndn_BinaryXmlStructureDecoder *self)
+void ndn_BinaryXmlStructureDecoder_reset(struct ndn_BinaryXmlStructureDecoder *self)
 {
   self->gotElementEnd = 0;
   self->offset = 0;

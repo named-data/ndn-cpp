@@ -49,11 +49,22 @@ enum {
 };
 
 /**
- * Initialize a ndn_TlvStructureDecoder struct.
+ * Reset this ndn_TlvStructureDecoder struct to the state created by
+ * ndn_TlvStructureDecoder_initialize.
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  */
 void
-ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self);
+ndn_TlvStructureDecoder_reset(struct ndn_TlvStructureDecoder *self);
+
+/**
+ * Initialize a ndn_TlvStructureDecoder struct.
+ * @param self A pointer to the ndn_TlvStructureDecoder struct.
+ */
+static __inline void
+ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
+{
+  ndn_TlvStructureDecoder_reset(self);
+}
 
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check

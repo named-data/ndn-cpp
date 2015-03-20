@@ -49,7 +49,9 @@ struct ndn_ElementReader {
 /**
  * Initialize an ndn_ElementReader struct with the elementListener and a buffer for saving partial data.
  * @param self pointer to the ndn_ElementReader struct
- * @param elementListener pointer to the ndn_ElementListener used by ndn_ElementReader_onReceivedData.
+ * @param elementListener pointer to the ndn_ElementListener used by 
+ * ndn_ElementReader_onReceivedData. If this is 0, you can set it later with
+ * ndn_ElementReader_reset.
  * @param buffer the allocated buffer.  If reallocFunction is null, this should 
  * be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
  * @param bufferLength the length of the buffer
@@ -64,6 +66,23 @@ static __inline void ndn_ElementReader_initialize
   ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
   self->usePartialData = 0;
   ndn_DynamicUInt8Array_initialize(&self->partialData, buffer, bufferLength, reallocFunction);
+}
+
+/**
+ * Reset the state of this ElementReader to begin reading new data and use the
+ * given elementListener. Keep using the buffer provided to
+ * ndn_ElementReader_initialize.
+ * @param self pointer to the ndn_ElementReader struct.
+ * @param elementListener pointer to the ndn_ElementListener used by
+ * ndn_ElementReader_onReceivedData.
+ */
+static __inline void ndn_ElementReader_reset
+  (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener)
+{
+  self->elementListener = elementListener;
+  ndn_BinaryXmlStructureDecoder_reset(&self->binaryXmlStructureDecoder);
+  ndn_TlvStructureDecoder_reset(&self->tlvStructureDecoder);
+  self->usePartialData = 0;
 }
 
 /**

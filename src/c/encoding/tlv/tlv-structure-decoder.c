@@ -24,7 +24,7 @@
 #include "tlv-structure-decoder.h"
 
 void
-ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
+ndn_TlvStructureDecoder_reset(struct ndn_TlvStructureDecoder *self)
 {
   self->gotElementEnd = 0;
   self->offset = 0;
