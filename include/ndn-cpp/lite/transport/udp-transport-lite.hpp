@@ -64,27 +64,6 @@ public:
   send(const uint8_t* data, size_t dataLength);
 
   /**
-   * Check if there is data ready on the socket to be received with receive.
-   * This does not block, and returns immediately.
-   * @param receiveIsReady This will be set to true if data is ready, false if not.
-   * @return 0 for success, else an error code.
-   */
-  ndn_Error
-  receiveIsReady(bool& receiveIsReady);
-
-  /**
-   * Receive data from the socket.  NOTE: This is a blocking call.
-   * You should first call receiveIsReady to make sure there is data ready to
-   * receive.
-   * @param buffer A pointer to the buffer to receive the data.
-   * @param bufferLength The maximum length of buffer.
-   * @param nBytes Return the number of bytes received into buffer.
-   * @return 0 for success, else an error code.
-   */
-  ndn_Error
-  receive(uint8_t* buffer, size_t bufferLength, size_t& nBytes);
-
-  /**
    * Close the socket.
    * @return 0 for success, else an error code.
    */

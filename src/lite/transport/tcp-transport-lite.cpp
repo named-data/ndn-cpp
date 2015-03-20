@@ -44,21 +44,6 @@ TcpTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
-TcpTransportLite::receiveIsReady(bool &receiveIsReady)
-{
-  int isReady;
-  ndn_Error error = ndn_TcpTransport_receiveIsReady(this, &isReady);
-  receiveIsReady = (isReady != 0);
-  return error;
-}
-
-ndn_Error
-TcpTransportLite::receive(uint8_t* buffer, size_t bufferLength, size_t& nBytes)
-{
-  return ndn_TcpTransport_receive(this, buffer, bufferLength, &nBytes);
-}
-
-ndn_Error
 TcpTransportLite::close() { return ndn_TcpTransport_close(this); }
 
 }

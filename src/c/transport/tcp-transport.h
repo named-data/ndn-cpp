@@ -78,36 +78,6 @@ static inline ndn_Error ndn_TcpTransport_send
 }
 
 /**
- * Check if there is data ready on the socket to be received with
- * ndn_TcpTransport_receive. This does not block, and returns immediately.
- * @param self A pointer to the ndn_TcpTransport struct.
- * @param receiveIsReady This will be set to 1 if data is ready, 0 if not.
- * @return 0 for success, else an error code.
- */
-static inline ndn_Error ndn_TcpTransport_receiveIsReady
-  (struct ndn_TcpTransport *self, int *receiveIsReady)
-{
-  return ndn_SocketTransport_receiveIsReady(&self->base, receiveIsReady);
-}
-
-/**
- * Receive data from the socket.  NOTE: This is a blocking call.
- * You should first call ndn_TcpTransport_receiveIsReady to make sure there
- * is data ready to receive.
- * @param self A pointer to the ndn_TcpTransport struct.
- * @param buffer A pointer to the buffer to receive the data.
- * @param bufferLength The maximum length of buffer.
- * @param nBytes Return the number of bytes received into buffer.
- * @return 0 for success, else an error code.
- */
-static inline ndn_Error ndn_TcpTransport_receive
-  (struct ndn_TcpTransport *self, uint8_t *buffer, size_t bufferLength,
-   size_t *nBytes)
-{
-  return ndn_SocketTransport_receive(&self->base, buffer, bufferLength, nBytes);
-}
-
-/**
  * Process any data to receive.  For each element received, call
  * (*elementListener->onReceivedElement)(element, elementLength) for the
  * elementListener in the elementReader given to connect(). This is non-blocking

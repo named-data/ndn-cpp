@@ -45,21 +45,6 @@ UdpTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
-UdpTransportLite::receiveIsReady(bool& receiveIsReady)
-{
-  int isReady;
-  ndn_Error error = ndn_UdpTransport_receiveIsReady(this, &isReady);
-  receiveIsReady = (isReady != 0);
-  return error;
-}
-
-ndn_Error
-UdpTransportLite::receive(uint8_t* buffer, size_t bufferLength, size_t& nBytes)
-{
-  return ndn_UdpTransport_receive(this, buffer, bufferLength, &nBytes);
-}
-
-ndn_Error
 UdpTransportLite::close()
 {
   return ndn_UdpTransport_close(this);

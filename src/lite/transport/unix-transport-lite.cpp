@@ -43,21 +43,6 @@ UnixTransportLite::send(const uint8_t* data, size_t dataLength)
 }
 
 ndn_Error
-UnixTransportLite::receiveIsReady(bool& receiveIsReady)
-{
-  int isReady;
-  ndn_Error error = ndn_UnixTransport_receiveIsReady(this, &isReady);
-  receiveIsReady = (isReady != 0);
-  return error;
-}
-
-ndn_Error
-UnixTransportLite::receive(uint8_t *buffer, size_t bufferLength, size_t& nBytes)
-{
-  return ndn_UnixTransport_receive(this, buffer, bufferLength, &nBytes);
-}
-
-ndn_Error
 UnixTransportLite::close()
 {
   return ndn_UnixTransport_close(this);
