@@ -23,22 +23,11 @@
 
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct ndn_BinaryXmlStructureDecoder {
-  int gotElementEnd; /**< boolean */
-  size_t offset;
-  int level;
-  int state;
-  size_t headerLength;
-  int useHeaderBuffer; /**< boolean */
-  // 10 bytes is enough to hold an encoded header with a type and a 64 bit value.
-  uint8_t headerBuffer[10];
-  int nBytesToRead;
-};
 
 enum {
   ndn_BinaryXmlStructureDecoder_READ_HEADER_OR_CLOSE,

@@ -8,6 +8,7 @@
 ndn_cpp_c_headers = \
   $(wildcard ndn-cpp/*.h) \
   $(wildcard ndn-cpp/c/*.*) \
+  $(wildcard ndn-cpp/c/encoding/*.*) \
   $(wildcard ndn-cpp/c/transport/*.*) \
   $(wildcard ndn-cpp/c/util/*.*)
 

@@ -23,22 +23,11 @@
 
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
-
-struct ndn_TlvStructureDecoder {
-  int gotElementEnd; /**< boolean */
-  size_t offset;
-  int state;
-  size_t headerLength;
-  int useHeaderBuffer; /**< boolean */
-  // 8 bytes is enough to hold the extended bytes in the length encoding where it is an 8-byte number.
-  uint8_t headerBuffer[8];
-  int nBytesToRead;
-  unsigned int firstOctet;
-};
 
 enum {
   ndn_TlvStructureDecoder_READ_TYPE,

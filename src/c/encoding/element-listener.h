@@ -22,21 +22,11 @@
 #define NDN_ELEMENT_LISTENER_H
 
 #include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct ndn_ElementListener;
-typedef void (*ndn_OnReceivedElement)
-  (struct ndn_ElementListener *self, uint8_t *element, size_t elementLength);
-
-/** An ndn_ElementListener struct holds a function pointer onReceivedElement.  You can extend this struct with data that
- * will be passed to onReceivedElement.
- */
-struct ndn_ElementListener {
-  ndn_OnReceivedElement onReceivedElement; /**< see ndn_ElementListener_initialize */
-};
 
 /**
  * Initialize an ndn_ElementListener struct to use the onReceivedElement function pointer.

@@ -939,6 +939,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
   include/ndn-cpp/c/publisher-public-key-digest-types.h \
+  include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
