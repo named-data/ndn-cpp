@@ -24,9 +24,17 @@
 
 namespace ndn {
 
-ElementListenerLite::ElementListenerLite(ndn_OnReceivedElement onReceivedElement)
+ElementListenerLite::ElementListenerLite()
 {
-  ndn_ElementListener_initialize(this, onReceivedElement);
+  ndn_ElementListener_initialize(this, onReceivedElementWrapper);
+}
+
+void
+ElementListenerLite::onReceivedElementWrapper
+  (ndn_ElementListener *self, uint8_t *element, size_t elementLength)
+{
+  // Because this method is private, assume there is not a problem with up casting.
+  ((ElementListenerLite *)self)->onReceivedElement(element, elementLength);
 }
 
 }

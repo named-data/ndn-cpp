@@ -26,22 +26,42 @@
 
 namespace ndn {
 
+/**
+ * ElementListenerLite is a base class for you to override to implement
+ * onReceivedElement.
+ * @param onReceivedElement When an entire packet element is received, call
+ * onReceivedElement(self, element, elementLength) where self is the pointer to
+ * this ElementListenerLite object, and element is a pointer to the array of
+ * length elementLength with the bytes of the element.
+ */
 class ElementListenerLite : private ndn_ElementListener {
 public:
+  ElementListenerLite();
+
   /**
-   * Create an ElementListenerLite to use the onReceivedElement function pointer.
-   * @param onReceivedElement When an entire packet element is received, call
-   * onReceivedElement(self, element, elementLength) where self is the pointer to
-   * this ElementListenerLite object, and element is a pointer to the array of
-   * length elementLength with the bytes of the element.
+   * onReceivedElement is called when an entire packet element is received.
+   * @param element A pointer to the array with the bytes of the element.
+   * @param elementLength The number of bytes in element.
    */
-  ElementListenerLite(ndn_OnReceivedElement onReceivedElement);
+  virtual void
+  onReceivedElement(uint8_t *element, size_t elementLength) = 0;
 
 private:
   // Declare friends who can downcast to the private base.
   friend class TcpTransportLite;
   friend class UdpTransportLite;
   friend class UnixTransportLite;
+
+  /**
+   * This the static onReceivedElement to pass to ndn_ElementListener_initialize
+   * which will call the virtual onReceivedElement method.
+   * @param self A pointer to this object.
+   * @param element A pointer to the array with the bytes of the element.
+   * @param elementLength The number of bytes in element.
+   */
+  static void
+  onReceivedElementWrapper
+    (ndn_ElementListener *self, uint8_t *element, size_t elementLength);
 };
 
 }
