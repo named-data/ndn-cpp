@@ -31,7 +31,7 @@ TcpTransportLite::TcpTransportLite(DynamicUInt8ArrayLite& buffer)
 
 ndn_Error
 TcpTransportLite::connect
-  (char* host, unsigned short port, ndn_ElementListener& elementListener)
+  (char* host, unsigned short port, ElementListenerLite& elementListener)
 {
   return ndn_TcpTransport_connect(this, host, port, &elementListener);
 }

@@ -30,7 +30,7 @@ UnixTransportLite::UnixTransportLite(DynamicUInt8ArrayLite& buffer)
 }
 
 ndn_Error
-UnixTransportLite::connect(char* filePath, ndn_ElementListener& elementListener)
+UnixTransportLite::connect(char* filePath, ElementListenerLite& elementListener)
 {
   return ndn_UnixTransport_connect(this, filePath, &elementListener);
 }

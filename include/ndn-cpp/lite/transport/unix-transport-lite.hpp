@@ -25,13 +25,14 @@
 #include "../../c/errors.h"
 #include "../../c/transport/transport-types.h"
 #include "../util/dynamic-uint8-array-lite.hpp"
+#include "../encoding/element-listener-lite.hpp"
 
 namespace ndn {
 
 class UnixTransportLite : private ndn_UnixTransport {
 public:
   /**
-   * Create an UnixTransport with default values for no connection yet and to use
+   * Create a UnixTransport with default values for no connection yet and to use
    * the given DynamicUInt8ArrayLite buffer for the ElementReader. Note that the
    * ElementReader is not valid until you call connect.
    * @param buffer A DynamicUInt8ArrayLite which is used to save data before
@@ -45,13 +46,14 @@ public:
   /**
    * Connect with a Unix Socket to the socket filePath.
    * @param filePath The file path of the Unix socket to connect to.
-   * @param elementListener The ElementListener used by processEvents, which
-   * remain valid during the life of this object or until replaced by the next
-   * call to connect.
+   * @param elementListener The ElementListenerLite whose onReceivedElement
+   * callback is called by processEvents. The elementListener must remain valid
+   * during the life of this object or until replaced by the next call to
+   * connect.
    * @return 0 for success, else an error code.
    */
   ndn_Error
-  connect(char* filePath, ndn_ElementListener& elementListener);
+  connect(char* filePath, ElementListenerLite& elementListener);
 
   /**
    * Send data to the socket.
