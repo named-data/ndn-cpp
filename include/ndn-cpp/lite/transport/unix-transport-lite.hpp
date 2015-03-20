@@ -24,6 +24,7 @@
 
 #include "../../c/errors.h"
 #include "../../c/transport/transport-types.h"
+#include "../util/dynamic-uint8-array-lite.hpp"
 
 namespace ndn {
 
@@ -31,15 +32,15 @@ class UnixTransportLite : private ndn_UnixTransport {
 public:
   /**
    * Create an UnixTransport with default values for no connection yet and to use
-   * the given buffer for the ElementReader. Note that the ElementReader is not
-   * valid until you call connect.
-   * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
-   * save data before calling the elementListener (see connect).
-   * The struct must remain valid during the entire life of this object.
-   * If the buffer->realloc function pointer is 0, its array must be large
-   * enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
+   * the given DynamicUInt8ArrayLite buffer for the ElementReader. Note that the
+   * ElementReader is not valid until you call connect.
+   * @param buffer A DynamicUInt8ArrayLite which is used to save data before
+   * calling the elementListener (see connect). The object must remain valid
+   * during the entire life of this object. If the reallocFunction given to
+   * buffer's constructor is 0, then its array must be large enough to save a
+   * full element, perhaps MAX_NDN_PACKET_SIZE bytes.
    */
-  UnixTransportLite(struct ndn_DynamicUInt8Array *buffer);
+  UnixTransportLite(DynamicUInt8ArrayLite& buffer);
 
   /**
    * Connect with a Unix Socket to the socket filePath.

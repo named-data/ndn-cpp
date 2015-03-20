@@ -24,9 +24,9 @@
 
 namespace ndn {
 
-UnixTransportLite::UnixTransportLite(struct ndn_DynamicUInt8Array *buffer)
+UnixTransportLite::UnixTransportLite(DynamicUInt8ArrayLite& buffer)
 {
-  ndn_UnixTransport_initialize(this, buffer);
+  ndn_UnixTransport_initialize(this, &buffer);
 }
 
 ndn_Error
