@@ -40,14 +40,10 @@ ArduinoYunTcpTransportLite::connect
 
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-  Serial.println("connecting...");
 
-  if (client_.connect(host, port) != 1) {
-    Serial.println("connection failed");
+  if (client_.connect(host, port) != 1)
     return NDN_ERROR_SocketTransport_cannot_connect_to_socket;
-  }
 
-  Serial.println("connected");
   return NDN_ERROR_success;
 }
 
