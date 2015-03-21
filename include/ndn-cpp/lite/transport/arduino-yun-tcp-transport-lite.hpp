@@ -53,7 +53,8 @@ public:
   ArduinoYunTcpTransportLite(DynamicUInt8ArrayLite& buffer);
 
   /**
-   * Connect with TCP to the host:port.
+   * Connect with TCP to the host:port. Note that your sketch must already have
+   * called Bridge.begin().
    * @param host The host to connect to.
    * @param port The port to connect to.
    * @param elementListener The ElementListenerLite whose onReceivedElement
