@@ -51,6 +51,7 @@ private:
   friend class TcpTransportLite;
   friend class UdpTransportLite;
   friend class UnixTransportLite;
+  friend class ArduinoYunTcpTransportLite;
 
   /**
    * This the static onReceivedElement to pass to ndn_ElementListener_initialize
