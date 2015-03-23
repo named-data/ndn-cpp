@@ -35,7 +35,8 @@ namespace ndn {
 
 /**
  * An ArduinoYunTransportLite uses the YunClient class of the Arduino Yun
- * bridge library to communicate over TCP.
+ * bridge library to communicate over TCP.  (As of March 2015, the Yun bridge
+ * library does not support UDP, so for now we provide this TCP support.)
  */
 class ArduinoYunTcpTransportLite {
 public:
