@@ -26,25 +26,26 @@
 
 namespace ndn {
 
-/**
- * ElementListenerLite is a base class for you to override to implement
- * onReceivedElement.
- * @param onReceivedElement When an entire packet element is received, call
- * onReceivedElement(self, element, elementLength) where self is the pointer to
- * this ElementListenerLite object, and element is a pointer to the array of
- * length elementLength with the bytes of the element.
+class ElementListenerLite;
+typedef void (*OnReceivedElementLite)
+  (ElementListenerLite *self, uint8_t *element, size_t elementLength);
+
+/** An ElementListenerLite holds an OnReceivedElementLite function pointer.
+ * You can use this class as is, or extend it to provide data that can be
+ * accessed through the self pointer in onReceivedElement.
  */
 class ElementListenerLite : private ndn_ElementListener {
 public:
-  ElementListenerLite();
-
   /**
-   * onReceivedElement is called when an entire packet element is received.
-   * @param element A pointer to the array with the bytes of the element.
-   * @param elementLength The number of bytes in element.
+   * Create an ElementListenerLite to use the onReceivedElement function pointer.
+   * @param onReceivedElement When an entire packet element is received, call
+   * onReceivedElement(ElementListenerLite *self, uint8_t *element, size_t elementLength)
+   * where self is the pointer to this object, and element is a pointer to the
+   * array of length elementLength with the bytes of the element. If you
+   * created a derived calss, you can upcast self to a pointer to your derived
+   * class in order to access its members.
    */
-  virtual void
-  onReceivedElement(uint8_t *element, size_t elementLength) = 0;
+  ElementListenerLite(OnReceivedElementLite onReceivedElement);
 
 private:
   // Declare friends who can downcast to the private base.
@@ -52,17 +53,6 @@ private:
   friend class UdpTransportLite;
   friend class UnixTransportLite;
   friend class ArduinoYunTcpTransportLite;
-
-  /**
-   * This the static onReceivedElement to pass to ndn_ElementListener_initialize
-   * which will call the virtual onReceivedElement method.
-   * @param self A pointer to this object.
-   * @param element A pointer to the array with the bytes of the element.
-   * @param elementLength The number of bytes in element.
-   */
-  static void
-  onReceivedElementWrapper
-    (ndn_ElementListener *self, uint8_t *element, size_t elementLength);
 };
 
 }
