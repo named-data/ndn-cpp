@@ -218,7 +218,7 @@ Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
 int
 Name::Component::compare(const Name::Component& other) const
 {
-  // Imitate ndn_Exclude_compareComponents.
+  // Imitate ndn_NameComponent_compare.
   if (value_.size() < other.value_.size())
     return -1;
   if (value_.size() > other.value_.size())

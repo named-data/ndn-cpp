@@ -68,6 +68,17 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
   (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result);
 
 /**
+ * Compare this component to the other component using NDN component ordering.
+ * A component is less if it is shorter, otherwise if equal length do a byte
+ * comparison.
+ * @param self A pointer this name component.
+ * @param other A pointer to the other name component to compare with.
+ * @return -1 if self is less than other, 1 if greater or 0 if equal.
+ */
+int ndn_NameComponent_compare
+  (struct ndn_NameComponent *self, struct ndn_NameComponent *other);
+
+/**
  * Initialize an ndn_Name struct with the components array.
  * @param self pointer to the ndn_Name struct
  * @param components the pre-allocated array of ndn_NameComponent

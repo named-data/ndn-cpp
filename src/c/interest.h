@@ -79,15 +79,6 @@ ndnExclude_appendComponent
   (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength);
 
 /**
- * Compare the components using NDN component ordering.
- * A component is less if it is shorter, otherwise if equal length do a byte comparison.
- * @param component1 A pointer to the first name component.
- * @param component2 A pointer to the second name component.
- * @return -1 if component1 is less than component2, 1 if greater or 0 if equal.
- */
-int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2);
-
-/**
  * Initialize an ndn_Interest struct with the pre-allocated nameComponents and excludeEntries,
  * and defaults for all the values.
  * @param self pointer to the ndn_Interest struct

@@ -71,6 +71,18 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
   return NDN_ERROR_success;
 }
 
+int ndn_NameComponent_compare
+  (struct ndn_NameComponent *self, struct ndn_NameComponent *other)
+{
+  if (self->value.length < other->value.length)
+    return -1;
+  if (self->value.length > other->value.length)
+    return 1;
+
+  // The components are equal length.  Just do a byte compare.
+  return ndn_memcmp(self->value.value, other->value.value, self->value.length);
+}
+
 int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
 {
   int i;
