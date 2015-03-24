@@ -113,7 +113,7 @@ static __inline void ndn_Interest_initialize
  * @param self A pointer to the ndn_Interest struct.
  * @return 1 if must be fresh, otherwise 0.
  */
-static __inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
+static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
 {
   if (self->answerOriginKind < 0)
     return 1;
