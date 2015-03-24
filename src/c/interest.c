@@ -25,7 +25,7 @@ ndn_Error
 ndn_Exclude_appendAny(struct ndn_Exclude *self)
 {
   if (self->nEntries >= self->maxEntries)
-    return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
   ndn_ExcludeEntry_initialize
     (self->entries + self->nEntries, ndn_Exclude_ANY, 0, 0);
   ++self->nEntries;
@@ -38,7 +38,7 @@ ndnExclude_appendComponent
   (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength)
 {
   if (self->nEntries >= self->maxEntries)
-    return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
   ndn_ExcludeEntry_initialize
     (self->entries + self->nEntries, ndn_Exclude_COMPONENT, component,
      componentLength);
