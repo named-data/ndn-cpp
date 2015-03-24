@@ -57,6 +57,15 @@ static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn
 }
 
 /**
+ * Clear all the entries.
+ */
+static __inline void
+ndn_Exclude_clear(struct ndn_Exclude *self)
+{
+  self->nEntries = 0;
+}
+
+/**
  * Append a new entry of type ndn_Exclude_ANY.
  * @param self A pointer to the ndn_Exclude struct.
  * @return 0 for success, or an error code if there is no more room in the
