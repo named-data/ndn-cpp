@@ -31,7 +31,7 @@
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeControlParametersValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_ControlParameters *controlParameters =
     (struct ndn_ControlParameters *)context;
@@ -88,7 +88,7 @@ encodeControlParametersValue(void *context, struct ndn_TlvEncoder *encoder)
 
 ndn_Error
 ndn_encodeTlvControlParameters
-  (struct ndn_ControlParameters *controlParameters,
+  (const struct ndn_ControlParameters *controlParameters,
    struct ndn_TlvEncoder *encoder)
 {
   return ndn_TlvEncoder_writeNestedTlv

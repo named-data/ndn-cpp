@@ -30,7 +30,7 @@
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeMetaInfoValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_MetaInfo *metaInfo = (struct ndn_MetaInfo *)context;
 
@@ -70,7 +70,7 @@ encodeMetaInfoValue(void *context, struct ndn_TlvEncoder *encoder)
  * signedPortionBeginOffset and signedPortionEndOffset.
  */
 struct DataValueContext {
-  struct ndn_Data *data;
+  const struct ndn_Data *data;
   size_t *signedPortionBeginOffset;
   size_t *signedPortionEndOffset;
 };
@@ -82,10 +82,10 @@ struct DataValueContext {
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeDataValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
-  struct DataValueContext *dataValueContext = (struct DataValueContext *)context;
-  struct ndn_Data *data = dataValueContext->data;
+  const struct DataValueContext *dataValueContext = (const struct DataValueContext *)context;
+  const struct ndn_Data *data = dataValueContext->data;
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset;
 
@@ -111,7 +111,8 @@ encodeDataValue(void *context, struct ndn_TlvEncoder *encoder)
 
 ndn_Error
 ndn_encodeTlvData
-  (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
+  (const struct ndn_Data *data, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   // Create the context to pass to encodeDataValue.
   struct DataValueContext dataValueContext;

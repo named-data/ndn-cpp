@@ -31,7 +31,7 @@
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Exclude *exclude = (struct ndn_Exclude *)context;
 
@@ -64,7 +64,8 @@ encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeKeyLocatorPublisherPublicKeyDigestValue
+  (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
 
@@ -83,7 +84,7 @@ encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncod
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
   ndn_Error error;
@@ -143,7 +144,7 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
  *   that we can include signedPortionBeginOffset and signedPortionEndOffset.
  */
 struct InterestValueContext {
-  struct ndn_Interest *interest;
+  const struct ndn_Interest *interest;
   size_t *signedPortionBeginOffset;
   size_t *signedPortionEndOffset;
 };
@@ -155,11 +156,11 @@ struct InterestValueContext {
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
-  struct InterestValueContext *interestValueContext =
-    (struct InterestValueContext *)context;
-  struct ndn_Interest *interest = interestValueContext->interest;
+  const struct InterestValueContext *interestValueContext =
+    (const struct InterestValueContext *)context;
+  const struct ndn_Interest *interest = interestValueContext->interest;
   ndn_Error error;
   uint8_t nonceBuffer[4];
   struct ndn_Blob nonceBlob;
@@ -203,7 +204,7 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 
 ndn_Error
 ndn_encodeTlvInterest
-  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   // Create the context to pass to encodeInterestValue.

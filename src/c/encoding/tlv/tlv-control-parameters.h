@@ -39,7 +39,7 @@ extern "C" {
  */
 ndn_Error
 ndn_encodeTlvControlParameters
-  (struct ndn_ControlParameters *controlParameters,
+  (const struct ndn_ControlParameters *controlParameters,
    struct ndn_TlvEncoder *encoder);
 
 // TODO: ndn_decodeControlParameters

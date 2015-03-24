@@ -22,7 +22,7 @@
 
 ndn_Error
 ndn_encodeTlvName
-  (struct ndn_Name *name, size_t *signedPortionBeginOffset,
+  (const struct ndn_Name *name, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   size_t nameValueLength = 0;

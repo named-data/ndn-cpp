@@ -105,8 +105,8 @@ public:
   void
   writeNestedTlv
   (unsigned int type,
-   ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder* encoder),
-   void *context, bool omitZeroLength = false)
+   ndn_Error (*writeValue)(const void *context, struct ndn_TlvEncoder* encoder),
+   const void *context, bool omitZeroLength = false)
   {
     ndn_Error error;
     if ((error = ndn_TlvEncoder_writeNestedTlv
@@ -124,8 +124,8 @@ public:
    */
   void
   writeNestedTlv
-  (unsigned int type, void (*writeValue)(void *context, TlvEncoder& encoder),
-   void *context, bool omitZeroLength = false)
+  (unsigned int type, void (*writeValue)(const void *context, TlvEncoder& encoder),
+   const void *context, bool omitZeroLength = false)
   {
     WriteValueWrapper(writeValue, context).writeNestedTlv
       (*this, type, omitZeroLength);
@@ -145,8 +145,8 @@ private:
      * @param context The context to pass to writeValue.
      */
     WriteValueWrapper
-      (void (*writeValue)(void *context, TlvEncoder& encoder), void *context)
-    : writeValue_(writeValue), context_(context) {}
+      (void (*writeValue)(const void *context, TlvEncoder& encoder), const void *context)
+      : writeValue_(writeValue), context_(context) {}
 
     /**
      * Call encoder.writeNestedTlv so that it calls writeValue(context, encoder)
@@ -172,17 +172,17 @@ private:
      * needed.
      */
     static ndn_Error
-    writeValueWrapper(void *context, struct ndn_TlvEncoder *encoder)
+    writeValueWrapper(const void *context, struct ndn_TlvEncoder *encoder)
     {
-      WriteValueWrapper& wrapper = *(WriteValueWrapper*)context;
+      const WriteValueWrapper& wrapper = *(const WriteValueWrapper*)context;
       wrapper.writeValue_(wrapper.context_, (TlvEncoder&)*encoder);
 
       // wrapper.writeValue_ has thrown an exception if needed.
       return NDN_ERROR_success;
     }
 
-    void (*writeValue_)(void *context, TlvEncoder& encoder);
-    void *context_;
+    void (*writeValue_)(const void *context, TlvEncoder& encoder);
+    const void *context_;
   };
 
   DynamicUInt8Vector output_;

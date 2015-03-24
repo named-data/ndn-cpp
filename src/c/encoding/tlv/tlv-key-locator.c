@@ -22,7 +22,7 @@
 #include "tlv-key-locator.h"
 
 ndn_Error
-ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder)
+ndn_encodeTlvKeyLocatorValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_KeyLocator *keyLocator = (struct ndn_KeyLocator *)context;
   ndn_Error error;

@@ -41,7 +41,8 @@ extern "C" {
  */
 ndn_Error
 ndn_encodeTlvData
-  (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
+  (const struct ndn_Data *data, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 /**
  * Decode the data packet as NDN-TLV and set the fields in the data object.

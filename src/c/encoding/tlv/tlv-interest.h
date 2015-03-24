@@ -31,7 +31,7 @@ extern "C" {
 
 ndn_Error
 ndn_encodeTlvInterest
-  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 ndn_Error

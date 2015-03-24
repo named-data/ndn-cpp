@@ -29,7 +29,8 @@
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeKeyLocatorPublisherPublicKeyDigestValue
+  (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signatureInfo = (struct ndn_Signature *)context;
 
@@ -49,7 +50,8 @@ encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncod
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeSignatureSha256WithRsaValue
+  (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
   ndn_Error error;
@@ -95,7 +97,8 @@ encodeSignatureSha256WithRsaValue(void *context, struct ndn_TlvEncoder *encoder)
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeSignatureSha256WithEcdsaValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeSignatureSha256WithEcdsaValue
+  (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
   ndn_Error error;
@@ -121,7 +124,7 @@ encodeSignatureSha256WithEcdsaValue(void *context, struct ndn_TlvEncoder *encode
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeDigestSha256Value(void *context, struct ndn_TlvEncoder *encoder)
+encodeDigestSha256Value(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
   ndn_Error error;
@@ -135,7 +138,7 @@ encodeDigestSha256Value(void *context, struct ndn_TlvEncoder *encoder)
 
 ndn_Error
 ndn_encodeTlvSignatureInfo
-  (struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
+  (const struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
 {
   if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature)
     return ndn_TlvEncoder_writeNestedTlv
