@@ -83,22 +83,26 @@ public:
    * Set the data packet's name.
    * @param name The data packet's name. This only copies the pointer to the name
    * components array, but does not copy the component values.
+   * @return This DataLite so that you can chain calls to update values.
    */
-  void
+  DataLite&
   setName(const NameLite& name)
   {
     NameLite::upCast(this->name) = name;
+    return *this;
   }
 
   /**
    * Set the data packet's content.
    * @param content The data packet's content. This does not copy the bytes of
    * the content.
+   * @return This DataLite so that you can chain calls to update values.
    */
-  void
+  DataLite&
   setContent(const BlobLite& content)
   {
     BlobLite::upCast(this->content) = content;
+    return *this;
   }
 
   /**
