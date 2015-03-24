@@ -48,9 +48,6 @@ public:
   ndn_KeyLocatorType
   getType() const { return type; }
 
-  BlobLite&
-  getKeyData() { return BlobLite::upCast(keyData); }
-
   const BlobLite&
   getKeyData() const { return BlobLite::upCast(keyData); }
 
