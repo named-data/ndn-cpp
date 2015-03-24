@@ -45,7 +45,7 @@ static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self
  * @param self A pointer to the ndn_NameComponent struct.
  * @return The integer number.
  */
-uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self);
+uint64_t ndn_NameComponent_toNumber(const struct ndn_NameComponent *self);
 
 /**
  * Interpret the name component as a network-ordered number with a marker and return an integer.
@@ -54,7 +54,8 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self);
  * @param result Return the integer number.
  * @return 0 for success, or an error code if the first byte of the component does not equal the marker.
  */
-ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, uint8_t marker, uint64_t *result);
+ndn_Error ndn_NameComponent_toNumberWithMarker
+  (const struct ndn_NameComponent *self, uint8_t marker, uint64_t *result);
 
 /**
  * Interpret the name component as a network-ordered number with a prefix and return an integer.
@@ -65,7 +66,8 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
  * @return 0 for success, or an error code if the first bytes of the component do not equal the prefix.
  */
 ndn_Error ndn_NameComponent_toNumberWithPrefix
-  (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result);
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength, uint64_t *result);
 
 /**
  * Compare this component to the other component using NDN component ordering.
@@ -76,7 +78,7 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
  * @return -1 if self is less than other, 1 if greater or 0 if equal.
  */
 int ndn_NameComponent_compare
-  (struct ndn_NameComponent *self, struct ndn_NameComponent *other);
+  (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other);
 
 /**
  * Initialize an ndn_Name struct with the components array.
@@ -97,7 +99,7 @@ static __inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameC
  * @param name A pointer to the other name to match.
  * @return 1 if this matches the given name, 0 otherwise.  This always returns 1 if this name is empty.
  */
-int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name);
+int ndn_Name_match(const struct ndn_Name *self, const struct ndn_Name *name);
 
 /**
  * Append a component to this name with the bytes in the given array.

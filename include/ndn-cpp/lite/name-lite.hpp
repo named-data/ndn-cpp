@@ -82,7 +82,7 @@ public:
      */
     ndn_Error
     toNumberWithPrefix
-      (const uint8_t* prefix, size_t prefixLength, uint64_t& result);
+      (const uint8_t* prefix, size_t prefixLength, uint64_t& result) const;
 
     /**
      * Compare this component to the other component using NDN component ordering.
@@ -91,7 +91,7 @@ public:
      * @param other The other name component to compare with.
      * @return -1 if self is less than other, 1 if greater or 0 if equal.
      */
-    int compare(Component& other);
+    int compare(const Component& other) const;
 
     /**
      * Upcast the reference to the ndn_NameComponent struct to a NameLite::Component.

@@ -37,25 +37,25 @@ NameLite::Component::Component(const uint8_t* value, size_t valueLength)
 uint64_t
 NameLite::Component::toNumber() const
 {
-  return ndn_NameComponent_toNumber(const_cast<Component*>(this));
+  return ndn_NameComponent_toNumber(this);
 }
 
 ndn_Error
 NameLite::Component::toNumberWithMarker(uint8_t marker, uint64_t& result) const
 {
-  return ndn_NameComponent_toNumberWithMarker(const_cast<Component*>(this), marker, &result);
+  return ndn_NameComponent_toNumberWithMarker(this, marker, &result);
 }
 
 ndn_Error
 NameLite::Component::toNumberWithPrefix
-  (const uint8_t* prefix, size_t prefixLength, uint64_t& result)
+  (const uint8_t* prefix, size_t prefixLength, uint64_t& result) const
 {
   return ndn_NameComponent_toNumberWithPrefix
     (this, prefix, prefixLength, &result);
 }
 
 int
-NameLite::Component::compare(NameLite::Component& other)
+NameLite::Component::compare(const NameLite::Component& other) const
 {
   return ndn_NameComponent_compare(this, &other);
 }
@@ -68,7 +68,7 @@ NameLite::NameLite(ndn_NameComponent* components, size_t maxComponents)
 bool
 NameLite::match(const NameLite& name) const
 {
-  return ndn_Name_match(const_cast<NameLite*>(this), const_cast<NameLite*>(&name)) != 0;
+  return ndn_Name_match(this, &name) != 0;
 }
 
 ndn_Error

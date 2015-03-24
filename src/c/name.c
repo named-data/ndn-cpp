@@ -22,7 +22,7 @@
 #include "util/ndn_memory.h"
 #include "name.h"
 
-uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
+uint64_t ndn_NameComponent_toNumber(const struct ndn_NameComponent *self)
 {
   uint64_t result = 0;
   size_t i;
@@ -34,7 +34,8 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
   return result;
 }
 
-ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, uint8_t marker, uint64_t *result)
+ndn_Error ndn_NameComponent_toNumberWithMarker
+  (const struct ndn_NameComponent *self, uint8_t marker, uint64_t *result)
 {
   uint64_t localResult;
   size_t i;
@@ -53,7 +54,8 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
 }
 
 ndn_Error ndn_NameComponent_toNumberWithPrefix
-  (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result)
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength, uint64_t *result)
 {
   uint64_t localResult;
   size_t i;
@@ -72,7 +74,7 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
 }
 
 int ndn_NameComponent_compare
-  (struct ndn_NameComponent *self, struct ndn_NameComponent *other)
+  (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
 {
   if (self->value.length < other->value.length)
     return -1;
@@ -83,7 +85,7 @@ int ndn_NameComponent_compare
   return ndn_memcmp(self->value.value, other->value.value, self->value.length);
 }
 
-int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
+int ndn_Name_match(const struct ndn_Name *self, const struct ndn_Name *name)
 {
   int i;
 
