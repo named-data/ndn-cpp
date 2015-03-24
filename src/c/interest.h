@@ -130,6 +130,32 @@ static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
     return (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0 ? 1 : 0;
 }
 
+/**
+ * Set the MustBeFresh flag.
+ * @param self A pointer to the ndn_Interest struct.
+ * @param mustBeFresh 1 if the content must be fresh, otherwise 0. If
+ * you do not set this flag, the default value is 1.
+ * @return This Interest so that you can chain calls to update values.
+ */
+static __inline void
+ndn_Interest_setMustBeFresh(struct ndn_Interest *self, int mustBeFresh)
+{
+  if (self->answerOriginKind < 0) {
+    // It is is already the default where MustBeFresh is true.
+    if (!mustBeFresh)
+      // Set answerOriginKind so that getMustBeFresh returns false.
+      self->answerOriginKind = ndn_Interest_ANSWER_STALE;
+  }
+  else {
+    if (mustBeFresh)
+      // Clear the stale bit.
+      self->answerOriginKind &= ~ndn_Interest_ANSWER_STALE;
+    else
+      // Set the stale bit.
+      self->answerOriginKind |= ndn_Interest_ANSWER_STALE;
+  }
+}
+
 #ifdef __cplusplus
 }
 #endif
