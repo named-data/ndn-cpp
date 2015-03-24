@@ -23,6 +23,7 @@
 
 #include <ndn-cpp/c/errors.h>
 
+struct ndn_Interest;
 struct ndn_Data;
 struct ndn_DynamicUInt8Array;
 
@@ -31,8 +32,53 @@ extern "C" {
 #endif
 
 /**
+ * Encode interest as NDN-TLV and return the encoding.
+ * @param interest A pointer to the interest object to encode.
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
+ * beginning of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param signedPortionEndOffset Return the offset in the encoding of the end
+ * of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  The struct must remain valid during the entire life of this
+ * ndn_TlvEncoder. If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeInterest
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength);
+
+/**
+ * Decode input as an interest in NDN-TLV and set the fields of the interest
+ * object.
+ * @param interest A pointer to the Interest object whose fields are updated.
+ * @param input A pointer to the input buffer to decode.
+ * @param inputLength The number of bytes in input.
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
+ * beginning of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param signedPortionEndOffset Return the offset in the encoding of the end
+ * of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeInterest
+  (struct ndn_Interest *interest, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
+
+/**
  * Encode the data packet as NDN-TLV.
- * @param data Pointer to the data object to encode.
+ * @param data A pointer to the data object to encode.
  * @param signedPortionBeginOffset Return the offset in the encoding of the 
  * beginning of the signed portion. If you are not encoding in order to sign,
  * you can ignore this returned value.
@@ -48,13 +94,13 @@ extern "C" {
  */
 ndn_Error
 ndn_Tlv0_1_1WireFormat_encodeData
-  (struct ndn_Data *data, size_t *signedPortionBeginOffset,
+  (const struct ndn_Data *data, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
    size_t *encodingLength);
 
 /**
  * Decode input as a data packet in NDN-TLV and set the fields in the data object.
- * @param data Pointer to the data object whose fields are updated.
+ * @param data A pointer to the data object whose fields are updated.
  * @param input A pointer to the input buffer to decode.
  * @param inputLength The number of bytes in input.
  * @param signedPortionBeginOffset Return the offset in the input buffer of the

@@ -18,12 +18,39 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "tlv/tlv-interest.h"
 #include "tlv/tlv-data.h"
 #include "tlv-0_1_1-wire-format.h"
 
 ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeInterest
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength)
+{
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  ndn_Error error = ndn_encodeTlvInterest
+    (interest, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeInterest
+  (struct ndn_Interest *interest, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  return ndn_decodeTlvInterest
+    (interest, signedPortionBeginOffset, signedPortionEndOffset, &decoder);
+}
+
+ndn_Error
 ndn_Tlv0_1_1WireFormat_encodeData
-  (struct ndn_Data *data, size_t *signedPortionBeginOffset,
+  (const struct ndn_Data *data, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
    size_t *encodingLength)
 {
