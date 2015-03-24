@@ -85,6 +85,15 @@ public:
       (const uint8_t* prefix, size_t prefixLength, uint64_t& result);
 
     /**
+     * Compare this component to the other component using NDN component ordering.
+     * A component is less if it is shorter, otherwise if equal length do a byte
+     * comparison.
+     * @param other The other name component to compare with.
+     * @return -1 if self is less than other, 1 if greater or 0 if equal.
+     */
+    int compare(Component& other);
+
+    /**
      * Upcast the reference to the ndn_NameComponent struct to a NameLite::Component.
      * @param component A reference to the ndn_NameComponent struct.
      * @return The same reference as NameLite::Component.

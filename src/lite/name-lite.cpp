@@ -54,6 +54,12 @@ NameLite::Component::toNumberWithPrefix
     (this, prefix, prefixLength, &result);
 }
 
+int
+NameLite::Component::compare(NameLite::Component& other)
+{
+  return ndn_NameComponent_compare(this, &other);
+}
+
 NameLite::NameLite(ndn_NameComponent* components, size_t maxComponents)
 {
   ndn_Name_initialize(this, components, maxComponents);
