@@ -73,7 +73,7 @@ static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self)
+static __inline int ndn_MetaInfo_getFreshnessSeconds(const struct ndn_MetaInfo *self)
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }
