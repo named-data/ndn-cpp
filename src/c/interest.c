@@ -21,6 +21,32 @@
 #include "util/ndn_memory.h"
 #include "interest.h"
 
+ndn_Error
+ndn_Exclude_appendAny(struct ndn_Exclude *self)
+{
+  if (self->nEntries >= self->maxEntries)
+    return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+  ndn_ExcludeEntry_initialize
+    (self->entries + self->nEntries, ndn_Exclude_ANY, 0, 0);
+  ++self->nEntries;
+
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndnExclude_appendComponent
+  (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength)
+{
+  if (self->nEntries >= self->maxEntries)
+    return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+  ndn_ExcludeEntry_initialize
+    (self->entries + self->nEntries, ndn_Exclude_COMPONENT, component,
+     componentLength);
+  ++self->nEntries;
+
+  return NDN_ERROR_success;
+}
+
 int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2)
 {
   if (component1->value.length < component2->value.length)

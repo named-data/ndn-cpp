@@ -57,6 +57,28 @@ static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn
 }
 
 /**
+ * Append a new entry of type ndn_Exclude_ANY.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @return 0 for success, or an error code if there is no more room in the
+ * entries array (nEntries is already maxEntries).
+ */
+ndn_Error
+ndn_Exclude_appendAny(struct ndn_Exclude *self);
+
+/**
+ * Append a new entry of type ndn_Exclude_COMPONENT with the given component
+ * value.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @param component The bytes of the component.  This does not copy the bytes.
+ * @param componentLength The number of bytes in component.
+ * @return 0 for success, or an error code if there is no more room in the
+ * entries array (nEntries is already maxEntries).
+ */
+ndn_Error
+ndnExclude_appendComponent
+  (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength);
+
+/**
  * Compare the components using NDN component ordering.
  * A component is less if it is shorter, otherwise if equal length do a byte comparison.
  * @param component1 A pointer to the first name component.
