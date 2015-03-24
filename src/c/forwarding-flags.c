@@ -34,7 +34,7 @@ void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
   self->captureOk = 0;
 }
 
-int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self)
+int ndn_ForwardingFlags_getForwardingEntryFlags(const struct ndn_ForwardingFlags *self)
 {
   int result = 0;
 
@@ -71,7 +71,7 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
 }
 
 int
-ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self)
+ndn_ForwardingFlags_getNfdForwardingFlags(const struct ndn_ForwardingFlags *self)
 {
   int result = 0;
 

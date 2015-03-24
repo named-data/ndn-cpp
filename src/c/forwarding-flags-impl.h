@@ -44,7 +44,7 @@ void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self);
  * @param self A pointer to the ndn_ForwardingFlags struct.
  * @return An integer with the bits set.
  */
-int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self);
+int ndn_ForwardingFlags_getForwardingEntryFlags(const struct ndn_ForwardingFlags *self);
 
 /**
  * Set the flags according to the bits in forwardingEntryFlags as used by the ForwardingEntry message.
@@ -59,7 +59,7 @@ void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *sel
  * @param self A pointer to the ndn_ForwardingFlags struct.
  * @return An integer with the bits set.
  */
-int ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self);
+int ndn_ForwardingFlags_getNfdForwardingFlags(const struct ndn_ForwardingFlags *self);
 
 /**
  * Set the flags according to the NFD forwarding flags as used in the
