@@ -31,14 +31,6 @@ extern "C" {
 #endif
 
 /**
- * An ndn_ExcludeEntry holds an ndn_ExcludeType, and if it is a COMPONENT, it holds a pointer to the component value.
- */
-struct ndn_ExcludeEntry {
-  ndn_ExcludeType type;
-  struct ndn_NameComponent component;
-};
-
-/**
  *
  * @param self pointer to the ndn_NameComponent struct
  * @param type one of the ndn_ExcludeType enum
@@ -51,14 +43,6 @@ static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, 
   ndn_NameComponent_initialize(&self->component, component, componentLength);
 }
 
-/**
- * An ndn_Exclude holds an array of ndn_ExcludeEntry.
- */
-struct ndn_Exclude {
-  struct ndn_ExcludeEntry *entries;  /**< pointer to the array of entries. */
-  size_t maxEntries;                 /**< the number of elements in the allocated entries array */
-  size_t nEntries;                   /**< the number of entries in the exclude, 0 for no exclude */
-};
 /**
  * Initialize an ndn_Exclude struct with the entries array.
  * @param self A pointer to the ndn_Exclude struct.
@@ -80,25 +64,6 @@ static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn
  * @return -1 if component1 is less than component2, 1 if greater or 0 if equal.
  */
 int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2);
-
-/**
- * An ndn_Interest holds an ndn_Name and other fields for an interest.
- */
-struct ndn_Interest {
-  struct ndn_Name name;
-  int minSuffixComponents;  /**< -1 for none */
-  int maxSuffixComponents;  /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
-  struct ndn_KeyLocator keyLocator;
-  struct ndn_Exclude exclude;
-  int childSelector;        /**< -1 for none */
-  int answerOriginKind;     /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
-  int scope;                /**< -1 for none */
-  ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
-  struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
-};
 
 /**
  * Initialize an ndn_Interest struct with the pre-allocated nameComponents and excludeEntries,
