@@ -403,7 +403,6 @@ benchmarkEncodeDataSecondsC
     data.setName(name);
     data.setContent(content);
     if (useComplex) {
-      data.getMetaInfo().setTimestampMilliseconds(1.3e+12);
       data.getMetaInfo().setFreshnessPeriod(1000);
       data.getMetaInfo().setFinalBlockId(finalBlockId);
     }
