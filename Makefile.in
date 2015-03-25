@@ -974,6 +974,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
   include/ndn-cpp/lite/interest-lite.hpp \
