@@ -64,7 +64,7 @@ encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeKeyLocatorPublisherPublicKeyDigestValue
+encodeKeyLocatorSelectorPublisherPublicKeyDigestValue
   (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
@@ -110,7 +110,7 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
     if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
       if ((error = ndn_TlvEncoder_writeNestedTlv
            (encoder, ndn_Tlv_PublisherPublicKeyLocator,
-            encodeKeyLocatorPublisherPublicKeyDigestValue, interest, 0)))
+            encodeKeyLocatorSelectorPublisherPublicKeyDigestValue, interest, 0)))
         return error;
     }
   }
