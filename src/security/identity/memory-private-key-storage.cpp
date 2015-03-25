@@ -23,6 +23,7 @@
 #include <stdexcept>
 #endif
 #include "../../c/util/crypto.h"
+#include <openssl/ssl.h>
 #include <openssl/ec.h>
 #include <ndn-cpp/encoding/oid.hpp>
 #include <ndn-cpp/security/security-exception.hpp>

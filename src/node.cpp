@@ -20,6 +20,8 @@
  */
 
 #include <stdexcept>
+// TODO: Remove this include when we remove selfregSignand NdndIdFetcher.
+#include <openssl/ssl.h>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <time.h>
 #include <sys/time.h>
+#include <openssl/ssl.h>
 #include <stdexcept>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>

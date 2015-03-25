@@ -21,7 +21,6 @@
 #ifndef NDN_CRYPTO_H
 #define NDN_CRYPTO_H
 
-#include <openssl/ssl.h>
 #include <ndn-cpp/c/common.h>
 
 #ifdef __cplusplus
@@ -32,7 +31,8 @@ extern "C" {
  * Compute the sha-256 digest of data.
  * @param data Pointer to the input byte array.
  * @param dataLength The length of data.
- * @param digest A pointer to a buffer of size SHA256_DIGEST_LENGTH to receive the data.
+ * @param digest A pointer to a buffer of size ndn_SHA256_DIGEST_SIZE to receive
+ * the data.
  */
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
 

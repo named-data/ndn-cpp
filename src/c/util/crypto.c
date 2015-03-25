@@ -18,6 +18,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <openssl/ssl.h>
 #include <openssl/rand.h>
 #include "crypto.h"
 
