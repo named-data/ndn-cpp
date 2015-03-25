@@ -100,7 +100,7 @@ DigestTree::recomputeRoot()
   SHA256_Init(&sha256);
   for (size_t i = 0; i < digestNode_.size(); ++i)
     SHA256_UpdateHex(&sha256, digestNode_[i]->getDigest());
-  uint8_t digestRoot[SHA256_DIGEST_LENGTH];
+  uint8_t digestRoot[ndn_SHA256_DIGEST_SIZE];
   SHA256_Final(&digestRoot[0], &sha256);
   root_ = toHex(digestRoot, sizeof(digestRoot));
   _LOG_DEBUG("update root to: " + root_);
@@ -129,18 +129,18 @@ DigestTree::Node::recomputeDigest()
   SHA256_Update(&sha256, number, sizeof(number));
   int32ToLittleEndian(sequenceNo_, number);
   SHA256_Update(&sha256, number, sizeof(number));
-  uint8_t sequenceDigest[SHA256_DIGEST_LENGTH];
+  uint8_t sequenceDigest[ndn_SHA256_DIGEST_SIZE];
   SHA256_Final(sequenceDigest, &sha256);
 
   SHA256_Init(&sha256);
   SHA256_Update(&sha256, &dataPrefix_[0], dataPrefix_.size());
-  uint8_t nameDigest[SHA256_DIGEST_LENGTH];
+  uint8_t nameDigest[ndn_SHA256_DIGEST_SIZE];
   SHA256_Final(nameDigest, &sha256);
 
   SHA256_Init(&sha256);
   SHA256_Update(&sha256, nameDigest, sizeof(nameDigest));
   SHA256_Update(&sha256, sequenceDigest, sizeof(sequenceDigest));
-  uint8_t nodeDigest[SHA256_DIGEST_LENGTH];
+  uint8_t nodeDigest[ndn_SHA256_DIGEST_SIZE];
   SHA256_Final(nodeDigest, &sha256);
   digest_ = toHex(nodeDigest, sizeof(nodeDigest));
 }
