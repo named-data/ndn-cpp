@@ -18,9 +18,23 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "crypto.h"
+
+#ifdef ARDUINO
+
+void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+{
+  // Assume the application has already initialized it, e.g.:
+  // randomSeed(analogRead(0));
+  size_t i;
+  for (i = 0; i < bufferLength; ++i)
+    buffer[i] = random(0, 256);
+}
+
+#else
+
 #include <openssl/ssl.h>
 #include <openssl/rand.h>
-#include "crypto.h"
 
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
 {
@@ -34,3 +48,5 @@ void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
   RAND_bytes(buffer, (int)bufferLength);
 }
+
+#endif
