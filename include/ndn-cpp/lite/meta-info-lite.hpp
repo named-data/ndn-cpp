@@ -22,6 +22,7 @@
 #ifndef NDN_META_INFO_LITE_HPP
 #define NDN_META_INFO_LITE_HPP
 
+#include "common-lite.hpp"
 #include "name-lite.hpp"
 #include "../c/data-types.h"
 
@@ -38,29 +39,20 @@ public:
    */
   MetaInfoLite();
 
-  ndn_MillisecondsSince1970
-  getTimestampMilliseconds() const { return timestampMilliseconds; }
-
   ndn_ContentType
   getType() const { return type; }
 
-  ndn_Milliseconds
+  Milliseconds
   getFreshnessPeriod() const { return freshnessPeriod; }
 
   const NameLite::Component
   getFinalBlockId() const { return NameLite::Component::upCast(finalBlockId); }
 
   void
-  setTimestampMilliseconds(ndn_MillisecondsSince1970 timestampMilliseconds)
-  {
-    this->timestampMilliseconds = timestampMilliseconds;
-  }
-
-  void
   setType(ndn_ContentType type) { this->type = type; }
 
   void
-  setFreshnessPeriod(ndn_Milliseconds freshnessPeriod)
+  setFreshnessPeriod(Milliseconds freshnessPeriod)
   {
     this->freshnessPeriod = freshnessPeriod;
   }
