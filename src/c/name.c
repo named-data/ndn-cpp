@@ -130,7 +130,7 @@ ndn_Name_setFromName(struct ndn_Name *self, const struct ndn_Name *other)
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  if (other->nComponents >= self->maxComponents)
+  if (other->nComponents > self->maxComponents)
     return NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name;
 
   self->nComponents = other->nComponents;
