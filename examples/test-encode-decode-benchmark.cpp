@@ -338,9 +338,10 @@ static double
 benchmarkEncodeDataSecondsC
   (int nIterations, bool useComplex, bool useCrypto, uint8_t* encoding, size_t maxEncodingLength, size_t *encodingLength)
 {
+  ndn_Error error;
   NameLite::Component finalBlockId((uint8_t*)"\x00", 1);
 
-  ndn_NameComponent nameComponents[20];
+  ndn_NameComponent nameComponents[7];
   NameLite name(nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
   const size_t complexContentSize = 1115;
   char contentString[complexContentSize + 10];
@@ -353,7 +354,10 @@ benchmarkEncodeDataSecondsC
     name.append("lwndn-test");
     name.append("numbers.txt");
     name.append("\xFD\x05\x05\xE8\x0C\xCE\x1D");
-    name.append(finalBlockId);
+    if ((error = name.append(finalBlockId))) {
+      cout << "Error in name.append: " << ndn_getErrorString(error) << endl;
+      return 0;
+    }
 
     int count = 1;
     sprintf(contentString, "%d", count++);
@@ -367,14 +371,17 @@ benchmarkEncodeDataSecondsC
     content = BlobLite((uint8_t*)"abc", 3);
   }
 
-  ndn_NameComponent certificateNameComponents[20];
+  ndn_NameComponent certificateNameComponents[5];
   NameLite certificateName
     (certificateNameComponents, sizeof(certificateNameComponents) / sizeof(certificateNameComponents[0]));
   certificateName.append("testname");
   certificateName.append("KEY");
   certificateName.append("DSK-123");
   certificateName.append("ID-CERT");
-  certificateName.append("0");
+  if ((error = certificateName.append("0"))) {
+    cout << "Error in certificateName.append: " << ndn_getErrorString(error) << endl;
+    return 0;
+  }
 
   // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
   uint8_t* publicKeyDer = DEFAULT_RSA_PUBLIC_KEY_DER;
@@ -397,10 +404,16 @@ benchmarkEncodeDataSecondsC
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
-    // We will set the name and keyName below.
-    DataLite data;
+    // Since we aren't going to change the names, we can re-use the arrays.
+    DataLite data
+      (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+       certificateNameComponents,
+       sizeof(certificateNameComponents) / sizeof(certificateNameComponents[0]));
 
-    data.setName(name);
+    if ((error = data.setName(name))) {
+      cout << "Error in data.setName: " << ndn_getErrorString(error) << endl;
+      return 0;
+    }
     data.setContent(content);
     if (useComplex) {
       data.getMetaInfo().setFreshnessPeriod(1000);
@@ -410,10 +423,12 @@ benchmarkEncodeDataSecondsC
     struct ndn_DynamicUInt8Array output;
     struct ndn_BinaryXmlEncoder binaryXmlEncoder;
     size_t signedPortionBeginOffset, signedPortionEndOffset;
-    ndn_Error error;
 
     data.getSignature().getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-    data.getSignature().getKeyLocator().setKeyName(certificateName);
+    if ((error = data.getSignature().getKeyLocator().setKeyName(certificateName))) {
+      cout << "Error in data.setKeyName: " << ndn_getErrorString(error) << endl;
+      return 0;
+    }
     data.getSignature().getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
     data.getSignature().getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
       (publisherPublicKeyDigest);
