@@ -94,6 +94,13 @@ static __inline void ndn_Name_initialize(struct ndn_Name *self, struct ndn_NameC
 }
 
 /**
+ * Clear all the components.
+ * @param self A pointer to the ndn_Name struct.
+ */
+static __inline void
+ndn_Name_clear(struct ndn_Name *self) { self->nComponents = 0; }
+
+/**
  * Return true if the N components of this name are the same as the first N components of the given name.
  * @param self A pointer to the ndn_Name struct.
  * @param name A pointer to the other name to match.
@@ -128,6 +135,16 @@ static __inline ndn_Error ndn_Name_appendBlob(struct ndn_Name *self, struct ndn_
  * @return 0 for success, or an error code if there is no more room in the components array (nComponents is already maxComponents).
  */
 ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char * value);
+
+/**
+ * Set this name to have the values from the other name.
+ * @param self A pointer to the ndn_Name struct.
+ * @param other A pointer to the other ndn_Name struct to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's components array.
+ */
+ndn_Error
+ndn_Name_setFromName(struct ndn_Name *self, const struct ndn_Name *other);
 
 #ifdef __cplusplus
 }

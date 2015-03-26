@@ -33,7 +33,7 @@ ndn_Exclude_appendAny(struct ndn_Exclude *self)
 }
 
 ndn_Error
-ndnExclude_appendComponent
+ndn_Exclude_appendComponent
   (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength)
 {
   if (self->nEntries >= self->maxEntries)
@@ -42,6 +42,28 @@ ndnExclude_appendComponent
     (self->entries + self->nEntries, ndn_Exclude_COMPONENT, component,
      componentLength);
   ++self->nEntries;
+
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_Exclude_setFromExclude
+  (struct ndn_Exclude *self, const struct ndn_Exclude *other)
+{
+  size_t i;
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  if (other->nEntries >= self->maxEntries)
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+
+  self->nEntries = other->nEntries;
+  for (i = 0; i < other->nEntries; ++i)
+    ndn_ExcludeEntry_initialize
+      (self->entries + i, other->entries[i].type, 
+       other->entries[i].component.value.value,
+       other->entries[i].component.value.length);
 
   return NDN_ERROR_success;
 }

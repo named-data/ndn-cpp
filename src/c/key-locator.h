@@ -42,6 +42,31 @@ static __inline void ndn_KeyLocator_initialize
   self->keyNameType = (ndn_KeyNameType)-1;
 }
 
+/**
+ * Set this ndn_KeyLocator struct to have the values from the other key locator.
+ * @param self A pointer to the ndn_KeyLocator struct.
+ * @param other A pointer to the other ndn_KeyLocator to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's keyName components array.
+ */
+static __inline ndn_Error
+ndn_KeyLocator_setFromKeyLocator
+  (struct ndn_KeyLocator *self, const struct ndn_KeyLocator *other)
+{
+  ndn_Error error;
+  
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  // Use a bulk copy, then fix objects that have arrays.
+  *self = *other;
+  if ((error = ndn_Name_setFromName(&self->keyName, &other->keyName)))
+    return error;
+
+  return NDN_ERROR_success;
+}
+
 #ifdef __cplusplus
 }
 #endif

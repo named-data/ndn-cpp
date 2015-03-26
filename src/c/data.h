@@ -59,6 +59,32 @@ static __inline void ndn_Signature_clear(struct ndn_Signature *self)
 }
 
 /**
+ * Set this ndn_Signature struct to have the values from the other signature.
+ * @param self A pointer to the ndn_Signature struct.
+ * @param other A pointer to the other ndn_Signature to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's key locator keyName components array.
+ */
+static __inline ndn_Error
+ndn_Signature_setFromSignature
+  (struct ndn_Signature *self, const struct ndn_Signature *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  // Use a bulk copy, then fix objects that have arrays.
+  *self = *other;
+  if ((error = ndn_KeyLocator_setFromKeyLocator
+       (&self->keyLocator, &other->keyLocator)))
+    return error;
+
+  return NDN_ERROR_success;
+}
+
+/**
  * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_BLOB.
  * @param self A pointer to the ndn_MetaInfo struct.
  */
@@ -103,6 +129,33 @@ static __inline void ndn_Data_initialize
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   ndn_MetaInfo_initialize(&self->metaInfo);
   ndn_Blob_initialize(&self->content, 0, 0);
+}
+
+/**
+ * Set this ndn_Data struct to have the values from the other data.
+ * @param self A pointer to the ndn_Data struct.
+ * @param other A pointer to the other ndn_Data to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's name or key locator keyName components array.
+ */
+static __inline ndn_Error
+ndn_Data_setFromData(struct ndn_Data *self, const struct ndn_Data *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  // Use a bulk copy, then fix objects that have arrays.
+  *self = *other;
+  if ((error = ndn_Signature_setFromSignature
+       (&self->signature, &other->signature)))
+    return error;
+  if ((error = ndn_Name_setFromName(&self->name, &other->name)))
+    return error;
+
+  return NDN_ERROR_success;
 }
 
 #ifdef __cplusplus

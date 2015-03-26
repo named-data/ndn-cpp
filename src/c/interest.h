@@ -84,8 +84,19 @@ ndn_Exclude_appendAny(struct ndn_Exclude *self);
  * entries array (nEntries is already maxEntries).
  */
 ndn_Error
-ndnExclude_appendComponent
+ndn_Exclude_appendComponent
   (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength);
+
+/**
+ * Set this exclude to have the values from the other exclude.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @param other A pointer to the other ndn_Exclude struct to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's entries array.
+ */
+ndn_Error
+ndn_Exclude_setFromExclude
+  (struct ndn_Exclude *self, const struct ndn_Exclude *other);
 
 /**
  * Initialize an ndn_Interest struct with the pre-allocated nameComponents and excludeEntries,
@@ -154,6 +165,34 @@ ndn_Interest_setMustBeFresh(struct ndn_Interest *self, int mustBeFresh)
       // Set the stale bit.
       self->answerOriginKind |= ndn_Interest_ANSWER_STALE;
   }
+}
+
+/**
+ * Set this ndn_Interest struct to have the values from the other interest.
+ * @param self A pointer to the ndn_Interest struct.
+ * @param other A pointer to the other ndn_Interest to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's name components array or exclude entries array.
+ */
+static __inline ndn_Error
+ndn_Interest_setFromInterest
+  (struct ndn_Interest *self, const struct ndn_Interest *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  // Use a bulk copy, then fix objects that have arrays.
+  *self = *other;
+  if ((error = ndn_Name_setFromName(&self->name, &other->name)))
+    return error;
+  if ((error = ndn_KeyLocator_setFromKeyLocator
+       (&self->keyLocator, &other->keyLocator)))
+    return error;
+
+  return NDN_ERROR_success;
 }
 
 #ifdef __cplusplus

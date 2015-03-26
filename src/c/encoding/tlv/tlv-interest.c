@@ -238,7 +238,7 @@ decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
       if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
         return error;
 
-      if ((error = ndnExclude_appendComponent
+      if ((error = ndn_Exclude_appendComponent
            (exclude, component.value, component.length)))
         return error;
       continue;
