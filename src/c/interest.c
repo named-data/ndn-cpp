@@ -55,7 +55,7 @@ ndn_Exclude_setFromExclude
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  if (other->nEntries >= self->maxEntries)
+  if (other->nEntries > self->maxEntries)
     return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
 
   self->nEntries = other->nEntries;
