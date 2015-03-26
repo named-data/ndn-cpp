@@ -33,4 +33,10 @@ SignatureLite::SignatureLite
 void
 SignatureLite::clear() { ndn_Signature_clear(this); }
 
+ndn_Error
+SignatureLite::set(const SignatureLite& other)
+{
+  return ndn_Signature_setFromSignature(this, &other);
+}
+
 }

@@ -35,4 +35,7 @@ DataLite::DataLite
      maxKeyNameComponents);
 }
 
+ndn_Error
+DataLite::set(const DataLite& other) { return ndn_Data_setFromData(this, &other); }
+
 }

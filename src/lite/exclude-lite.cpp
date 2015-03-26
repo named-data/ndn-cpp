@@ -49,10 +49,16 @@ ExcludeLite::appendAny()
 ndn_Error
 ExcludeLite::appendComponent(const uint8_t* component, size_t componentLength)
 {
-  return ndnExclude_appendComponent(this, component, componentLength);
+  return ndn_Exclude_appendComponent(this, component, componentLength);
 }
 
 void
 ExcludeLite::clear() { ndn_Exclude_clear(this); }
+
+ndn_Error
+ExcludeLite::set(const ExcludeLite& other)
+{
+  return ndn_Exclude_setFromExclude(this, &other);
+}
 
 }

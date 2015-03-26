@@ -105,16 +105,15 @@ public:
   getNonce() const { return BlobLite::upCast(nonce); }
 
   /**
-   * Set the interest name.
-   * @param name The interest name. This only copies the pointer to the name
-   * components array, but does not copy the component values.
-   * @return This InterestLite so that you can chain calls to update values.
+   * Set this interest's name to have the values from the given name.
+   * @param name The name to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's name components array.
    */
-  InterestLite&
+  ndn_Error
   setName(const NameLite& name)
   {
-    NameLite::upCast(this->name) = name;
-    return *this;
+    return NameLite::upCast(this->name).set(name);
   }
 
   /**
@@ -188,6 +187,42 @@ public:
     this->interestLifetimeMilliseconds = interestLifetimeMilliseconds;
     return *this;
   }
+
+  /**
+   * Set this interest object to have the values from the other interest.
+   * @param other The other InterestLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's name components array or exclude entries array.
+   */
+  ndn_Error
+  set(const InterestLite& other);
+
+  /**
+   * Upcast the reference to the ndn_Interest struct to a InterestLite.
+   * @param interest A reference to the ndn_Interest struct.
+   * @return The same reference as InterestLite.
+   */
+  static InterestLite&
+  upCast(ndn_Interest& interest) { return *(InterestLite*)&interest; }
+
+  static const InterestLite&
+  upCast(const ndn_Interest& interest) { return *(InterestLite*)&interest; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const InterestLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  InterestLite(InterestLite& other);
+  InterestLite(const InterestLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const InterestLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  InterestLite& operator=(const InterestLite& other);
 };
 
 }

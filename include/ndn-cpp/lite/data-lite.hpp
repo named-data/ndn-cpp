@@ -80,20 +80,19 @@ public:
   getContent() const { return BlobLite::upCast(content); }
 
   /**
-   * Set the data packet's name.
-   * @param name The data packet's name. This only copies the pointer to the name
-   * components array, but does not copy the component values.
-   * @return This DataLite so that you can chain calls to update values.
+   * Set this data packet's name to have the values from the given name.
+   * @param name The name to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's name components array.
    */
-  DataLite&
+  ndn_Error
   setName(const NameLite& name)
   {
-    NameLite::upCast(this->name) = name;
-    return *this;
+    return NameLite::upCast(this->name).set(name);
   }
 
   /**
-   * Set the data packet's content.
+   * Set this data packet's content.
    * @param content The data packet's content. This does not copy the bytes of
    * the content.
    * @return This DataLite so that you can chain calls to update values.
@@ -106,6 +105,15 @@ public:
   }
 
   /**
+   * Set this data packet object to have the values from the other data.
+   * @param other The other DataLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's name or key locator keyName components array.
+   */
+  ndn_Error
+  set(const DataLite& other);
+
+  /**
    * Upcast the reference to the ndn_Data struct to a DataLite.
    * @param data A reference to the ndn_Data struct.
    * @return The same reference as DataLite.
@@ -115,6 +123,22 @@ public:
 
   static const DataLite&
   upCast(const ndn_Data& data) { return *(DataLite*)&data; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const DataLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  DataLite(DataLite& other);
+  DataLite(const DataLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const DataLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  DataLite& operator=(const DataLite& other);
 };
 
 }

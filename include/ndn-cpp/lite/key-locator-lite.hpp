@@ -61,14 +61,15 @@ public:
   getKeyNameType() const { return keyNameType; }
 
   /**
-   * Set the key name.
-   * @param keyName The key name. This only copies the pointer to the name
-   * components array, but does not copy the component values.
+   * Set this object's key name to have the values from the given keyName.
+   * @param keyName The key name to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's keyName components array.
    */
-  void
+  ndn_Error
   setKeyName(const NameLite& keyName)
   {
-    NameLite::upCast(this->keyName) = keyName;
+    return NameLite::upCast(this->keyName).set(keyName);
   }
 
   void
@@ -88,6 +89,15 @@ public:
   setKeyNameType(ndn_KeyNameType keyNameType) { this->keyNameType = keyNameType; }
 
   /**
+   * Set this key locator to have the values from the other key locator.
+   * @param other The other KeyLocatorLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's keyName components array.
+   */
+  ndn_Error
+  set(const KeyLocatorLite& other);
+
+  /**
    * Upcast the reference to the ndn_KeyLocator struct to a KeyLocatorLite.
    * @param keyLocator A reference to the ndn_KeyLocator struct.
    * @return The same reference as KeyLocatorLite.
@@ -97,6 +107,22 @@ public:
 
   static const KeyLocatorLite&
   upCast(const ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const KeyLocatorLite&) 
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  KeyLocatorLite(KeyLocatorLite& other);
+  KeyLocatorLite(const KeyLocatorLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const KeyLocatorLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  KeyLocatorLite& operator=(const KeyLocatorLite& other);
 };
 
 }

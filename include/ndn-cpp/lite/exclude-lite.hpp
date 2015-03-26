@@ -135,6 +135,15 @@ public:
   clear();
 
   /**
+   * Set this exclude object to have the values from the other exclude.
+   * @param other The other ExcludeLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's entries array.
+   */
+  ndn_Error
+  set(const ExcludeLite& other);
+
+  /**
    * Upcast the reference to the ndn_Exclude struct to an ExcludeLite.
    * @param exclude A reference to the ndn_Exclude struct.
    * @return The same reference as ExcludeLite.
@@ -144,6 +153,20 @@ public:
 
   static const ExcludeLite&
   upCast(const ndn_Exclude& exclude) { return *(ExcludeLite*)&exclude; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const ExcludeLite&)
+   * which can return an error if there is no more room in the entries array.
+   */
+  ExcludeLite(ExcludeLite& other);
+  ExcludeLite(const ExcludeLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const ExcludeLite&)
+   * which can return an error if there is no more room in the entries array.
+   */
+  ExcludeLite& operator=(const ExcludeLite& other);
 };
 
 }

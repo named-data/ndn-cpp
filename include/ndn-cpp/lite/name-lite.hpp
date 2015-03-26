@@ -150,6 +150,12 @@ public:
   match(const NameLite& name) const;
 
   /**
+   * Clear all the components.
+   */
+  void
+  clear();
+
+  /**
    * Append a component to this name with the bytes in the given buffer.
    * @param value A pointer to the buffer with the bytes of the component.
    * This does not copy the bytes.
@@ -194,6 +200,15 @@ public:
   append(const char *value);
 
   /**
+   * Set this name to have the values from the other name.
+   * @param other The other NameLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's components array.
+   */
+  ndn_Error
+  set(const NameLite& other);
+
+  /**
    * Upcast the reference to the ndn_Name struct to a NameLite.
    * @param name A reference to the ndn_Name struct.
    * @return The same reference as NameLite.
@@ -203,6 +218,20 @@ public:
 
   static const NameLite&
   upCast(const ndn_Name& name) { return *(NameLite*)&name; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const NameLite&) which
+   * can return an error if there is no more room in the name components array.
+   */
+  NameLite(NameLite& other);
+  NameLite(const NameLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const NameLite&) which
+   * can return an error if there is no more room in the name components array.
+   */
+  NameLite& operator=(const NameLite& other);
 };
 
 }

@@ -30,4 +30,10 @@ KeyLocatorLite::KeyLocatorLite
   ndn_KeyLocator_initialize(this, keyNameComponents, maxKeyNameComponents);
 }
 
+ndn_Error
+KeyLocatorLite::set(const KeyLocatorLite& other)
+{
+  return ndn_KeyLocator_setFromKeyLocator(this, &other);
+}
+
 }

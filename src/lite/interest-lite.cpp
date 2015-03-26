@@ -47,4 +47,10 @@ InterestLite::setMustBeFresh(bool mustBeFresh)
   return *this;
 }
 
+ndn_Error
+InterestLite::set(const InterestLite& other)
+{
+  return ndn_Interest_setFromInterest(this, &other);
+}
+
 }

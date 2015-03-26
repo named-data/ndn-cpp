@@ -71,6 +71,9 @@ NameLite::match(const NameLite& name) const
   return ndn_Name_match(this, &name) != 0;
 }
 
+void
+NameLite::clear() { ndn_Name_clear(this); }
+
 ndn_Error
 NameLite::append(const uint8_t* value, size_t valueLength)
 {
@@ -79,5 +82,8 @@ NameLite::append(const uint8_t* value, size_t valueLength)
 
 ndn_Error
 NameLite::append(const char *value) { return ndn_Name_appendString(this, value); }
+
+ndn_Error
+NameLite::set(const NameLite& other) { return ndn_Name_setFromName(this, &other); }
 
 }

@@ -114,6 +114,15 @@ public:
   }
 
   /**
+   * Set this signature to have the values from the other signature.
+   * @param other The other SignatureLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's key locator keyName components array.
+   */
+  ndn_Error
+  set(const SignatureLite& other);
+
+  /**
    * Upcast the reference to the ndn_Signature struct to a SignatureLite.
    * @param signature A reference to the ndn_Signature struct.
    * @return The same reference as SignatureLite.
@@ -123,6 +132,22 @@ public:
 
   static const SignatureLite&
   upCast(const ndn_Signature& signature) { return *(SignatureLite*)&signature; }
+
+private:
+  /**
+   * Don't allow the copy constructor. Instead use set(const SignatureLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  SignatureLite(SignatureLite& other);
+  SignatureLite(const SignatureLite& other);
+
+  /**
+   * Don't allow the assignment operator. Instead use set(const SignatureLite&)
+   * which can return an error if there is no more room in the name components
+   * array.
+   */
+  SignatureLite& operator=(const SignatureLite& other);
 };
 
 }
