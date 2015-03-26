@@ -34,12 +34,6 @@ namespace ndn {
 class DataLite : private ndn_Data {
 public:
   /**
-   * Create a DataLite where the name and KeyLocator keyName have no components
-   * array. You must later user setName(), etc.
-   */
-  DataLite();
-
-  /**
    * Create a DataLite with the pre-allocated nameComponents and
    * keyNameComponents, and defaults for all the values.
    * @param nameComponents The pre-allocated array of ndn_NameComponent. Instead
