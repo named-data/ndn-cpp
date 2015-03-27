@@ -44,6 +44,18 @@ static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, 
 }
 
 /**
+ * Set this exclude entry to have the values from the other exclude entry.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param other A pointer to the other ndn_NameComponent struct to get values from.
+ */
+static __inline void
+ndn_ExcludeEntry_setFromExcludeEntry
+  (struct ndn_ExcludeEntry *self, const struct ndn_ExcludeEntry *other)
+{
+  *self = *other;
+}
+
+/**
  * Initialize an ndn_Exclude struct with the entries array.
  * @param self A pointer to the ndn_Exclude struct.
  * @param entries the pre-allocated array of ndn_ExcludeEntry

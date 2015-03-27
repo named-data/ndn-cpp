@@ -81,6 +81,18 @@ int ndn_NameComponent_compare
   (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other);
 
 /**
+ * Set this name component to have the values from the other name component.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param other A pointer to the other ndn_NameComponent struct to get values from.
+ */
+static __inline void
+ndn_NameComponent_setFromNameComponent
+  (struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
+{
+  *self = *other;
+}
+
+/**
  * Initialize an ndn_Name struct with the components array.
  * @param self pointer to the ndn_Name struct
  * @param components the pre-allocated array of ndn_NameComponent

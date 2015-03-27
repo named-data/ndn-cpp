@@ -59,11 +59,11 @@ ndn_Exclude_setFromExclude
     return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
 
   self->nEntries = other->nEntries;
-  for (i = 0; i < other->nEntries; ++i)
-    ndn_ExcludeEntry_initialize
-      (self->entries + i, other->entries[i].type, 
-       other->entries[i].component.value.value,
-       other->entries[i].component.value.length);
+  // If the two excludes share the entries array, we don't need to copy.
+  if (self->entries != other->entries) {
+    for (i = 0; i < other->nEntries; ++i)
+      ndn_ExcludeEntry_setFromExcludeEntry(&self->entries[i], &other->entries[i]);
+  }
 
   return NDN_ERROR_success;
 }

@@ -134,10 +134,12 @@ ndn_Name_setFromName(struct ndn_Name *self, const struct ndn_Name *other)
     return NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name;
 
   self->nComponents = other->nComponents;
-  for (i = 0; i < other->nComponents; ++i)
-    ndn_NameComponent_initialize
-      (self->components + i, other->components[i].value.value,
-       other->components[i].value.length);
+  // If the two names share the components array, we don't need to copy.
+  if (self->components != other->components) {
+    for (i = 0; i < other->nComponents; ++i)
+      ndn_NameComponent_setFromNameComponent
+        (&self->components[i], &other->components[i]);
+  }
 
   return NDN_ERROR_success;
 }
