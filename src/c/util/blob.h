@@ -39,6 +39,17 @@ static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *v
   self->length = length;
 }
 
+/**
+ * Set this ndn_Blob struct to have the values from the other blob.
+ * @param self A pointer to this ndn_Blob struct.
+ * @param other A pointer to the other ndn_Blob to get values from.
+ */
+static __inline void
+ndn_Blob_setFromBlob(struct ndn_Blob *self, const struct ndn_Blob *other)
+{
+  *self = *other;
+}
+
 #ifdef __cplusplus
 }
 #endif
