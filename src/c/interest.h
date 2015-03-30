@@ -196,10 +196,18 @@ ndn_Interest_setFromInterest
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  // Use a bulk copy, then fix objects that have arrays.
-  *self = *other;
   if ((error = ndn_Name_setFromName(&self->name, &other->name)))
     return error;
+  self->minSuffixComponents = other->minSuffixComponents;
+  self->maxSuffixComponents = other->maxSuffixComponents;
+  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
+  if ((error = ndn_Exclude_setFromExclude(&self->exclude, &other->exclude)))
+    return error;
+  self->childSelector = other->childSelector;
+  self->answerOriginKind = other->answerOriginKind;
+  self->scope = other->scope;
+  self->interestLifetimeMilliseconds = other->interestLifetimeMilliseconds;
+  ndn_Blob_setFromBlob(&self->nonce, &other->nonce);
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
     return error;

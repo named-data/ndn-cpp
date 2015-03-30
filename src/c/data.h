@@ -75,8 +75,10 @@ ndn_Signature_setFromSignature
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  // Use a bulk copy, then fix objects that have arrays.
-  *self = *other;
+  ndn_Blob_setFromBlob(&self->digestAlgorithm, &other->digestAlgorithm);
+  ndn_Blob_setFromBlob(&self->witness, &other->witness);
+  ndn_Blob_setFromBlob(&self->signature, &other->signature);
+  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
     return error;
@@ -110,6 +112,29 @@ static __inline int ndn_MetaInfo_getFreshnessSeconds(const struct ndn_MetaInfo *
 static __inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self, int freshnessSeconds)
 {
   self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0;
+}
+
+/**
+ * Set this ndn_MetaInfo struct to have the values from the other meta info.
+ * @param self A pointer to the ndn_MetaInfo struct.
+ * @param other A pointer to the other ndn_MetaInfo to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's array.
+ */
+static __inline ndn_Error
+ndn_MetaInfo_setFromMetaInfo
+  (struct ndn_MetaInfo *self, const struct ndn_MetaInfo *other)
+{
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  self->timestampMilliseconds = other->timestampMilliseconds;
+  self->type = other->type;
+  self->freshnessPeriod = other->freshnessPeriod;
+  ndn_NameComponent_setFromNameComponent(&self->finalBlockId, &other->finalBlockId);
+
+  return NDN_ERROR_success;
 }
 
 /**
@@ -147,13 +172,15 @@ ndn_Data_setFromData(struct ndn_Data *self, const struct ndn_Data *other)
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  // Use a bulk copy, then fix objects that have arrays.
-  *self = *other;
   if ((error = ndn_Signature_setFromSignature
        (&self->signature, &other->signature)))
     return error;
   if ((error = ndn_Name_setFromName(&self->name, &other->name)))
     return error;
+  if ((error = ndn_MetaInfo_setFromMetaInfo
+       (&self->metaInfo, &other->metaInfo)))
+    return error;
+  ndn_Blob_setFromBlob(&self->content, &other->content);
 
   return NDN_ERROR_success;
 }

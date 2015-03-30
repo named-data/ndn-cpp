@@ -59,10 +59,11 @@ ndn_KeyLocator_setFromKeyLocator
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  // Use a bulk copy, then fix objects that have arrays.
-  *self = *other;
+  self->type = other->type;
+  ndn_Blob_setFromBlob(&self->keyData, &other->keyData);
   if ((error = ndn_Name_setFromName(&self->keyName, &other->keyName)))
     return error;
+  self->keyNameType = other->keyNameType;
 
   return NDN_ERROR_success;
 }
