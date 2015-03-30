@@ -24,6 +24,7 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -296,6 +297,26 @@ TEST_F(TestInterestMethods, VerifyDigestSha256)
      bind(&VerifyCounter::onVerifyFailed, &counter, _1));
   ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
+}
+
+TEST_F(TestInterestMethods, InterestFilterMatching)
+{
+  // From ndn-cxx interest.t.cpp.
+  ASSERT_EQ(true,  InterestFilter("/a").doesMatch(Name("/a/b")));
+  ASSERT_EQ(true,  InterestFilter("/a/b").doesMatch(Name("/a/b")));
+  ASSERT_EQ(false, InterestFilter("/a/b/c").doesMatch(Name("/a/b")));
+
+  ASSERT_EQ(true,  InterestFilter("/a", "<b>").doesMatch(Name("/a/b")));
+  ASSERT_EQ(false, InterestFilter("/a/b", "<b>").doesMatch(Name("/a/b")));
+
+  ASSERT_EQ(false, InterestFilter("/a/b", "<b>").doesMatch(Name("/a/b/c/b")));
+  ASSERT_EQ(true,  InterestFilter("/a/b", "<>*<b>").doesMatch(Name("/a/b/c/b")));
+
+  ASSERT_EQ(false, InterestFilter("/a", "<b>").doesMatch(Name("/a/b/c/d")));
+  ASSERT_EQ(true,  InterestFilter("/a", "<b><>*").doesMatch(Name("/a/b/c/d")));
+  ASSERT_EQ(true,  InterestFilter("/a", "<b><>*").doesMatch(Name("/a/b")));
+  ASSERT_EQ(false, InterestFilter("/a", "<b><>+").doesMatch(Name("/a/b")));
+  ASSERT_EQ(true,  InterestFilter("/a", "<b><>+").doesMatch(Name("/a/b/c")));
 }
 
 int
