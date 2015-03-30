@@ -217,10 +217,10 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/data.lo src/digest-sha256-signature.lo \
 	src/exclude.lo src/face.lo src/forwarding-entry.lo \
-	src/interest.lo src/key-locator.lo src/meta-info.lo \
-	src/name.lo src/node.lo src/control-parameters.lo \
-	src/publisher-public-key-digest.lo src/signature.lo \
-	src/sha256-with-ecdsa-signature.lo \
+	src/interest-filter.lo src/interest.lo src/key-locator.lo \
+	src/meta-info.lo src/name.lo src/node.lo \
+	src/control-parameters.lo src/publisher-public-key-digest.lo \
+	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
 	src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
@@ -938,6 +938,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
   include/ndn-cpp/meta-info.hpp \
@@ -1040,6 +1041,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
+  src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
   src/meta-info.cpp \
@@ -1346,6 +1348,8 @@ src/digest-sha256-signature.lo: src/$(am__dirstamp) \
 src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/forwarding-entry.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/interest-filter.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/key-locator.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1829,6 +1833,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-entry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/meta-info.Plo@am__quote@

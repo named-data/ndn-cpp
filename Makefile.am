@@ -50,6 +50,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
   include/ndn-cpp/meta-info.hpp \
@@ -150,6 +151,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
+  src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
   src/meta-info.cpp \
