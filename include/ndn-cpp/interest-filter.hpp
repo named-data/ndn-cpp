@@ -84,11 +84,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const Name& prefix, const std::string& regexFilter)
-  : prefix_(prefix), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const Name& prefix, const std::string& regexFilter);
 
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
@@ -98,11 +94,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const Name& prefix, const char* regexFilter)
-  : prefix_(prefix), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const Name& prefix, const char* regexFilter);
 
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
@@ -112,11 +104,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const std::string& prefixUri, const std::string& regexFilter)
-  : prefix_(prefixUri), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const std::string& prefixUri, const std::string& regexFilter);
 
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
@@ -126,11 +114,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const char* prefixUri, const std::string& regexFilter)
-  : prefix_(prefixUri), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const char* prefixUri, const std::string& regexFilter);
 
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
@@ -140,11 +124,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const std::string& prefixUri, const char* regexFilter)
-  : prefix_(prefixUri), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const std::string& prefixUri, const char* regexFilter);
 
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
@@ -154,11 +134,7 @@ public:
    * @param regexFilter The regular expression for matching the remaining name
    * components.
    */
-  InterestFilter(const char* prefixUri, const char* regexFilter)
-  : prefix_(prefixUri), regexFilter_(regexFilter),
-    regexFilterPattern_(makePattern(regexFilter))
-  {
-  }
+  InterestFilter(const char* prefixUri, const char* regexFilter);
 
   /**
    * Check if the given name matches this filter.

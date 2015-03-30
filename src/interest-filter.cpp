@@ -19,12 +19,55 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include "util/ndn-regex-matcher.hpp"
 #include <ndn-cpp/interest-filter.hpp>
 
 using namespace std;
 
 namespace ndn {
+
+// Only compile these constructors if we set NDN_CPP_HAVE_REGEX_LIB in
+// ndn-regex-matcher.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
+InterestFilter::InterestFilter(const Name& prefix, const string& regexFilter)
+: prefix_(prefix), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+InterestFilter::InterestFilter(const Name& prefix, const char* regexFilter)
+: prefix_(prefix), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+InterestFilter::InterestFilter(const string& prefixUri, const string& regexFilter)
+: prefix_(prefixUri), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+InterestFilter::InterestFilter(const char* prefixUri, const string& regexFilter)
+: prefix_(prefixUri), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+InterestFilter::InterestFilter(const string& prefixUri, const char* regexFilter)
+: prefix_(prefixUri), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+InterestFilter::InterestFilter(const char* prefixUri, const char* regexFilter)
+: prefix_(prefixUri), regexFilter_(regexFilter),
+  regexFilterPattern_(makePattern(regexFilter))
+{
+}
+
+#endif
 
 bool
 InterestFilter::doesMatch(const Name& name) const
@@ -33,6 +76,7 @@ InterestFilter::doesMatch(const Name& name) const
     return false;
 
   if (hasRegexFilter()) {
+#if NDN_CPP_HAVE_REGEX_LIB
     // Perform a prefix match and regular expression match for the remaining
     // components.
     if (!prefix_.match(name))
@@ -41,6 +85,11 @@ InterestFilter::doesMatch(const Name& name) const
     return regex_lib::sregex_iterator() != NdnRegexMatcher
       (regexFilterPattern_,
        name.getSubName(prefix_.size(), name.size() - prefix_.size())).iterator;
+#else
+    // We should not reach this point because the constructors for regexFilter
+    // don't compile.
+    throw runtime_error("InterestFilter::regexFilter is not supported");
+#endif
   }
   else
     // Just perform a prefix match.
