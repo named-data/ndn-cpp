@@ -34,9 +34,9 @@
 #include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 // Hack: Hook directly into non-API functions.
 #include "../src/c/encoding/binary-xml-data.h"
-#include "../src/c/encoding/tlv-0_1_1-wire-format.h"
 #include "../src/c/util/crypto.h"
 
 using namespace std;
@@ -420,7 +420,8 @@ benchmarkEncodeDataSecondsC
       data.getMetaInfo().setFinalBlockId(finalBlockId);
     }
 
-    struct ndn_DynamicUInt8Array output;
+    // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
+    DynamicUInt8ArrayLite output(encoding, maxEncodingLength, 0);
     struct ndn_BinaryXmlEncoder binaryXmlEncoder;
     size_t signedPortionBeginOffset, signedPortionEndOffset;
 
@@ -436,9 +437,8 @@ benchmarkEncodeDataSecondsC
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
 
       // Encode once to get the signed portion.
-      ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
       if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
-        ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);
+        ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, (ndn_DynamicUInt8Array*)&output);
         if ((error = ndn_encodeBinaryXmlData
              ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
           cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
@@ -447,9 +447,9 @@ benchmarkEncodeDataSecondsC
       }
       else {
         size_t dummyEncodingLength;
-        if ((error = ndn_Tlv0_1_1WireFormat_encodeData
-             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, 
-              &output, &dummyEncodingLength))) {
+        if ((error = Tlv0_1_1WireFormatLite::encodeData
+             (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+              output, &dummyEncodingLength))) {
           cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
           return 0;
         }
@@ -473,10 +473,8 @@ benchmarkEncodeDataSecondsC
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
     }
 
-    // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
-    ndn_DynamicUInt8Array_initialize(&output, encoding, maxEncodingLength, 0);
     if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
-      ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, &output);
+      ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, (ndn_DynamicUInt8Array*)&output);
       if ((error = ndn_encodeBinaryXmlData
            ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
         cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
@@ -485,9 +483,9 @@ benchmarkEncodeDataSecondsC
       *encodingLength = binaryXmlEncoder.offset;
     }
     else {
-      if ((error = ndn_Tlv0_1_1WireFormat_encodeData
-           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, 
-            &output, encodingLength))) {
+      if ((error = Tlv0_1_1WireFormatLite::encodeData
+           (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+            output, encodingLength))) {
         cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
@@ -531,9 +529,9 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
       }
     }
     else {
-      if ((error = ndn_Tlv0_1_1WireFormat_decodeData
-           ((ndn_Data*)&data, encoding, encodingLength,
-            &signedPortionBeginOffset, &signedPortionEndOffset))) {
+      if ((error = Tlv0_1_1WireFormatLite::decodeData
+           (data, encoding, encodingLength, &signedPortionBeginOffset,
+            &signedPortionEndOffset))) {
         cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
       }
