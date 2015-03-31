@@ -36,6 +36,7 @@ ndn_Error ndn_ElementReader_onReceivedData
         // Wait for more data.
         return NDN_ERROR_success;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
       // The type codes for TLV Interest and Data packets are chosen to not
       //   conflict with the first byte of a binary XML packet, so we can
       //   just look at the first byte.
@@ -45,15 +46,19 @@ ndn_Error ndn_ElementReader_onReceivedData
       else
         // Binary XML.
         self->useTlv = 0;
+#endif
     }
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     if (self->useTlv) {
+#endif
       // Scan the input to check if a whole TLV element has been read.
       ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);
       if ((error = ndn_TlvStructureDecoder_findElementEnd(&self->tlvStructureDecoder, data, dataLength)))
         return error;
       gotElementEnd = self->tlvStructureDecoder.gotElementEnd;
       offset = self->tlvStructureDecoder.offset;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     }
     else {
       // Scan the input to check if a whole binary XML element has been read.
@@ -63,6 +68,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       gotElementEnd = self->binaryXmlStructureDecoder.gotElementEnd;
       offset = self->binaryXmlStructureDecoder.offset;
     }
+#endif
 
     if (gotElementEnd) {
       if (!self->elementListener)
@@ -93,7 +99,9 @@ ndn_Error ndn_ElementReader_onReceivedData
       // Need to read a new object.
       data += offset;
       dataLength -= offset;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
       ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+#endif
       ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
       if (dataLength == 0)
         // No more data in the packet.
