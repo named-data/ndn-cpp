@@ -21,6 +21,7 @@
 #include "tlv-key-locator.h"
 #include "tlv-signature-info.h"
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest
  * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
@@ -42,6 +43,7 @@ encodeKeyLocatorPublisherPublicKeyDigestValue
 
   return NDN_ERROR_success;
 }
+#endif
 
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the SignatureSha256WithRsa value.
@@ -61,6 +63,7 @@ encodeSignatureSha256WithRsaValue
        (encoder, ndn_Tlv_SignatureType,
         ndn_Tlv_SignatureType_SignatureSha256WithRsa)))
     return error;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Save the offset and set omitZeroLength true so we can detect if the key
   //   locator is omitted.  (When we remove the deprecated
   //   publisherPublicKeyDigest, we can call normally with omitZeroLength false.)
@@ -85,6 +88,12 @@ encodeSignatureSha256WithRsaValue
         return error;
     }
   }
+#else
+  if ((error = ndn_TlvEncoder_writeNestedTlv
+       (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue,
+        &signature->keyLocator, 0)))
+    return error;
+#endif
 
   return NDN_ERROR_success;
 }
@@ -179,6 +188,7 @@ ndn_decodeTlvSignatureInfo
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
       return error;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       // For backwards compatibility, also set the publisherPublicKeyDigest.
       signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest =
@@ -187,6 +197,7 @@ ndn_decodeTlvSignatureInfo
       // Set publisherPublicKeyDigest to none.
       ndn_Blob_initialize
         (&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
+#endif
   }
   else if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa) {
     signatureInfo->type = ndn_SignatureType_Sha256WithEcdsaSignature;

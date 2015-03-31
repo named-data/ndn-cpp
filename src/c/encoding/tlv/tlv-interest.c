@@ -56,6 +56,7 @@ encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;
 }
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest
  * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
@@ -76,6 +77,7 @@ encodeKeyLocatorSelectorPublisherPublicKeyDigestValue
 
   return NDN_ERROR_success;
 }
+#endif
 
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
@@ -97,6 +99,7 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_MaxSuffixComponents, interest->maxSuffixComponents)))
     return error;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted to see if we need to
   //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call
   //   with omitZeroLength true.)
@@ -114,6 +117,12 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
         return error;
     }
   }
+#else
+  if ((error = ndn_TlvEncoder_writeNestedTlv
+       (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue,
+        &interest->keyLocator, 0)))
+    return error;
+#endif
 
   if (interest->exclude.nEntries > 0)
     if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
@@ -280,8 +289,10 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_MaxSuffixComponents, endOffset, &interest->maxSuffixComponents)))
     return error;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Initially set publisherPublicKeyDigest to none.
   ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
+#endif
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_PublisherPublicKeyLocator, endOffset, &gotExpectedType)))
     return error;
@@ -289,9 +300,11 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_PublisherPublicKeyLocator, &interest->keyLocator, decoder)))
       return error;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       // For backwards compatibility, also set the publisherPublicKeyDigest.
       interest->publisherPublicKeyDigest.publisherPublicKeyDigest = interest->keyLocator.keyData;
+#endif
   }
   else
     // Clear the key locator.
@@ -350,7 +363,9 @@ ndn_decodeTlvInterest
     // Set selectors to none.
     interest->minSuffixComponents = -1;
     interest->maxSuffixComponents = -1;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     ndn_PublisherPublicKeyDigest_initialize(&interest->publisherPublicKeyDigest);
+#endif
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
     interest->answerOriginKind = -1;
