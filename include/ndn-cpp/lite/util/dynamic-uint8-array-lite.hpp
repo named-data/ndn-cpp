@@ -137,6 +137,7 @@ private:
   friend class UdpTransportLite;
   friend class UnixTransportLite;
   friend class ArduinoYunTcpTransportLite;
+  friend class Tlv0_1_1WireFormatLite;
 };
 
 }

@@ -21,6 +21,7 @@
 #ifndef NDN_TLV_0_1_1_WIRE_FORMAT_H
 #define NDN_TLV_0_1_1_WIRE_FORMAT_H
 
+#include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
 
 struct ndn_Interest;
@@ -32,7 +33,7 @@ extern "C" {
 #endif
 
 /**
- * Encode interest as NDN-TLV and return the encoding.
+ * Encode interest as NDN-TLV.
  * @param interest A pointer to the interest object to encode.
  * @param signedPortionBeginOffset Return the offset in the encoding of the
  * beginning of the signed portion. The signed portion starts from the first
@@ -43,8 +44,7 @@ extern "C" {
  * name component and ends just before the final name component (which is
  * assumed to be a signature for a signed interest).
  * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
- * encoded output.  The struct must remain valid during the entire life of this
- * ndn_TlvEncoder. If the output->realloc function pointer is null, its array
+ * encoded output.  If the output->realloc function pointer is null, its array
  * must be large enough to receive the entire encoding.
  * @param encodingLength Set encodingLength to the length of the encoded output.
  * @return 0 for success, else an error code.
@@ -86,8 +86,7 @@ ndn_Tlv0_1_1WireFormat_decodeInterest
  * the signed portion. If you are not encoding in order to sign, you can ignore
  * this returned value.
  * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
- * encoded output.  The struct must remain valid during the entire life of this
- * ndn_TlvEncoder. If the output->realloc function pointer is null, its array
+ * encoded output.  If the output->realloc function pointer is null, its array
  * must be large enough to receive the entire encoding.
  * @param encodingLength Set encodingLength to the length of the encoded output.
  * @return 0 for success, else an error code.

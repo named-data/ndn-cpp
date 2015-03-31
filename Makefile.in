@@ -219,8 +219,8 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/data.lo src/digest-sha256-signature.lo \
 	src/exclude.lo src/face.lo src/forwarding-entry.lo \
-	src/forwarding-flags.lo src/interest.lo src/key-locator.lo \
-	src/meta-info.lo src/name.lo src/node.lo \
+	src/forwarding-flags.lo src/interest-filter.lo src/interest.lo \
+	src/key-locator.lo src/meta-info.lo src/name.lo src/node.lo \
 	src/control-parameters.lo src/publisher-public-key-digest.lo \
 	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
@@ -237,6 +237,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/publisher-public-key-digest-lite.lo \
 	src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
+	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
@@ -958,6 +959,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
   include/ndn-cpp/meta-info.hpp \
@@ -984,6 +986,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/publisher-public-key-digest-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -1077,6 +1080,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/face.cpp \
   src/forwarding-entry.cpp \
   src/forwarding-flags.cpp \
+  src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
   src/meta-info.cpp \
@@ -1111,6 +1115,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/publisher-public-key-digest-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
+  src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -1403,6 +1408,8 @@ src/forwarding-entry.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/forwarding-flags.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/interest-filter.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/key-locator.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/meta-info.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1480,6 +1487,9 @@ src/lite/encoding/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/encoding/$(DEPDIR)
 	@: > src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
 src/lite/encoding/element-listener-lite.lo:  \
+	src/lite/encoding/$(am__dirstamp) \
+	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+src/lite/encoding/tlv-0_1_1-wire-format-lite.lo:  \
 	src/lite/encoding/$(am__dirstamp) \
 	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
 src/lite/transport/$(am__dirstamp):
@@ -1951,6 +1961,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-entry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-flags.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/meta-info.Plo@am__quote@
@@ -2010,6 +2021,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/publisher-public-key-digest-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
