@@ -126,7 +126,8 @@ ndn_encodeTlvSignatureInfo
   (const struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
 {
   if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature ||
-      signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature)
+      signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature ||
+      signatureInfo->type == ndn_SignatureType_HmacWithSha256Signature)
     return ndn_TlvEncoder_writeNestedTlv
       (encoder, ndn_Tlv_SignatureInfo, encodeSignatureWithKeyLocatorValue,
        signatureInfo, 0);
@@ -157,7 +158,8 @@ ndn_decodeTlvSignatureInfo
     return error;
 
   if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa ||
-      signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa) {
+      signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa ||
+      signatureType == ndn_Tlv_SignatureType_SignatureHmacWithSha256) {
     // Assume that the ndn_SignatureType enum has the same values as the TLV
     // signature types.
     signatureInfo->type = signatureType;
