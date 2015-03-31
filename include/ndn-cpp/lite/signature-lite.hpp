@@ -22,7 +22,6 @@
 #ifndef NDN_SIGNATURE_LITE_HPP
 #define NDN_SIGNATURE_LITE_HPP
 
-#include "publisher-public-key-digest-lite.hpp"
 #include "key-locator-lite.hpp"
 #include "../c/data-types.h"
 
@@ -64,12 +63,6 @@ public:
 
   const BlobLite&
   getSignature() const { return BlobLite::upCast(signature); }
-
-  const PublisherPublicKeyDigestLite&
-  getPublisherPublicKeyDigest() const { return PublisherPublicKeyDigestLite::upCast(publisherPublicKeyDigest); }
-
-  PublisherPublicKeyDigestLite&
-  getPublisherPublicKeyDigest() { return PublisherPublicKeyDigestLite::upCast(publisherPublicKeyDigest); }
 
   const KeyLocatorLite&
   getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }

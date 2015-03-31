@@ -431,8 +431,6 @@ benchmarkEncodeDataSecondsC
       return 0;
     }
     data.getSignature().getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
-    data.getSignature().getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
-      (publisherPublicKeyDigest);
     if (useCrypto) {
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
 

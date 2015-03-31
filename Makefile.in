@@ -234,7 +234,6 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/data-lite.lo src/lite/exclude-lite.lo \
 	src/lite/interest-lite.lo src/lite/key-locator-lite.lo \
 	src/lite/meta-info-lite.lo src/lite/name-lite.lo \
-	src/lite/publisher-public-key-digest-lite.lo \
 	src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
 	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
@@ -983,7 +982,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/key-locator-lite.hpp \
   include/ndn-cpp/lite/meta-info-lite.hpp \
   include/ndn-cpp/lite/name-lite.hpp \
-  include/ndn-cpp/lite/publisher-public-key-digest-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
@@ -1112,7 +1110,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \
   src/lite/name-lite.cpp \
-  src/lite/publisher-public-key-digest-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
@@ -1476,8 +1473,6 @@ src/lite/meta-info-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/name-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
-src/lite/publisher-public-key-digest-lite.lo:  \
-	src/lite/$(am__dirstamp) src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/signature-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/encoding/$(am__dirstamp):
@@ -2018,7 +2013,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/key-locator-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/meta-info-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/name-lite.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/publisher-public-key-digest-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
