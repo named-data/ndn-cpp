@@ -70,12 +70,19 @@ ndn_Error ndn_ElementReader_onReceivedData
       
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
-        // We have partial data from a previous call, so append this data and point to partialData.
-        if ((error = ndn_DynamicUInt8Array_copy(self->partialData, data, offset, self->partialDataLength)))
-          return error;
-        self->partialDataLength += offset;
+        if (self->gotPartialDataError) {
+          // We returned an error allocating the partialData, so it is not
+          // valid. Therefore, don't send it to the callback.
+        }
+        else {
+          // We have partial data from a previous call, so append this data and point to partialData.
+          if ((error = ndn_DynamicUInt8Array_copy(self->partialData, data, offset, self->partialDataLength)))
+            return error;
+          self->partialDataLength += offset;
 
-        (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData->array, self->partialDataLength);
+          (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData->array, self->partialDataLength);
+        }
+        
         // Assume we don't need to use partialData anymore until needed.
         self->usePartialData = 0;
       }
@@ -98,12 +105,19 @@ ndn_Error ndn_ElementReader_onReceivedData
       // Save remaining data for a later call.
       if (!self->usePartialData) {
         self->usePartialData = 1;
+        self->gotPartialDataError = 0;
         self->partialDataLength = 0;
       }
 
-      if ((error = ndn_DynamicUInt8Array_copy(self->partialData, data, dataLength, self->partialDataLength)))
-        return error;
-      self->partialDataLength += dataLength;
+      if (!self->gotPartialDataError) {
+        if ((error = ndn_DynamicUInt8Array_copy
+             (self->partialData, data, dataLength, self->partialDataLength))) {
+          // Set gotPartialDataError so we won't call onReceivedElement with invalid data.
+          self->gotPartialDataError = 1;
+          return error;
+        }
+        self->partialDataLength += dataLength;
+      }
 
       return NDN_ERROR_success;
     }
