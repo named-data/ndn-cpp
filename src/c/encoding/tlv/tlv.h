@@ -57,7 +57,8 @@ enum {
 enum {
   ndn_Tlv_SignatureType_DigestSha256 = 0,
   ndn_Tlv_SignatureType_SignatureSha256WithRsa = 1,
-  ndn_Tlv_SignatureType_SignatureSha256WithEcdsa = 3
+  ndn_Tlv_SignatureType_SignatureSha256WithEcdsa = 3,
+  ndn_Tlv_SignatureType_SignatureHmacWithSha256 = 4
 };
 
 enum {
