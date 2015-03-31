@@ -50,7 +50,8 @@ typedef enum {
 typedef enum {
   ndn_SignatureType_DigestSha256Signature = 0,
   ndn_SignatureType_Sha256WithRsaSignature = 1,
-  ndn_SignatureType_Sha256WithEcdsaSignature = 3
+  ndn_SignatureType_Sha256WithEcdsaSignature = 3,
+  ndn_SignatureType_HmacWithSha256Signature = 4
 } ndn_SignatureType;
 
 /**
