@@ -46,13 +46,17 @@ encodeKeyLocatorPublisherPublicKeyDigestValue
 #endif
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the SignatureSha256WithRsa value.
- * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs 
+ * in the body of a signature value which has a KeyLocator, e.g.
+ * SignatureSha256WithRsa.
+ * @param context This is the ndn_Signature struct pointer which was passed to 
+ * writeTlv. Use signature->type as the TLV type, assuming that the
+ * ndn_SignatureType enum has the same values as the TLV signature types.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeSignatureSha256WithRsaValue
+encodeSignatureWithKeyLocatorValue
   (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
@@ -60,8 +64,7 @@ encodeSignatureSha256WithRsaValue
   size_t saveOffset;
 
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
-       (encoder, ndn_Tlv_SignatureType,
-        ndn_Tlv_SignatureType_SignatureSha256WithRsa)))
+       (encoder, ndn_Tlv_SignatureType, signature->type)))
     return error;
 #ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Save the offset and set omitZeroLength true so we can detect if the key
@@ -100,32 +103,6 @@ encodeSignatureSha256WithRsaValue
 
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
- * in the body of the SignatureSha256WithEcdsa value.
- * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
- * @param encoder the ndn_TlvEncoder which is calling this.
- * @return 0 for success, else an error code.
- */
-static ndn_Error
-encodeSignatureSha256WithEcdsaValue
-  (const void *context, struct ndn_TlvEncoder *encoder)
-{
-  struct ndn_Signature *signature = (struct ndn_Signature *)context;
-  ndn_Error error;
-
-  if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
-       (encoder, ndn_Tlv_SignatureType,
-        ndn_Tlv_SignatureType_SignatureSha256WithEcdsa)))
-    return error;
-  if ((error = ndn_TlvEncoder_writeNestedTlv
-       (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue,
-        &signature->keyLocator, 1)))
-    return error;
-
-  return NDN_ERROR_success;
-}
-
-/**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
  * in the body of the DigestSha256 value.
  * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
  * (It is ignored.)
@@ -135,7 +112,6 @@ encodeSignatureSha256WithEcdsaValue
 static ndn_Error
 encodeDigestSha256Value(const void *context, struct ndn_TlvEncoder *encoder)
 {
-  struct ndn_Signature *signature = (struct ndn_Signature *)context;
   ndn_Error error;
 
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
@@ -149,13 +125,10 @@ ndn_Error
 ndn_encodeTlvSignatureInfo
   (const struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
 {
-  if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature)
+  if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature ||
+      signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature)
     return ndn_TlvEncoder_writeNestedTlv
-      (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithRsaValue,
-       signatureInfo, 0);
-  else if (signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature)
-    return ndn_TlvEncoder_writeNestedTlv
-      (encoder, ndn_Tlv_SignatureInfo, encodeSignatureSha256WithEcdsaValue,
+      (encoder, ndn_Tlv_SignatureInfo, encodeSignatureWithKeyLocatorValue,
        signatureInfo, 0);
   else if (signatureInfo->type == ndn_SignatureType_DigestSha256Signature)
     return ndn_TlvEncoder_writeNestedTlv
@@ -183,8 +156,11 @@ ndn_decodeTlvSignatureInfo
        (decoder, ndn_Tlv_SignatureType, &signatureType)))
     return error;
 
-  if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa) {
-    signatureInfo->type = ndn_SignatureType_Sha256WithRsaSignature;
+  if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithRsa ||
+      signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa) {
+    // Assume that the ndn_SignatureType enum has the same values as the TLV
+    // signature types.
+    signatureInfo->type = signatureType;
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
       return error;
@@ -198,12 +174,6 @@ ndn_decodeTlvSignatureInfo
       ndn_Blob_initialize
         (&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
 #endif
-  }
-  else if (signatureType == ndn_Tlv_SignatureType_SignatureSha256WithEcdsa) {
-    signatureInfo->type = ndn_SignatureType_Sha256WithEcdsaSignature;
-    if ((error = ndn_decodeTlvKeyLocator
-         (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
-      return error;
   }
   else if (signatureType == ndn_Tlv_SignatureType_DigestSha256)
     signatureInfo->type = ndn_SignatureType_DigestSha256Signature;
