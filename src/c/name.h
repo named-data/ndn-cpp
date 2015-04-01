@@ -113,6 +113,16 @@ static __inline void
 ndn_Name_clear(struct ndn_Name *self) { self->nComponents = 0; }
 
 /**
+ * Check if this name has the same component count and components as the given
+ * name.
+ * @param self A pointer to this ndn_Name struct.
+ * @param name A pointer to the other name to check.
+ * @return 1 if this matches the given name, otherwise 0. This always returns 1
+ * if this name is empty.
+ */
+int ndn_Name_equals(const struct ndn_Name *self, const struct ndn_Name *name);
+
+/**
  * Return true if the N components of this name are the same as the first N components of the given name.
  * @param self A pointer to the ndn_Name struct.
  * @param name A pointer to the other name to match.
