@@ -140,6 +140,16 @@ public:
   size() const { return nComponents; }
 
   /**
+   * Check if this name has the same component count and components as the given
+   * name.
+   * @param name The Name to check.
+   * @return true if this matches the given name, otherwise false. This always
+   * returns true if this name is empty.
+   */
+  bool
+  equals(const NameLite& name);
+
+  /**
    * Check if the N components of this name are the same as the first N
    * components of the given name.
    * @param name The Name to check.

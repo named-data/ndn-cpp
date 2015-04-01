@@ -66,6 +66,12 @@ NameLite::NameLite(ndn_NameComponent* components, size_t maxComponents)
 }
 
 bool
+NameLite::equals(const NameLite& name)
+{
+  return ndn_Name_equals(this, &name) != 0;
+}
+
+bool
 NameLite::match(const NameLite& name) const
 {
   return ndn_Name_match(this, &name) != 0;
