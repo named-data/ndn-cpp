@@ -32,7 +32,7 @@ UdpTransportLite::UdpTransportLite(DynamicUInt8ArrayLite& buffer)
 
 ndn_Error
 UdpTransportLite::connect
-  (char* host, unsigned short port, ElementListenerLite& elementListener)
+  (const char* host, unsigned short port, ElementListenerLite& elementListener)
 {
   return ndn_UdpTransport_connect(this, host, port, &elementListener);
 }

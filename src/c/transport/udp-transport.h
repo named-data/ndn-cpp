@@ -55,7 +55,7 @@ static __inline void ndn_UdpTransport_initialize
  * @return 0 for success, else an error code.
  */
 static __inline ndn_Error ndn_UdpTransport_connect
-  (struct ndn_UdpTransport *self, char *host, unsigned short port,
+  (struct ndn_UdpTransport *self, const char *host, unsigned short port,
    struct ndn_ElementListener *elementListener)
 {
   return ndn_SocketTransport_connect

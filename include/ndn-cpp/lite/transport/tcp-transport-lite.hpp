@@ -54,7 +54,7 @@ public:
    * @return 0 for success, else an error code.
    */
   ndn_Error
-  connect(char* host, unsigned short port, ElementListenerLite& elementListener);
+  connect(const char* host, unsigned short port, ElementListenerLite& elementListener);
 
   /**
    * Send data to the socket.

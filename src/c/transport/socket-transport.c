@@ -33,7 +33,7 @@
 #include <errno.h>
 
 ndn_Error ndn_SocketTransport_connect
-  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host,
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, const char *host,
    unsigned short port, struct ndn_ElementListener *elementListener)
 {
   int socketDescriptor;

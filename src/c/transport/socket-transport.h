@@ -69,7 +69,7 @@ static __inline void ndn_SocketTransport_initialize
  * @return 0 for success, else an error code.
  */
 ndn_Error ndn_SocketTransport_connect
-  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host,
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, const char *host,
    unsigned short port, struct ndn_ElementListener *elementListener);
 
 /**

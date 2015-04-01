@@ -34,7 +34,7 @@ ArduinoYunTcpTransportLite::ArduinoYunTcpTransportLite
 
 ndn_Error
 ArduinoYunTcpTransportLite::connect
-  (char* host, int port, ElementListenerLite& elementListener)
+  (const char* host, int port, ElementListenerLite& elementListener)
 {
   ndn_ElementReader_reset(&elementReader_, &elementListener);
 
