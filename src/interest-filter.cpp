@@ -101,7 +101,7 @@ InterestFilter::makePattern(const string& regexFilter)
 {
   if (regexFilter.size() == 0)
     // We don't expect this.
-    return regexFilter;
+    return "^$";
   
   string pattern;
   if (pattern[0] != '^')
