@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -65,7 +65,67 @@ public:
   /**
    * Create an InterestFilter to match any Interest whose name starts with the
    * given prefix and the remaining components match the regexFilter regular
-   * expression.
+   * expression as described in doesMatch.
+   * @param prefix The prefix Name. This makes a copy of the Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const Name& prefix, const std::string& regexFilter);
+
+  /**
+   * Create an InterestFilter to match any Interest whose name starts with the
+   * given prefix URI and the remaining components match the regexFilter regular
+   * expression as described in doesMatch.
+   * @param prefix The prefix Name. This makes a copy of the Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const Name& prefix, const char* regexFilter);
+
+  /**
+   * Create an InterestFilter to match any Interest whose name starts with the
+   * given prefix URI and the remaining components match the regexFilter regular
+   * expression as described in doesMatch.
+   * @param prefixUri The URI of the prefix Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const std::string& prefixUri, const std::string& regexFilter);
+
+  /**
+   * Create an InterestFilter to match any Interest whose name starts with the
+   * given prefix URI and the remaining components match the regexFilter regular
+   * expression as described in doesMatch.
+   * @param prefixUri The URI of the prefix Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const char* prefixUri, const std::string& regexFilter);
+
+  /**
+   * Create an InterestFilter to match any Interest whose name starts with the
+   * given prefix URI and the remaining components match the regexFilter regular
+   * expression as described in doesMatch.
+   * @param prefixUri The URI of the prefix Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const std::string& prefixUri, const char* regexFilter);
+
+  /**
+   * Create an InterestFilter to match any Interest whose name starts with the
+   * given prefix URI and the remaining components match the regexFilter regular
+   * expression as described in doesMatch.
+   * @param prefixUri The URI of the prefix Name.
+   * @param regexFilter The regular expression for matching the remaining name
+   * components.
+   */
+  InterestFilter(const char* prefixUri, const char* regexFilter);
+
+  /**
+   * Check if the given name matches this filter. Match if name starts with this
+   * filter's prefix. If this filter has the optional regexFilter then the
+   * remaining components match the regexFilter regular expression.
    * For example, the following InterestFilter:
    *
    *    InterestFilter("/hello", "<world><>+")
@@ -80,64 +140,6 @@ public:
    * Note that the regular expression will need to match all remaining components
    * (e.g., there are implicit heading `^` and trailing `$` symbols in the
    * regular expression).
-   * @param prefix The prefix Name. This makes a copy of the Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const Name& prefix, const std::string& regexFilter);
-
-  /**
-   * Create an InterestFilter to match any Interest whose name starts with the
-   * given prefix URI and the remaining components match the regexFilter regular
-   * expression. Fox examples, see InterestFilter(Name prefix, string regexFilter).
-   * @param prefix The prefix Name. This makes a copy of the Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const Name& prefix, const char* regexFilter);
-
-  /**
-   * Create an InterestFilter to match any Interest whose name starts with the
-   * given prefix URI and the remaining components match the regexFilter regular
-   * expression. Fox examples, see InterestFilter(Name prefix, string regexFilter).
-   * @param prefixUri The URI of the prefix Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const std::string& prefixUri, const std::string& regexFilter);
-
-  /**
-   * Create an InterestFilter to match any Interest whose name starts with the
-   * given prefix URI and the remaining components match the regexFilter regular
-   * expression. Fox examples, see InterestFilter(Name prefix, string regexFilter).
-   * @param prefixUri The URI of the prefix Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const char* prefixUri, const std::string& regexFilter);
-
-  /**
-   * Create an InterestFilter to match any Interest whose name starts with the
-   * given prefix URI and the remaining components match the regexFilter regular
-   * expression. Fox examples, see InterestFilter(Name prefix, string regexFilter).
-   * @param prefixUri The URI of the prefix Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const std::string& prefixUri, const char* regexFilter);
-
-  /**
-   * Create an InterestFilter to match any Interest whose name starts with the
-   * given prefix URI and the remaining components match the regexFilter regular
-   * expression. Fox examples, see InterestFilter(Name prefix, string regexFilter).
-   * @param prefixUri The URI of the prefix Name.
-   * @param regexFilter The regular expression for matching the remaining name
-   * components.
-   */
-  InterestFilter(const char* prefixUri, const char* regexFilter);
-
-  /**
-   * Check if the given name matches this filter.
    * @param name The name to check against this filter.
    * @return True if name matches this filter, otherwise false.
    */
@@ -159,7 +161,7 @@ public:
   hasRegexFilter() const { return regexFilter_.size() != 0; }
 
   /**
-   * Get the regex filter. This is only valid if hasRegexFilter() is true.
+   * Get the regex filter. This is only valid if hasRegexFilter()is true.
    * @return The regular expression for matching the remaining name components.
    */
   const std::string&
