@@ -25,7 +25,7 @@
  * appeneded with the reading number and the content is the decimal 
  * reading of analogRead(0).
  * This communicates using the NDN-CPP Lite class ArduinoYunTcpTransportLite.
- * This works with examples/arduino-analog-reading-consumer.cpp .
+ * This works with examples/arduino/analog-reading-consumer.cpp .
  */
 
 #ifdef ARDUINO
