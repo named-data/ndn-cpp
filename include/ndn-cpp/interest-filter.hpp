@@ -159,7 +159,7 @@ public:
   hasRegexFilter() const { return regexFilter_.size() != 0; }
 
   /**
-   * Get the regex filter. This is only valid if hasRegexFilter()is true.
+   * Get the regex filter. This is only valid if hasRegexFilter() is true.
    * @return The regular expression for matching the remaining name components.
    */
   const std::string&
