@@ -309,6 +309,7 @@ TEST_F(TestInterestMethods, InterestFilterMatching)
   ASSERT_EQ(true,  InterestFilter("/a", "<b>").doesMatch(Name("/a/b")));
   ASSERT_EQ(false, InterestFilter("/a/b", "<b>").doesMatch(Name("/a/b")));
 
+  ASSERT_EQ(false, InterestFilter("/a/b", "<c>").doesMatch(Name("/a/b/c/b")));
   ASSERT_EQ(false, InterestFilter("/a/b", "<b>").doesMatch(Name("/a/b/c/b")));
   ASSERT_EQ(true,  InterestFilter("/a/b", "<>*<b>").doesMatch(Name("/a/b/c/b")));
 
