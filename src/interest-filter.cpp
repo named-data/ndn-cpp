@@ -83,8 +83,7 @@ InterestFilter::doesMatch(const Name& name) const
       return false;
 
     return regex_lib::sregex_iterator() != NdnRegexMatcher
-      (regexFilterPattern_,
-       name.getSubName(prefix_.size(), name.size() - prefix_.size())).iterator;
+      (regexFilterPattern_, name.getSubName(prefix_.size())).iterator;
 #else
     // We should not reach this point because the constructors for regexFilter
     // don't compile.
