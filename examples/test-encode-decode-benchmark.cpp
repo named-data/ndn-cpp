@@ -31,12 +31,9 @@
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
-#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
-#include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 // Hack: Hook directly into non-API functions.
-#include "../src/c/encoding/binary-xml-data.h"
 #include "../src/c/util/crypto.h"
 
 using namespace std;
@@ -422,7 +419,6 @@ benchmarkEncodeDataSecondsC
 
     // Assume the encoding buffer is big enough so we don't need to dynamically reallocate.
     DynamicUInt8ArrayLite output(encoding, maxEncodingLength, 0);
-    struct ndn_BinaryXmlEncoder binaryXmlEncoder;
     size_t signedPortionBeginOffset, signedPortionEndOffset;
 
     data.getSignature().getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
@@ -435,22 +431,12 @@ benchmarkEncodeDataSecondsC
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
 
       // Encode once to get the signed portion.
-      if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
-        ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, (ndn_DynamicUInt8Array*)&output);
-        if ((error = ndn_encodeBinaryXmlData
-             ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
-          cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-          return 0;
-        }
-      }
-      else {
-        size_t dummyEncodingLength;
-        if ((error = Tlv0_1_1WireFormatLite::encodeData
-             (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
-              output, &dummyEncodingLength))) {
-          cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
-          return 0;
-        }
+      size_t dummyEncodingLength;
+      if ((error = Tlv0_1_1WireFormatLite::encodeData
+           (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+            output, &dummyEncodingLength))) {
+        cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
+        return 0;
       }
 
       // Imitate MemoryPrivateKeyStorage::sign.
@@ -471,22 +457,11 @@ benchmarkEncodeDataSecondsC
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
     }
 
-    if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
-      ndn_BinaryXmlEncoder_initialize(&binaryXmlEncoder, (ndn_DynamicUInt8Array*)&output);
-      if ((error = ndn_encodeBinaryXmlData
-           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &binaryXmlEncoder))) {
-        cout << "Error in ndn_encodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-        return 0;
-      }
-      *encodingLength = binaryXmlEncoder.offset;
-    }
-    else {
-      if ((error = Tlv0_1_1WireFormatLite::encodeData
-           (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
-            output, encodingLength))) {
-        cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
-        return 0;
-      }
+    if ((error = Tlv0_1_1WireFormatLite::encodeData
+         (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+          output, encodingLength))) {
+      cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
+      return 0;
     }
   }
   double finish = getNowSeconds();
@@ -517,22 +492,11 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
 
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
-    if (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get()) {
-      ndn_BinaryXmlDecoder decoder;
-      ndn_BinaryXmlDecoder_initialize(&decoder, encoding, encodingLength);
-      if ((error = ndn_decodeBinaryXmlData
-           ((ndn_Data*)&data, &signedPortionBeginOffset, &signedPortionEndOffset, &decoder))) {
-        cout << "Error in ndn_decodeBinaryXmlData: " << ndn_getErrorString(error) << endl;
-        return 0;
-      }
-    }
-    else {
-      if ((error = Tlv0_1_1WireFormatLite::decodeData
-           (data, encoding, encodingLength, &signedPortionBeginOffset,
-            &signedPortionEndOffset))) {
-        cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
-        return 0;
-      }
+    if ((error = Tlv0_1_1WireFormatLite::decodeData
+         (data, encoding, encodingLength, &signedPortionBeginOffset,
+          &signedPortionEndOffset))) {
+      cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
+      return 0;
     }
 
     if (useCrypto) {
@@ -558,7 +522,7 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
 static void
 benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
 {
-  const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
+  const char *format = "TLV";
   Blob encoding;
   {
     int nIterations = useCrypto ? 5000 : 2000000;
@@ -583,7 +547,7 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
 static void
 benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
 {
-  const char *format = (WireFormat::getDefaultWireFormat() == BinaryXmlWireFormat::get() ? "ndnb" : "TLV ");
+  const char *format = "TLV";
   uint8_t encoding[1600];
   size_t encodingLength;
   {
@@ -604,23 +568,15 @@ int
 main(int argc, char** argv)
 {
   try {
-    // Make two passes, one for each wire format.
-    for (int i = 1; i <= 2; ++i) {
-      if (i == 1)
-        WireFormat::setDefaultWireFormat(BinaryXmlWireFormat::get());
-      else
-        WireFormat::setDefaultWireFormat(TlvWireFormat::get());
+    benchmarkEncodeDecodeDataCpp(false, false);
+    benchmarkEncodeDecodeDataCpp(true, false);
+    benchmarkEncodeDecodeDataCpp(false, true);
+    benchmarkEncodeDecodeDataCpp(true, true);
 
-      benchmarkEncodeDecodeDataCpp(false, false);
-      benchmarkEncodeDecodeDataCpp(true, false);
-      benchmarkEncodeDecodeDataCpp(false, true);
-      benchmarkEncodeDecodeDataCpp(true, true);
-
-      benchmarkEncodeDecodeDataC(false, false);
-      benchmarkEncodeDecodeDataC(true, false);
-      benchmarkEncodeDecodeDataC(false, true);
-      benchmarkEncodeDecodeDataC(true, true);
-    }
+    benchmarkEncodeDecodeDataC(false, false);
+    benchmarkEncodeDecodeDataC(true, false);
+    benchmarkEncodeDecodeDataC(false, true);
+    benchmarkEncodeDecodeDataC(true, true);
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
