@@ -54,6 +54,12 @@ NameLite::Component::toNumberWithPrefix
     (this, prefix, prefixLength, &result);
 }
 
+bool
+NameLite::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
+{
+  return ndn_NameComponent_hasPrefix(this, prefix, prefixLength);
+}
+
 int
 NameLite::Component::compare(const NameLite::Component& other) const
 {

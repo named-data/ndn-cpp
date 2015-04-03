@@ -85,6 +85,15 @@ public:
       (const uint8_t* prefix, size_t prefixLength, uint64_t& result) const;
 
     /**
+     * Check if this name component begins with the given prefix.
+     * @param prefix The required prefix of the component.
+     * @param prefixLength The length of prefix.
+     * @return True if this component begins with the prefix.
+     */
+    bool
+    hasPrefix(const uint8_t* prefix, size_t prefixLength) const;
+
+    /**
      * Compare this component to the other component using NDN component ordering.
      * A component is less if it is shorter, otherwise if equal length do a byte
      * comparison.
