@@ -60,6 +60,36 @@ NameLite::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
   return ndn_NameComponent_hasPrefix(this, prefix, prefixLength);
 }
 
+ndn_Error
+NameLite::Component::toSegment(uint64_t& result) const
+{
+  return ndn_NameComponent_toSegment(this, &result);
+}
+
+ndn_Error
+NameLite::Component::toSegmentOffset(uint64_t& result) const
+{
+  return ndn_NameComponent_toSegmentOffset(this, &result);
+}
+
+ndn_Error
+NameLite::Component::toVersion(uint64_t& result) const
+{
+  return ndn_NameComponent_toVersion(this, &result);
+}
+
+ndn_Error
+NameLite::Component::toTimestamp(uint64_t& result) const
+{
+  return ndn_NameComponent_toTimestamp(this, &result);
+}
+
+ndn_Error
+NameLite::Component::toSequenceNumber(uint64_t& result) const
+{
+  return ndn_NameComponent_toSequenceNumber(this, &result);
+}
+
 int
 NameLite::Component::compare(const NameLite::Component& other) const
 {
@@ -94,6 +124,58 @@ NameLite::append(const uint8_t* value, size_t valueLength)
 
 ndn_Error
 NameLite::append(const char *value) { return ndn_Name_appendString(this, value); }
+
+ndn_Error
+NameLite::appendSegment(uint64_t segment, uint8_t* buffer, size_t bufferLength)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, 0, 0)))
+    return error;
+  return ndn_NameComponent_setSegment
+    (&components[nComponents - 1], segment, buffer, bufferLength);
+}
+
+ndn_Error
+NameLite::appendSegmentOffset
+  (uint64_t segmentOffset, uint8_t* buffer, size_t bufferLength)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, 0, 0)))
+    return error;
+  return ndn_NameComponent_setSegmentOffset
+    (&components[nComponents - 1], segmentOffset, buffer, bufferLength);
+}
+
+ndn_Error
+NameLite::appendVersion(uint64_t version, uint8_t* buffer, size_t bufferLength)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, 0, 0)))
+    return error;
+  return ndn_NameComponent_setVersion
+    (&components[nComponents - 1], version, buffer, bufferLength);
+}
+
+ndn_Error
+NameLite::appendTimestamp(uint64_t timestamp, uint8_t* buffer, size_t bufferLength)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, 0, 0)))
+    return error;
+  return ndn_NameComponent_setTimestamp
+    (&components[nComponents - 1], timestamp, buffer, bufferLength);
+}
+
+ndn_Error
+NameLite::appendSequenceNumber
+  (uint64_t sequenceNumber, uint8_t* buffer, size_t bufferLength)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, 0, 0)))
+    return error;
+  return ndn_NameComponent_setSequenceNumber
+    (&components[nComponents - 1], sequenceNumber, buffer, bufferLength);
+}
 
 ndn_Error
 NameLite::set(const NameLite& other) { return ndn_Name_setFromName(this, &other); }

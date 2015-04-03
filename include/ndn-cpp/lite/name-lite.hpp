@@ -94,6 +94,63 @@ public:
     hasPrefix(const uint8_t* prefix, size_t prefixLength) const;
 
     /**
+     * Interpret this name component as a segment number according to NDN naming
+     * conventions for "Segment number" (marker 0x00).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param result Return the integer segment number.
+     * @return 0 for success, or an error code if the first byte of the
+     * component is not the expected marker.
+     */
+    ndn_Error
+    toSegment(uint64_t& result) const;
+
+    /**
+     * Interpret this name component as a segment byte offset according to NDN
+     * naming conventions for segment "Byte offset" (marker 0xFB).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param result Return the integer segment byte offset.
+     * @return 0 for success, or an error code if the first byte of the
+     * component is not the expected marker.
+     */
+    ndn_Error
+    toSegmentOffset(uint64_t& result) const;
+
+    /**
+     * Interpret this name component as a version number according to NDN naming
+     * conventions for "Versioning" (marker 0xFD). Note that this returns
+     * the exact number from the component without converting it to a time
+     * representation.
+     * @param result Return the integer version number.
+     * @return 0 for success, or an error code if the first byte of the
+     * component is not the expected marker.
+     */
+    ndn_Error
+    toVersion(uint64_t& result) const;
+
+    /**
+     * Interpret this name component as a timestamp  according to NDN naming
+     * conventions for "Timestamp" (marker 0xFC).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param result Return the number of microseconds since the UNIX epoch (Thursday,
+     * 1 January 1970) not counting leap seconds.
+     * @return 0 for success, or an error code if the first byte of the
+     * component is not the expected marker.
+     */
+    ndn_Error
+    toTimestamp(uint64_t& result) const;
+
+    /**
+     * Interpret this name component as a sequence number according to NDN naming
+     * conventions for "Sequencing" (marker 0xFE).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param result Return the integer sequence number.
+     * @return 0 for success, or an error code if the first byte of the
+     * component is not the expected marker.
+     */
+    ndn_Error
+    toSequenceNumber(uint64_t& result) const;
+
+    /**
      * Compare this component to the other component using NDN component ordering.
      * A component is less if it is shorter, otherwise if equal length do a byte
      * comparison.
@@ -217,6 +274,90 @@ public:
    */
   ndn_Error
   append(const char *value);
+
+  /**
+   * Append a component with the encoded segment number according to NDN
+   * naming conventions for "Segment number" (marker 0x00).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param segment The segment number.
+   * @param buffer The allocated buffer to hold the name component value. This
+   * buffer must remain valid during the life of the name component. It is the
+   * caller's responsibility to free this buffer if necessary when finished with it.
+   * @param bufferLength The number of bytes in the allocated buffer. This
+   * should be at least 9 bytes to hold a marker plus a 64-bit value.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array or if bufferLength is too small.
+   */
+  ndn_Error
+  appendSegment(uint64_t segment, uint8_t* buffer, size_t bufferLength);
+
+  /**
+   * Append a component with the encoded segment byte offset according to NDN
+   * naming conventions for segment "Byte offset" (marker 0xFB).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param segmentOffset The segment byte offset.
+   * @param buffer The allocated buffer to hold the name component value. This
+   * buffer must remain valid during the life of the name component. It is the
+   * caller's responsibility to free this buffer if necessary when finished with it.
+   * @param bufferLength The number of bytes in the allocated buffer. This
+   * should be at least 9 bytes to hold a marker plus a 64-bit value.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array or if bufferLength is too small.
+   */
+  ndn_Error
+  appendSegmentOffset
+    (uint64_t segmentOffset, uint8_t* buffer, size_t bufferLength);
+
+  /**
+   * Append a component with the encoded version number according to NDN
+   * naming conventions for "Versioning" (marker 0xFD).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * Note that this encodes the exact value of version without converting from a time representation.
+   * @param version The version number.
+   * @param buffer The allocated buffer to hold the name component value. This
+   * buffer must remain valid during the life of the name component. It is the
+   * caller's responsibility to free this buffer if necessary when finished with it.
+   * @param bufferLength The number of bytes in the allocated buffer. This
+   * should be at least 9 bytes to hold a marker plus a 64-bit value.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array or if bufferLength is too small.
+   */
+  ndn_Error
+  appendVersion(uint64_t version, uint8_t* buffer, size_t bufferLength);
+
+  /**
+   * Append a component with the encoded timestamp according to NDN naming
+   * conventions for "Timestamp" (marker 0xFC).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param timestamp The number of microseconds since the UNIX epoch (Thursday,
+   * 1 January 1970) not counting leap seconds.
+   * @param buffer The allocated buffer to hold the name component value. This
+   * buffer must remain valid during the life of the name component. It is the
+   * caller's responsibility to free this buffer if necessary when finished with it.
+   * @param bufferLength The number of bytes in the allocated buffer. This
+   * should be at least 9 bytes to hold a marker plus a 64-bit value.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array or if bufferLength is too small.
+   */
+  ndn_Error
+  appendTimestamp(uint64_t timestamp, uint8_t* buffer, size_t bufferLength);
+
+  /**
+   * Append a component with the encoded sequence number according to NDN naming
+   * conventions for "Sequencing" (marker 0xFE).
+   * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+   * @param sequenceNumber The sequence number.
+   * @param buffer The allocated buffer to hold the name component value. This
+   * buffer must remain valid during the life of the name component. It is the
+   * caller's responsibility to free this buffer if necessary when finished with it.
+   * @param bufferLength The number of bytes in the allocated buffer. This
+   * should be at least 9 bytes to hold a marker plus a 64-bit value.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array or if bufferLength is too small.
+   */
+  ndn_Error
+  appendSequenceNumber
+    (uint64_t sequenceNumber, uint8_t* buffer, size_t bufferLength);
 
   /**
    * Set this name to have the values from the other name.
