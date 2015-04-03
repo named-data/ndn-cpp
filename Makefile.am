@@ -28,7 +28,8 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
   bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
   bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
-  bin/test-publish-async-nfd bin/test-register-route
+  bin/test-publish-async-nfd bin/test-register-route \
+  bin/analog-reading-consumer
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -288,6 +289,9 @@ bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+
+bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
+bin_analog_reading_consumer_LDADD = libndn-cpp.la
 
 bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
