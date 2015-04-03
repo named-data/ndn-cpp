@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include "util/ndn_memory.h"
+#include "encoding/tlv/tlv-encoder.h"
 #include "name.h"
 
 uint64_t ndn_NameComponent_toNumber(const struct ndn_NameComponent *self)
@@ -83,6 +84,47 @@ ndn_NameComponent_hasPrefix
     return 1;
   else
     return 0;
+}
+
+ndn_Error
+ndn_NameComponent_setFromNumber
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t *buffer,
+   size_t bufferLength)
+{
+  struct ndn_DynamicUInt8Array output;
+  struct ndn_TlvEncoder encoder;
+  ndn_Error error;
+
+  ndn_DynamicUInt8Array_initialize(&output, buffer, bufferLength, 0);
+  ndn_TlvEncoder_initialize(&encoder, &output);
+
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, number)))
+    return error;
+  ndn_NameComponent_initialize(self, buffer, encoder.offset);
+
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_NameComponent_setFromNumberWithMarker
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t marker,
+   uint8_t *buffer, size_t bufferLength)
+{
+  struct ndn_DynamicUInt8Array output;
+  struct ndn_TlvEncoder encoder;
+  ndn_Error error;
+
+  ndn_DynamicUInt8Array_initialize(&output, buffer, bufferLength, 0);
+  ndn_TlvEncoder_initialize(&encoder, &output);
+
+  // Add the leading marker.
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, marker & 0xff)))
+    return error;
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, number)))
+    return error;
+  ndn_NameComponent_initialize(self, buffer, encoder.offset);
+
+  return NDN_ERROR_success;
 }
 
 int ndn_NameComponent_compare

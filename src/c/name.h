@@ -58,6 +58,89 @@ ndn_Error ndn_NameComponent_toNumberWithMarker
   (const struct ndn_NameComponent *self, uint8_t marker, uint64_t *result);
 
 /**
+ * Interpret this name component as a segment number according to NDN naming
+ * conventions for "Segment number" (marker 0x00) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param result Return the integer segment number.
+ * @return 0 for success, or an error code if the first byte of the
+ * component is not the expected marker.
+ */
+static __inline ndn_Error
+ndn_NameComponent_toSegment
+  (const struct ndn_NameComponent *self, uint64_t *result)
+{
+  return ndn_NameComponent_toNumberWithMarker(self, 0x00, result);
+}
+
+/**
+ * Interpret this name component as a segment byte offset according to NDN naming
+ * conventions for "Byte offset" (marker 0xFB) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param result Return the integer segment byte offset.
+ * @return 0 for success, or an error code if the first byte of the
+ * component is not the expected marker.
+ */
+static __inline ndn_Error
+ndn_NameComponent_toSegmentOffset
+  (const struct ndn_NameComponent *self, uint64_t *result)
+{
+  return ndn_NameComponent_toNumberWithMarker(self, 0xFB, result);
+}
+
+/**
+ * Interpret this name component as a version number according to NDN naming
+ * conventions for "Versioning" (marker 0xFD) and return an integer. Note that
+ * this returns the exact number from the component without converting it to a
+ * time representation.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param result Return the integer version number.
+ * @return 0 for success, or an error code if the first byte of the
+ * component is not the expected marker.
+ */
+static __inline ndn_Error
+ndn_NameComponent_toVersion
+  (const struct ndn_NameComponent *self, uint64_t *result)
+{
+  return ndn_NameComponent_toNumberWithMarker(self, 0xFD, result);
+}
+
+/**
+ * Interpret this name component as a timestamp according to NDN naming
+ * conventions for "Timestamp" (marker 0xFC) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param result Return the number of microseconds since the UNIX epoch
+ * (Thursday, 1 January 1970) not counting leap seconds.
+ * @return 0 for success, or an error code if the first byte of the
+ * component is not the expected marker.
+ */
+static __inline ndn_Error
+ndn_NameComponent_toTimestamp
+  (const struct ndn_NameComponent *self, uint64_t *result)
+{
+  return ndn_NameComponent_toNumberWithMarker(self, 0xFC, result);
+}
+
+/**
+ * Interpret this name component as a sequence number according to NDN naming
+ * conventions for "Sequencing" (marker 0xFE) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param result Return the integer sequence number.
+ * @return 0 for success, or an error code if the first byte of the
+ * component is not the expected marker.
+ */
+static __inline ndn_Error
+ndn_NameComponent_toSequenceNumber
+  (const struct ndn_NameComponent *self, uint64_t *result)
+{
+  return ndn_NameComponent_toNumberWithMarker(self, 0xFE, result);
+}
+
+/**
  * Interpret the name component as a network-ordered number with a prefix and return an integer.
  * @param self A pointer to the ndn_NameComponent struct.
  * @param prefix The required prefix of the component.
@@ -102,6 +185,153 @@ ndn_NameComponent_setFromNameComponent
   (struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
 {
   *self = *other;
+}
+
+/**
+ * Set this name component to have a value which is the nonNegativeInteger
+ * encoding of the number.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param number The number to be encoded.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 8 bytes to hold a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+ndn_Error
+ndn_NameComponent_setFromNumber
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t *buffer,
+   size_t bufferLength);
+
+/**
+ * Set this name component to have a value which is the marker appended with the
+ * nonNegativeInteger encoding of the number.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param number The number to be encoded.
+ * @param marker The marker to use as the first byte of the component.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+ndn_Error
+ndn_NameComponent_setFromNumberWithMarker
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t marker,
+   uint8_t *buffer, size_t bufferLength);
+
+/**
+ * Set this name component to have the encoded segment number according to NDN
+ * naming conventions for "Segment number" (marker 0x00).
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param segment The segment number.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+static __inline ndn_Error
+ndn_NameComponent_setSegment
+  (struct ndn_NameComponent *self, uint64_t segment, uint8_t* buffer,
+   size_t bufferLength)
+{
+  return ndn_NameComponent_setFromNumberWithMarker
+    (self, segment, 0x00, buffer, bufferLength);
+}
+
+/**
+ * Set this name component to have the encoded segment byte offset according to NDN
+ * naming conventions for segment "Byte offset" (marker 0xFB).
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param segmentOffset The segment byte offset.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+static __inline ndn_Error
+ndn_NameComponent_setSegmentOffset
+  (struct ndn_NameComponent *self, uint64_t segmentOffset, uint8_t* buffer,
+   size_t bufferLength)
+{
+  return ndn_NameComponent_setFromNumberWithMarker
+    (self, segmentOffset, 0xFB, buffer, bufferLength);
+}
+
+/**
+ * Set this name component to have the encoded version number according to NDN
+ * naming conventions for "Versioning" (marker 0xFD).
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * Note that this encodes the exact value of version without converting from a time representation.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param version The version number.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+static __inline ndn_Error
+ndn_NameComponent_setVersion
+  (struct ndn_NameComponent *self, uint64_t version, uint8_t* buffer,
+   size_t bufferLength)
+{
+  return ndn_NameComponent_setFromNumberWithMarker
+    (self, version, 0xFD, buffer, bufferLength);
+}
+
+/**
+ * Set this name component to have the encoded timestamp according to NDN naming
+ * conventions for "Timestamp" (marker 0xFC).
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param timestamp The number of microseconds since the UNIX epoch (Thursday,
+ * 1 January 1970) not counting leap seconds.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+static __inline ndn_Error
+ndn_NameComponent_setTimestamp
+  (struct ndn_NameComponent *self, uint64_t timestamp, uint8_t* buffer,
+   size_t bufferLength)
+{
+  return ndn_NameComponent_setFromNumberWithMarker
+    (self, timestamp, 0xFC, buffer, bufferLength);
+}
+
+/**
+ * Set this name component to have the encoded sequence number according to NDN naming
+ * conventions for "Sequencing" (marker 0xFE).
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param sequenceNumber The sequence number.
+ * @param buffer The allocated buffer to hold the name component value. This
+ * buffer must remain valid during the life of the name component. It is the
+ * caller's responsibility to free this buffer if necessary when finished with it.
+ * @param bufferLength The number of bytes in the allocated buffer. This
+ * should be at least 9 bytes to hold a marker plus a 64-bit value.
+ * @return 0 for success, or an error code if bufferLength is too small.
+ */
+static __inline ndn_Error
+ndn_NameComponent_setSequenceNumber
+  (struct ndn_NameComponent *self, uint64_t sequenceNumber, uint8_t* buffer,
+   size_t bufferLength)
+{
+  return ndn_NameComponent_setFromNumberWithMarker
+    (self, sequenceNumber, 0xFE, buffer, bufferLength);
 }
 
 /**
