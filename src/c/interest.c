@@ -18,16 +18,52 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "util/ndn_memory.h"
 #include "interest.h"
 
-int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2)
+ndn_Error
+ndn_Exclude_appendAny(struct ndn_Exclude *self)
 {
-  if (component1->value.length < component2->value.length)
-    return -1;
-  if (component1->value.length > component2->value.length)
-    return 1;
+  if (self->nEntries >= self->maxEntries)
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+  ndn_ExcludeEntry_initialize
+    (self->entries + self->nEntries, ndn_Exclude_ANY, 0, 0);
+  ++self->nEntries;
 
-  // The components are equal length.  Just do a byte compare.
-  return ndn_memcmp(component1->value.value, component2->value.value, component1->value.length);
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_Exclude_appendComponent
+  (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength)
+{
+  if (self->nEntries >= self->maxEntries)
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+  ndn_ExcludeEntry_initialize
+    (self->entries + self->nEntries, ndn_Exclude_COMPONENT, component,
+     componentLength);
+  ++self->nEntries;
+
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_Exclude_setFromExclude
+  (struct ndn_Exclude *self, const struct ndn_Exclude *other)
+{
+  size_t i;
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  if (other->nEntries > self->maxEntries)
+    return NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
+
+  self->nEntries = other->nEntries;
+  // If the two excludes share the entries array, we don't need to copy.
+  if (self->entries != other->entries) {
+    for (i = 0; i < other->nEntries; ++i)
+      ndn_ExcludeEntry_setFromExcludeEntry(&self->entries[i], &other->entries[i]);
+  }
+
+  return NDN_ERROR_success;
 }

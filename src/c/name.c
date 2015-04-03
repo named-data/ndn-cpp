@@ -20,9 +20,10 @@
 
 #include <string.h>
 #include "util/ndn_memory.h"
+#include "encoding/tlv/tlv-encoder.h"
 #include "name.h"
 
-uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
+uint64_t ndn_NameComponent_toNumber(const struct ndn_NameComponent *self)
 {
   uint64_t result = 0;
   size_t i;
@@ -34,7 +35,8 @@ uint64_t ndn_NameComponent_toNumber(struct ndn_NameComponent *self)
   return result;
 }
 
-ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, uint8_t marker, uint64_t *result)
+ndn_Error ndn_NameComponent_toNumberWithMarker
+  (const struct ndn_NameComponent *self, uint8_t marker, uint64_t *result)
 {
   uint64_t localResult;
   size_t i;
@@ -53,7 +55,8 @@ ndn_Error ndn_NameComponent_toNumberWithMarker(struct ndn_NameComponent *self, u
 }
 
 ndn_Error ndn_NameComponent_toNumberWithPrefix
-  (struct ndn_NameComponent *self, const uint8_t *prefix, size_t prefixLength, uint64_t *result)
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength, uint64_t *result)
 {
   uint64_t localResult;
   size_t i;
@@ -71,7 +74,93 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
   return NDN_ERROR_success;
 }
 
-int ndn_Name_match(struct ndn_Name *self, struct ndn_Name *name)
+int
+ndn_NameComponent_hasPrefix
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength)
+{
+  if (self->value.length >= prefixLength &&
+      ndn_memcmp(self->value.value, prefix, prefixLength) == 0)
+    return 1;
+  else
+    return 0;
+}
+
+ndn_Error
+ndn_NameComponent_setFromNumber
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t *buffer,
+   size_t bufferLength)
+{
+  struct ndn_DynamicUInt8Array output;
+  struct ndn_TlvEncoder encoder;
+  ndn_Error error;
+
+  ndn_DynamicUInt8Array_initialize(&output, buffer, bufferLength, 0);
+  ndn_TlvEncoder_initialize(&encoder, &output);
+
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, number)))
+    return error;
+  ndn_NameComponent_initialize(self, buffer, encoder.offset);
+
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_NameComponent_setFromNumberWithMarker
+  (struct ndn_NameComponent *self, uint64_t number, uint8_t marker,
+   uint8_t *buffer, size_t bufferLength)
+{
+  struct ndn_DynamicUInt8Array output;
+  struct ndn_TlvEncoder encoder;
+  ndn_Error error;
+
+  ndn_DynamicUInt8Array_initialize(&output, buffer, bufferLength, 0);
+  ndn_TlvEncoder_initialize(&encoder, &output);
+
+  // Add the leading marker.
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, marker & 0xff)))
+    return error;
+  if ((error = ndn_TlvEncoder_writeNonNegativeInteger(&encoder, number)))
+    return error;
+  ndn_NameComponent_initialize(self, buffer, encoder.offset);
+
+  return NDN_ERROR_success;
+}
+
+int ndn_NameComponent_compare
+  (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
+{
+  if (self->value.length < other->value.length)
+    return -1;
+  if (self->value.length > other->value.length)
+    return 1;
+
+  // The components are equal length.  Just do a byte compare.
+  return ndn_memcmp(self->value.value, other->value.value, self->value.length);
+}
+
+int ndn_Name_equals(const struct ndn_Name *self, const struct ndn_Name *name)
+{
+  int i;
+
+  if (self->nComponents != name->nComponents)
+    return 0;
+
+  // Check from last to first since the last components are more likely to differ.
+  for (i = self->nComponents - 1; i >= 0; --i) {
+    struct ndn_NameComponent *selfComponent = self->components + i;
+    struct ndn_NameComponent *nameComponent = name->components + i;
+
+    if (selfComponent->value.length != nameComponent->value.length ||
+        ndn_memcmp(selfComponent->value.value, nameComponent->value.value,
+                   selfComponent->value.length) != 0)
+      return 0;
+  }
+
+  return 1;
+}
+
+int ndn_Name_match(const struct ndn_Name *self, const struct ndn_Name *name)
 {
   int i;
 
@@ -106,4 +195,26 @@ ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t *value, 
 ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char *value)
 {
   return ndn_Name_appendComponent(self, (const uint8_t *)value, strlen(value));
+}
+
+ndn_Error
+ndn_Name_setFromName(struct ndn_Name *self, const struct ndn_Name *other)
+{
+  size_t i;
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  if (other->nComponents > self->maxComponents)
+    return NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name;
+
+  self->nComponents = other->nComponents;
+  // If the two names share the components array, we don't need to copy.
+  if (self->components != other->components) {
+    for (i = 0; i < other->nComponents; ++i)
+      ndn_NameComponent_setFromNameComponent
+        (&self->components[i], &other->components[i]);
+  }
+
+  return NDN_ERROR_success;
 }

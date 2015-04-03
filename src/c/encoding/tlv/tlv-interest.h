@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_INTEREST_H
 #define NDN_TLV_INTEREST_H
 
-#include "../../errors.h"
 #include "../../interest.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
@@ -32,7 +31,7 @@ extern "C" {
 
 ndn_Error
 ndn_encodeTlvInterest
-  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 ndn_Error

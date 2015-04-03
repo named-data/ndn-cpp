@@ -28,7 +28,8 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
   bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
   bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
-  bin/test-publish-async-nfd bin/test-register-route
+  bin/test-publish-async-nfd bin/test-register-route \
+  bin/analog-reading-consumer
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -36,9 +37,16 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/ndn-cpp-config.h \
   include/ndn-cpp/c/common.h \
   include/ndn-cpp/c/data-types.h \
+  include/ndn-cpp/c/errors.h \
   include/ndn-cpp/c/forwarding-flags.h \
   include/ndn-cpp/c/interest-types.h \
-  include/ndn-cpp/c/key-types.h
+  include/ndn-cpp/c/key-types.h \
+  include/ndn-cpp/c/name-types.h \
+  include/ndn-cpp/c/publisher-public-key-digest-types.h \
+  include/ndn-cpp/c/encoding/element-reader-types.h \
+  include/ndn-cpp/c/transport/transport-types.h \
+  include/ndn-cpp/c/util/blob-types.h \
+  include/ndn-cpp/c/util/dynamic-uint8-array-types.h
 
 # Public C++ headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_cpp_headers in include/Makefile.am.
@@ -67,6 +75,21 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/lite/common-lite.hpp \
+  include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/exclude-lite.hpp \
+  include/ndn-cpp/lite/interest-lite.hpp \
+  include/ndn-cpp/lite/key-locator-lite.hpp \
+  include/ndn-cpp/lite/meta-info-lite.hpp \
+  include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/signature-lite.hpp \
+  include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
+  include/ndn-cpp/lite/util/blob-lite.hpp \
+  include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -104,7 +127,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-entry.h \
-  src/c/forwarding-flags.c \
+  src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
@@ -122,6 +145,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/binary-xml.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
+  src/c/encoding/tlv-0_1_1-wire-format.c src/c/encoding/tlv-0_1_1-wire-format.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
@@ -151,6 +175,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
+  src/forwarding-flags.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
@@ -177,6 +202,20 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/lite/data-lite.cpp \
+  src/lite/exclude-lite.cpp \
+  src/lite/interest-lite.cpp \
+  src/lite/key-locator-lite.cpp \
+  src/lite/meta-info-lite.cpp \
+  src/lite/name-lite.cpp \
+  src/lite/signature-lite.cpp \
+  src/lite/encoding/element-listener-lite.cpp \
+  src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/transport/tcp-transport-lite.cpp \
+  src/lite/transport/udp-transport-lite.cpp \
+  src/lite/transport/unix-transport-lite.cpp \
+  src/lite/util/blob-lite.cpp \
+  src/lite/util/dynamic-uint8-array-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -250,6 +289,9 @@ bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+
+bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
+bin_analog_reading_consumer_LDADD = libndn-cpp.la
 
 bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \

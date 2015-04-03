@@ -36,10 +36,7 @@ public:
   /**
    * Create a new ForwardingFlags with "active" and "childInherit" set and all other flags cleared.
    */
-  ForwardingFlags()
-  {
-    ndn_ForwardingFlags_initialize(this);
-  }
+  ForwardingFlags();
 
   ForwardingFlags(const struct ndn_ForwardingFlags &forwardingFlagsStruct)
   : ndn_ForwardingFlags(forwardingFlagsStruct)

@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <openssl/ssl.h>
 #include <openssl/ec.h>
 #include <ndn-cpp/security//security-exception.hpp>
 #include "../../c/util/crypto.h"

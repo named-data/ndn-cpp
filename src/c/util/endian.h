@@ -24,6 +24,8 @@
 
 #if defined(__APPLE__)
 
+#define NDN_CPP_HAVE_ENDIAN_H 1
+
 #include <libkern/OSByteOrder.h>
 #define htobe16(x) OSSwapHostToBigInt16(x)
 #define htole16(x) OSSwapHostToLittleInt16(x)
@@ -39,6 +41,8 @@
 #define le64toh(x) OSSwapLittleToHostInt64(x)
 
 #elif defined(_WIN32)
+
+#define NDN_CPP_HAVE_ENDIAN_H 1
 
 #include <WinSock2.h>
 #include <stdint.h>
@@ -75,10 +79,20 @@ static __inline uint64_t be64toh(uint64_t x) { return htons(1) == 1 ? x : (((uin
 //#define le64toh(x)
 
 #elif defined(__FreeBSD__)
+
+#define NDN_CPP_HAVE_ENDIAN_H 1
 #include <sys/endian.h>
+
+#elif defined(ARDUINO)
+
+#define NDN_CPP_HAVE_ENDIAN_H 0
+
 #else
+
 // Linux, Cygwin, etc.
+#define NDN_CPP_HAVE_ENDIAN_H 1
 #include <endian.h>
+
 #endif
 
 #endif

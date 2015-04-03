@@ -27,9 +27,10 @@
 #include "transport.hpp"
 
 struct ndn_UnixTransport;
-struct ndn_ElementReader;
 
 namespace ndn {
+
+class DynamicUInt8Vector;
 
 class UnixTransport : public Transport {
 public:
@@ -100,13 +101,10 @@ public:
    */
   virtual void close();
 
-  ~UnixTransport();
-
 private:
   ptr_lib::shared_ptr<struct ndn_UnixTransport> transport_;
+  ptr_lib::shared_ptr<DynamicUInt8Vector> elementBuffer_;
   bool isConnected_;
-  // TODO: This belongs in the socket listener.
-  ptr_lib::shared_ptr<struct ndn_ElementReader> elementReader_;
 };
 
 }

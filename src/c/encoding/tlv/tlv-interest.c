@@ -31,7 +31,7 @@
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Exclude *exclude = (struct ndn_Exclude *)context;
 
@@ -56,6 +56,7 @@ encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;
 }
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest
  * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
@@ -64,7 +65,8 @@ encodeExcludeValue(void *context, struct ndn_TlvEncoder *encoder)
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeKeyLocatorSelectorPublisherPublicKeyDigestValue
+  (const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
 
@@ -75,6 +77,7 @@ encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncod
 
   return NDN_ERROR_success;
 }
+#endif
 
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
@@ -83,7 +86,7 @@ encodeKeyLocatorPublisherPublicKeyDigestValue(void *context, struct ndn_TlvEncod
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
   ndn_Error error;
@@ -96,6 +99,7 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_MaxSuffixComponents, interest->maxSuffixComponents)))
     return error;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted to see if we need to
   //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call
   //   with omitZeroLength true.)
@@ -109,10 +113,16 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
     if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
       if ((error = ndn_TlvEncoder_writeNestedTlv
            (encoder, ndn_Tlv_PublisherPublicKeyLocator,
-            encodeKeyLocatorPublisherPublicKeyDigestValue, interest, 0)))
+            encodeKeyLocatorSelectorPublisherPublicKeyDigestValue, interest, 0)))
         return error;
     }
   }
+#else
+  if ((error = ndn_TlvEncoder_writeNestedTlv
+       (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue,
+        &interest->keyLocator, 0)))
+    return error;
+#endif
 
   if (interest->exclude.nEntries > 0)
     if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
@@ -143,7 +153,7 @@ encodeSelectorsValue(void *context, struct ndn_TlvEncoder *encoder)
  *   that we can include signedPortionBeginOffset and signedPortionEndOffset.
  */
 struct InterestValueContext {
-  struct ndn_Interest *interest;
+  const struct ndn_Interest *interest;
   size_t *signedPortionBeginOffset;
   size_t *signedPortionEndOffset;
 };
@@ -155,11 +165,11 @@ struct InterestValueContext {
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
+encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
-  struct InterestValueContext *interestValueContext =
-    (struct InterestValueContext *)context;
-  struct ndn_Interest *interest = interestValueContext->interest;
+  const struct InterestValueContext *interestValueContext =
+    (const struct InterestValueContext *)context;
+  const struct ndn_Interest *interest = interestValueContext->interest;
   ndn_Error error;
   uint8_t nonceBuffer[4];
   struct ndn_Blob nonceBlob;
@@ -203,7 +213,7 @@ encodeInterestValue(void *context, struct ndn_TlvEncoder *encoder)
 
 ndn_Error
 ndn_encodeTlvInterest
-  (struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
   // Create the context to pass to encodeInterestValue.
@@ -237,24 +247,17 @@ decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
       if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
         return error;
 
-      // Add the component entry.
-      if (exclude->nEntries >= exclude->maxEntries)
-        return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
-      ndn_ExcludeEntry_initialize(exclude->entries + exclude->nEntries, ndn_Exclude_COMPONENT, component.value, component.length);
-      ++exclude->nEntries;
-
+      if ((error = ndn_Exclude_appendComponent
+           (exclude, component.value, component.length)))
+        return error;
       continue;
     }
 
     if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_Any, endOffset, &isAny)))
       return error;
     if (isAny) {
-      // Add the any entry.
-      if (exclude->nEntries >= exclude->maxEntries)
-        return NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude;
-      ndn_ExcludeEntry_initialize(exclude->entries + exclude->nEntries, ndn_Exclude_ANY, 0, 0);
-      ++exclude->nEntries;
-
+      if ((error = ndn_Exclude_appendAny(exclude)))
+        return error;
       continue;
     }
 
@@ -286,8 +289,10 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_MaxSuffixComponents, endOffset, &interest->maxSuffixComponents)))
     return error;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   // Initially set publisherPublicKeyDigest to none.
   ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
+#endif
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_PublisherPublicKeyLocator, endOffset, &gotExpectedType)))
     return error;
@@ -295,9 +300,11 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_PublisherPublicKeyLocator, &interest->keyLocator, decoder)))
       return error;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       // For backwards compatibility, also set the publisherPublicKeyDigest.
       interest->publisherPublicKeyDigest.publisherPublicKeyDigest = interest->keyLocator.keyData;
+#endif
   }
   else
     // Clear the key locator.
@@ -356,7 +363,9 @@ ndn_decodeTlvInterest
     // Set selectors to none.
     interest->minSuffixComponents = -1;
     interest->maxSuffixComponents = -1;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     ndn_PublisherPublicKeyDigest_initialize(&interest->publisherPublicKeyDigest);
+#endif
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
     interest->answerOriginKind = -1;

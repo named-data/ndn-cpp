@@ -58,6 +58,12 @@ typedef double ndn_MillisecondsSince1970;
  */
 static const size_t MAX_NDN_PACKET_SIZE = 8800;
 
+/**
+ * The size in bytes of a SHA-256 digest. We define this separately so that we
+ * don't have to include the openssl header everywhere.
+ */
+static const size_t ndn_SHA256_DIGEST_SIZE = 32;
+
 #ifdef __cplusplus
 }
 #endif

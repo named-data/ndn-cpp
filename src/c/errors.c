@@ -18,7 +18,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "errors.h"
+#include <ndn-cpp/c/errors.h>
 
 char *ndn_getErrorString(int error)
 {
@@ -45,8 +45,8 @@ char *ndn_getErrorString(int error)
     return      "EncodeTypeAndValue miscalculated N encoding bytes";
   case NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name:
     return      "Attempt to add a component past the maximum number of components allowed in the name";
-  case NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude:
-    return      "Read an entry past the maximum number of entries allowed in the exclude";
+  case NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude:
+    return      "Cannot add an entry past the maximum number of entries allowed in the exclude";
   case NDN_ERROR_findElementEnd_unexpected_close_tag:
     return      "FindElementEnd unexpected close tag";
   case NDN_ERROR_cannot_store_more_header_bytes_than_the_size_of_headerBuffer:
@@ -107,6 +107,10 @@ char *ndn_getErrorString(int error)
     return      "encodeSignatureInfo unrecognized SignatureType";
   case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:
     return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
+  case NDN_ERROR_Unimplemented_operation:
+    return      "Unimplemented operation";
+  case NDN_ERROR_ElementReader_ElementListener_is_not_specified:
+    return      "ElementReader ElementListener is not specified";
   default:
     return "unrecognized ndn_Error code";
   }

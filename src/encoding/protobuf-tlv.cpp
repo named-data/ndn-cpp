@@ -36,7 +36,7 @@ using namespace google::protobuf;
 namespace ndn {
 
 static void
-encodeMessageValue(void *context, TlvEncoder &encoder)
+encodeMessageValue(const void *context, TlvEncoder &encoder)
 {
   const Message& message = *(const Message *)context;
   const Reflection& reflection = *message.GetReflection();
@@ -51,7 +51,7 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
         if (field->type() == FieldDescriptor::TYPE_MESSAGE)
           encoder.writeNestedTlv
             (tlvType, encodeMessageValue,
-             (void*)&reflection.GetRepeatedMessage(message, field, i));
+             (const void*)&reflection.GetRepeatedMessage(message, field, i));
         else if (field->type() == FieldDescriptor::TYPE_UINT32)
           encoder.writeNonNegativeIntegerTlv
             (tlvType, (uint64_t)reflection.GetRepeatedUInt32(message, field, i));
@@ -83,7 +83,7 @@ encodeMessageValue(void *context, TlvEncoder &encoder)
         if (field->type() == FieldDescriptor::TYPE_MESSAGE)
           encoder.writeNestedTlv
             (tlvType, encodeMessageValue,
-             (void*)&reflection.GetMessage(message, field));
+             (const void*)&reflection.GetMessage(message, field));
         else if (field->type() == FieldDescriptor::TYPE_UINT32)
           encoder.writeNonNegativeIntegerTlv
             (tlvType, (uint64_t)reflection.GetUInt32(message, field));

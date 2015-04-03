@@ -23,7 +23,9 @@
 
 #include <sys/socket.h>
 #include <ndn-cpp/c/common.h>
-#include "../errors.h"
+#include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/transport/transport-types.h>
+#include "../encoding/element-reader.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,17 +37,22 @@ typedef enum {
   SOCKET_UNIX
 } ndn_SocketType;
 
-struct ndn_SocketTransport {
-  int socketDescriptor; /**< -1 if not connected */
-};
-
 /**
- * Initialize the ndn_SocketTransport struct with default values for no connection yet.
+ * Initialize the ndn_SocketTransport struct with default values for no 
+ * connection yet and to use the given buffer for the ElementReader. Note that
+ * the ElementReader is not valid until you call ndn_SocketTransport_connect.
  * @param self A pointer to the ndn_SocketTransport struct.
+ * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+ * save data before calling the elementListener (see ndn_SocketTransport_connect).
+ * The struct must remain valid during the entire life of this
+ * ndn_SocketTransport. If the buffer->realloc function pointer is 0, its array
+ * must be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
  */
-static inline void ndn_SocketTransport_initialize(struct ndn_SocketTransport *self)
+static __inline void ndn_SocketTransport_initialize
+  (struct ndn_SocketTransport *self, struct ndn_DynamicUInt8Array *buffer)
 {
   self->socketDescriptor = -1;
+  ndn_ElementReader_initialize(&self->elementReader, 0, buffer);
 }
 
 /**
@@ -56,9 +63,14 @@ static inline void ndn_SocketTransport_initialize(struct ndn_SocketTransport *se
  * @param host For SOCKET_TCP or SOCKET_UDP, the host to connect to. For
  * SOCKET_UNIX, the socket filename.
  * @param port The port to connect to (ignored for SOCKET_UNIX).
+ * @param elementListener A pointer to the ndn_ElementListener used by
+ * ndn_SocketTransport_processEvents, which remain valid during the life of this
+ * object or until replaced by the next call to connect.
  * @return 0 for success, else an error code.
  */
-ndn_Error ndn_SocketTransport_connect(struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host, unsigned short port);
+ndn_Error ndn_SocketTransport_connect
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, const char *host,
+   unsigned short port, struct ndn_ElementListener *elementListener);
 
 /**
  * Send data to the socket.
@@ -89,6 +101,25 @@ ndn_Error ndn_SocketTransport_receiveIsReady(struct ndn_SocketTransport *self, i
  */
 ndn_Error ndn_SocketTransport_receive
   (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength, size_t *nBytes);
+
+/**
+ * Process any data to receive.  For each element received, call
+ * (*elementListener->onReceivedElement)(element, elementLength) for the
+ * elementListener in the elementReader given to connect(). This is non-blocking
+ * and will return immediately if there is no data to receive.
+ * @param self A pointer to the ndn_SocketTransport struct.
+ * @param buffer A pointer to a buffer for receiving data. Note that this is
+ * only for temporary use and is not the way that this function supplies data.
+ * It supplies the data by calling the onReceivedElement callback.
+ * @param bufferLength The size of buffer. The buffer should be as large as
+ * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
+ * however may be less efficient due to multiple calls to socket receive and
+ * more processing by the ElementReader.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_SocketTransport_processEvents
+  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength);
 
 /**
  * Close the socket.

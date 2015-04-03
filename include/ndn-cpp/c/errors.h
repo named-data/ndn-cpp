@@ -38,7 +38,7 @@ typedef enum {
   NDN_ERROR_header_type_is_out_of_range,
   NDN_ERROR_encodeTypeAndValue_miscalculated_N_encoding_bytes,
   NDN_ERROR_attempt_to_add_a_component_past_the_maximum_number_of_components_allowed_in_the_name,
-  NDN_ERROR_read_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude,
+  NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude,
   NDN_ERROR_findElementEnd_unexpected_close_tag,
   NDN_ERROR_cannot_store_more_header_bytes_than_the_size_of_headerBuffer,
   NDN_ERROR_findElementEnd_cannot_read_header_type_and_value,
@@ -68,7 +68,9 @@ typedef enum {
   NDN_ERROR_TLV_length_does_not_equal_total_length_of_nested_TLVs,
   NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type,
   NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType,
-  NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh
+  NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh,
+  NDN_ERROR_Unimplemented_operation,
+  NDN_ERROR_ElementReader_ElementListener_is_not_specified
 } ndn_Error;
 
 /**

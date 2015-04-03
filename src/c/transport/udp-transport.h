@@ -27,17 +27,21 @@
 extern "C" {
 #endif
 
-struct ndn_UdpTransport {
-  struct ndn_SocketTransport base;
-};
-
 /**
- * Initialize the ndn_UdpTransport struct with default values for no connection yet.
+ * Initialize the ndn_UdpTransport struct with default values for no connection
+ * yet and to use the given buffer for the ElementReader. Note that
+ * the ElementReader is not valid until you call ndn_UdpTransport_connect.
  * @param self A pointer to the ndn_UdpTransport struct.
+ * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+ * save data before calling the elementListener (see ndn_SocketTransport_connect).
+ * The struct must remain valid during the entire life of this
+ * ndn_SocketTransport. If the buffer->realloc function pointer is 0, its array
+ * must be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
  */
-static inline void ndn_UdpTransport_initialize(struct ndn_UdpTransport *self)
+static __inline void ndn_UdpTransport_initialize
+  (struct ndn_UdpTransport *self, struct ndn_DynamicUInt8Array *buffer)
 {
-  ndn_SocketTransport_initialize(&self->base);
+  ndn_SocketTransport_initialize(&self->base, buffer);
 }
 
 /**
@@ -45,12 +49,17 @@ static inline void ndn_UdpTransport_initialize(struct ndn_UdpTransport *self)
  * @param self A pointer to the ndn_UdpTransport struct.
  * @param host The host to connect to.
  * @param port The port to connect to.
+ * @param elementListener A pointer to the ndn_ElementListener used by
+ * ndn_SocketTransport_processEvents, which remain valid during the life of this
+ * object or until replaced by the next call to connect.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_UdpTransport_connect
-  (struct ndn_UdpTransport *self, char *host, unsigned short port)
+static __inline ndn_Error ndn_UdpTransport_connect
+  (struct ndn_UdpTransport *self, const char *host, unsigned short port,
+   struct ndn_ElementListener *elementListener)
 {
-  return ndn_SocketTransport_connect(&self->base, SOCKET_UDP, host, port);
+  return ndn_SocketTransport_connect
+    (&self->base, SOCKET_UDP, host, port, elementListener);
 }
 
 /**
@@ -60,40 +69,32 @@ static inline ndn_Error ndn_UdpTransport_connect
  * @param dataLength The number of bytes in data.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_UdpTransport_send
+static __inline ndn_Error ndn_UdpTransport_send
   (struct ndn_UdpTransport *self, const uint8_t *data, size_t dataLength)
 {
   return ndn_SocketTransport_send(&self->base, data, dataLength);
 }
 
 /**
- * Check if there is data ready on the socket to be received with
- * ndn_UdpTransport_receive. This does not block, and returns immediately.
+ * Process any data to receive.  For each element received, call
+ * (*elementListener->onReceivedElement)(element, elementLength) for the
+ * elementListener in the elementReader given to connect(). This is non-blocking
+ * and will return immediately if there is no data to receive.
  * @param self A pointer to the ndn_UdpTransport struct.
- * @param receiveIsReady This will be set to 1 if data is ready, 0 if not.
+ * @param buffer A pointer to a buffer for receiving data. Note that this is
+ * only for temporary use and is not the way that this function supplies data.
+ * It supplies the data by calling the onReceivedElement callback.
+ * @param bufferLength The size of buffer. The buffer should be as large as
+ * resources permit up to MAX_NDN_PACKET_SIZE, but smaller sizes will work
+ * however may be less efficient due to multiple calls to socket receive and
+ * more processing by the ElementReader.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_UdpTransport_receiveIsReady
-  (struct ndn_UdpTransport *self, int *receiveIsReady)
+static __inline ndn_Error
+ndn_UdpTransport_processEvents
+  (struct ndn_UdpTransport *self, uint8_t *buffer, size_t bufferLength)
 {
-  return ndn_SocketTransport_receiveIsReady(&self->base, receiveIsReady);
-}
-
-/**
- * Receive data from the socket.  NOTE: This is a blocking call.
- * You should first call ndn_SocketTransport_receiveIsReady to make sure there
- * is data ready to receive.
- * @param self A pointer to the ndn_UdpTransport struct.
- * @param buffer A pointer to the buffer to receive the data.
- * @param bufferLength The maximum length of buffer.
- * @param nBytes Return the number of bytes received into buffer.
- * @return 0 for success, else an error code.
- */
-static inline ndn_Error ndn_UdpTransport_receive
-  (struct ndn_UdpTransport *self, uint8_t *buffer, size_t bufferLength,
-   size_t *nBytes)
-{
-  return ndn_SocketTransport_receive(&self->base, buffer, bufferLength, nBytes);
+  return ndn_SocketTransport_processEvents(&self->base, buffer, bufferLength);
 }
 
 /**
@@ -101,7 +102,7 @@ static inline ndn_Error ndn_UdpTransport_receive
  * @param self A pointer to the ndn_UdpTransport struct.
  * @return 0 for success, else an error code.
  */
-static inline ndn_Error ndn_UdpTransport_close(struct ndn_UdpTransport *self)
+static __inline ndn_Error ndn_UdpTransport_close(struct ndn_UdpTransport *self)
 {
   return ndn_SocketTransport_close(&self->base);
 }

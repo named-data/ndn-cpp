@@ -23,7 +23,7 @@
 
 #include <math.h>
 #include <ndn-cpp/c/common.h>
-#include <ndn-cpp/c/forwarding-flags.h>
+#include "forwarding-flags-impl.h"
 #include "name.h"
 #include "publisher-public-key-digest.h"
 
@@ -76,7 +76,7 @@ static __inline void ndn_ForwardingEntry_initialize
  * @deprecated Use freshnessPeriod.
  */
 static __inline int ndn_ForwardingEntry_getFreshnessSeconds
-  (struct ndn_ForwardingEntry *self)
+  (const struct ndn_ForwardingEntry *self)
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }

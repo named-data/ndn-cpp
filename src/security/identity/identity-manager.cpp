@@ -366,7 +366,7 @@ IdentityManager::signWithSha256(Data &data, WireFormat& wireFormat)
   SignedBlob encoding = data.wireEncode(wireFormat);
 
   // Digest and set the signature.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256
     (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
   data.getSignature()->setSignature
@@ -390,7 +390,7 @@ IdentityManager::signInterestWithSha256
   SignedBlob encoding = interest.wireEncode(wireFormat);
 
   // Digest and set the signature.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256
     (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
   signature.setSignature(Blob(signedPortionDigest, sizeof(signedPortionDigest)));

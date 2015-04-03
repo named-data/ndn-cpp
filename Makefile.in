@@ -107,7 +107,8 @@ noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-list-faces$(EXEEXT) bin/test-list-rib$(EXEEXT) \
 	bin/test-publish-async-ndnx$(EXEEXT) \
 	bin/test-publish-async-nfd$(EXEEXT) \
-	bin/test-register-route$(EXEEXT)
+	bin/test-register-route$(EXEEXT) \
+	bin/analog-reading-consumer$(EXEEXT)
 TESTS = $(check_PROGRAMS)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -172,6 +173,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/binary-xml-publisher-public-key-digest.lo \
 	src/c/encoding/binary-xml-structure-decoder.lo \
 	src/c/encoding/element-reader.lo \
+	src/c/encoding/tlv-0_1_1-wire-format.lo \
 	src/c/encoding/tlv/tlv-data.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
@@ -202,6 +204,7 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/binary-xml-publisher-public-key-digest.lo \
 	src/c/encoding/binary-xml-structure-decoder.lo \
 	src/c/encoding/element-reader.lo \
+	src/c/encoding/tlv-0_1_1-wire-format.lo \
 	src/c/encoding/tlv/tlv-data.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
@@ -217,8 +220,8 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/data.lo src/digest-sha256-signature.lo \
 	src/exclude.lo src/face.lo src/forwarding-entry.lo \
-	src/interest-filter.lo src/interest.lo src/key-locator.lo \
-	src/meta-info.lo src/name.lo src/node.lo \
+	src/forwarding-flags.lo src/interest-filter.lo src/interest.lo \
+	src/key-locator.lo src/meta-info.lo src/name.lo src/node.lo \
 	src/control-parameters.lo src/publisher-public-key-digest.lo \
 	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
@@ -229,6 +232,17 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-0_1_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
+	src/lite/data-lite.lo src/lite/exclude-lite.lo \
+	src/lite/interest-lite.lo src/lite/key-locator-lite.lo \
+	src/lite/meta-info-lite.lo src/lite/name-lite.lo \
+	src/lite/signature-lite.lo \
+	src/lite/encoding/element-listener-lite.lo \
+	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
+	src/lite/transport/tcp-transport-lite.lo \
+	src/lite/transport/udp-transport-lite.lo \
+	src/lite/transport/unix-transport-lite.lo \
+	src/lite/util/blob-lite.lo \
+	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
@@ -257,6 +271,11 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/segment-fetcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
+am_bin_analog_reading_consumer_OBJECTS =  \
+	examples/arduino/analog-reading-consumer.$(OBJEXT)
+bin_analog_reading_consumer_OBJECTS =  \
+	$(am_bin_analog_reading_consumer_OBJECTS)
+bin_analog_reading_consumer_DEPENDENCIES = libndn-cpp.la
 am_bin_test_chrono_chat_OBJECTS = examples/test-chrono-chat.$(OBJEXT) \
 	examples/chatbuf.pb.$(OBJEXT)
 bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
@@ -424,6 +443,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_analog_reading_consumer_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
@@ -447,6 +467,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
+	$(bin_analog_reading_consumer_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
@@ -923,9 +944,16 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/ndn-cpp-config.h \
   include/ndn-cpp/c/common.h \
   include/ndn-cpp/c/data-types.h \
+  include/ndn-cpp/c/errors.h \
   include/ndn-cpp/c/forwarding-flags.h \
   include/ndn-cpp/c/interest-types.h \
-  include/ndn-cpp/c/key-types.h
+  include/ndn-cpp/c/key-types.h \
+  include/ndn-cpp/c/name-types.h \
+  include/ndn-cpp/c/publisher-public-key-digest-types.h \
+  include/ndn-cpp/c/encoding/element-reader-types.h \
+  include/ndn-cpp/c/transport/transport-types.h \
+  include/ndn-cpp/c/util/blob-types.h \
+  include/ndn-cpp/c/util/dynamic-uint8-array-types.h
 
 
 # Public C++ headers.
@@ -955,6 +983,21 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/lite/common-lite.hpp \
+  include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/exclude-lite.hpp \
+  include/ndn-cpp/lite/interest-lite.hpp \
+  include/ndn-cpp/lite/key-locator-lite.hpp \
+  include/ndn-cpp/lite/meta-info-lite.hpp \
+  include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/signature-lite.hpp \
+  include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
+  include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
+  include/ndn-cpp/lite/util/blob-lite.hpp \
+  include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -993,7 +1036,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-entry.h \
-  src/c/forwarding-flags.c \
+  src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
@@ -1011,6 +1054,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/binary-xml.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
+  src/c/encoding/tlv-0_1_1-wire-format.c src/c/encoding/tlv-0_1_1-wire-format.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
@@ -1041,6 +1085,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/exclude.cpp \
   src/face.cpp \
   src/forwarding-entry.cpp \
+  src/forwarding-flags.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
@@ -1067,6 +1112,20 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/lite/data-lite.cpp \
+  src/lite/exclude-lite.cpp \
+  src/lite/interest-lite.cpp \
+  src/lite/key-locator-lite.cpp \
+  src/lite/meta-info-lite.cpp \
+  src/lite/name-lite.cpp \
+  src/lite/signature-lite.cpp \
+  src/lite/encoding/element-listener-lite.cpp \
+  src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/transport/tcp-transport-lite.cpp \
+  src/lite/transport/udp-transport-lite.cpp \
+  src/lite/transport/unix-transport-lite.cpp \
+  src/lite/util/blob-lite.cpp \
+  src/lite/util/dynamic-uint8-array-lite.cpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -1128,6 +1187,8 @@ bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
 bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
+bin_analog_reading_consumer_LDADD = libndn-cpp.la
 bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
   examples/face-status.pb.cc
@@ -1279,6 +1340,9 @@ src/c/encoding/binary-xml-structure-decoder.lo:  \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/element-reader.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
+src/c/encoding/tlv-0_1_1-wire-format.lo:  \
+	src/c/encoding/$(am__dirstamp) \
+	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/$(am__dirstamp):
 	@$(MKDIR_P) src/c/encoding/tlv
 	@: > src/c/encoding/tlv/$(am__dirstamp)
@@ -1349,6 +1413,8 @@ src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/forwarding-entry.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/forwarding-flags.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/interest-filter.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1399,6 +1465,64 @@ src/encoding/der/der-exception.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 src/encoding/der/der-node.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
+src/lite/$(am__dirstamp):
+	@$(MKDIR_P) src/lite
+	@: > src/lite/$(am__dirstamp)
+src/lite/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/$(DEPDIR)
+	@: > src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/data-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/exclude-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/interest-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/key-locator-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/meta-info-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/name-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/signature-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/encoding/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encoding
+	@: > src/lite/encoding/$(am__dirstamp)
+src/lite/encoding/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encoding/$(DEPDIR)
+	@: > src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+src/lite/encoding/element-listener-lite.lo:  \
+	src/lite/encoding/$(am__dirstamp) \
+	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+src/lite/encoding/tlv-0_1_1-wire-format-lite.lo:  \
+	src/lite/encoding/$(am__dirstamp) \
+	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+src/lite/transport/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/transport
+	@: > src/lite/transport/$(am__dirstamp)
+src/lite/transport/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/transport/$(DEPDIR)
+	@: > src/lite/transport/$(DEPDIR)/$(am__dirstamp)
+src/lite/transport/tcp-transport-lite.lo:  \
+	src/lite/transport/$(am__dirstamp) \
+	src/lite/transport/$(DEPDIR)/$(am__dirstamp)
+src/lite/transport/udp-transport-lite.lo:  \
+	src/lite/transport/$(am__dirstamp) \
+	src/lite/transport/$(DEPDIR)/$(am__dirstamp)
+src/lite/transport/unix-transport-lite.lo:  \
+	src/lite/transport/$(am__dirstamp) \
+	src/lite/transport/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/util
+	@: > src/lite/util/$(am__dirstamp)
+src/lite/util/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/util/$(DEPDIR)
+	@: > src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/blob-lite.lo: src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/dynamic-uint8-array-lite.lo:  \
+	src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/security/$(am__dirstamp):
 	@$(MKDIR_P) src/security
 	@: > src/security/$(am__dirstamp)
@@ -1544,6 +1668,22 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+examples/arduino/$(am__dirstamp):
+	@$(MKDIR_P) examples/arduino
+	@: > examples/arduino/$(am__dirstamp)
+examples/arduino/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) examples/arduino/$(DEPDIR)
+	@: > examples/arduino/$(DEPDIR)/$(am__dirstamp)
+examples/arduino/analog-reading-consumer.$(OBJEXT):  \
+	examples/arduino/$(am__dirstamp) \
+	examples/arduino/$(DEPDIR)/$(am__dirstamp)
+bin/$(am__dirstamp):
+	@$(MKDIR_P) bin
+	@: > bin/$(am__dirstamp)
+
+bin/analog-reading-consumer$(EXEEXT): $(bin_analog_reading_consumer_OBJECTS) $(bin_analog_reading_consumer_DEPENDENCIES) $(EXTRA_bin_analog_reading_consumer_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/analog-reading-consumer$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_analog_reading_consumer_OBJECTS) $(bin_analog_reading_consumer_LDADD) $(LIBS)
 examples/$(am__dirstamp):
 	@$(MKDIR_P) examples
 	@: > examples/$(am__dirstamp)
@@ -1554,9 +1694,6 @@ examples/test-chrono-chat.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 examples/chatbuf.pb.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
-bin/$(am__dirstamp):
-	@$(MKDIR_P) bin
-	@: > bin/$(am__dirstamp)
 
 bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-chrono-chat$(EXEEXT)
@@ -1761,6 +1898,7 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/*.$(OBJEXT)
 	-rm -f examples/*.$(OBJEXT)
+	-rm -f examples/arduino/*.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
 	-rm -f src/*.lo
 	-rm -f src/c/*.$(OBJEXT)
@@ -1777,6 +1915,14 @@ mostlyclean-compile:
 	-rm -f src/encoding/*.lo
 	-rm -f src/encoding/der/*.$(OBJEXT)
 	-rm -f src/encoding/der/*.lo
+	-rm -f src/lite/*.$(OBJEXT)
+	-rm -f src/lite/*.lo
+	-rm -f src/lite/encoding/*.$(OBJEXT)
+	-rm -f src/lite/encoding/*.lo
+	-rm -f src/lite/transport/*.$(OBJEXT)
+	-rm -f src/lite/transport/*.lo
+	-rm -f src/lite/util/*.$(OBJEXT)
+	-rm -f src/lite/util/*.lo
 	-rm -f src/security/*.$(OBJEXT)
 	-rm -f src/security/*.lo
 	-rm -f src/security/certificate/*.$(OBJEXT)
@@ -1826,6 +1972,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/arduino/$(DEPDIR)/analog-reading-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/data.Plo@am__quote@
@@ -1833,6 +1980,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-entry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-flags.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
@@ -1857,6 +2005,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-publisher-public-key-digest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/binary-xml-structure-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/element-reader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/tlv-0_1_1-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-decoder.Plo@am__quote@
@@ -1883,6 +2032,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/data-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/exclude-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/interest-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/key-locator-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/meta-info-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/name-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
@@ -2265,6 +2428,10 @@ clean-libtool:
 	-rm -rf src/c/util/.libs src/c/util/_libs
 	-rm -rf src/encoding/.libs src/encoding/_libs
 	-rm -rf src/encoding/der/.libs src/encoding/der/_libs
+	-rm -rf src/lite/.libs src/lite/_libs
+	-rm -rf src/lite/encoding/.libs src/lite/encoding/_libs
+	-rm -rf src/lite/transport/.libs src/lite/transport/_libs
+	-rm -rf src/lite/util/.libs src/lite/util/_libs
 	-rm -rf src/security/.libs src/security/_libs
 	-rm -rf src/security/certificate/.libs src/security/certificate/_libs
 	-rm -rf src/security/identity/.libs src/security/identity/_libs
@@ -2834,6 +3001,8 @@ distclean-generic:
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
 	-rm -f examples/$(DEPDIR)/$(am__dirstamp)
 	-rm -f examples/$(am__dirstamp)
+	-rm -f examples/arduino/$(DEPDIR)/$(am__dirstamp)
+	-rm -f examples/arduino/$(am__dirstamp)
 	-rm -f src/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/$(am__dirstamp)
 	-rm -f src/c/$(DEPDIR)/$(am__dirstamp)
@@ -2850,6 +3019,14 @@ distclean-generic:
 	-rm -f src/encoding/$(am__dirstamp)
 	-rm -f src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/encoding/der/$(am__dirstamp)
+	-rm -f src/lite/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/$(am__dirstamp)
+	-rm -f src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/encoding/$(am__dirstamp)
+	-rm -f src/lite/transport/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/transport/$(am__dirstamp)
+	-rm -f src/lite/util/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/util/$(am__dirstamp)
 	-rm -f src/security/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/$(am__dirstamp)
 	-rm -f src/security/certificate/$(DEPDIR)/$(am__dirstamp)
@@ -2877,7 +3054,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -2925,7 +3102,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

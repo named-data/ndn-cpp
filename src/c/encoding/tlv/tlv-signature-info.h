@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_SIGNATURE_INFO_H
 #define NDN_TLV_SIGNATURE_INFO_H
 
-#include "../../errors.h"
 #include "../../data.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
@@ -39,7 +38,7 @@ extern "C" {
  */
 ndn_Error
 ndn_encodeTlvSignatureInfo
-  (struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder);
+  (const struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder);
 
 /**
  * Decode as an NDN-TLV SignatureInfo and set the fields in signatureInfo.

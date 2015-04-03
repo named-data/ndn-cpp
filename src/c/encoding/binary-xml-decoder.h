@@ -22,7 +22,7 @@
 #define NDN_BINARYXMLDECODER_H
 
 #include <ndn-cpp/c/common.h>
-#include "../errors.h"
+#include <ndn-cpp/c/errors.h>
 #include "../util/blob.h"
 #include "binary-xml.h"
 

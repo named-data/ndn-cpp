@@ -23,7 +23,6 @@
 #define NDN_BINARYXMLDECODER_HPP
 
 #include <stdexcept>
-#include "../c/errors.h"
 #include "../c/encoding/binary-xml-decoder.h"
 
 using namespace std;

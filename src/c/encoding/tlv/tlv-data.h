@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_DATA_H
 #define NDN_TLV_DATA_H
 
-#include "../../errors.h"
 #include "../../data.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
@@ -42,7 +41,8 @@ extern "C" {
  */
 ndn_Error
 ndn_encodeTlvData
-  (struct ndn_Data *data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
+  (const struct ndn_Data *data, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 
 /**
  * Decode the data packet as NDN-TLV and set the fields in the data object.

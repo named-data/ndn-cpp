@@ -21,7 +21,6 @@
 #ifndef NDN_BINARYXMLINTEREST_H
 #define NDN_BINARYXMLINTEREST_H
 
-#include "../errors.h"
 #include "../interest.h"
 #include "binary-xml-encoder.h"
 #include "binary-xml-decoder.h"

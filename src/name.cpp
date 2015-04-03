@@ -39,7 +39,7 @@ static const char *WHITESPACE_CHARS = " \n\r\t";
  * Modify str in place to erase whitespace on the left.
  * @param str
  */
-static inline void
+static __inline void
 trimLeft(string& str)
 {
   size_t found = str.find_first_not_of(WHITESPACE_CHARS);
@@ -56,7 +56,7 @@ trimLeft(string& str)
  * Modify str in place to erase whitespace on the right.
  * @param str
  */
-static inline void
+static __inline void
 trimRight(string& str)
 {
   size_t found = str.find_last_not_of(WHITESPACE_CHARS);
@@ -160,6 +160,14 @@ Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) 
   return result;
 }
 
+bool
+Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
+{
+  struct ndn_NameComponent componentStruct;
+  get(componentStruct);
+  return ndn_NameComponent_hasPrefix(&componentStruct, prefix, prefixLength) != 0;
+}
+
 Name::Component
 Name::Component::fromNumber(uint64_t number)
 {
@@ -209,16 +217,10 @@ Name::Component::toNumber() const
   return ndn_NameComponent_toNumber(&componentStruct);
 }
 
-bool
-Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
-{
-  return value_.size() >= prefixLength && ndn_memcmp(value_.buf(), prefix, prefixLength) == 0;
-}
-
 int
 Name::Component::compare(const Name::Component& other) const
 {
-  // Imitate ndn_Exclude_compareComponents.
+  // Imitate ndn_NameComponent_compare.
   if (value_.size() < other.value_.size())
     return -1;
   if (value_.size() > other.value_.size())

@@ -21,7 +21,6 @@
 #ifndef NDN_BINARYXMLPUBLISHERPUBLICKEYDIGEST_H
 #define NDN_BINARYXMLPUBLISHERPUBLICKEYDIGEST_H
 
-#include "../errors.h"
 #include "../publisher-public-key-digest.h"
 #include "binary-xml-encoder.h"
 #include "binary-xml-decoder.h"

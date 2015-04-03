@@ -22,7 +22,6 @@
 #define NDN_BINARY_XML_KEY_LOCATOR_H
 
 #include "../key-locator.h"
-#include "../errors.h"
 #include "binary-xml-encoder.h"
 #include "binary-xml-decoder.h"
 

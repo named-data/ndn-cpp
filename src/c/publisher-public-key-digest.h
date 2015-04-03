@@ -21,20 +21,12 @@
 #ifndef NDN_PUBLISHERPUBLICKEYDIGEST_H
 #define NDN_PUBLISHERPUBLICKEYDIGEST_H
 
-#include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/publisher-public-key-digest-types.h>
 #include "util/blob.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * A PublisherPublicKeyDigest holds a pointer to the publisher public key digest value, if any.
- * We make a separate struct since this is used by multiple other structs.
- */
-struct ndn_PublisherPublicKeyDigest {
-  struct ndn_Blob publisherPublicKeyDigest; /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none */
-};
 
 /**
  * Initialize an ndn_PublisherPublicKeyDigest struct with 0 for none.

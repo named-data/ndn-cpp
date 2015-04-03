@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_KEY_LOCATOR_H
 #define NDN_TLV_KEY_LOCATOR_H
 
-#include "../../errors.h"
 #include "../../key-locator.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
@@ -37,7 +36,7 @@ extern "C" {
  * @return 0 for success, else an error code.
  */
 ndn_Error
-ndn_encodeTlvKeyLocatorValue(void *context, struct ndn_TlvEncoder *encoder);
+ndn_encodeTlvKeyLocatorValue(const void *context, struct ndn_TlvEncoder *encoder);
 
 /**
  * Expect the next element to be a TLV KeyLocator and decode into the ndn_KeyLocator struct.

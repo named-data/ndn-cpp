@@ -21,7 +21,7 @@
 #ifndef NDN_BINARYXMLENCODER_H
 #define NDN_BINARYXMLENCODER_H
 
-#include "../errors.h"
+#include <ndn-cpp/c/errors.h>
 #include "../util/dynamic-uint8-array.h"
 #include "../util/blob.h"
 #include "binary-xml.h"

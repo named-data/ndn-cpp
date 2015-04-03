@@ -22,26 +22,23 @@
 #define NDN_ELEMENT_LISTENER_H
 
 #include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** An ndn_ElementListener struct holds a function pointer onReceivedElement.  You can extend this struct with data that
- * will be passed to onReceivedElement.
- */
-struct ndn_ElementListener {
-  void (*onReceivedElement)(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength); /**< see ndn_ElementListener_initialize */
-};
-
 /**
- * Initialize an ndn_ElementListener struct to use the onReceivedElement function pointer.
+ * Initialize an ndn_ElementListener struct to use the onReceivedElement
+ * function pointer.
  * @param self pointer to the ndn_ElementListener struct
- * @param onReceivedElement pointer to a function which is called when an entire binary XML element is received.
- * self is the pointer to this ndn_ElementListener struct.  See ndn_ElementReader_onReceivedData.
+ * @param onReceivedElement When an entire packet element is received, call
+ * onReceivedElement(self, element, elementLength) where self is the pointer to
+ * this ndn_ElementListener struct, and element is a pointer to the array of
+ * length elementLength with the bytes of the element.
  */
 static __inline void ndn_ElementListener_initialize
-  (struct ndn_ElementListener *self, void (*onReceivedElement)(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength))
+  (struct ndn_ElementListener *self, ndn_OnReceivedElement onReceivedElement)
 {
   self->onReceivedElement = onReceivedElement;
 }

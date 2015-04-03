@@ -36,6 +36,7 @@ ndn_Error ndn_ElementReader_onReceivedData
         // Wait for more data.
         return NDN_ERROR_success;
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
       // The type codes for TLV Interest and Data packets are chosen to not
       //   conflict with the first byte of a binary XML packet, so we can
       //   just look at the first byte.
@@ -45,15 +46,19 @@ ndn_Error ndn_ElementReader_onReceivedData
       else
         // Binary XML.
         self->useTlv = 0;
+#endif
     }
 
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     if (self->useTlv) {
+#endif
       // Scan the input to check if a whole TLV element has been read.
       ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);
       if ((error = ndn_TlvStructureDecoder_findElementEnd(&self->tlvStructureDecoder, data, dataLength)))
         return error;
       gotElementEnd = self->tlvStructureDecoder.gotElementEnd;
       offset = self->tlvStructureDecoder.offset;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
     }
     else {
       // Scan the input to check if a whole binary XML element has been read.
@@ -63,16 +68,27 @@ ndn_Error ndn_ElementReader_onReceivedData
       gotElementEnd = self->binaryXmlStructureDecoder.gotElementEnd;
       offset = self->binaryXmlStructureDecoder.offset;
     }
+#endif
 
     if (gotElementEnd) {
+      if (!self->elementListener)
+        return NDN_ERROR_ElementReader_ElementListener_is_not_specified;
+      
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
-        // We have partial data from a previous call, so append this data and point to partialData.
-        if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, offset, self->partialDataLength)))
-          return error;
-        self->partialDataLength += offset;
+        if (self->gotPartialDataError) {
+          // We returned an error allocating the partialData, so it is not
+          // valid. Therefore, don't send it to the callback.
+        }
+        else {
+          // We have partial data from a previous call, so append this data and point to partialData.
+          if ((error = ndn_DynamicUInt8Array_copy(self->partialData, data, offset, self->partialDataLength)))
+            return error;
+          self->partialDataLength += offset;
 
-        (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData.array, self->partialDataLength);
+          (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData->array, self->partialDataLength);
+        }
+        
         // Assume we don't need to use partialData anymore until needed.
         self->usePartialData = 0;
       }
@@ -83,7 +99,9 @@ ndn_Error ndn_ElementReader_onReceivedData
       // Need to read a new object.
       data += offset;
       dataLength -= offset;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
       ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+#endif
       ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
       if (dataLength == 0)
         // No more data in the packet.
@@ -95,12 +113,19 @@ ndn_Error ndn_ElementReader_onReceivedData
       // Save remaining data for a later call.
       if (!self->usePartialData) {
         self->usePartialData = 1;
+        self->gotPartialDataError = 0;
         self->partialDataLength = 0;
       }
 
-      if ((error = ndn_DynamicUInt8Array_copy(&self->partialData, data, dataLength, self->partialDataLength)))
-        return error;
-      self->partialDataLength += dataLength;
+      if (!self->gotPartialDataError) {
+        if ((error = ndn_DynamicUInt8Array_copy
+             (self->partialData, data, dataLength, self->partialDataLength))) {
+          // Set gotPartialDataError so we won't call onReceivedElement with invalid data.
+          self->gotPartialDataError = 1;
+          return error;
+        }
+        self->partialDataLength += dataLength;
+      }
 
       return NDN_ERROR_success;
     }

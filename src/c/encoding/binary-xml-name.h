@@ -21,7 +21,6 @@
 #ifndef NDN_BINARYXMLNAME_H
 #define NDN_BINARYXMLNAME_H
 
-#include "../errors.h"
 #include "../name.h"
 #include "binary-xml-encoder.h"
 #include "binary-xml-decoder.h"

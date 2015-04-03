@@ -21,7 +21,6 @@
 #ifndef NDN_CRYPTO_H
 #define NDN_CRYPTO_H
 
-#include <openssl/ssl.h>
 #include <ndn-cpp/c/common.h>
 
 #ifdef __cplusplus
@@ -32,9 +31,25 @@ extern "C" {
  * Compute the sha-256 digest of data.
  * @param data Pointer to the input byte array.
  * @param dataLength The length of data.
- * @param digest A pointer to a buffer of size SHA256_DIGEST_LENGTH to receive the data.
+ * @param digest A pointer to a buffer of size ndn_SHA256_DIGEST_SIZE to receive
+ * the digest.
  */
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
+
+/**
+ * Compute the HMAC with sha-256 of data, as defined in
+ * http://tools.ietf.org/html/rfc2104#section-2 .
+ * @param key A pointer to buffer with the key.
+ * @param keyLength The length of key.
+ * @param data A pointer to the input byte array.
+ * @param dataLength The length of data.
+ * @param digest A pointer to a buffer of size ndn_SHA256_DIGEST_SIZE to receive
+ * the HMAC digest.
+ */
+void
+ndn_computeHmacWithSha256
+  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength, 
+   uint8_t *digest);
 
 /**
  * Fill the buffer with random bytes.

@@ -33,10 +33,12 @@
 #include <errno.h>
 
 ndn_Error ndn_SocketTransport_connect
-  (struct ndn_SocketTransport *self, ndn_SocketType socketType, char *host,
-   unsigned short port)
+  (struct ndn_SocketTransport *self, ndn_SocketType socketType, const char *host,
+   unsigned short port, struct ndn_ElementListener *elementListener)
 {
   int socketDescriptor;
+
+  ndn_ElementReader_reset(&self->elementReader, elementListener);
 
   if (socketType == SOCKET_UNIX) {
     struct sockaddr_un address;
@@ -163,6 +165,33 @@ ndn_Error ndn_SocketTransport_receive
   *nBytesOut = (size_t)nBytes;
 
   return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_SocketTransport_processEvents
+  (struct ndn_SocketTransport *self, uint8_t *buffer, size_t bufferLength)
+{
+  // Loop until there is no more data in the receive buffer.
+  while(1) {
+    int receiveIsReady;
+    ndn_Error error;
+    size_t nBytes;
+    if ((error = ndn_SocketTransport_receiveIsReady
+         (self, &receiveIsReady)))
+      return error;
+    if (!receiveIsReady)
+      return NDN_ERROR_success;
+
+    if ((error = ndn_SocketTransport_receive
+         (self, buffer, bufferLength, &nBytes)))
+      return error;
+    if (nBytes == 0)
+      return NDN_ERROR_success;
+
+    if ((error = ndn_ElementReader_onReceivedData
+         (&self->elementReader, buffer, nBytes)))
+      return error;
+  }
 }
 
 ndn_Error ndn_SocketTransport_close(struct ndn_SocketTransport *self)

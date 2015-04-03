@@ -21,19 +21,11 @@
 #ifndef NDN_BLOB_H
 #define NDN_BLOB_H
 
-#include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/util/blob-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * An ndn_Blob holds a pointer to a read-only pre-allocated buffer and its length.
- */
-struct ndn_Blob {
-  const uint8_t *value; /**< pointer to the pre-allocated buffer for the value. Must be treated as read only. */
-  size_t length;        /**< the number of bytes in value. */
-};
 
 /**
  * Initialize the ndn_Blob struct with the given value.
@@ -45,6 +37,17 @@ static __inline void ndn_Blob_initialize(struct ndn_Blob *self, const uint8_t *v
 {
   self->value = value;
   self->length = length;
+}
+
+/**
+ * Set this ndn_Blob struct to have the values from the other blob.
+ * @param self A pointer to this ndn_Blob struct.
+ * @param other A pointer to the other ndn_Blob to get values from.
+ */
+static __inline void
+ndn_Blob_setFromBlob(struct ndn_Blob *self, const struct ndn_Blob *other)
+{
+  *self = *other;
 }
 
 #ifdef __cplusplus

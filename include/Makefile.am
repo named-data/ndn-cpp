@@ -7,13 +7,20 @@
 # Public C headers.
 ndn_cpp_c_headers = \
   $(wildcard ndn-cpp/*.h) \
-  $(wildcard ndn-cpp/c/*.*)
+  $(wildcard ndn-cpp/c/*.*) \
+  $(wildcard ndn-cpp/c/encoding/*.*) \
+  $(wildcard ndn-cpp/c/transport/*.*) \
+  $(wildcard ndn-cpp/c/util/*.*)
 
 # Public C++ headers.
 # Use ndn-cpp/*.hpp instead of *.* to not overwrite *.h from above.
 ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/*.hpp) \
   $(wildcard ndn-cpp/encoding/*.*) \
+  $(wildcard ndn-cpp/lite/*.*) \
+  $(wildcard ndn-cpp/lite/encoding/*.*) \
+  $(wildcard ndn-cpp/lite/transport/*.*) \
+  $(wildcard ndn-cpp/lite/util/*.*) \
   $(wildcard ndn-cpp/security/*.*) \
   $(wildcard ndn-cpp/security/certificate/*.*) \
   $(wildcard ndn-cpp/security/identity/*.*) \

@@ -431,7 +431,7 @@ public:
 
   /**
    * Set this interest to use a copy of the given KeyLocator object.
-   * @note ou can also call getKeyLocator and change the key locator directly.
+   * @note You can also call getKeyLocator and change the key locator directly.
    * @param keyLocator The KeyLocator object. This makes a copy of the object.
    * If no key locator is specified, set to a new default KeyLocator(), or to a
    * KeyLocator with an unspecified type.

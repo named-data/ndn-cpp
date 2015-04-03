@@ -22,30 +22,26 @@
 #define NDN_BINARYXMLSTRUCTUREDECODER_H
 
 #include <ndn-cpp/c/common.h>
-#include "../errors.h"
+#include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct ndn_BinaryXmlStructureDecoder {
-  int gotElementEnd; /**< boolean */
-  size_t offset;
-  int level;
-  int state;
-  size_t headerLength;
-  int useHeaderBuffer; /**< boolean */
-  // 10 bytes is enough to hold an encoded header with a type and a 64 bit value.
-  uint8_t headerBuffer[10];
-  int nBytesToRead;
-};
 
 enum {
   ndn_BinaryXmlStructureDecoder_READ_HEADER_OR_CLOSE,
   ndn_BinaryXmlStructureDecoder_READ_BYTES
 };
 
-void ndn_BinaryXmlStructureDecoder_initialize(struct ndn_BinaryXmlStructureDecoder *self);
+void ndn_BinaryXmlStructureDecoder_reset
+  (struct ndn_BinaryXmlStructureDecoder *self);
+
+static __inline void ndn_BinaryXmlStructureDecoder_initialize
+  (struct ndn_BinaryXmlStructureDecoder *self)
+{
+  ndn_BinaryXmlStructureDecoder_reset(self);
+}
 
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check

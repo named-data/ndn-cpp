@@ -23,7 +23,6 @@
 #define NDN_TLV_DECODER_HPP
 
 #include <stdexcept>
-#include "../c/errors.h"
 #include "../c/encoding/tlv/tlv-decoder.h"
 
 using namespace std;

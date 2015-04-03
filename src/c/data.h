@@ -31,35 +31,6 @@
 extern "C" {
 #endif
 
-/** ndn_SignatureType defines constants for the Signature "type" field.
- * Note that the constants are the same as defined in the NDN-TLV spec, but we
- * keep a separate enum so that we aren't directly tied to the TLV code.
- */
-typedef enum {
-  ndn_SignatureType_DigestSha256Signature = 0,
-  ndn_SignatureType_Sha256WithRsaSignature = 1,
-  ndn_SignatureType_Sha256WithEcdsaSignature = 3
-} ndn_SignatureType;
-
-/**
- * An ndn_Signature struct holds the signature bits and other info representing 
- * the signature in a data packet or signed interest. We use one structure which
- * is a union of all the fields from the different known signature types. This
- * lets us avoid the infrastructure to simulate an abstract base class with
- * subclasses and virtual methods.
- */
-struct ndn_Signature {
-  ndn_SignatureType type;          /**< -1 for none */
-  struct ndn_Blob digestAlgorithm; /**< A Blob whose value is a pointer to a pre-allocated buffer.  0 for none.
-                                    *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
-  struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
-  struct ndn_Blob signature;
-  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
-  struct ndn_KeyLocator keyLocator;
-};
-
 /**
  * Initialize the ndn_Signature struct with values for none and the default digestAlgorithm.
  * @param self A pointer to the ndn_Signature struct.
@@ -88,14 +59,32 @@ static __inline void ndn_Signature_clear(struct ndn_Signature *self)
 }
 
 /**
- * An ndn_MetaInfo struct holds the meta info which is signed inside the data packet.
+ * Set this ndn_Signature struct to have the values from the other signature.
+ * @param self A pointer to the ndn_Signature struct.
+ * @param other A pointer to the other ndn_Signature to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's key locator keyName components array.
  */
-struct ndn_MetaInfo {
-  ndn_MillisecondsSince1970 timestampMilliseconds; /**< milliseconds since 1/1/1970. -1 for none */
-  ndn_ContentType type;                  /**< default is ndn_ContentType_DATA. -1 for none */
-  ndn_Milliseconds freshnessPeriod;      /**< -1 for none */
-  struct ndn_NameComponent finalBlockId; /**< has a pointer to a pre-allocated buffer.  0 for none */
-};
+static __inline ndn_Error
+ndn_Signature_setFromSignature
+  (struct ndn_Signature *self, const struct ndn_Signature *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  ndn_Blob_setFromBlob(&self->digestAlgorithm, &other->digestAlgorithm);
+  ndn_Blob_setFromBlob(&self->witness, &other->witness);
+  ndn_Blob_setFromBlob(&self->signature, &other->signature);
+  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
+  if ((error = ndn_KeyLocator_setFromKeyLocator
+       (&self->keyLocator, &other->keyLocator)))
+    return error;
+
+  return NDN_ERROR_success;
+}
 
 /**
  * Initialize the ndn_MetaInfo struct with values for none and the type to the default ndn_ContentType_BLOB.
@@ -112,7 +101,7 @@ static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 /**
  * @deprecated Use freshnessPeriod.
  */
-static __inline int ndn_MetaInfo_getFreshnessSeconds(struct ndn_MetaInfo *self)
+static __inline int ndn_MetaInfo_getFreshnessSeconds(const struct ndn_MetaInfo *self)
 {
   return self->freshnessPeriod < 0 ? -1 : (int)round(self->freshnessPeriod / 1000.0);
 }
@@ -125,12 +114,28 @@ static __inline void ndn_MetaInfo_setFreshnessSeconds(struct ndn_MetaInfo *self,
   self->freshnessPeriod = freshnessSeconds < 0 ? -1.0 : (double)freshnessSeconds * 1000.0;
 }
 
-struct ndn_Data {
-  struct ndn_Signature signature;
-  struct ndn_Name name;
-  struct ndn_MetaInfo metaInfo;
-  struct ndn_Blob content;     /**< A Blob with a pointer to the content. */
-};
+/**
+ * Set this ndn_MetaInfo struct to have the values from the other meta info.
+ * @param self A pointer to the ndn_MetaInfo struct.
+ * @param other A pointer to the other ndn_MetaInfo to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's array.
+ */
+static __inline ndn_Error
+ndn_MetaInfo_setFromMetaInfo
+  (struct ndn_MetaInfo *self, const struct ndn_MetaInfo *other)
+{
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  self->timestampMilliseconds = other->timestampMilliseconds;
+  self->type = other->type;
+  self->freshnessPeriod = other->freshnessPeriod;
+  ndn_NameComponent_setFromNameComponent(&self->finalBlockId, &other->finalBlockId);
+
+  return NDN_ERROR_success;
+}
 
 /**
  * Initialize an ndn_Data struct with the pre-allocated nameComponents and keyNameComponents,
@@ -149,6 +154,35 @@ static __inline void ndn_Data_initialize
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   ndn_MetaInfo_initialize(&self->metaInfo);
   ndn_Blob_initialize(&self->content, 0, 0);
+}
+
+/**
+ * Set this ndn_Data struct to have the values from the other data.
+ * @param self A pointer to the ndn_Data struct.
+ * @param other A pointer to the other ndn_Data to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's name or key locator keyName components array.
+ */
+static __inline ndn_Error
+ndn_Data_setFromData(struct ndn_Data *self, const struct ndn_Data *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  if ((error = ndn_Signature_setFromSignature
+       (&self->signature, &other->signature)))
+    return error;
+  if ((error = ndn_Name_setFromName(&self->name, &other->name)))
+    return error;
+  if ((error = ndn_MetaInfo_setFromMetaInfo
+       (&self->metaInfo, &other->metaInfo)))
+    return error;
+  ndn_Blob_setFromBlob(&self->content, &other->content);
+
+  return NDN_ERROR_success;
 }
 
 #ifdef __cplusplus

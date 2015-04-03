@@ -21,7 +21,6 @@
 #ifndef NDN_TLV_CONTROL_PARAMETERS_OPTIONS_H
 #define NDN_TLV_CONTROL_PARAMETERS_OPTIONS_H
 
-#include "../../errors.h"
 #include "../../control-parameters.h"
 #include "tlv-encoder.h"
 #include "tlv-decoder.h"
@@ -40,7 +39,7 @@ extern "C" {
  */
 ndn_Error
 ndn_encodeTlvControlParameters
-  (struct ndn_ControlParameters *controlParameters,
+  (const struct ndn_ControlParameters *controlParameters,
    struct ndn_TlvEncoder *encoder);
 
 // TODO: ndn_decodeControlParameters

@@ -31,14 +31,6 @@ extern "C" {
 #endif
 
 /**
- * An ndn_ExcludeEntry holds an ndn_ExcludeType, and if it is a COMPONENT, it holds a pointer to the component value.
- */
-struct ndn_ExcludeEntry {
-  ndn_ExcludeType type;
-  struct ndn_NameComponent component;
-};
-
-/**
  *
  * @param self pointer to the ndn_NameComponent struct
  * @param type one of the ndn_ExcludeType enum
@@ -52,13 +44,17 @@ static __inline void ndn_ExcludeEntry_initialize(struct ndn_ExcludeEntry *self, 
 }
 
 /**
- * An ndn_Exclude holds an array of ndn_ExcludeEntry.
+ * Set this exclude entry to have the values from the other exclude entry.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param other A pointer to the other ndn_NameComponent struct to get values from.
  */
-struct ndn_Exclude {
-  struct ndn_ExcludeEntry *entries;  /**< pointer to the array of entries. */
-  size_t maxEntries;                 /**< the number of elements in the allocated entries array */
-  size_t nEntries;                   /**< the number of entries in the exclude, 0 for no exclude */
-};
+static __inline void
+ndn_ExcludeEntry_setFromExcludeEntry
+  (struct ndn_ExcludeEntry *self, const struct ndn_ExcludeEntry *other)
+{
+  *self = *other;
+}
+
 /**
  * Initialize an ndn_Exclude struct with the entries array.
  * @param self A pointer to the ndn_Exclude struct.
@@ -73,32 +69,46 @@ static __inline void ndn_Exclude_initialize(struct ndn_Exclude *self, struct ndn
 }
 
 /**
- * Compare the components using NDN component ordering.
- * A component is less if it is shorter, otherwise if equal length do a byte comparison.
- * @param component1 A pointer to the first name component.
- * @param component2 A pointer to the second name component.
- * @return -1 if component1 is less than component2, 1 if greater or 0 if equal.
+ * Clear all the entries.
  */
-int ndn_Exclude_compareComponents(struct ndn_NameComponent *component1, struct ndn_NameComponent *component2);
+static __inline void
+ndn_Exclude_clear(struct ndn_Exclude *self)
+{
+  self->nEntries = 0;
+}
 
 /**
- * An ndn_Interest holds an ndn_Name and other fields for an interest.
+ * Append a new entry of type ndn_Exclude_ANY.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @return 0 for success, or an error code if there is no more room in the
+ * entries array (nEntries is already maxEntries).
  */
-struct ndn_Interest {
-  struct ndn_Name name;
-  int minSuffixComponents;  /**< -1 for none */
-  int maxSuffixComponents;  /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
-  struct ndn_KeyLocator keyLocator;
-  struct ndn_Exclude exclude;
-  int childSelector;        /**< -1 for none */
-  int answerOriginKind;     /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
-  int scope;                /**< -1 for none */
-  ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
-  struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
-};
+ndn_Error
+ndn_Exclude_appendAny(struct ndn_Exclude *self);
+
+/**
+ * Append a new entry of type ndn_Exclude_COMPONENT with the given component
+ * value.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @param component The bytes of the component.  This does not copy the bytes.
+ * @param componentLength The number of bytes in component.
+ * @return 0 for success, or an error code if there is no more room in the
+ * entries array (nEntries is already maxEntries).
+ */
+ndn_Error
+ndn_Exclude_appendComponent
+  (struct ndn_Exclude *self, const uint8_t* component, size_t componentLength);
+
+/**
+ * Set this exclude to have the values from the other exclude.
+ * @param self A pointer to the ndn_Exclude struct.
+ * @param other A pointer to the other ndn_Exclude struct to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's entries array.
+ */
+ndn_Error
+ndn_Exclude_setFromExclude
+  (struct ndn_Exclude *self, const struct ndn_Exclude *other);
 
 /**
  * Initialize an ndn_Interest struct with the pre-allocated nameComponents and excludeEntries,
@@ -135,12 +145,74 @@ static __inline void ndn_Interest_initialize
  * @param self A pointer to the ndn_Interest struct.
  * @return 1 if must be fresh, otherwise 0.
  */
-static __inline int ndn_Interest_getMustBeFresh(struct ndn_Interest *self)
+static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
 {
   if (self->answerOriginKind < 0)
     return 1;
   else
     return (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0 ? 1 : 0;
+}
+
+/**
+ * Set the MustBeFresh flag.
+ * @param self A pointer to the ndn_Interest struct.
+ * @param mustBeFresh 1 if the content must be fresh, otherwise 0. If
+ * you do not set this flag, the default value is 1.
+ * @return This Interest so that you can chain calls to update values.
+ */
+static __inline void
+ndn_Interest_setMustBeFresh(struct ndn_Interest *self, int mustBeFresh)
+{
+  if (self->answerOriginKind < 0) {
+    // It is is already the default where MustBeFresh is true.
+    if (!mustBeFresh)
+      // Set answerOriginKind so that getMustBeFresh returns false.
+      self->answerOriginKind = ndn_Interest_ANSWER_STALE;
+  }
+  else {
+    if (mustBeFresh)
+      // Clear the stale bit.
+      self->answerOriginKind &= ~ndn_Interest_ANSWER_STALE;
+    else
+      // Set the stale bit.
+      self->answerOriginKind |= ndn_Interest_ANSWER_STALE;
+  }
+}
+
+/**
+ * Set this ndn_Interest struct to have the values from the other interest.
+ * @param self A pointer to the ndn_Interest struct.
+ * @param other A pointer to the other ndn_Interest to get values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's name components array or exclude entries array.
+ */
+static __inline ndn_Error
+ndn_Interest_setFromInterest
+  (struct ndn_Interest *self, const struct ndn_Interest *other)
+{
+  ndn_Error error;
+
+  if (other == self)
+    // Setting to itself. Do nothing.
+    return NDN_ERROR_success;
+
+  if ((error = ndn_Name_setFromName(&self->name, &other->name)))
+    return error;
+  self->minSuffixComponents = other->minSuffixComponents;
+  self->maxSuffixComponents = other->maxSuffixComponents;
+  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
+  if ((error = ndn_Exclude_setFromExclude(&self->exclude, &other->exclude)))
+    return error;
+  self->childSelector = other->childSelector;
+  self->answerOriginKind = other->answerOriginKind;
+  self->scope = other->scope;
+  self->interestLifetimeMilliseconds = other->interestLifetimeMilliseconds;
+  ndn_Blob_setFromBlob(&self->nonce, &other->nonce);
+  if ((error = ndn_KeyLocator_setFromKeyLocator
+       (&self->keyLocator, &other->keyLocator)))
+    return error;
+
+  return NDN_ERROR_success;
 }
 
 #ifdef __cplusplus

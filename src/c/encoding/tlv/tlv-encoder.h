@@ -23,7 +23,7 @@
 #define NDN_TLV_ENCODER_H
 
 #include <math.h>
-#include "../../errors.h"
+#include <ndn-cpp/c/errors.h>
 #include "../../util/dynamic-uint8-array.h"
 #include "../../util/blob.h"
 #include "tlv.h"
@@ -182,7 +182,7 @@ ndn_TlvEncoder_writeNonNegativeInteger(struct ndn_TlvEncoder *self, uint64_t val
  * @return The number of bytes to encode the TLV.
  */
 static __inline size_t
-ndn_TlvEncoder_sizeOfBlobTlv(unsigned int type, struct ndn_Blob *value)
+ndn_TlvEncoder_sizeOfBlobTlv(unsigned int type, const struct ndn_Blob *value)
 {
   return ndn_TlvEncoder_sizeOfVarNumber((uint64_t)type) + ndn_TlvEncoder_sizeOfVarNumber((uint64_t)value->length) +
     value->length;
@@ -196,7 +196,8 @@ ndn_TlvEncoder_sizeOfBlobTlv(unsigned int type, struct ndn_Blob *value)
  * @return 0 for success, else an error code.
  */
 ndn_Error
-ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, unsigned int type, struct ndn_Blob *value);
+ndn_TlvEncoder_writeBlobTlvEnabled
+  (struct ndn_TlvEncoder *self, unsigned int type, const struct ndn_Blob *value);
 
 /**
  * Write the type, then the length of the blob then the blob value to self->output.  If self->enableOutput is 0,
@@ -207,7 +208,8 @@ ndn_TlvEncoder_writeBlobTlvEnabled(struct ndn_TlvEncoder *self, unsigned int typ
  * @return 0 for success, else an error code. If self->enableOutput is 0, this always returns NDN_ERROR_success.
  */
 static __inline ndn_Error
-ndn_TlvEncoder_writeBlobTlv(struct ndn_TlvEncoder *self, unsigned int type, struct ndn_Blob *value)
+ndn_TlvEncoder_writeBlobTlv
+  (struct ndn_TlvEncoder *self, unsigned int type, const struct ndn_Blob *value)
 {
   if (self->enableOutput)
     return ndn_TlvEncoder_writeBlobTlvEnabled(self, type, value);
@@ -228,7 +230,7 @@ ndn_TlvEncoder_writeBlobTlv(struct ndn_TlvEncoder *self, unsigned int type, stru
  */
 static __inline ndn_Error
 ndn_TlvEncoder_writeOptionalBlobTlv
-  (struct ndn_TlvEncoder *self, unsigned int type, struct ndn_Blob *value)
+  (struct ndn_TlvEncoder *self, unsigned int type, const struct ndn_Blob *value)
 {
   if (value->value && value->length > 0)
     return ndn_TlvEncoder_writeBlobTlv(self, type, value);
@@ -312,8 +314,9 @@ ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble(struct ndn_TlvEncode
  */
 ndn_Error
 ndn_TlvEncoder_writeNestedTlv
-  (struct ndn_TlvEncoder *self, unsigned int type, ndn_Error (*writeValue)(void *context, struct ndn_TlvEncoder *encoder),
-   void *context, int omitZeroLength);
+  (struct ndn_TlvEncoder *self, unsigned int type, 
+   ndn_Error (*writeValue)(const void *context, struct ndn_TlvEncoder *encoder),
+   const void *context, int omitZeroLength);
 
 #ifdef  __cplusplus
 }

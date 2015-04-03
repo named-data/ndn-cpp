@@ -22,23 +22,12 @@
 #define NDN_TLV_STRUCTURE_DECODER_H
 
 #include <ndn-cpp/c/common.h>
-#include "../../errors.h"
+#include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
-
-struct ndn_TlvStructureDecoder {
-  int gotElementEnd; /**< boolean */
-  size_t offset;
-  int state;
-  size_t headerLength;
-  int useHeaderBuffer; /**< boolean */
-  // 8 bytes is enough to hold the extended bytes in the length encoding where it is an 8-byte number.
-  uint8_t headerBuffer[8];
-  int nBytesToRead;
-  unsigned int firstOctet;
-};
 
 enum {
   ndn_TlvStructureDecoder_READ_TYPE,
@@ -49,11 +38,22 @@ enum {
 };
 
 /**
- * Initialize a ndn_TlvStructureDecoder struct.
+ * Reset this ndn_TlvStructureDecoder struct to the state created by
+ * ndn_TlvStructureDecoder_initialize.
  * @param self A pointer to the ndn_TlvStructureDecoder struct.
  */
 void
-ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self);
+ndn_TlvStructureDecoder_reset(struct ndn_TlvStructureDecoder *self);
+
+/**
+ * Initialize a ndn_TlvStructureDecoder struct.
+ * @param self A pointer to the ndn_TlvStructureDecoder struct.
+ */
+static __inline void
+ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
+{
+  ndn_TlvStructureDecoder_reset(self);
+}
 
 /**
  * Continue scanning input starting from self->offset to find the element end.  On return, you must check

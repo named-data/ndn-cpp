@@ -18,6 +18,11 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+/* Note: This file should be named forward-flags-types.h (like data-types.h) but
+ * we leave it as forwarding-flags.h for backwards compatibility with the
+ * include directory of old installations.
+ */
+
 #ifndef NDN_FORWARDING_FLAGS_H
 #define NDN_FORWARDING_FLAGS_H
 
@@ -40,43 +45,6 @@ struct ndn_ForwardingFlags {
   int tap;
   int captureOk;
 };
-
-/**
- * Initialize an ndn_ForwardingFlags struct with the default with "active" and "childInherit" set and all other flags cleared.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- */
-void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self);
-
-/**
- * Get an integer with the bits set according to the flags as used by the ForwardingEntry message.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @return An integer with the bits set.
- */
-int ndn_ForwardingFlags_getForwardingEntryFlags(struct ndn_ForwardingFlags *self);
-
-/**
- * Set the flags according to the bits in forwardingEntryFlags as used by the ForwardingEntry message.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @param flags An integer with the bits set.
- */
-void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *self, int forwardingEntryFlags);
-
-/**
- * Get an integer with the bits set according to the NFD forwarding flags as
- * used in the ControlParameters of the command interest.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @return An integer with the bits set.
- */
-int ndn_ForwardingFlags_getNfdForwardingFlags(struct ndn_ForwardingFlags *self);
-
-/**
- * Set the flags according to the NFD forwarding flags as used in the
- * ControlParameters of the command interest.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @param nfdForwardingFlags An integer with the bits set.
- */
-void ndn_ForwardingFlags_setNfdForwardingFlags
-  (struct ndn_ForwardingFlags *self, int nfdForwardingFlags);
 
 #ifdef __cplusplus
 }

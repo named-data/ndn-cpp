@@ -22,49 +22,57 @@
 #define NDN_ELEMENT_READER_H
 
 #include "element-listener.h"
-#include "../errors.h"
 #include "binary-xml-structure-decoder.h"
 #include "tlv/tlv-structure-decoder.h"
 #include "../util/dynamic-uint8-array.h"
+#include <ndn-cpp/c/encoding/element-reader-types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * A ndn_ElementReader lets you call ndn_ElementReader_onReceivedData multiple times which uses an
- * ndn_BinaryXmlStructureDecoder or ndn_TlvStructureDecoder as needed to detect the end of a binary XML or TLV element,
- * and calls (*elementListener->onReceivedElement)(element, elementLength) with the element.
- * This handles the case where a single call to onReceivedData may contain multiple elements.
- */
-struct ndn_ElementReader {
-  struct ndn_ElementListener *elementListener;
-  struct ndn_BinaryXmlStructureDecoder binaryXmlStructureDecoder;
-  struct ndn_TlvStructureDecoder tlvStructureDecoder;
-  int usePartialData;
-  struct ndn_DynamicUInt8Array partialData;
-  size_t partialDataLength;
-  int useTlv; /**< boolean */
-};
-
-/**
  * Initialize an ndn_ElementReader struct with the elementListener and a buffer for saving partial data.
  * @param self pointer to the ndn_ElementReader struct
- * @param elementListener pointer to the ndn_ElementListener used by ndn_ElementReader_onReceivedData.
- * @param buffer the allocated buffer.  If reallocFunction is null, this should 
- * be large enough to save a full element, perhaps MAX_NDN_PACKET_SIZE bytes.
- * @param bufferLength the length of the buffer
- * @param reallocFunction see ndn_DynamicUInt8Array_ensureLength.  This may be 0.
+ * @param elementListener pointer to the ndn_ElementListener used by 
+ * ndn_ElementReader_onReceivedData. If this is 0, you can set it later with
+ * ndn_ElementReader_reset.
+ * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to
+ * save data before calling the elementListener. The struct must remain valid
+ * during the entire life of this ndn_ElementReader. If the buffer->realloc
+ * function pointer is 0, its array must be large enough to save a full element,
+ * perhaps MAX_NDN_PACKET_SIZE bytes.
  */
 static __inline void ndn_ElementReader_initialize
   (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener,
-   uint8_t *buffer, size_t bufferLength, uint8_t * (*reallocFunction)(struct ndn_DynamicUInt8Array *self, uint8_t *, size_t))
+   struct ndn_DynamicUInt8Array *buffer)
 {
   self->elementListener = elementListener;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
   ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+#endif
   ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
+  self->partialData = buffer;
   self->usePartialData = 0;
-  ndn_DynamicUInt8Array_initialize(&self->partialData, buffer, bufferLength, reallocFunction);
+}
+
+/**
+ * Reset the state of this ElementReader to begin reading new data and use the
+ * given elementListener. Keep using the buffer provided to
+ * ndn_ElementReader_initialize.
+ * @param self pointer to the ndn_ElementReader struct.
+ * @param elementListener pointer to the ndn_ElementListener used by
+ * ndn_ElementReader_onReceivedData.
+ */
+static __inline void ndn_ElementReader_reset
+  (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener)
+{
+  self->elementListener = elementListener;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
+  ndn_BinaryXmlStructureDecoder_reset(&self->binaryXmlStructureDecoder);
+#endif
+  ndn_TlvStructureDecoder_reset(&self->tlvStructureDecoder);
+  self->usePartialData = 0;
 }
 
 /**
