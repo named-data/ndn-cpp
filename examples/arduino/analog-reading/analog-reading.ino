@@ -22,9 +22,10 @@
 // Note: To compile this sketch, you must fix NDN_CPP_ROOT in ndn_cpp_root.h .
 /** 
  * This Arduino (Yun) sketch registers the prefix /testarduino/voltage. When it
- * receives an interest it returns a data packet where the name is 
- * appeneded with the reading number and the content is the decimal 
- * reading of analogRead(0).
+ * receives an interest for /testarduino/voltage<reading number> it returns a 
+ * data packet where the content is the decimal reading of analogRead(0). The
+ * <reading number> is encoded as a version number component. This keeps track
+ * of the previously send <reading number> and only answers for newer numbers.
  * This communicates using the NDN-CPP Lite class ArduinoYunTcpTransportLite.
  * This works with examples/arduino/analog-reading-consumer.cpp .
  */
@@ -60,12 +61,7 @@ ArduinoYunTcpTransportLite transport(elementBuffer);
 uint8_t hmacKey[64];
 uint8_t hmacKeyDigest[ndn_SHA256_DIGEST_SIZE];
 
-// We will increment readingNumber to put in the data packet name.
-int readingNumber = 0;
-
-// Initialize prefixComponents in setup().
-ndn_NameComponent prefixComponents[2];
-NameLite prefix(prefixComponents, sizeof(prefixComponents));
+uint64_t previousReadingNumber = 0;
 
 /** 
  * Decode the element as an interest and check the prefix. 
@@ -86,22 +82,34 @@ replyToInterest(uint8_t *element, size_t elementLength)
         &signedPortionEndOffset)))
     return error;
   
-  // We expect the interest name to be /testarduino/voltage. We will append the reading number
-  // component in the response data packet, but don't accept it here since we don't return
-  // prefiously-generated readings.
-  if (!interest.getName().equals(prefix))
+  // We expect the interest name to be "/testarduino/voltage/<reading number>". 
+  // Check the size here. We construct the data name below and if it doesn't 
+  // match the interest prefix, then the forwarder will drop it.
+  if (interest.getName().size() != 3)
     // Ignore an unexpected prefix.
     return NDN_ERROR_success;
+
+  uint64_t requestedReadingNumber;
+  if ((error = interest.getName().get(2).toVersion(requestedReadingNumber)))
+    return error;
+  if (requestedReadingNumber > previousReadingNumber)
+    // Use the requested reading number. Normally, this is one more than the
+    // previous number, but allow jumps.
+    previousReadingNumber = requestedReadingNumber;
+  else {
+    // Ignore requests for previous reading numbers.
+    Serial.println("Skip old #");
+    return NDN_ERROR_success;
+  }
 
   // Create the response data packet.
   ndn_NameComponent dataNameComponents[3];
   DataLite data(dataNameComponents, sizeof(dataNameComponents) / sizeof(dataNameComponents[0]), 0, 0);
-  data.setName(interest.getName());
-  // Append the reading number to the name.
-  ++readingNumber;
-  char readingNumberBuffer[12];
-  itoa(readingNumber, readingNumberBuffer, 10);
-  data.getName().append(BlobLite((const uint8_t*)readingNumberBuffer, strlen(readingNumberBuffer)));
+  data.getName().append("testarduino");
+  data.getName().append("voltage");
+  // Append the requested number to the name.
+  data.getName().append(interest.getName().get(2));
+
   // Set the content to an analog reading.
   int reading = analogRead(0);
   char contentBuffer[12];
@@ -136,9 +144,11 @@ replyToInterest(uint8_t *element, size_t elementLength)
 	output, &encodingLength)))
     return error;
 
-  transport.send(encoding, encodingLength);  
+  transport.send(encoding, encodingLength);
   Serial.print("Sent reading #");
-  Serial.println(readingNumberBuffer);
+  char buf[12];
+  itoa((int)requestedReadingNumber, buf, 10);
+  Serial.println(buf);
 
   return NDN_ERROR_success;
 }
@@ -153,8 +163,7 @@ onReceivedElement(ndn::ElementListenerLite* self, uint8_t *element, size_t eleme
 
   ndn_Error error;
   if ((error = replyToInterest(element, elementLength))) {
-    Serial.print("OnInterest error "); 
-    Serial.println((int)error);
+    Serial.println("OnInterest error");
     return;
   }
 }
@@ -167,10 +176,6 @@ void setup() {
   Serial.begin(57600);
   while (!Serial); // Wait untilSerial is ready.
   
-  // Set the expected prefix.
-  prefix.append("testarduino");
-  prefix.append("voltage");
-  
   // Set hmacKey to a default test value.
   memset(hmacKey, 0, sizeof(hmacKey));
   // Set hmacKeyDigest to sha256(hmacKey).
@@ -181,7 +186,7 @@ void setup() {
   const char* host = "88.5.44.216";
   ndn_Error error;
   if ((error = transport.connect(host, 6363, elementListener))) {
-    Serial.println(error);
+    Serial.println("Connect error");
     return;
   }
   Serial.println("connected");
@@ -217,8 +222,7 @@ void loop() {
     // To save stack space, elementBufferBytes is only big enough for the interest packet.
   }
   else if (error) {
-    Serial.print("processEvents "); 
-    Serial.println(error);
+    Serial.println("processEvents error");
     return;
   }
 }

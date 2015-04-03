@@ -20,8 +20,8 @@
  */
 
 /**
- * This sends interests for /testarduino/voltage and prints the readings
- * returned by the Arduino sketch examples/arduino/analog-reading.
+ * This sends interests for /testarduino/voltage?<reading number> and prints the
+ * readings returned by the Arduino sketch examples/arduino/analog-reading.
  */
 
 #include <cstdlib>
@@ -33,13 +33,72 @@ using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
 
-static void
-processReading
-  (const ptr_lib::shared_ptr<const Interest>& interest,
-   const ptr_lib::shared_ptr<Data>& data, Face* face, bool* enabled);
+class Callbacks
+{
+public:
+  Callbacks(Face *face) {
+    face_ = face;
+    enabled_ = true;
+    expectedReadingNumber_ = 1;
+  }
 
-static void
-onTimeout(const ptr_lib::shared_ptr<const Interest>& interest, bool* enabled);
+  /**
+   * Express and interest for "/testarduino/voltage/<reading number>" for the
+   * expectedReadingNumber_.
+   */
+  void
+  expressInterestForReadingNumber()
+  {
+    Interest interest(Name("/testarduino/voltage"));
+    interest.getName().appendVersion(expectedReadingNumber_);
+    interest.setInterestLifetimeMilliseconds(2000);
+
+    face_->expressInterest
+      (interest, bind(&Callbacks::onData, this, _1, _2),
+       bind(&Callbacks::onTimeout, this, _1));
+  }
+
+  void
+  onData
+    (const ptr_lib::shared_ptr<const Interest>& interest,
+     const ptr_lib::shared_ptr<Data>& data)
+  {
+    cout << "Got data packet " << data->getName().toUri() << endl;
+
+    const size_t nExpectedComponents = 3;
+    if (data->getName().size() != nExpectedComponents) {
+      // We don't expect this to happen.
+      cout << "Expected " << nExpectedComponents << " but got " <<
+        data->getName().size() << ". Skipping." << endl;
+      enabled_ = false;
+      return;
+    }
+
+    uint64_t readingNumber = data->getName()[2].toVersion();
+    if (readingNumber != expectedReadingNumber_)
+      cout << "Expected reading #" << expectedReadingNumber_ << " but got #" <<
+        readingNumber << ". Skipping." << endl;
+    else {
+      cout << "Reading #" << readingNumber << ": " <<
+        data->getContent().toRawStr() << endl;
+
+      // Get the next reading.
+      ++expectedReadingNumber_;
+      expressInterestForReadingNumber();
+    }
+  }
+
+  void
+  onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
+  {
+    cout << "Time out for interest " << interest->getName().toUri() << endl;
+    enabled_ = false;
+  }
+
+  Face *face_;
+  bool enabled_;
+  uint64_t expectedReadingNumber_;
+};
 
 int main(int argc, char** argv)
 {
@@ -47,20 +106,13 @@ int main(int argc, char** argv)
     // The default Face connects to the local NFD.
     Face face;
 
-    // First get the latest reading (rightmost child) in the forwarder's content
-    // store, if any.
-    Name prefix("/testarduino/voltage");
-    Interest interest(prefix);
-    interest.setChildSelector(1);
-    interest.setInterestLifetimeMilliseconds(4000);
+    Callbacks callbacks(&face);
 
-    bool enabled = true;
-    face.expressInterest
-      (interest, bind(&processReading, _1, _2, &face, &enabled),
-       bind(&onTimeout, _1, &enabled));
+    // Send the first interest.
+    callbacks.expressInterestForReadingNumber();
 
-    // Loop calling processEvents until a callback sets enabled = false.
-    while (enabled) {
+    // Loop calling processEvents until a callback sets callbacks.enabled_ = false.
+    while (callbacks.enabled_) {
       face.processEvents();
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
@@ -69,58 +121,4 @@ int main(int argc, char** argv)
     cout << "exception: " << e.what() << endl;
   }
   return 0;
-}
-
-/**
- * This is called after expressing an interest for a reading. (The first answer
- * may be the latest reading from the forwarder's content store.) Express an
- * interest for the next reading.
- * @param expressedInterest The expressed interest.
- * @param data The reading data packet.
- * @param face The Face which is used to call expressInterest.
- * @param enabled On success or error, set *enabled = false.
- */
-static void
-processReading
-  (const ptr_lib::shared_ptr<const Interest>& expressedInterest,
-   const ptr_lib::shared_ptr<Data>& data, Face *face, bool* enabled)
-{
-  cout << "Got data packet " << data->getName().toUri() << endl;
-
-  const size_t nExpectedComponents = 3;
-  if (data->getName().size() != nExpectedComponents) {
-    // We don't expect this to happen.
-    cout << "Expected " << nExpectedComponents << " but got " <<
-      data->getName().size() << endl;
-    *enabled = false;
-    return;
-  }
-
-  cout << "Reading #" << data->getName()[2].getValue().toRawStr() << ": " <<
-    data->getContent().toRawStr() << endl;
-
-  // Exclude up to the reading number and get the lowest reading number
-  // (leftmost child) after that.
-  Interest interest(data->getName().getPrefix(2));
-  interest.getExclude().appendAny();
-  interest.getExclude().appendComponent(data->getName()[2]);
-  interest.setChildSelector(0);
-  interest.setInterestLifetimeMilliseconds(4000);
-
-  // Express the interest to call this callback again, looping forever.
-  face->expressInterest
-    (interest, bind(&processReading, _1, _2, face, enabled),
-     bind(&onTimeout, _1, enabled));
-}
-
-/**
- * This is called when the interest times out. Print a message and quit.
- * @param interest The timed-out interest.
- * @param enabled On success or error, set *enabled = false.
- */
-static void
-onTimeout(const ptr_lib::shared_ptr<const Interest>& interest, bool* enabled)
-{
-  cout << "Interest timed out for " << interest->toUri() << endl;
-  *enabled = false;
 }
