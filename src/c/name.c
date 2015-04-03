@@ -73,6 +73,18 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
   return NDN_ERROR_success;
 }
 
+int
+ndn_NameComponent_hasPrefix
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength)
+{
+  if (self->value.length >= prefixLength &&
+      ndn_memcmp(self->value.value, prefix, prefixLength) == 0)
+    return 1;
+  else
+    return 0;
+}
+
 int ndn_NameComponent_compare
   (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
 {

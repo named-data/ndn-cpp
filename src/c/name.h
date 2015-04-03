@@ -70,6 +70,18 @@ ndn_Error ndn_NameComponent_toNumberWithPrefix
    size_t prefixLength, uint64_t *result);
 
 /**
+ * Check if this name component begins with the given prefix.
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @param prefix The required prefix of the component.
+ * @param prefixLength The length of prefix.
+ * @return 1 if this component begins with the prefix, 0 if not.
+ */
+int
+ndn_NameComponent_hasPrefix
+  (const struct ndn_NameComponent *self, const uint8_t *prefix,
+   size_t prefixLength);
+
+/**
  * Compare this component to the other component using NDN component ordering.
  * A component is less if it is shorter, otherwise if equal length do a byte
  * comparison.

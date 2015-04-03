@@ -160,6 +160,14 @@ Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) 
   return result;
 }
 
+bool
+Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
+{
+  struct ndn_NameComponent componentStruct;
+  get(componentStruct);
+  return ndn_NameComponent_hasPrefix(&componentStruct, prefix, prefixLength) != 0;
+}
+
 Name::Component
 Name::Component::fromNumber(uint64_t number)
 {
@@ -207,12 +215,6 @@ Name::Component::toNumber() const
   struct ndn_NameComponent componentStruct;
   get(componentStruct);
   return ndn_NameComponent_toNumber(&componentStruct);
-}
-
-bool
-Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
-{
-  return value_.size() >= prefixLength && ndn_memcmp(value_.buf(), prefix, prefixLength) == 0;
 }
 
 int
