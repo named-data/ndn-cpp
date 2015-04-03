@@ -10,8 +10,12 @@ Changes
 * In Interest setter methods, return this so that you can chain calls to update values.
 * In configure, only link to the Boost regex library if HAVE_STD_REGEX==0.
 * Added class util/SegmentFetcher, ported from ndn-cxx. Use it in examples test-list-rib.
+* Added the public NDN-CPP Lite API in include/ndn-cpp/lite. See README-NDN-CPP-Lite.md.
 * examples: Added test-list-channels, test-list-faces, test-list-rib and
   test-register-route to query NFD.
+* examples: Added arduino/analog-reading-consumer.cpp and the related
+  Arduino sketch examples/arduino/analog-reading.
+* examples: Make test-encode-decode-benchmarks use NDN-CPP Lite to test C.
 * Unit tests: Added test-der-encode-decode tests for CertificateExtension.
 
 NDN-CPP v0.6 (2014-12-23)
