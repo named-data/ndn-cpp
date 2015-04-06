@@ -28,7 +28,7 @@
 namespace ndn {
 
 /**
- * SegmentFetcher is a utility class to fetch latest version of segmented data.
+ * SegmentFetcher is a utility class to the fetch latest version of segmented data.
  *
  * SegmentFetcher assumes that the data is named /<prefix>/<version>/<segment>,
  * where:
