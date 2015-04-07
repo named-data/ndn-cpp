@@ -117,7 +117,9 @@ replyToInterest(uint8_t *element, size_t elementLength)
   data.setContent(BlobLite((const uint8_t*)contentBuffer, strlen(contentBuffer)));
   
   // Set up the signature with the hmacKeyDigest key locator digest.
-  // TODO: Change to ndn_SignatureType_HmacWithSha256Signature.
+  // TODO: Change to ndn_SignatureType_HmacWithSha256Signature when
+  //   SignatureHmacWithSha256 is in the NDN-TLV Signature spec:
+  //   http://named-data.net/doc/ndn-tlv/signature.html
   data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
   data.getSignature().getKeyLocator().setType(ndn_KeyLocatorType_KEY_LOCATOR_DIGEST);
   data.getSignature().getKeyLocator().setKeyData(BlobLite(hmacKeyDigest, sizeof(hmacKeyDigest)));
