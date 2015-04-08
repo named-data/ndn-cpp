@@ -294,7 +294,7 @@ processRegisterResponse
      ", FaceId: " << controlParameters.face_id() <<
      ", Origin: " << controlParameters.origin() <<
      ", Cost: " << controlParameters.cost() <<
-     ", Flags: " << controlParameters.flags() << ")";
+     ", Flags: " << controlParameters.flags() << ")" << endl;
 }
 
 /**
