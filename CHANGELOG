@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.6 (2015-03-13)
+Interim changes since NDN-CPP v0.6 (2015-04-09)
 -----------------------------------------------
 
 Changes
@@ -11,6 +11,11 @@ Changes
 * In configure, only link to the Boost regex library if HAVE_STD_REGEX==0.
 * Added class util/SegmentFetcher, ported from ndn-cxx. Use it in examples test-list-rib.
 * Added the public NDN-CPP Lite API in include/ndn-cpp/lite. See README-NDN-CPP-Lite.md.
+* http://redmine.named-data.net/issues/2532#change-8836 In Face.registerPrefix,
+  if connected to a remote NFD then use localhop to do remote registration. (For
+  remote registration, the remote NFD must be configured for localhop_security.)
+  Added the optional method Face.isLocal() for the application to check if the
+  connection is local.
 * examples: Added test-list-channels, test-list-faces, test-list-rib and
   test-register-route to query NFD.
 * examples: Added arduino/analog-reading-consumer.cpp and the related
