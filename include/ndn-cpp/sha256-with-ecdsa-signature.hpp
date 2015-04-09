@@ -24,7 +24,6 @@
 
 #include "signature.hpp"
 #include "key-locator.hpp"
-#include "publisher-public-key-digest.hpp"
 #include "util/change-counter.hpp"
 
 namespace ndn {
