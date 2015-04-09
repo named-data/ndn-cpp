@@ -50,15 +50,14 @@ TcpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
 
   if (connectionInfo_.getHost() == "" ||
       connectionInfo_.getHost() != tcpConnectionInfo.getHost()) {
-    // Cache the result in isLocal_ and save connectionInfo_ for next time.
-    connectionInfo_ = tcpConnectionInfo;
-    // TODO: Properly look up the IP address and check for loopback.
     ndn_Error error;
     int intIsLocal;
     if ((error = ndn_TcpTransport_isLocal
          ((char *)tcpConnectionInfo.getHost().c_str(), &intIsLocal)))
       throw runtime_error(ndn_getErrorString(error));
 
+    // Cache the result in isLocal_ and save connectionInfo_ for next time.
+    connectionInfo_ = tcpConnectionInfo;
     isLocal_ = (intIsLocal != 0);
   }
 
