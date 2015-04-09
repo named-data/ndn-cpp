@@ -497,14 +497,22 @@ Node::nfdRegisterPrefix
   ControlParameters controlParameters;
   controlParameters.setName(*prefix);
 
-  Interest commandInterest("/localhost/nfd/rib/register");
+  Interest commandInterest;
+  if (isLocal()) {
+    commandInterest.setName(Name("/localhost/nfd/rib/register"));
+    // The interest is answered by the local host, so set a short timeout.
+    commandInterest.setInterestLifetimeMilliseconds(2000.0);
+  }
+  else {
+    commandInterest.setName(Name("/localhop/nfd/rib/register"));
+    // The host is remote, so set a longer timeout.
+    commandInterest.setInterestLifetimeMilliseconds(4000.0);
+  }
   // NFD only accepts TlvWireFormat packets.
   commandInterest.getName().append(controlParameters.wireEncode(*TlvWireFormat::get()));
   makeCommandInterest
     (commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
-  // The interest is answered by the local host, so set a short timeout.
-  commandInterest.setInterestLifetimeMilliseconds(2000.0);
 
   if (registeredPrefixId != 0)
     // Save the onInterest callback and send the registration interest.

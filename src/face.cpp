@@ -155,6 +155,12 @@ Face::processEvents()
   node_->processEvents();
 }
 
+bool
+Face::isLocal()
+{
+  return node_->isLocal();
+}
+
 void
 Face::shutdown()
 {

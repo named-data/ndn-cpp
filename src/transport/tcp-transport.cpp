@@ -37,9 +37,32 @@ TcpTransport::ConnectionInfo::~ConnectionInfo()
 
 TcpTransport::TcpTransport()
   : isConnected_(false), transport_(new struct ndn_TcpTransport),
-    elementBuffer_(new DynamicUInt8Vector(1000))
+    elementBuffer_(new DynamicUInt8Vector(1000)), connectionInfo_("", 0)
 {
   ndn_TcpTransport_initialize(transport_.get(), elementBuffer_.get());
+}
+
+bool
+TcpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
+{
+  const TcpTransport::ConnectionInfo& tcpConnectionInfo =
+    dynamic_cast<const TcpTransport::ConnectionInfo&>(connectionInfo);
+
+  if (connectionInfo_.getHost() == "" ||
+      connectionInfo_.getHost() != tcpConnectionInfo.getHost()) {
+    // Cache the result in isLocal_ and save connectionInfo_ for next time.
+    connectionInfo_ = tcpConnectionInfo;
+    // TODO: Properly look up the IP address and check for loopback.
+    ndn_Error error;
+    int intIsLocal;
+    if ((error = ndn_TcpTransport_isLocal
+         ((char *)tcpConnectionInfo.getHost().c_str(), &intIsLocal)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    isLocal_ = (intIsLocal != 0);
+  }
+
+  return isLocal_;
 }
 
 void

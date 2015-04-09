@@ -42,6 +42,12 @@ UnixTransport::UnixTransport()
   ndn_UnixTransport_initialize(transport_.get(), elementBuffer_.get());
 }
 
+bool
+UnixTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
+{
+  return ndn_UnixTransport_isLocal() != 0;
+}
+
 void
 UnixTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,

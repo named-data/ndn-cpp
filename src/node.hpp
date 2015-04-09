@@ -153,6 +153,14 @@ public:
   void
   onReceivedElement(const uint8_t *element, size_t elementLength);
 
+  /**
+   * Check if the face is local based on the current connection through the
+   * Transport; some Transport may cause network I/O (e.g. an IP host name lookup).
+   * @return True if the face is local, false if not.
+   */
+  bool
+  isLocal() { return transport_->isLocal(*connectionInfo_); }
+
   void
   shutdown();
 

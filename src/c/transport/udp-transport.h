@@ -45,6 +45,14 @@ static __inline void ndn_UdpTransport_initialize
 }
 
 /**
+ * Determine whether this transport is to a node on the current machine.
+ * UDP transports are always non-local.
+ * @return 0 because UDP transports are always non-local.
+ */
+static __inline int
+ndn_UdpTransport_isLocal() { return 0; }
+
+/**
  * Connect with UDP to the host:port.
  * @param self A pointer to the ndn_UdpTransport struct.
  * @param host The host to connect to.

@@ -42,6 +42,12 @@ UdpTransport::UdpTransport()
   ndn_UdpTransport_initialize(transport_.get(), elementBuffer_.get());
 }
 
+bool
+UdpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
+{
+  return ndn_UdpTransport_isLocal() != 0;
+}
+
 void
 UdpTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,

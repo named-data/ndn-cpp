@@ -30,6 +30,9 @@ UdpTransportLite::UdpTransportLite(DynamicUInt8ArrayLite& buffer)
   ndn_UdpTransport_initialize(this, &buffer);
 }
 
+bool
+UdpTransportLite::isLocal() { return ndn_UdpTransport_isLocal() != 0; }
+
 ndn_Error
 UdpTransportLite::connect
   (const char* host, unsigned short port, ElementListenerLite& elementListener)

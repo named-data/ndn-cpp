@@ -29,6 +29,9 @@ UnixTransportLite::UnixTransportLite(DynamicUInt8ArrayLite& buffer)
   ndn_UnixTransport_initialize(this, &buffer);
 }
 
+bool
+UnixTransportLite::isLocal() { return ndn_UnixTransport_isLocal() != 0; }
+
 ndn_Error
 UnixTransportLite::connect(char* filePath, ElementListenerLite& elementListener)
 {

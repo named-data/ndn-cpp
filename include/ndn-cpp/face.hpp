@@ -256,6 +256,15 @@ public:
   processEvents();
 
   /**
+   * Check if the face is local based on the current connection through the
+   * Transport; some Transport may cause network I/O (e.g. an IP host name lookup).
+   * @return True if the face is local, false if not.
+   * @note This is an experimental feature. This API may change in the future.
+   */
+  bool
+  isLocal();
+
+  /**
    * Shut down and disconnect this Face.
    */
   void

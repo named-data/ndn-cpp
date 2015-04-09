@@ -30,6 +30,16 @@ TcpTransportLite::TcpTransportLite(DynamicUInt8ArrayLite& buffer)
 }
 
 ndn_Error
+TcpTransportLite::isLocal(const char *host, bool& result)
+{
+  int intResult;
+  ndn_Error status = ndn_TcpTransport_isLocal(host, &intResult);
+  result = (intResult != 0);
+
+  return status;
+}
+
+ndn_Error
 TcpTransportLite::connect
   (const char* host, unsigned short port, ElementListenerLite& elementListener)
 {

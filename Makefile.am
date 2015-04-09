@@ -157,7 +157,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
-  src/c/transport/tcp-transport.h \
+  src/c/transport/tcp-transport.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
   src/c/transport/unix-transport.h \
   src/c/util/blob.h \

@@ -41,6 +41,18 @@ public:
   };
 
   /**
+   * Determine whether this transport connecting according to connectionInfo is
+   * to a node on the current machine. This affects the processing of
+   * Face.registerPrefix(): if the NFD is local, registration occurs with the
+   * '/localhost/nfd...' prefix; if non-local, the library will attempt to use
+   * remote prefix registration using '/localhop/nfd...'
+   * @param connectionInfo A ConnectionInfo with the host to check.
+   * @return True if the host is local, false if not.
+   */
+  virtual bool
+  isLocal(const Transport::ConnectionInfo& connectionInfo);
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to an object of a subclass of

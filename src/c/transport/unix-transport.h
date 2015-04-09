@@ -45,6 +45,14 @@ static __inline void ndn_UnixTransport_initialize
 }
 
 /**
+ * Determine whether this transport is to a node on the current machine. 
+ * Unix transports are always local.
+ * @return 1 because Unix transports are always local.
+ */
+static __inline int
+ndn_UnixTransport_isLocal() { return 1; }
+
+/**
  * Connect with a Unix Socket to the socket filePath.
  * @param self A pointer to the ndn_UnixTransport struct.
  * @param filePath The file path of the Unix socket to connect to.

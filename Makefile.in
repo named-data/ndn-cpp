@@ -183,7 +183,8 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
-	src/c/transport/socket-transport.lo src/c/util/crypto.lo \
+	src/c/transport/socket-transport.lo \
+	src/c/transport/tcp-transport.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
 libndn_c_la_OBJECTS = $(am_libndn_c_la_OBJECTS)
@@ -214,7 +215,8 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
-	src/c/transport/socket-transport.lo src/c/util/crypto.lo \
+	src/c/transport/socket-transport.lo \
+	src/c/transport/tcp-transport.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
@@ -1066,7 +1068,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
-  src/c/transport/tcp-transport.h \
+  src/c/transport/tcp-transport.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
   src/c/transport/unix-transport.h \
   src/c/util/blob.h \
@@ -1379,6 +1381,8 @@ src/c/transport/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/c/transport/$(DEPDIR)
 	@: > src/c/transport/$(DEPDIR)/$(am__dirstamp)
 src/c/transport/socket-transport.lo: src/c/transport/$(am__dirstamp) \
+	src/c/transport/$(DEPDIR)/$(am__dirstamp)
+src/c/transport/tcp-transport.lo: src/c/transport/$(am__dirstamp) \
 	src/c/transport/$(DEPDIR)/$(am__dirstamp)
 src/c/util/$(am__dirstamp):
 	@$(MKDIR_P) src/c/util
@@ -2016,6 +2020,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/socket-transport.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/tcp-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/crypto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/dynamic-uint8-array.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ndn_memory.Plo@am__quote@
