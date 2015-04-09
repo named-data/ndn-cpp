@@ -44,6 +44,14 @@ public:
   UnixTransportLite(DynamicUInt8ArrayLite& buffer);
 
   /**
+   * Determine whether this transport is to a node on the current machine.
+   * Unix transports are always local.
+   * @return True because Unix transports are always local.
+   */
+  static bool
+  isLocal();
+
+  /**
    * Connect with a Unix Socket to the socket filePath.
    * @param filePath The file path of the Unix socket to connect to.
    * @param elementListener The ElementListenerLite whose onReceivedElement

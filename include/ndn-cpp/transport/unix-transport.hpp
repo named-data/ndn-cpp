@@ -66,6 +66,15 @@ public:
   UnixTransport();
 
   /**
+   * Determine whether this transport connecting according to connectionInfo is
+   * to a node on the current machine. Unix transports are always local.
+   * @param connectionInfo This is ignored.
+   * @return True because Unix transports are always local.
+   */
+  virtual bool
+  isLocal(const Transport::ConnectionInfo& connectionInfo);
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to a UnixTransport::ConnectionInfo.

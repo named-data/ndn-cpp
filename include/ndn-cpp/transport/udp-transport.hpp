@@ -75,6 +75,15 @@ public:
   UdpTransport();
 
   /**
+   * Determine whether this transport connecting according to connectionInfo is
+   * to a node on the current machine. UDP transports are always non-local.
+   * @param connectionInfo This is ignored.
+   * @return False because UDP transports are always non-local.
+   */
+  virtual bool
+  isLocal(const Transport::ConnectionInfo& connectionInfo);
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to a TcpTransport::ConnectionInfo.

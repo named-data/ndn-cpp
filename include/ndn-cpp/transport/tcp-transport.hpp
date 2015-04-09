@@ -75,6 +75,20 @@ public:
   TcpTransport();
 
   /**
+   * Determine whether this transport connecting according to connectionInfo is
+   * to a node on the current machine; results are cached. According to
+   * http://redmine.named-data.net/projects/nfd/wiki/ScopeControl#local-face,
+   * TCP transports with a loopback address are local. If connectionInfo
+   * contains a host name, this will do a blocking DNS lookup; otherwise
+   * this will parse the IP address and examine the first octet to determine if
+   * it is a loopback address (e.g. the first IPv4 octet is 127 or IPv6 is "::1").
+   * @param connectionInfo A TcpTransport.ConnectionInfo with the host to check.
+   * @return True if the host is local, false if not.
+   */
+  virtual bool
+  isLocal(const Transport::ConnectionInfo& connectionInfo);
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to a TcpTransport::ConnectionInfo.
@@ -114,6 +128,8 @@ private:
   ptr_lib::shared_ptr<struct ndn_TcpTransport> transport_;
   ptr_lib::shared_ptr<DynamicUInt8Vector> elementBuffer_;
   bool isConnected_;
+  ConnectionInfo connectionInfo_;
+  bool isLocal_;
 };
 
 }

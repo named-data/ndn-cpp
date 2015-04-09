@@ -44,6 +44,21 @@ public:
   TcpTransportLite(DynamicUInt8ArrayLite& buffer);
 
   /**
+   * Determine whether this transport connecting to the host is
+   * to a node on the current machine; results are not cached. According to
+   * http://redmine.named-data.net/projects/nfd/wiki/ScopeControl#local-face,
+   * TCP transports with a loopback address are local. If host is a host name,
+   * this will do a blocking DNS lookup; otherwise this will parse the IP address
+   * and examine the first octet to determine if it is a loopback address (e.g.
+   * the first IPv4 octet is 127 or IPv6 is "::1").
+   * @param host The host to check.
+   * @param result Set result to true if the host is local, false if not.
+   * @return 0 for success, else an error code.
+   */
+  ndn_Error
+  isLocal(const char *host, bool& result);
+
+  /**
    * Connect with TCP to the host:port.
    * @param host The host to connect to.
    * @param port The port to connect to.

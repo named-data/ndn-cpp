@@ -44,6 +44,14 @@ public:
   UdpTransportLite(DynamicUInt8ArrayLite& buffer);
 
   /**
+   * Determine whether this transport is to a node on the current machine.
+   * UDP transports are always non-local.
+   * @return False because UDP transports are always non-local.
+   */
+  static bool
+  isLocal();
+
+  /**
    * Connect with UDP to the host:port.
    * @param host The host to connect to.
    * @param port The port to connect to.
