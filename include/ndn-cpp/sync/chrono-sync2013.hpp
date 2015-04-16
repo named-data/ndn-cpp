@@ -229,55 +229,6 @@ private:
   };
 
   /**
-   * A PendingInterest holds an interest which onInterest received but could
-   * not satisfy. When we add a new data packet to the contentCache_, we will
-   * also check if it satisfies a pending interest.
-   */
-  class PendingInterest {
-  public:
-    /**
-     * Create a new PendingInterest and set the timeoutTime_ based on the current time and the interest lifetime.
-     * @param interest A shared_ptr for the interest.
-     * @param transport The transport from the onInterest callback. If the
-     * interest is satisfied later by a new data packet, we will send the data
-     * packet to the transport.
-     */
-    PendingInterest
-      (const ptr_lib::shared_ptr<const Interest>& interest,
-       Transport& transport);
-
-    /**
-     * Return the interest given to the constructor.
-     */
-    const ptr_lib::shared_ptr<const Interest>&
-    getInterest() { return interest_; }
-
-    /**
-     * Return the transport given to the constructor.
-     */
-    Transport&
-    getTransport() { return transport_; }
-
-    /**
-     * Check if this interest is timed out.
-     * @param nowMilliseconds The current time in milliseconds from ndn_getNowMilliseconds.
-     * @return true if this interest timed out, otherwise false.
-     */
-    bool
-    isTimedOut(MillisecondsSince1970 nowMilliseconds)
-    {
-      return timeoutTimeMilliseconds_ >= 0.0 && nowMilliseconds >= timeoutTimeMilliseconds_;
-    }
-
-  private:
-    ptr_lib::shared_ptr<const Interest> interest_;
-    Transport& transport_;
-    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
-      * interest times out in milliseconds according to ndn_getNowMilliseconds,
-      * or -1 for no timeout. */
-  };
-
-  /**
    * ChronoSync2013::Impl does the work of ChronoSync2013. It is a separate
    * class so that ChronoSync2013 can create an instance in a shared_ptr to
    * use in callbacks.
@@ -364,8 +315,8 @@ private:
 
     /**
      * Process the sync interest from the applicationBroadcastPrefix. If we can't
-     * satisfy the interest, add it to the pendingInterestTable_ so that a
-     * future call to contentCacheAdd may satisfy it.
+     * satisfy the interest, add it to the pending interest table in the
+     * contentCache_ so that a future call to add may satisfy it.
      */
     void
     onInterest
@@ -418,16 +369,6 @@ private:
     initialOndata(const google::protobuf::RepeatedPtrField<Sync::SyncState >& content);
 
     /**
-     * Add the data packet to the contentCache_. Remove timed-out entries
-     * from pendingInterestTable_. If the data packet satisfies any pending
-     * interest, then send the data packet to the pending interest's transport
-     * and remove from the pendingInterestTable_.
-     * @param data
-     */
-    void
-    contentCacheAdd(const Data& data);
-
-    /**
      * This is a do-nothing onData for using expressInterest for timeouts.
      * This should never be called.
      */
@@ -449,7 +390,6 @@ private:
     int sessionNo_;
     int sequenceNo_;
     MemoryContentCache contentCache_;
-    std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
     bool enabled_;
   };
 
