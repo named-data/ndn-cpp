@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.6 (2015-04-09)
+Interim changes since NDN-CPP v0.6 (2015-04-16)
 -----------------------------------------------
 
 Changes
@@ -18,6 +18,8 @@ Changes
   connection is local.
 * examples: Added test-list-channels, test-list-faces, test-list-rib and
   test-register-route to query NFD.
+* examples: In repo-ng added basic-insertion and watched-insertion to show
+  interaction with the repo-ng repository.
 * examples: Added arduino/analog-reading-consumer.cpp and the related
   Arduino sketch examples/arduino/analog-reading.
 * examples: Make test-encode-decode-benchmarks use NDN-CPP Lite to test C.

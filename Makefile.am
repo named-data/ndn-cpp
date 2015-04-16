@@ -29,7 +29,8 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
   bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
   bin/test-publish-async-nfd bin/test-register-route \
-  bin/analog-reading-consumer
+  bin/analog-reading-consumer \
+  bin/basic-insertion bin/watched-insertion
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -292,6 +293,14 @@ bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 
 bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
 bin_analog_reading_consumer_LDADD = libndn-cpp.la
+
+bin_basic_insertion_SOURCES = examples/repo-ng/basic-insertion.cpp \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_basic_insertion_LDADD = libndn-cpp.la
+
+bin_watched_insertion_SOURCES = examples/repo-ng/watched-insertion.cpp \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_watched_insertion_LDADD = libndn-cpp.la
 
 bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
