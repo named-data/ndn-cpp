@@ -16,6 +16,9 @@ Changes
   remote registration, the remote NFD must be configured for localhop_security.)
   Added the optional method Face.isLocal() for the application to check if the
   connection is local.
+* In MemoryContentCache, added support for storePendingInterest. add(data) will
+  check if the added Data packet satisfies any pending interest. You can use
+  getStorePendingInterest() for onDataNotFound in registerPrefix().
 * examples: Added test-list-channels, test-list-faces, test-list-rib and
   test-register-route to query NFD.
 * examples: In repo-ng added basic-insertion and watched-insertion to show

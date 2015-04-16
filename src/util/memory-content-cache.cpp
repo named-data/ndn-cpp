@@ -21,16 +21,22 @@
 
 #include <algorithm>
 #include "../c/util/time.h"
+#include "logging.hpp"
 #include <ndn-cpp/util/memory-content-cache.hpp>
 
 using namespace std;
+using namespace ndn::func_lib;
 
 namespace ndn {
 
 MemoryContentCache::MemoryContentCache
   (Face* face, Milliseconds cleanupIntervalMilliseconds)
 : face_(face), cleanupIntervalMilliseconds_(cleanupIntervalMilliseconds),
-  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds)
+  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds),
+  // We don't expect this callback to be stored outside of this object, so
+  // don't worry about using shared_from_this().
+  storePendingInterestCallback_(bind
+    (&MemoryContentCache::storePendingInterestCallback, this, _1, _2, _3, _4))
 {
 }
 
@@ -62,6 +68,40 @@ MemoryContentCache::add(const Data& data)
     // The data does not go stale, so use noStaleTimeCache_.
     noStaleTimeCache_.push_back
       (ptr_lib::make_shared<const Content>(data));
+
+  // Remove timed-out interests and check if the data packet matches any pending
+  // interest.
+  // Go backwards through the list so we can erase entries.
+  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
+  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
+    if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+      continue;
+    }
+
+    if (pendingInterestTable_[i]->getInterest()->matchesName(data.getName())) {
+      try {
+        // Send to the same transport from the original call to onInterest.
+        // wireEncode returns the cached encoding if available.
+        pendingInterestTable_[i]->getTransport().send
+          (*data.wireEncode());
+      } catch (std::exception& e) {
+        _LOG_DEBUG("Error in send: " << e.what());
+        return;
+      }
+
+      // The pending interest is satisfied, so remove it.
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+    }
+  }
+}
+
+void
+MemoryContentCache::storePendingInterest
+  (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport)
+{
+  pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>
+    (new PendingInterest(interest, transport)));
 }
 
 void
@@ -157,6 +197,19 @@ MemoryContentCache::StaleTimeContent::StaleTimeContent(const Data& data)
   // Set up staleTimeMilliseconds_.
   staleTimeMilliseconds_ = ndn_getNowMilliseconds() +
     data.getMetaInfo().getFreshnessPeriod();
+}
+
+MemoryContentCache::PendingInterest::PendingInterest
+  (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport)
+  : interest_(interest), transport_(transport)
+{
+  // Set up timeoutTime_.
+  if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
+    timeoutTimeMilliseconds_ = ndn_getNowMilliseconds() +
+      interest_->getInterestLifetimeMilliseconds();
+  else
+    // No timeout.
+    timeoutTimeMilliseconds_ = -1.0;
 }
 
 }

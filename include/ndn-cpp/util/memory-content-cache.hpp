@@ -56,11 +56,17 @@ public:
    * @param onRegisterFailed A function object to call if failed to retrieve the
    * connected hub’s ID or failed to register the prefix. This calls
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
-   * @param onDataNotFound (optional) A function object to call to forward the
-   * OnInterest message when a data packet is not found in the cache.
-   * If onDataNotFound is an empty OnInterest(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate.
+   * @param onDataNotFound (optional) If a data packet for an interest is not
+   * found in the cache, this forwards the interest by calling
+   * onInterest.onInterest(prefix, interest, transport, registeredPrefixId).
+   * Your callback can find the Data packet for the interest and call
+   * face.putData(data).  If your callback cannot find the Data packet, it can
+   * optionally call storePendingInterest(interest, transport) to store the pending
+   * interest in this object to be satisfied by a later call to add(data). If
+   * you want to automatically store all pending interests, you can simply use
+   * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
+   * OnInterest(), this does not use it. This copies the function object, so you
+   * may need to use func_lib::ref() as appropriate.
    * @param flags (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
@@ -93,12 +99,42 @@ public:
    * staleness time to now plus data.getFreshnessPeriod(), which is checked
    * during cleanup to remove stale content. This also checks if
    * cleanupIntervalMilliseconds milliseconds have passed and removes stale
-   * content from the cache.
+   * content from the cache. After removing stale content, remove timed-out
+   * pending interests from storePendingInterest(), then if the added Data 
+   * packet satisfies any interest, send it through the transport and remove the
+   * interest from the pending interest table.
    * @param data The Data packet object to put in the cache. This copies the
    * fields from the object.
    */
   void
   add(const Data& data);
+
+  /**
+   * Store an interest from an OnInterest callback in the internal pending
+   * interest table (normally because there is no Data packet available yet to
+   * satisfy the interest). add(data) will check if the added Data packet
+   * satisfies any pending interest and send it through the transport.
+   * @param interest The Interest for which we don't have a Data packet yet. You
+   * should not modify the interest after calling this.
+   * @param transport The Transport with the connection which received the
+   * interest. This comes from the OnInterest callback.
+   */
+  void
+  storePendingInterest
+    (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport);
+
+  /**
+   * Return a callback to use for onDataNotFound in registerPrefix which simply
+   * calls storePendingInterest() to store the interest that doesn't match a
+   * Data packet. add(data) will check if the added Data packet satisfies any
+   * pending interest and send it.
+   * @return A callback to use for onDataNotFound in registerPrefix().
+   */
+  const OnInterest&
+  getStorePendingInterest()
+  {
+    return storePendingInterestCallback_;
+  }
 
   /**
    * This is the OnInterest callback which is called when the library receives
@@ -189,6 +225,58 @@ private:
   };
 
   /**
+   * A PendingInterest holds an interest which onInterest received but could
+   * not satisfy. When we add a new data packet to the cache, we will also check
+   * if it satisfies a pending interest.
+   */
+  class PendingInterest {
+  public:
+    /**
+     * Create a new PendingInterest and set the timeoutTime_ based on the
+     * current time and the interest lifetime.
+     * @param interest A shared_ptr for the interest.
+     * @param transport The transport from the onInterest callback. If the
+     * interest is satisfied later by a new data packet, we will send the data
+     * packet to the transport.
+     */
+    PendingInterest
+      (const ptr_lib::shared_ptr<const Interest>& interest,
+       Transport& transport);
+
+    /**
+     * Return the interest given to the constructor.
+     */
+    const ptr_lib::shared_ptr<const Interest>&
+    getInterest() { return interest_; }
+
+    /**
+     * Return the transport given to the constructor.
+     */
+    Transport&
+    getTransport() { return transport_; }
+
+    /**
+     * Check if this interest is timed out.
+     * @param nowMilliseconds The current time in milliseconds from
+     * ndn_getNowMilliseconds.
+     * @return true if this interest timed out, otherwise false.
+     */
+    bool
+    isTimedOut(MillisecondsSince1970 nowMilliseconds)
+    {
+      return timeoutTimeMilliseconds_ >= 0.0 &&
+             nowMilliseconds >= timeoutTimeMilliseconds_;
+    }
+
+  private:
+    ptr_lib::shared_ptr<const Interest> interest_;
+    Transport& transport_;
+    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
+      * interest times out in milliseconds according to ndn_getNowMilliseconds,
+      * or -1 for no timeout. */
+  };
+
+  /**
    * Check if now is greater than nextCleanupTime_ and, if so, remove stale
    * content from staleTimeCache_ and reset nextCleanupTime_ based on
    * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
@@ -197,6 +285,20 @@ private:
    */
   void
   doCleanup();
+
+  /**
+   * This is a private method to return for setting storePendingInterestCallback_.
+   * We need a separate method because the arguments are different from the main
+   * storePendingInterest.
+   */
+  void
+  storePendingInterestCallback
+    (const ptr_lib::shared_ptr<const Name>& prefix,
+     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
+     uint64_t registeredPrefixId)
+  {
+    storePendingInterest(interest, transport);
+  }
 
   Face* face_;
   Milliseconds cleanupIntervalMilliseconds_;
@@ -208,6 +310,8 @@ private:
   std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
   StaleTimeContent::Compare contentCompare_;
   Name::Component emptyComponent_;
+  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+  OnInterest storePendingInterestCallback_;
 };
 
 }
