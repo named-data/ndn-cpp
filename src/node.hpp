@@ -95,7 +95,7 @@ public:
    * @param onInterest (optional) If not null, this creates an interest filter
    * from prefix so that when an Interest is received which matches the filter,
    * this calls the function object
-   * onInterest(prefix, interest, transport, interestFilterId). 
+   * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as 
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
@@ -106,14 +106,16 @@ public:
    * @param commandKeyChain The KeyChain object for signing interests.  If null,
    * assume we are connected to a legacy NDNx forwarder.
    * @param commandCertificateName The certificate name for signing interests.
+   * @param face The face which is passed to the onInterest callback. If
+   * onInterest is null, this is ignored.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest,
+    (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
-     const Name& commandCertificateName);
+     const Name& commandCertificateName, Face* face);
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the 
@@ -136,17 +138,19 @@ public:
    * used to match the name of an incoming Interest. This makes a copy of filter.
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
-   * onInterest(prefix, interest, transport, interestFilterId).
+   * onInterest(prefix, interest, face, interestFilterId, filter).
+   * @param face The face which is passed to the onInterest callback.
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   uint64_t
   setInterestFilter
-    (const InterestFilter& filter, const OnInterest& onInterest)
+    (const InterestFilter& filter, const OnInterestCallback& onInterest,
+     Face* face)
   {
     uint64_t interestFilterId = InterestFilterEntry::getNextInterestFilterId();
     interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
       (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
-       onInterest));
+       onInterest, face));
 
     return interestFilterId;
   }
@@ -171,6 +175,16 @@ public:
    */
   void
   putData(const Data& data, WireFormat& wireFormat);
+
+  /**
+   * Send the encoded packet out through the face.
+   * @param encoding The array of bytes for the encoded packet to send.
+   * @param encodingLength The number of bytes in the encoding array.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  send(const uint8_t *encoding, size_t encodingLength);
 
   /**
    * Process any packets to receive and call callbacks such as onData,
@@ -342,7 +356,7 @@ private:
 
   /**
    * An InterestFilterEntry holds an interestFilterId, an InterestFilter and
-   * and the OnInterest callback with its related Face.
+   * and the OnInterestCallback with its related Face.
    */
   class InterestFilterEntry {
   public:
@@ -352,13 +366,15 @@ private:
      * @param filter A shared_ptr for the InterestFilter for this entry.
      * @param onInterest A function object to call when a matching data packet
      * is received.
+     * @param face The face on which was called registerPrefix or
+     * setInterestFilter which is passed to the onInterest callback.
      */
     InterestFilterEntry
       (uint64_t interestFilterId,
        const ptr_lib::shared_ptr<const InterestFilter>& filter,
-       const OnInterest& onInterest)
+       const OnInterestCallback& onInterest, Face* face)
     : interestFilterId_(interestFilterId), filter_(filter), 
-      onInterest_(onInterest)
+      onInterest_(onInterest), face_(face)
     {
     }
 
@@ -389,16 +405,24 @@ private:
     getFilter() { return filter_; }
 
     /**
-     * Get the OnInterest callback given to the constructor.
+     * Get the OnInterestCallback given to the constructor.
      * @return The OnInterest callback.
      */
-    const OnInterest&
+    const OnInterestCallback&
     getOnInterest() { return onInterest_; }
+
+    /**
+     * Get the Face given to the constructor.
+     * @return The Face.
+     */
+    Face&
+    getFace() { return *face_; }
 
   private:
     uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const InterestFilter> filter_;
-    const OnInterest onInterest_;
+    const OnInterestCallback onInterest_;
+    Face* face_;
   };
   
   /**
@@ -439,21 +463,27 @@ private:
        * @param onRegisterFailed
        * @param flags
        * @param wireFormat
+       * @param flace
        */
-      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, const OnInterest& onInterest,
-           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat)
-      : node_(*node), registeredPrefixId_(registeredPrefixId), prefix_(new Name(prefix)), onInterest_(onInterest), onRegisterFailed_(onRegisterFailed),
-        flags_(flags), wireFormat_(wireFormat)
+      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, 
+           const OnInterestCallback& onInterest,
+           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, 
+           WireFormat& wireFormat, Face* face)
+      : node_(*node), registeredPrefixId_(registeredPrefixId),
+        prefix_(new Name(prefix)), onInterest_(onInterest),
+        onRegisterFailed_(onRegisterFailed), flags_(flags),
+        wireFormat_(wireFormat), face_(face)
       {
       }
 
       Node& node_;
       uint64_t registeredPrefixId_;
       ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterest onInterest_;
+      const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
+      Face* face_;
     };
 
   private:
@@ -494,23 +524,24 @@ private:
     class Info {
     public:
       Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
-           const OnInterest& onInterest,
+           const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed,
            const ForwardingFlags& flags, WireFormat& wireFormat,
-           bool isNfdCommand)
+           bool isNfdCommand, Face* face)
       : node_(*node), prefix_(prefix), onInterest_(onInterest),
         onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand)
+        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand), face_(face)
       {
       }
 
       Node& node_;
       ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterest onInterest_;
+      const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
       bool isNfdCommand_;
+      Face* face_;
     };
 
   private:
@@ -541,12 +572,13 @@ private:
    * @param onRegisterFailed
    * @param flags
    * @param wireFormat
+   * @param face
    */
   void
   registerPrefixHelper
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags, WireFormat& wireFormat);
+     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags, WireFormat& wireFormat, Face* face);
 
   /**
    * Do the work of registerPrefix to register with NFD.
@@ -560,13 +592,14 @@ private:
    * @param flags
    * @param commandKeyChain
    * @param commandCertificateName
+   * @param face
    */
   void
   nfdRegisterPrefix
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
+     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
      const ForwardingFlags& flags, KeyChain& commandKeyChain,
-     const Name& commandCertificateName, WireFormat& wireFormat);
+     const Name& commandCertificateName, WireFormat& wireFormat, Face* face);
 
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
