@@ -140,8 +140,10 @@ public:
 
   // onInterest.
   void operator()
-     (const ptr_lib::shared_ptr<const Name>& prefix, const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t interestFilterId)
+     (const ptr_lib::shared_ptr<const Name>& prefix, 
+      const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+      uint64_t interestFilterId,
+      const ptr_lib::shared_ptr<const InterestFilter>& filter)
   {
     ++responseCount_;
 
@@ -152,10 +154,9 @@ public:
     // setTimestampMilliseconds is needed for BinaryXml compatibility.
     data.getMetaInfo().setTimestampMilliseconds(time(NULL) * 1000.0);
     keyChain_.sign(data, certificateName_);
-    Blob encodedData = data.wireEncode();
 
     cout << "Sent content " << content << endl;
-    transport.send(*encodedData);
+    face.putData(data);
   }
 
   // onRegisterFailed.

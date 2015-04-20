@@ -238,8 +238,9 @@ public:
   void
   operator()
      (const ptr_lib::shared_ptr<const Name>& prefix,
-      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t interestFilterId);
+      const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+      uint64_t interestFilterId,
+      const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
 private:
   KeyChain& keyChain_;
@@ -251,8 +252,9 @@ private:
 void
 SendSegments::operator()
    (const ptr_lib::shared_ptr<const Name>& prefix,
-    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-    uint64_t interestFilterId)
+    const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+    uint64_t interestFilterId,
+    const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
   int maxSegment = 2;
   if (segment_ >= maxSegment)
@@ -268,9 +270,8 @@ SendSegments::operator()
   content << "Segment number " << segment_;
   data.setContent((const uint8_t *)&content.str()[0], content.str().size());
   keyChain_.sign(data, certificateName_);
-  Blob encodedData = data.wireEncode();
 
-  transport.send(*encodedData);
+  face.putData(data);
   cout << "Sent data packet " << data.getName().toUri() << endl;
 
   if (segment_ >= maxSegment)

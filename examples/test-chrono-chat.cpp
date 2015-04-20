@@ -94,7 +94,7 @@ public:
        face_, keyChain_, certificateName_, syncLifetime_, onRegisterFailed));
 
     face_.registerPrefix
-      (chatPrefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4),
+      (chatPrefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
        onRegisterFailed);
   }
 
@@ -128,8 +128,9 @@ private:
   void
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t interestFilterId);
+     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+     uint64_t interestFilterId,
+     const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
   // Processing the incoming Chat data.
   void
@@ -303,8 +304,9 @@ Chat::sendInterest
 void
 Chat::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-   uint64_t interestFilterId)
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+   uint64_t interestFilterId,
+   const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
   SyncDemo::ChatMessage content;
   int sequenceNo = ::atoi(interest->getName().get(chatPrefix_.size() + 1).toEscapedString().c_str());
@@ -334,7 +336,7 @@ Chat::onInterest
     data.setContent(Blob(array, false));
     keyChain_.sign(data, certificateName_);
     try {
-      transport.send(*data.wireEncode());
+      face.putData(data);
     }
     catch (std::exception& e) {
       cout << "Error sending the chat data " << e.what() << endl;
