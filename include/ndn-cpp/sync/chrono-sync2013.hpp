@@ -321,8 +321,9 @@ private:
     void
     onInterest
       (const ptr_lib::shared_ptr<const Name>& prefix,
-       const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-       uint64_t registerPrefixId);
+       const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+       uint64_t registerPrefixId,
+       const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
     // Process Sync Data.
     void
@@ -336,7 +337,7 @@ private:
 
     void
     processRecoveryInterest
-      (const Interest& interest, const std::string& syncDigest, Transport& transport);
+      (const Interest& interest, const std::string& syncDigest, Face& face);
 
     /**
      * Common interest processing, using digest log to find the difference after
@@ -344,7 +345,7 @@ private:
      * otherwise false.
      */
     bool
-    processSyncInterest(int index, const std::string& syncDigest, Transport& transport);
+    processSyncInterest(int index, const std::string& syncDigest, Face& face);
 
     // Send Recovery Interest.
     void
@@ -353,12 +354,13 @@ private:
     /**
      * This is called by onInterest after a timeout to check if a recovery is needed.
      * This method has an "interest" argument because we use it as the onTimeout
-     * for Face.expressInterest.
+     * for Face.expressInterest. Face must be a pointer, not a reference, because
+     * it is used in a function object and we don't want to copy it.
      */
     void
     judgeRecovery
       (const ptr_lib::shared_ptr<const Interest> &interest,
-       const std::string& syncDigest, Transport* transport);
+       const std::string& syncDigest, Face* face);
 
     // Sync interest time out, if the interest is the static one send again.
     void

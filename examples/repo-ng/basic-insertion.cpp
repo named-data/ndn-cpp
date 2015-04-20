@@ -162,8 +162,9 @@ public:
   void
   operator()
      (const ptr_lib::shared_ptr<const Name>& prefix,
-      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t registeredPrefixId);
+      const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+      uint64_t interestFilterId,
+      const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
 private:
   KeyChain& keyChain_;
@@ -177,8 +178,9 @@ private:
 void
 ProduceSegments::operator()
    (const ptr_lib::shared_ptr<const Name>& prefix,
-    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-    uint64_t registeredPrefixId)
+    const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+    uint64_t interestFilterId,
+    const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
   cout << "Got interest " << interest->toUri() << endl;
 
@@ -187,9 +189,8 @@ ProduceSegments::operator()
   string content(string("Data packet ") + interest->getName().toUri());
   data.setContent((const uint8_t *)&content[0], content.size());
   keyChain_.sign(data, certificateName_);
-  Blob encodedData = data.wireEncode();
 
-  transport.send(*encodedData);
+  face.putData(data);
   cout << "Sent data packet " << data.getName().toUri() << endl;
 
   nSegmentsSent_ += 1;

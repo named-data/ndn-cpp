@@ -58,10 +58,10 @@ public:
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onDataNotFound (optional) If a data packet for an interest is not
    * found in the cache, this forwards the interest by calling
-   * onDataNotFound(prefix, interest, transport, registeredPrefixId).
+   * onDataNotFound(prefix, interest, face, interestFilterId, filter).
    * Your callback can find the Data packet for the interest and call
    * transport.send.  If your callback cannot find the Data packet, it can
-   * optionally call storePendingInterest(interest, transport) to store the pending
+   * optionally call storePendingInterest(interest, face) to store the pending
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
@@ -73,7 +73,7 @@ public:
   void
   registerPrefix
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
-     const OnInterest& onDataNotFound = OnInterest(),
+     const OnInterestCallback& onDataNotFound = OnInterestCallback(),
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
@@ -114,15 +114,15 @@ public:
    * Store an interest from an OnInterest callback in the internal pending
    * interest table (normally because there is no Data packet available yet to
    * satisfy the interest). add(data) will check if the added Data packet
-   * satisfies any pending interest and send it through the transport.
+   * satisfies any pending interest and send it through the face.
    * @param interest The Interest for which we don't have a Data packet yet. You
    * should not modify the interest after calling this.
-   * @param transport The Transport with the connection which received the
-   * interest. This comes from the OnInterest callback.
+   * @param face The Face with the connection which received the
+   * interest. This comes from the onInterest callback.
    */
   void
   storePendingInterest
-    (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport);
+    (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
 
   /**
    * Return a callback to use for onDataNotFound in registerPrefix which simply
@@ -131,7 +131,7 @@ public:
    * pending interest and send it.
    * @return A callback to use for onDataNotFound in registerPrefix().
    */
-  const OnInterest&
+  const OnInterestCallback&
   getStorePendingInterest()
   {
     return storePendingInterestCallback_;
@@ -149,8 +149,9 @@ public:
   void
   operator()
     (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId);
+     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+     uint64_t interestFilterId,
+     const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
 private:
   /**
@@ -236,13 +237,12 @@ private:
      * Create a new PendingInterest and set the timeoutTime_ based on the
      * current time and the interest lifetime.
      * @param interest A shared_ptr for the interest.
-     * @param transport The transport from the onInterest callback. If the
+     * @param face The face from the onInterest callback. If the
      * interest is satisfied later by a new data packet, we will send the data
-     * packet to the transport.
+     * packet to the face.
      */
     PendingInterest
-      (const ptr_lib::shared_ptr<const Interest>& interest,
-       Transport& transport);
+      (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
 
     /**
      * Return the interest given to the constructor.
@@ -251,10 +251,10 @@ private:
     getInterest() { return interest_; }
 
     /**
-     * Return the transport given to the constructor.
+     * Return the face given to the constructor.
      */
-    Transport&
-    getTransport() { return transport_; }
+    Face&
+    getFace() { return face_; }
 
     /**
      * Check if this interest is timed out.
@@ -271,7 +271,7 @@ private:
 
   private:
     ptr_lib::shared_ptr<const Interest> interest_;
-    Transport& transport_;
+    Face& face_;
     MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
       * interest times out in milliseconds according to ndn_getNowMilliseconds,
       * or -1 for no timeout. */
@@ -295,16 +295,17 @@ private:
   void
   storePendingInterestCallback
     (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId)
+     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+     uint64_t interestFilterId,
+     const ptr_lib::shared_ptr<const InterestFilter>& filter)
   {
-    storePendingInterest(interest, transport);
+    storePendingInterest(interest, face);
   }
 
   Face* face_;
   Milliseconds cleanupIntervalMilliseconds_;
   MillisecondsSince1970 nextCleanupTime_;
-  std::map<std::string, OnInterest> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
+  std::map<std::string, OnInterestCallback> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
   std::vector<uint64_t> registeredPrefixIdList_;
   std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
   // Use a deque so we can efficiently remove from the front.
@@ -312,7 +313,7 @@ private:
   StaleTimeContent::Compare contentCompare_;
   Name::Component emptyComponent_;
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
-  OnInterest storePendingInterestCallback_;
+  OnInterestCallback storePendingInterestCallback_;
 };
 
 }

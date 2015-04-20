@@ -28,6 +28,7 @@
 #include <ndn-cpp/face.hpp>
 
 using namespace std;
+using namespace ndn::func_lib;
 
 namespace ndn {
 
@@ -128,12 +129,38 @@ Face::makeCommandInterest(Interest& interest, WireFormat& wireFormat)
 
 uint64_t
 Face::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
-   const ForwardingFlags& flags, WireFormat& wireFormat)
+  (const Name& prefix, const OnInterestCallback& onInterest,
+   const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+   WireFormat& wireFormat)
 {
   return node_->registerPrefix
     (prefix, onInterest, onRegisterFailed, flags, wireFormat, *commandKeyChain_,
-     commandCertificateName_);
+     commandCertificateName_, this);
+}
+
+uint64_t
+Face::registerPrefix
+  (const Name& prefix, const OnInterest& onInterest,
+   const OnRegisterFailed& onRegisterFailed,
+   const ForwardingFlags& flags, WireFormat& wireFormat)
+{
+  // Wrap the deprecated OnInterest in an OnInterestCallback.
+  registerPrefix
+    (prefix,
+     bind(&Face::onInterestWrapper, _1, _2, _3, _4, _5, onInterest),
+     onRegisterFailed, flags, wireFormat);
+}
+
+void
+Face::onInterestWrapper
+  (const ptr_lib::shared_ptr<const Name>& prefix,
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+   uint64_t interestFilterId,
+   const ptr_lib::shared_ptr<const InterestFilter>& filter,
+   const OnInterest callerOnInterest)
+{
+  callerOnInterest
+    (prefix, interest, *face.node_->getTransport(), interestFilterId);
 }
 
 void
@@ -142,10 +169,35 @@ Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
   node_->removeRegisteredPrefix(registeredPrefixId);
 }
 
+uint64_t
+Face::setInterestFilter
+  (const InterestFilter& filter, const OnInterestCallback& onInterest)
+{
+  return node_->setInterestFilter(filter, onInterest, this);
+}
+
+uint64_t
+Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
+{
+  return node_->setInterestFilter(InterestFilter(prefix), onInterest, this);
+}
+
+void
+Face::unsetInterestFilter(uint64_t interestFilterId)
+{
+  node_->unsetInterestFilter(interestFilterId);
+}
+
 void
 Face::putData(const Data& data, WireFormat& wireFormat)
 {
   node_->putData(data, wireFormat);
+}
+
+void
+Face::send(const uint8_t *encoding, size_t encodingLength)
+{
+  node_->send(encoding, encodingLength);
 }
 
 void

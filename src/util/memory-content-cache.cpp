@@ -36,7 +36,7 @@ MemoryContentCache::MemoryContentCache
   // We don't expect this callback to be stored outside of this object, so
   // don't worry about using shared_from_this().
   storePendingInterestCallback_(bind
-    (&MemoryContentCache::storePendingInterestCallback, this, _1, _2, _3, _4))
+    (&MemoryContentCache::storePendingInterestCallback, this, _1, _2, _3, _4, _5))
 {
 }
 
@@ -83,8 +83,7 @@ MemoryContentCache::add(const Data& data)
       try {
         // Send to the same transport from the original call to onInterest.
         // wireEncode returns the cached encoding if available.
-        pendingInterestTable_[i]->getTransport().send
-          (*data.wireEncode());
+        pendingInterestTable_[i]->getFace().send(*data.wireEncode());
       } catch (std::exception& e) {
         _LOG_DEBUG("Error in send: " << e.what());
         return;
@@ -98,17 +97,18 @@ MemoryContentCache::add(const Data& data)
 
 void
 MemoryContentCache::storePendingInterest
-  (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport)
+  (const ptr_lib::shared_ptr<const Interest>& interest, Face& face)
 {
   pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>
-    (new PendingInterest(interest, transport)));
+    (new PendingInterest(interest, face)));
 }
 
 void
 MemoryContentCache::operator()
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-   uint64_t registeredPrefixId)
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+   uint64_t interestFilterId,
+   const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
   doCleanup();
 
@@ -127,7 +127,7 @@ MemoryContentCache::operator()
     if (interest->matchesName(content->getName())) {
       if (interest->getChildSelector() < 0) {
         // No child selector, so send the first match that we have found.
-        transport.send(*content->getDataEncoding());
+        face.send(*content->getDataEncoding());
         return;
       }
       else {
@@ -165,14 +165,14 @@ MemoryContentCache::operator()
 
   if (selectedEncoding)
     // We found the leftmost or rightmost child.
-    transport.send(*selectedEncoding);
+    face.send(*selectedEncoding);
   else {
     // Call the onDataNotFound callback (if defined).
-    map<string, OnInterest>::iterator onDataNotFound =
+    map<string, OnInterestCallback>::iterator onDataNotFound =
       onDataNotFoundForPrefix_.find(prefix->toUri());
     if (onDataNotFound != onDataNotFoundForPrefix_.end() &&
         onDataNotFound->second)
-      onDataNotFound->second(prefix, interest, transport, registeredPrefixId);
+      onDataNotFound->second(prefix, interest, face, interestFilterId, filter);
   }
 }
 
@@ -200,8 +200,8 @@ MemoryContentCache::StaleTimeContent::StaleTimeContent(const Data& data)
 }
 
 MemoryContentCache::PendingInterest::PendingInterest
-  (const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport)
-  : interest_(interest), transport_(transport)
+  (const ptr_lib::shared_ptr<const Interest>& interest, Face& face)
+  : interest_(interest), face_(face)
 {
   // Set up timeoutTime_.
   if (interest_->getInterestLifetimeMilliseconds() >= 0.0)

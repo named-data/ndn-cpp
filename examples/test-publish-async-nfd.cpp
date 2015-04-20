@@ -38,8 +38,9 @@ public:
   // onInterest.
   void operator()
      (const ptr_lib::shared_ptr<const Name>& prefix,
-      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t registeredPrefixId)
+      const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+      uint64_t interestFilterId,
+      const ptr_lib::shared_ptr<const InterestFilter>& filter)
   {
     ++responseCount_;
 
@@ -48,10 +49,9 @@ public:
     string content(string("Echo ") + interest->getName().toUri());
     data.setContent((const uint8_t *)&content[0], content.size());
     keyChain_.sign(data, certificateName_);
-    Blob encodedData = data.wireEncode();
 
     cout << "Sent content " << content << endl;
-    transport.send(*encodedData);
+    face.putData(data);
   }
 
   // onRegisterFailed.

@@ -26,6 +26,7 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-flags.hpp>
+#include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
 #include "encoding/element-listener.hpp"
@@ -91,8 +92,13 @@ public:
   /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
-   * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
+   * @param onInterest (optional) If not null, this creates an interest filter
+   * from prefix so that when an Interest is received which matches the filter,
+   * this calls the function object
+   * onInterest(prefix, interest, face, interestFilterId, filter).
+   * This copies the function object, so you may need to use func_lib::ref() as 
+   * appropriate. If onInterest is null, it is ignored and you must call
+   * setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forwarded to the application.
@@ -100,23 +106,64 @@ public:
    * @param commandKeyChain The KeyChain object for signing interests.  If null,
    * assume we are connected to a legacy NDNx forwarder.
    * @param commandCertificateName The certificate name for signing interests.
+   * @param face The face which is passed to the onInterest callback. If
+   * onInterest is null, this is ignored.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest,
+    (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
-     const Name& commandCertificateName);
+     const Name& commandCertificateName, Face* face);
 
   /**
-   * Remove the registered prefix entry with the registeredPrefixId from the registered prefix table.
-   * This does not affect another registered prefix with a different registeredPrefixId, even if it has the same prefix name.
-   * If there is no entry with the registeredPrefixId, do nothing.
+   * Remove the registered prefix entry with the registeredPrefixId from the 
+   * registered prefix table. This does not affect another registered prefix
+   * with a different registeredPrefixId, even if it has the same prefix name.
+   * If there is no entry with the registeredPrefixId, do nothing. If an
+   * interest filter was automatically created by registerPrefix, also remove it.
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
   removeRegisteredPrefix(uint64_t registeredPrefixId);
+
+  /**
+   * Add an entry to the local interest filter table to call the onInterest
+   * callback for a matching incoming Interest. This method only modifies the
+   * library's local callback table and does not register the prefix with the
+   * forwarder. It will always succeed. To register a prefix with the forwarder,
+   * use registerPrefix.
+   * @param filter The InterestFilter with a prefix an optional regex filter
+   * used to match the name of an incoming Interest. This makes a copy of filter.
+   * @param onInterest When an Interest is received which matches the filter,
+   * this calls
+   * onInterest(prefix, interest, face, interestFilterId, filter).
+   * @param face The face which is passed to the onInterest callback.
+   * @return The interest filter ID which can be used with unsetInterestFilter.
+   */
+  uint64_t
+  setInterestFilter
+    (const InterestFilter& filter, const OnInterestCallback& onInterest,
+     Face* face)
+  {
+    uint64_t interestFilterId = InterestFilterEntry::getNextInterestFilterId();
+    interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
+      (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
+       onInterest, face));
+
+    return interestFilterId;
+  }
+
+  /**
+   * Remove the interest filter entry which has the interestFilterId from the
+   * interest filter table. This does not affect another interest filter with
+   * a different interestFilterId, even if it has the same prefix name.
+   * If there is no entry with the interestFilterId, do nothing.
+   * @param interestFilterId The ID returned from setInterestFilter.
+   */
+  void
+  unsetInterestFilter(uint64_t interestFilterId);
 
   /**
    * The OnInterestCallback calls this to put a Data packet which satisfies an
@@ -128,6 +175,16 @@ public:
    */
   void
   putData(const Data& data, WireFormat& wireFormat);
+
+  /**
+   * Send the encoded packet out through the face.
+   * @param encoding The array of bytes for the encoded packet to send.
+   * @param encodingLength The number of bytes in the encoding array.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  send(const uint8_t *encoding, size_t encodingLength);
 
   /**
    * Process any packets to receive and call callbacks such as onData,
@@ -235,21 +292,33 @@ private:
     MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the interest times out in milliseconds according to ndn_getNowMilliseconds, or -1 for no timeout. */
   };
 
+  /**
+   * A RegisteredPrefix holds a registeredPrefixId and information necessary
+   * to remove the registration later. It optionally holds a related
+   * interestFilterId if the InterestFilter was set in the same registerPrefix
+   * operation.
+   */
   class RegisteredPrefix {
   public:
     /**
-     * Create a new RegisteredPrefix.
+     * Create a new RegisteredPrefix with the given values.
      * @param registeredPrefixId A unique ID for this entry, which you should get with getNextRegisteredPrefixId().
      * @param prefix A shared_ptr for the prefix.
-     * @param onInterest A function object to call when a matching data packet is received.
+     * @param relatedInterestFilterId (optional) The related interestFilterId
+     * for the filter set in the same registerPrefix operation. If omitted, set
+     * to 0.
      */
-    RegisteredPrefix(uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest)
-    : registeredPrefixId_(registeredPrefixId), prefix_(prefix), onInterest_(onInterest)
+    RegisteredPrefix
+      (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
+       uint64_t relatedInterestFilterId)
+    : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
+      relatedInterestFilterId_(relatedInterestFilterId)
     {
     }
 
     /**
      * Return the next unique entry ID.
+     * @return The next ID.
      */
     static uint64_t
     getNextRegisteredPrefixId()
@@ -259,23 +328,103 @@ private:
 
     /**
      * Return the registeredPrefixId given to the constructor.
+     * @return The registeredPrefixId.
      */
     uint64_t
     getRegisteredPrefixId() { return registeredPrefixId_; }
 
+    /**
+     * Get the name prefix given to the constructor.
+     * @return The name prefix.
+     */
     const ptr_lib::shared_ptr<const Name>&
     getPrefix() { return prefix_; }
 
-    const OnInterest&
-    getOnInterest() { return onInterest_; }
+    /**
+     * Get the related interestFilterId given to the constructor.
+     * @return The related interestFilterId.
+     */
+    uint64_t
+    getRelatedInterestFilterId() { return relatedInterestFilterId_; }
 
   private:
     static uint64_t lastRegisteredPrefixId_; /**< A class variable used to get the next unique ID. */
     uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const Name> prefix_;
-    const OnInterest onInterest_;
+    uint64_t relatedInterestFilterId_;
   };
 
+  /**
+   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and
+   * and the OnInterestCallback with its related Face.
+   */
+  class InterestFilterEntry {
+  public:
+    /**
+     * Create a new InterestFilterEntry with the given values.
+     * @param interestFilterId The ID from getNextInterestFilterId().
+     * @param filter A shared_ptr for the InterestFilter for this entry.
+     * @param onInterest A function object to call when a matching data packet
+     * is received.
+     * @param face The face on which was called registerPrefix or
+     * setInterestFilter which is passed to the onInterest callback.
+     */
+    InterestFilterEntry
+      (uint64_t interestFilterId,
+       const ptr_lib::shared_ptr<const InterestFilter>& filter,
+       const OnInterestCallback& onInterest, Face* face)
+    : interestFilterId_(interestFilterId), filter_(filter), 
+      onInterest_(onInterest), face_(face)
+    {
+    }
+
+    /**
+     * Get the next interest filter ID. This just calls
+     * RegisteredPrefix::getNextRegisteredPrefixId() so that IDs come from the
+     * same pool and won't be confused when removing entries from the two tables.
+     * @return The next ID.
+     */
+    static uint64_t
+    getNextInterestFilterId()
+    {
+      return RegisteredPrefix::getNextRegisteredPrefixId();
+    }
+
+    /**
+     * Return the interestFilterId given to the constructor.
+     * @return The interestFilterId.
+     */
+    uint64_t
+    getInterestFilterId() { return interestFilterId_; }
+
+    /**
+     * Get the InterestFilter given to the constructor.
+     * @return The InterestFilter.
+     */
+    const ptr_lib::shared_ptr<const InterestFilter>&
+    getFilter() { return filter_; }
+
+    /**
+     * Get the OnInterestCallback given to the constructor.
+     * @return The OnInterest callback.
+     */
+    const OnInterestCallback&
+    getOnInterest() { return onInterest_; }
+
+    /**
+     * Get the Face given to the constructor.
+     * @return The Face.
+     */
+    Face&
+    getFace() { return *face_; }
+
+  private:
+    uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
+    ptr_lib::shared_ptr<const InterestFilter> filter_;
+    const OnInterestCallback onInterest_;
+    Face* face_;
+  };
+  
   /**
    * An NdndIdFetcher receives the Data packet with the publisher public key digest for the connected NDN hub.
    * This class is a function object for the callbacks. It only holds a pointer to an Info object, so it is OK to copy the pointer.
@@ -314,21 +463,27 @@ private:
        * @param onRegisterFailed
        * @param flags
        * @param wireFormat
+       * @param flace
        */
-      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, const OnInterest& onInterest,
-           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, WireFormat& wireFormat)
-      : node_(*node), registeredPrefixId_(registeredPrefixId), prefix_(new Name(prefix)), onInterest_(onInterest), onRegisterFailed_(onRegisterFailed),
-        flags_(flags), wireFormat_(wireFormat)
+      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, 
+           const OnInterestCallback& onInterest,
+           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, 
+           WireFormat& wireFormat, Face* face)
+      : node_(*node), registeredPrefixId_(registeredPrefixId),
+        prefix_(new Name(prefix)), onInterest_(onInterest),
+        onRegisterFailed_(onRegisterFailed), flags_(flags),
+        wireFormat_(wireFormat), face_(face)
       {
       }
 
       Node& node_;
       uint64_t registeredPrefixId_;
       ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterest onInterest_;
+      const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
+      Face* face_;
     };
 
   private:
@@ -369,23 +524,24 @@ private:
     class Info {
     public:
       Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
-           const OnInterest& onInterest,
+           const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed,
            const ForwardingFlags& flags, WireFormat& wireFormat,
-           bool isNfdCommand)
+           bool isNfdCommand, Face* face)
       : node_(*node), prefix_(prefix), onInterest_(onInterest),
         onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand)
+        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand), face_(face)
       {
       }
 
       Node& node_;
       ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterest onInterest_;
+      const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
       bool isNfdCommand_;
+      Face* face_;
     };
 
   private:
@@ -406,14 +562,6 @@ private:
      std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
 
   /**
-   * Find the first entry from the registeredPrefixTable_ where the entry prefix is the longest that matches name.
-   * @param name The name to find the RegisteredPrefix for (from the incoming interest packet).
-   * @return A pointer to the entry, or 0 if not found.
-   */
-  RegisteredPrefix*
-  getEntryForRegisteredPrefix(const Name& name);
-
-  /**
    * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
    * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
    * which registerPrefix got so it could return it to the caller. If this
@@ -424,12 +572,13 @@ private:
    * @param onRegisterFailed
    * @param flags
    * @param wireFormat
+   * @param face
    */
   void
   registerPrefixHelper
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags, WireFormat& wireFormat);
+     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags, WireFormat& wireFormat, Face* face);
 
   /**
    * Do the work of registerPrefix to register with NFD.
@@ -443,18 +592,20 @@ private:
    * @param flags
    * @param commandKeyChain
    * @param commandCertificateName
+   * @param face
    */
   void
   nfdRegisterPrefix
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
+     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
      const ForwardingFlags& flags, KeyChain& commandKeyChain,
-     const Name& commandCertificateName, WireFormat& wireFormat);
+     const Name& commandCertificateName, WireFormat& wireFormat, Face* face);
 
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
+  std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;

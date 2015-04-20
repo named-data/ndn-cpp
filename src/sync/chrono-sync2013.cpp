@@ -63,7 +63,7 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
   //   as the onDataNotFound fallback.
   contentCache_.registerPrefix
     (applicationBroadcastPrefix_, onRegisterFailed,
-     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4));
+     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
@@ -155,8 +155,9 @@ ChronoSync2013::Impl::publishNextSequenceNo()
 void
 ChronoSync2013::Impl::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-   uint64_t registerPrefixId)
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+   uint64_t registerPrefixId,
+   const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
   if (!enabled_)
     // Ignore callbacks after the application calls shutdown().
@@ -176,9 +177,9 @@ ChronoSync2013::Impl::onInterest
   if (interest->getName().size() == applicationBroadcastPrefix_.size() + 2 ||
       syncDigest == "00")
     // Recovery interest or newcomer interest.
-    processRecoveryInterest(*interest, syncDigest, transport);
+    processRecoveryInterest(*interest, syncDigest, face);
   else {
-    contentCache_.storePendingInterest(interest, transport);
+    contentCache_.storePendingInterest(interest, face);
 
     if (syncDigest != digestTree_->getRoot()) {
       size_t index = logFind(syncDigest);
@@ -190,12 +191,13 @@ ChronoSync2013::Impl::onInterest
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
-           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, syncDigest, &transport));
+           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, 
+                syncDigest, &face));
         _LOG_DEBUG("set timer recover");
       }
       else
         // common interest processing
-        processSyncInterest(index, syncDigest, transport);
+        processSyncInterest(index, syncDigest, face);
     }
   }
 }
@@ -253,7 +255,7 @@ ChronoSync2013::Impl::onData
 
 void
 ChronoSync2013::Impl::processRecoveryInterest
-  (const Interest& interest, const string& syncDigest, Transport& transport)
+  (const Interest& interest, const string& syncDigest, Face& face)
 {
   _LOG_DEBUG("processRecoveryInst");
   if (logFind(syncDigest) != -1) {
@@ -273,7 +275,7 @@ ChronoSync2013::Impl::processRecoveryInterest
       data.setContent(Blob(array, false));
       keyChain_.sign(data, certificateName_);
       try {
-        transport.send(*data.wireEncode());
+        face.putData(data);
         _LOG_DEBUG("send recovery data back");
         _LOG_DEBUG(interest.getName().toUri());
       }
@@ -286,7 +288,7 @@ ChronoSync2013::Impl::processRecoveryInterest
 
 bool
 ChronoSync2013::Impl::processSyncInterest
-  (int index, const string& syncDigest, Transport& transport)
+  (int index, const string& syncDigest, Face& face)
 {
   vector<string> nameList;
   vector<int> sequenceNoList;
@@ -338,7 +340,7 @@ ChronoSync2013::Impl::processSyncInterest
     data.setContent(Blob(array, false));
     keyChain_.sign(data, certificateName_);
     try {
-      transport.send(*data.wireEncode());
+      face.putData(data);
       sent = true;
       _LOG_DEBUG("Sync Data send");
       _LOG_DEBUG(name.toUri());
@@ -368,7 +370,7 @@ ChronoSync2013::Impl::sendRecovery(const string& syncdigest_t)
 void
 ChronoSync2013::Impl::judgeRecovery
   (const ptr_lib::shared_ptr<const Interest> &interest,
-   const string& syncDigest, Transport* transport)
+   const string& syncDigest, Face* face)
 {
   if (!enabled_)
     // Ignore callbacks after the application calls shutdown().
@@ -377,7 +379,7 @@ ChronoSync2013::Impl::judgeRecovery
   int index2 = logFind(syncDigest);
   if (index2 != -1) {
     if (syncDigest != digestTree_->getRoot())
-      processSyncInterest(index2, syncDigest, *transport);
+      processSyncInterest(index2, syncDigest, *face);
   }
   else
     sendRecovery(syncDigest);
