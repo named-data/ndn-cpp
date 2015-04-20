@@ -123,6 +123,18 @@ public:
   InterestFilter(const char* prefixUri, const char* regexFilter);
 
   /**
+   * Create an InterestFilter which is a copy of the given interestFilter.
+   * @param interestFilter The InterestFilter with values to copy from.
+   */
+  InterestFilter(const InterestFilter& interestFilter)
+    // Make a deep copy of the Name.
+  : prefix_(new Name(*interestFilter.prefix_)),
+    regexFilter_(interestFilter.regexFilter_),
+    regexFilterPattern_(interestFilter.regexFilterPattern_)
+  {
+  }
+
+  /**
    * Check if the given name matches this filter. Match if name starts with this
    * filter's prefix. If this filter has the optional regexFilter then the
    * remaining components match the regexFilter regular expression.
