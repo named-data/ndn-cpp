@@ -111,7 +111,7 @@ public:
    * elementListener.onReceivedElement. This is non-blocking and will return
    * immediately if there is no data to receive. You should normally not call
    * this directly since it is called by Face.processEvents.
-   * @throw This may throw an exception for reading data or in the callback for
+   * @throws This may throw an exception for reading data or in the callback for
    * processing the data.  If you call this from an main event loop, you may
    * want to catch and log/disregard all exceptions.
    */

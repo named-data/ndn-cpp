@@ -70,7 +70,7 @@ public:
    * throw an exception.
    * (DerSequence overrides to implement this method.)
    * @return The children as an array of shared_ptr<DerNode>.
-   * @throw DerDecodingException if this object is not a DerSequence.
+   * @throws DerDecodingException if this object is not a DerSequence.
    */
   virtual const std::vector<ptr_lib::shared_ptr<DerNode> >&
   getChildren();
@@ -100,7 +100,7 @@ public:
    * call to getChildren.
    * @param index The index of the children.
    * @return children[index] cast to DerSequence.
-   * @throw DerDecodingException if index is out of bounds or if
+   * @throws DerDecodingException if index is out of bounds or if
    * children[index] is not a DerSequence.
    */
   static DerNode::DerSequence&

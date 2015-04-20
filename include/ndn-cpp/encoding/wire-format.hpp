@@ -40,7 +40,7 @@ public:
    * Encode name and return the encoding. Your derived class should override.
    * @param name The Name object to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeName(const Name& name);
@@ -50,7 +50,7 @@ public:
    * @param name The Name object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual void
   decodeName(Name& name, const uint8_t *input, size_t inputLength);
@@ -71,7 +71,7 @@ public:
    * If you are not encoding in order to sign, you can call
    * encodeInterest(const Interest& interest) to ignore this returned value.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeInterest
@@ -82,7 +82,7 @@ public:
    * Encode interest and return the encoding.  Your derived class should override.
    * @param interest The Interest object to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   Blob
   encodeInterest(const Interest& interest)
@@ -110,7 +110,7 @@ public:
    * If you are not decoding in order to verify, you can call
    * decodeInterest(Interest& interest, const uint8_t *input, size_t inputLength)
    * to ignore this returned value.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual void
   decodeInterest
@@ -133,7 +133,7 @@ public:
    * @param signedPortionEndOffset Return the offset in the encoding of the end of the signed portion.
    * If you are not encoding in order to sign, you can call encodeData(const Data& data) to ignore this returned value.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeData
@@ -143,7 +143,7 @@ public:
    * Encode data and return the encoding.
    * @param data The Data object to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   Blob
   encodeData(const Data& data)
@@ -163,7 +163,7 @@ public:
    * @param signedPortionEndOffset Return the offset in the input buffer of the end of the signed portion.
    * If you are not decoding in order to verify, you can call
    * decodeData(Data& data, const uint8_t *input, size_t inputLength) to ignore this returned value.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual void
   decodeData
@@ -180,7 +180,7 @@ public:
    * Encode forwardingEntry and return the encoding.  Your derived class should override.
    * @param forwardingEntry The ForwardingEntry object to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeForwardingEntry(const ForwardingEntry& forwardingEntry);
@@ -190,7 +190,7 @@ public:
    * @param forwardingEntry The ForwardingEntry object whose fields are updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual void
   decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
@@ -200,7 +200,7 @@ public:
    * Your derived class should override.
    * @param controlParameters The ControlParameters object to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeControlParameters
@@ -213,7 +213,7 @@ public:
    * updated.
    * @param input A pointer to the input buffer to decode.
    * @param inputLength The number of bytes in input.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual void
   decodeControlParameters
@@ -225,7 +225,7 @@ public:
    * Your derived class should override.
    * @param signature An object of a subclass of Signature to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeSignatureInfo(const Signature& signature);
@@ -239,7 +239,7 @@ public:
    * @param signatureValue A pointer to the signature value input buffer to decode.
    * @param signatureValueLength The number of bytes in signatureValue.
    * @return A new object which is a subclass of Signature.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual ptr_lib::shared_ptr<Signature>
   decodeSignatureInfoAndValue
@@ -269,7 +269,7 @@ public:
    * @param signature An object of a subclass of Signature with the signature
    * value to encode.
    * @return A Blob containing the encoding.
-   * @throw logic_error for unimplemented if the derived class does not override.
+   * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
   encodeSignatureValue(const Signature& signature);
