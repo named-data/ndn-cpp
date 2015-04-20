@@ -55,7 +55,7 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
    * @return The pending interest ID which can be used with removePendingInterest.
-   * @throw runtime_error If the encoded interest size exceeds
+   * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
   uint64_t
@@ -170,7 +170,7 @@ public:
    * Interest.
    * @param data The Data packet which satisfies the interest.
    * @param wireFormat A WireFormat object used to encode the Data packet.
-   * @throw runtime_error If the encoded Data packet size exceeds
+   * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
   void
@@ -180,7 +180,7 @@ public:
    * Send the encoded packet out through the face.
    * @param encoding The array of bytes for the encoded packet to send.
    * @param encodingLength The number of bytes in the encoding array.
-   * @throw runtime_error If the encoded Data packet size exceeds
+   * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
   void
@@ -195,7 +195,7 @@ public:
    * interest table, your application should make sure that it calls
    * processEvents in the same thread as expressInterest (which also modifies
    * the pending interest table).
-   * @throw This may throw an exception for reading data or in the callback for processing the data.  If you
+   * @throws This may throw an exception for reading data or in the callback for processing the data.  If you
    * call this from an main event loop, you may want to catch and log/disregard all exceptions.
    */
   void

@@ -150,7 +150,7 @@ public:
      * Interpret this name component as a network-ordered number with a marker and return an integer.
      * @param marker The required first byte of the component.
      * @return The integer number.
-     * @throw runtime_error If the first byte of the component does not equal the marker.
+     * @throws runtime_error If the first byte of the component does not equal the marker.
      */
     uint64_t
     toNumberWithMarker(uint8_t marker) const;
@@ -160,7 +160,7 @@ public:
      * @param prefix The required prefix of the component.
      * @param prefixLength The length of prefix.
      * @return The integer number.
-     * @throw runtime_error If the first bytes of the component do not equal the prefix.
+     * @throws runtime_error If the first bytes of the component do not equal the prefix.
      */
     uint64_t
     toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) const;
@@ -179,7 +179,7 @@ public:
      * conventions for "Segment number" (marker 0x00).
      * http://named-data.net/doc/tech-memos/naming-conventions.pdf
      * @return The integer segment number.
-     * @throw runtime_error If the first byte of the component is not the expected marker.
+     * @throws runtime_error If the first byte of the component is not the expected marker.
      */
     uint64_t
     toSegment() const
@@ -192,7 +192,7 @@ public:
      * naming conventions for segment "Byte offset" (marker 0xFB).
      * http://named-data.net/doc/tech-memos/naming-conventions.pdf
      * @return The integer segment byte offset.
-     * @throw runtime_error If the first byte of the component is not the expected marker.
+     * @throws runtime_error If the first byte of the component is not the expected marker.
      */
     uint64_t
     toSegmentOffset() const
@@ -230,7 +230,7 @@ public:
      * the exact number from the component without converting it to a time
      * representation.
      * @return The integer version number.
-     * @throw runtime_error If the first byte of the component is not the expected marker.
+     * @throws runtime_error If the first byte of the component is not the expected marker.
      */
     uint64_t
     toVersion() const
@@ -244,7 +244,7 @@ public:
      * http://named-data.net/doc/tech-memos/naming-conventions.pdf
      * @return The number of microseconds since the UNIX epoch (Thursday,
      * 1 January 1970) not counting leap seconds.
-     * @throw runtime_error If the first byte of the component is not the expected marker.
+     * @throws runtime_error If the first byte of the component is not the expected marker.
      */
     uint64_t
     toTimestamp() const
@@ -257,7 +257,7 @@ public:
      * conventions for "Sequencing" (marker 0xFE).
      * http://named-data.net/doc/tech-memos/naming-conventions.pdf
      * @return The integer sequence number.
-     * @throw runtime_error If the first byte of the component is not the expected marker.
+     * @throws runtime_error If the first byte of the component is not the expected marker.
      */
     uint64_t
     toSequenceNumber() const
@@ -870,7 +870,7 @@ public:
    * @param i The index of the component, starting from 0.  However, if i is negative, return the component
    * at size() - (-i).
    * @return The name component at the index.
-   * @throw runtime_error If index is out of range.
+   * @throws runtime_error If index is out of range.
    */
   const Component&
   get(int i) const;
