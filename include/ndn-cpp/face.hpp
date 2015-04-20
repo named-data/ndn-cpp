@@ -26,7 +26,8 @@
 #include "data.hpp"
 #include "forwarding-flags.hpp"
 #include "encoding/wire-format.hpp"
-#include <ndn-cpp/transport/transport.hpp>
+#include "interest-filter.hpp"
+#include "transport/transport.hpp"
 
 namespace ndn {
 
@@ -218,13 +219,57 @@ public:
      const ForwardingFlags& flags = ForwardingFlags(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
-   * Remove the registered prefix entry with the registeredPrefixId from the registered prefix table.
-   * This does not affect another registered prefix with a different registeredPrefixId, even if it has the same prefix name.
-   * If there is no entry with the registeredPrefixId, do nothing.
+   * Remove the registered prefix entry with the registeredPrefixId from the
+   * registered prefix table. This does not affect another registered prefix
+   * with a different registeredPrefixId, even if it has the same prefix name.
+   * If an interest filter was automatically created by registerPrefix, also
+   * remove it. If there is no entry with the registeredPrefixId, do nothing.
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
   removeRegisteredPrefix(uint64_t registeredPrefixId);
+
+  /**
+   * Add an entry to the local interest filter table to call the onInterest
+   * callback for a matching incoming Interest. This method only modifies the
+   * library's local callback table and does not register the prefix with the
+   * forwarder. It will always succeed. To register a prefix with the forwarder,
+   * use registerPrefix.
+   * @param filter The InterestFilter with a prefix an optional regex filter
+   * used to match the name of an incoming Interest. This makes a copy of filter.
+   * @param onInterest When an Interest is received which matches the filter,
+   * this calls
+   * onInterest(prefix, interest, transport, interestFilterId).
+   * @return The interest filter ID which can be used with unsetInterestFilter.
+   */
+  uint64_t
+  setInterestFilter(const InterestFilter& filter, const OnInterest& onInterest);
+
+  /**
+   * Add an entry to the local interest filter table to call the onInterest
+   * callback for a matching incoming Interest. This method only modifies the
+   * library's local callback table and does not register the prefix with the
+   * forwarder. It will always succeed. To register a prefix with the forwarder,
+   * use registerPrefix.
+   * @param prefix The Name prefix used to match the name of an incoming
+   * Interest.
+   * @param onInterest This creates an interest filter from prefix so that when
+   * an Interest is received which matches the filter, this calls
+   * onInterest(prefix, interest, transport, interestFilterId).
+   * @return The interest filter ID which can be used with unsetInterestFilter.
+   */
+  uint64_t
+  setInterestFilter(const Name& prefix, const OnInterest& onInterest);
+
+  /**
+   * Remove the interest filter entry which has the interestFilterId from the
+   * interest filter table. This does not affect another interest filter with
+   * a different interestFilterId, even if it has the same prefix name.
+   * If there is no entry with the interestFilterId, do nothing.
+   * @param interestFilterId The ID returned from setInterestFilter.
+   */
+  void
+  unsetInterestFilter(uint64_t interestFilterId);
 
   /**
    * The OnInterestCallback calls this to put a Data packet which satisfies an

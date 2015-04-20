@@ -142,6 +142,24 @@ Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
   node_->removeRegisteredPrefix(registeredPrefixId);
 }
 
+uint64_t
+Face::setInterestFilter(const InterestFilter& filter, const OnInterest& onInterest)
+{
+  return node_->setInterestFilter(filter, onInterest);
+}
+
+uint64_t
+Face::setInterestFilter(const Name& prefix, const OnInterest& onInterest)
+{
+  return node_->setInterestFilter(InterestFilter(prefix), onInterest);
+}
+
+void
+Face::unsetInterestFilter(uint64_t interestFilterId)
+{
+  node_->unsetInterestFilter(interestFilterId);
+}
+
 void
 Face::putData(const Data& data, WireFormat& wireFormat)
 {
