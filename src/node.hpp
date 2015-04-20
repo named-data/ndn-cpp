@@ -92,8 +92,13 @@ public:
   /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
-   * @param onInterest A function object to call when a matching interest is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
+   * @param onInterest (optional) If not null, this creates an interest filter
+   * from prefix so that when an Interest is received which matches the filter,
+   * this calls the function object
+   * onInterest(prefix, interest, transport, interestFilterId). 
+   * This copies the function object, so you may need to use func_lib::ref() as 
+   * appropriate. If onInterest is null, it is ignored and you must call
+   * setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forwarded to the application.
