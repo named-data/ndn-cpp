@@ -239,7 +239,7 @@ public:
   operator()
      (const ptr_lib::shared_ptr<const Name>& prefix,
       const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-      uint64_t registeredPrefixId);
+      uint64_t interestFilterId);
 
 private:
   KeyChain& keyChain_;
@@ -252,7 +252,7 @@ void
 SendSegments::operator()
    (const ptr_lib::shared_ptr<const Name>& prefix,
     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-    uint64_t registeredPrefixId)
+    uint64_t interestFilterId)
 {
   int maxSegment = 2;
   if (segment_ >= maxSegment)

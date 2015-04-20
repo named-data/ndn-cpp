@@ -129,7 +129,7 @@ private:
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId);
+     uint64_t interestFilterId);
 
   // Processing the incoming Chat data.
   void
@@ -304,7 +304,7 @@ void
 Chat::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-   uint64_t registeredPrefixId)
+   uint64_t interestFilterId)
 {
   SyncDemo::ChatMessage content;
   int sequenceNo = ::atoi(interest->getName().get(chatPrefix_.size() + 1).toEscapedString().c_str());

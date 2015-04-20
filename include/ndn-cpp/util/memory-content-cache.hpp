@@ -58,7 +58,7 @@ public:
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onDataNotFound (optional) If a data packet for an interest is not
    * found in the cache, this forwards the interest by calling
-   * onDataNotFound(prefix, interest, transport, registeredPrefixId).
+   * onDataNotFound(prefix, interest, transport, interestFilterId).
    * Your callback can find the Data packet for the interest and call
    * transport.send.  If your callback cannot find the Data packet, it can
    * optionally call storePendingInterest(interest, transport) to store the pending
@@ -150,7 +150,7 @@ public:
   operator()
     (const ptr_lib::shared_ptr<const Name>& prefix,
      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId);
+     uint64_t interestFilterId);
 
 private:
   /**
@@ -296,7 +296,7 @@ private:
   storePendingInterestCallback
     (const ptr_lib::shared_ptr<const Name>& prefix,
      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId)
+     uint64_t interestFilterId)
   {
     storePendingInterest(interest, transport);
   }

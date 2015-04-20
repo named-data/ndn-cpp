@@ -108,7 +108,7 @@ void
 MemoryContentCache::operator()
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-   uint64_t registeredPrefixId)
+   uint64_t interestFilterId)
 {
   doCleanup();
 
@@ -172,7 +172,7 @@ MemoryContentCache::operator()
       onDataNotFoundForPrefix_.find(prefix->toUri());
     if (onDataNotFound != onDataNotFoundForPrefix_.end() &&
         onDataNotFound->second)
-      onDataNotFound->second(prefix, interest, transport, registeredPrefixId);
+      onDataNotFound->second(prefix, interest, transport, interestFilterId);
   }
 }
 

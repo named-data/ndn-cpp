@@ -91,7 +91,7 @@ public:
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
      const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t registeredPrefixId)
+     uint64_t interestFilterId)
   {
     ++onInterestCallCount_;
 
