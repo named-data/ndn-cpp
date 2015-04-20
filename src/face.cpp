@@ -145,7 +145,7 @@ Face::registerPrefix
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   // Wrap the deprecated OnInterest in an OnInterestCallback.
-  registerPrefix
+  return registerPrefix
     (prefix,
      bind(&Face::onInterestWrapper, _1, _2, _3, _4, _5, onInterest),
      onRegisterFailed, flags, wireFormat);
