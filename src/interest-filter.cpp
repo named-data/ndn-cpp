@@ -32,37 +32,37 @@ namespace ndn {
 #if NDN_CPP_HAVE_REGEX_LIB
 
 InterestFilter::InterestFilter(const Name& prefix, const string& regexFilter)
-: prefix_(prefix), regexFilter_(regexFilter),
+: prefix_(new Name(prefix)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
 
 InterestFilter::InterestFilter(const Name& prefix, const char* regexFilter)
-: prefix_(prefix), regexFilter_(regexFilter),
+: prefix_(new Name(prefix)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
 
 InterestFilter::InterestFilter(const string& prefixUri, const string& regexFilter)
-: prefix_(prefixUri), regexFilter_(regexFilter),
+: prefix_(new Name(prefixUri)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
 
 InterestFilter::InterestFilter(const char* prefixUri, const string& regexFilter)
-: prefix_(prefixUri), regexFilter_(regexFilter),
+: prefix_(new Name(prefixUri)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
 
 InterestFilter::InterestFilter(const string& prefixUri, const char* regexFilter)
-: prefix_(prefixUri), regexFilter_(regexFilter),
+: prefix_(new Name(prefixUri)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
 
 InterestFilter::InterestFilter(const char* prefixUri, const char* regexFilter)
-: prefix_(prefixUri), regexFilter_(regexFilter),
+: prefix_(new Name(prefixUri)), regexFilter_(regexFilter),
   regexFilterPattern_(makePattern(regexFilter))
 {
 }
@@ -72,18 +72,18 @@ InterestFilter::InterestFilter(const char* prefixUri, const char* regexFilter)
 bool
 InterestFilter::doesMatch(const Name& name) const
 {
-  if (name.size() < prefix_.size())
+  if (name.size() < prefix_->size())
     return false;
 
   if (hasRegexFilter()) {
 #if NDN_CPP_HAVE_REGEX_LIB
     // Perform a prefix match and regular expression match for the remaining
     // components.
-    if (!prefix_.match(name))
+    if (!prefix_->match(name))
       return false;
 
     return regex_lib::sregex_iterator() != NdnRegexMatcher
-      (regexFilterPattern_, name.getSubName(prefix_.size())).iterator;
+      (regexFilterPattern_, name.getSubName(prefix_->size())).iterator;
 #else
     // We should not reach this point because the constructors for regexFilter
     // don't compile.
@@ -92,7 +92,7 @@ InterestFilter::doesMatch(const Name& name) const
   }
   else
     // Just perform a prefix match.
-    return prefix_.match(name);
+    return prefix_->match(name);
 }
 
 string

@@ -38,7 +38,7 @@ public:
    * @param prefix The prefix Name. This makes a copy of the Name.
    */
   InterestFilter(const Name& prefix)
-  : prefix_(prefix)
+  : prefix_(new Name(prefix))
   {
   }
 
@@ -48,7 +48,7 @@ public:
    * @param prefixUri The URI of the prefix Name.
    */
   InterestFilter(const std::string& prefixUri)
-  : prefix_(prefixUri)
+  : prefix_(new Name(prefixUri))
   {
   }
 
@@ -58,7 +58,7 @@ public:
    * @param prefixUri The URI of the prefix Name.
    */
   InterestFilter(const char* prefixUri)
-  : prefix_(prefixUri)
+  : prefix_(new Name(prefixUri))
   {
   }
 
@@ -150,7 +150,7 @@ public:
    * Get the prefix given to the constructor.
    * @return The prefix Name.
    */
-  const Name&
+  const ptr_lib::shared_ptr<const Name>&
   getPrefix() const { return prefix_; }
 
   /**
@@ -177,7 +177,7 @@ private:
   static std::string
   makePattern(const std::string& regexFilter);
 
-  Name prefix_;
+  ptr_lib::shared_ptr<const Name> prefix_;
   std::string regexFilter_;
   std::string regexFilterPattern_;
 };
