@@ -31,6 +31,8 @@
 
 namespace ndn {
 
+class Face;
+
 /**
  * An OnData function object is used to pass a callback to expressInterest.
  */
@@ -42,10 +44,19 @@ typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&, cons
 typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&)> OnTimeout;
 
 /**
- * An OnInterest function object is used to pass a callback to registerPrefix.
+ * @deprecated Use OnInterestCallback.
  */
 typedef func_lib::function<void
   (const ptr_lib::shared_ptr<const Name>&, const ptr_lib::shared_ptr<const Interest>&, Transport&, uint64_t)> OnInterest;
+
+/**
+ * An OnInterestCallback function object is used to pass a callback to
+ * setInterestFilter and optionally to registerPrefix.
+ */
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Name>&, 
+   const ptr_lib::shared_ptr<const Interest>&, Face&, uint64_t,
+   const ptr_lib::shared_ptr<const InterestFilter>&)> OnInterestCallback;
 
 /**
  * An OnRegisterFailed function object is used to report when registerPrefix fails.
@@ -207,7 +218,7 @@ public:
    * @param onInterest (optional) If not null, this creates an interest filter
    * from prefix so that when an Interest is received which matches the filter,
    * this calls the function object
-   * onInterest(prefix, interest, transport, interestFilterId).
+   * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
@@ -220,8 +231,22 @@ public:
    */
   uint64_t
   registerPrefix
-    (const Name& prefix, const OnInterest& onInterest, const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags = ForwardingFlags(), WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+    (const Name& prefix, const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags = ForwardingFlags(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * @deprecated Use registerPrefix where onInterest is an OnInterestCallback
+   * (which is passed this Face for calling putData) instead of the deprecated
+   * OnInterest (which is passed a Transport object).
+   */
+  uint64_t
+  DEPRECATED_IN_NDN_CPP registerPrefix
+    (const Name& prefix, const OnInterest& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags = ForwardingFlags(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the
@@ -244,11 +269,12 @@ public:
    * used to match the name of an incoming Interest. This makes a copy of filter.
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
-   * onInterest(prefix, interest, transport, interestFilterId).
+   * onInterest(prefix, interest, face, interestFilterId, filter).
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   uint64_t
-  setInterestFilter(const InterestFilter& filter, const OnInterest& onInterest);
+  setInterestFilter
+    (const InterestFilter& filter, const OnInterestCallback& onInterest);
 
   /**
    * Add an entry to the local interest filter table to call the onInterest
@@ -260,11 +286,11 @@ public:
    * Interest.
    * @param onInterest This creates an interest filter from prefix so that when
    * an Interest is received which matches the filter, this calls
-   * onInterest(prefix, interest, transport, interestFilterId).
+   * onInterest(prefix, interest, face, interestFilterId, filter).
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   uint64_t
-  setInterestFilter(const Name& prefix, const OnInterest& onInterest);
+  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest);
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -289,6 +315,28 @@ public:
   putData
     (const Data& data,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Send the encoded packet out through the face.
+   * @param encoding The blob with the the encoded packet to send.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  send(Blob encoding)
+  {
+    send(encoding.buf(), encoding.size());
+  }
+
+  /**
+   * Send the encoded packet out through the face.
+   * @param encoding The array of bytes for the encoded packet to send.
+   * @param encodingLength The number of bytes in the encoding array.
+   * @throw runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  send(const uint8_t *encoding, size_t encodingLength);
 
   /**
    * Process any packets to receive and call callbacks such as onData,
@@ -331,6 +379,19 @@ public:
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
 private:
+  /**
+   * Call callerOnInterest with the values and node_->getTransport().
+   * This is a wrapper to support the deprecated registerPrefix which takes an
+   * OnInterest callback instead of OnInterestCallback.
+   */
+  static void
+  onInterestWrapper
+    (const ptr_lib::shared_ptr<const Name>& prefix,
+     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+     uint64_t interestFilterId,
+     const ptr_lib::shared_ptr<const InterestFilter>& filter,
+     const OnInterest callerOnInterest);
+
   Node *node_;
   KeyChain* commandKeyChain_;
   Name commandCertificateName_;
