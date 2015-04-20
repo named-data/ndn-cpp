@@ -281,14 +281,38 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
   // Go backwards through the list so we can erase entries.
   // Remove all entries even though registeredPrefixId should be unique.
   for (int i = (int)registeredPrefixTable_.size() - 1; i >= 0; --i) {
-    if (registeredPrefixTable_[i]->getRegisteredPrefixId() == registeredPrefixId) {
+    RegisteredPrefix& entry = *registeredPrefixTable_[i];
+
+    if (entry.getRegisteredPrefixId() == registeredPrefixId) {
       ++count;
+
+      if (entry.getRelatedInterestFilterId() > 0)
+        // Remove the related interest filter.
+        unsetInterestFilter(entry.getRelatedInterestFilterId());
+
       registeredPrefixTable_.erase(registeredPrefixTable_.begin() + i);
     }
   }
 
   if (count == 0)
     _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
+}
+
+void
+Node::unsetInterestFilter(uint64_t interestFilterId)
+{
+  int count = 0;
+  // Go backwards through the list so we can erase entries.
+  // Remove all entries even though interestFilterId should be unique.
+  for (int i = (int)interestFilterTable_.size() - 1; i >= 0; --i) {
+    if (interestFilterTable_[i]->getInterestFilterId() == interestFilterId) {
+      ++count;
+      interestFilterTable_.erase(interestFilterTable_.begin() + i);
+    }
+  }
+
+  if (count == 0)
+    _LOG_DEBUG("unsetInterestFilter: Didn't find interestFilterId " << interestFilterId);
 }
 
 void
@@ -466,12 +490,19 @@ Node::registerPrefixHelper
   interest.setInterestLifetimeMilliseconds(4000.0);
   interest.setScope(1);
 
-  if (registeredPrefixId != 0)
-    // Save the onInterest callback and send the registration interest.
+  if (registeredPrefixId != 0) {
+    uint64_t interestFilterId = 0;
+    if (onInterest)
+      // registerPrefix was call with the "combined" form that includes the
+      // callback, so add an InterestFilterEntry.
+      interestFilterId = setInterestFilter(InterestFilter(*prefix), onInterest);
+
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>
-       (new RegisteredPrefix(registeredPrefixId, prefix, onInterest)));
+       (new RegisteredPrefix(registeredPrefixId, prefix, interestFilterId)));
+  }
 
+  // Send the registration interest.
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false)));
@@ -514,12 +545,19 @@ Node::nfdRegisterPrefix
     (commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
 
-  if (registeredPrefixId != 0)
-    // Save the onInterest callback and send the registration interest.
+  if (registeredPrefixId != 0) {
+    uint64_t interestFilterId = 0;
+    if (onInterest)
+      // registerPrefix was call with the "combined" form that includes the
+      // callback, so add an InterestFilterEntry.
+      interestFilterId = setInterestFilter(InterestFilter(*prefix), onInterest);
+
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
-        (registeredPrefixId, prefix, onInterest)));
+        (registeredPrefixId, prefix, interestFilterId)));
+  }
 
+  // Send the registration interest.
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true)));
@@ -583,9 +621,14 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
 
   // Now process as Interest or Data.
   if (interest) {
-    RegisteredPrefix *entry = getEntryForRegisteredPrefix(interest->getName());
-    if (entry)
-      entry->getOnInterest()(entry->getPrefix(), interest, *transport_, entry->getRegisteredPrefixId());
+    // Call all interest filter callbacks which match.
+    for (size_t i = 0; i < interestFilterTable_.size(); ++i) {
+      InterestFilterEntry &entry = *interestFilterTable_[i];
+      if (entry.getFilter()->doesMatch(interest->getName()))
+        entry.getOnInterest()
+          (entry.getFilter()->getPrefix(), interest, *transport_,
+           entry.getInterestFilterId());
+    }
   }
   else if (data) {
     vector<ptr_lib::shared_ptr<PendingInterest> > pitEntries;
@@ -612,26 +655,6 @@ Node::extractEntriesForExpressedInterest
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
-}
-
-Node::RegisteredPrefix*
-Node::getEntryForRegisteredPrefix(const Name& name)
-{
-  int iResult = -1;
-
-  for (size_t i = 0; i < registeredPrefixTable_.size(); ++i) {
-    if (registeredPrefixTable_[i]->getPrefix()->match(name)) {
-      if (iResult < 0 ||
-          registeredPrefixTable_[i]->getPrefix()->size() > registeredPrefixTable_[iResult]->getPrefix()->size())
-        // Update to the longer match.
-        iResult = i;
-    }
-  }
-
-  if (iResult >= 0)
-    return registeredPrefixTable_[iResult].get();
-  else
-    return 0;
 }
 
 Node::PendingInterest::PendingInterest

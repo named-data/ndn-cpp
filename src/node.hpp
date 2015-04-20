@@ -26,6 +26,7 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/forwarding-flags.hpp>
+#include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
 #include "encoding/element-listener.hpp"
@@ -110,13 +111,50 @@ public:
      const Name& commandCertificateName);
 
   /**
-   * Remove the registered prefix entry with the registeredPrefixId from the registered prefix table.
-   * This does not affect another registered prefix with a different registeredPrefixId, even if it has the same prefix name.
-   * If there is no entry with the registeredPrefixId, do nothing.
+   * Remove the registered prefix entry with the registeredPrefixId from the 
+   * registered prefix table. This does not affect another registered prefix
+   * with a different registeredPrefixId, even if it has the same prefix name.
+   * If there is no entry with the registeredPrefixId, do nothing. If an
+   * interest filter was automatically created by registerPrefix, also remove it.
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
   removeRegisteredPrefix(uint64_t registeredPrefixId);
+
+  /**
+   * Add an entry to the local interest filter table to call the onInterest
+   * callback for a matching incoming Interest. This method only modifies the
+   * library's local callback table and does not register the prefix with the
+   * forwarder. It will always succeed. To register a prefix with the forwarder,
+   * use registerPrefix.
+   * @param filter The InterestFilter with a prefix an optional regex filter
+   * used to match the name of an incoming Interest. This makes a copy of filter.
+   * @param onInterest When an Interest is received which matches the filter,
+   * this calls
+   * onInterest(prefix, interest, transport, interestFilterId).
+   * @return The interest filter ID which can be used with unsetInterestFilter.
+   */
+  uint64_t
+  setInterestFilter
+    (const InterestFilter& filter, const OnInterest& onInterest)
+  {
+    uint64_t interestFilterId = InterestFilterEntry::getNextInterestFilterId();
+    interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
+      (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
+       onInterest));
+
+    return interestFilterId;
+  }
+
+  /**
+   * Remove the interest filter entry which has the interestFilterId from the
+   * interest filter table. This does not affect another interest filter with
+   * a different interestFilterId, even if it has the same prefix name.
+   * If there is no entry with the interestFilterId, do nothing.
+   * @param interestFilterId The ID returned from setInterestFilter.
+   */
+  void
+  unsetInterestFilter(uint64_t interestFilterId);
 
   /**
    * The OnInterestCallback calls this to put a Data packet which satisfies an
@@ -235,21 +273,33 @@ private:
     MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the interest times out in milliseconds according to ndn_getNowMilliseconds, or -1 for no timeout. */
   };
 
+  /**
+   * A RegisteredPrefix holds a registeredPrefixId and information necessary
+   * to remove the registration later. It optionally holds a related
+   * interestFilterId if the InterestFilter was set in the same registerPrefix
+   * operation.
+   */
   class RegisteredPrefix {
   public:
     /**
-     * Create a new RegisteredPrefix.
+     * Create a new RegisteredPrefix with the given values.
      * @param registeredPrefixId A unique ID for this entry, which you should get with getNextRegisteredPrefixId().
      * @param prefix A shared_ptr for the prefix.
-     * @param onInterest A function object to call when a matching data packet is received.
+     * @param relatedInterestFilterId (optional) The related interestFilterId
+     * for the filter set in the same registerPrefix operation. If omitted, set
+     * to 0.
      */
-    RegisteredPrefix(uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix, const OnInterest& onInterest)
-    : registeredPrefixId_(registeredPrefixId), prefix_(prefix), onInterest_(onInterest)
+    RegisteredPrefix
+      (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
+       uint64_t relatedInterestFilterId)
+    : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
+      relatedInterestFilterId_(relatedInterestFilterId)
     {
     }
 
     /**
      * Return the next unique entry ID.
+     * @return The next ID.
      */
     static uint64_t
     getNextRegisteredPrefixId()
@@ -259,23 +309,93 @@ private:
 
     /**
      * Return the registeredPrefixId given to the constructor.
+     * @return The registeredPrefixId.
      */
     uint64_t
     getRegisteredPrefixId() { return registeredPrefixId_; }
 
+    /**
+     * Get the name prefix given to the constructor.
+     * @return The name prefix.
+     */
     const ptr_lib::shared_ptr<const Name>&
     getPrefix() { return prefix_; }
 
-    const OnInterest&
-    getOnInterest() { return onInterest_; }
+    /**
+     * Get the related interestFilterId given to the constructor.
+     * @return The related interestFilterId.
+     */
+    uint64_t
+    getRelatedInterestFilterId() { return relatedInterestFilterId_; }
 
   private:
     static uint64_t lastRegisteredPrefixId_; /**< A class variable used to get the next unique ID. */
     uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const Name> prefix_;
-    const OnInterest onInterest_;
+    uint64_t relatedInterestFilterId_;
   };
 
+  /**
+   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and
+   * and the OnInterest callback with its related Face.
+   */
+  class InterestFilterEntry {
+  public:
+    /**
+     * Create a new InterestFilterEntry with the given values.
+     * @param interestFilterId The ID from getNextInterestFilterId().
+     * @param filter A shared_ptr for the InterestFilter for this entry.
+     * @param onInterest A function object to call when a matching data packet
+     * is received.
+     */
+    InterestFilterEntry
+      (uint64_t interestFilterId,
+       const ptr_lib::shared_ptr<const InterestFilter>& filter,
+       const OnInterest& onInterest)
+    : interestFilterId_(interestFilterId), filter_(filter), 
+      onInterest_(onInterest)
+    {
+    }
+
+    /**
+     * Get the next interest filter ID. This just calls
+     * RegisteredPrefix::getNextRegisteredPrefixId() so that IDs come from the
+     * same pool and won't be confused when removing entries from the two tables.
+     * @return The next ID.
+     */
+    static uint64_t
+    getNextInterestFilterId()
+    {
+      return RegisteredPrefix::getNextRegisteredPrefixId();
+    }
+
+    /**
+     * Return the interestFilterId given to the constructor.
+     * @return The interestFilterId.
+     */
+    uint64_t
+    getInterestFilterId() { return interestFilterId_; }
+
+    /**
+     * Get the InterestFilter given to the constructor.
+     * @return The InterestFilter.
+     */
+    const ptr_lib::shared_ptr<const InterestFilter>&
+    getFilter() { return filter_; }
+
+    /**
+     * Get the OnInterest callback given to the constructor.
+     * @return The OnInterest callback.
+     */
+    const OnInterest&
+    getOnInterest() { return onInterest_; }
+
+  private:
+    uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
+    ptr_lib::shared_ptr<const InterestFilter> filter_;
+    const OnInterest onInterest_;
+  };
+  
   /**
    * An NdndIdFetcher receives the Data packet with the publisher public key digest for the connected NDN hub.
    * This class is a function object for the callbacks. It only holds a pointer to an Info object, so it is OK to copy the pointer.
@@ -406,14 +526,6 @@ private:
      std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
 
   /**
-   * Find the first entry from the registeredPrefixTable_ where the entry prefix is the longest that matches name.
-   * @param name The name to find the RegisteredPrefix for (from the incoming interest packet).
-   * @return A pointer to the entry, or 0 if not found.
-   */
-  RegisteredPrefix*
-  getEntryForRegisteredPrefix(const Name& name);
-
-  /**
    * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
    * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
    * which registerPrefix got so it could return it to the caller. If this
@@ -455,6 +567,7 @@ private:
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
+  std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
