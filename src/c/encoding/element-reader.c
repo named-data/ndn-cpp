@@ -71,6 +71,9 @@ ndn_Error ndn_ElementReader_onReceivedData
 #endif
 
     if (gotElementEnd) {
+      const uint8_t *element = 0;
+      size_t elementLength;
+      
       if (!self->elementListener)
         return NDN_ERROR_ElementReader_ElementListener_is_not_specified;
       
@@ -86,23 +89,31 @@ ndn_Error ndn_ElementReader_onReceivedData
             return error;
           self->partialDataLength += offset;
 
-          (*self->elementListener->onReceivedElement)(self->elementListener, self->partialData->array, self->partialDataLength);
+          element = self->partialData->array;
+          elementLength = self->partialDataLength;
         }
         
         // Assume we don't need to use partialData anymore until needed.
         self->usePartialData = 0;
       }
-      else
+      else {
         // We are not using partialData, so just point to the input data buffer.
-        (*self->elementListener->onReceivedElement)(self->elementListener, data, offset);
+        element = data;
+        elementLength = offset;
+      }
 
-      // Need to read a new object.
+      // Reset to read a new object. Do this before calling onReceivedElement
+      // in case it throws an exception.
       data += offset;
       dataLength -= offset;
 #ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
       ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
 #endif
       ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
+
+      if (element)
+        (*self->elementListener->onReceivedElement)
+          (self->elementListener, element, elementLength);
       if (dataLength == 0)
         // No more data in the packet.
         return NDN_ERROR_success;
