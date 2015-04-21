@@ -101,11 +101,9 @@ noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
-	bin/test-encode-decode-forwarding-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) bin/test-list-channels$(EXEEXT) \
 	bin/test-list-faces$(EXEEXT) bin/test-list-rib$(EXEEXT) \
-	bin/test-publish-async-ndnx$(EXEEXT) \
 	bin/test-publish-async-nfd$(EXEEXT) \
 	bin/test-register-route$(EXEEXT) \
 	bin/analog-reading-consumer$(EXEEXT) \
@@ -309,11 +307,6 @@ am_bin_test_encode_decode_fib_entry_OBJECTS =  \
 bin_test_encode_decode_fib_entry_OBJECTS =  \
 	$(am_bin_test_encode_decode_fib_entry_OBJECTS)
 bin_test_encode_decode_fib_entry_DEPENDENCIES = libndn-cpp.la
-am_bin_test_encode_decode_forwarding_entry_OBJECTS =  \
-	examples/test-encode-decode-forwarding-entry.$(OBJEXT)
-bin_test_encode_decode_forwarding_entry_OBJECTS =  \
-	$(am_bin_test_encode_decode_forwarding_entry_OBJECTS)
-bin_test_encode_decode_forwarding_entry_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_interest_OBJECTS =  \
 	examples/test-encode-decode-interest.$(OBJEXT)
 bin_test_encode_decode_interest_OBJECTS =  \
@@ -335,11 +328,6 @@ am_bin_test_list_rib_OBJECTS = examples/test-list-rib.$(OBJEXT) \
 	examples/rib-entry.pb.$(OBJEXT)
 bin_test_list_rib_OBJECTS = $(am_bin_test_list_rib_OBJECTS)
 bin_test_list_rib_DEPENDENCIES = libndn-cpp.la
-am_bin_test_publish_async_ndnx_OBJECTS =  \
-	examples/test-publish-async-ndnx.$(OBJEXT)
-bin_test_publish_async_ndnx_OBJECTS =  \
-	$(am_bin_test_publish_async_ndnx_OBJECTS)
-bin_test_publish_async_ndnx_DEPENDENCIES = libndn-cpp.la
 am_bin_test_publish_async_nfd_OBJECTS =  \
 	examples/test-publish-async-nfd.$(OBJEXT)
 bin_test_publish_async_nfd_OBJECTS =  \
@@ -464,12 +452,10 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
-	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
-	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -489,12 +475,10 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
-	$(bin_test_encode_decode_forwarding_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
-	$(bin_test_publish_async_ndnx_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -1188,8 +1172,6 @@ bin_test_encode_decode_data_SOURCES = examples/test-encode-decode-data.cpp
 bin_test_encode_decode_data_LDADD = libndn-cpp.la
 bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
-bin_test_encode_decode_forwarding_entry_SOURCES = examples/test-encode-decode-forwarding-entry.cpp
-bin_test_encode_decode_forwarding_entry_LDADD = libndn-cpp.la
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
@@ -1200,8 +1182,6 @@ bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.
 bin_test_list_faces_LDADD = libndn-cpp.la
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
-bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
-bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
@@ -1770,12 +1750,6 @@ examples/fib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-encode-decode-fib-entry$(EXEEXT): $(bin_test_encode_decode_fib_entry_OBJECTS) $(bin_test_encode_decode_fib_entry_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_fib_entry_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-fib-entry$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_fib_entry_OBJECTS) $(bin_test_encode_decode_fib_entry_LDADD) $(LIBS)
-examples/test-encode-decode-forwarding-entry.$(OBJEXT):  \
-	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-encode-decode-forwarding-entry$(EXEEXT): $(bin_test_encode_decode_forwarding_entry_OBJECTS) $(bin_test_encode_decode_forwarding_entry_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_forwarding_entry_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-encode-decode-forwarding-entry$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_forwarding_entry_OBJECTS) $(bin_test_encode_decode_forwarding_entry_LDADD) $(LIBS)
 examples/test-encode-decode-interest.$(OBJEXT):  \
 	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -1812,12 +1786,6 @@ examples/rib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-list-rib$(EXEEXT): $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_DEPENDENCIES) $(EXTRA_bin_test_list_rib_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-list-rib$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_LDADD) $(LIBS)
-examples/test-publish-async-ndnx.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
-
-bin/test-publish-async-ndnx$(EXEEXT): $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_DEPENDENCIES) $(EXTRA_bin_test_publish_async_ndnx_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-publish-async-ndnx$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_ndnx_OBJECTS) $(bin_test_publish_async_ndnx_LDADD) $(LIBS)
 examples/test-publish-async-nfd.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -2017,13 +1985,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-forwarding-entry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-channels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-faces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-ndnx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/arduino/$(DEPDIR)/analog-reading-consumer.Po@am__quote@

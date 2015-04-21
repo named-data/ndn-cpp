@@ -25,11 +25,9 @@ check_PROGRAMS = bin/unit-tests/test-data-methods \
 
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
-  bin/test-encode-decode-fib-entry bin/test-encode-decode-forwarding-entry \
-  bin/test-encode-decode-interest bin/test-get-async bin/test-list-channels \
-  bin/test-list-faces bin/test-list-rib bin/test-publish-async-ndnx \
-  bin/test-publish-async-nfd bin/test-register-route \
-  bin/analog-reading-consumer \
+  bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
+  bin/test-get-async bin/test-list-channels bin/test-list-faces bin/test-list-rib \
+  bin/test-publish-async-nfd bin/test-register-route bin/analog-reading-consumer \
   bin/basic-insertion bin/watched-insertion
 
 # Public C headers.
@@ -267,9 +265,6 @@ bin_test_encode_decode_data_LDADD = libndn-cpp.la
 bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_forwarding_entry_SOURCES = examples/test-encode-decode-forwarding-entry.cpp
-bin_test_encode_decode_forwarding_entry_LDADD = libndn-cpp.la
-
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 
@@ -284,9 +279,6 @@ bin_test_list_faces_LDADD = libndn-cpp.la
 
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
-
-bin_test_publish_async_ndnx_SOURCES = examples/test-publish-async-ndnx.cpp
-bin_test_publish_async_ndnx_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
