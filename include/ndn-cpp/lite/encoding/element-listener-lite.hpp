@@ -28,7 +28,7 @@ namespace ndn {
 
 class ElementListenerLite;
 typedef void (*OnReceivedElementLite)
-  (ElementListenerLite *self, uint8_t *element, size_t elementLength);
+  (ElementListenerLite *self, const uint8_t *element, size_t elementLength);
 
 /** An ElementListenerLite holds an OnReceivedElementLite function pointer.
  * You can use this class as is, or extend it to provide data that can be

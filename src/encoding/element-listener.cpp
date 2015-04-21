@@ -24,7 +24,7 @@
 namespace ndn {
 
 void
-ElementListener::staticOnReceivedElement(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength)
+ElementListener::staticOnReceivedElement(struct ndn_ElementListener *self, const uint8_t *element, size_t elementLength)
 {
   ((ElementListener *)self)->onReceivedElement(element, elementLength);
 }

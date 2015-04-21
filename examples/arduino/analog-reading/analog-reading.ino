@@ -49,7 +49,7 @@ void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
 using namespace ndn;
 
 static void
-onReceivedElement(ndn::ElementListenerLite* self, uint8_t *element, size_t elementLength);
+onReceivedElement(ndn::ElementListenerLite* self, const uint8_t *element, size_t elementLength);
 
 // Set up the transport to call onReceivedElement.
 // elementBufferBytes is big enough for an interest packet.
@@ -67,7 +67,7 @@ uint64_t previousReadingNumber = 0;
  * Decode the element as an interest and check the prefix. 
  */
 static ndn_Error
-replyToInterest(uint8_t *element, size_t elementLength)
+replyToInterest(const uint8_t *element, size_t elementLength)
 {
   // Decode the element as an InterestLite.
   ndn_NameComponent interestNameComponents[3];
@@ -156,7 +156,7 @@ replyToInterest(uint8_t *element, size_t elementLength)
 }
 
 static void
-onReceivedElement(ndn::ElementListenerLite* self, uint8_t *element, size_t elementLength)
+onReceivedElement(ndn::ElementListenerLite* self, const uint8_t *element, size_t elementLength)
 {
   const int interestTlvType = 5;
   if (element[0] != interestTlvType)

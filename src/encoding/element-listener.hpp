@@ -54,7 +54,7 @@ private:
    * @param elementLength
    */
   static void
-  staticOnReceivedElement(struct ndn_ElementListener *self, uint8_t *element, size_t elementLength);
+  staticOnReceivedElement(struct ndn_ElementListener *self, const uint8_t *element, size_t elementLength);
 };
 
 }

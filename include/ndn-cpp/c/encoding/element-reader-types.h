@@ -29,7 +29,7 @@ extern "C" {
 
 struct ndn_ElementListener;
 typedef void (*ndn_OnReceivedElement)
-  (struct ndn_ElementListener *self, uint8_t *element, size_t elementLength);
+  (struct ndn_ElementListener *self, const uint8_t *element, size_t elementLength);
 
 /** An ndn_ElementListener struct holds a function pointer onReceivedElement.  You can extend this struct with data that
  * will be passed to onReceivedElement.
