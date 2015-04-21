@@ -84,7 +84,7 @@ static __inline void ndn_ElementReader_reset
  * @return 0 for success, else an error code
  */
 ndn_Error ndn_ElementReader_onReceivedData
-  (struct ndn_ElementReader *self, uint8_t *data, size_t dataLength);
+  (struct ndn_ElementReader *self, const uint8_t *data, size_t dataLength);
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,7 @@
 #include "element-reader.h"
 
 ndn_Error ndn_ElementReader_onReceivedData
-  (struct ndn_ElementReader *self, uint8_t *data, size_t dataLength)
+  (struct ndn_ElementReader *self, const uint8_t *data, size_t dataLength)
 {
   // Process multiple objects in the data.
   while(1) {
