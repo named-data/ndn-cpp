@@ -85,6 +85,14 @@ enum {
   ndn_Tlv_ControlParameters_ExpirationPeriod =    109
 };
 
+enum {
+  ndn_Tlv_LocalControlHeader_LocalControlHeader = 80,
+  ndn_Tlv_LocalControlHeader_IncomingFaceId = 81,
+  ndn_Tlv_LocalControlHeader_NextHopFaceId = 82,
+  ndn_Tlv_LocalControlHeader_CachingPolicy = 83,
+  ndn_Tlv_LocalControlHeader_NoCache = 96
+};
+
 #ifdef __cplusplus
 }
 #endif
