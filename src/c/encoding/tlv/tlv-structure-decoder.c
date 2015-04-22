@@ -35,7 +35,7 @@ ndn_TlvStructureDecoder_reset(struct ndn_TlvStructureDecoder *self)
 }
 
 ndn_Error
-ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength)
+ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, const uint8_t *input, size_t inputLength)
 {
   struct ndn_TlvDecoder decoder;
 

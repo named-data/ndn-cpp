@@ -45,7 +45,7 @@ static __inline void startHeader(struct ndn_BinaryXmlStructureDecoder *self)
 }
 
 ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
-  (struct ndn_BinaryXmlStructureDecoder *self, uint8_t *input, size_t inputLength)
+  (struct ndn_BinaryXmlStructureDecoder *self, const uint8_t *input, size_t inputLength)
 {
   struct ndn_BinaryXmlDecoder decoder;
 

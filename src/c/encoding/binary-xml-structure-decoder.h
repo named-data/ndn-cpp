@@ -54,7 +54,7 @@ static __inline void ndn_BinaryXmlStructureDecoder_initialize
  * @return 0 for success, else an error code
  */
 ndn_Error ndn_BinaryXmlStructureDecoder_findElementEnd
-  (struct ndn_BinaryXmlStructureDecoder *self, uint8_t *input, size_t inputLength);
+  (struct ndn_BinaryXmlStructureDecoder *self, const uint8_t *input, size_t inputLength);
 
 /**
  * Set the offset into the input, used for the next read.

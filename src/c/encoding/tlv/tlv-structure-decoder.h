@@ -66,7 +66,7 @@ ndn_TlvStructureDecoder_initialize(struct ndn_TlvStructureDecoder *self)
  * @return 0 for success, else an error code.
  */
 ndn_Error
-ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, uint8_t *input, size_t inputLength);
+ndn_TlvStructureDecoder_findElementEnd(struct ndn_TlvStructureDecoder *self, const uint8_t *input, size_t inputLength);
 
 /**
  * Set the offset into the input, used for the next read.
