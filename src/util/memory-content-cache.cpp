@@ -104,6 +104,27 @@ MemoryContentCache::storePendingInterest
 }
 
 void
+MemoryContentCache::getPendingInterestsForName
+  (const Name& name,
+   vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests)
+{
+  pendingInterests.clear();
+
+  // Remove timed-out interests as we add results.
+  // Go backwards through the list so we can erase entries.
+  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
+  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
+    if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
+      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
+      continue;
+    }
+
+    if (pendingInterestTable_[i]->getInterest()->matchesName(name))
+      pendingInterests.push_back(pendingInterestTable_[i]);
+  }
+}
+
+void
 MemoryContentCache::operator()
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& interest, Face& face,

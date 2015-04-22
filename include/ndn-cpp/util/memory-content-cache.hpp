@@ -50,6 +50,57 @@ public:
     (Face* face, Milliseconds cleanupIntervalMilliseconds = 1000.0);
 
   /**
+   * A PendingInterest holds an interest which onInterest received but could
+   * not satisfy. When we add a new data packet to the cache, we will also check
+   * if it satisfies a pending interest.
+   */
+  class PendingInterest {
+  public:
+    /**
+     * Create a new PendingInterest and set the timeoutTime_ based on the
+     * current time and the interest lifetime.
+     * @param interest A shared_ptr for the interest.
+     * @param face The face from the onInterest callback. If the
+     * interest is satisfied later by a new data packet, we will send the data
+     * packet to the face.
+     */
+    PendingInterest
+      (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
+
+    /**
+     * Return the interest given to the constructor.
+     */
+    const ptr_lib::shared_ptr<const Interest>&
+    getInterest() const { return interest_; }
+
+    /**
+     * Return the face given to the constructor.
+     */
+    Face&
+    getFace() const { return face_; }
+
+    /**
+     * Check if this interest is timed out.
+     * @param nowMilliseconds The current time in milliseconds from
+     * ndn_getNowMilliseconds.
+     * @return true if this interest timed out, otherwise false.
+     */
+    bool
+    isTimedOut(MillisecondsSince1970 nowMilliseconds) const
+    {
+      return timeoutTimeMilliseconds_ >= 0.0 &&
+             nowMilliseconds >= timeoutTimeMilliseconds_;
+    }
+
+  private:
+    ptr_lib::shared_ptr<const Interest> interest_;
+    Face& face_;
+    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
+      * interest times out in milliseconds according to ndn_getNowMilliseconds,
+      * or -1 for no timeout. */
+  };
+
+  /**
    * Call registerPrefix on the Face given to the constructor so that this
    * MemoryContentCache will answer interests whose name has the prefix.
    * @param prefix The Name for the prefix to register. This copies the Name.
@@ -104,6 +155,8 @@ public:
    * storePendingInterest(), then if the added Data packet satisfies any
    * interest, send it through the transport and remove the interest from the
    * pending interest table.
+   * Because this modifies the internal tables, you should call this on the same
+   * thread as processEvents, which can also modify the tables.
    * @param data The Data packet object to put in the cache. This copies the
    * fields from the object.
    */
@@ -115,6 +168,8 @@ public:
    * interest table (normally because there is no Data packet available yet to
    * satisfy the interest). add(data) will check if the added Data packet
    * satisfies any pending interest and send it through the face.
+   * Because this modifies the internal tables, you should call this on the same
+   * thread as processEvents, which can also modify the tables.
    * @param interest The Interest for which we don't have a Data packet yet. You
    * should not modify the interest after calling this.
    * @param face The Face with the connection which received the
@@ -136,6 +191,22 @@ public:
   {
     return storePendingInterestCallback_;
   }
+
+  /**
+   * Remove timed-out pending interests, then for each pending interest which
+   * matches according to Interest.matchesName(name), append the PendingInterest
+   * entry to the given pendingInterests list.
+   * Because this modifies the internal tables, you should call this on the same
+   * thread as processEvents, which can also modify the tables.
+   * @param name The name to check.
+   * @param pendingInterests The vector to receive the matching PendingInterest
+   * objects. This first clears the list before adding objects. You should not
+   * modify the PendingInterest objects.
+   */
+  void
+  getPendingInterestsForName
+    (const Name& name,
+     std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
 
   /**
    * This is the OnInterest callback which is called when the library receives
@@ -227,57 +298,6 @@ private:
   };
 
   /**
-   * A PendingInterest holds an interest which onInterest received but could
-   * not satisfy. When we add a new data packet to the cache, we will also check
-   * if it satisfies a pending interest.
-   */
-  class PendingInterest {
-  public:
-    /**
-     * Create a new PendingInterest and set the timeoutTime_ based on the
-     * current time and the interest lifetime.
-     * @param interest A shared_ptr for the interest.
-     * @param face The face from the onInterest callback. If the
-     * interest is satisfied later by a new data packet, we will send the data
-     * packet to the face.
-     */
-    PendingInterest
-      (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
-
-    /**
-     * Return the interest given to the constructor.
-     */
-    const ptr_lib::shared_ptr<const Interest>&
-    getInterest() { return interest_; }
-
-    /**
-     * Return the face given to the constructor.
-     */
-    Face&
-    getFace() { return face_; }
-
-    /**
-     * Check if this interest is timed out.
-     * @param nowMilliseconds The current time in milliseconds from
-     * ndn_getNowMilliseconds.
-     * @return true if this interest timed out, otherwise false.
-     */
-    bool
-    isTimedOut(MillisecondsSince1970 nowMilliseconds)
-    {
-      return timeoutTimeMilliseconds_ >= 0.0 &&
-             nowMilliseconds >= timeoutTimeMilliseconds_;
-    }
-
-  private:
-    ptr_lib::shared_ptr<const Interest> interest_;
-    Face& face_;
-    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
-      * interest times out in milliseconds according to ndn_getNowMilliseconds,
-      * or -1 for no timeout. */
-  };
-
-  /**
    * Check if now is greater than nextCleanupTime_ and, if so, remove stale
    * content from staleTimeCache_ and reset nextCleanupTime_ based on
    * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
@@ -312,7 +332,7 @@ private:
   std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
   StaleTimeContent::Compare contentCompare_;
   Name::Component emptyComponent_;
-  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+  std::vector<ptr_lib::shared_ptr<const PendingInterest> > pendingInterestTable_;
   OnInterestCallback storePendingInterestCallback_;
 };
 
