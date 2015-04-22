@@ -222,11 +222,11 @@ MemoryContentCache::StaleTimeContent::StaleTimeContent(const Data& data)
 
 MemoryContentCache::PendingInterest::PendingInterest
   (const ptr_lib::shared_ptr<const Interest>& interest, Face& face)
-  : interest_(interest), face_(face)
+  : interest_(interest), face_(face), timeoutPeriodStart_(ndn_getNowMilliseconds())
 {
   // Set up timeoutTime_.
   if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
-    timeoutTimeMilliseconds_ = ndn_getNowMilliseconds() +
+    timeoutTimeMilliseconds_ = timeoutPeriodStart_ +
       interest_->getInterestLifetimeMilliseconds();
   else
     // No timeout.

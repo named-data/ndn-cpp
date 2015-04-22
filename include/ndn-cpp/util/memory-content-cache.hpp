@@ -68,10 +68,20 @@ public:
       (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
 
     /**
-     * Return the interest given to the constructor.
+     * Return the interest given to the constructor. You must not modify this
+     * object - if you need to modify it then make a copy.
      */
     const ptr_lib::shared_ptr<const Interest>&
     getInterest() const { return interest_; }
+
+    /**
+     * Return the time when this pending interest entry was created (the time
+     * when the unsatisfied interest arrived and was added to the pending
+     * interest table). The interest timeout is based on this value.
+     * @return The timeout period start time in milliseconds since 1/1/1970.
+     */
+    MillisecondsSince1970
+    getTimeoutPeriodStart() const { return timeoutPeriodStart_; }
 
     /**
      * Return the face given to the constructor.
@@ -95,6 +105,7 @@ public:
   private:
     ptr_lib::shared_ptr<const Interest> interest_;
     Face& face_;
+    MillisecondsSince1970 timeoutPeriodStart_;
     MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the
       * interest times out in milliseconds according to ndn_getNowMilliseconds,
       * or -1 for no timeout. */
