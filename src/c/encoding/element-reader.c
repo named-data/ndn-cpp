@@ -138,6 +138,17 @@ ndn_Error ndn_ElementReader_onReceivedData
       }
 
       if (!self->gotPartialDataError) {
+        if (self->partialDataLength + dataLength > MAX_NDN_PACKET_SIZE) {
+          // Reset to read a new element on the next call.
+          self->usePartialData = 0;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
+          ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+#endif
+          ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
+
+          return NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize;
+        }
+        
         if ((error = ndn_DynamicUInt8Array_copy
              (self->partialData, data, dataLength, self->partialDataLength))) {
           // Set gotPartialDataError so we won't call onReceivedElement with invalid data.
