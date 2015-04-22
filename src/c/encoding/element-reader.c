@@ -54,8 +54,7 @@ ndn_Error ndn_ElementReader_onReceivedData
 #endif
       // Scan the input to check if a whole TLV element has been read.
       ndn_TlvStructureDecoder_seek(&self->tlvStructureDecoder, 0);
-      if ((error = ndn_TlvStructureDecoder_findElementEnd(&self->tlvStructureDecoder, data, dataLength)))
-        return error;
+      error = ndn_TlvStructureDecoder_findElementEnd(&self->tlvStructureDecoder, data, dataLength);
       gotElementEnd = self->tlvStructureDecoder.gotElementEnd;
       offset = self->tlvStructureDecoder.offset;
 #ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
@@ -63,12 +62,22 @@ ndn_Error ndn_ElementReader_onReceivedData
     else {
       // Scan the input to check if a whole binary XML element has been read.
       ndn_BinaryXmlStructureDecoder_seek(&self->binaryXmlStructureDecoder, 0);
-      if ((error = ndn_BinaryXmlStructureDecoder_findElementEnd(&self->binaryXmlStructureDecoder, data, dataLength)))
-        return error;
+      error = ndn_BinaryXmlStructureDecoder_findElementEnd(&self->binaryXmlStructureDecoder, data, dataLength);
       gotElementEnd = self->binaryXmlStructureDecoder.gotElementEnd;
       offset = self->binaryXmlStructureDecoder.offset;
     }
 #endif
+
+    if (error) {
+      // Reset to read a new element on the next call.
+      self->usePartialData = 0;
+#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
+      ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
+#endif
+      ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
+
+      return error;
+    }
 
     if (gotElementEnd) {
       const uint8_t *element = 0;
