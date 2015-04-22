@@ -70,7 +70,8 @@ typedef enum {
   NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType,
   NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh,
   NDN_ERROR_Unimplemented_operation,
-  NDN_ERROR_ElementReader_ElementListener_is_not_specified
+  NDN_ERROR_ElementReader_ElementListener_is_not_specified,
+  NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize
 } ndn_Error;
 
 /**

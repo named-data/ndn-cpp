@@ -111,6 +111,8 @@ char *ndn_getErrorString(int error)
     return      "Unimplemented operation";
   case NDN_ERROR_ElementReader_ElementListener_is_not_specified:
     return      "ElementReader ElementListener is not specified";
+  case NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize:
+    return      "ElementReader The incoming packet exceeds the maximum limit Face::getMaxNdnPacketSize()";
   default:
     return "unrecognized ndn_Error code";
   }
