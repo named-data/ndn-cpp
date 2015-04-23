@@ -30,6 +30,7 @@ extern "C" {
 typedef enum {
   ndn_KeyLocatorType_KEYNAME = 1,
   ndn_KeyLocatorType_KEY_LOCATOR_DIGEST = 2,
+  // KeyLocatorType KEY and CERTIFICATE are not supported in NDN-TLV encoding and are deprecated.
   ndn_KeyLocatorType_KEY = 3,
   ndn_KeyLocatorType_CERTIFICATE = 4
 } ndn_KeyLocatorType;
