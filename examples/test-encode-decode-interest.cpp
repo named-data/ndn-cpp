@@ -26,7 +26,6 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
-#include <ndn-cpp/encoding/tlv-wire-format.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -132,25 +131,6 @@ static uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
   0x3f, 0xb9, 0xfe, 0xbc, 0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-uint8_t BinaryXmlInterest[] = {
-0x01, 0xd2,
-  0xf2, 0xfa, 0x9d, 0x6e, 0x64, 0x6e, 0x00, 0xfa, 0x9d, 0x61, 0x62, 0x63, 0x00, 0x00,
-  0x05, 0x9a, 0x9e, 0x31, 0x32, 0x33, 0x00,
-  0x05, 0xa2, 0x8e, 0x34, 0x00,
-  0x03, 0xe2,
-    0x02, 0x85, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-  0x00,
-  0x02, 0xda, 0xfa, 0x9d, 0x61, 0x62, 0x63, 0x00, 0xea, 0x00, 0x00,
-  0x05, 0xaa, 0x8e, 0x31, 0x00,
-  0x02, 0xfa, 0x8e, 0x34, 0x00,
-  0x02, 0xd2, 0x8e, 0x32, 0x00,
-  0x03, 0x82, 0x9d, 0x01, 0xe0, 0x00, 0x00,
-  0x02, 0xca, 0xb5, 0x61, 0x62, 0x61, 0x62, 0x61, 0x62, 0x00,
-0x00,
-1
-};
-
 uint8_t TlvInterest[] = {
 0x05, 0x53, // Interest
   0x07, 0x0A, 0x08, 0x03, 0x6E, 0x64, 0x6E, 0x08, 0x03, 0x61, 0x62, 0x63, // Name
@@ -237,11 +217,7 @@ int main(int argc, char** argv)
 {
   try {
     Interest interest;
-    // Note: While we transition to the TLV wire format, check if it has been made the default.
-    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
-      interest.wireDecode(TlvInterest, sizeof(TlvInterest));
-    else
-      interest.wireDecode(BinaryXmlInterest, sizeof(BinaryXmlInterest));
+    interest.wireDecode(TlvInterest, sizeof(TlvInterest));
     cout << "Interest:" << endl;
     dumpInterest(interest);
 
@@ -292,20 +268,16 @@ int main(int argc, char** argv)
     // Make a Face just so that we can sign the interest.
     Face face("localhost");
     face.setCommandSigningInfo(keyChain, certificateName);
-    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
-      // For the moment, sign and verify of command interests is only supported in TLV.
-      face.makeCommandInterest(freshInterest);
+    face.makeCommandInterest(freshInterest);
     
     ptr_lib::shared_ptr<Interest> reDecodedFreshInterest(new Interest());
     reDecodedFreshInterest->wireDecode(freshInterest.wireEncode());
     cout << endl << "Re-decoded fresh Interest:" << endl;
     dumpInterest(*reDecodedFreshInterest);
 
-    if (WireFormat::getDefaultWireFormat() == TlvWireFormat::get())
-      // For the moment, sign and verify of command interests is only supported in TLV.
-      keyChain.verifyInterest
-        (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
-         bind(&onVerifyFailed, "Freshly-signed Interest", _1));
+    keyChain.verifyInterest
+      (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
+       bind(&onVerifyFailed, "Freshly-signed Interest", _1));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
