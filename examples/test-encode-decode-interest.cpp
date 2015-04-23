@@ -167,11 +167,7 @@ static void dumpInterest(const Interest& interest)
     cout << "<none>" << endl;
   cout << "keyLocator: ";
   if ((int)interest.getKeyLocator().getType() >= 0) {
-    if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY)
-      cout << "Key: " << interest.getKeyLocator().getKeyData().toHex() << endl;
-    else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_CERTIFICATE)
-      cout << "Certificate: " << interest.getKeyLocator().getKeyData().toHex() << endl;
-    else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+    if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
       cout << "KeyLocatorDigest: " << interest.getKeyLocator().getKeyData().toHex() << endl;
     else if (interest.getKeyLocator().getType() == ndn_KeyLocatorType_KEYNAME)
       cout << "KeyName: " << interest.getKeyLocator().getKeyName().toUri() << endl;

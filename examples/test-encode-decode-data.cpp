@@ -228,11 +228,7 @@ static void dumpData(const Data& data)
   if (keyLocator) {
     cout << "signature.keyLocator: ";
     if ((int)keyLocator->getType() >= 0) {
-      if (keyLocator->getType() == ndn_KeyLocatorType_KEY)
-        cout << "Key: " << keyLocator->getKeyData().toHex() << endl;
-      else if (keyLocator->getType() == ndn_KeyLocatorType_CERTIFICATE)
-        cout << "Certificate: " << keyLocator->getKeyData().toHex() << endl;
-      else if (keyLocator->getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
+      if (keyLocator->getType() == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
         cout << "KeyLocatorDigest: " << keyLocator->getKeyData().toHex() << endl;
       else if (keyLocator->getType() == ndn_KeyLocatorType_KEYNAME)
         cout << "KeyName: " << keyLocator->getKeyName().toUri() << endl;
