@@ -639,7 +639,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
       InterestFilterEntry &entry = *interestFilterTable_[i];
       if (entry.getFilter()->doesMatch(interest->getName()))
         entry.getOnInterest()
-          (entry.getFilter()->getPrefix(), interest, entry.getFace(),
+          (entry.getPrefix(), interest, entry.getFace(),
            entry.getInterestFilterId(), entry.getFilter());
     }
   }

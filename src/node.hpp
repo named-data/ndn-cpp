@@ -373,8 +373,8 @@ private:
       (uint64_t interestFilterId,
        const ptr_lib::shared_ptr<const InterestFilter>& filter,
        const OnInterestCallback& onInterest, Face* face)
-    : interestFilterId_(interestFilterId), filter_(filter), 
-      onInterest_(onInterest), face_(face)
+    : interestFilterId_(interestFilterId), filter_(filter),
+      prefix_(new Name(filter->getPrefix())), onInterest_(onInterest), face_(face)
     {
     }
 
@@ -405,6 +405,15 @@ private:
     getFilter() { return filter_; }
 
     /**
+     * Get the prefix from the filter as a shared_ptr. We keep this cached value
+     * so that we don't have to copy the name to pass a shared_ptr each time
+     * we call the OnInterestCallback.
+     * @return The filter's prefix.
+     */
+    const ptr_lib::shared_ptr<const Name>&
+    getPrefix() { return prefix_; }
+
+    /**
      * Get the OnInterestCallback given to the constructor.
      * @return The OnInterest callback.
      */
@@ -421,6 +430,7 @@ private:
   private:
     uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const InterestFilter> filter_;
+    ptr_lib::shared_ptr<const Name> prefix_;
     const OnInterestCallback onInterest_;
     Face* face_;
   };
