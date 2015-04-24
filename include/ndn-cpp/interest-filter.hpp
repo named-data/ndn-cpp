@@ -38,7 +38,7 @@ public:
    * @param prefix The prefix Name. This makes a copy of the Name.
    */
   InterestFilter(const Name& prefix)
-  : prefix_(new Name(prefix))
+  : prefix_(prefix)
   {
   }
 
@@ -48,7 +48,7 @@ public:
    * @param prefixUri The URI of the prefix Name.
    */
   InterestFilter(const std::string& prefixUri)
-  : prefix_(new Name(prefixUri))
+  : prefix_(prefixUri)
   {
   }
 
@@ -58,7 +58,7 @@ public:
    * @param prefixUri The URI of the prefix Name.
    */
   InterestFilter(const char* prefixUri)
-  : prefix_(new Name(prefixUri))
+  : prefix_(prefixUri)
   {
   }
 
@@ -123,18 +123,6 @@ public:
   InterestFilter(const char* prefixUri, const char* regexFilter);
 
   /**
-   * Create an InterestFilter which is a copy of the given interestFilter.
-   * @param interestFilter The InterestFilter with values to copy from.
-   */
-  InterestFilter(const InterestFilter& interestFilter)
-    // Make a deep copy of the Name.
-  : prefix_(new Name(*interestFilter.prefix_)),
-    regexFilter_(interestFilter.regexFilter_),
-    regexFilterPattern_(interestFilter.regexFilterPattern_)
-  {
-  }
-
-  /**
    * Check if the given name matches this filter. Match if name starts with this
    * filter's prefix. If this filter has the optional regexFilter then the
    * remaining components match the regexFilter regular expression.
@@ -162,7 +150,7 @@ public:
    * Get the prefix given to the constructor.
    * @return The prefix Name.
    */
-  const ptr_lib::shared_ptr<const Name>&
+  const Name&
   getPrefix() const { return prefix_; }
 
   /**
@@ -189,7 +177,7 @@ private:
   static std::string
   makePattern(const std::string& regexFilter);
 
-  ptr_lib::shared_ptr<const Name> prefix_;
+  Name prefix_;
   std::string regexFilter_;
   std::string regexFilterPattern_;
 };
