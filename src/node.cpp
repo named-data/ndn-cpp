@@ -504,7 +504,7 @@ Node::registerPrefixHelper
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
     if (onInterest)
-      // registerPrefix was call with the "combined" form that includes the
+      // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
       interestFilterId = setInterestFilter
         (InterestFilter(*prefix), onInterest, face);
@@ -560,7 +560,7 @@ Node::nfdRegisterPrefix
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
     if (onInterest)
-      // registerPrefix was call with the "combined" form that includes the
+      // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
       interestFilterId = setInterestFilter
         (InterestFilter(*prefix), onInterest, face);
