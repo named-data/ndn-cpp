@@ -355,8 +355,8 @@ private:
   };
 
   /**
-   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and
-   * and the OnInterestCallback with its related Face.
+   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and the
+   * OnInterestCallback with its related Face.
    */
   class InterestFilterEntry {
   public:
