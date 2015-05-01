@@ -40,7 +40,7 @@ encodeControlParametersValue(const void *context, struct ndn_TlvEncoder *encoder
   struct ndn_ForwardingFlags defaultFlags;
   int flags;
 
-  if (controlParameters->name.nComponents > 0) {
+  if (controlParameters->hasName) {
     if ((error = ndn_encodeTlvName
          (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset,
           encoder)))

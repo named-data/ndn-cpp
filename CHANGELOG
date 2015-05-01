@@ -4,12 +4,12 @@ Interim changes since NDN-CPP v0.6 (2015-04-21)
 Changes
 * http://redmine.named-data.net/issues/2388 Moved example programs from "tests" to "examples".
 * http://redmine.named-data.net/issues/1921 In Face, added getMaxNdnPacketSize().
-  expressInterest andn putData throw an exception if the encoded packet size exceeds it.
+  expressInterest and putData throw an exception if the encoded packet size exceeds it.
 * Renamed KEY_TYPE_EC to KEY_TYPE_ECDSA.
 * http://redmine.named-data.net/issues/2566 In Face, added setInterestFilter. In
   registerPrefix, make the onInterest callback optional.
 * http://redmine.named-data.net/issues/2579 Added callback type OnInterestCallback
-  to use in registerPrefix and setInterest filter instead of OnInterest. The new
+  to use in registerPrefix and setInterestFilter instead of OnInterest. The new
   callback is passed the Face so that you can supply the Data with face.putData().
 * Face: Changed the OnInterest callback to pass interestFilterId instead of registeredPrefixId.
   (You should use OnInterestCallback instead of the deprecated OnInterest.)
@@ -42,6 +42,9 @@ Changes
 Deprecated
 * In Face, deprecated registerPrefix where onInterest is type OnInterest. Use the
   registerPrefix where onInterest is OnInterestCallback so you can call face.putData().
+
+Bug fixes
+* http://redmine.named-data.net/issues/2758 ControlParameters with empty name not properly encoded.
 
 NDN-CPP v0.6 (2014-12-23)
 -------------------------
