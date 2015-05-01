@@ -323,7 +323,7 @@ public:
    * getMaxNdnPacketSize().
    */
   void
-  send(Blob encoding)
+  send(const Blob& encoding)
   {
     send(encoding.buf(), encoding.size());
   }
