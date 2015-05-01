@@ -38,7 +38,7 @@ namespace ndn {
 class ControlParameters {
 public:
   ControlParameters()
-  : faceId_(-1), localControlFeature_(-1), origin_(-1), cost_(-1),
+  : hasName_(false), faceId_(-1), localControlFeature_(-1), origin_(-1), cost_(-1),
     expirationPeriod_(-1.0)
   {
   }
@@ -72,9 +72,17 @@ public:
   void
   get(struct ndn_ControlParameters& controlParametersStruct) const;
 
-  Name&
-  getName() { return name_; }
+  /**
+   * Check if the name is specified.
+   * @return True if the name is specified, false if not.
+   */
+  bool
+  getHasName() const { return hasName_; }
 
+  /**
+   * Get the name, if specified.
+   * @return The Name. This is only meaningful if getHasName() is true.
+   */
   const Name&
   getName() const { return name_; }
 
@@ -105,9 +113,24 @@ public:
   void
   set(const struct ndn_ControlParameters& controlParametersStruct);
 
+  /**
+   * Set the flag for whether the name is specified. Note that setName
+   * automatically calls setHasName(true).
+   * @param hasName True if the name is specified, false if not.
+   */
+  void
+  setHasName(bool hasName) { hasName_ = hasName; }
+
+  /**
+   * Set the name. This also calls setHasName(true).
+   * @param name The name. This makes a copy of the name. If the name is not
+   * specified, call setHasName(false).
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setName(const Name& name)
   {
+    hasName_ = true;
     name_ = name;
     return *this;
   }
@@ -155,7 +178,8 @@ public:
   }
 
 private:
-  Name name_;
+  bool hasName_;
+  Name name_;                     /**< Only used if hasName_ */
   int faceId_;                    /**< -1 for none. */
   // TODO: Add "Uri" string.
   int localControlFeature_;       /**< -1 for none. */

@@ -32,6 +32,7 @@ void
 ControlParameters::get
   (struct ndn_ControlParameters& controlParametersStruct) const
 {
+  controlParametersStruct.hasName = hasName_ ? 1 : 0;
   name_.get(controlParametersStruct.name);
   controlParametersStruct.faceId = faceId_;
   // TODO: Add "Uri" string.
@@ -47,6 +48,7 @@ void
 ControlParameters::set
   (const struct ndn_ControlParameters& controlParametersStruct)
 {
+  hasName_ = controlParametersStruct.hasName != 0 ? true : false;
   name_.set(controlParametersStruct.name);
   faceId_ = controlParametersStruct.faceId;
   // TODO: Add "Uri" string.

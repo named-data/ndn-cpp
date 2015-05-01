@@ -39,7 +39,8 @@ typedef enum {
  * used in the command interest such as to register a prefix with a forwarder.
  */
 struct ndn_ControlParameters {
-  struct ndn_Name name;
+  int hasName;
+  struct ndn_Name name;              /**< Only used if hasName */
   int faceId;                        /**< -1 for none. */
   // TODO: Add "Uri" string.
   int localControlFeature;           /**< -1 for none. */
@@ -63,6 +64,7 @@ ndn_ControlParameters_initialize
   (struct ndn_ControlParameters *self, struct ndn_NameComponent *nameComponents,
    size_t maxNameComponents)
 {
+  self->hasName = 0;
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   self->faceId = -1;
   self->localControlFeature = -1;
