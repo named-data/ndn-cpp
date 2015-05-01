@@ -404,6 +404,7 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
         ("Register prefix failed: Expected NFD status code 200, got: " <<
          statusCode);
       info_->onRegisterFailed_(info_->prefix_);
+      return;
     }
 
     _LOG_DEBUG("Register prefix succeeded with the NFD forwarder for prefix " <<
