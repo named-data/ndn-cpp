@@ -38,7 +38,7 @@ Interest& Interest::operator=(const Interest& interest)
   setKeyLocator(interest.keyLocator_.get());
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
-  setAnswerOriginKind(interest.answerOriginKind_);
+  answerOriginKind_ = interest.answerOriginKind_;
   setScope(interest.scope_);
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
