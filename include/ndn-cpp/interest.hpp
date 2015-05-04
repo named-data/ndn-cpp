@@ -44,44 +44,29 @@ public:
    * Create a new Interest for the given name and values.
    * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder
    * generate a random nonce internally before sending the interest.
+   * This has PublisherPublicKeyDigest. Use KeyLocator.
+   * This also has answerOriginKind. Use setMustBeFresh().
    */
   DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
-  : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    nonce_(nonce), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-  {
-  }
+    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce);
 
   /**
    * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
-   * @deprecated You should use the constructor which has KeyLocator instead of the deprecated PublisherPublicKeyDigest.
+   * @deprecated This has PublisherPublicKeyDigest. Use KeyLocator.
+   * This also has answerOriginKind. Use setMustBeFresh().
    */
   DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
     const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds)
-  : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-  {
-  }
+    int scope, Milliseconds interestLifetimeMilliseconds);
 
   /**
    * Create a new Interest with the given name and values, and "none" for the nonce.
-   * @deprecated This is deprecated because it has answerOriginKind. Use setMustBeFresh().
+   * @deprecated This has answerOriginKind. Use setMustBeFresh().
    */
   DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
     const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds)
-  : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-    keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
-    answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-    getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-  {
-  }
+    int scope, Milliseconds interestLifetimeMilliseconds);
 
   /**
    * Create a new Interest with the given name and interest lifetime and "none" for other values.

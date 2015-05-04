@@ -29,6 +29,45 @@ using namespace std;
 
 namespace ndn {
 
+Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
+  int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
+: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
+  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
+  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+  nonce_(nonce), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
+}
+
+Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
+  int scope, Milliseconds interestLifetimeMilliseconds)
+: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
+  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
+  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
+}
+
+Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+  const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
+  int scope, Milliseconds interestLifetimeMilliseconds)
+: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
+  keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
+  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
+  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("answerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
+}
+
 Interest& Interest::operator=(const Interest& interest)
 {
   setName(interest.name_.get());
