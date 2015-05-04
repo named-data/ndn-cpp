@@ -71,8 +71,9 @@ public:
 
   /**
    * Create a new Interest with the given name and values, and "none" for the nonce.
+   * @deprecated This is deprecated because it has answerOriginKind. Use setMustBeFresh().
    */
-  Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
+  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
     const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
     int scope, Milliseconds interestLifetimeMilliseconds)
   : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
