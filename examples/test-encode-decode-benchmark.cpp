@@ -238,10 +238,6 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
      sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
      sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
-  // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
-  uint8_t publisherPublicKeyDigestArray[32];
-  memset(publisherPublicKeyDigestArray, 0, sizeof(publisherPublicKeyDigestArray));
-  Blob publisherPublicKeyDigest(publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
   uint8_t signatureBitsArray[256];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
   Blob signatureBits(signatureBitsArray, sizeof(signatureBitsArray));
@@ -265,7 +261,6 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
       keyLocator.setKeyName(certificateName);
       Sha256WithRsaSignature* sha256Signature = (Sha256WithRsaSignature*)data.getSignature();
       sha256Signature->setKeyLocator(keyLocator);
-      sha256Signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publisherPublicKeyDigest);
       sha256Signature->setSignature(signatureBits);
     }
 
@@ -380,12 +375,6 @@ benchmarkEncodeDataSecondsC
     return 0;
   }
 
-  // Set up publisherPublicKeyDigest and signatureBits in case useCrypto is false.
-  uint8_t* publicKeyDer = DEFAULT_RSA_PUBLIC_KEY_DER;
-  size_t publicKeyDerLength = sizeof(DEFAULT_RSA_PUBLIC_KEY_DER);
-  uint8_t publisherPublicKeyDigestArray[SHA256_DIGEST_LENGTH];
-  ndn_digestSha256(publicKeyDer, publicKeyDerLength, publisherPublicKeyDigestArray);
-  BlobLite publisherPublicKeyDigest(publisherPublicKeyDigestArray, sizeof(publisherPublicKeyDigestArray));
   uint8_t signatureBitsArray[256];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
 
