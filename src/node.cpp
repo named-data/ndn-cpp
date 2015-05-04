@@ -249,6 +249,9 @@ Node::registerPrefix
   // If we have an _ndndId, we know we already connected to NDNx.
   if (ndndId_.size() != 0 || !&commandKeyChain) {
     // Assume we are connected to a legacy NDNx server.
+    if (!WireFormat::ENABLE_NDNX)
+      throw runtime_error
+        ("registerPrefix with NDNx is deprecated. To enable while you upgrade your code to use NFD, set WireFormat::ENABLE_NDNX = true");
 
     if (ndndId_.size() == 0) {
       // First fetch the ndndId of the connected hub.
@@ -472,6 +475,11 @@ Node::registerPrefixHelper
    const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
    const ForwardingFlags& flags, WireFormat& wireFormat, Face* face)
 {
+  if (!WireFormat::ENABLE_NDNX)
+    // We can get here if the command signing info is set, but running NDNx.
+    throw runtime_error
+      ("registerPrefix with NDNx is deprecated. To enable while you upgrade your code to use NFD, set WireFormat::ENABLE_NDNX = true");
+
   // Create a ForwardingEntry.
   // Note: ndnd ignores any freshness that is larger than 3600 seconds and sets 300 seconds instead.  To register "forever",
   //   (=2000000000 sec), the freshness period must be omitted.
