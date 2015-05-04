@@ -68,7 +68,6 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
   interest.setInterestLifetimeMilliseconds(1000);
-  interest.setAnswerOriginKind(ndn_Interest_ANSWER_NO_CONTENT_STORE);
   face_.expressInterest
     (interest, bind(&ChronoSync2013::Impl::onData, shared_from_this(), _1, _2),
      bind(&ChronoSync2013::Impl::initialTimeOut, shared_from_this(), _1));
