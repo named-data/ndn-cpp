@@ -104,12 +104,12 @@ Face::expressInterest
   (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout,
    WireFormat& wireFormat)
 {
-  if (interestTemplate)
-    return node_->expressInterest(Interest
-      (name, interestTemplate->getMinSuffixComponents(), interestTemplate->getMaxSuffixComponents(),
-       interestTemplate->getKeyLocator(), interestTemplate->getExclude(),
-       interestTemplate->getChildSelector(), interestTemplate->getAnswerOriginKind(),
-       interestTemplate->getScope(), interestTemplate->getInterestLifetimeMilliseconds()), onData, onTimeout, wireFormat);
+  if (interestTemplate) {
+    // Copy the interestTemplate.
+    Interest interest(*interestTemplate);
+    interest.setName(name);
+    return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+  }
   else
     return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);
 }
