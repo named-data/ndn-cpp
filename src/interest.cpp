@@ -203,5 +203,27 @@ Interest::matchesName(const Name& name) const
   return true;
 }
 
+int
+Interest::getAnswerOriginKind() const
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("getAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's getMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
+
+  return answerOriginKind_;
+}
+
+Interest&
+Interest::setAnswerOriginKind(int answerOriginKind)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("setAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
+
+  answerOriginKind_ = answerOriginKind;
+  ++changeCount_;
+  return *this;
+}
+
 }
 

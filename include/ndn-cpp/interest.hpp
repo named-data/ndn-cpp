@@ -248,7 +248,7 @@ public:
    * @deprecated Use getMustBeFresh.
    */
   int
-  DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const { return answerOriginKind_; }
+  DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const;
 
   /**
    * Return true if the content must be fresh. The default is true.
@@ -354,12 +354,7 @@ public:
    * @deprecated Use setMustBeFresh.
    */
   Interest&
-  DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind)
-  {
-    answerOriginKind_ = answerOriginKind;
-    ++changeCount_;
-    return *this;
-  }
+  DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind);
 
   /**
    * Set the MustBeFresh flag.
