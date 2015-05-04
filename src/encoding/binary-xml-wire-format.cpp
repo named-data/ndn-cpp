@@ -47,6 +47,13 @@ WireFormat::newInitialDefaultWireFormat()
 }
 #endif
 
+BinaryXmlWireFormat::BinaryXmlWireFormat()
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("BinaryXmlWireFormat (NDNx) is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
+}
+
 Blob
 BinaryXmlWireFormat::encodeName(const Name& name)
 {

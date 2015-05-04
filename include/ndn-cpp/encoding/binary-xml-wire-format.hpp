@@ -32,6 +32,8 @@ namespace ndn {
  */
 class BinaryXmlWireFormat : public WireFormat {
 public:
+  BinaryXmlWireFormat();
+  
   /**
    * Get a singleton instance of a BinaryXmlWireFormat.  Assuming that the default wire format was set with
    * WireFormat::setDefaultWireFormat(BinaryXmlWireFormat::get()), you can check if this is the default wire encoding with
