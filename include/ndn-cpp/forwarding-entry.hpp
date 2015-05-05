@@ -36,23 +36,15 @@ namespace ndn {
 /**
  * A ForwardingEntry holds an action and Name prefix and other fields for a
  * forwarding entry.
+ * @deprecated This is for NDNx. Install NFD and use Face.setCommandSigningInfo with registerPrefix.
  */
 class ForwardingEntry {
 public:
   ForwardingEntry
     (const std::string& action, const Name& prefix, const PublisherPublicKeyDigest publisherPublicKeyDigest,
-     int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod)
-  : action_(action), prefix_(prefix), publisherPublicKeyDigest_(publisherPublicKeyDigest),
-    faceId_(faceId), forwardingFlags_(forwardingFlags), freshnessPeriod_(freshnessPeriod)
-  {
-  }
+     int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod);
 
-  ForwardingEntry()
-  : faceId_(-1), freshnessPeriod_(-1.0)
-  {
-    forwardingFlags_.setActive(true);
-    forwardingFlags_.setChildInherit(true);
-  }
+  ForwardingEntry();
 
   Blob
   wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const

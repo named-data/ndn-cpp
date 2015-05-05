@@ -28,6 +28,28 @@ using namespace std;
 
 namespace ndn {
 
+ForwardingEntry::ForwardingEntry
+  (const std::string& action, const Name& prefix, const PublisherPublicKeyDigest publisherPublicKeyDigest,
+   int faceId, const ForwardingFlags& forwardingFlags, Milliseconds freshnessPeriod)
+: action_(action), prefix_(prefix), publisherPublicKeyDigest_(publisherPublicKeyDigest),
+  faceId_(faceId), forwardingFlags_(forwardingFlags), freshnessPeriod_(freshnessPeriod)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("ForwardingEntry is for NDNx and is deprecated. To enable while you upgrade your code to use NFD, set WireFormat::ENABLE_NDNX = true");
+}
+
+ForwardingEntry::ForwardingEntry()
+: faceId_(-1), freshnessPeriod_(-1.0)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("ForwardingEntry is for NDNx and is deprecated. To enable while you upgrade your code to use NFD, set WireFormat::ENABLE_NDNX = true");
+
+  forwardingFlags_.setActive(true);
+  forwardingFlags_.setChildInherit(true);
+}
+
 void
 ForwardingEntry::set(const struct ndn_ForwardingEntry& forwardingEntryStruct)
 {
