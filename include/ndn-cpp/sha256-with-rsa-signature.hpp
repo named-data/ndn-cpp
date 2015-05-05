@@ -65,13 +65,13 @@ public:
    * @deprecated digestAlgorithm is deprecated.
    */
   const Blob&
-  DEPRECATED_IN_NDN_CPP getDigestAlgorithm() const { return digestAlgorithm_; }
+  DEPRECATED_IN_NDN_CPP getDigestAlgorithm() const;
 
   /**
    * @deprecated Witness is deprecated.
    */
   const Blob&
-  DEPRECATED_IN_NDN_CPP getWitness() const { return witness_; }
+  DEPRECATED_IN_NDN_CPP getWitness() const;
 
   /**
    * Get the signature bytes.
@@ -104,21 +104,13 @@ public:
    * @deprecated digestAlgorithm is deprecated.
    */
   void
-  DEPRECATED_IN_NDN_CPP setDigestAlgorithm(const Blob& digestAlgorithm)
-  {
-    digestAlgorithm_ = digestAlgorithm;
-    ++changeCount_;
-  }
+  DEPRECATED_IN_NDN_CPP setDigestAlgorithm(const Blob& digestAlgorithm);
 
   /**
    * @deprecated Witness is deprecated.
    */
   void
-  DEPRECATED_IN_NDN_CPP setWitness(const Blob& witness)
-  {
-    witness_ = witness;
-    ++changeCount_;
-  }
+  DEPRECATED_IN_NDN_CPP setWitness(const Blob& witness);
 
   /**
    * Set the signature bytes to the given value.

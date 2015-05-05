@@ -34,9 +34,51 @@ Sha256WithRsaSignature::clone() const
 }
 
 const Blob&
+Sha256WithRsaSignature::getDigestAlgorithm() const
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("The Digest Algorithm is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
+
+  return digestAlgorithm_;
+}
+
+const Blob&
+Sha256WithRsaSignature::getWitness() const
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("The Witness is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
+
+  return witness_;
+}
+
+const Blob&
 Sha256WithRsaSignature::getSignature() const
 {
   return signature_;
+}
+
+void
+Sha256WithRsaSignature::setDigestAlgorithm(const Blob& digestAlgorithm)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("The Digest Algorithm is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
+
+  digestAlgorithm_ = digestAlgorithm;
+  ++changeCount_;
+}
+
+void
+Sha256WithRsaSignature::setWitness(const Blob& witness)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("The Witness is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
+
+  witness_ = witness;
+  ++changeCount_;
 }
 
 void
