@@ -2,6 +2,10 @@ Interim changes since NDN-CPP v0.6 (2015-04-21)
 -----------------------------------------------
 
 Changes
+* http://redmine.named-data.net/issues/2624 By default, throw an exception when
+  using the deprecated NDNx and binary XML wire format. To enable support while
+  you upgrade your code to use NFD, in your main application set
+  WireFormat::ENABLE_NDNX = true
 * http://redmine.named-data.net/issues/2388 Moved example programs from "tests" to "examples".
 * http://redmine.named-data.net/issues/1921 In Face, added getMaxNdnPacketSize().
   expressInterest and putData throw an exception if the encoded packet size exceeds it.
