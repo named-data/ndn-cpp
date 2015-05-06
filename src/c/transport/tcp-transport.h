@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * Initialize the ndn_TcpTransport struct with default values for no connection 
+ * Initialize the ndn_TcpTransport struct with default values for no connection
  * yet and to use the given buffer for the ElementReader. Note that
  * the ElementReader is not valid until you call ndn_TcpTransport_connect.
  * @param self A pointer to the ndn_TcpTransport struct.
@@ -49,7 +49,7 @@ static __inline void ndn_TcpTransport_initialize
  * to a node on the current machine; results are not cached. According to
  * http://redmine.named-data.net/projects/nfd/wiki/ScopeControl#local-face,
  * TCP transports with a loopback address are local. If host is a host name,
- * this will do a blocking DNS lookup; otherwise this will parse the IP address 
+ * this will do a blocking DNS lookup; otherwise this will parse the IP address
  * and examine the first octet to determine if it is a loopback address (e.g.
  * the first IPv4 octet is 127 or IPv6 is "::1").
  * @param host The host to check.

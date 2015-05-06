@@ -34,7 +34,7 @@ extern "C" {
 /**
  * Initialize an ndn_ElementReader struct with the elementListener and a buffer for saving partial data.
  * @param self pointer to the ndn_ElementReader struct
- * @param elementListener pointer to the ndn_ElementListener used by 
+ * @param elementListener pointer to the ndn_ElementListener used by
  * ndn_ElementReader_onReceivedData. If this is 0, you can set it later with
  * ndn_ElementReader_reset.
  * @param buffer A pointer to a ndn_DynamicUInt8Array struct which is used to

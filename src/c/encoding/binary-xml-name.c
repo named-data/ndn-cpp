@@ -64,7 +64,7 @@ ndn_Error ndn_decodeBinaryXmlName
   *signedPortionBeginOffset = decoder->offset;
   // In case there are no components, set signedPortionEndOffset arbitrarily.
   *signedPortionEndOffset = *signedPortionBeginOffset;
-  
+
   name->nComponents = 0;
   while (1) {
     int gotExpectedTag;

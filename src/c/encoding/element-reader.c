@@ -82,10 +82,10 @@ ndn_Error ndn_ElementReader_onReceivedData
     if (gotElementEnd) {
       const uint8_t *element = 0;
       size_t elementLength;
-      
+
       if (!self->elementListener)
         return NDN_ERROR_ElementReader_ElementListener_is_not_specified;
-      
+
       // Got the remainder of an element.  Report to the caller.
       if (self->usePartialData) {
         if (self->gotPartialDataError) {
@@ -101,7 +101,7 @@ ndn_Error ndn_ElementReader_onReceivedData
           element = self->partialData->array;
           elementLength = self->partialDataLength;
         }
-        
+
         // Assume we don't need to use partialData anymore until needed.
         self->usePartialData = 0;
       }
@@ -148,7 +148,7 @@ ndn_Error ndn_ElementReader_onReceivedData
 
           return NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize;
         }
-        
+
         if ((error = ndn_DynamicUInt8Array_copy
              (self->partialData, data, dataLength, self->partialDataLength))) {
           // Set gotPartialDataError so we won't call onReceivedElement with invalid data.

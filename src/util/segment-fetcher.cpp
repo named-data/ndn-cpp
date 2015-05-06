@@ -55,7 +55,7 @@ SegmentFetcher::fetchFirstSegment(const Interest& baseInterest)
   interest.setMustBeFresh(true);
 
   face_.expressInterest
-    (interest, 
+    (interest,
      bind(&SegmentFetcher::onSegmentReceived, shared_from_this(), _1, _2),
      bind(&SegmentFetcher::onTimeout, shared_from_this(), _1));
 }
@@ -71,7 +71,7 @@ SegmentFetcher::fetchNextSegment
   interest.setName(dataName.getPrefix(-1).appendSegment(segment));
 
   face_.expressInterest
-    (interest, 
+    (interest,
      bind(&SegmentFetcher::onSegmentReceived, shared_from_this(), _1, _2),
      bind(&SegmentFetcher::onTimeout, shared_from_this(), _1));
 }
@@ -123,7 +123,7 @@ SegmentFetcher::onSegmentReceived
           onError_
             (DATA_HAS_NO_SEGMENT,
              string("Error decoding the FinalBlockId segment number ") +
-             data->getMetaInfo().getFinalBlockId().toEscapedString() + ": " + 
+             data->getMetaInfo().getFinalBlockId().toEscapedString() + ": " +
              ex.what());
           return;
         }

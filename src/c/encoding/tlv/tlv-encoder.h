@@ -314,7 +314,7 @@ ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble(struct ndn_TlvEncode
  */
 ndn_Error
 ndn_TlvEncoder_writeNestedTlv
-  (struct ndn_TlvEncoder *self, unsigned int type, 
+  (struct ndn_TlvEncoder *self, unsigned int type,
    ndn_Error (*writeValue)(const void *context, struct ndn_TlvEncoder *encoder),
    const void *context, int omitZeroLength);
 

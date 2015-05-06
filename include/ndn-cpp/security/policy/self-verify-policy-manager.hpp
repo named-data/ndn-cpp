@@ -106,7 +106,7 @@ public:
 
   /**
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
-   * components of the signed interest. Use the public key DER in the signed 
+   * components of the signed interest. Use the public key DER in the signed
    * interest SignatureInfo's KeyLocator (if available) or look in the
    * IdentityStorage for the public key with the name in the KeyLocator
    * (if available) and use it to verify the interest. If the public key can't
@@ -143,9 +143,9 @@ public:
 
 private:
   /**
-   * Check the type of signatureInfo to get the KeyLocator. Use the public key 
-   * DER in the KeyLocator (if available) or look in the IdentityStorage for the 
-   * public key with the name in the KeyLocator (if available) and use it to 
+   * Check the type of signatureInfo to get the KeyLocator. Use the public key
+   * DER in the KeyLocator (if available) or look in the IdentityStorage for the
+   * public key with the name in the KeyLocator (if available) and use it to
    * verify the signedBlob. If the public key can't be found, return false.
    * (This is a generalized method which can verify both a Data packet and an
    * interest.)

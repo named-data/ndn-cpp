@@ -48,7 +48,7 @@ ndn_Error ndn_DynamicUInt8Array_reallocArrayFromBack
   (struct ndn_DynamicUInt8Array *self, size_t length)
 {
   size_t initialLength = self->length;
-  
+
   ndn_Error error;
   if ((error = ndn_DynamicUInt8Array_reallocArray(self, length)))
     return error;
@@ -62,6 +62,6 @@ ndn_Error ndn_DynamicUInt8Array_reallocArrayFromBack
       *(--to) = *(--from);
     } while (from != self->array);
   }
-  
+
   return NDN_ERROR_success;
 }

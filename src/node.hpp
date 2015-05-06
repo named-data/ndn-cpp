@@ -96,7 +96,7 @@ public:
    * from prefix so that when an Interest is received which matches the filter,
    * this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
-   * This copies the function object, so you may need to use func_lib::ref() as 
+   * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
@@ -118,7 +118,7 @@ public:
      const Name& commandCertificateName, Face* face);
 
   /**
-   * Remove the registered prefix entry with the registeredPrefixId from the 
+   * Remove the registered prefix entry with the registeredPrefixId from the
    * registered prefix table. This does not affect another registered prefix
    * with a different registeredPrefixId, even if it has the same prefix name.
    * If there is no entry with the registeredPrefixId, do nothing. If an
@@ -434,7 +434,7 @@ private:
     const OnInterestCallback onInterest_;
     Face* face_;
   };
-  
+
   /**
    * An NdndIdFetcher receives the Data packet with the publisher public key digest for the connected NDN hub.
    * This class is a function object for the callbacks. It only holds a pointer to an Info object, so it is OK to copy the pointer.
@@ -475,9 +475,9 @@ private:
        * @param wireFormat
        * @param flace
        */
-      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix, 
+      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix,
            const OnInterestCallback& onInterest,
-           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags, 
+           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
            WireFormat& wireFormat, Face* face)
       : node_(*node), registeredPrefixId_(registeredPrefixId),
         prefix_(new Name(prefix)), onInterest_(onInterest),

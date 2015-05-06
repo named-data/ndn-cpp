@@ -315,7 +315,7 @@ public:
    * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted, use WireFormat getDefaultWireFormat().
    */
   void
-  sign(Data& data, const Name& certificateName, 
+  sign(Data& data, const Name& certificateName,
        WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     identityManager_->signByCertificate(data, certificateName, wireFormat);
@@ -399,7 +399,7 @@ public:
   /**
    * Wire encode the Data object, digest it and set its SignatureInfo to
    * a DigestSha256.
-   * @param data The Data object to be signed. This updates its signature and 
+   * @param data The Data object to be signed. This updates its signature and
    * wireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
@@ -478,7 +478,7 @@ private:
    */
   void
   onCertificateInterestTimeoutForVerifyInterest
-    (const ptr_lib::shared_ptr<const Interest> &interest, int retry, 
+    (const ptr_lib::shared_ptr<const Interest> &interest, int retry,
      const OnVerifyInterestFailed& onVerifyFailed,
      const ptr_lib::shared_ptr<Interest>& originalInterest,
      ptr_lib::shared_ptr<ValidationRequest> nextStep);

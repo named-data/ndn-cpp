@@ -257,7 +257,7 @@ Node::registerPrefix
       // First fetch the ndndId of the connected hub.
       NdndIdFetcher fetcher
         (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-          (this, registeredPrefixId, prefix, onInterest, onRegisterFailed, 
+          (this, registeredPrefixId, prefix, onInterest, onRegisterFailed,
            flags, wireFormat, face)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.

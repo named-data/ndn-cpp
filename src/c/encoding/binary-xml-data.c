@@ -70,7 +70,7 @@ static ndn_Error decodeSignature(struct ndn_Signature *signature, struct ndn_Bin
     return error;
 
   signature->type = ndn_SignatureType_Sha256WithRsaSignature;
-  
+
   return NDN_ERROR_success;
 }
 

@@ -88,7 +88,7 @@ SelfVerifyPolicyManager::checkVerificationPolicy
     onVerified(interest);
   else
     onVerifyFailed(interest);
-  
+
   // No more steps, so return a null ValidationRequest.
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
@@ -115,7 +115,7 @@ SelfVerifyPolicyManager::verify
     if (!publicKeyDer)
       return false;
   }
-  
+
   return verifySignature(signatureInfo, signedBlob, publicKeyDer);
 }
 

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -61,7 +61,7 @@ ndn_TcpTransport_isLocal(const char *host, int *result)
 
     *result = (strcmp(ipString, "::1") == 0 ? 1 : 0);
   }
-  
+
   freeaddrinfo(serverInfo);
   return NDN_ERROR_success;
 }

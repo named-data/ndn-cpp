@@ -4,7 +4,7 @@
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * @author: From PyNDN der.py by Adeola Bannis <thecodemaiden@gmail.com>.
  * @author: Originally from code in ndn-cxx by Yingdi Yu <yingdi@cs.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -219,7 +219,7 @@ protected:
   }
 
   /**
-   * Override the base decode to decode and store the data from an input buffer. 
+   * Override the base decode to decode and store the data from an input buffer.
    * Recursively populates child nodes.
    * @param inputBuf The input buffer to read from. This reads from startIdx.
    * @param startIdx The offset into the buffer.
@@ -258,7 +258,7 @@ public:
    */
   virtual Blob
   toVal();
-  
+
 protected:
   /**
    * Create a DerByteString with the given inputData and nodeType. This is a
@@ -403,7 +403,7 @@ public:
     OID tempOid(oidStr);
     prepareEncoding(tempOid.getIntegerList());
   }
-  
+
   /**
    * Create a DerOid with the given object identifier. The object identifier
    * string must begin with 0,1, or 2 and must contain at least 2 digits.

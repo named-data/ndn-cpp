@@ -3,7 +3,7 @@
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * @author: From ndn-cxx util/segment-fetcher https://github.com/named-data/ndn-cxx
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -77,7 +77,7 @@ namespace ndn {
  *     void onComplete(const Blob& encodedMessage);
  *
  *     void onError(SegmentFetcher::ErrorCode errorCode, const string& message);
- * 
+ *
  *     Interest interest(Name("/data/prefix"));
  *     interest.setInterestLifetimeMilliseconds(1000);
  *
@@ -138,9 +138,9 @@ private:
    * verifySegment(data). If it returns false then abort fetching and call
    * onError.onError with SEGMENT_VERIFICATION_FAILED.
    * @param onComplete When all segments are received, call
-   * onComplete(content) where content is the concatenation of the content of 
+   * onComplete(content) where content is the concatenation of the content of
    * all the segments.
-   * @param onError Call onError(errorCode, message) for timeout or an error 
+   * @param onError Call onError(errorCode, message) for timeout or an error
    * processing segments.
    */
   SegmentFetcher

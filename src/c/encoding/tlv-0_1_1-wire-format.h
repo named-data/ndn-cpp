@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -79,10 +79,10 @@ ndn_Tlv0_1_1WireFormat_decodeInterest
 /**
  * Encode the data packet as NDN-TLV.
  * @param data A pointer to the data object to encode.
- * @param signedPortionBeginOffset Return the offset in the encoding of the 
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
  * beginning of the signed portion. If you are not encoding in order to sign,
  * you can ignore this returned value.
- * @param signedPortionEndOffset Return the offset in the encoding of the end of 
+ * @param signedPortionEndOffset Return the offset in the encoding of the end of
  * the signed portion. If you are not encoding in order to sign, you can ignore
  * this returned value.
  * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
@@ -112,7 +112,7 @@ ndn_Tlv0_1_1WireFormat_encodeData
  */
 ndn_Error
 ndn_Tlv0_1_1WireFormat_decodeData
-  (struct ndn_Data *data, const uint8_t *input, size_t inputLength, 
+  (struct ndn_Data *data, const uint8_t *input, size_t inputLength,
    size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
 
 #ifdef __cplusplus

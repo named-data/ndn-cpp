@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -101,13 +101,13 @@ InterestFilter::makePattern(const string& regexFilter)
   if (regexFilter.size() == 0)
     // We don't expect this.
     return "^$";
-  
+
   string pattern;
   if (pattern[0] != '^')
     pattern = '^' + regexFilter;
   else
     pattern = regexFilter;
-  
+
   if (pattern[pattern.size() - 1] != '$')
     pattern.push_back('$');
 

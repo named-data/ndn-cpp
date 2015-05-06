@@ -38,7 +38,7 @@ typedef enum {
 } ndn_SocketType;
 
 /**
- * Initialize the ndn_SocketTransport struct with default values for no 
+ * Initialize the ndn_SocketTransport struct with default values for no
  * connection yet and to use the given buffer for the ElementReader. Note that
  * the ElementReader is not valid until you call ndn_SocketTransport_connect.
  * @param self A pointer to the ndn_SocketTransport struct.

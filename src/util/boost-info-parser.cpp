@@ -3,7 +3,7 @@
  * Copyright (C) 2014-2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN boost_info_parser by Adeola Bannis.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -180,7 +180,7 @@ BoostInfoTree::prettyPrint(int indentLevel) const
         s += nextLevel + subtrees_[i].first + " " +
              subtrees_[i].second[iSubTree]->prettyPrint(indentLevel + 2);
     }
-    
+
     if (parent_)
       s +=  prefix + "}\n";
   }

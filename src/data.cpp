@@ -93,7 +93,7 @@ Data::set(const struct ndn_Data& dataStruct)
   else
     // We don't expect this to happen.
     throw runtime_error("dataStruct.signature.type has an unrecognized value");
-  
+
   signature_.get()->set(dataStruct.signature);
 
   name_.get().set(dataStruct.name);

@@ -74,7 +74,7 @@ ndn_Error ndn_DynamicUInt8Array_reallocArrayFromBack
   (struct ndn_DynamicUInt8Array *self, size_t length);
 
 /**
- * Ensure that self->length is greater than or equal to length.  If it is, just 
+ * Ensure that self->length is greater than or equal to length.  If it is, just
  * return 0 for success. Otherwise, if the self->reallocFunction function
  * pointer is null, then return an error. If not null, call
  * self->reallocFunction to reallocate self->array, and update self->length
@@ -119,7 +119,7 @@ static __inline ndn_Error ndn_DynamicUInt8Array_copy
  * self->array, and update self->length (which may be greater than length).
  * @param self pointer to the ndn_DynamicUInt8Array struct
  * @param length the needed minimum size for self->length
- * @return 0 for success, else an error code if need to reallocate the array but 
+ * @return 0 for success, else an error code if need to reallocate the array but
  * can't.
  */
 static __inline ndn_Error ndn_DynamicUInt8Array_ensureLengthFromBack

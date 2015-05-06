@@ -54,7 +54,7 @@ typedef func_lib::function<void
  * setInterestFilter and optionally to registerPrefix.
  */
 typedef func_lib::function<void
-  (const ptr_lib::shared_ptr<const Name>&, 
+  (const ptr_lib::shared_ptr<const Name>&,
    const ptr_lib::shared_ptr<const Interest>&, Face&, uint64_t,
    const ptr_lib::shared_ptr<const InterestFilter>&)> OnInterestCallback;
 
@@ -105,7 +105,7 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
-   * @throws runtime_error If the encoded interest size exceeds 
+   * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
   uint64_t

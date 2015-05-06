@@ -54,7 +54,7 @@ ndn_KeyLocator_setFromKeyLocator
   (struct ndn_KeyLocator *self, const struct ndn_KeyLocator *other)
 {
   ndn_Error error;
-  
+
   if (other == self)
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;

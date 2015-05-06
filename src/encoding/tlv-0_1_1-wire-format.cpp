@@ -236,7 +236,7 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
   else
     // We don't expect this to happen.
     throw runtime_error("signatureStruct.type has an unrecognized value");
-  
+
   result->set(signatureStruct);
   return result;
 }

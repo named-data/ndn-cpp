@@ -39,7 +39,7 @@ class Data;
 class IdentityStorage {
 public:
   IdentityStorage();
-  
+
   /**
    * The virtual Destructor.
    */

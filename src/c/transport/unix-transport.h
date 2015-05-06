@@ -45,7 +45,7 @@ static __inline void ndn_UnixTransport_initialize
 }
 
 /**
- * Determine whether this transport is to a node on the current machine. 
+ * Determine whether this transport is to a node on the current machine.
  * Unix transports are always local.
  * @return 1 because Unix transports are always local.
  */

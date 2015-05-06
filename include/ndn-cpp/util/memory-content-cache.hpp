@@ -157,7 +157,7 @@ public:
 
   /**
    * Add the Data packet to the cache so that it is available to use to
-   * answer interests. If data.getMetaInfo().getFreshnessPeriod() is not 
+   * answer interests. If data.getMetaInfo().getFreshnessPeriod() is not
    * negative, set the staleness time to now plus
    * data.getMetaInfo().getFreshnessPeriod(), which is checked during cleanup to
    * remove stale content. This also checks if cleanupIntervalMilliseconds

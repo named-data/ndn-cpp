@@ -48,7 +48,7 @@ void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
  */
 void
 ndn_computeHmacWithSha256
-  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength, 
+  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
    uint8_t *digest);
 
 /**

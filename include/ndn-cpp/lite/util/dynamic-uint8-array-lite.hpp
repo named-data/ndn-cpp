@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -68,14 +68,14 @@ public:
    * reallocate this object's array, and update the getLength() (which may be
    * greater than the given length).
    * @param length The needed minimum size for getLength().
-   * @return 0 for success, else an error code if need to reallocate the array 
+   * @return 0 for success, else an error code if need to reallocate the array
    * but can't.
    */
   ndn_Error
   ensureLength(size_t length);
 
   /**
-   * Copy value into this object's array at offset, using ensureLength to make 
+   * Copy value into this object's array at offset, using ensureLength to make
    * sure the array has enough length.
    * @param value The buffer to copy from.
    * @param valueLength The length of the value buffer.
@@ -83,7 +83,7 @@ public:
    * @return 0 for success, else an error code if need to reallocate the array
    * but can't.
    */
-  ndn_Error 
+  ndn_Error
   copy(const uint8_t *value, size_t valueLength, size_t offset);
 
   /**
@@ -96,7 +96,7 @@ public:
    * @return 0 for success, else an error code if need to reallocate the array
    * but can't.
    */
-  ndn_Error 
+  ndn_Error
   ensureLengthFromBack(size_t length);
 
   /**
@@ -110,7 +110,7 @@ public:
    * @return 0 for success, else an error code if need to reallocate the array
    * but can't.
    */
-  ndn_Error 
+  ndn_Error
   copyFromBack(const uint8_t *value, size_t valueLength, size_t offsetFromBack);
 
   /**

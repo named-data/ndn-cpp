@@ -597,7 +597,7 @@ BasicIdentityStorage::getAllKeyNamesOfIdentity
        sqlite3_column_bytes(statement, 0)));
     nameList.push_back(keyName);
   }
-  
+
   sqlite3_finalize(statement);
 }
 
@@ -709,7 +709,7 @@ BasicIdentityStorage::deletePublicKeyInfo(const Name& keyName)
 
   string keyId = keyName.get(-1).toEscapedString();
   Name identityName = keyName.getPrefix(-1);
-  
+
   sqlite3_stmt *statement;
   sqlite3_prepare_v2
     (database_,

@@ -169,7 +169,7 @@ public:
     return (*this) ? std::string((const char*)(&(*this)->front()), (*this)->size())
                    : std::string();
   }
-  
+
   /**
    * Check if the value of this Blob equals the other blob.
    * @param other The other Blob to check.

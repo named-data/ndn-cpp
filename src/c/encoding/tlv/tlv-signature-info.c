@@ -46,10 +46,10 @@ encodeKeyLocatorPublisherPublicKeyDigestValue
 #endif
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs 
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
  * in the body of a signature value which has a KeyLocator, e.g.
  * SignatureSha256WithRsa.
- * @param context This is the ndn_Signature struct pointer which was passed to 
+ * @param context This is the ndn_Signature struct pointer which was passed to
  * writeTlv. Use signature->type as the TLV type, assuming that the
  * ndn_SignatureType enum has the same values as the TLV signature types.
  * @param encoder the ndn_TlvEncoder which is calling this.

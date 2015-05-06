@@ -305,7 +305,7 @@ IdentityManager::signByCertificate(const uint8_t* buffer, size_t bufferLength, c
     (certificateName, digestAlgorithm);
 
   signature->setSignature
-    (privateKeyStorage_->sign(buffer, bufferLength, 
+    (privateKeyStorage_->sign(buffer, bufferLength,
      IdentityCertificate::certificateNameToPublicKeyName(certificateName),
      digestAlgorithm));
 
@@ -324,7 +324,7 @@ IdentityManager::signByCertificate(Data &data, const Name &certificateName, Wire
   SignedBlob encoding = data.wireEncode(wireFormat);
 
   data.getSignature()->setSignature
-    (privateKeyStorage_->sign(encoding.signedBuf(), encoding.signedSize(), 
+    (privateKeyStorage_->sign(encoding.signedBuf(), encoding.signedSize(),
      IdentityCertificate::certificateNameToPublicKeyName(certificateName),
      digestAlgorithm));
 

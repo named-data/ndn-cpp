@@ -4,7 +4,7 @@
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN config_policy_manager.py by Adeola Bannis.
  * Originally from Yingdi Yu <http://irl.cs.ucla.edu/~yingdi/>.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -88,7 +88,7 @@ public:
   ~ConfigPolicyManager();
 
   /**
-   * Check if the received data packet can escape from verification and be 
+   * Check if the received data packet can escape from verification and be
    * trusted as valid. If the configuration file contains the trust anchor
    * 'any', nothing is verified.
    * @param data The received data packet.
@@ -188,9 +188,9 @@ public:
 private:
   // Allow the unit tests to call private members.
   friend class ::TestVerificationRulesFriend;
-  
+
   /**
-   * TrustAnchorRefreshManager manages the trust-anchor certificates, including 
+   * TrustAnchorRefreshManager manages the trust-anchor certificates, including
    *   refresh.
    */
   class TrustAnchorRefreshManager {
@@ -225,12 +225,12 @@ private:
         refreshPeriod_(refreshPeriod)
       {
       }
-      
+
       std::vector<std::string> certificateNames_;
       MillisecondsSince1970 nextRefresh_;
       Milliseconds refreshPeriod_;
     };
-    
+
     CertificateCache certificateCache_;
     // refreshDirectories_ maps the directory name to certificate names so they
     //   can be deleted when necessary, and the next refresh time.
@@ -252,9 +252,9 @@ private:
    * else the data or interest is rejected.
    * @param signatureName The certificate name from the KeyLocator.
    * @param objectName The name of the data packet or interest. In the case of
-   * signed interests, this excludes the timestamp, nonce and signature 
+   * signed interests, this excludes the timestamp, nonce and signature
    * components.
-   * @param rule The rule from the configuration file that matches the data or 
+   * @param rule The rule from the configuration file that matches the data or
    * interest.
    * @return True if matches.
    */
@@ -291,7 +291,7 @@ private:
    * @param name
    * @param matchName
    * @param matchRelation  Can be one of:
-      "is-prefix-of" - passes if the name is equal to or has the other 
+      "is-prefix-of" - passes if the name is equal to or has the other
          name as a prefix
       "is-strict-prefix-of" - passes if the name has the other name as a
          prefix, and is not equal
@@ -305,8 +305,8 @@ private:
   /**
    * Extract the signature information from the interest name.
    * @param interest The interest whose signature is needed.
-   * @param wireFormat The wire format used to decode signature information 
-   * from the interest name. 
+   * @param wireFormat The wire format used to decode signature information
+   * from the interest name.
    * @return A shared_ptr for the Signature object. This is null if can't decode.
    */
   static ptr_lib::shared_ptr<Signature>
@@ -323,7 +323,7 @@ private:
   interestTimestampIsFresh(const Name& keyName, MillisecondsSince1970 timestamp) const;
 
   /**
-   * Trim the table size down if necessary, and insert/update the latest 
+   * Trim the table size down if necessary, and insert/update the latest
    * interest signing timestamp for the key. Any key which has not been used
    * within the TTL period is purged. If the table is still too large, the
    * oldest key is purged.

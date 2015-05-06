@@ -41,7 +41,7 @@ namespace ndn {
 ChronoSync2013::Impl::Impl
   (const OnReceivedSyncState& onReceivedSyncState,
    const OnInitialized& onInitialized, const Name& applicationDataPrefix,
-   const Name& applicationBroadcastPrefix, int sessionNo, Face& face, 
+   const Name& applicationBroadcastPrefix, int sessionNo, Face& face,
    KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
@@ -183,14 +183,14 @@ ChronoSync2013::Impl::onInterest
     if (syncDigest != digestTree_->getRoot()) {
       size_t index = logFind(syncDigest);
       if (index == -1) {
-        // To see whether there is any data packet coming back, wait 2 seconds 
+        // To see whether there is any data packet coming back, wait 2 seconds
         // using the Interest timeout mechanism.
         // TODO: Are we sure using a "/local/timeout" interest is the best future call approach?
         Interest timeout("/local/timeout");
         timeout.setInterestLifetimeMilliseconds(2000);
         face_.expressInterest
           (timeout, dummyOnData,
-           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1, 
+           bind(&ChronoSync2013::Impl::judgeRecovery, shared_from_this(), _1,
                 syncDigest, &face));
         _LOG_DEBUG("set timer recover");
       }

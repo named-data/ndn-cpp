@@ -150,7 +150,7 @@ FilePrivateKeyStorage::generateKeyPair
 
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
-    
+
     BIGNUM* exponent = 0;
     RSA* rsa = 0;
 
@@ -347,7 +347,7 @@ FilePrivateKeyStorage::sign
   else
     throw SecurityException
       ("FilePrivateKeyStorage::sign: Unrecognized private key OID");
-  
+
   return Blob(signatureBits, (size_t)signatureBitsLength);
 }
 
@@ -468,7 +468,7 @@ FilePrivateKeyStorage::decodeEcPrivateKey
     throw SecurityException
       ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't get the private key octet string");
   Blob octetStringValue = octetString->toVal();
-  
+
   BIGNUM* keyBignum = BN_bin2bn(octetStringValue.buf(), octetStringValue.size(), NULL);
   if (!keyBignum) {
     // We don't expect this to happen.

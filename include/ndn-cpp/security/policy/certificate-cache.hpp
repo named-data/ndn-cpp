@@ -4,7 +4,7 @@
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN certificate_cache.py by Adeola Bannis.
  * Originally from Yingdi Yu <http://irl.cs.ucla.edu/~yingdi/>.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,7 +63,7 @@ public:
 
   /**
    * Fetch a certificate from the cache.
-   * @param certificateName The name of the certificate to remove. Assumes there 
+   * @param certificateName The name of the certificate to remove. Assumes there
    * is no timestamp in the name.
    * @return A new copy of the IdentityCertificate, or a null shared_ptr if not
    * found.
@@ -75,7 +75,7 @@ public:
       (cache_.find(certificateName.toUri()));
     if (entry == cache_.end())
       return ptr_lib::shared_ptr<IdentityCertificate>();
-    
+
     ptr_lib::shared_ptr<IdentityCertificate> cert(new IdentityCertificate());
     Blob certData = entry->second;
     cert->wireDecode(certData);

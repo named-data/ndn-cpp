@@ -95,7 +95,7 @@ public:
    */
   ChronoSync2013
     (const OnReceivedSyncState& onReceivedSyncState,
-     const OnInitialized& onInitialized, const Name& applicationDataPrefix, 
+     const OnInitialized& onInitialized, const Name& applicationDataPrefix,
      const Name& applicationBroadcastPrefix, int sessionNo,
      Face& face, KeyChain& keyChain, const Name& certificateName,
      Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
@@ -258,7 +258,7 @@ private:
      */
     void
     initialize(const OnRegisterFailed& onRegisterFailed);
-    
+
     /**
      * See ChronoSync2013::getProducerSequenceNo.
      */

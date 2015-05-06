@@ -4,7 +4,7 @@
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN config_policy_manager.py by Adeola Bannis.
  * Originally from Yingdi Yu <http://irl.cs.ucla.edu/~yingdi/>.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -51,7 +51,7 @@ using namespace regex_lib;
  */
 static void
 onVerifyInterestFailedWrapper
-  (const ptr_lib::shared_ptr<Data>& data, 
+  (const ptr_lib::shared_ptr<Data>& data,
    const OnVerifyInterestFailed& onVerifyFailed,
    const ptr_lib::shared_ptr<Interest>& interest)
 {
@@ -121,7 +121,7 @@ ConfigPolicyManager::checkVerificationPolicy
 
   if (certificateInterest->getName().size() > 0)
     return ptr_lib::make_shared<ValidationRequest>
-      (certificateInterest, 
+      (certificateInterest,
        bind(&ConfigPolicyManager::onCertificateDownloadComplete, this, _1,
             data, stepCount, onVerified, onVerifyFailed),
        onVerifyFailed, 2, stepCount + 1);
@@ -413,7 +413,7 @@ ConfigPolicyManager::checkSignatureMatch
           return false;
         // format_sed will substitute with \1 instead of $1.
         string keyMatchPrefix = keyMatch.iterator->format(*keyExpansion, regex_constants::format_sed);
-        
+
         NdnRegexMatcher nameMatch(*nameRegex, objectName);
         if (nameMatch.iterator->size() == 0)
           return false;
@@ -463,7 +463,7 @@ ConfigPolicyManager::findMatchingRule
   vector<const BoostInfoTree*> rules = config_->getRoot()["validator/rule"];
   for (int iRule = 0; iRule < rules.size(); ++iRule) {
     const BoostInfoTree& r = *rules[iRule];
-    
+
     if (r["for"][0]->getValue() == matchType) {
       bool passed = true;
       vector<const BoostInfoTree*> filters = r["filter"];
@@ -565,7 +565,7 @@ ConfigPolicyManager::updateTimestampForKey
     MillisecondsSince1970 now = ndn_getNowMilliseconds();
     MillisecondsSince1970 oldestTimestamp = now;
     string oldestKey;
-    
+
     // Get the keys to erase without disturbing the map.
     vector<string> keysToErase;
 
@@ -673,7 +673,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
     certificateCache_.insertCertificate(*cert);
     certificateNames.push_back(certUri);
   }
-  
+
   ::closedir(directory);
 
   refreshDirectories_[directoryName] = ptr_lib::make_shared<DirectoryInfo>

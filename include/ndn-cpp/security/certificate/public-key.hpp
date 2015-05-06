@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  PublicKey() 
+  PublicKey()
   : keyType_((KeyType)-1)
   {}
 

@@ -2,7 +2,7 @@
 /**
  * Copyright (C) 2015 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ namespace ndn {
 
 /**
  * A SignatureLite holds a signature type, a KeyLocatorLite, the signature
- * bytes and other fields to represent the Signature block of a Data packet. 
+ * bytes and other fields to represent the Signature block of a Data packet.
  * This has the union of fields needed to represent specific types of signature
  * such as Sha256WithRsaSignature and DigestSha256Signature.
  */
@@ -37,7 +37,7 @@ class SignatureLite : private ndn_Signature {
 public:
   /**
    * Create a SignatureLite with values for none and the default digestAlgorithm.
-   * @param keyNameComponents The pre-allocated array of ndn_NameComponent for 
+   * @param keyNameComponents The pre-allocated array of ndn_NameComponent for
    * the keyLocatorLite. Instead of an array of NameLite::Component, this is an
    * array of the underlying ndn_NameComponent struct so that it doesn't run the
    * default constructor unnecessarily.
