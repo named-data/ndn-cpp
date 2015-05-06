@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 
     bool enabled = true;
     SegmentFetcher::fetch
-      (face, interest, SegmentFetcher::DontVerifySegment, 
+      (face, interest, SegmentFetcher::DontVerifySegment,
        bind(&processFaceStatus, _1, prefix, uri, &face, &enabled),
        bind(&onError, _1, _2, &enabled));
 
@@ -243,7 +243,7 @@ registerRoute(const Name& prefix, uint64_t faceId, Face* face, bool* enabled)
   // Sign and express the interest.
   face->makeCommandInterest(interest);
   face->expressInterest
-    (interest, 
+    (interest,
      bind(&processRegisterResponse, _1, _2, enabled),
      bind(&onTimeout, _1, "Register route command timed out.", enabled));
 }
@@ -265,7 +265,7 @@ processRegisterResponse
 {
   // We are finished in all cases.
   *enabled = false;
-  
+
   ndn_message::ControlParametersTypes_ControlParametersResponseMessage
     decodedControlResponse;
   ProtobufTlv::decode(decodedControlResponse, responseData->getContent());

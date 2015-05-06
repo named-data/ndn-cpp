@@ -265,7 +265,7 @@ int main(int argc, char** argv)
     Face face("localhost");
     face.setCommandSigningInfo(keyChain, certificateName);
     face.makeCommandInterest(freshInterest);
-    
+
     ptr_lib::shared_ptr<Interest> reDecodedFreshInterest(new Interest());
     reDecodedFreshInterest->wireDecode(freshInterest.wireEncode());
     cout << endl << "Re-decoded fresh Interest:" << endl;

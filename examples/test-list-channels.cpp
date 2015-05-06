@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
     bool enabled = true;
     SegmentFetcher::fetch
-      (face, interest, SegmentFetcher::DontVerifySegment, 
+      (face, interest, SegmentFetcher::DontVerifySegment,
        bind(&printChannelStatuses, _1, &enabled),
        bind(&onError, _1, _2, &enabled));
 

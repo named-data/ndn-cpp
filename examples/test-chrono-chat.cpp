@@ -194,7 +194,7 @@ private:
   dummyOnData
     (const ptr_lib::shared_ptr<const Interest>& interest,
      const ptr_lib::shared_ptr<Data>& data);
-  
+
   class CachedMessage {
   public:
     CachedMessage
@@ -783,7 +783,7 @@ int main(int argc, char** argv)
     {
       if (Chat::getNowMilliseconds() - startTime >= 1000.0)
         break;
-      
+
       face.processEvents();
       usleep(10000);
     }

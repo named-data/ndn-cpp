@@ -422,7 +422,7 @@ benchmarkEncodeDataSecondsC
       // Encode once to get the signed portion.
       size_t dummyEncodingLength;
       if ((error = Tlv0_1_1WireFormatLite::encodeData
-           (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+           (data, &signedPortionBeginOffset, &signedPortionEndOffset,
             output, &dummyEncodingLength))) {
         cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
         return 0;
@@ -447,7 +447,7 @@ benchmarkEncodeDataSecondsC
     }
 
     if ((error = Tlv0_1_1WireFormatLite::encodeData
-         (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
+         (data, &signedPortionBeginOffset, &signedPortionEndOffset,
           output, encodingLength))) {
       cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
       return 0;

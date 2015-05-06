@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
     bool enabled = true;
     SegmentFetcher::fetch
-      (face, interest, SegmentFetcher::DontVerifySegment, 
+      (face, interest, SegmentFetcher::DontVerifySegment,
        bind(&printFaceStatuses, _1, &enabled),
        bind(&onError, _1, _2, &enabled));
 
@@ -85,7 +85,7 @@ static void
 printFaceStatuses(const Blob& encodedMessage, bool* enabled)
 {
   *enabled = false;
-  
+
   ndn_message::FaceStatusMessage faceStatusMessage;
   ProtobufTlv::decode(faceStatusMessage, encodedMessage);
 
