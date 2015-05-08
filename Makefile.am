@@ -17,7 +17,8 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
-check_PROGRAMS = bin/unit-tests/test-data-methods \
+check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
+   bin/unit-tests/test-data-methods \
   bin/unit-tests/test-der-encode-decode bin/unit-tests/test-face-methods \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
@@ -298,6 +299,12 @@ bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
   examples/face-status.pb.cc
 bin_test_register_route_LDADD = libndn-cpp.la
+
+# Unit tests
+
+bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_control_parameters_encode_decode_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

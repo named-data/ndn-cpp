@@ -87,7 +87,9 @@ DIST_COMMON = $(srcdir)/aminclude.am $(srcdir)/Makefile.in \
 	$(am__configure_deps) $(srcdir)/libndn-cpp.pc.in \
 	$(dist_noinst_SCRIPTS) depcomp test-driver COPYING ar-lib \
 	compile config.guess config.sub install-sh missing ltmain.sh
-check_PROGRAMS = bin/unit-tests/test-data-methods$(EXEEXT) \
+check_PROGRAMS =  \
+	bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT) \
+	bin/unit-tests/test-data-methods$(EXEEXT) \
 	bin/unit-tests/test-der-encode-decode$(EXEEXT) \
 	bin/unit-tests/test-face-methods$(EXEEXT) \
 	bin/unit-tests/test-identity-methods$(EXEEXT) \
@@ -341,6 +343,11 @@ am_bin_test_register_route_OBJECTS =  \
 bin_test_register_route_OBJECTS =  \
 	$(am_bin_test_register_route_OBJECTS)
 bin_test_register_route_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT)
+bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = $(am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS)
+bin_unit_tests_test_control_parameters_encode_decode_DEPENDENCIES =  \
+	libndn-cpp.la
 am_bin_unit_tests_test_data_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT)
 bin_unit_tests_test_data_methods_OBJECTS =  \
@@ -458,6 +465,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
+	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -481,6 +489,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
+	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
@@ -1199,6 +1208,11 @@ bin_test_register_route_SOURCES = examples/test-register-route.cpp \
   examples/face-status.pb.cc
 
 bin_test_register_route_LDADD = libndn-cpp.la
+
+# Unit tests
+bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_control_parameters_encode_decode_LDADD = libndn-cpp.la
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
@@ -1808,7 +1822,7 @@ tests/unit-tests/$(am__dirstamp):
 tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
 	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT):  \
+tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
@@ -1817,12 +1831,22 @@ contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
 contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
 	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT):  \
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 bin/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) bin/unit-tests
 	@: > bin/unit-tests/$(am__dirstamp)
+
+bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT): $(bin_unit_tests_test_control_parameters_encode_decode_OBJECTS) $(bin_unit_tests_test_control_parameters_encode_decode_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_control_parameters_encode_decode_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_control_parameters_encode_decode_OBJECTS) $(bin_unit_tests_test_control_parameters_encode_decode_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_data_methods-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 
 bin/unit-tests/test-data-methods$(EXEEXT): $(bin_unit_tests_test_data_methods_OBJECTS) $(bin_unit_tests_test_data_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_data_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-data-methods$(EXEEXT)
@@ -1964,6 +1988,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Po@am__quote@
@@ -2104,6 +2129,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po@am__quote@
@@ -2161,6 +2187,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o: tests/unit-tests/test-control-parameters-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o `test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-control-parameters-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-control-parameters-encode-decode.cpp' object='tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o `test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-control-parameters-encode-decode.cpp
+
+tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.obj: tests/unit-tests/test-control-parameters-encode-decode.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.obj `if test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-control-parameters-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-control-parameters-encode-decode.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-control-parameters-encode-decode.cpp' object='tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.obj `if test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-control-parameters-encode-decode.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-control-parameters-encode-decode.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o: tests/unit-tests/test-data-methods.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_data_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_data_methods-test-data-methods.o `test -f 'tests/unit-tests/test-data-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-data-methods.cpp
@@ -2715,6 +2769,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+bin/unit-tests/test-control-parameters-encode-decode.log: bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)
+	@p='bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)'; \
+	b='bin/unit-tests/test-control-parameters-encode-decode'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-data-methods.log: bin/unit-tests/test-data-methods$(EXEEXT)
 	@p='bin/unit-tests/test-data-methods$(EXEEXT)'; \
 	b='bin/unit-tests/test-data-methods'; \
