@@ -21,8 +21,8 @@
 
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
-#include <ndn-cpp/control-parameters.hpp>
 #include "c/control-parameters.h"
+#include <ndn-cpp/control-parameters.hpp>
 
 using namespace std;
 
@@ -35,12 +35,14 @@ ControlParameters::get
   controlParametersStruct.hasName = hasName_ ? 1 : 0;
   name_.get(controlParametersStruct.name);
   controlParametersStruct.faceId = faceId_;
-  // TODO: Add "Uri" string.
+  // Store the uri_ string as an ndn_Blob.
+  controlParametersStruct.uri.value = (const uint8_t*)uri_.c_str();
+  controlParametersStruct.uri.length = uri_.size();
   controlParametersStruct.localControlFeature = localControlFeature_;
   controlParametersStruct.origin = origin_;
   controlParametersStruct.cost = cost_;
   controlParametersStruct.flags = flags_;
-  // TODO: Add "Strategy" name.
+  strategy_.get(controlParametersStruct.strategy);
   controlParametersStruct.expirationPeriod = expirationPeriod_;
 }
 
@@ -51,12 +53,15 @@ ControlParameters::set
   hasName_ = controlParametersStruct.hasName != 0 ? true : false;
   name_.set(controlParametersStruct.name);
   faceId_ = controlParametersStruct.faceId;
-  // TODO: Add "Uri" string.
+  // Convert the ndn_Blob to the uri_ string.
+  uri_.assign
+    ((const char*)controlParametersStruct.uri.value,
+     controlParametersStruct.uri.length);
   localControlFeature_ = controlParametersStruct.localControlFeature;
   origin_ = controlParametersStruct.origin;
   cost_ = controlParametersStruct.cost;
   flags_ = controlParametersStruct.flags;
-  // TODO: Add "Strategy" name.
+  strategy_.set(controlParametersStruct.strategy);
   expirationPeriod_ = controlParametersStruct.expirationPeriod;
 }
 

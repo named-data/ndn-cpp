@@ -42,12 +42,13 @@ struct ndn_ControlParameters {
   int hasName;
   struct ndn_Name name;              /**< Only used if hasName */
   int faceId;                        /**< -1 for none. */
-  // TODO: Add "Uri" string.
+  struct ndn_Blob uri;               /**< A Blob whose value is a pointer to pre-allocated buffer.
+                                          0 for none. */
   int localControlFeature;           /**< -1 for none. */
   int origin;                        /**< -1 for none. */
   int cost;                          /**< -1 for none. */
   struct ndn_ForwardingFlags flags;
-  // TODO: Add "Strategy" name.
+  struct ndn_Name strategy;          /**< nComponents == 0 for none. */
   ndn_Milliseconds expirationPeriod; /**< -1 for none. */
 };
 
@@ -62,15 +63,19 @@ struct ndn_ControlParameters {
 static __inline void
 ndn_ControlParameters_initialize
   (struct ndn_ControlParameters *self, struct ndn_NameComponent *nameComponents,
-   size_t maxNameComponents)
+   size_t maxNameComponents, struct ndn_NameComponent *strategyNameComponents,
+   size_t strategyMaxNameComponents)
 {
   self->hasName = 0;
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   self->faceId = -1;
+  ndn_Blob_initialize(&self->uri, 0, 0);
   self->localControlFeature = -1;
   self->origin = -1;
   self->cost = -1;
   ndn_ForwardingFlags_initialize(&self->flags);
+  ndn_Name_initialize
+    (&self->strategy, strategyNameComponents, strategyMaxNameComponents);
   self->expirationPeriod = -1.0;
 }
 

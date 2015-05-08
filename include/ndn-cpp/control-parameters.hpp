@@ -61,6 +61,14 @@ public:
     wireDecode(&input[0], input.size(), wireFormat);
   }
 
+  void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(input.buf(), input.size(), wireFormat);
+  }
+
   /**
    * Set the controlParametersStruct to point to the components in this
    * ControlParameters, without copying any memory.
@@ -89,6 +97,9 @@ public:
   int
   getFaceId() const { return faceId_; }
 
+  const std::string&
+  getUri() const { return uri_; }
+
   int
   getLocalControlFeature() const { return localControlFeature_; }
 
@@ -98,8 +109,17 @@ public:
   int
   getCost() const { return cost_; }
 
+  ForwardingFlags&
+  getForwardingFlags() { return flags_; }
+
   const ForwardingFlags&
-  getFlags() const { return flags_; }
+  getForwardingFlags() const { return flags_; }
+
+  Name&
+  getStrategy() { return strategy_; }
+
+  const Name&
+  getStrategy() const { return strategy_; }
 
   Milliseconds
   getExpirationPeriod() const { return expirationPeriod_; }
@@ -135,6 +155,11 @@ public:
     return *this;
   }
 
+  /**
+   * Set the Face ID.
+   * @param faceId The new face ID, or -1 for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setFaceId(int faceId)
   {
@@ -142,6 +167,24 @@ public:
     return *this;
   }
 
+  /**
+   * Set the URI.
+   * @param uri The new uri, or an empty string for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
+  ControlParameters&
+  setUri(const std::string& uri)
+  {
+    uri_ = uri;
+    return *this;
+  }
+
+  /**
+   * Set the local control feature value.
+   * @param localControlFeature The new local control feature value, or -1 for
+   * not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setLocalControlFeature(int localControlFeature)
   {
@@ -149,6 +192,11 @@ public:
     return *this;
   }
 
+  /**
+   * Set the origin value.
+   * @param origin The new origin value, or -1 for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setOrigin(int origin)
   {
@@ -156,6 +204,11 @@ public:
     return *this;
   }
 
+  /**
+   * Set the cost value.
+   * @param cost The new cost value, or -1 for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setCost(int cost)
   {
@@ -163,13 +216,37 @@ public:
     return *this;
   }
 
+  /**
+   * Set the ForwardingFlags object to a copy of forwardingFlags. You can use
+   * getForwardingFlags() and change the existing ForwardingFlags object.
+   * @param forwardingFlags The new cost value, or null for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
-  setFlags(const ForwardingFlags& flags)
+  setForwardingFlags(const ForwardingFlags& flags)
   {
     flags_ = flags;
     return *this;
   }
 
+  /**
+   * Set the strategy to a copy of the given Name.
+   * @param strategy The Name to copy, or an empty Name if not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
+  ControlParameters&
+  setStrategy(const Name& strategy)
+  {
+    strategy_ = strategy;
+    return *this;
+  }
+
+  /**
+   * Set the expiration period.
+   * @param expirationPeriod The expiration period in milliseconds, or
+   * null for not specified.
+   * @return This ControlParameters so that you can chain calls to update values.
+   */
   ControlParameters&
   setExpirationPeriod(Milliseconds expirationPeriod)
   {
@@ -181,12 +258,12 @@ private:
   bool hasName_;
   Name name_;                     /**< Only used if hasName_ */
   int faceId_;                    /**< -1 for none. */
-  // TODO: Add "Uri" string.
+  std::string uri_;               /**< "" for none. */
   int localControlFeature_;       /**< -1 for none. */
   int origin_;                    /**< -1 for none. */
   int cost_;                      /**< -1 for none. */
   ForwardingFlags flags_;
-  // TODO: Add "Strategy" name.
+  Name strategy_;                 /**< empty for none. */
   Milliseconds expirationPeriod_; /**< -1 for none. */
 };
 
