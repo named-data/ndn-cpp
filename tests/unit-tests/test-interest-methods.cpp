@@ -278,6 +278,25 @@ TEST_F(TestInterestMethods, SetRemovesNonce)
   ASSERT_TRUE(interest.getNonce().isNull()) << "Interest should not have a nonce after changing fields";
 }
 
+TEST_F(TestInterestMethods, ExcludeMatches)
+{
+  Exclude exclude;
+  exclude.appendComponent(Name("%00%02").get(0));
+  exclude.appendAny();
+  exclude.appendComponent(Name("%00%20").get(0));
+
+  Name::Component component;
+  component = Name("%00%01").get(0);
+  ASSERT_FALSE(exclude.matches(component)) <<
+    component.toEscapedString() << " should not match " << exclude.toUri();
+  component = Name("%00%0F").get(0);
+  ASSERT_TRUE(exclude.matches(component)) <<
+    component.toEscapedString() << " should not match " << exclude.toUri();
+  component = Name("%00%21").get(0);
+  ASSERT_FALSE(exclude.matches(component)) <<
+    component.toEscapedString() << " should not match " << exclude.toUri();
+}
+
 TEST_F(TestInterestMethods, VerifyDigestSha256)
 {
   // Create a KeyChain but we don't need to add keys.
