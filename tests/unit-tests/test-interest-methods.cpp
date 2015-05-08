@@ -291,7 +291,7 @@ TEST_F(TestInterestMethods, ExcludeMatches)
     component.toEscapedString() << " should not match " << exclude.toUri();
   component = Name("%00%0F").get(0);
   ASSERT_TRUE(exclude.matches(component)) <<
-    component.toEscapedString() << " should not match " << exclude.toUri();
+    component.toEscapedString() << " should match " << exclude.toUri();
   component = Name("%00%21").get(0);
   ASSERT_FALSE(exclude.matches(component)) <<
     component.toEscapedString() << " should not match " << exclude.toUri();
