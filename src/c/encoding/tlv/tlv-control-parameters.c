@@ -23,6 +23,30 @@
 #include "tlv-control-parameters.h"
 
 /**
+ * This private function is called by ndn_TlvEncoder_writeTlv to write the Name
+ * TLVs in the body of the ControlParameters strategy value.
+ * @param context This is the ndn_ControlParameters struct pointer which
+ * was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error
+encodeStrategyValue(const void *context, struct ndn_TlvEncoder *encoder)
+{
+  struct ndn_ControlParameters *controlParameters =
+    (struct ndn_ControlParameters *)context;
+  ndn_Error error;
+  size_t dummyBeginOffset, dummyEndOffset;
+
+  if ((error = ndn_encodeTlvName
+       (&controlParameters->strategy, &dummyBeginOffset, &dummyEndOffset,
+        encoder)))
+    return error;
+
+  return NDN_ERROR_success;
+}
+
+/**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
  * in the body of the ControlParameters value.
  * @param context This is the ndn_ControlParameters struct pointer which
@@ -50,9 +74,9 @@ encodeControlParametersValue(const void *context, struct ndn_TlvEncoder *encoder
        (encoder, ndn_Tlv_ControlParameters_FaceId,
         controlParameters->faceId)))
     return error;
-
-  // TODO: Encode Uri.
-
+  if ((error = ndn_TlvEncoder_writeOptionalBlobTlv
+       (encoder, ndn_Tlv_ControlParameters_Uri, &controlParameters->uri)))
+    return error;
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
        (encoder, ndn_Tlv_ControlParameters_LocalControlFeature,
         controlParameters->localControlFeature)))
@@ -76,7 +100,13 @@ encodeControlParametersValue(const void *context, struct ndn_TlvEncoder *encoder
       return error;
   }
 
-  // TODO: Encode Strategy.
+  // Encode strategy.
+  if (controlParameters->strategy.nComponents != 0) {
+    if ((error = ndn_TlvEncoder_writeNestedTlv
+         (encoder, ndn_Tlv_ControlParameters_Strategy,
+          encodeStrategyValue, controlParameters, 0)))
+      return error;
+  }
 
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
        (encoder, ndn_Tlv_ControlParameters_ExpirationPeriod,
@@ -94,4 +124,103 @@ ndn_encodeTlvControlParameters
   return ndn_TlvEncoder_writeNestedTlv
     (encoder, ndn_Tlv_ControlParameters_ControlParameters,
      encodeControlParametersValue, controlParameters, 0);
+}
+
+ndn_Error
+ndn_decodeTlvControlParameters
+  (struct ndn_ControlParameters *controlParameters, struct ndn_TlvDecoder *decoder)
+{
+  ndn_Error error;
+  size_t endOffset;
+  int gotExpectedType;
+  size_t dummyBeginOffset, dummyEndOffset;
+
+  if ((error = ndn_TlvDecoder_readNestedTlvsStart
+       (decoder, ndn_Tlv_ControlParameters_ControlParameters, &endOffset)))
+    return error;
+
+  // Decode name.
+  if ((error = ndn_TlvDecoder_peekType
+       (decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    if ((error = ndn_decodeTlvName
+         (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset, decoder)))
+      return error;
+  }
+  else {
+    controlParameters->hasName = 0;
+    controlParameters->name.nComponents = 0;
+  }
+
+  // Decode face ID.
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+       (decoder, ndn_Tlv_ControlParameters_FaceId, endOffset,
+        &controlParameters->faceId)))
+    return error;
+
+  // Decode URI.
+  if ((error = ndn_TlvDecoder_readOptionalBlobTlv
+       (decoder, ndn_Tlv_ControlParameters_Uri, endOffset,
+        &controlParameters->uri)))
+    return error;
+
+  // Decode integers.
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+       (decoder, ndn_Tlv_ControlParameters_LocalControlFeature, endOffset,
+        &controlParameters->localControlFeature)))
+    return error;
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+       (decoder, ndn_Tlv_ControlParameters_Origin, endOffset,
+        &controlParameters->origin)))
+    return error;
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+       (decoder, ndn_Tlv_ControlParameters_Cost, endOffset,
+        &controlParameters->cost)))
+    return error;
+
+  // Set forwarding flags.
+  if ((error = ndn_TlvDecoder_peekType
+       (decoder, ndn_Tlv_ControlParameters_Flags, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    uint64_t flags;
+    if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+         (decoder, ndn_Tlv_ControlParameters_Flags, &flags)))
+      return error;
+    ndn_ForwardingFlags_setNfdForwardingFlags(&controlParameters->flags, flags);
+  }
+  else
+    ndn_ForwardingFlags_initialize(&controlParameters->flags);
+
+  // Decode strategy.
+  if ((error = ndn_TlvDecoder_peekType
+       (decoder, ndn_Tlv_ControlParameters_Strategy, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    size_t strategyEndOffset;
+
+    if ((error = ndn_TlvDecoder_readNestedTlvsStart
+         (decoder, ndn_Tlv_ControlParameters_Strategy, &strategyEndOffset)))
+      return error;
+    if ((error = ndn_decodeTlvName
+         (&controlParameters->strategy, &dummyBeginOffset, &dummyEndOffset,
+          decoder)))
+      return error;
+    if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, strategyEndOffset)))
+      return error;
+  }
+  else
+    controlParameters->strategy.nComponents = 0;
+
+  // Decode expiration period.
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
+       (decoder, ndn_Tlv_ControlParameters_ExpirationPeriod, endOffset,
+        &controlParameters->expirationPeriod)))
+    return error;
+  
+  if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
+    return error;
+
+  return NDN_ERROR_success;
 }

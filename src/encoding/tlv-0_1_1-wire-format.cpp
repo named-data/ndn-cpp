@@ -169,10 +169,12 @@ Tlv0_1_1WireFormat::encodeControlParameters
   (const ControlParameters& controlParameters)
 {
   struct ndn_NameComponent nameComponents[100];
+  struct ndn_NameComponent strategyNameComponents[100];
   struct ndn_ControlParameters controlParametersStruct;
   ndn_ControlParameters_initialize
     (&controlParametersStruct, nameComponents,
-     sizeof(nameComponents) / sizeof(nameComponents[0]));
+     sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
+     sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
   controlParameters.get(controlParametersStruct);
 
   TlvEncoder encoder(256);
@@ -182,6 +184,27 @@ Tlv0_1_1WireFormat::encodeControlParameters
     throw runtime_error(ndn_getErrorString(error));
 
   return Blob(encoder.getOutput(), false);
+}
+
+void
+Tlv0_1_1WireFormat::decodeControlParameters
+  (ControlParameters& controlParameters, const uint8_t *input,
+   size_t inputLength)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_NameComponent strategyNameComponents[100];
+  struct ndn_ControlParameters controlParametersStruct;
+  ndn_ControlParameters_initialize
+    (&controlParametersStruct, nameComponents,
+     sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
+     sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
+
+  TlvDecoder decoder(input, inputLength);
+  ndn_Error error;
+  if ((error = ndn_decodeTlvControlParameters(&controlParametersStruct, &decoder)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  controlParameters.set(controlParametersStruct);
 }
 
 Blob

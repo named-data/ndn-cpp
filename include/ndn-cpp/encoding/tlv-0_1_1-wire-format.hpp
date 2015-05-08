@@ -133,6 +133,19 @@ public:
     (const ControlParameters& controlParameters);
 
   /**
+   * Decode input as a command parameters and set the fields of the
+   * controlParameters object.
+   * @param controlParameters The ControlParameters object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  virtual void
+  decodeControlParameters
+    (ControlParameters& controlParameters, const uint8_t *input,
+     size_t inputLength);
+
+  /**
    * Encode signature as an NDN-TLV SignatureInfo and return the encoding.
    * @param signature An object of a subclass of Signature to encode.
    * @return A Blob containing the encoding.

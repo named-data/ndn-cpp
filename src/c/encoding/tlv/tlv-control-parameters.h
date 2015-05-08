@@ -42,7 +42,18 @@ ndn_encodeTlvControlParameters
   (const struct ndn_ControlParameters *controlParameters,
    struct ndn_TlvEncoder *encoder);
 
-// TODO: ndn_decodeControlParameters
+/**
+ * Expect the next element to be a TLV ControlParameters and decode into the
+ * ndn_ControlParameters struct.
+ * @param controlParameters A pointer to the ndn_ControlParameters struct.
+ * @param decoder A pointer to the ndn_TlvDecoder struct.
+ * @return 0 for success, else an error code, including if the next element is 
+ * not ControlParameters.
+ */
+ndn_Error
+ndn_decodeTlvControlParameters
+  (struct ndn_ControlParameters *controlParameters, struct ndn_TlvDecoder *decoder);
+
 
 #ifdef __cplusplus
 }
