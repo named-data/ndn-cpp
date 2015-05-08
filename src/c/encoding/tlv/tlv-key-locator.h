@@ -43,8 +43,9 @@ ndn_encodeTlvKeyLocatorValue(const void *context, struct ndn_TlvEncoder *encoder
  * @param expectedType The expected type code of the TLV, e.g. ndn_Tlv_KeyLocator
  * or ndn_Tlv_PublisherPublicKeyLocator.
  * @param keyLocator A pointer to the ndn_KeyLocator struct.
- * @param decoder A pointer to the ndn_BinaryXmlDecoder struct.
- * @return 0 for success, else an error code, including if the next element is not KeyLocator.
+ * @param decoder A pointer to the ndn_TlvDecoder struct.
+ * @return 0 for success, else an error code, including if the next element is 
+ * not expectedType.
  */
 ndn_Error
 ndn_decodeTlvKeyLocator
