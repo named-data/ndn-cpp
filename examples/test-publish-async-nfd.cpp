@@ -80,7 +80,9 @@ int main(int argc, char** argv)
     Echo echo(keyChain, keyChain.getDefaultCertificateName());
     Name prefix("/testecho");
     cout << "Register prefix  " << prefix.toUri() << endl;
-    face.registerPrefix(prefix, func_lib::ref(echo), func_lib::ref(echo));
+    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+    // we can remove the explicit cast to OnInterestCallback (needed for boost).
+    face.registerPrefix(prefix, (const OnInterestCallback&)func_lib::ref(echo), func_lib::ref(echo));
 
     // The main event loop.
     // Wait forever to receive one interest for the prefix.

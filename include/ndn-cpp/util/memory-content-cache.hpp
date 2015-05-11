@@ -140,8 +140,10 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
+    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+    // we can remove the explicit cast to OnInterestCallback (needed for boost).
     uint64_t registeredPrefixId = face_->registerPrefix
-      (prefix, func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
+      (prefix, (const OnInterestCallback&)func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
     // Remember the registeredPrefixId so unregisterAll can remove it.
     registeredPrefixIdList_.push_back(registeredPrefixId);
   }
