@@ -247,8 +247,10 @@ int main(int argc, char** argv)
       (keyChain, keyChain.getDefaultCertificateName(), startBlockId, endBlockId,
        bind(&printAndQuit, "All data was inserted.", &enabled));
     cout << "Register prefix " << fetchPrefix.toUri() << endl;
+    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+    // we can remove the explicit cast to OnInterestCallback (needed for boost).
     face.registerPrefix
-      (fetchPrefix, func_lib::ref(produceSegments),
+      (fetchPrefix, (const OnInterestCallback&)func_lib::ref(produceSegments),
        bind(&printAndQuit, "Register failed for prefix " + fetchPrefix.toUri(),
             &enabled));
 
@@ -264,7 +266,7 @@ int main(int argc, char** argv)
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
     }
-  } catch (exception& e) {
+  } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
   return 0;

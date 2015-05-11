@@ -145,9 +145,11 @@ Face::registerPrefix
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
   // Wrap the deprecated OnInterest in an OnInterestCallback.
+  // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+  // we can remove the explicit cast to OnInterestCallback (needed for boost).
   return registerPrefix
     (prefix,
-     bind(&Face::onInterestWrapper, _1, _2, _3, _4, _5, onInterest),
+     (const OnInterestCallback&)bind(&Face::onInterestWrapper, _1, _2, _3, _4, _5, onInterest),
      onRegisterFailed, flags, wireFormat);
 }
 

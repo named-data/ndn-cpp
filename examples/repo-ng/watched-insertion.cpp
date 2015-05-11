@@ -330,8 +330,10 @@ int main(int argc, char** argv)
       (keyChain, keyChain.getDefaultCertificateName(),
        bind(&stopRepoWatchAndQuit, &face, repoCommandPrefix, watchPrefix, &enabled));
     cout << "Register prefix " << watchPrefix.toUri() << endl;
+    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+    // we can remove the explicit cast to OnInterestCallback (needed for boost).
     face.registerPrefix
-      (watchPrefix, func_lib::ref(sendSegments),
+      (watchPrefix, (const OnInterestCallback&)func_lib::ref(sendSegments),
        bind(&printAndQuit, "Register failed for prefix " + watchPrefix.toUri(),
             &enabled));
 
@@ -346,7 +348,7 @@ int main(int argc, char** argv)
       // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
       usleep(10000);
     }
-  } catch (exception& e) {
+  } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
   return 0;

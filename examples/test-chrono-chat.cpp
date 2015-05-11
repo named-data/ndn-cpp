@@ -93,8 +93,10 @@ public:
        Name("/ndn/broadcast/ChronoChat-0.3").append(chatRoom_), sessionNo,
        face_, keyChain_, certificateName_, syncLifetime_, onRegisterFailed));
 
+    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
+    // we can remove the explicit cast to OnInterestCallback (needed for boost).
     face_.registerPrefix
-      (chatPrefix_, bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
+      (chatPrefix_, (const OnInterestCallback&)bind(&Chat::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
        onRegisterFailed);
   }
 
