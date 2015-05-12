@@ -650,7 +650,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
   vector<string> certificateNames;
   struct dirent *entry;
   while ((entry = ::readdir(directory)) != NULL) {
-    // TODO: Handle non-unix file system paths which don't use '/' or have stat.
+    // TODO: Handle non-unix file systems which don't have stat.
     string fullPath = directoryName + '/' + entry->d_name;
     struct stat fileStat;
     if (::stat(fullPath.c_str(), &fileStat) == -1)

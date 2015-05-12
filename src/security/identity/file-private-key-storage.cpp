@@ -123,8 +123,8 @@ FilePrivateKeyStorage::FilePrivateKeyStorage()
     // Don't expect this to happen;
     home = ".";
   string homeDir(home);
-  if (homeDir[homeDir.size() - 1] == '/')
-    // Strip the ending '/'.
+  if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
+    // Strip the ending path separator.
     homeDir.erase(homeDir.size() - 1);
 
   keyStorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";

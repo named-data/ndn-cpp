@@ -105,14 +105,13 @@ BasicIdentityStorage::BasicIdentityStorage(const std::string& databaseFilePath)
   int res;
   if (databaseFilePath == "") {
     // Note: We don't use <filesystem> support because it is not "header-only" and require linking to libraries.
-    // TODO: Handle non-unix file system paths which don't use '/'.
     const char* home = getenv("HOME");
     if (!home || *home == '\0')
       // Don't expect this to happen;
       home = ".";
     string homeDir(home);
-    if (homeDir[homeDir.size() - 1] == '/')
-      // Strip the ending '/'.
+    if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
+      // Strip the ending path separator.
       homeDir.erase(homeDir.size() - 1);
 
     string identityDir = homeDir + '/' + ".ndn";
