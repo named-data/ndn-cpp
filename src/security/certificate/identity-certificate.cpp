@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/certificate/identity-certificate.hpp>
 
@@ -99,21 +100,39 @@ IdentityCertificate::isIdentityCertificate(const Certificate& certificate)
 Name
 IdentityCertificate::certificateNameToPublicKeyName(const Name& certificateName)
 {
-  int i = certificateName.size() - 1;
   string idString("ID-CERT");
-  for (; i >= 0; i--) {
-    if (certificateName.get(i).toEscapedString() == idString)
+  bool foundIdString = false;
+  size_t idCertComponentIndex = certificateName.size() - 1;
+  for (; idCertComponentIndex + 1 > 0; --idCertComponentIndex) {
+    if (certificateName.get(idCertComponentIndex).toEscapedString() == idString) {
+      foundIdString = true;
       break;
+    }
   }
 
-  Name tmpName = certificateName.getSubName(0, i);
+  if (!foundIdString)
+    throw runtime_error
+      ("Incorrect identity certificate name " + certificateName.toUri());
+
+  Name tempName = certificateName.getSubName(0, idCertComponentIndex);
   string keyString("KEY");
-  for (i = 0; i < tmpName.size(); i++) {
-    if (tmpName.get(i).toEscapedString() == keyString)
+  bool foundKeyString = false;
+  size_t keyComponentIndex = 0;
+  for (; keyComponentIndex < tempName.size(); keyComponentIndex++) {
+    if (tempName.get(keyComponentIndex).toEscapedString() == keyString) {
+      foundKeyString = true;
       break;
+    }
   }
 
-  return tmpName.getSubName(0, i).append(tmpName.getSubName(i + 1, tmpName.size() - i - 1));
+  if (!foundKeyString)
+    throw runtime_error
+      ("Incorrect identity certificate name " + certificateName.toUri());
+
+  return tempName
+    .getSubName(0, keyComponentIndex)
+    .append(tempName.getSubName
+            (keyComponentIndex + 1, tempName.size() - keyComponentIndex - 1));
 }
 
 void
