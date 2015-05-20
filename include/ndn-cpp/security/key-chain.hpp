@@ -71,16 +71,39 @@ public:
    *****************************************/
 
   /**
-   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this identity and a self-signed certificate of the KSK.
+   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
+   * identity and a self-signed certificate of the KSK.
+   * @param identityName The name of the identity.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use DEFAULT_KEY_PARAMS.
+   * @return The name of the certificate for the auto-generated KSK of the
+   * identity.
+   */
+  Name
+  createIdentityAndCertificate
+    (const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
+  {
+    return identityManager_->createIdentityAndCertificate(identityName, params);
+  }
+
+  /**
+   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
+   * identity and a self-signed certificate of the KSK.
+   * @deprecated Use createIdentityAndCertificate which returns the
+   * certificate name instead of the key name. You can use
+   * IdentityCertificate.certificateNameToPublicKeyName to convert the
+   * certificate name to the key name.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use DEFAULT_KEY_PARAMS.
    * @return The key name of the auto-generated KSK of the identity.
    */
   Name
-  createIdentity(const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
+  DEPRECATED_IN_NDN_CPP createIdentity
+    (const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
   {
-    return identityManager_->createIdentity(identityName, params);
+    return IdentityCertificate::certificateNameToPublicKeyName
+      (createIdentityAndCertificate(identityName, params));
   }
 
   /**

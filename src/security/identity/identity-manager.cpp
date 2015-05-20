@@ -117,7 +117,8 @@ IdentityManager::IdentityManager()
 #endif
 
 Name
-IdentityManager::createIdentity(const Name& identityName, const KeyParams& params)
+IdentityManager::createIdentityAndCertificate
+  (const Name& identityName, const KeyParams& params)
 {
   if (!identityStorage_->doesIdentityExist(identityName)) {
     identityStorage_->addIdentity(identityName);
@@ -126,7 +127,7 @@ IdentityManager::createIdentity(const Name& identityName, const KeyParams& param
     ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
     addCertificateAsDefault(*selfCert);
 
-    return keyName;
+    return selfCert->getName();
   }
   else
     throw SecurityException("Identity has already been created!");

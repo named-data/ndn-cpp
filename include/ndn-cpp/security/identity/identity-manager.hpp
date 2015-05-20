@@ -63,13 +63,34 @@ public:
   IdentityManager();
 
   /**
-   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this identity and a self-signed certificate of the KSK.
+   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
+   * identity and a self-signed certificate of the KSK.
+   * @param identityName The name of the identity.
+   * @param params The key parameters if a key needs to be generated for the identity.
+   * @return The name of the certificate for the auto-generated KSK of the
+   * identity.
+   */
+  Name
+  createIdentityAndCertificate(const Name& identityName, const KeyParams& params);
+
+  /**
+   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
+   * identity and a self-signed certificate of the KSK.
+   * @deprecated Use createIdentityAndCertificate which returns the
+   * certificate name instead of the key name. You can use
+   * IdentityCertificate.certificateNameToPublicKeyName to convert the
+   * certificate name to the key name.
    * @param identityName The name of the identity.
    * @param params The key parameters if a key needs to be generated for the identity.
    * @return The key name of the auto-generated KSK of the identity.
    */
   Name
-  createIdentity(const Name& identityName, const KeyParams& params);
+  DEPRECATED_IN_NDN_CPP createIdentity
+    (const Name& identityName, const KeyParams& params)
+  {
+    return IdentityCertificate::certificateNameToPublicKeyName
+      (createIdentityAndCertificate(identityName, params));
+  }
 
   /**
    * Delete the identity from the public and private key storage. If the
