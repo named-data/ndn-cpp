@@ -322,7 +322,7 @@ TEST_F(TestConfigPolicyManager, NoVerify)
   Name identityName = Name("TestValidator/Null").appendVersion(getNowSeconds());
 
   KeyChain keyChain(identityManager_, policyManager);
-  keyChain.createIdentity(identityName);
+  keyChain.createIdentityAndCertificate(identityName);
   ptr_lib::shared_ptr<Data> data(new Data(Name(identityName).append("data")));
   keyChain.signByIdentity(*data, identityName);
 
@@ -344,7 +344,7 @@ TEST_F(TestConfigPolicyManager, SelfVerification)
   KeyChain keyChain(identityManager_, policyManager);
 
   Name identityName  = Name("TestValidator/RsaSignatureVerification");
-  keyChain.createIdentity(identityName);
+  keyChain.createIdentityAndCertificate(identityName);
 
   ptr_lib::shared_ptr<Data> data(new Data(Name("/TestData/1")));
   keyChain.signByIdentity(*data, identityName);

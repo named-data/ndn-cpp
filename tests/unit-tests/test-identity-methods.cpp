@@ -139,14 +139,14 @@ TEST_F(TestSqlIdentityStorage, IdentityCreateDelete)
   Name identityName = Name("/TestIdentityStorage/Identity").appendVersion
     (getNowSeconds());
 
-  Name keyName = keyChain->createIdentity(identityName);
+  Name certificateName = keyChain->createIdentityAndCertificate(identityName);
+  Name keyName = IdentityCertificate::certificateNameToPublicKeyName
+    (certificateName);
 
   ASSERT_TRUE(identityStorage->doesIdentityExist(identityName)) <<
       "Identity was not added to IdentityStorage";
   ASSERT_TRUE(identityStorage->doesKeyExist(keyName)) <<
       "Key was not added to IdentityStorage";
-  Name certificateName = identityManager->getDefaultCertificateNameForIdentity
-    (identityName);
   
   keyChain->deleteIdentity(identityName);
   ASSERT_FALSE(identityStorage->doesIdentityExist(identityName)) <<
@@ -235,7 +235,8 @@ TEST_F(TestSqlIdentityStorage, CertificateAddDelete)
   Name identityName = Name("/TestIdentityStorage/Identity").appendVersion
     ((uint64_t)getNowSeconds());
 
-  identityManager->createIdentity(identityName, KeyChain::DEFAULT_KEY_PARAMS);
+  identityManager->createIdentityAndCertificate
+    (identityName, KeyChain::DEFAULT_KEY_PARAMS);
   Name keyName1 = identityManager->getDefaultKeyNameForIdentity(identityName);
   ptr_lib::shared_ptr<IdentityCertificate> cert2 =
     identityManager->selfSign(keyName1);
@@ -261,8 +262,8 @@ TEST_F(TestSqlIdentityStorage, Stress)
 
   // ndn-cxx returns the cert name, but the IndentityManager docstring
   // specifies a key.
-  Name keyName1 = keyChain->createIdentity(identityName);
-  Name certName1 = identityStorage->getDefaultCertificateNameForKey(keyName1);
+  Name certName1 = keyChain->createIdentityAndCertificate(identityName);
+  Name keyName1 = IdentityCertificate::certificateNameToPublicKeyName(certName1);
   Name keyName2 = keyChain->generateRSAKeyPairAsDefault(identityName);
 
   ptr_lib::shared_ptr<IdentityCertificate> cert2 =
