@@ -41,6 +41,7 @@
 INIT_LOGGER("ndn.Node");
 
 using namespace std;
+using namespace ndn::func_lib;
 
 namespace ndn {
 
@@ -204,8 +205,16 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
     transport_->connect(*connectionInfo_, *this);
 
   uint64_t pendingInterestId = PendingInterest::getNextPendingInterestId();
-  pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>(new PendingInterest
-    (pendingInterestId, ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData, onTimeout)));
+  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
+    (pendingInterestId,
+     ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData,
+     onTimeout));
+  pendingInterestTable_.push_back(pendingInterest);
+  if (interest.getInterestLifetimeMilliseconds() >= 0.0)
+    // Set up the timeout.
+    callLater
+      (interest.getInterestLifetimeMilliseconds(),
+       bind(&Node::processInterestTimeout, this, pendingInterest));
 
   // Special case: For timeoutPrefix_ we don't actually send the interest.
   if (!timeoutPrefix_.match(interest.getName())) {
@@ -228,6 +237,9 @@ Node::removePendingInterest(uint64_t pendingInterestId)
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
     if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId) {
       ++count;
+      // For efficiency, mark this as removed so that processInterestTimeout
+      // doesn't look for it.
+      pendingInterestTable_[i]->setIsRemoved();
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
@@ -593,20 +605,6 @@ Node::processEvents()
 {
   transport_->processEvents();
 
-  // Check for PIT entry timeouts.  Go backwards through the list so we can erase entries.
-  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
-      // Save the PendingInterest and remove it from the PIT.  Then call the callback.
-      ptr_lib::shared_ptr<PendingInterest> pendingInterest = pendingInterestTable_[i];
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-      pendingInterest->callTimeout();
-
-      // Refresh now since the timeout callback might have delayed.
-      nowMilliseconds = ndn_getNowMilliseconds();
-    }
-  }
-
   // Check for delayed calls. Since callLater does a sorted insert into
   // delayedCallTable_, the check for timeouts is quick and does not require
   // searching the entire table. If callLater is overridden to use a different
@@ -681,6 +679,30 @@ Node::shutdown()
 }
 
 void
+Node::processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest)
+{
+  if (pendingInterest->getIsRemoved())
+    // extractEntriesForExpressedInterest or removePendingInterest has removed 
+    // pendingInterest from pendingInterestTable_, so we don't need to look for
+    // it. Do nothing.
+    return;
+
+  // Find the entry.
+  for (vector<ptr_lib::shared_ptr<PendingInterest> >::iterator entry =
+         pendingInterestTable_.begin();
+       entry != pendingInterestTable_.end();
+       ++entry) {
+    if (entry->get() == pendingInterest.get()) {
+      pendingInterestTable_.erase(entry);
+      pendingInterest->callTimeout();
+      return;
+    }
+  }
+
+  // The pending interest has been removed. Do nothing.
+}
+
+void
 Node::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
@@ -688,6 +710,9 @@ Node::extractEntriesForExpressedInterest
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
     if (pendingInterestTable_[i]->getInterest()->matchesName(name)) {
       entries.push_back(pendingInterestTable_[i]);
+      // We let the callback from callLater call _processInterestTimeout, but
+      // for efficiency, mark this as removed so that it returns right away.
+      pendingInterestTable_[i]->setIsRemoved();
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
@@ -716,12 +741,6 @@ Node::PendingInterest::PendingInterest
   (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
 : pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout)
 {
-  // Set up timeoutTime_.
-  if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
-    timeoutTimeMilliseconds_ = ndn_getNowMilliseconds() + interest_->getInterestLifetimeMilliseconds();
-  else
-    // No timeout.
-    timeoutTimeMilliseconds_ = -1.0;
 }
 
 void

@@ -297,7 +297,7 @@ private:
   class PendingInterest {
   public:
     /**
-     * Create a new PendingInterest and set the timeoutTime_ based on the current time and the interest lifetime.
+     * Create a new PendingInterest.
      * @param pendingInterestId A unique ID for this entry, which you should get with getNextPendingInteresId().
      * @param interest A shared_ptr for the interest.
      * @param onData A function object to call when a matching data packet is received.
@@ -329,15 +329,17 @@ private:
     getOnData() { return onData_; }
 
     /**
-     * Check if this interest is timed out.
-     * @param nowMilliseconds The current time in milliseconds from ndn_getNowMilliseconds.
-     * @return true if this interest timed out, otherwise false.
+     * Set the isRemoved flag which is returned by getIsRemoved().
+     */
+    void
+    setIsRemoved() { isRemoved_ = true; }
+
+    /**
+     * Check if setIsRemoved() was called.
+     * @return True if setIsRemoved() was called.
      */
     bool
-    isTimedOut(MillisecondsSince1970 nowMilliseconds)
-    {
-      return timeoutTimeMilliseconds_ >= 0.0 && nowMilliseconds >= timeoutTimeMilliseconds_;
-    }
+    getIsRemoved() { return isRemoved_; }
 
     /**
      * Call onTimeout_ (if defined).  This ignores exceptions from the onTimeout_.
@@ -351,7 +353,7 @@ private:
     uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
     const OnData onData_;
     const OnTimeout onTimeout_;
-    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the interest times out in milliseconds according to ndn_getNowMilliseconds, or -1 for no timeout. */
+    bool isRemoved_;
   };
 
   /**
@@ -619,6 +621,15 @@ private:
   private:
     ptr_lib::shared_ptr<Info> info_;
   };
+
+  /**
+   * This is used in callLater for when the pending interest expires. If the
+   * pendingInterest is still in the pendingInterestTable_, remove it and call
+   * its onTimeout callback.
+   * @param pendingInterest The pending interest to check.
+   */
+  void
+  processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest);
 
   /**
    * Find all entries from pendingInterestTable_ where the name conforms to the
