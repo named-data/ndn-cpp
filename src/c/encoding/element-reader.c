@@ -41,7 +41,7 @@ ndn_Error ndn_ElementReader_onReceivedData
       //   conflict with the first byte of a binary XML packet, so we can
       //   just look at the first byte.
       if (data[0] == ndn_Tlv_Interest || data[0] == ndn_Tlv_Data ||
-          data[0] == 80)
+          data[0] == 80 || data[0] == 100)
         self->useTlv = 1;
       else
         // Binary XML.
