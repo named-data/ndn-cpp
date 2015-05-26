@@ -22,6 +22,8 @@
 #ifndef NDN_NODE_HPP
 #define NDN_NODE_HPP
 
+#include <map>
+#include <deque>
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
@@ -231,7 +233,67 @@ public:
   static size_t
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
+  /**
+   * Node::Callback is used in callLater.
+   */
+  typedef func_lib::function<void()> Callback;
+
+  /**
+   * Call callback() after the given delay. This adds to delayedCallTable_ which 
+   * is used by processEvents().
+   * @param delayMilliseconds The delay in milliseconds.
+   * @param callback This calls callback() after the delay.
+   */
+  void
+  callLater(Milliseconds delayMilliseconds, const Callback& callback);
+
 private:
+  /**
+   * DelayedCall is a class for the members of the delayedCallTable_.
+   */
+  class DelayedCall {
+  public:
+    /**
+     * Create a new DelayedCall and set the call time based on the current time
+     * and the delayMilliseconds.
+     * @param delayMilliseconds The delay in milliseconds.
+     * @param callback This calls callback() after the delay.
+     */
+    DelayedCall(Milliseconds delayMilliseconds, const Callback& callback);
+
+    /**
+     * Get the time at which the callback should be called.
+     * @return The call time in milliseconds, similar to ndn_getNowMilliseconds.
+     */
+    MillisecondsSince1970
+    getCallTime() const { return callTime_; }
+
+    /**
+     * Call the callback given to the constructor. This does not catch
+     * exceptions.
+     */
+    void
+    callCallback() const { callback_(); }
+
+    /**
+     * Compare shared_ptrs to DelayedCall based only on callTime_.
+     */
+    class Compare {
+    public:
+      bool
+      operator()
+        (const ptr_lib::shared_ptr<const DelayedCall>& x,
+         const ptr_lib::shared_ptr<const DelayedCall>& y) const
+      {
+        return x->callTime_ < y->callTime_;
+      }
+    };
+
+  private:
+    const Callback callback_;
+    MillisecondsSince1970 callTime_;
+  };
+
   class PendingInterest {
   public:
     /**
@@ -616,6 +678,9 @@ private:
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
+  // Use a deque so we can efficiently remove from the front.
+  std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
+  DelayedCall::Compare delayedCallCompare_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
