@@ -56,12 +56,16 @@ public:
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
+   * @param face The face which has the callLater method, used for interest
+   * timeouts. The callLater method may be overridden in a subclass of Face.
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
   uint64_t
-  expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat);
+  expressInterest
+    (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
+     WireFormat& wireFormat, Face* face);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the pending interest table.
@@ -234,18 +238,13 @@ public:
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
   /**
-   * Node::Callback is used in callLater.
-   */
-  typedef func_lib::function<void()> Callback;
-
-  /**
    * Call callback() after the given delay. This adds to delayedCallTable_ which 
    * is used by processEvents().
    * @param delayMilliseconds The delay in milliseconds.
    * @param callback This calls callback() after the delay.
    */
   void
-  callLater(Milliseconds delayMilliseconds, const Callback& callback);
+  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
 
 private:
   /**
@@ -259,7 +258,7 @@ private:
      * @param delayMilliseconds The delay in milliseconds.
      * @param callback This calls callback() after the delay.
      */
-    DelayedCall(Milliseconds delayMilliseconds, const Callback& callback);
+    DelayedCall(Milliseconds delayMilliseconds, const Face::Callback& callback);
 
     /**
      * Get the time at which the callback should be called.
@@ -290,7 +289,7 @@ private:
     };
 
   private:
-    const Callback callback_;
+    const Face::Callback callback_;
     MillisecondsSince1970 callTime_;
   };
 

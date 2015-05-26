@@ -96,7 +96,7 @@ uint64_t
 Face::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
-  return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+  return node_->expressInterest(interest, onData, onTimeout, wireFormat, this);
 }
 
 uint64_t
@@ -108,10 +108,11 @@ Face::expressInterest
     // Copy the interestTemplate.
     Interest interest(*interestTemplate);
     interest.setName(name);
-    return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+    return node_->expressInterest(interest, onData, onTimeout, wireFormat, this);
   }
   else
-    return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);
+    return node_->expressInterest
+      (Interest(name, 4000.0), onData, onTimeout, wireFormat, this);
 }
 
 void
@@ -219,6 +220,12 @@ void
 Face::shutdown()
 {
   node_->shutdown();
+}
+
+void
+Face::callLater(Milliseconds delayMilliseconds, const Callback& callback)
+{
+  node_->callLater(delayMilliseconds, callback);
 }
 
 }

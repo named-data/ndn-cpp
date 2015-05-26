@@ -198,7 +198,9 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 }
 
 uint64_t
-Node::expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
+Node::expressInterest
+  (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
+   WireFormat& wireFormat, Face* face)
 {
   // TODO: Properly check if we are already connected to the expected host.
   if (!transport_->getIsConnected())
@@ -212,7 +214,7 @@ Node::expressInterest(const Interest& interest, const OnData& onData, const OnTi
   pendingInterestTable_.push_back(pendingInterest);
   if (interest.getInterestLifetimeMilliseconds() >= 0.0)
     // Set up the timeout.
-    callLater
+    face->callLater
       (interest.getInterestLifetimeMilliseconds(),
        bind(&Node::processInterestTimeout, this, pendingInterest));
 
@@ -273,7 +275,7 @@ Node::registerPrefix
            flags, wireFormat, face)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-      expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
+      expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat, face);
     }
     else
       registerPrefixHelper
@@ -462,7 +464,7 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
       info_->node_.expressInterest
         (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher,
-         info_->wireFormat_);
+         info_->wireFormat_, info_->face_);
     }
     else
       // Pass 0 for registeredPrefixId since the entry was already added to
@@ -541,7 +543,7 @@ Node::registerPrefixHelper
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(interest, response, response, wireFormat);
+  expressInterest(interest, response, response, wireFormat, face);
 }
 
 void
@@ -597,7 +599,7 @@ Node::nfdRegisterPrefix
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(commandInterest, response, response, wireFormat);
+  expressInterest(commandInterest, response, response, wireFormat, face);
 }
 
 void
@@ -719,7 +721,7 @@ Node::extractEntriesForExpressedInterest
 }
 
 void
-Node::callLater(Milliseconds delayMilliseconds, const Callback& callback)
+Node::callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
 {
   ptr_lib::shared_ptr<DelayedCall> delayedCall
     (new DelayedCall(delayMilliseconds, callback));
@@ -731,7 +733,7 @@ Node::callLater(Milliseconds delayMilliseconds, const Callback& callback)
 }
 
 Node::DelayedCall::DelayedCall
-  (Milliseconds delayMilliseconds, const Callback& callback)
+  (Milliseconds delayMilliseconds, const Face::Callback& callback)
   : callback_(callback),
     callTime_(ndn_getNowMilliseconds() + delayMilliseconds)
 {

@@ -378,6 +378,21 @@ public:
   static size_t
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
+  /**
+   * Face::Callback is used internally in callLater.
+   */
+  typedef func_lib::function<void()> Callback;
+
+  /**
+   * Call callback() after the given delay. Even though this is public,
+   * it is not part of the public API of Face. This default implementation just
+   * calls Node::callLater, but a subclass can override.
+   * @param delayMilliseconds The delay in milliseconds.
+   * @param callback This calls callback.callback() after the delay.
+   */
+  virtual void
+  callLater(Milliseconds delayMilliseconds, const Callback& callback);
+
 private:
   /**
    * Call callerOnInterest with the values and node_->getTransport().
