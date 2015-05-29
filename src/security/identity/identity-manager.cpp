@@ -120,17 +120,38 @@ Name
 IdentityManager::createIdentityAndCertificate
   (const Name& identityName, const KeyParams& params)
 {
-  if (!identityStorage_->doesIdentityExist(identityName)) {
-    identityStorage_->addIdentity(identityName);
-    Name keyName = generateKeyPair(identityName, true, params);
-    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
-    ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
-    addCertificateAsDefault(*selfCert);
+  identityStorage_->addIdentity(identityName);
 
-    return selfCert->getName();
+  Name keyName;
+  bool generateKey = true;
+  try {
+    keyName = identityStorage_->getDefaultKeyNameForIdentity(identityName);
+    PublicKey key(identityStorage_->getKey(keyName));
+    if (key.getKeyType() == params.getKeyType())
+      // The key exists and has the same type, so don't need to generate one.
+      generateKey = false;
+  } catch (const SecurityException& ex) {}
+
+  if (generateKey) {
+    keyName = generateKeyPair(identityName, true, params);
+    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
   }
-  else
-    throw SecurityException("Identity has already been created!");
+
+  Name certName;
+  bool makeCert = true;
+  try {
+    certName = identityStorage_->getDefaultCertificateNameForKey(keyName);
+    // The cert exists, so don't need to make it.
+    makeCert = false;
+  } catch (const SecurityException& ex) {}
+
+  if (makeCert) {
+    ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
+    addCertificateAsIdentityDefault(*selfCert);
+    certName = selfCert->getName();
+  }
+
+  return certName;
 }
 
 void

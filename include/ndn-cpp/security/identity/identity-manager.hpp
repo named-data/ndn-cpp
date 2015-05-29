@@ -64,11 +64,11 @@ public:
 
   /**
    * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
-   * identity and a self-signed certificate of the KSK.
+   * identity and a self-signed certificate of the KSK. If a key pair or
+   * certificate for the identity already exists, use it.
    * @param identityName The name of the identity.
    * @param params The key parameters if a key needs to be generated for the identity.
-   * @return The name of the certificate for the auto-generated KSK of the
-   * identity.
+   * @return The name of the default certificate of the identity.
    */
   Name
   createIdentityAndCertificate(const Name& identityName, const KeyParams& params);
