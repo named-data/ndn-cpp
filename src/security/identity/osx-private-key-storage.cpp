@@ -361,22 +361,21 @@ namespace ndn
                                                      kCFStringEncodingUTF8);
 
     CFReleaser<CFMutableDictionaryRef> attrDict = CFDictionaryCreateMutable(NULL,
-                                                                3,
+                                                                4,
                                                                 &kCFTypeDictionaryKeyCallBacks,
                                                                 NULL);
 
-    CFDictionaryAddValue(attrDict.get(), kSecAttrKeyClass, getKeyClass(keyClass));
+    CFDictionaryAddValue(attrDict.get(), kSecClass, kSecClassKey);
     CFDictionaryAddValue(attrDict.get(), kSecAttrLabel, keyLabel.get());
     CFDictionaryAddValue(attrDict.get(), kSecReturnRef, kCFBooleanTrue);
 
     CFReleaser<SecKeychainItemRef> itemRef;
     OSStatus res = SecItemCopyMatching((CFDictionaryRef)attrDict.get(), (CFTypeRef*)&itemRef.get());
 
-    if(res == errSecItemNotFound)
+    if (res == errSecSuccess)
       return true;
     else
       return false;
-
   }
 
   CFReleaser<SecKeychainItemRef> OSXPrivateKeyStorage::getKey(const Name & keyName, KeyClass keyClass)
