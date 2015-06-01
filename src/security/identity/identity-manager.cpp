@@ -250,13 +250,9 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
   Name keyName = getKeyNameFromCertificatePrefix(certificatePrefix);
 
-  Name certificateName = certificatePrefix;
-  MillisecondsSince1970 ti = ::ndn_getNowMilliseconds();
-  // Get the number of seconds.
-  ostringstream oss;
-  oss << floor(ti / 1000.0);
-
-  certificateName.append("ID-CERT").append(oss.str());
+  Name certificateName(certificatePrefix);
+  certificateName.append("ID-CERT")
+    .appendVersion((uint64_t)ndn_getNowMilliseconds());
 
   certificate->setName(certificateName);
   certificate->setNotBefore(notBefore);
@@ -281,7 +277,8 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   ptr_lib::shared_ptr<IdentityCertificate> signerCertificate = getCertificate(signerCertificateName);
   Name signerkeyName = signerCertificate->getPublicKeyName();
 
-  Blob sigBits = privateKeyStorage_->sign(unsignedData, signerkeyName);
+  Blob sigBits = privateKeyStorage_->sign
+    (unsignedData.signedBuf(), unsignedData.signedSize(), signerkeyName);
 
   sha256Sig->setSignature(sigBits);
 
