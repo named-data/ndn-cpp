@@ -53,9 +53,9 @@ IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
   string keyIdStr;
 
   if (useKsk)
-    keyIdStr = ("KSK-" + oss.str());
+    keyIdStr = ("ksk-" + oss.str());
   else
-    keyIdStr = ("DSK-" + oss.str());
+    keyIdStr = ("dsk-" + oss.str());
 
   Name keyName = Name(identityName).append(keyIdStr);
 
