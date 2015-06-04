@@ -91,6 +91,59 @@ public:
     return IdentityCertificate::certificateNameToPublicKeyName
       (createIdentityAndCertificate(identityName, params));
   }
+  
+  /**
+   * Use the keyName to get the public key from the identity storage and
+   * prepare an unsigned identity certificate.
+   * @param keyName The key name, e.g., `/<identity_name>/ksk-123456`.
+   * @param signingIdentity The signing identity.
+   * @param notBefore See IdentityCertificate.
+   * @param notAfter See IdentityCertificate.
+   * @param subjectDescription A list of CertificateSubjectDescription. See
+   * IdentityCertificate. If empty, this adds a an ATTRIBUTE_NAME based on the
+   * keyName.
+   * @param certPrefix (optional) The prefix before the `KEY` component. If 0, this
+   * infers the certificate name according to the relation between the
+   * signingIdentity and the subject identity. If the signingIdentity is a
+   * prefix of the subject identity, `KEY` will be inserted after the
+   * signingIdentity, otherwise `KEY` is inserted after subject identity (i.e.,
+   * before `ksk-...`).
+   * @return The unsigned IdentityCertificate, or a null shared_ptr if the
+   * inputs are invalid.
+   */
+  ptr_lib::shared_ptr<IdentityCertificate>
+  prepareUnsignedIdentityCertificate
+    (const Name& keyName, const Name& signingIdentity, 
+     MillisecondsSince1970 notBefore, MillisecondsSince1970 notAfter,
+     std::vector<CertificateSubjectDescription>& subjectDescription,
+     const Name* certPrefix = 0);
+
+  /**
+   * Prepare an unsigned identity certificate.
+   * @param keyName The key name, e.g., `/<identity_name>/ksk-123456`.
+   * @param publicKey The public key to sign.
+   * @param signingIdentity The signing identity.
+   * @param notBefore See IdentityCertificate.
+   * @param notAfter See IdentityCertificate.
+   * @param subjectDescription A list of CertificateSubjectDescription. See
+   * IdentityCertificate. If empty, this adds a an ATTRIBUTE_NAME based on the
+   * keyName.
+   * @param certPrefix (optional) The prefix before the `KEY` component. If 0, this
+   * infers the certificate name according to the relation between the
+   * signingIdentity and the subject identity. If the signingIdentity is a
+   * prefix of the subject identity, `KEY` will be inserted after the
+   * signingIdentity, otherwise `KEY` is inserted after subject identity (i.e.,
+   * before `ksk-...`).
+   * @return The unsigned IdentityCertificate, or a null shared_ptr if the
+   * inputs are invalid.
+   */
+  ptr_lib::shared_ptr<IdentityCertificate>
+  prepareUnsignedIdentityCertificate
+    (const Name& keyName, const PublicKey& publicKey,
+     const Name& signingIdentity, MillisecondsSince1970 notBefore,
+     MillisecondsSince1970 notAfter, 
+     std::vector<CertificateSubjectDescription>& subjectDescription,
+     const Name* certPrefix = 0);
 
   /**
    * Delete the identity from the public and private key storage. If the

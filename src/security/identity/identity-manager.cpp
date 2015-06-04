@@ -285,6 +285,89 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   return certificate;
 }
 
+ptr_lib::shared_ptr<IdentityCertificate>
+IdentityManager::prepareUnsignedIdentityCertificate
+  (const Name& keyName, const Name& signingIdentity,
+   MillisecondsSince1970 notBefore, MillisecondsSince1970 notAfter,
+   vector<CertificateSubjectDescription>& subjectDescription,
+   const Name* certPrefix)
+{
+  PublicKey publicKey;
+  try {
+    publicKey = PublicKey(identityStorage_->getKey(keyName));
+  }
+  catch (const SecurityException& e) {
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+  }
+
+  return prepareUnsignedIdentityCertificate
+    (keyName, publicKey, signingIdentity, notBefore, notAfter,
+     subjectDescription, certPrefix);
+}
+
+ptr_lib::shared_ptr<IdentityCertificate>
+IdentityManager::prepareUnsignedIdentityCertificate
+  (const Name& keyName, const PublicKey& publicKey,
+   const Name& signingIdentity, MillisecondsSince1970 notBefore,
+   MillisecondsSince1970 notAfter,
+   vector<CertificateSubjectDescription>& subjectDescription,
+   const Name* certPrefix)
+{
+  if (keyName.size() < 1)
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+
+  string keyIdPrefix = keyName.get(-1).toEscapedString().substr(0, 4);
+  if (keyIdPrefix != "ksk-" && keyIdPrefix != "dsk-")
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+  
+  ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
+  Name certName;
+
+  if (!certPrefix) {
+    // No certificate prefix hint, so infer the prefix.
+    if (signingIdentity.match(keyName))
+      certName.append(signingIdentity)
+        .append("KEY")
+        .append(keyName.getSubName(signingIdentity.size()))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+    else
+      certName.append(keyName.getPrefix(-1))
+        .append("KEY")
+        .append(keyName.get(-1))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+  }
+  else {
+    // A cert prefix hint is supplied, so determine the cert name.
+    if (certPrefix->match(keyName) && !certPrefix->equals(keyName))
+      certName.append(*certPrefix)
+        .append("KEY")
+        .append(keyName.getSubName(certPrefix->size()))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+    else
+      return ptr_lib::shared_ptr<IdentityCertificate>();
+  }
+
+  certificate->setName(certName);
+  certificate->setNotBefore(notBefore);
+  certificate->setNotAfter(notAfter);
+  certificate->setPublicKeyInfo(publicKey);
+
+  if (subjectDescription.size() == 0)
+    certificate->addSubjectDescription(CertificateSubjectDescription
+      ("2.5.4.41", keyName.getPrefix(-1).toUri()));
+  else {
+    for (int i = 0; i < subjectDescription.size(); ++i)
+      certificate->addSubjectDescription(subjectDescription[i]);
+  }
+
+  certificate->encode();
+  
+  return certificate;
+}
+
 void
 IdentityManager::addCertificateAsDefault(const IdentityCertificate& certificate)
 {
