@@ -51,7 +51,7 @@ UnixTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
 void
 UnixTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,
-   ElementListener& elementListener)
+   ElementListener& elementListener, const OnConnected& onConnected)
 {
   const UnixTransport::ConnectionInfo& unixConnectionInfo =
     dynamic_cast<const UnixTransport::ConnectionInfo&>(connectionInfo);
@@ -63,6 +63,7 @@ UnixTransport::connect
     throw runtime_error(ndn_getErrorString(error));
 
   isConnected_ = true;
+  onConnected();
 }
 
 void

@@ -197,6 +197,11 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 {
 }
 
+static void dummyOnConnected()
+{
+  // TODO: Implement onConnected. For now, do nothing.
+}
+
 uint64_t
 Node::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
@@ -204,7 +209,7 @@ Node::expressInterest
 {
   // TODO: Properly check if we are already connected to the expected host.
   if (!transport_->getIsConnected())
-    transport_->connect(*connectionInfo_, *this);
+    transport_->connect(*connectionInfo_, *this, &dummyOnConnected);
 
   uint64_t pendingInterestId = PendingInterest::getNextPendingInterestId();
   ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest

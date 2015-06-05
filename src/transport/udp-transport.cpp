@@ -51,7 +51,7 @@ UdpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
 void
 UdpTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,
-   ElementListener& elementListener)
+   ElementListener& elementListener, const OnConnected& onConnected)
 {
   const UdpTransport::ConnectionInfo& udpConnectionInfo =
     dynamic_cast<const UdpTransport::ConnectionInfo&>(connectionInfo);
@@ -63,6 +63,7 @@ UdpTransport::connect
     throw runtime_error(ndn_getErrorString(error));
 
   isConnected_ = true;
+  onConnected();
 }
 
 void

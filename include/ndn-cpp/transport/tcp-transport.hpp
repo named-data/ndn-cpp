@@ -94,10 +94,12 @@ public:
    * @param connectionInfo A reference to a TcpTransport::ConnectionInfo.
    * @param elementListener Not a shared_ptr because we assume that it will
    * remain valid during the life of this object.
+   * @param onConnected This calls onConnected() when the connection is
+   * established.
    */
   virtual void connect
     (const Transport::ConnectionInfo& connectionInfo,
-     ElementListener& elementListener);
+     ElementListener& elementListener, const OnConnected& onConnected);
 
   /**
    * Set data to the host

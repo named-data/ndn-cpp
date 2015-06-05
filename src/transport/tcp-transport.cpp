@@ -67,7 +67,7 @@ TcpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
 void
 TcpTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,
-   ElementListener& elementListener)
+   ElementListener& elementListener, const OnConnected& onConnected)
 {
   const TcpTransport::ConnectionInfo& tcpConnectionInfo =
     dynamic_cast<const TcpTransport::ConnectionInfo&>(connectionInfo);
@@ -79,6 +79,7 @@ TcpTransport::connect
     throw runtime_error(ndn_getErrorString(error));
 
   isConnected_ = true;
+  onConnected();
 }
 
 void

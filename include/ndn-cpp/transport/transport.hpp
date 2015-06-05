@@ -40,6 +40,8 @@ public:
     virtual ~ConnectionInfo();
   };
 
+  typedef func_lib::function<void()> OnConnected;
+
   /**
    * Determine whether this transport connecting according to connectionInfo is
    * to a node on the current machine. This affects the processing of
@@ -59,10 +61,12 @@ public:
    * ConnectionInfo.
    * @param elementListener Not a shared_ptr because we assume that it will
    * remain valid during the life of this object.
+   * @param onConnected This calls onConnected() when the connection is
+   * established.
    */
   virtual void
   connect(const Transport::ConnectionInfo& connectionInfo,
-          ElementListener& elementListener);
+          ElementListener& elementListener, const OnConnected& onConnected);
 
   /**
    * Set data to the host

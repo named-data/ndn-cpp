@@ -39,7 +39,7 @@ Transport::isLocal(const Transport::ConnectionInfo& connectionInfo)
 void
 Transport::connect
   (const Transport::ConnectionInfo& connectionInfo,
-   ElementListener& elementListener)
+   ElementListener& elementListener, const OnConnected& onConnected)
 {
   throw logic_error("unimplemented");
 }
