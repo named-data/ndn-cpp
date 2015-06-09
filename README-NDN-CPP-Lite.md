@@ -41,7 +41,7 @@ name "/ndn/ucla":
 The code cannot allocate new memory to enlarge the name components array, so a
 sufficiently large array is provided to the NameLite constructor. The append
 method is provided a pre-allocated buffer for the component value, in this case
-a static C string. The append method returns an error is there is not enough
+a static C string. The append method returns an error if there is not enough
 room in the nameComponents array to add another entry to point to the new
 component value. (NDN-CPP Lite uses error codes instead of exceptions.)
 
