@@ -145,9 +145,6 @@ static uint8_t SELFREG_PRIVATE_KEY_DER[] = {
   0x3f, 0xb9, 0xfe, 0xbc, 0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-uint64_t Node::PendingInterest::lastPendingInterestId_ = 0;
-uint64_t Node::RegisteredPrefix::lastRegisteredPrefixId_ = 0;
-
 /**
  * Set the KeyLocator using the full SELFREG_PUBLIC_KEY_DER, sign the data packet using SELFREG_PRIVATE_KEY_DER
  * and set the signature.
@@ -193,7 +190,8 @@ selfregSign(Data& data, WireFormat& wireFormat)
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
   ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0),
-  timeoutPrefix_(Name("/local/timeout"))
+  timeoutPrefix_(Name("/local/timeout")),
+  lastEntryId_(0)
 {
 }
 
@@ -211,7 +209,7 @@ Node::expressInterest
   if (!transport_->getIsConnected())
     transport_->connect(*connectionInfo_, *this, &dummyOnConnected);
 
-  uint64_t pendingInterestId = PendingInterest::getNextPendingInterestId();
+  uint64_t pendingInterestId = getNextEntryId();
   ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
     (pendingInterestId,
      ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData,
@@ -263,7 +261,7 @@ Node::registerPrefix
    const Name& commandCertificateName, Face* face)
 {
   // Get the registeredPrefixId now so we can return it to the caller.
-  uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
+  uint64_t registeredPrefixId = getNextEntryId();
 
   // If we have an _ndndId, we know we already connected to NDNx.
   if (ndndId_.size() != 0 || !&commandKeyChain) {
@@ -357,6 +355,13 @@ Node::send(const uint8_t *encoding, size_t encodingLength)
       ("The encoded packet size exceeds the maximum limit getMaxNdnPacketSize()");
 
   transport_->send(encoding, encodingLength);
+}
+
+uint64_t
+Node::getNextEntryId()
+{
+  // This is an atomic_uint64_t, so increment is thread-safe.
+  return ++lastEntryId_;
 }
 
 void

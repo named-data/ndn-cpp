@@ -24,6 +24,7 @@
 
 #include <map>
 #include <deque>
+#include <ndnboost/atomic.hpp>
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
@@ -153,7 +154,7 @@ public:
     (const InterestFilter& filter, const OnInterestCallback& onInterest,
      Face* face)
   {
-    uint64_t interestFilterId = InterestFilterEntry::getNextInterestFilterId();
+    uint64_t interestFilterId = getNextEntryId();
     interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
       (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
        onInterest, face));
@@ -246,6 +247,17 @@ public:
   void
   callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
 
+  /**
+   * Get the next unique entry ID for the pending interest table, interest
+   * filter table, etc. This uses an atomic_uint64_t to be thread safe. Most
+   * entry IDs are for the pending interest table (there usually are not many
+   * interest filter table entries) so we use a common pool to only have to do
+   * the thread safe operation in one method which is called by Face.
+   * @return The next entry ID.
+   */
+  uint64_t
+  getNextEntryId();
+
 private:
   /**
    * DelayedCall is a class for the members of the delayedCallTable_.
@@ -297,7 +309,8 @@ private:
   public:
     /**
      * Create a new PendingInterest.
-     * @param pendingInterestId A unique ID for this entry, which you should get with getNextPendingInteresId().
+     * @param pendingInterestId A unique ID for this entry, which you should get 
+     * with getNextEntryId().
      * @param interest A shared_ptr for the interest.
      * @param onData A function object to call when a matching data packet is received.
      * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
@@ -305,15 +318,6 @@ private:
     PendingInterest
       (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
        const OnTimeout& onTimeout);
-
-    /**
-     * Return the next unique pending interest ID.
-     */
-    static uint64_t
-    getNextPendingInterestId()
-    {
-      return ++lastPendingInterestId_;
-    }
 
     /**
      * Return the pendingInterestId given to the constructor.
@@ -348,7 +352,6 @@ private:
 
   private:
     ptr_lib::shared_ptr<const Interest> interest_;
-    static uint64_t lastPendingInterestId_; /**< A class variable used to get the next unique ID. */
     uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
     const OnData onData_;
     const OnTimeout onTimeout_;
@@ -365,7 +368,8 @@ private:
   public:
     /**
      * Create a new RegisteredPrefix with the given values.
-     * @param registeredPrefixId A unique ID for this entry, which you should get with getNextRegisteredPrefixId().
+     * @param registeredPrefixId A unique ID for this entry, which you should 
+     * get with getNextEntryId().
      * @param prefix A shared_ptr for the prefix.
      * @param relatedInterestFilterId (optional) The related interestFilterId
      * for the filter set in the same registerPrefix operation. If omitted, set
@@ -377,16 +381,6 @@ private:
     : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
       relatedInterestFilterId_(relatedInterestFilterId)
     {
-    }
-
-    /**
-     * Return the next unique entry ID.
-     * @return The next ID.
-     */
-    static uint64_t
-    getNextRegisteredPrefixId()
-    {
-      return ++lastRegisteredPrefixId_;
     }
 
     /**
@@ -411,7 +405,6 @@ private:
     getRelatedInterestFilterId() { return relatedInterestFilterId_; }
 
   private:
-    static uint64_t lastRegisteredPrefixId_; /**< A class variable used to get the next unique ID. */
     uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const Name> prefix_;
     uint64_t relatedInterestFilterId_;
@@ -425,7 +418,7 @@ private:
   public:
     /**
      * Create a new InterestFilterEntry with the given values.
-     * @param interestFilterId The ID from getNextInterestFilterId().
+     * @param interestFilterId The ID from getNextEntryId().
      * @param filter A shared_ptr for the InterestFilter for this entry.
      * @param onInterest A function object to call when a matching data packet
      * is received.
@@ -439,18 +432,6 @@ private:
     : interestFilterId_(interestFilterId), filter_(filter),
       prefix_(new Name(filter->getPrefix())), onInterest_(onInterest), face_(face)
     {
-    }
-
-    /**
-     * Get the next interest filter ID. This just calls
-     * RegisteredPrefix::getNextRegisteredPrefixId() so that IDs come from the
-     * same pool and won't be confused when removing entries from the two tables.
-     * @return The next ID.
-     */
-    static uint64_t
-    getNextInterestFilterId()
-    {
-      return RegisteredPrefix::getNextRegisteredPrefixId();
     }
 
     /**
@@ -530,7 +511,8 @@ private:
       /**
        *
        * @param node
-       * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId() which registerPrefix got so it could return it to the caller.
+       * @param registeredPrefixId The getNextEntryId() which registerPrefix got
+       * so it could return it to the caller.
        * @param prefix
        * @param onInterest
        * @param onRegisterFailed
@@ -645,10 +627,9 @@ private:
 
   /**
    * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
-   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
-   * which registerPrefix got so it could return it to the caller. If this
-   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
-   * been done).
+   * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
+   * it could return it to the caller. If this is 0, then don't add to
+   * registeredPrefixTable_ (assuming it has already been done).
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
@@ -664,10 +645,9 @@ private:
 
   /**
    * Do the work of registerPrefix to register with NFD.
-   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
-   * which registerPrefix got so it could return it to the caller. If this
-   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
-   * been done).
+   * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
+   * it could return it to the caller. If this is 0, then don't add to
+   * registeredPrefixTable_ (assuming it has already been done).
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
@@ -695,6 +675,10 @@ private:
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
+  // lastEntryId_ is used to get the next unique ID. Use atomic_uint64_t to be
+  // thread safe. This is not exposed in the public API or shared with the
+  // application, so use ndnboost. */
+  ndnboost::atomic_uint64_t lastEntryId_;
 };
 
 }
