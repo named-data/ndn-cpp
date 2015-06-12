@@ -108,11 +108,11 @@ Face::expressInterest
     // Copy the interestTemplate.
     Interest interest(*interestTemplate);
     interest.setName(name);
-    return node_->expressInterest(interest, onData, onTimeout, wireFormat, this);
+    return expressInterest(interest, onData, onTimeout, wireFormat);
   }
   else
-    return node_->expressInterest
-      (Interest(name, 4000.0), onData, onTimeout, wireFormat, this);
+    return expressInterest
+      (Interest(name, 4000.0), onData, onTimeout, wireFormat);
 }
 
 void
@@ -182,7 +182,7 @@ Face::setInterestFilter
 uint64_t
 Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
 {
-  return node_->setInterestFilter(InterestFilter(prefix), onInterest, this);
+  return setInterestFilter(InterestFilter(prefix), onInterest);
 }
 
 void
