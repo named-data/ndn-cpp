@@ -51,6 +51,8 @@ public:
 
   /**
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
+   * @param pendingInterestId The getNextEntryId() for the pending interest ID
+   * which Face got so it could return it to the caller.
    * @param interest A reference to the Interest.  This copies the Interest.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
@@ -59,14 +61,13 @@ public:
    * @param wireFormat A WireFormat object used to encode the message.
    * @param face The face which has the callLater method, used for interest
    * timeouts. The callLater method may be overridden in a subclass of Face.
-   * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
-  uint64_t
+  void
   expressInterest
-    (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
-     WireFormat& wireFormat, Face* face);
+    (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
+     const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the pending interest table.
@@ -98,6 +99,8 @@ public:
 
   /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
+   * @param registeredPrefixId The getNextEntryId() for the registered prefix ID
+   * which Face got so it could return it to the caller.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest (optional) If not null, this creates an interest filter
    * from prefix so that when an Interest is received which matches the filter,
@@ -115,11 +118,11 @@ public:
    * @param commandCertificateName The certificate name for signing interests.
    * @param face The face which is passed to the onInterest callback. If
    * onInterest is null, this is ignored.
-   * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
-  uint64_t
+  void
   registerPrefix
-    (const Name& prefix, const OnInterestCallback& onInterest,
+    (uint64_t registeredPrefixId, const Name& prefix,
+     const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
      const Name& commandCertificateName, Face* face);
@@ -141,26 +144,19 @@ public:
    * library's local callback table and does not register the prefix with the
    * forwarder. It will always succeed. To register a prefix with the forwarder,
    * use registerPrefix.
+   * @param interestFilterId The getNextEntryId() for the interest filter ID
+   * which Face got so it could return it to the caller.
    * @param filter The InterestFilter with a prefix and optional regex filter
    * used to match the name of an incoming Interest. This makes a copy of filter.
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * @param face The face which is passed to the onInterest callback.
-   * @return The interest filter ID which can be used with unsetInterestFilter.
    */
-  uint64_t
+  void
   setInterestFilter
-    (const InterestFilter& filter, const OnInterestCallback& onInterest,
-     Face* face)
-  {
-    uint64_t interestFilterId = getNextEntryId();
-    interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
-      (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
-       onInterest, face));
-
-    return interestFilterId;
-  }
+    (uint64_t interestFilterId, const InterestFilter& filter,
+     const OnInterestCallback& onInterest, Face* face);
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the

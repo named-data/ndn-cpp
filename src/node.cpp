@@ -200,16 +200,15 @@ static void dummyOnConnected()
   // TODO: Implement onConnected. For now, do nothing.
 }
 
-uint64_t
+void
 Node::expressInterest
-  (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
-   WireFormat& wireFormat, Face* face)
+  (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
+   const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
   // TODO: Properly check if we are already connected to the expected host.
   if (!transport_->getIsConnected())
     transport_->connect(*connectionInfo_, *this, &dummyOnConnected);
 
-  uint64_t pendingInterestId = getNextEntryId();
   ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
     (pendingInterestId,
      ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData,
@@ -229,8 +228,6 @@ Node::expressInterest
         ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
     transport_->send(*encoding);
   }
-
-  return pendingInterestId;
 }
 
 void
@@ -253,16 +250,14 @@ Node::removePendingInterest(uint64_t pendingInterestId)
     _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
 }
 
-uint64_t
+void
 Node::registerPrefix
-  (const Name& prefix, const OnInterestCallback& onInterest,
+  (uint64_t registeredPrefixId, const Name& prefix,
+   const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
    WireFormat& wireFormat, KeyChain& commandKeyChain,
    const Name& commandCertificateName, Face* face)
 {
-  // Get the registeredPrefixId now so we can return it to the caller.
-  uint64_t registeredPrefixId = getNextEntryId();
-
   // If we have an _ndndId, we know we already connected to NDNx.
   if (ndndId_.size() != 0 || !&commandKeyChain) {
     // Assume we are connected to a legacy NDNx server.
@@ -278,7 +273,9 @@ Node::registerPrefix
            flags, wireFormat, face)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-      expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat, face);
+      expressInterest
+        (getNextEntryId(), ndndIdFetcherInterest_, fetcher, fetcher, wireFormat,
+         face);
     }
     else
       registerPrefixHelper
@@ -291,8 +288,6 @@ Node::registerPrefix
       (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
        onRegisterFailed, flags, commandKeyChain, commandCertificateName,
        wireFormat, face);
-
-  return registeredPrefixId;
 }
 
 void
@@ -317,6 +312,16 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 
   if (count == 0)
     _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
+}
+
+void
+Node::setInterestFilter
+  (uint64_t interestFilterId, const InterestFilter& filter,
+   const OnInterestCallback& onInterest, Face* face)
+{
+  interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
+    (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
+     onInterest, face));
 }
 
 void
@@ -473,8 +478,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
       info_->node_.expressInterest
-        (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher,
-         info_->wireFormat_, info_->face_);
+        (info_->node_.getNextEntryId(), info_->node_.ndndIdFetcherInterest_,
+         fetcher, fetcher, info_->wireFormat_, info_->face_);
     }
     else
       // Pass 0 for registeredPrefixId since the entry was already added to
@@ -536,11 +541,13 @@ Node::registerPrefixHelper
 
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
-    if (onInterest)
+    if (onInterest) {
       // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
-      interestFilterId = setInterestFilter
-        (InterestFilter(*prefix), onInterest, face);
+      interestFilterId = getNextEntryId();
+      setInterestFilter
+        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+    }
 
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>
@@ -553,7 +560,8 @@ Node::registerPrefixHelper
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(interest, response, response, wireFormat, face);
+  expressInterest
+    (getNextEntryId(), interest, response, response, wireFormat, face);
 }
 
 void
@@ -592,11 +600,13 @@ Node::nfdRegisterPrefix
 
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
-    if (onInterest)
+    if (onInterest) {
       // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
-      interestFilterId = setInterestFilter
-        (InterestFilter(*prefix), onInterest, face);
+      interestFilterId = getNextEntryId();
+      setInterestFilter
+        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+    }
 
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
@@ -609,7 +619,8 @@ Node::nfdRegisterPrefix
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(commandInterest, response, response, wireFormat, face);
+  expressInterest
+    (getNextEntryId(), commandInterest, response, response, wireFormat, face);
 }
 
 void

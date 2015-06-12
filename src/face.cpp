@@ -96,7 +96,12 @@ uint64_t
 Face::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
-  return node_->expressInterest(interest, onData, onTimeout, wireFormat, this);
+  uint64_t pendingInterestId = node_->getNextEntryId();
+
+  node_->expressInterest
+    (pendingInterestId, interest, onData, onTimeout, wireFormat, this);
+
+  return pendingInterestId;
 }
 
 uint64_t
@@ -134,9 +139,13 @@ Face::registerPrefix
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
    WireFormat& wireFormat)
 {
-  return node_->registerPrefix
-    (prefix, onInterest, onRegisterFailed, flags, wireFormat, *commandKeyChain_,
-     commandCertificateName_, this);
+  uint64_t registeredPrefixId = node_->getNextEntryId();
+
+  node_->registerPrefix
+    (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat,
+     *commandKeyChain_, commandCertificateName_, this);
+
+  return registeredPrefixId;
 }
 
 uint64_t
@@ -176,7 +185,11 @@ uint64_t
 Face::setInterestFilter
   (const InterestFilter& filter, const OnInterestCallback& onInterest)
 {
-  return node_->setInterestFilter(filter, onInterest, this);
+  uint64_t interestFilterId = node_->getNextEntryId();
+
+  node_->setInterestFilter(interestFilterId, filter, onInterest, this);
+
+  return interestFilterId;
 }
 
 uint64_t
