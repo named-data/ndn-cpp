@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.7 (2015-05-20)
+Interim changes since NDN-CPP v0.7 (2015-06-02)
 -----------------------------------------------
 
 Changes
@@ -9,6 +9,12 @@ Changes
 Deprecated
 * Deprecated KeyChain::createIdentity. Use createIdentityAndCertificate which
   returns the certificate name instead of the key name.
+
+Bug fixes
+* http://redmine.named-data.net/issues/2844 Build error in memory-content-cache.cpp
+  on Ubuntu with log4cxx. (Thanks Junxiao)
+* http://redmine.named-data.net/issues/2846 Self-signed cert name needs a version component.
+* http://redmine.named-data.net/issues/2847 Lower-case "ksk-" in generated key name.
 
 NDN-CPP v0.7 (2015-05-13)
 -------------------------

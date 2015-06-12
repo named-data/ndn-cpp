@@ -120,17 +120,38 @@ Name
 IdentityManager::createIdentityAndCertificate
   (const Name& identityName, const KeyParams& params)
 {
-  if (!identityStorage_->doesIdentityExist(identityName)) {
-    identityStorage_->addIdentity(identityName);
-    Name keyName = generateKeyPair(identityName, true, params);
-    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
-    ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
-    addCertificateAsDefault(*selfCert);
+  identityStorage_->addIdentity(identityName);
 
-    return selfCert->getName();
+  Name keyName;
+  bool generateKey = true;
+  try {
+    keyName = identityStorage_->getDefaultKeyNameForIdentity(identityName);
+    PublicKey key(identityStorage_->getKey(keyName));
+    if (key.getKeyType() == params.getKeyType())
+      // The key exists and has the same type, so don't need to generate one.
+      generateKey = false;
+  } catch (const SecurityException& ex) {}
+
+  if (generateKey) {
+    keyName = generateKeyPair(identityName, true, params);
+    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
   }
-  else
-    throw SecurityException("Identity has already been created!");
+
+  Name certName;
+  bool makeCert = true;
+  try {
+    certName = identityStorage_->getDefaultCertificateNameForKey(keyName);
+    // The cert exists, so don't need to make it.
+    makeCert = false;
+  } catch (const SecurityException& ex) {}
+
+  if (makeCert) {
+    ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
+    addCertificateAsIdentityDefault(*selfCert);
+    certName = selfCert->getName();
+  }
+
+  return certName;
 }
 
 void
@@ -229,13 +250,9 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
   Name keyName = getKeyNameFromCertificatePrefix(certificatePrefix);
 
-  Name certificateName = certificatePrefix;
-  MillisecondsSince1970 ti = ::ndn_getNowMilliseconds();
-  // Get the number of seconds.
-  ostringstream oss;
-  oss << floor(ti / 1000.0);
-
-  certificateName.append("ID-CERT").append(oss.str());
+  Name certificateName(certificatePrefix);
+  certificateName.append("ID-CERT")
+    .appendVersion((uint64_t)ndn_getNowMilliseconds());
 
   certificate->setName(certificateName);
   certificate->setNotBefore(notBefore);
@@ -260,10 +277,94 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   ptr_lib::shared_ptr<IdentityCertificate> signerCertificate = getCertificate(signerCertificateName);
   Name signerkeyName = signerCertificate->getPublicKeyName();
 
-  Blob sigBits = privateKeyStorage_->sign(unsignedData, signerkeyName);
+  Blob sigBits = privateKeyStorage_->sign
+    (unsignedData.signedBuf(), unsignedData.signedSize(), signerkeyName);
 
   sha256Sig->setSignature(sigBits);
 
+  return certificate;
+}
+
+ptr_lib::shared_ptr<IdentityCertificate>
+IdentityManager::prepareUnsignedIdentityCertificate
+  (const Name& keyName, const Name& signingIdentity,
+   MillisecondsSince1970 notBefore, MillisecondsSince1970 notAfter,
+   vector<CertificateSubjectDescription>& subjectDescription,
+   const Name* certPrefix)
+{
+  PublicKey publicKey;
+  try {
+    publicKey = PublicKey(identityStorage_->getKey(keyName));
+  }
+  catch (const SecurityException& e) {
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+  }
+
+  return prepareUnsignedIdentityCertificate
+    (keyName, publicKey, signingIdentity, notBefore, notAfter,
+     subjectDescription, certPrefix);
+}
+
+ptr_lib::shared_ptr<IdentityCertificate>
+IdentityManager::prepareUnsignedIdentityCertificate
+  (const Name& keyName, const PublicKey& publicKey,
+   const Name& signingIdentity, MillisecondsSince1970 notBefore,
+   MillisecondsSince1970 notAfter,
+   vector<CertificateSubjectDescription>& subjectDescription,
+   const Name* certPrefix)
+{
+  if (keyName.size() < 1)
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+
+  string keyIdPrefix = keyName.get(-1).toEscapedString().substr(0, 4);
+  if (keyIdPrefix != "ksk-" && keyIdPrefix != "dsk-")
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+  
+  ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
+  Name certName;
+
+  if (!certPrefix) {
+    // No certificate prefix hint, so infer the prefix.
+    if (signingIdentity.match(keyName))
+      certName.append(signingIdentity)
+        .append("KEY")
+        .append(keyName.getSubName(signingIdentity.size()))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+    else
+      certName.append(keyName.getPrefix(-1))
+        .append("KEY")
+        .append(keyName.get(-1))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+  }
+  else {
+    // A cert prefix hint is supplied, so determine the cert name.
+    if (certPrefix->match(keyName) && !certPrefix->equals(keyName))
+      certName.append(*certPrefix)
+        .append("KEY")
+        .append(keyName.getSubName(certPrefix->size()))
+        .append("ID-CERT")
+        .appendVersion((uint64_t)ndn_getNowMilliseconds());
+    else
+      return ptr_lib::shared_ptr<IdentityCertificate>();
+  }
+
+  certificate->setName(certName);
+  certificate->setNotBefore(notBefore);
+  certificate->setNotAfter(notAfter);
+  certificate->setPublicKeyInfo(publicKey);
+
+  if (subjectDescription.size() == 0)
+    certificate->addSubjectDescription(CertificateSubjectDescription
+      ("2.5.4.41", keyName.getPrefix(-1).toUri()));
+  else {
+    for (int i = 0; i < subjectDescription.size(); ++i)
+      certificate->addSubjectDescription(subjectDescription[i]);
+  }
+
+  certificate->encode();
+  
   return certificate;
 }
 
@@ -427,8 +528,8 @@ IdentityManager::selfSign(const Name& keyName)
 #endif
 
   Name certificateName = keyName.getPrefix(-1).append("KEY").append
-    (keyName.get(-1)).append("ID-CERT").append
-    (Name::Component::fromNumber((uint64_t)ndn_getNowMilliseconds()));
+    (keyName.get(-1)).append("ID-CERT").appendVersion
+    ((uint64_t)ndn_getNowMilliseconds());
   certificate->setName(certificateName);
 
   certificate->setPublicKeyInfo(*publicKey);

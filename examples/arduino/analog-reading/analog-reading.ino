@@ -208,7 +208,7 @@ void setup() {
   const size_t commandNonceLength = 8;
   ndn_generateRandomBytes(REGISTER_INTEREST_ENCODING + commandNonceOffset, commandNonceLength);
   
-  // Send the registration require. We don't decode the response data packet because it's too big.
+  // Send the registration request. We don't decode the response data packet because it's too big.
   transport.send(REGISTER_INTEREST_ENCODING, sizeof(REGISTER_INTEREST_ENCODING));
 }
 
