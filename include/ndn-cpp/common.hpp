@@ -41,9 +41,9 @@ namespace ndn { namespace ptr_lib = boost; }
 #else
 /* Use the boost header files in this distribution that were extracted with:
 cd <BOOST DEVELOPMENT DIRECTORY WITH boost SUBDIRECTORY>
-dist/bin/bcp --namespace=ndnboost shared_ptr make_shared enable_shared_from_this weak_ptr function bind any iostreams <NDN-CPP ROOT>/include
+dist/bin/bcp --namespace=ndnboost shared_ptr make_shared enable_shared_from_this weak_ptr function bind atomic <NDN-CPP ROOT>/include
 cd <NDN-CPP ROOT>/include
-rm -rf boost.css boost.png Jamroot libs
+rm -rf boost.css boost.png jamroot libs
 mv boost ndnboost
 cd ndnboost
 # Replace when including files.
