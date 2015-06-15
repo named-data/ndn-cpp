@@ -249,8 +249,11 @@ public:
       return (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
   }
 
+  /**
+   * @deprecated Scope is not used by NFD.
+   */
   int
-  getScope() const { return scope_; }
+  DEPRECATED_IN_NDN_CPP getScope() const;
 
   Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds_; }
@@ -371,17 +374,10 @@ public:
   }
 
   /**
-   * Set the interest scope.
-   * @param scope The interest scope. If not specified, set to -1.
-   * @return This Interest so that you can chain calls to update values.
+   * @deprecated Scope is not used by NFD.
    */
   Interest&
-  setScope(int scope)
-  {
-    scope_ = scope;
-    ++changeCount_;
-    return *this;
-  }
+  DEPRECATED_IN_NDN_CPP setScope(int scope);
 
   /**
    * Set the interest lifetime.
@@ -531,6 +527,7 @@ private:
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
   int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
+  /** @deprecated Scope is not used by NFD. */
   int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;

@@ -78,7 +78,7 @@ Interest& Interest::operator=(const Interest& interest)
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
   answerOriginKind_ = interest.answerOriginKind_;
-  setScope(interest.scope_);
+  scope_ = interest.scope_;
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
   setDefaultWireEncoding
@@ -100,7 +100,7 @@ Interest::set(const struct ndn_Interest& interestStruct)
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
   answerOriginKind_ = interestStruct.answerOriginKind;
-  setScope(interestStruct.scope);
+  scope_ = interestStruct.scope;
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
   nonce_ = Blob(interestStruct.nonce);
@@ -252,6 +252,16 @@ Interest::getAnswerOriginKind() const
   return answerOriginKind_;
 }
 
+int
+Interest::getScope() const
+{ 
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("getScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
+
+  return scope_;
+}
+
 Interest&
 Interest::setAnswerOriginKind(int answerOriginKind)
 {
@@ -260,6 +270,18 @@ Interest::setAnswerOriginKind(int answerOriginKind)
       ("setAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
 
   answerOriginKind_ = answerOriginKind;
+  ++changeCount_;
+  return *this;
+}
+
+Interest&
+Interest::setScope(int scope)
+{
+  if (!WireFormat::ENABLE_NDNX)
+    throw runtime_error
+      ("setScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
+
+  scope_ = scope;
   ++changeCount_;
   return *this;
 }
