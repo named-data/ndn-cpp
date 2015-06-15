@@ -600,6 +600,30 @@ private:
   };
 
   /**
+   * Do the work of expressInterest once we know we are connected. Add the
+   * entry to the PIT, encode and send the interest.
+   * @param pendingInterestId The getNextEntryId() for the pending interest ID
+   * which Face got so it could return it to the caller.
+   * @param interestCopy The Interest to send, which has already been copied and put
+   * in a shared_ptr.
+   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
+   * use func_lib::ref() as appropriate.
+   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
+   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param wireFormat A WireFormat object used to encode the message.
+   * @param face The face which has the callLater method, used for interest
+   * timeouts. The callLater method may be overridden in a subclass of Face.
+   * @throws runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  expressInterestHelper
+    (uint64_t pendingInterestId, 
+     const ptr_lib::shared_ptr<const Interest>& interestCopy,
+     const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
+     Face* face);
+
+  /**
    * This is used in callLater for when the pending interest expires. If the
    * pendingInterest is still in the pendingInterestTable_, remove it and call
    * its onTimeout callback.

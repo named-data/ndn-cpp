@@ -205,29 +205,14 @@ Node::expressInterest
   (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
+  ptr_lib::shared_ptr<const Interest> interestCopy(new Interest(interest));
+  
   // TODO: Properly check if we are already connected to the expected host.
   if (!transport_->getIsConnected())
     transport_->connect(*connectionInfo_, *this, &dummyOnConnected);
 
-  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
-    (pendingInterestId,
-     ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData,
-     onTimeout));
-  pendingInterestTable_.push_back(pendingInterest);
-  if (interest.getInterestLifetimeMilliseconds() >= 0.0)
-    // Set up the timeout.
-    face->callLater
-      (interest.getInterestLifetimeMilliseconds(),
-       bind(&Node::processInterestTimeout, this, pendingInterest));
-
-  // Special case: For timeoutPrefix_ we don't actually send the interest.
-  if (!timeoutPrefix_.match(interest.getName())) {
-    Blob encoding = interest.wireEncode(wireFormat);
-    if (encoding.size() > getMaxNdnPacketSize())
-      throw runtime_error
-        ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
-    transport_->send(*encoding);
-  }
+  expressInterestHelper
+    (pendingInterestId, interestCopy, onData, onTimeout, wireFormat, face);
 }
 
 void
@@ -700,6 +685,32 @@ void
 Node::shutdown()
 {
   transport_->close();
+}
+
+void
+Node::expressInterestHelper
+  (uint64_t pendingInterestId,
+   const ptr_lib::shared_ptr<const Interest>& interestCopy,
+   const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
+   Face* face)
+{
+  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
+    (pendingInterestId, interestCopy, onData, onTimeout));
+  pendingInterestTable_.push_back(pendingInterest);
+  if (interestCopy->getInterestLifetimeMilliseconds() >= 0.0)
+    // Set up the timeout.
+    face->callLater
+      (interestCopy->getInterestLifetimeMilliseconds(),
+       bind(&Node::processInterestTimeout, this, pendingInterest));
+
+  // Special case: For timeoutPrefix_ we don't actually send the interest.
+  if (!timeoutPrefix_.match(interestCopy->getName())) {
+    Blob encoding = interestCopy->wireEncode(wireFormat);
+    if (encoding.size() > getMaxNdnPacketSize())
+      throw runtime_error
+        ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
+    transport_->send(*encoding);
+  }
 }
 
 void
