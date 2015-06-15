@@ -548,6 +548,7 @@ Node::nfdRegisterPrefix
 
   ControlParameters controlParameters;
   controlParameters.setName(*prefix);
+  controlParameters.setForwardingFlags(flags);
 
   Interest commandInterest;
   if (isLocal()) {
