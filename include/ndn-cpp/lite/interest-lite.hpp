@@ -95,9 +95,6 @@ public:
   bool
   getMustBeFresh() const;
 
-  int
-  getScope() const { return scope; }
-
   Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds; }
 
@@ -162,18 +159,6 @@ public:
    */
   InterestLite&
   setMustBeFresh(bool mustBeFresh);
-
-  /**
-   * Set the interest scope.
-   * @param scope The interest scope. If not specified, set to -1.
-   * @return This InterestLite so that you can chain calls to update values.
-   */
-  InterestLite&
-  setScope(int scope)
-  {
-    this->scope = scope;
-    return *this;
-  }
 
   /**
    * Set the interest lifetime.
