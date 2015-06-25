@@ -97,7 +97,8 @@ public:
    * @param onConnected This calls onConnected() when the connection is
    * established.
    */
-  virtual void connect
+  virtual void
+  connect
     (const Transport::ConnectionInfo& connectionInfo,
      ElementListener& elementListener, const OnConnected& onConnected);
 
@@ -106,7 +107,8 @@ public:
    * @param data A pointer to the buffer of data to send.
    * @param dataLength The number of bytes in data.
    */
-  virtual void send(const uint8_t *data, size_t dataLength);
+  virtual void
+  send(const uint8_t *data, size_t dataLength);
 
   /**
    * Process any data to receive.  For each element received, call
@@ -117,14 +119,17 @@ public:
    * processing the data.  If you call this from an main event loop, you may
    * want to catch and log/disregard all exceptions.
    */
-  virtual void processEvents();
+  virtual void
+  processEvents();
 
-  virtual bool getIsConnected();
+  virtual bool
+  getIsConnected();
 
   /**
    * Close the connection to the host.
    */
-  virtual void close();
+  virtual void
+  close();
 
 private:
   ptr_lib::shared_ptr<struct ndn_TcpTransport> transport_;
