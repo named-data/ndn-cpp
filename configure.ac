@@ -59,6 +59,8 @@ AC_C_INLINE
 # Use the minimum boost version from NFD.
 AX_BOOST_BASE([1.48])
 
+AX_BOOST_ASIO
+
 AC_MSG_CHECKING([for std::shared_ptr])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <memory>]]
