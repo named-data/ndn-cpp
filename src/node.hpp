@@ -255,6 +255,12 @@ public:
   getNextEntryId();
 
 private:
+  enum ConnectStatus {
+    ConnectStatus_UNCONNECTED = 1,
+    ConnectStatus_CONNECT_REQUESTED = 2,
+    ConnectStatus_CONNECT_COMPLETE = 3
+  };
+
   /**
    * DelayedCall is a class for the members of the delayedCallTable_.
    */
@@ -620,7 +626,7 @@ private:
   expressInterestHelper
     (uint64_t pendingInterestId, 
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
-     const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
+     const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
      Face* face);
 
   /**
@@ -683,6 +689,12 @@ private:
      const ForwardingFlags& flags, KeyChain& commandKeyChain,
      const Name& commandCertificateName, WireFormat& wireFormat, Face* face);
 
+  /**
+   * This is called by Transport::connect from expressInterest.
+   */
+  void
+  onConnected();
+
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
@@ -691,6 +703,7 @@ private:
   // Use a deque so we can efficiently remove from the front.
   std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
   DelayedCall::Compare delayedCallCompare_;
+  std::vector<Face::Callback> onConnectedCallbacks_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
@@ -699,6 +712,7 @@ private:
   // thread safe. This is not exposed in the public API or shared with the
   // application, so use ndnboost. */
   ndnboost::atomic_uint64_t lastEntryId_;
+  ConnectStatus connectStatus_;
 };
 
 }

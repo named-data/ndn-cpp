@@ -19,6 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <algorithm>
 #include <stdexcept>
 // TODO: Remove this include when we remove selfregSignand NdndIdFetcher.
 #include <openssl/ssl.h>
@@ -191,13 +192,8 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 : transport_(transport), connectionInfo_(connectionInfo),
   ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0),
   timeoutPrefix_(Name("/local/timeout")),
-  lastEntryId_(0)
+  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED)
 {
-}
-
-static void dummyOnConnected()
-{
-  // TODO: Implement onConnected. For now, do nothing.
 }
 
 void
@@ -208,11 +204,48 @@ Node::expressInterest
   ptr_lib::shared_ptr<const Interest> interestCopy(new Interest(interest));
   
   // TODO: Properly check if we are already connected to the expected host.
-  if (!transport_->getIsConnected())
-    transport_->connect(*connectionInfo_, *this, &dummyOnConnected);
+  if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
+    // We are connected. Simply send the interest.
+    expressInterestHelper
+      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+    return;
+  }
 
-  expressInterestHelper
-    (pendingInterestId, interestCopy, onData, onTimeout, wireFormat, face);
+  if (connectStatus_ == ConnectStatus_UNCONNECTED) {
+    connectStatus_ = ConnectStatus_CONNECT_REQUESTED;
+
+    // expressInterestHelper will be called by onConnected.
+    onConnectedCallbacks_.push_back(bind
+      (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
+       onData, onTimeout, &wireFormat, face));
+
+    transport_->connect
+      (*connectionInfo_, *this, bind(&Node::onConnected, this));
+  }
+  else if (connectStatus_ == ConnectStatus_CONNECT_REQUESTED) {
+    // Still connecting. add to the interests to express by onConnected.
+    onConnectedCallbacks_.push_back(bind
+      (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
+       onData, onTimeout, &wireFormat, face));
+  }
+  else
+    // Don't expect this to happen.
+    throw runtime_error("Node: Unrecognized connectStatus_");
+}
+
+void
+Node::onConnected()
+{
+  // Assume that further calls to expressInterest dispatched to the event loop
+  // are queued and won't enter expressInterest until this method completes and
+  // sets CONNECT_COMPLETE.
+  // Call each callback added while the connection was opening.
+  for (size_t i = 0; i < onConnectedCallbacks_.size(); ++i)
+    onConnectedCallbacks_[i]();
+  onConnectedCallbacks_.clear();
+
+  // Make future calls to expressInterest send directly to the Transport.
+  connectStatus_ = ConnectStatus_CONNECT_COMPLETE;
 }
 
 void
@@ -691,7 +724,7 @@ void
 Node::expressInterestHelper
   (uint64_t pendingInterestId,
    const ptr_lib::shared_ptr<const Interest>& interestCopy,
-   const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
+   const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
    Face* face)
 {
   ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
@@ -705,7 +738,7 @@ Node::expressInterestHelper
 
   // Special case: For timeoutPrefix_ we don't actually send the interest.
   if (!timeoutPrefix_.match(interestCopy->getName())) {
-    Blob encoding = interestCopy->wireEncode(wireFormat);
+    Blob encoding = interestCopy->wireEncode(*wireFormat);
     if (encoding.size() > getMaxNdnPacketSize())
       throw runtime_error
         ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
