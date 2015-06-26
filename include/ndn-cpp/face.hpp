@@ -82,7 +82,7 @@ public:
    * Create a new Face for communication with an NDN hub at host:port using the
    * default TcpTransport.
    * @param host The host of the NDN hub.
-   * @param port (optional) The port of the NDN hub. If omitted. use 6363.
+   * @param port (optional) The port of the NDN hub. If omitted, use 6363.
    */
   Face(const char *host, unsigned short port = 6363);
 
@@ -94,7 +94,7 @@ public:
    */
   Face();
 
-  ~Face();
+  virtual ~Face();
 
   /**
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
@@ -108,7 +108,7 @@ public:
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
-  uint64_t
+  virtual uint64_t
   expressInterest
     (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -158,7 +158,7 @@ public:
    * If there is no entry with the pendingInterestId, do nothing.
    * @param pendingInterestId The ID returned from expressInterest.
    */
-  void
+  virtual void
   removePendingInterest(uint64_t pendingInterestId);
 
   /**
@@ -202,7 +202,7 @@ public:
    * @note This method is an experimental feature. See the API docs for more detail at
    * http://named-data.net/doc/ndn-ccl-api/face.html#face-makecommandinterest-method .
    */
-  void
+  virtual void
   makeCommandInterest
     (Interest& interest,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -229,7 +229,7 @@ public:
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
-  uint64_t
+  virtual uint64_t
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
@@ -256,7 +256,7 @@ public:
    * remove it. If there is no entry with the registeredPrefixId, do nothing.
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
-  void
+  virtual void
   removeRegisteredPrefix(uint64_t registeredPrefixId);
 
   /**
@@ -272,7 +272,7 @@ public:
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
-  uint64_t
+  virtual uint64_t
   setInterestFilter
     (const InterestFilter& filter, const OnInterestCallback& onInterest);
 
@@ -290,7 +290,10 @@ public:
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   uint64_t
-  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest);
+  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
+  {
+    return setInterestFilter(InterestFilter(prefix), onInterest);
+  }
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -299,7 +302,7 @@ public:
    * If there is no entry with the interestFilterId, do nothing.
    * @param interestFilterId The ID returned from setInterestFilter.
    */
-  void
+  virtual void
   unsetInterestFilter(uint64_t interestFilterId);
 
   /**
@@ -311,7 +314,7 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  void
+  virtual void
   putData
     (const Data& data,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -336,7 +339,7 @@ public:
    * getMaxNdnPacketSize().
    */
   void
-  send(const uint8_t *encoding, size_t encodingLength);
+  virtual send(const uint8_t *encoding, size_t encodingLength);
 
   /**
    * Process any packets to receive and call callbacks such as onData,
@@ -359,7 +362,7 @@ public:
    * @return True if the face is local, false if not.
    * @note This is an experimental feature. This API may change in the future.
    */
-  bool
+  virtual bool
   isLocal();
 
   /**

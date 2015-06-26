@@ -192,12 +192,6 @@ Face::setInterestFilter
   return interestFilterId;
 }
 
-uint64_t
-Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
-{
-  return setInterestFilter(InterestFilter(prefix), onInterest);
-}
-
 void
 Face::unsetInterestFilter(uint64_t interestFilterId)
 {
