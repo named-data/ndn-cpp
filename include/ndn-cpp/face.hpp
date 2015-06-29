@@ -191,6 +191,12 @@ public:
     commandCertificateName_ = certificateName;
   }
 
+  KeyChain*
+  getCommandKeyChain() { return commandKeyChain_; }
+
+  const Name&
+  getCommandCertificateName() { return commandCertificateName_; }
+
   /**
    * Append a timestamp component and a random value component to interest's
    * name. Then use the keyChain and certificateName from setCommandSigningInfo
