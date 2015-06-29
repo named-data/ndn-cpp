@@ -128,6 +128,23 @@ public:
      const Name& commandCertificateName, Face* face);
 
   /**
+   * This is the same as registerPrefix above except get the commandKeyChain and
+   * commandCertificateName directly from face.
+   */
+  void
+  registerPrefix
+    (uint64_t registeredPrefixId, const Name& prefix,
+     const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     WireFormat& wireFormat, Face* face)
+  {
+    registerPrefix
+      (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags,
+       wireFormat, *face->getCommandKeyChain(), face->getCommandCertificateName(),
+       face);
+  }
+
+  /**
    * Remove the registered prefix entry with the registeredPrefixId from the
    * registered prefix table. This does not affect another registered prefix
    * with a different registeredPrefixId, even if it has the same prefix name.
