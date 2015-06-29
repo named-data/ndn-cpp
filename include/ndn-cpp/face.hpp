@@ -396,6 +396,9 @@ public:
   virtual void
   callLater(Milliseconds delayMilliseconds, const Callback& callback);
 
+protected:
+  Node *node_;
+
 private:
   /**
    * Call callerOnInterest with the values and node_->getTransport().
@@ -410,7 +413,6 @@ private:
      const ptr_lib::shared_ptr<const InterestFilter>& filter,
      const OnInterest callerOnInterest);
 
-  Node *node_;
   KeyChain* commandKeyChain_;
   Name commandCertificateName_;
 };
