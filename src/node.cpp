@@ -360,17 +360,6 @@ Node::unsetInterestFilter(uint64_t interestFilterId)
 }
 
 void
-Node::putData(const Data& data, WireFormat& wireFormat)
-{
-  Blob encoding = data.wireEncode(wireFormat);
-  if (encoding.size() > getMaxNdnPacketSize())
-    throw runtime_error
-      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
-
-  transport_->send(*encoding);
-}
-
-void
 Node::send(const uint8_t *encoding, size_t encodingLength)
 {
   if (encodingLength > getMaxNdnPacketSize())

@@ -320,7 +320,7 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  virtual void
+  void
   putData
     (const Data& data,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -344,8 +344,8 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  void
-  virtual send(const uint8_t *encoding, size_t encodingLength);
+  virtual void
+  send(const uint8_t *encoding, size_t encodingLength);
 
   /**
    * Process any packets to receive and call callbacks such as onData,
