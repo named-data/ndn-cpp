@@ -398,6 +398,8 @@ public:
 
 protected:
   Node *node_;
+  KeyChain* commandKeyChain_;
+  Name commandCertificateName_;
 
 private:
   /**
@@ -412,9 +414,6 @@ private:
      uint64_t interestFilterId,
      const ptr_lib::shared_ptr<const InterestFilter>& filter,
      const OnInterest callerOnInterest);
-
-  KeyChain* commandKeyChain_;
-  Name commandCertificateName_;
 };
 
 }
