@@ -10,7 +10,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 
 AM_CPPFLAGS=${BOOST_CPPFLAGS}
-AM_LDFLAGS=${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB}
+AM_LDFLAGS=${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_LIB}
 
 # "make install" will also install the include headers.
 SUBDIRS = include
@@ -27,9 +27,10 @@ check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
-  bin/test-get-async bin/test-list-channels bin/test-list-faces bin/test-list-rib \
-  bin/test-publish-async-nfd bin/test-register-route bin/analog-reading-consumer \
-  bin/basic-insertion bin/watched-insertion
+  bin/test-get-async bin/test-get-async-threadsafe bin/test-list-channels \
+  bin/test-list-faces bin/test-list-rib bin/test-publish-async-nfd \
+  bin/test-register-route bin/analog-reading-consumer bin/basic-insertion \
+  bin/watched-insertion
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -68,6 +69,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
+  include/ndn-cpp/threadsafe-face.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
@@ -112,6 +114,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
+  include/ndn-cpp/transport/async-tcp-transport.hpp \
+  include/ndn-cpp/transport/async-unix-transport.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
   include/ndn-cpp/transport/transport.hpp \
   include/ndn-cpp/transport/udp-transport.hpp \
@@ -187,6 +191,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
+  src/threadsafe-face.cpp \
   src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
@@ -237,6 +242,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
+  src/transport/async-tcp-transport.cpp \
+  src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
   src/transport/transport.cpp \
   src/transport/udp-transport.cpp \
@@ -271,6 +278,9 @@ bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+
+bin_test_get_async_threadsafe_SOURCES = examples/test-get-async-threadsafe.cpp
+bin_test_get_async_threadsafe_LDADD = libndn-cpp.la
 
 bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
 bin_test_list_channels_LDADD = libndn-cpp.la
