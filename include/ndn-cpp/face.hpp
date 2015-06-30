@@ -403,6 +403,14 @@ public:
   callLater(Milliseconds delayMilliseconds, const Callback& callback);
 
 protected:
+  /**
+   * If the forwarder's Unix socket file path exists, then return the file path.
+   * Otherwise return an empty string.
+   * @return The Unix socket file path to use, or an empty string.
+   */
+  static std::string
+  getUnixSocketFilePathForLocalhost();
+  
   Node *node_;
   KeyChain* commandKeyChain_;
   Name commandCertificateName_;
@@ -420,6 +428,12 @@ private:
      uint64_t interestFilterId,
      const ptr_lib::shared_ptr<const InterestFilter>& filter,
      const OnInterest callerOnInterest);
+
+  static ptr_lib::shared_ptr<Transport>
+  getDefaultTransport();
+
+  static ptr_lib::shared_ptr<Transport::ConnectionInfo>
+  getDefaultConnectionInfo();
 };
 
 }

@@ -32,12 +32,8 @@ using namespace ndn::func_lib;
 
 namespace ndn {
 
-/**
- * If the forwarder's Unix socket file path exists, then return the file path.
- * Otherwise return an empty string.
- * @return The Unix socket file path to use, or an empty string.
- */
-static string getUnixSocketFilePathForLocalhost()
+string 
+Face::getUnixSocketFilePathForLocalhost()
 {
   string filePath = "/var/run/nfd.sock";
   if (::access(filePath.c_str(), R_OK) == 0)
@@ -51,7 +47,8 @@ static string getUnixSocketFilePathForLocalhost()
   }
 }
 
-static ptr_lib::shared_ptr<Transport> getDefaultTransport()
+ptr_lib::shared_ptr<Transport>
+Face::getDefaultTransport()
 {
   if (getUnixSocketFilePathForLocalhost() == "")
     return ptr_lib::make_shared<TcpTransport>();
@@ -59,7 +56,8 @@ static ptr_lib::shared_ptr<Transport> getDefaultTransport()
     return ptr_lib::make_shared<UnixTransport>();
 }
 
-static ptr_lib::shared_ptr<Transport::ConnectionInfo> getDefaultConnectionInfo()
+ptr_lib::shared_ptr<Transport::ConnectionInfo>
+Face::getDefaultConnectionInfo()
 {
   string filePath = getUnixSocketFilePathForLocalhost();
   if (filePath == "")
