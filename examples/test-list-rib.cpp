@@ -18,7 +18,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* This sense a rib list request to the local NFD and prints the response.
+/* This sends a rib list request to the local NFD and prints the response.
  * This is equivalent to the NFD command line command "nfd-status -r".
  * See http://redmine.named-data.net/projects/nfd/wiki/Management .
  */
