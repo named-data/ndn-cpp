@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdexcept>
 #include "node.hpp"
 #include <ndn-cpp/transport/tcp-transport.hpp>
 #include <ndn-cpp/transport/unix-transport.hpp>
