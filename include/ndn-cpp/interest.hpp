@@ -102,7 +102,7 @@ public:
     nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
   {
     setDefaultWireEncoding
-      (interest.defaultWireEncoding_, interest.defaultWireEncodingFormat_);
+      (interest.getDefaultWireEncoding(), interest.defaultWireEncodingFormat_);
   }
 
   /**

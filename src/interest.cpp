@@ -82,7 +82,7 @@ Interest& Interest::operator=(const Interest& interest)
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
   setDefaultWireEncoding
-    (interest.defaultWireEncoding_, interest.defaultWireEncodingFormat_);
+    (interest.getDefaultWireEncoding(), interest.defaultWireEncodingFormat_);
 
   return *this;
 }
