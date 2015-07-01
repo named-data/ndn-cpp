@@ -796,7 +796,8 @@ Node::DelayedCall::DelayedCall
 
 Node::PendingInterest::PendingInterest
   (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
-: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout)
+: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout),
+  isRemoved_(false)
 {
 }
 
