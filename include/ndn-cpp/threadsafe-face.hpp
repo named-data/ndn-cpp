@@ -121,6 +121,20 @@ public:
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
+  uint64_t
+  DEPRECATED_IN_NDN_CPP registerPrefix
+    (const Name& prefix, const OnInterest& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags = ForwardingFlags(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    // This is needed, otherwise C++ will try to use the signature with
+    // const OnInterestCallback&. Just call the Face method with the 
+    // same signature as this.
+    return Face::registerPrefix
+      (prefix, onInterest, onRegisterFailed, flags, wireFormat);
+  }
+
   /**
    * Override to use the ioService given to the constructor to dispatch
    * removeRegisteredPrefix to be called in a thread-safe manner. See
