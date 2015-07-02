@@ -29,7 +29,7 @@ namespace boost { namespace asio { class io_service; }}
 namespace ndn {
 
 /**
- * A ThreadsafeFace extends Face use a Boost asio io_service to process events
+ * A ThreadsafeFace extends Face to use a Boost asio io_service to process events
  * and schedule communication calls. You must start the service on the thread in
  * which you want the library to call communication callbacks such as onData and
  * onInterest. For usage, see the example test-get-async-threadsafe.cpp.
@@ -175,7 +175,7 @@ public:
    * @param callback This calls callback.callback() after the delay.
    */
   virtual void
-  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
+  callLater(Milliseconds delayMilliseconds, const Callback& callback);
 
 private:
   static ptr_lib::shared_ptr<Transport>
