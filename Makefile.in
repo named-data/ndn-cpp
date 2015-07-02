@@ -104,16 +104,18 @@ noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
-	bin/test-get-async$(EXEEXT) bin/test-list-channels$(EXEEXT) \
-	bin/test-list-faces$(EXEEXT) bin/test-list-rib$(EXEEXT) \
-	bin/test-publish-async-nfd$(EXEEXT) \
+	bin/test-get-async$(EXEEXT) \
+	bin/test-get-async-threadsafe$(EXEEXT) \
+	bin/test-list-channels$(EXEEXT) bin/test-list-faces$(EXEEXT) \
+	bin/test-list-rib$(EXEEXT) bin/test-publish-async-nfd$(EXEEXT) \
 	bin/test-register-route$(EXEEXT) \
 	bin/analog-reading-consumer$(EXEEXT) \
 	bin/basic-insertion$(EXEEXT) bin/watched-insertion$(EXEEXT)
 TESTS = $(check_PROGRAMS)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_boost_base.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_boost_asio.m4 \
+	$(top_srcdir)/m4/ax_boost_base.m4 \
 	$(top_srcdir)/m4/ax_boost_regex.m4 \
 	$(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
 	$(top_srcdir)/m4/ax_lib_sqlite3.m4 \
@@ -227,8 +229,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/key-locator.lo src/meta-info.lo src/name.lo src/node.lo \
 	src/control-parameters.lo src/publisher-public-key-digest.lo \
 	src/signature.lo src/sha256-with-ecdsa-signature.lo \
-	src/sha256-with-rsa-signature.lo src/encoding/base64.lo \
-	src/encoding/binary-xml-wire-format.lo \
+	src/sha256-with-rsa-signature.lo src/threadsafe-face.lo \
+	src/encoding/base64.lo src/encoding/binary-xml-wire-format.lo \
 	src/encoding/element-listener.lo src/encoding/oid.lo \
 	src/encoding/protobuf-tlv.lo \
 	src/encoding/tlv-0_1-wire-format.lo \
@@ -264,10 +266,11 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/policy/policy-manager.lo \
 	src/security/policy/self-verify-policy-manager.lo \
 	src/sync/chrono-sync2013.lo src/sync/digest-tree.lo \
-	src/sync/sync-state.pb.lo src/transport/tcp-transport.lo \
-	src/transport/transport.lo src/transport/udp-transport.lo \
-	src/transport/unix-transport.lo src/util/blob.lo \
-	src/util/boost-info-parser.lo \
+	src/sync/sync-state.pb.lo src/transport/async-tcp-transport.lo \
+	src/transport/async-unix-transport.lo \
+	src/transport/tcp-transport.lo src/transport/transport.lo \
+	src/transport/udp-transport.lo src/transport/unix-transport.lo \
+	src/util/blob.lo src/util/boost-info-parser.lo \
 	src/util/command-interest-generator.lo \
 	src/util/dynamic-uint8-vector.lo src/util/logging.lo \
 	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo \
@@ -317,6 +320,11 @@ bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
 am_bin_test_get_async_OBJECTS = examples/test-get-async.$(OBJEXT)
 bin_test_get_async_OBJECTS = $(am_bin_test_get_async_OBJECTS)
 bin_test_get_async_DEPENDENCIES = libndn-cpp.la
+am_bin_test_get_async_threadsafe_OBJECTS =  \
+	examples/test-get-async-threadsafe.$(OBJEXT)
+bin_test_get_async_threadsafe_OBJECTS =  \
+	$(am_bin_test_get_async_threadsafe_OBJECTS)
+bin_test_get_async_threadsafe_DEPENDENCIES = libndn-cpp.la
 am_bin_test_list_channels_OBJECTS =  \
 	examples/test-list-channels.$(OBJEXT) \
 	examples/channel-status.pb.$(OBJEXT)
@@ -461,6 +469,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
+	$(bin_test_get_async_threadsafe_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
@@ -485,6 +494,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
+	$(bin_test_get_async_threadsafe_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
@@ -768,6 +778,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_ASIO_LIB = @BOOST_ASIO_LIB@
 BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
 BOOST_LDFLAGS = @BOOST_LDFLAGS@
 BOOST_REGEX_LIB = @BOOST_REGEX_LIB@
@@ -942,7 +953,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 AM_CPPFLAGS = ${BOOST_CPPFLAGS}
-AM_LDFLAGS = ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB}
+AM_LDFLAGS = ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_LIB}
 
 # "make install" will also install the include headers.
 SUBDIRS = include
@@ -986,6 +997,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
+  include/ndn-cpp/threadsafe-face.hpp \
   include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
@@ -1030,6 +1042,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
+  include/ndn-cpp/transport/async-tcp-transport.hpp \
+  include/ndn-cpp/transport/async-unix-transport.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
   include/ndn-cpp/transport/transport.hpp \
   include/ndn-cpp/transport/udp-transport.hpp \
@@ -1107,6 +1121,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
+  src/threadsafe-face.cpp \
   src/encoding/base64.cpp src/encoding/base64.hpp \
   src/encoding/binary-xml-decoder.hpp \
   src/encoding/binary-xml-encoder.hpp \
@@ -1157,6 +1172,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
+  src/transport/async-tcp-transport.cpp \
+  src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
   src/transport/transport.cpp \
   src/transport/udp-transport.cpp \
@@ -1185,6 +1202,8 @@ bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.c
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
+bin_test_get_async_threadsafe_SOURCES = examples/test-get-async-threadsafe.cpp
+bin_test_get_async_threadsafe_LDADD = libndn-cpp.la
 bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
 bin_test_list_channels_LDADD = libndn-cpp.la
 bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
@@ -1452,6 +1471,8 @@ src/sha256-with-ecdsa-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/sha256-with-rsa-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/threadsafe-face.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/encoding/$(am__dirstamp):
 	@$(MKDIR_P) src/encoding
 	@: > src/encoding/$(am__dirstamp)
@@ -1638,6 +1659,10 @@ src/transport/$(am__dirstamp):
 src/transport/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/transport/$(DEPDIR)
 	@: > src/transport/$(DEPDIR)/$(am__dirstamp)
+src/transport/async-tcp-transport.lo: src/transport/$(am__dirstamp) \
+	src/transport/$(DEPDIR)/$(am__dirstamp)
+src/transport/async-unix-transport.lo: src/transport/$(am__dirstamp) \
+	src/transport/$(DEPDIR)/$(am__dirstamp)
 src/transport/tcp-transport.lo: src/transport/$(am__dirstamp) \
 	src/transport/$(DEPDIR)/$(am__dirstamp)
 src/transport/transport.lo: src/transport/$(am__dirstamp) \
@@ -1776,6 +1801,12 @@ examples/test-get-async.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-get-async$(EXEEXT): $(bin_test_get_async_OBJECTS) $(bin_test_get_async_DEPENDENCIES) $(EXTRA_bin_test_get_async_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_OBJECTS) $(bin_test_get_async_LDADD) $(LIBS)
+examples/test-get-async-threadsafe.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-get-async-threadsafe$(EXEEXT): $(bin_test_get_async_threadsafe_OBJECTS) $(bin_test_get_async_threadsafe_DEPENDENCIES) $(EXTRA_bin_test_get_async_threadsafe_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-get-async-threadsafe$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_threadsafe_OBJECTS) $(bin_test_get_async_threadsafe_LDADD) $(LIBS)
 examples/test-list-channels.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 examples/channel-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
@@ -2011,6 +2042,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async-threadsafe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-channels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-faces.Po@am__quote@
@@ -2040,6 +2072,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-ecdsa-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-rsa-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/signature.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/threadsafe-face.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/errors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/forwarding-flags.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/interest.Plo@am__quote@
@@ -2117,6 +2150,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-tcp-transport.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-unix-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/tcp-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/udp-transport.Plo@am__quote@

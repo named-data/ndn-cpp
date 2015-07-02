@@ -82,7 +82,7 @@ public:
    * Create a new Face for communication with an NDN hub at host:port using the
    * default TcpTransport.
    * @param host The host of the NDN hub.
-   * @param port (optional) The port of the NDN hub. If omitted. use 6363.
+   * @param port (optional) The port of the NDN hub. If omitted, use 6363.
    */
   Face(const char *host, unsigned short port = 6363);
 
@@ -94,7 +94,7 @@ public:
    */
   Face();
 
-  ~Face();
+  virtual ~Face();
 
   /**
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
@@ -108,7 +108,7 @@ public:
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
-  uint64_t
+  virtual uint64_t
   expressInterest
     (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -158,7 +158,7 @@ public:
    * If there is no entry with the pendingInterestId, do nothing.
    * @param pendingInterestId The ID returned from expressInterest.
    */
-  void
+  virtual void
   removePendingInterest(uint64_t pendingInterestId);
 
   /**
@@ -191,6 +191,12 @@ public:
     commandCertificateName_ = certificateName;
   }
 
+  KeyChain*
+  getCommandKeyChain() { return commandKeyChain_; }
+
+  const Name&
+  getCommandCertificateName() { return commandCertificateName_; }
+
   /**
    * Append a timestamp component and a random value component to interest's
    * name. Then use the keyChain and certificateName from setCommandSigningInfo
@@ -202,7 +208,7 @@ public:
    * @note This method is an experimental feature. See the API docs for more detail at
    * http://named-data.net/doc/ndn-ccl-api/face.html#face-makecommandinterest-method .
    */
-  void
+  virtual void
   makeCommandInterest
     (Interest& interest,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -229,7 +235,7 @@ public:
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
-  uint64_t
+  virtual uint64_t
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
@@ -256,7 +262,7 @@ public:
    * remove it. If there is no entry with the registeredPrefixId, do nothing.
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
-  void
+  virtual void
   removeRegisteredPrefix(uint64_t registeredPrefixId);
 
   /**
@@ -272,7 +278,7 @@ public:
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
-  uint64_t
+  virtual uint64_t
   setInterestFilter
     (const InterestFilter& filter, const OnInterestCallback& onInterest);
 
@@ -290,7 +296,10 @@ public:
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   uint64_t
-  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest);
+  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
+  {
+    return setInterestFilter(InterestFilter(prefix), onInterest);
+  }
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -299,7 +308,7 @@ public:
    * If there is no entry with the interestFilterId, do nothing.
    * @param interestFilterId The ID returned from setInterestFilter.
    */
-  void
+  virtual void
   unsetInterestFilter(uint64_t interestFilterId);
 
   /**
@@ -335,7 +344,7 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  void
+  virtual void
   send(const uint8_t *encoding, size_t encodingLength);
 
   /**
@@ -359,7 +368,7 @@ public:
    * @return True if the face is local, false if not.
    * @note This is an experimental feature. This API may change in the future.
    */
-  bool
+  virtual bool
   isLocal();
 
   /**
@@ -378,6 +387,34 @@ public:
   static size_t
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
+  /**
+   * Face::Callback is used internally in callLater.
+   */
+  typedef func_lib::function<void()> Callback;
+
+  /**
+   * Call callback() after the given delay. Even though this is public,
+   * it is not part of the public API of Face. This default implementation just
+   * calls Node::callLater, but a subclass can override.
+   * @param delayMilliseconds The delay in milliseconds.
+   * @param callback This calls callback.callback() after the delay.
+   */
+  virtual void
+  callLater(Milliseconds delayMilliseconds, const Callback& callback);
+
+protected:
+  /**
+   * If the forwarder's Unix socket file path exists, then return the file path.
+   * Otherwise return an empty string.
+   * @return The Unix socket file path to use, or an empty string.
+   */
+  static std::string
+  getUnixSocketFilePathForLocalhost();
+  
+  Node *node_;
+  KeyChain* commandKeyChain_;
+  Name commandCertificateName_;
+
 private:
   /**
    * Call callerOnInterest with the values and node_->getTransport().
@@ -392,9 +429,11 @@ private:
      const ptr_lib::shared_ptr<const InterestFilter>& filter,
      const OnInterest callerOnInterest);
 
-  Node *node_;
-  KeyChain* commandKeyChain_;
-  Name commandCertificateName_;
+  static ptr_lib::shared_ptr<Transport>
+  getDefaultTransport();
+
+  static ptr_lib::shared_ptr<Transport::ConnectionInfo>
+  getDefaultConnectionInfo();
 };
 
 }

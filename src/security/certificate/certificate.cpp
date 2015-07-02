@@ -24,7 +24,6 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../encoding/der/der-node.hpp"
 #include "../../encoding/base64.hpp"
-#include "../../util/blob-stream.hpp"
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/certificate/certificate.hpp>
 

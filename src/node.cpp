@@ -19,6 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <algorithm>
 #include <stdexcept>
 // TODO: Remove this include when we remove selfregSignand NdndIdFetcher.
 #include <openssl/ssl.h>
@@ -41,6 +42,7 @@
 INIT_LOGGER("ndn.Node");
 
 using namespace std;
+using namespace ndn::func_lib;
 
 namespace ndn {
 
@@ -144,9 +146,6 @@ static uint8_t SELFREG_PRIVATE_KEY_DER[] = {
   0x3f, 0xb9, 0xfe, 0xbc, 0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-uint64_t Node::PendingInterest::lastPendingInterestId_ = 0;
-uint64_t Node::RegisteredPrefix::lastRegisteredPrefixId_ = 0;
-
 /**
  * Set the KeyLocator using the full SELFREG_PUBLIC_KEY_DER, sign the data packet using SELFREG_PRIVATE_KEY_DER
  * and set the signature.
@@ -192,31 +191,61 @@ selfregSign(Data& data, WireFormat& wireFormat)
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
   ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0),
-  timeoutPrefix_(Name("/local/timeout"))
+  timeoutPrefix_(Name("/local/timeout")),
+  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED)
 {
 }
 
-uint64_t
-Node::expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
+void
+Node::expressInterest
+  (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
+   const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
+  ptr_lib::shared_ptr<const Interest> interestCopy(new Interest(interest));
+  
   // TODO: Properly check if we are already connected to the expected host.
-  if (!transport_->getIsConnected())
-    transport_->connect(*connectionInfo_, *this);
-
-  uint64_t pendingInterestId = PendingInterest::getNextPendingInterestId();
-  pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>(new PendingInterest
-    (pendingInterestId, ptr_lib::shared_ptr<const Interest>(new Interest(interest)), onData, onTimeout)));
-
-  // Special case: For timeoutPrefix_ we don't actually send the interest.
-  if (!timeoutPrefix_.match(interest.getName())) {
-    Blob encoding = interest.wireEncode(wireFormat);
-    if (encoding.size() > getMaxNdnPacketSize())
-      throw runtime_error
-        ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
-    transport_->send(*encoding);
+  if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
+    // We are connected. Simply send the interest.
+    expressInterestHelper
+      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+    return;
   }
 
-  return pendingInterestId;
+  if (connectStatus_ == ConnectStatus_UNCONNECTED) {
+    connectStatus_ = ConnectStatus_CONNECT_REQUESTED;
+
+    // expressInterestHelper will be called by onConnected.
+    onConnectedCallbacks_.push_back(bind
+      (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
+       onData, onTimeout, &wireFormat, face));
+
+    transport_->connect
+      (*connectionInfo_, *this, bind(&Node::onConnected, this));
+  }
+  else if (connectStatus_ == ConnectStatus_CONNECT_REQUESTED) {
+    // Still connecting. add to the interests to express by onConnected.
+    onConnectedCallbacks_.push_back(bind
+      (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
+       onData, onTimeout, &wireFormat, face));
+  }
+  else
+    // Don't expect this to happen.
+    throw runtime_error("Node: Unrecognized connectStatus_");
+}
+
+void
+Node::onConnected()
+{
+  // Assume that further calls to expressInterest dispatched to the event loop
+  // are queued and won't enter expressInterest until this method completes and
+  // sets CONNECT_COMPLETE.
+  // Call each callback added while the connection was opening.
+  for (size_t i = 0; i < onConnectedCallbacks_.size(); ++i)
+    onConnectedCallbacks_[i]();
+  onConnectedCallbacks_.clear();
+
+  // Make future calls to expressInterest send directly to the Transport.
+  connectStatus_ = ConnectStatus_CONNECT_COMPLETE;
 }
 
 void
@@ -228,6 +257,9 @@ Node::removePendingInterest(uint64_t pendingInterestId)
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
     if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId) {
       ++count;
+      // For efficiency, mark this as removed so that processInterestTimeout
+      // doesn't look for it.
+      pendingInterestTable_[i]->setIsRemoved();
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
@@ -236,16 +268,14 @@ Node::removePendingInterest(uint64_t pendingInterestId)
     _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
 }
 
-uint64_t
+void
 Node::registerPrefix
-  (const Name& prefix, const OnInterestCallback& onInterest,
+  (uint64_t registeredPrefixId, const Name& prefix,
+   const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
    WireFormat& wireFormat, KeyChain& commandKeyChain,
    const Name& commandCertificateName, Face* face)
 {
-  // Get the registeredPrefixId now so we can return it to the caller.
-  uint64_t registeredPrefixId = RegisteredPrefix::getNextRegisteredPrefixId();
-
   // If we have an _ndndId, we know we already connected to NDNx.
   if (ndndId_.size() != 0 || !&commandKeyChain) {
     // Assume we are connected to a legacy NDNx server.
@@ -261,7 +291,9 @@ Node::registerPrefix
            flags, wireFormat, face)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
-      expressInterest(ndndIdFetcherInterest_, fetcher, fetcher, wireFormat);
+      expressInterest
+        (getNextEntryId(), ndndIdFetcherInterest_, fetcher, fetcher, wireFormat,
+         face);
     }
     else
       registerPrefixHelper
@@ -274,8 +306,6 @@ Node::registerPrefix
       (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
        onRegisterFailed, flags, commandKeyChain, commandCertificateName,
        wireFormat, face);
-
-  return registeredPrefixId;
 }
 
 void
@@ -303,6 +333,16 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 }
 
 void
+Node::setInterestFilter
+  (uint64_t interestFilterId, const InterestFilter& filter,
+   const OnInterestCallback& onInterest, Face* face)
+{
+  interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
+    (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
+     onInterest, face));
+}
+
+void
 Node::unsetInterestFilter(uint64_t interestFilterId)
 {
   int count = 0;
@@ -320,17 +360,6 @@ Node::unsetInterestFilter(uint64_t interestFilterId)
 }
 
 void
-Node::putData(const Data& data, WireFormat& wireFormat)
-{
-  Blob encoding = data.wireEncode(wireFormat);
-  if (encoding.size() > getMaxNdnPacketSize())
-    throw runtime_error
-      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
-
-  transport_->send(*encoding);
-}
-
-void
 Node::send(const uint8_t *encoding, size_t encodingLength)
 {
   if (encodingLength > getMaxNdnPacketSize())
@@ -338,6 +367,13 @@ Node::send(const uint8_t *encoding, size_t encodingLength)
       ("The encoded packet size exceeds the maximum limit getMaxNdnPacketSize()");
 
   transport_->send(encoding, encodingLength);
+}
+
+uint64_t
+Node::getNextEntryId()
+{
+  // This is an atomic_uint64_t, so increment is thread-safe.
+  return ++lastEntryId_;
 }
 
 void
@@ -449,8 +485,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
       info_->node_.expressInterest
-        (info_->node_.ndndIdFetcherInterest_, fetcher, fetcher,
-         info_->wireFormat_);
+        (info_->node_.getNextEntryId(), info_->node_.ndndIdFetcherInterest_,
+         fetcher, fetcher, info_->wireFormat_, info_->face_);
     }
     else
       // Pass 0 for registeredPrefixId since the entry was already added to
@@ -512,11 +548,13 @@ Node::registerPrefixHelper
 
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
-    if (onInterest)
+    if (onInterest) {
       // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
-      interestFilterId = setInterestFilter
-        (InterestFilter(*prefix), onInterest, face);
+      interestFilterId = getNextEntryId();
+      setInterestFilter
+        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+    }
 
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>
@@ -529,7 +567,8 @@ Node::registerPrefixHelper
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, false, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(interest, response, response, wireFormat);
+  expressInterest
+    (getNextEntryId(), interest, response, response, wireFormat, face);
 }
 
 void
@@ -569,11 +608,13 @@ Node::nfdRegisterPrefix
 
   if (registeredPrefixId != 0) {
     uint64_t interestFilterId = 0;
-    if (onInterest)
+    if (onInterest) {
       // registerPrefix was called with the "combined" form that includes the
       // callback, so add an InterestFilterEntry.
-      interestFilterId = setInterestFilter
-        (InterestFilter(*prefix), onInterest, face);
+      interestFilterId = getNextEntryId();
+      setInterestFilter
+        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+    }
 
     registeredPrefixTable_.push_back
       (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
@@ -586,7 +627,8 @@ Node::nfdRegisterPrefix
      (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
-  expressInterest(commandInterest, response, response, wireFormat);
+  expressInterest
+    (getNextEntryId(), commandInterest, response, response, wireFormat, face);
 }
 
 void
@@ -594,18 +636,18 @@ Node::processEvents()
 {
   transport_->processEvents();
 
-  // Check for PIT entry timeouts.  Go backwards through the list so we can erase entries.
-  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
-      // Save the PendingInterest and remove it from the PIT.  Then call the callback.
-      ptr_lib::shared_ptr<PendingInterest> pendingInterest = pendingInterestTable_[i];
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-      pendingInterest->callTimeout();
-
-      // Refresh now since the timeout callback might have delayed.
-      nowMilliseconds = ndn_getNowMilliseconds();
-    }
+  // Check for delayed calls. Since callLater does a sorted insert into
+  // delayedCallTable_, the check for timeouts is quick and does not require
+  // searching the entire table. If callLater is overridden to use a different
+  // mechanism, then processEvents is not needed to check for delayed calls.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds();
+  // delayedCallTable_ is sorted on _callTime, so we only need to process
+  // the timed-out entries at the front, then quit.
+  while (delayedCallTable_.size() > 0 &&
+         delayedCallTable_.front()->getCallTime() <= now) {
+    ptr_lib::shared_ptr<DelayedCall> delayedCall = delayedCallTable_.front();
+    delayedCallTable_.erase(delayedCallTable_.begin());
+    delayedCall->callCallback();
   }
 }
 
@@ -668,6 +710,56 @@ Node::shutdown()
 }
 
 void
+Node::expressInterestHelper
+  (uint64_t pendingInterestId,
+   const ptr_lib::shared_ptr<const Interest>& interestCopy,
+   const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
+   Face* face)
+{
+  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
+    (pendingInterestId, interestCopy, onData, onTimeout));
+  pendingInterestTable_.push_back(pendingInterest);
+  if (interestCopy->getInterestLifetimeMilliseconds() >= 0.0)
+    // Set up the timeout.
+    face->callLater
+      (interestCopy->getInterestLifetimeMilliseconds(),
+       bind(&Node::processInterestTimeout, this, pendingInterest));
+
+  // Special case: For timeoutPrefix_ we don't actually send the interest.
+  if (!timeoutPrefix_.match(interestCopy->getName())) {
+    Blob encoding = interestCopy->wireEncode(*wireFormat);
+    if (encoding.size() > getMaxNdnPacketSize())
+      throw runtime_error
+        ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
+    transport_->send(*encoding);
+  }
+}
+
+void
+Node::processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest)
+{
+  if (pendingInterest->getIsRemoved())
+    // extractEntriesForExpressedInterest or removePendingInterest has removed 
+    // pendingInterest from pendingInterestTable_, so we don't need to look for
+    // it. Do nothing.
+    return;
+
+  // Find the entry.
+  for (vector<ptr_lib::shared_ptr<PendingInterest> >::iterator entry =
+         pendingInterestTable_.begin();
+       entry != pendingInterestTable_.end();
+       ++entry) {
+    if (entry->get() == pendingInterest.get()) {
+      pendingInterestTable_.erase(entry);
+      pendingInterest->callTimeout();
+      return;
+    }
+  }
+
+  // The pending interest has been removed. Do nothing.
+}
+
+void
 Node::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
 {
@@ -675,21 +767,38 @@ Node::extractEntriesForExpressedInterest
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
     if (pendingInterestTable_[i]->getInterest()->matchesName(name)) {
       entries.push_back(pendingInterestTable_[i]);
+      // We let the callback from callLater call _processInterestTimeout, but
+      // for efficiency, mark this as removed so that it returns right away.
+      pendingInterestTable_[i]->setIsRemoved();
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
     }
   }
 }
 
+void
+Node::callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
+{
+  ptr_lib::shared_ptr<DelayedCall> delayedCall
+    (new DelayedCall(delayMilliseconds, callback));
+  // Insert into delayedCallTable_, sorted on delayedCall.getCallTime().
+  delayedCallTable_.insert
+    (std::lower_bound(delayedCallTable_.begin(), delayedCallTable_.end(),
+                      delayedCall, delayedCallCompare_),
+     delayedCall);
+}
+
+Node::DelayedCall::DelayedCall
+  (Milliseconds delayMilliseconds, const Face::Callback& callback)
+  : callback_(callback),
+    callTime_(ndn_getNowMilliseconds() + delayMilliseconds)
+{
+}
+
 Node::PendingInterest::PendingInterest
   (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
-: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout)
+: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout),
+  isRemoved_(false)
 {
-  // Set up timeoutTime_.
-  if (interest_->getInterestLifetimeMilliseconds() >= 0.0)
-    timeoutTimeMilliseconds_ = ndn_getNowMilliseconds() + interest_->getInterestLifetimeMilliseconds();
-  else
-    // No timeout.
-    timeoutTimeMilliseconds_ = -1.0;
 }
 
 void

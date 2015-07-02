@@ -12,6 +12,7 @@ Prerequisites
 * Optional: Protobuf (for the ProtobufTlv converter and ChronoSync)
 * Optional: log4cxx (for debugging and log output)
 * Optional: Doxygen (to make documentation)
+* Optional: Boost with asio (for ThreadsafeFace and async I/O)
 
 Following are the detailed steps for each platform to install the prerequisites.
 
@@ -52,11 +53,15 @@ In a new terminal, enter:
 
     sudo port install doxygen
 
+Optional: To install Boost with asio, install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install boost
+
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
 In a terminal, enter:
 
-    sudo apt-get install build-essential
-    sudo apt-get install libssl-dev
+    sudo apt-get install build-essential libssl-dev
 
 Optional: To install libsqlite3, in a terminal, enter:
 
@@ -73,6 +78,10 @@ Optional: To install log4cxx, in a terminal, enter:
 Optional: To install Doxygen, in a terminal, enter:
 
     sudo apt-get install doxygen
+
+Optional: To install Boost with asio, in a terminal, enter:
+
+    sudo apt-get install libboost-all-dev
 
 ### Odroid Ubuntu
 

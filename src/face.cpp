@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdexcept>
 #include "node.hpp"
 #include <ndn-cpp/transport/tcp-transport.hpp>
 #include <ndn-cpp/transport/unix-transport.hpp>
@@ -32,12 +33,8 @@ using namespace ndn::func_lib;
 
 namespace ndn {
 
-/**
- * If the forwarder's Unix socket file path exists, then return the file path.
- * Otherwise return an empty string.
- * @return The Unix socket file path to use, or an empty string.
- */
-static string getUnixSocketFilePathForLocalhost()
+string 
+Face::getUnixSocketFilePathForLocalhost()
 {
   string filePath = "/var/run/nfd.sock";
   if (::access(filePath.c_str(), R_OK) == 0)
@@ -51,7 +48,8 @@ static string getUnixSocketFilePathForLocalhost()
   }
 }
 
-static ptr_lib::shared_ptr<Transport> getDefaultTransport()
+ptr_lib::shared_ptr<Transport>
+Face::getDefaultTransport()
 {
   if (getUnixSocketFilePathForLocalhost() == "")
     return ptr_lib::make_shared<TcpTransport>();
@@ -59,7 +57,8 @@ static ptr_lib::shared_ptr<Transport> getDefaultTransport()
     return ptr_lib::make_shared<UnixTransport>();
 }
 
-static ptr_lib::shared_ptr<Transport::ConnectionInfo> getDefaultConnectionInfo()
+ptr_lib::shared_ptr<Transport::ConnectionInfo>
+Face::getDefaultConnectionInfo()
 {
   string filePath = getUnixSocketFilePathForLocalhost();
   if (filePath == "")
@@ -96,7 +95,12 @@ uint64_t
 Face::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
-  return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+  uint64_t pendingInterestId = node_->getNextEntryId();
+
+  node_->expressInterest
+    (pendingInterestId, interest, onData, onTimeout, wireFormat, this);
+
+  return pendingInterestId;
 }
 
 uint64_t
@@ -108,10 +112,11 @@ Face::expressInterest
     // Copy the interestTemplate.
     Interest interest(*interestTemplate);
     interest.setName(name);
-    return node_->expressInterest(interest, onData, onTimeout, wireFormat);
+    return expressInterest(interest, onData, onTimeout, wireFormat);
   }
   else
-    return node_->expressInterest(Interest(name, 4000.0), onData, onTimeout, wireFormat);
+    return expressInterest
+      (Interest(name, 4000.0), onData, onTimeout, wireFormat);
 }
 
 void
@@ -133,9 +138,13 @@ Face::registerPrefix
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
    WireFormat& wireFormat)
 {
-  return node_->registerPrefix
-    (prefix, onInterest, onRegisterFailed, flags, wireFormat, *commandKeyChain_,
-     commandCertificateName_, this);
+  uint64_t registeredPrefixId = node_->getNextEntryId();
+
+  node_->registerPrefix
+    (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat,
+     *commandKeyChain_, commandCertificateName_, this);
+
+  return registeredPrefixId;
 }
 
 uint64_t
@@ -175,13 +184,11 @@ uint64_t
 Face::setInterestFilter
   (const InterestFilter& filter, const OnInterestCallback& onInterest)
 {
-  return node_->setInterestFilter(filter, onInterest, this);
-}
+  uint64_t interestFilterId = node_->getNextEntryId();
 
-uint64_t
-Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
-{
-  return node_->setInterestFilter(InterestFilter(prefix), onInterest, this);
+  node_->setInterestFilter(interestFilterId, filter, onInterest, this);
+
+  return interestFilterId;
 }
 
 void
@@ -193,7 +200,14 @@ Face::unsetInterestFilter(uint64_t interestFilterId)
 void
 Face::putData(const Data& data, WireFormat& wireFormat)
 {
-  node_->putData(data, wireFormat);
+  // We get the encoding now before calling send because it may dispatch to
+  // async I/O to be called later, and the caller may modify data before then.
+  Blob encoding = data.wireEncode(wireFormat);
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
+  send(encoding);
 }
 
 void
@@ -219,6 +233,12 @@ void
 Face::shutdown()
 {
   node_->shutdown();
+}
+
+void
+Face::callLater(Milliseconds delayMilliseconds, const Callback& callback)
+{
+  node_->callLater(delayMilliseconds, callback);
 }
 
 }

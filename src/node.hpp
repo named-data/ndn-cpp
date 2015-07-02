@@ -22,6 +22,9 @@
 #ifndef NDN_NODE_HPP
 #define NDN_NODE_HPP
 
+#include <map>
+#include <deque>
+#include <ndnboost/atomic.hpp>
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
@@ -48,18 +51,23 @@ public:
 
   /**
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
+   * @param pendingInterestId The getNextEntryId() for the pending interest ID
+   * which Face got so it could return it to the caller.
    * @param interest A reference to the Interest.  This copies the Interest.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
-   * @return The pending interest ID which can be used with removePendingInterest.
+   * @param face The face which has the callLater method, used for interest
+   * timeouts. The callLater method may be overridden in a subclass of Face.
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
-  uint64_t
-  expressInterest(const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat);
+  void
+  expressInterest
+    (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
+     const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the pending interest table.
@@ -91,6 +99,8 @@ public:
 
   /**
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
+   * @param registeredPrefixId The getNextEntryId() for the registered prefix ID
+   * which Face got so it could return it to the caller.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
    * @param onInterest (optional) If not null, this creates an interest filter
    * from prefix so that when an Interest is received which matches the filter,
@@ -108,14 +118,31 @@ public:
    * @param commandCertificateName The certificate name for signing interests.
    * @param face The face which is passed to the onInterest callback. If
    * onInterest is null, this is ignored.
-   * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
-  uint64_t
+  void
   registerPrefix
-    (const Name& prefix, const OnInterestCallback& onInterest,
+    (uint64_t registeredPrefixId, const Name& prefix,
+     const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
      const Name& commandCertificateName, Face* face);
+
+  /**
+   * This is the same as registerPrefix above except get the commandKeyChain and
+   * commandCertificateName directly from face.
+   */
+  void
+  registerPrefix
+    (uint64_t registeredPrefixId, const Name& prefix,
+     const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     WireFormat& wireFormat, Face* face)
+  {
+    registerPrefix
+      (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags,
+       wireFormat, *face->getCommandKeyChain(), face->getCommandCertificateName(),
+       face);
+  }
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the
@@ -134,26 +161,19 @@ public:
    * library's local callback table and does not register the prefix with the
    * forwarder. It will always succeed. To register a prefix with the forwarder,
    * use registerPrefix.
+   * @param interestFilterId The getNextEntryId() for the interest filter ID
+   * which Face got so it could return it to the caller.
    * @param filter The InterestFilter with a prefix and optional regex filter
    * used to match the name of an incoming Interest. This makes a copy of filter.
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * @param face The face which is passed to the onInterest callback.
-   * @return The interest filter ID which can be used with unsetInterestFilter.
    */
-  uint64_t
+  void
   setInterestFilter
-    (const InterestFilter& filter, const OnInterestCallback& onInterest,
-     Face* face)
-  {
-    uint64_t interestFilterId = InterestFilterEntry::getNextInterestFilterId();
-    interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
-      (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
-       onInterest, face));
-
-    return interestFilterId;
-  }
+    (uint64_t interestFilterId, const InterestFilter& filter,
+     const OnInterestCallback& onInterest, Face* face);
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -164,17 +184,6 @@ public:
    */
   void
   unsetInterestFilter(uint64_t interestFilterId);
-
-  /**
-   * The OnInterestCallback calls this to put a Data packet which satisfies an
-   * Interest.
-   * @param data The Data packet which satisfies the interest.
-   * @param wireFormat A WireFormat object used to encode the Data packet.
-   * @throws runtime_error If the encoded Data packet size exceeds
-   * getMaxNdnPacketSize().
-   */
-  void
-  putData(const Data& data, WireFormat& wireFormat);
 
   /**
    * Send the encoded packet out through the face.
@@ -231,12 +240,85 @@ public:
   static size_t
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
+  /**
+   * Call callback() after the given delay. This adds to delayedCallTable_ which 
+   * is used by processEvents().
+   * @param delayMilliseconds The delay in milliseconds.
+   * @param callback This calls callback() after the delay.
+   */
+  void
+  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
+
+  /**
+   * Get the next unique entry ID for the pending interest table, interest
+   * filter table, etc. This uses an atomic_uint64_t to be thread safe. Most
+   * entry IDs are for the pending interest table (there usually are not many
+   * interest filter table entries) so we use a common pool to only have to do
+   * the thread safe operation in one method which is called by Face.
+   * @return The next entry ID.
+   */
+  uint64_t
+  getNextEntryId();
+
 private:
+  enum ConnectStatus {
+    ConnectStatus_UNCONNECTED = 1,
+    ConnectStatus_CONNECT_REQUESTED = 2,
+    ConnectStatus_CONNECT_COMPLETE = 3
+  };
+
+  /**
+   * DelayedCall is a class for the members of the delayedCallTable_.
+   */
+  class DelayedCall {
+  public:
+    /**
+     * Create a new DelayedCall and set the call time based on the current time
+     * and the delayMilliseconds.
+     * @param delayMilliseconds The delay in milliseconds.
+     * @param callback This calls callback() after the delay.
+     */
+    DelayedCall(Milliseconds delayMilliseconds, const Face::Callback& callback);
+
+    /**
+     * Get the time at which the callback should be called.
+     * @return The call time in milliseconds, similar to ndn_getNowMilliseconds.
+     */
+    MillisecondsSince1970
+    getCallTime() const { return callTime_; }
+
+    /**
+     * Call the callback given to the constructor. This does not catch
+     * exceptions.
+     */
+    void
+    callCallback() const { callback_(); }
+
+    /**
+     * Compare shared_ptrs to DelayedCall based only on callTime_.
+     */
+    class Compare {
+    public:
+      bool
+      operator()
+        (const ptr_lib::shared_ptr<const DelayedCall>& x,
+         const ptr_lib::shared_ptr<const DelayedCall>& y) const
+      {
+        return x->callTime_ < y->callTime_;
+      }
+    };
+
+  private:
+    const Face::Callback callback_;
+    MillisecondsSince1970 callTime_;
+  };
+
   class PendingInterest {
   public:
     /**
-     * Create a new PendingInterest and set the timeoutTime_ based on the current time and the interest lifetime.
-     * @param pendingInterestId A unique ID for this entry, which you should get with getNextPendingInteresId().
+     * Create a new PendingInterest.
+     * @param pendingInterestId A unique ID for this entry, which you should get 
+     * with getNextEntryId().
      * @param interest A shared_ptr for the interest.
      * @param onData A function object to call when a matching data packet is received.
      * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
@@ -244,15 +326,6 @@ private:
     PendingInterest
       (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
        const OnTimeout& onTimeout);
-
-    /**
-     * Return the next unique pending interest ID.
-     */
-    static uint64_t
-    getNextPendingInterestId()
-    {
-      return ++lastPendingInterestId_;
-    }
 
     /**
      * Return the pendingInterestId given to the constructor.
@@ -267,15 +340,17 @@ private:
     getOnData() { return onData_; }
 
     /**
-     * Check if this interest is timed out.
-     * @param nowMilliseconds The current time in milliseconds from ndn_getNowMilliseconds.
-     * @return true if this interest timed out, otherwise false.
+     * Set the isRemoved flag which is returned by getIsRemoved().
+     */
+    void
+    setIsRemoved() { isRemoved_ = true; }
+
+    /**
+     * Check if setIsRemoved() was called.
+     * @return True if setIsRemoved() was called.
      */
     bool
-    isTimedOut(MillisecondsSince1970 nowMilliseconds)
-    {
-      return timeoutTimeMilliseconds_ >= 0.0 && nowMilliseconds >= timeoutTimeMilliseconds_;
-    }
+    getIsRemoved() { return isRemoved_; }
 
     /**
      * Call onTimeout_ (if defined).  This ignores exceptions from the onTimeout_.
@@ -285,11 +360,10 @@ private:
 
   private:
     ptr_lib::shared_ptr<const Interest> interest_;
-    static uint64_t lastPendingInterestId_; /**< A class variable used to get the next unique ID. */
     uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
     const OnData onData_;
     const OnTimeout onTimeout_;
-    MillisecondsSince1970 timeoutTimeMilliseconds_; /**< The time when the interest times out in milliseconds according to ndn_getNowMilliseconds, or -1 for no timeout. */
+    bool isRemoved_;
   };
 
   /**
@@ -302,7 +376,8 @@ private:
   public:
     /**
      * Create a new RegisteredPrefix with the given values.
-     * @param registeredPrefixId A unique ID for this entry, which you should get with getNextRegisteredPrefixId().
+     * @param registeredPrefixId A unique ID for this entry, which you should 
+     * get with getNextEntryId().
      * @param prefix A shared_ptr for the prefix.
      * @param relatedInterestFilterId (optional) The related interestFilterId
      * for the filter set in the same registerPrefix operation. If omitted, set
@@ -314,16 +389,6 @@ private:
     : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
       relatedInterestFilterId_(relatedInterestFilterId)
     {
-    }
-
-    /**
-     * Return the next unique entry ID.
-     * @return The next ID.
-     */
-    static uint64_t
-    getNextRegisteredPrefixId()
-    {
-      return ++lastRegisteredPrefixId_;
     }
 
     /**
@@ -348,7 +413,6 @@ private:
     getRelatedInterestFilterId() { return relatedInterestFilterId_; }
 
   private:
-    static uint64_t lastRegisteredPrefixId_; /**< A class variable used to get the next unique ID. */
     uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
     ptr_lib::shared_ptr<const Name> prefix_;
     uint64_t relatedInterestFilterId_;
@@ -362,7 +426,7 @@ private:
   public:
     /**
      * Create a new InterestFilterEntry with the given values.
-     * @param interestFilterId The ID from getNextInterestFilterId().
+     * @param interestFilterId The ID from getNextEntryId().
      * @param filter A shared_ptr for the InterestFilter for this entry.
      * @param onInterest A function object to call when a matching data packet
      * is received.
@@ -376,18 +440,6 @@ private:
     : interestFilterId_(interestFilterId), filter_(filter),
       prefix_(new Name(filter->getPrefix())), onInterest_(onInterest), face_(face)
     {
-    }
-
-    /**
-     * Get the next interest filter ID. This just calls
-     * RegisteredPrefix::getNextRegisteredPrefixId() so that IDs come from the
-     * same pool and won't be confused when removing entries from the two tables.
-     * @return The next ID.
-     */
-    static uint64_t
-    getNextInterestFilterId()
-    {
-      return RegisteredPrefix::getNextRegisteredPrefixId();
     }
 
     /**
@@ -467,7 +519,8 @@ private:
       /**
        *
        * @param node
-       * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId() which registerPrefix got so it could return it to the caller.
+       * @param registeredPrefixId The getNextEntryId() which registerPrefix got
+       * so it could return it to the caller.
        * @param prefix
        * @param onInterest
        * @param onRegisterFailed
@@ -559,6 +612,39 @@ private:
   };
 
   /**
+   * Do the work of expressInterest once we know we are connected. Add the
+   * entry to the PIT, encode and send the interest.
+   * @param pendingInterestId The getNextEntryId() for the pending interest ID
+   * which Face got so it could return it to the caller.
+   * @param interestCopy The Interest to send, which has already been copied and put
+   * in a shared_ptr.
+   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
+   * use func_lib::ref() as appropriate.
+   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
+   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param wireFormat A WireFormat object used to encode the message.
+   * @param face The face which has the callLater method, used for interest
+   * timeouts. The callLater method may be overridden in a subclass of Face.
+   * @throws runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  expressInterestHelper
+    (uint64_t pendingInterestId, 
+     const ptr_lib::shared_ptr<const Interest>& interestCopy,
+     const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
+     Face* face);
+
+  /**
+   * This is used in callLater for when the pending interest expires. If the
+   * pendingInterest is still in the pendingInterestTable_, remove it and call
+   * its onTimeout callback.
+   * @param pendingInterest The pending interest to check.
+   */
+  void
+  processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest);
+
+  /**
    * Find all entries from pendingInterestTable_ where the name conforms to the
    * entry's interest selectors, remove the entries from the table and add to
    * the entries vector.
@@ -573,10 +659,9 @@ private:
 
   /**
    * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
-   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
-   * which registerPrefix got so it could return it to the caller. If this
-   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
-   * been done).
+   * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
+   * it could return it to the caller. If this is 0, then don't add to
+   * registeredPrefixTable_ (assuming it has already been done).
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
@@ -592,10 +677,9 @@ private:
 
   /**
    * Do the work of registerPrefix to register with NFD.
-   * @param registeredPrefixId The RegisteredPrefix::getNextRegisteredPrefixId()
-   * which registerPrefix got so it could return it to the caller. If this
-   * is 0, then don't add to registeredPrefixTable_ (assuming it has already
-   * been done).
+   * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
+   * it could return it to the caller. If this is 0, then don't add to
+   * registeredPrefixTable_ (assuming it has already been done).
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
@@ -611,15 +695,30 @@ private:
      const ForwardingFlags& flags, KeyChain& commandKeyChain,
      const Name& commandCertificateName, WireFormat& wireFormat, Face* face);
 
+  /**
+   * This is called by Transport::connect from expressInterest.
+   */
+  void
+  onConnected();
+
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
+  // Use a deque so we can efficiently remove from the front.
+  std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
+  DelayedCall::Compare delayedCallCompare_;
+  std::vector<Face::Callback> onConnectedCallbacks_;
   Interest ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
+  // lastEntryId_ is used to get the next unique ID. Use atomic_uint64_t to be
+  // thread safe. This is not exposed in the public API or shared with the
+  // application, so use ndnboost. */
+  ndnboost::atomic_uint64_t lastEntryId_;
+  ConnectStatus connectStatus_;
 };
 
 }
