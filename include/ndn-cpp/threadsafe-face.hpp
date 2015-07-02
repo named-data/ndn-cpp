@@ -175,7 +175,7 @@ public:
    * @param callback This calls callback.callback() after the delay.
    */
   virtual void
-  callLater(Milliseconds delayMilliseconds, const Callback& callback);
+  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
 
 private:
   static ptr_lib::shared_ptr<Transport>
