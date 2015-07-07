@@ -60,13 +60,14 @@ int main(int argc, char** argv)
     // Counter holds data used by the callbacks.
     Counter counter;
 
-    Name name1("/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4");
+    // Try to fetch anything.
+    Name name1("/");
     cout << "Express name " << name1.toUri() << endl;
     // Use bind to pass the counter object to the callbacks.
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 
-    // Try to get anything.
-    Name name2("/");
+    // Try to fetch using a known name.
+    Name name2("/ndn/edu/ucla/remap/demo/ndn-js-test/hello.txt/%FDU%8D%9DM");
     cout << "Express name " << name2.toUri() << endl;
     face.expressInterest(name2, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 
