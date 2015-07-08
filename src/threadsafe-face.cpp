@@ -84,10 +84,29 @@ ThreadsafeFace::expressInterest
 {
   uint64_t pendingInterestId = node_->getNextEntryId();
 
+  // This copies the interest as required by Node.expressInterest.
   ioService_.dispatch
     (boost::bind
-     (&Node::expressInterest, node_, pendingInterestId, interest, onData,
-      onTimeout, boost::ref(wireFormat), this));
+     (&Node::expressInterest, node_, pendingInterestId,
+      ptr_lib::make_shared<const Interest>(interest), onData, onTimeout,
+      boost::ref(wireFormat), this));
+
+  return pendingInterestId;
+}
+
+uint64_t
+ThreadsafeFace::expressInterest
+  (const Name& name, const Interest *interestTemplate, const OnData& onData,
+   const OnTimeout& onTimeout, WireFormat& wireFormat)
+{
+  uint64_t pendingInterestId = node_->getNextEntryId();
+
+  // This copies the name object as required by Node.expressInterest.
+  ioService_.dispatch
+    (boost::bind
+     (&Node::expressInterest, node_, pendingInterestId,
+      getInterestCopy(name, interestTemplate), onData, onTimeout,
+      boost::ref(wireFormat), this));
 
   return pendingInterestId;
 }
@@ -107,7 +126,7 @@ ThreadsafeFace::registerPrefix
 {
   uint64_t registeredPrefixId = node_->getNextEntryId();
 
-  // This copies the prefix object as required by Node.setInterestFilter.
+  // This copies the prefix object as required by Node.registerPrefix.
   ioService_.dispatch
     (boost::bind
      (&Node::registerPrefix, node_, registeredPrefixId,

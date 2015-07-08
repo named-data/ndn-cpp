@@ -127,7 +127,7 @@ public:
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
-  uint64_t
+  virtual uint64_t
   expressInterest
     (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
@@ -407,7 +407,28 @@ protected:
    */
   static std::string
   getUnixSocketFilePathForLocalhost();
-  
+
+  /**
+   * Do the work of expressInterest to make an Interest based on name and
+   * interestTemplate.
+   * @param name A reference to a Name for the interest.  This copies the Name.
+   * @param interestTemplate if not 0, copy interest selectors from the template.
+   * This does not keep a pointer to the Interest object.
+   * @return A shared_ptr of the Interest, suitable for Node.expressInterest.
+   */
+  static ptr_lib::shared_ptr<const Interest>
+  getInterestCopy(const Name& name, const Interest *interestTemplate)
+  {
+    if (interestTemplate) {
+      // Copy the interestTemplate.
+      ptr_lib::shared_ptr<Interest> interestCopy(new Interest(*interestTemplate));
+      interestCopy->setName(name);
+      return interestCopy;
+    }
+    else
+      return ptr_lib::make_shared<Interest>(name, 4000.0);
+  }
+
   Node *node_;
   KeyChain* commandKeyChain_;
   Name commandCertificateName_;

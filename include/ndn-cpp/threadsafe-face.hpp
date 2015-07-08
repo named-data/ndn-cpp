@@ -80,12 +80,22 @@ public:
   /**
    * Override to use the ioService given to the constructor to dispatch
    * expressInterest to be called in a thread-safe manner. See
-   * Face.expressInterest for calling details. (Note that the other overloads of
-   * Face.expressInterest also call this.)
+   * Face.expressInterest for calling details.
    */
   virtual uint64_t
   expressInterest
     (const Interest& interest, const OnData& onData,
+     const OnTimeout& onTimeout = OnTimeout(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Override to use the ioService given to the constructor to dispatch
+   * expressInterest to be called in a thread-safe manner. See
+   * Face.expressInterest for calling details.
+   */
+  virtual uint64_t
+  expressInterest
+    (const Name& name, const Interest *interestTemplate, const OnData& onData,
      const OnTimeout& onTimeout = OnTimeout(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 

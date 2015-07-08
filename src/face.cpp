@@ -97,8 +97,10 @@ Face::expressInterest
 {
   uint64_t pendingInterestId = node_->getNextEntryId();
 
+  // This copies the interest as required by Node.expressInterest.
   node_->expressInterest
-    (pendingInterestId, interest, onData, onTimeout, wireFormat, this);
+    (pendingInterestId, ptr_lib::make_shared<const Interest>(interest), onData,
+     onTimeout, wireFormat, this);
 
   return pendingInterestId;
 }
@@ -108,15 +110,14 @@ Face::expressInterest
   (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout,
    WireFormat& wireFormat)
 {
-  if (interestTemplate) {
-    // Copy the interestTemplate.
-    Interest interest(*interestTemplate);
-    interest.setName(name);
-    return expressInterest(interest, onData, onTimeout, wireFormat);
-  }
-  else
-    return expressInterest
-      (Interest(name, 4000.0), onData, onTimeout, wireFormat);
+  uint64_t pendingInterestId = node_->getNextEntryId();
+
+  // This copies the name object as required by Node.expressInterest.
+  node_->expressInterest
+    (pendingInterestId, getInterestCopy(name, interestTemplate), onData,
+     onTimeout, wireFormat, this);
+
+  return pendingInterestId;
 }
 
 void
@@ -140,7 +141,7 @@ Face::registerPrefix
 {
   uint64_t registeredPrefixId = node_->getNextEntryId();
 
-  // This copies the prefix object as required by Node.setInterestFilter.
+  // This copies the prefix object as required by Node.registerPrefix.
   node_->registerPrefix
     (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
      onRegisterFailed, flags, wireFormat, *commandKeyChain_,
@@ -202,6 +203,8 @@ Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest
   uint64_t interestFilterId = node_->getNextEntryId();
 
   // This copies the prefix object as required by Node.setInterestFilter.
+  // We could just call setInterestFilter(InterestFilter(prefix), onInterest),
+  // but that would make yet another copy of prefix, which we want to avoid.
   node_->setInterestFilter
     (interestFilterId,
      ptr_lib::make_shared<const InterestFilter>(prefix), onInterest, this);
