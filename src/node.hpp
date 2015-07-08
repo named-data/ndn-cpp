@@ -163,8 +163,10 @@ public:
    * use registerPrefix.
    * @param interestFilterId The getNextEntryId() for the interest filter ID
    * which Face got so it could return it to the caller.
-   * @param filter The InterestFilter with a prefix and optional regex filter
-   * used to match the name of an incoming Interest. This makes a copy of filter.
+   * @param filterCopy The InterestFilter with a prefix and optional regex filter
+   * used to match the name of an incoming Interest, which is NOT copied for
+   * this internal Node method. The Face setInterestFilter is responsible for
+   * making a copy and passing a shared_ptr for Node to use.
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
    * onInterest(prefix, interest, face, interestFilterId, filter).
@@ -172,7 +174,8 @@ public:
    */
   void
   setInterestFilter
-    (uint64_t interestFilterId, const InterestFilter& filter,
+    (uint64_t interestFilterId, 
+     const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
      const OnInterestCallback& onInterest, Face* face);
 
   /**

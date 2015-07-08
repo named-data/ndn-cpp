@@ -334,12 +334,12 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 
 void
 Node::setInterestFilter
-  (uint64_t interestFilterId, const InterestFilter& filter,
+  (uint64_t interestFilterId, 
+   const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
    const OnInterestCallback& onInterest, Face* face)
 {
   interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
-    (interestFilterId, ptr_lib::make_shared<const InterestFilter>(filter),
-     onInterest, face));
+    (interestFilterId, filterCopy, onInterest, face));
 }
 
 void
@@ -553,7 +553,8 @@ Node::registerPrefixHelper
       // callback, so add an InterestFilterEntry.
       interestFilterId = getNextEntryId();
       setInterestFilter
-        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+        (interestFilterId, ptr_lib::make_shared<const InterestFilter>(*prefix),
+         onInterest, face);
     }
 
     registeredPrefixTable_.push_back
@@ -613,7 +614,8 @@ Node::nfdRegisterPrefix
       // callback, so add an InterestFilterEntry.
       interestFilterId = getNextEntryId();
       setInterestFilter
-        (interestFilterId, InterestFilter(*prefix), onInterest, face);
+        (interestFilterId, ptr_lib::make_shared<const InterestFilter>(*prefix),
+         onInterest, face);
     }
 
     registeredPrefixTable_.push_back
