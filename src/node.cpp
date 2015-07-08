@@ -190,7 +190,8 @@ selfregSign(Data& data, WireFormat& wireFormat)
 
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
-  ndndIdFetcherInterest_(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0),
+  ndndIdFetcherInterest_
+    (new Interest(Name("/%C1.M.S.localhost/%C1.M.SRV/ndnd/KEY"), 4000.0)),
   timeoutPrefix_(Name("/local/timeout")),
   lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED)
 {
@@ -198,11 +199,10 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 
 void
 Node::expressInterest
-  (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
+  (uint64_t pendingInterestId,
+   const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
-  ptr_lib::shared_ptr<const Interest> interestCopy(new Interest(interest));
-  
   // TODO: Properly check if we are already connected to the expected host.
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
@@ -569,7 +569,8 @@ Node::registerPrefixHelper
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest
-    (getNextEntryId(), interest, response, response, wireFormat, face);
+    (getNextEntryId(), ptr_lib::make_shared<const Interest>(interest),
+     response, response, wireFormat, face);
 }
 
 void
@@ -590,21 +591,22 @@ Node::nfdRegisterPrefix
   controlParameters.setName(*prefix);
   controlParameters.setForwardingFlags(flags);
 
-  Interest commandInterest;
+  ptr_lib::shared_ptr<Interest> commandInterest(new Interest());
   if (isLocal()) {
-    commandInterest.setName(Name("/localhost/nfd/rib/register"));
+    commandInterest->setName(Name("/localhost/nfd/rib/register"));
     // The interest is answered by the local host, so set a short timeout.
-    commandInterest.setInterestLifetimeMilliseconds(2000.0);
+    commandInterest->setInterestLifetimeMilliseconds(2000.0);
   }
   else {
-    commandInterest.setName(Name("/localhop/nfd/rib/register"));
+    commandInterest->setName(Name("/localhop/nfd/rib/register"));
     // The host is remote, so set a longer timeout.
-    commandInterest.setInterestLifetimeMilliseconds(4000.0);
+    commandInterest->setInterestLifetimeMilliseconds(4000.0);
   }
   // NFD only accepts TlvWireFormat packets.
-  commandInterest.getName().append(controlParameters.wireEncode(*TlvWireFormat::get()));
+  commandInterest->getName().append
+    (controlParameters.wireEncode(*TlvWireFormat::get()));
   makeCommandInterest
-    (commandInterest, commandKeyChain, commandCertificateName,
+    (*commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
 
   if (registeredPrefixId != 0) {

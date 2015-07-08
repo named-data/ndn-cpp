@@ -53,7 +53,9 @@ public:
    * Send the Interest through the transport, read the entire response and call onData(interest, data).
    * @param pendingInterestId The getNextEntryId() for the pending interest ID
    * which Face got so it could return it to the caller.
-   * @param interest A reference to the Interest.  This copies the Interest.
+   * @param interestCopy The Interest which is NOT copied for this internal Node
+   * method. The Face expressInterest is responsible for making a copy and
+   * passing a shared_ptr for Node to use.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
@@ -66,8 +68,10 @@ public:
    */
   void
   expressInterest
-    (uint64_t pendingInterestId, const Interest& interest, const OnData& onData,
-     const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face);
+    (uint64_t pendingInterestId,
+     const ptr_lib::shared_ptr<const Interest>& interestCopy,
+     const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
+     Face* face);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the pending interest table.
@@ -718,7 +722,7 @@ private:
   std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
   DelayedCall::Compare delayedCallCompare_;
   std::vector<Face::Callback> onConnectedCallbacks_;
-  Interest ndndIdFetcherInterest_;
+  ptr_lib::shared_ptr<const Interest> ndndIdFetcherInterest_;
   Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
