@@ -270,7 +270,8 @@ Node::removePendingInterest(uint64_t pendingInterestId)
 
 void
 Node::registerPrefix
-  (uint64_t registeredPrefixId, const Name& prefix,
+  (uint64_t registeredPrefixId,
+   const ptr_lib::shared_ptr<const Name>& prefixCopy,
    const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
    WireFormat& wireFormat, KeyChain& commandKeyChain,
@@ -287,7 +288,7 @@ Node::registerPrefix
       // First fetch the ndndId of the connected hub.
       NdndIdFetcher fetcher
         (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-          (this, registeredPrefixId, prefix, onInterest, onRegisterFailed,
+          (this, registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
            flags, wireFormat, face)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.
@@ -297,15 +298,14 @@ Node::registerPrefix
     }
     else
       registerPrefixHelper
-        (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix),
-         onInterest, onRegisterFailed, flags, wireFormat, face);
+        (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, flags,
+         wireFormat, face);
   }
   else
     // The application set the KeyChain for signing NFD interests.
     nfdRegisterPrefix
-      (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
-       onRegisterFailed, flags, commandKeyChain, commandCertificateName,
-       wireFormat, face);
+      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, flags,
+       commandKeyChain, commandCertificateName, wireFormat, face);
 }
 
 void
@@ -480,7 +480,7 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& ti
       //   registeredPrefixTable_ on the first try.
       NdndIdFetcher fetcher
         (ptr_lib::shared_ptr<NdndIdFetcher::Info>(new NdndIdFetcher::Info
-          (&info_->node_, 0, *info_->prefix_, info_->onInterest_,
+          (&info_->node_, 0, info_->prefix_, info_->onInterest_,
            info_->onRegisterFailed_, info_->flags_, info_->wireFormat_, info_->face_)));
       // We send the interest using the given wire format so that the hub receives (and sends) in the application's desired wire format.
       // It is OK for func_lib::function make a copy of the function object because the Info is in a ptr_lib::shared_ptr.

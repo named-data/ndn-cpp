@@ -101,7 +101,9 @@ public:
    * Register prefix with the connected NDN hub and call onInterest when a matching interest is received.
    * @param registeredPrefixId The getNextEntryId() for the registered prefix ID
    * which Face got so it could return it to the caller.
-   * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
+   * @param prefixCopy The Name for the prefix to register,  which is NOT copied
+   * for this internal Node method. The Face registerPrefix is responsible for
+   * making a copy and passing a shared_ptr for Node to use.
    * @param onInterest (optional) If not null, this creates an interest filter
    * from prefix so that when an Interest is received which matches the filter,
    * this calls the function object
@@ -121,7 +123,8 @@ public:
    */
   void
   registerPrefix
-    (uint64_t registeredPrefixId, const Name& prefix,
+    (uint64_t registeredPrefixId, 
+     const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
@@ -133,13 +136,14 @@ public:
    */
   void
   registerPrefix
-    (uint64_t registeredPrefixId, const Name& prefix,
+    (uint64_t registeredPrefixId,
+     const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
      WireFormat& wireFormat, Face* face)
   {
     registerPrefix
-      (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags,
+      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, flags,
        wireFormat, *face->getCommandKeyChain(), face->getCommandCertificateName(),
        face);
   }
@@ -531,12 +535,13 @@ private:
        * @param wireFormat
        * @param flace
        */
-      Info(Node *node, uint64_t registeredPrefixId, const Name& prefix,
+      Info(Node *node, uint64_t registeredPrefixId,
+           const ptr_lib::shared_ptr<const Name>& prefix,
            const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
            WireFormat& wireFormat, Face* face)
       : node_(*node), registeredPrefixId_(registeredPrefixId),
-        prefix_(new Name(prefix)), onInterest_(onInterest),
+        prefix_(prefix), onInterest_(onInterest),
         onRegisterFailed_(onRegisterFailed), flags_(flags),
         wireFormat_(wireFormat), face_(face)
       {
