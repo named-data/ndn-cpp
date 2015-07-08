@@ -128,10 +128,28 @@ ThreadsafeFace::setInterestFilter
 {
   uint64_t interestFilterId = node_->getNextEntryId();
 
+  // Make a copy as required by Node.setInterestFilter.
   ioService_.dispatch
     (boost::bind
-     (&Node::setInterestFilter, node_, interestFilterId, filter, onInterest,
-      this));
+     (&Node::setInterestFilter, node_, interestFilterId,
+      ptr_lib::make_shared<const InterestFilter>(filter), onInterest, this));
+
+  return interestFilterId;
+}
+
+uint64_t
+ThreadsafeFace::setInterestFilter
+  (const Name& prefix, const OnInterestCallback& onInterest)
+{
+  uint64_t interestFilterId = node_->getNextEntryId();
+
+  // This copies the prefix object as required by Node.setInterestFilter.
+  // We could just call setInterestFilter(InterestFilter(prefix), onInterest),
+  // but that would make yet another copy of prefix, which we want to avoid.
+  ioService_.dispatch
+    (boost::bind
+     (&Node::setInterestFilter, node_, interestFilterId,
+      ptr_lib::make_shared<const InterestFilter>(prefix), onInterest, this));
 
   return interestFilterId;
 }

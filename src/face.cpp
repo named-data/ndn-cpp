@@ -186,7 +186,23 @@ Face::setInterestFilter
 {
   uint64_t interestFilterId = node_->getNextEntryId();
 
-  node_->setInterestFilter(interestFilterId, filter, onInterest, this);
+  // Make a copy as required by Node.setInterestFilter.
+  node_->setInterestFilter
+    (interestFilterId,
+     ptr_lib::make_shared<const InterestFilter>(filter), onInterest, this);
+
+  return interestFilterId;
+}
+
+uint64_t
+Face::setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
+{
+  uint64_t interestFilterId = node_->getNextEntryId();
+
+  // This copies the prefix object as required by Node.setInterestFilter.
+  node_->setInterestFilter
+    (interestFilterId,
+     ptr_lib::make_shared<const InterestFilter>(prefix), onInterest, this);
 
   return interestFilterId;
 }

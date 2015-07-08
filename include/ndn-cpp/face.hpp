@@ -295,11 +295,8 @@ public:
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
-  uint64_t
-  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest)
-  {
-    return setInterestFilter(InterestFilter(prefix), onInterest);
-  }
+  virtual uint64_t
+  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest);
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the

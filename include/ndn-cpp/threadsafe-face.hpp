@@ -154,6 +154,14 @@ public:
 
   /**
    * Override to use the ioService given to the constructor to dispatch
+   * setInterestFilter to be called in a thread-safe manner. See
+   * Face.setInterestFilter for calling details.
+   */
+  virtual uint64_t
+  setInterestFilter(const Name& prefix, const OnInterestCallback& onInterest);
+
+  /**
+   * Override to use the ioService given to the constructor to dispatch
    * unsetInterestFilter to be called in a thread-safe manner. See
    * Face.unsetInterestFilter for calling details.
    */
