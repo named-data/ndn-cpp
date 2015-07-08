@@ -107,10 +107,12 @@ ThreadsafeFace::registerPrefix
 {
   uint64_t registeredPrefixId = node_->getNextEntryId();
 
+  // This copies the prefix object as required by Node.setInterestFilter.
   ioService_.dispatch
     (boost::bind
-     (&Node::registerPrefix, node_, registeredPrefixId, prefix, onInterest,
-      onRegisterFailed, boost::ref(flags), boost::ref(wireFormat), this));
+     (&Node::registerPrefix, node_, registeredPrefixId,
+      ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed,
+      boost::ref(flags), boost::ref(wireFormat), this));
 
   return registeredPrefixId;
 }
@@ -128,7 +130,7 @@ ThreadsafeFace::setInterestFilter
 {
   uint64_t interestFilterId = node_->getNextEntryId();
 
-  // Make a copy as required by Node.setInterestFilter.
+  //This copies the filter as required by Node.setInterestFilter.
   ioService_.dispatch
     (boost::bind
      (&Node::setInterestFilter, node_, interestFilterId,

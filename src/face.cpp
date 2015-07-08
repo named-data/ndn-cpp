@@ -140,9 +140,11 @@ Face::registerPrefix
 {
   uint64_t registeredPrefixId = node_->getNextEntryId();
 
+  // This copies the prefix object as required by Node.setInterestFilter.
   node_->registerPrefix
-    (registeredPrefixId, prefix, onInterest, onRegisterFailed, flags, wireFormat,
-     *commandKeyChain_, commandCertificateName_, this);
+    (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
+     onRegisterFailed, flags, wireFormat, *commandKeyChain_,
+     commandCertificateName_, this);
 
   return registeredPrefixId;
 }
@@ -186,7 +188,7 @@ Face::setInterestFilter
 {
   uint64_t interestFilterId = node_->getNextEntryId();
 
-  // Make a copy as required by Node.setInterestFilter.
+  // This copies the filter as required by Node.setInterestFilter.
   node_->setInterestFilter
     (interestFilterId,
      ptr_lib::make_shared<const InterestFilter>(filter), onInterest, this);
