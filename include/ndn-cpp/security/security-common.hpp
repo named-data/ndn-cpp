@@ -25,14 +25,11 @@
 namespace ndn {
 
 // The KeyType integer is used by the Sqlite key storage, so don't change them.
+// Make these the same as ndn-cxx in case the storage file is shared.
 enum KeyType {
   KEY_TYPE_RSA = 0,
-  // KEY_TYPE_DSA,
-  KEY_TYPE_AES = 1,
-  // KEY_TYPE_DES,
-  // KEY_TYPE_RC4,
-  // KEY_TYPE_RC2
-  KEY_TYPE_ECDSA = 2
+  KEY_TYPE_ECDSA = 1,
+  KEY_TYPE_AES   = 128,
 };
 
 enum KeyClass {
