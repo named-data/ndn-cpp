@@ -259,8 +259,7 @@ DerNode::DerStructure::updateSize()
 Blob
 DerNode::DerByteString::toVal()
 {
-  // Make a copy since payload_ can change.
-  return Blob(&payload_[0], payloadPosition_);
+  return getPayload();
 }
 
 DerNode::DerInteger::DerInteger(int integer)

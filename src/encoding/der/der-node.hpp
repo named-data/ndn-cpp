@@ -66,6 +66,13 @@ public:
   toVal();
 
   /**
+   * Get a copy of the payload bytes.
+   * @return A copy of the payload.
+   */
+  Blob
+  getPayload() { return Blob(&payload_[0], payloadPosition_); }
+
+  /**
    * If this object is a DerSequence, get the children of this node. Otherwise,
    * throw an exception.
    * (DerSequence overrides to implement this method.)
