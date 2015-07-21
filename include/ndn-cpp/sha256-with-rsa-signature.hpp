@@ -156,18 +156,7 @@ public:
    * @return The change count.
    */
   virtual uint64_t
-  getChangeCount() const
-  {
-    // Make sure each of the checkChanged is called.
-    bool changed = publisherPublicKeyDigest_.checkChanged();
-    changed = keyLocator_.checkChanged() || changed;
-    if (changed)
-      // A child object has changed, so update the change count.
-      // This method can be called on a const object, but we want to be able to update the changeCount_.
-      ++const_cast<Sha256WithRsaSignature*>(this)->changeCount_;
-
-    return changeCount_;
-  }
+  getChangeCount() const;
 
 private:
   Blob digestAlgorithm_; /**< if empty, the default is 2.16.840.1.101.3.4.2.1 (sha-256) */

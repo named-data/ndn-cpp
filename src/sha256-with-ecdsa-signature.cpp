@@ -70,4 +70,18 @@ Sha256WithEcdsaSignature::set(const struct ndn_Signature& signatureStruct)
   keyLocator_.get().set(signatureStruct.keyLocator);
 }
 
+uint64_t
+Sha256WithEcdsaSignature::getChangeCount() const
+{
+  // Make sure each of the checkChanged is called.
+  bool changed = keyLocator_.checkChanged();
+  if (changed)
+    // A child object has changed, so update the change count.
+    // This method can be called on a const object, but we want to be able to
+    //   update the changeCount_.
+    ++const_cast<Sha256WithEcdsaSignature*>(this)->changeCount_;
+
+  return changeCount_;
+}
+
 }

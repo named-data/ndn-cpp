@@ -109,18 +109,7 @@ public:
    * @return The change count.
    */
   virtual uint64_t
-  getChangeCount() const
-  {
-    // Make sure each of the checkChanged is called.
-    bool changed = keyLocator_.checkChanged();
-    if (changed)
-      // A child object has changed, so update the change count.
-      // This method can be called on a const object, but we want to be able to
-      //   update the changeCount_.
-      ++const_cast<Sha256WithEcdsaSignature*>(this)->changeCount_;
-
-    return changeCount_;
-  }
+  getChangeCount() const;
 
 private:
   Blob signature_;

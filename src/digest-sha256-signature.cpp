@@ -66,4 +66,10 @@ DigestSha256Signature::set(const struct ndn_Signature& signatureStruct)
   setSignature(Blob(signatureStruct.signature));
 }
 
+uint64_t
+DigestSha256Signature::getChangeCount() const
+{
+  return changeCount_;
+}
+
 }

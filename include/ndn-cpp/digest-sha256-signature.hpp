@@ -93,10 +93,7 @@ public:
    * @return The change count.
    */
   virtual uint64_t
-  getChangeCount() const
-  {
-    return changeCount_;
-  }
+  getChangeCount() const;
 
 private:
   Blob signature_;
