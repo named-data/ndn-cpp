@@ -37,12 +37,18 @@ PolicyManager::verifySignature
   (const Signature* signature, const SignedBlob& signedBlob,
    const Blob& publicKeyDer)
 {
-  if (dynamic_cast<const Sha256WithRsaSignature *>(signature))
+  if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
+    if (publicKeyDer.isNull())
+      return false;
     return verifySha256WithRsaSignature
       (signature->getSignature(), signedBlob, publicKeyDer);
-  else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature))
+  }
+  else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature)) {
+    if (publicKeyDer.isNull())
+      return false;
     return verifySha256WithEcdsaSignature
       (signature->getSignature(), signedBlob, publicKeyDer);
+  }
   else if (dynamic_cast<const DigestSha256Signature *>(signature))
     return verifyDigestSha256Signature(signature->getSignature(), signedBlob);
   else
