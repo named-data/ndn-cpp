@@ -565,7 +565,7 @@ void ChannelStatusMessage::Swap(ChannelStatusMessage* other) {
 
 // @@protoc_insertion_point(global_scope)
 
-#else // GOOGLE_PROTOBUF_VERSION < 2005000
+#elif GOOGLE_PROTOBUF_VERSION < 2006000
 
 #include <algorithm>
 
@@ -1122,6 +1122,595 @@ void ChannelStatusMessage::Swap(ChannelStatusMessage* other) {
 
 // @@protoc_insertion_point(global_scope)
 
-#endif // GOOGLE_PROTOBUF_VERSION < 2005000
+#else // GOOGLE_PROTOBUF_VERSION < 2006000
+
+#include <algorithm>
+
+#include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/once.h>
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/generated_message_reflection.h>
+#include <google/protobuf/reflection_ops.h>
+#include <google/protobuf/wire_format.h>
+// @@protoc_insertion_point(includes)
+
+namespace ndn_message {
+
+namespace {
+
+const ::google::protobuf::Descriptor* ChannelStatusMessage_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ChannelStatusMessage_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ChannelStatusMessage_ChannelStatus_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ChannelStatusMessage_ChannelStatus_reflection_ = NULL;
+
+}  // namespace
+
+
+void protobuf_AssignDesc_channel_2dstatus_2eproto() {
+  protobuf_AddDesc_channel_2dstatus_2eproto();
+  const ::google::protobuf::FileDescriptor* file =
+    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
+      "channel-status.proto");
+  GOOGLE_CHECK(file != NULL);
+  ChannelStatusMessage_descriptor_ = file->message_type(0);
+  static const int ChannelStatusMessage_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage, channel_status_),
+  };
+  ChannelStatusMessage_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ChannelStatusMessage_descriptor_,
+      ChannelStatusMessage::default_instance_,
+      ChannelStatusMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ChannelStatusMessage));
+  ChannelStatusMessage_ChannelStatus_descriptor_ = ChannelStatusMessage_descriptor_->nested_type(0);
+  static const int ChannelStatusMessage_ChannelStatus_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage_ChannelStatus, local_uri_),
+  };
+  ChannelStatusMessage_ChannelStatus_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ChannelStatusMessage_ChannelStatus_descriptor_,
+      ChannelStatusMessage_ChannelStatus::default_instance_,
+      ChannelStatusMessage_ChannelStatus_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage_ChannelStatus, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ChannelStatusMessage_ChannelStatus, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ChannelStatusMessage_ChannelStatus));
+}
+
+namespace {
+
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
+inline void protobuf_AssignDescriptorsOnce() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
+                 &protobuf_AssignDesc_channel_2dstatus_2eproto);
+}
+
+void protobuf_RegisterTypes(const ::std::string&) {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ChannelStatusMessage_descriptor_, &ChannelStatusMessage::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ChannelStatusMessage_ChannelStatus_descriptor_, &ChannelStatusMessage_ChannelStatus::default_instance());
+}
+
+}  // namespace
+
+void protobuf_ShutdownFile_channel_2dstatus_2eproto() {
+  delete ChannelStatusMessage::default_instance_;
+  delete ChannelStatusMessage_reflection_;
+  delete ChannelStatusMessage_ChannelStatus::default_instance_;
+  delete ChannelStatusMessage_ChannelStatus_reflection_;
+}
+
+void protobuf_AddDesc_channel_2dstatus_2eproto() {
+  static bool already_here = false;
+  if (already_here) return;
+  already_here = true;
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
+    "\n\024channel-status.proto\022\013ndn_message\"\205\001\n\024"
+    "ChannelStatusMessage\022H\n\016channel_status\030\202"
+    "\001 \003(\0132/.ndn_message.ChannelStatusMessage"
+    ".ChannelStatus\032#\n\rChannelStatus\022\022\n\tlocal"
+    "_uri\030\201\001 \002(\t", 171);
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
+    "channel-status.proto", &protobuf_RegisterTypes);
+  ChannelStatusMessage::default_instance_ = new ChannelStatusMessage();
+  ChannelStatusMessage_ChannelStatus::default_instance_ = new ChannelStatusMessage_ChannelStatus();
+  ChannelStatusMessage::default_instance_->InitAsDefaultInstance();
+  ChannelStatusMessage_ChannelStatus::default_instance_->InitAsDefaultInstance();
+  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_channel_2dstatus_2eproto);
+}
+
+// Force AddDescriptors() to be called at static initialization time.
+struct StaticDescriptorInitializer_channel_2dstatus_2eproto {
+  StaticDescriptorInitializer_channel_2dstatus_2eproto() {
+    protobuf_AddDesc_channel_2dstatus_2eproto();
+  }
+} static_descriptor_initializer_channel_2dstatus_2eproto_;
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ChannelStatusMessage_ChannelStatus::kLocalUriFieldNumber;
+#endif  // !_MSC_VER
+
+ChannelStatusMessage_ChannelStatus::ChannelStatusMessage_ChannelStatus()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:ndn_message.ChannelStatusMessage.ChannelStatus)
+}
+
+void ChannelStatusMessage_ChannelStatus::InitAsDefaultInstance() {
+}
+
+ChannelStatusMessage_ChannelStatus::ChannelStatusMessage_ChannelStatus(const ChannelStatusMessage_ChannelStatus& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:ndn_message.ChannelStatusMessage.ChannelStatus)
+}
+
+void ChannelStatusMessage_ChannelStatus::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  local_uri_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ChannelStatusMessage_ChannelStatus::~ChannelStatusMessage_ChannelStatus() {
+  // @@protoc_insertion_point(destructor:ndn_message.ChannelStatusMessage.ChannelStatus)
+  SharedDtor();
+}
+
+void ChannelStatusMessage_ChannelStatus::SharedDtor() {
+  if (local_uri_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete local_uri_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void ChannelStatusMessage_ChannelStatus::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ChannelStatusMessage_ChannelStatus::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ChannelStatusMessage_ChannelStatus_descriptor_;
+}
+
+const ChannelStatusMessage_ChannelStatus& ChannelStatusMessage_ChannelStatus::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_channel_2dstatus_2eproto();
+  return *default_instance_;
+}
+
+ChannelStatusMessage_ChannelStatus* ChannelStatusMessage_ChannelStatus::default_instance_ = NULL;
+
+ChannelStatusMessage_ChannelStatus* ChannelStatusMessage_ChannelStatus::New() const {
+  return new ChannelStatusMessage_ChannelStatus;
+}
+
+void ChannelStatusMessage_ChannelStatus::Clear() {
+  if (has_local_uri()) {
+    if (local_uri_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      local_uri_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ChannelStatusMessage_ChannelStatus::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:ndn_message.ChannelStatusMessage.ChannelStatus)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(16383);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string local_uri = 129;
+      case 129: {
+        if (tag == 1034) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_local_uri()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->local_uri().data(), this->local_uri().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "local_uri");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:ndn_message.ChannelStatusMessage.ChannelStatus)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:ndn_message.ChannelStatusMessage.ChannelStatus)
+  return false;
+#undef DO_
+}
+
+void ChannelStatusMessage_ChannelStatus::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:ndn_message.ChannelStatusMessage.ChannelStatus)
+  // required string local_uri = 129;
+  if (has_local_uri()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->local_uri().data(), this->local_uri().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "local_uri");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      129, this->local_uri(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:ndn_message.ChannelStatusMessage.ChannelStatus)
+}
+
+::google::protobuf::uint8* ChannelStatusMessage_ChannelStatus::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:ndn_message.ChannelStatusMessage.ChannelStatus)
+  // required string local_uri = 129;
+  if (has_local_uri()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->local_uri().data(), this->local_uri().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "local_uri");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        129, this->local_uri(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ndn_message.ChannelStatusMessage.ChannelStatus)
+  return target;
+}
+
+int ChannelStatusMessage_ChannelStatus::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string local_uri = 129;
+    if (has_local_uri()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->local_uri());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ChannelStatusMessage_ChannelStatus::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ChannelStatusMessage_ChannelStatus* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ChannelStatusMessage_ChannelStatus*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ChannelStatusMessage_ChannelStatus::MergeFrom(const ChannelStatusMessage_ChannelStatus& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_local_uri()) {
+      set_local_uri(from.local_uri());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ChannelStatusMessage_ChannelStatus::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ChannelStatusMessage_ChannelStatus::CopyFrom(const ChannelStatusMessage_ChannelStatus& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ChannelStatusMessage_ChannelStatus::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void ChannelStatusMessage_ChannelStatus::Swap(ChannelStatusMessage_ChannelStatus* other) {
+  if (other != this) {
+    std::swap(local_uri_, other->local_uri_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ChannelStatusMessage_ChannelStatus::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ChannelStatusMessage_ChannelStatus_descriptor_;
+  metadata.reflection = ChannelStatusMessage_ChannelStatus_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int ChannelStatusMessage::kChannelStatusFieldNumber;
+#endif  // !_MSC_VER
+
+ChannelStatusMessage::ChannelStatusMessage()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:ndn_message.ChannelStatusMessage)
+}
+
+void ChannelStatusMessage::InitAsDefaultInstance() {
+}
+
+ChannelStatusMessage::ChannelStatusMessage(const ChannelStatusMessage& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:ndn_message.ChannelStatusMessage)
+}
+
+void ChannelStatusMessage::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ChannelStatusMessage::~ChannelStatusMessage() {
+  // @@protoc_insertion_point(destructor:ndn_message.ChannelStatusMessage)
+  SharedDtor();
+}
+
+void ChannelStatusMessage::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void ChannelStatusMessage::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ChannelStatusMessage::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ChannelStatusMessage_descriptor_;
+}
+
+const ChannelStatusMessage& ChannelStatusMessage::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_channel_2dstatus_2eproto();
+  return *default_instance_;
+}
+
+ChannelStatusMessage* ChannelStatusMessage::default_instance_ = NULL;
+
+ChannelStatusMessage* ChannelStatusMessage::New() const {
+  return new ChannelStatusMessage;
+}
+
+void ChannelStatusMessage::Clear() {
+  channel_status_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ChannelStatusMessage::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:ndn_message.ChannelStatusMessage)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(16383);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .ndn_message.ChannelStatusMessage.ChannelStatus channel_status = 130;
+      case 130: {
+        if (tag == 1042) {
+         parse_channel_status:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_channel_status()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(1042)) goto parse_channel_status;
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:ndn_message.ChannelStatusMessage)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:ndn_message.ChannelStatusMessage)
+  return false;
+#undef DO_
+}
+
+void ChannelStatusMessage::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:ndn_message.ChannelStatusMessage)
+  // repeated .ndn_message.ChannelStatusMessage.ChannelStatus channel_status = 130;
+  for (int i = 0; i < this->channel_status_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      130, this->channel_status(i), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:ndn_message.ChannelStatusMessage)
+}
+
+::google::protobuf::uint8* ChannelStatusMessage::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:ndn_message.ChannelStatusMessage)
+  // repeated .ndn_message.ChannelStatusMessage.ChannelStatus channel_status = 130;
+  for (int i = 0; i < this->channel_status_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        130, this->channel_status(i), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ndn_message.ChannelStatusMessage)
+  return target;
+}
+
+int ChannelStatusMessage::ByteSize() const {
+  int total_size = 0;
+
+  // repeated .ndn_message.ChannelStatusMessage.ChannelStatus channel_status = 130;
+  total_size += 2 * this->channel_status_size();
+  for (int i = 0; i < this->channel_status_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->channel_status(i));
+  }
+
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ChannelStatusMessage::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ChannelStatusMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ChannelStatusMessage*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ChannelStatusMessage::MergeFrom(const ChannelStatusMessage& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  channel_status_.MergeFrom(from.channel_status_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ChannelStatusMessage::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ChannelStatusMessage::CopyFrom(const ChannelStatusMessage& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ChannelStatusMessage::IsInitialized() const {
+
+  if (!::google::protobuf::internal::AllAreInitialized(this->channel_status())) return false;
+  return true;
+}
+
+void ChannelStatusMessage::Swap(ChannelStatusMessage* other) {
+  if (other != this) {
+    channel_status_.Swap(&other->channel_status_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ChannelStatusMessage::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ChannelStatusMessage_descriptor_;
+  metadata.reflection = ChannelStatusMessage_reflection_;
+  return metadata;
+}
+
+
+// @@protoc_insertion_point(namespace_scope)
+
+}  // namespace ndn_message
+
+// @@protoc_insertion_point(global_scope)
+
+#endif // GOOGLE_PROTOBUF_VERSION < 2006000
 
 #endif // NDN_CPP_HAVE_PROTOBUF
