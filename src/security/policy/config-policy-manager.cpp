@@ -66,14 +66,14 @@ ConfigPolicyManager::ConfigPolicyManager
   : maxDepth_(searchDepth),
     keyGraceInterval_(graceInterval),
     keyTimestampTtl_(keyTimestampTtl),
-    maxTrackedKeys_(maxTrackedKeys),
-    config_(new BoostInfoParser()),
-    requiresVerification_(true)
+    maxTrackedKeys_(maxTrackedKeys)
 {
   if (!certificateCache)
     certificateCache_.reset(new CertificateCache());
   else
     certificateCache_ = certificateCache;
+
+  reset();
 
   config_->read(configFileName);
   loadTrustAnchorCertificates();
@@ -81,6 +81,17 @@ ConfigPolicyManager::ConfigPolicyManager
 
 ConfigPolicyManager::~ConfigPolicyManager()
 {
+}
+
+void
+ConfigPolicyManager::reset()
+{
+  certificateCache_->reset();
+  fixedCertificateCache_.clear();
+  keyTimestamps_.clear();
+  requiresVerification_ = true;
+  config_.reset(new BoostInfoParser());
+  refreshManager_.reset(new TrustAnchorRefreshManager());
 }
 
 bool
@@ -232,12 +243,12 @@ ConfigPolicyManager::getCertificateInterest
     return ptr_lib::shared_ptr<Interest>();
 
   // Before we look up keys, refresh any certificate directories.
-  refreshManager_.refreshAnchors();
+  refreshManager_->refreshAnchors();
 
   // If we don't actually have the certificate yet, return a certificateInterest
   //   for it.
   ptr_lib::shared_ptr<IdentityCertificate> foundCert =
-    refreshManager_.getCertificate(signatureName);
+    refreshManager_->getCertificate(signatureName);
   if (!foundCert)
     foundCert = certificateCache_->getCertificate(signatureName);
   if (!foundCert)
@@ -332,7 +343,7 @@ ConfigPolicyManager::loadTrustAnchorCertificates()
       }
 
       // Convert refreshPeriod from seconds to milliseconds.
-      refreshManager_.addDirectory(dirName, refreshPeriod * 1000);
+      refreshManager_->addDirectory(dirName, refreshPeriod * 1000);
       continue;
     }
     else if (typeName == "any") {
@@ -602,7 +613,7 @@ ConfigPolicyManager::verify
     // Assume the key name is a certificate name.
     Name signatureName = keyLocator.getKeyName();
     ptr_lib::shared_ptr<IdentityCertificate> certificate =
-      refreshManager_.getCertificate(signatureName);
+      refreshManager_->getCertificate(signatureName);
     if (!certificate)
       certificate = certificateCache_->getCertificate(signatureName);
     if (!certificate)

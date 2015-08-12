@@ -88,6 +88,12 @@ public:
   ~ConfigPolicyManager();
 
   /**
+   * Reset the certificate cache and other fields to the constructor state.
+   */
+  void
+  reset();
+
+  /**
    * Check if the received data packet can escape from verification and be
    * trusted as valid. If the configuration file contains the trust anchor
    * 'any', nothing is verified.
@@ -417,7 +423,7 @@ private:
   std::map<std::string, MillisecondsSince1970> keyTimestamps_;
   ptr_lib::shared_ptr<BoostInfoParser> config_;
   bool requiresVerification_;
-  TrustAnchorRefreshManager refreshManager_;
+  ptr_lib::shared_ptr<TrustAnchorRefreshManager> refreshManager_;
 };
 
 }
