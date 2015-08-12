@@ -23,6 +23,7 @@
 #ifndef NDN_BOOST_INFO_PARSER_HPP
 #define NDN_BOOST_INFO_PARSER_HPP
 
+#include <istream>
 #include <string>
 #include <vector>
 #include <utility>
@@ -182,12 +183,12 @@ private:
 
   /**
    * Internal import method with an explicit context node.
-   * @param fileName The path to the INFO file.
+   * @param stream The stream for reading the INFO content.
    * @param ctx The node currently being populated.
    * @return The ctx.
    */
   BoostInfoTree*
-  read(const std::string& fileName, BoostInfoTree* ctx);
+  read(std::istream& stream, BoostInfoTree* ctx);
 
   /**
    * Internal helper method for parsing INFO files line by line.

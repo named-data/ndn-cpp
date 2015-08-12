@@ -203,22 +203,22 @@ BoostInfoTree::split(const string &input, char separator)
 const BoostInfoTree&
 BoostInfoParser::read(const string& fileName)
 {
-  read(fileName, root_.get());
+  ifstream stream(fileName.c_str());
+  read(stream, root_.get());
+  stream.close();
+
   return *root_;
 }
 
 BoostInfoTree*
-BoostInfoParser::read(const string& fileName, BoostInfoTree* ctx)
+BoostInfoParser::read(istream& stream, BoostInfoTree* ctx)
 {
-  ifstream stream(fileName.c_str());
-
   string line;
   while (getline(stream, line)) {
     trim(line);
     ctx = parseLine(line, ctx);
   }
 
-  stream.close();
   return ctx;
 }
 
@@ -334,8 +334,11 @@ BoostInfoParser::parseLine(const string& lineIn, BoostInfoTree* context)
       val = strings[1];
 
     // If it is an "#include", load the new file instead of inserting keys.
-    if (key == "#include")
-      context = read(val, context);
+    if (key == "#include") {
+      ifstream stream(val);
+      context = read(stream, context);
+      stream.close();
+    }
     else
       context->createSubtree(key, val);
 
