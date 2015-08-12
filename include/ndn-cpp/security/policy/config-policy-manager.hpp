@@ -76,7 +76,7 @@ public:
    * track.
    */
   ConfigPolicyManager
-    (const std::string& configFileName,
+    (const std::string& configFileName = "",
      const ptr_lib::shared_ptr<CertificateCache>& certificateCache =
      ptr_lib::shared_ptr<CertificateCache>(), int searchDepth = 5,
      Milliseconds graceInterval = 3000, Milliseconds keyTimestampTtl = 3600000,
