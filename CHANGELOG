@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.7 (2015-08-04)
+Interim changes since NDN-CPP v0.7 (2015-08-12)
 -----------------------------------------------
 
 Changes
@@ -8,6 +8,8 @@ Changes
 * Added ThreadsafeFace, AsyncTcpTransport and AsyncUnixTransport which use
   Boost's asio io_service which handles all the async operations so that your
   application doesn't need to call processEvents.
+* In security ConfigPolicyManager, added load(input, inputName) to read
+  configuration rules from a string.
 * In examples, added test-get-async-threadsafe which uses ThreadsafeFace and
   doesn't call processEvents. To run, you must install Boost with asio.
 

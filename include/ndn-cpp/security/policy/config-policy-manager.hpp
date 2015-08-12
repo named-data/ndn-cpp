@@ -56,10 +56,11 @@ class IdentityCertificate;
 class ConfigPolicyManager : public PolicyManager {
 public:
   /**
-   * Create a new ConfigPolicyManager which acts on the rules specified in the
-   * configuration file and downloads unknown certificates when necessary.
-   * @param configFileName The path to the configuration file containing
-   * verification rules.
+   * Create a new ConfigPolicyManager which will act on the rules specified in
+   * the configuration and download unknown certificates when necessary.
+   * @param configFileName (optional) If not empty, the path to the
+   * configuration file containing verification rules. Otherwise, you should
+   * separately call load().
    * @param certificateCache (optional) A CertificateCache to hold known
    * certificates. If this is null or omitted, then create an internal
    * CertificateCache.
@@ -92,6 +93,23 @@ public:
    */
   void
   reset();
+
+  /**
+   * Call reset() and load the configuration rules from the file.
+   * @param configFileName The path to the configuration file containing the
+   * verification rules.
+   */
+  void
+  load(const std::string& configFileName);
+
+  /**
+   * Call reset() and load the configuration rules from the input.
+   * @param input The contents of the configuration rules, with lines separated
+   * by "\n" or "\r\n".
+   * @param inputName Used for log messages, etc.
+   */
+  void
+  load(const std::string& input, const std::string& inputName);
 
   /**
    * Check if the received data packet can escape from verification and be

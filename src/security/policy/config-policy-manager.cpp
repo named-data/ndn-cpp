@@ -75,8 +75,8 @@ ConfigPolicyManager::ConfigPolicyManager
 
   reset();
 
-  config_->read(configFileName);
-  loadTrustAnchorCertificates();
+  if (configFileName != "")
+    load(configFileName);
 }
 
 ConfigPolicyManager::~ConfigPolicyManager()
@@ -92,6 +92,22 @@ ConfigPolicyManager::reset()
   requiresVerification_ = true;
   config_.reset(new BoostInfoParser());
   refreshManager_.reset(new TrustAnchorRefreshManager());
+}
+
+void
+ConfigPolicyManager::load(const std::string& configFileName)
+{
+  reset();
+  config_->read(configFileName);
+  loadTrustAnchorCertificates();
+}
+
+void
+ConfigPolicyManager::load(const std::string& input, const std::string& inputName)
+{
+  reset();
+  config_->read(input, inputName);
+  loadTrustAnchorCertificates();
 }
 
 bool
