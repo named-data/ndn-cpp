@@ -210,6 +210,15 @@ BoostInfoParser::read(const string& fileName)
   return *root_;
 }
 
+const BoostInfoTree&
+BoostInfoParser::read(const string& input, const string& inputName)
+{
+  stringstream stream(input);
+  read(stream, root_.get());
+
+  return *root_;
+}
+
 BoostInfoTree*
 BoostInfoParser::read(istream& stream, BoostInfoTree* ctx)
 {

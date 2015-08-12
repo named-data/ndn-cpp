@@ -152,6 +152,16 @@ public:
   const BoostInfoTree&
   read(const std::string& fileName);
 
+  /**
+   * Add the contents of the input string to the root BoostInfoTree.
+   * @param input The contents of the INFO file, with lines separated by "\n" or
+   * "\r\n".
+   * @param inputName Used for log messages, etc.
+   * @return The new root BoostInfoTree.
+   */
+  const BoostInfoTree&
+  read(const std::string& input, const std::string& inputName);
+
   // TODO: Implement readPropertyList.
 
   /**
