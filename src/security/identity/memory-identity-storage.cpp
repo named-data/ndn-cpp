@@ -38,18 +38,17 @@ MemoryIdentityStorage::~MemoryIdentityStorage()
 bool
 MemoryIdentityStorage::doesIdentityExist(const Name& identityName)
 {
-  string identityUri = identityName.toUri();
-  return find(identityStore_.begin(), identityStore_.end(), identityUri) != identityStore_.end();
+  return identityStore_.find(identityName.toUri()) != identityStore_.end();
 }
 
 void
 MemoryIdentityStorage::addIdentity(const Name& identityName)
 {
   string identityUri = identityName.toUri();
-  if (find(identityStore_.begin(), identityStore_.end(), identityUri) != identityStore_.end())
+  if (identityStore_.find(identityUri) != identityStore_.end())
     return;
 
-  identityStore_.push_back(identityUri);
+  identityStore_[identityUri] = IdentityRecord();
 }
 
 bool
@@ -160,17 +159,32 @@ MemoryIdentityStorage::getDefaultIdentity()
 Name
 MemoryIdentityStorage::getDefaultKeyNameForIdentity(const Name& identityName)
 {
-#if 1
-  throw runtime_error("MemoryIdentityStorage::getDefaultKeyNameForIdentity not implemented");
-#endif
+  string identityUri = identityName.toUri();
+  map<string, IdentityRecord>::iterator record = identityStore_.find(identityUri);
+  if (record != identityStore_.end()) {
+    if (record->second.hasDefaultKey())
+      return record->second.getDefaultKey();
+    else
+      throw SecurityException("No default key set.");
+  }
+  else
+    throw SecurityException("Identity not found.");
 }
 
 Name
 MemoryIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 {
-#if 1
-  throw runtime_error("MemoryIdentityStorage::getDefaultCertificateNameForKey not implemented");
-#endif
+  string keyUri = keyName.toUri();
+  map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record =
+    keyStore_.find(keyUri);
+  if (record != keyStore_.end()) {
+    if (record->second->hasDefaultCertificate())
+      return record->second->getDefaultCertificate();
+    else
+      throw SecurityException("No default certificate set.");
+  }
+  else
+    throw SecurityException("Key not found.");
 }
 
 void
@@ -186,7 +200,7 @@ void
 MemoryIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   string identityUri = identityName.toUri();
-  if (find(identityStore_.begin(), identityStore_.end(), identityUri) != identityStore_.end())
+  if (identityStore_.find(identityUri) != identityStore_.end())
     defaultIdentity_ = identityUri;
   else
     // The identity doesn't exist, so clear the default.
@@ -194,19 +208,30 @@ MemoryIdentityStorage::setDefaultIdentity(const Name& identityName)
 }
 
 void
-MemoryIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Name& identityNameCheck)
+MemoryIdentityStorage::setDefaultKeyNameForIdentity
+  (const Name& keyName, const Name& identityNameCheck)
 {
-#if 1
-  throw runtime_error("MemoryIdentityStorage::setDefaultKeyNameForIdentity not implemented");
-#endif
+  Name identityName = keyName.getPrefix(-1);
+
+  if (identityNameCheck.size() > 0 && identityNameCheck != identityName)
+    throw SecurityException
+      ("The specified identity name does not match the key name");
+
+  string identityUri = identityName.toUri();
+  map<string, IdentityRecord>::iterator record = identityStore_.find(identityUri);
+  if (record != identityStore_.end())
+    record->second.setDefaultKey(ptr_lib::make_shared<Name>(keyName));
 }
 
 void
 MemoryIdentityStorage::setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName)
 {
-#if 1
-  throw runtime_error("MemoryIdentityStorage::setDefaultCertificateNameForKey not implemented");
-#endif
+  string keyUri = keyName.toUri();
+  map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record =
+    keyStore_.find(keyUri);
+  if (record != keyStore_.end())
+    record->second->setDefaultCertificate
+      (ptr_lib::make_shared<Name>(certificateName));
 }
 
 void

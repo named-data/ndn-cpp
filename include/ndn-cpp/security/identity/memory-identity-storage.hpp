@@ -221,6 +221,21 @@ public:
   deleteIdentityInfo(const Name& identity);
 
 private:
+  class IdentityRecord {
+  public:
+    void
+    setDefaultKey(const ptr_lib::shared_ptr<Name>& key) { defaultKey_ = key; }
+
+    bool
+    hasDefaultKey() const { return !!defaultKey_; }
+
+    const Name&
+    getDefaultKey() const { return *defaultKey_; }
+
+  private:
+    ptr_lib::shared_ptr<Name> defaultKey_;
+  };
+
   class KeyRecord {
   public:
     KeyRecord(KeyType keyType, const Blob &keyDer)
@@ -232,12 +247,26 @@ private:
 
     const Blob& getKeyDer() { return keyDer_; }
 
+    void
+    setDefaultCertificate(const ptr_lib::shared_ptr<Name>& certificate)
+    {
+      defaultCertificate_ = certificate;
+    }
+
+    bool
+    hasDefaultCertificate() const { return !!defaultCertificate_; }
+
+    const Name&
+    getDefaultCertificate() const { return *defaultCertificate_; }
+
   private:
     KeyType keyType_;
     Blob keyDer_;
+    ptr_lib::shared_ptr<Name> defaultCertificate_;
   };
 
-  std::vector<std::string> identityStore_; /**< A list of name URI. */
+  std::map<std::string, IdentityRecord> 
+    identityStore_; /**< The map key is the identityName.toUri(). The value is an IdentityRecord. */
   std::string defaultIdentity_;            /**< The default identity in identityStore_, or "" if not defined. */
   std::map<std::string, ptr_lib::shared_ptr<KeyRecord> > keyStore_; /**< The map key is the keyName.toUri() */
   std::map<std::string, Blob> certificateStore_;                    /**< The map key is the certificateName.toUri() */
