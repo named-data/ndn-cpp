@@ -28,7 +28,7 @@
 #include <fstream>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
-#include <ndn-cpp/security/identity/basic-identity-storage.hpp>
+#include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include "../../src/encoding/base64.hpp"
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
@@ -264,10 +264,7 @@ public:
     policyConfigDirectory_ = getPolicyConfigDirectory();
     testCertFile_ = policyConfigDirectory_ + "/certs/test.cert";
     
-    databaseFilePath_ = policyConfigDirectory_ + "/test-public-info.db";
-    remove(databaseFilePath_.c_str());
-
-    identityStorage_.reset(new BasicIdentityStorage(databaseFilePath_));
+    identityStorage_.reset(new MemoryIdentityStorage());
     privateKeyStorage_.reset(new MemoryPrivateKeyStorage());
     identityManager_.reset(new IdentityManager
       (identityStorage_, privateKeyStorage_));
@@ -297,17 +294,15 @@ public:
   virtual void
   TearDown()
   {
-    remove(databaseFilePath_.c_str());
     remove(testCertFile_.c_str());
     face_.shutdown();
   }
 
   string policyConfigDirectory_;
-  string databaseFilePath_;
   string testCertFile_;
   Name identityName_;
   Name keyName_;
-  ptr_lib::shared_ptr<BasicIdentityStorage> identityStorage_;
+  ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage_;
   ptr_lib::shared_ptr<IdentityManager> identityManager_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;
