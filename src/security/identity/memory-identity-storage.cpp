@@ -137,6 +137,10 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 ptr_lib::shared_ptr<IdentityCertificate>
 MemoryIdentityStorage::getCertificate(const Name& certificateName, bool allowAny)
 {
+  if (!allowAny)
+    throw runtime_error
+      ("MemoryIdentityStorage.getCertificate for !allowAny is not implemented");
+
   map<string, Blob>::iterator record = certificateStore_.find(certificateName.toUri());
   if (record == certificateStore_.end())
     // Not found.  Silently return null.
