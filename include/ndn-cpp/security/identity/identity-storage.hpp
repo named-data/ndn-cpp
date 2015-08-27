@@ -91,6 +91,7 @@ public:
    * @param keyName The name of the public key to be added.
    * @param keyType Type of the public key to be added.
    * @param publicKeyDer A blob of the public key DER to be added.
+   * @throws SecurityException if a key with the keyName already exists.
    */
   virtual void
   addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer) = 0;
@@ -128,6 +129,7 @@ public:
   /**
    * Add a certificate to the identity storage.
    * @param certificate The certificate to be added.  This makes a copy of the certificate.
+   * @throws SecurityException if the certificate is already installed.
    */
   virtual void
   addCertificate(const IdentityCertificate& certificate) = 0;
