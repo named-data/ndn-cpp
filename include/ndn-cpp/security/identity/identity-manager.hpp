@@ -201,15 +201,16 @@ public:
   generateEcdsaKeyPair(const Name& identityName, bool isKsk = false, int keySize = 256);
 
   /**
-   * Set a key as the default key of an identity.
+   * Set a key as the default key of an identity. The identity name is inferred
+   * from keyName.
    * @param keyName The name of the key.
-   * @param identityName (optional) the name of the identity. If not specified,
-   * the identity name is inferred from the keyName.
+   * @param identityNameCheck (optional) The identity name to check that the
+   * keyName contains the same identity name. If an empty name, it is ignored.
    */
   void
-  setDefaultKeyForIdentity(const Name& keyName, const Name& identityName = Name())
+  setDefaultKeyForIdentity(const Name& keyName, const Name& identityNameCheck = Name())
   {
-    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
+    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityNameCheck);
   }
 
   /**
