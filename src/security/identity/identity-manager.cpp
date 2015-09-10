@@ -134,7 +134,7 @@ IdentityManager::createIdentityAndCertificate
 
   if (generateKey) {
     keyName = generateKeyPair(identityName, true, params);
-    identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
+    identityStorage_->setDefaultKeyNameForIdentity(keyName);
   }
 
   Name certName;
@@ -208,7 +208,7 @@ IdentityManager::generateRSAKeyPairAsDefault(const Name& identityName, bool isKs
 {
   Name keyName = generateKeyPair(identityName, isKsk, RsaKeyParams(keySize));
 
-  identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
+  identityStorage_->setDefaultKeyNameForIdentity(keyName);
 
   return keyName;
 }
@@ -217,7 +217,7 @@ Name
 IdentityManager::generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
 {
   Name keyName = generateKeyPair(identityName, isKsk, EcdsaKeyParams(keySize));
-  identityStorage_->setDefaultKeyNameForIdentity(keyName, identityName);
+  identityStorage_->setDefaultKeyNameForIdentity(keyName);
   return keyName;
 }
 
