@@ -48,7 +48,8 @@ NdnRegexMatcher::NdnRegexMatcher(const string& patternIn, const Name& name)
   pattern = regex_replace(pattern, regex(">"), "");
   pattern = regex_replace(pattern, regex("<(?!!)"), "/");
 
-  iterator = sregex_iterator(nameUri.begin(), nameUri.end(), regex(pattern));
+  regex re = regex(pattern);
+  iterator = sregex_iterator(nameUri.begin(), nameUri.end(), re);
 }
 
 string

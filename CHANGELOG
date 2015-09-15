@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.7 (2015-08-12)
+Interim changes since NDN-CPP v0.7 (2015-09-15)
 -----------------------------------------------
 
 Changes
@@ -24,6 +24,7 @@ Bug fixes
 * http://redmine.named-data.net/issues/2846 Self-signed cert name needs a version component.
 * http://redmine.named-data.net/issues/2847 Lower-case "ksk-" in generated key name.
 * http://redmine.named-data.net/issues/3080 Support for Protobuf 2.6
+* http://redmine.named-data.net/issues/3201 Regex use of deleted function.
 
 NDN-CPP v0.7 (2015-05-13)
 -------------------------
