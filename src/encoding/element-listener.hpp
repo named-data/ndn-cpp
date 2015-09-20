@@ -38,8 +38,8 @@ public:
   }
 
   /**
-   * This is called when an entire binary XML element is received.  You must extend this class to override this method.
-   * @param element pointer to the binary XML element.  This buffer is only valid during this call.  If you need the data
+   * This is called when an entire element is received.  You must extend this class to override this method.
+   * @param element pointer to the element.  This buffer is only valid during this call.  If you need the data
    * later, you must copy.
    * @param elementLength length of element
    */
