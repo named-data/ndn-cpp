@@ -308,7 +308,7 @@ Node::nfdRegisterPrefix
   // Send the registration interest.
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, true, face)));
+     (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, face)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest

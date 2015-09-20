@@ -532,11 +532,10 @@ private:
       Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
            const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed,
-           const ForwardingFlags& flags, WireFormat& wireFormat,
-           bool isNfdCommand, Face* face)
+           const ForwardingFlags& flags, WireFormat& wireFormat, Face* face)
       : node_(*node), prefix_(prefix), onInterest_(onInterest),
         onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand), face_(face)
+        wireFormat_(wireFormat), face_(face)
       {
       }
 
@@ -546,7 +545,6 @@ private:
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
-      bool isNfdCommand_;
       Face* face_;
     };
 
