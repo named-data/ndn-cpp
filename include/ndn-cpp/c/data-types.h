@@ -22,7 +22,6 @@
 #define NDN_DATA_TYPES_H
 
 #include "key-types.h"
-#include "publisher-public-key-digest-types.h"
 
 #ifdef __cplusplus
 extern "C" {

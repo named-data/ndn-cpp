@@ -20,7 +20,6 @@
  */
 
 #include "binary-xml-name.h"
-#include "binary-xml-publisher-public-key-digest.h"
 #include "binary-xml-interest.h"
 
 static ndn_Error encodeExclude(struct ndn_Exclude *exclude, struct ndn_BinaryXmlEncoder *encoder)

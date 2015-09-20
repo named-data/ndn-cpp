@@ -20,7 +20,6 @@
  */
 
 #include "binary-xml-name.h"
-#include "binary-xml-publisher-public-key-digest.h"
 #include "binary-xml-data.h"
 #include "binary-xml-key-locator.h"
 

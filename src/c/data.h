@@ -24,7 +24,6 @@
 #include <math.h>
 #include <ndn-cpp/c/data-types.h>
 #include "name.h"
-#include "publisher-public-key-digest.h"
 #include "key-locator.h"
 
 #ifdef __cplusplus
