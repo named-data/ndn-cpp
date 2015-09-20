@@ -26,14 +26,11 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/control-parameters.hpp>
-#include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
 #include "c/name.h"
 #include "c/interest.h"
 #include "c/util/crypto.h"
 #include "c/util/time.h"
 #include "encoding/tlv-decoder.hpp"
-#include "c/encoding/binary-xml.h"
-#include "encoding/binary-xml-decoder.hpp"
 #include "util/logging.hpp"
 #include "node.hpp"
 
@@ -341,9 +338,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   // First, decode as Interest or Data.
   ptr_lib::shared_ptr<Interest> interest;
   ptr_lib::shared_ptr<Data> data;
-  // The type codes for TLV Interest and Data packets are chosen to not
-  //   conflict with the first byte of a binary XML packet, so we can
-  //   just look at the first byte.
+
   if (element[0] == ndn_Tlv_Interest || element[0] == ndn_Tlv_Data) {
     TlvDecoder decoder(element, elementLength);
     if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
@@ -353,18 +348,6 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
     else if (decoder.peekType(ndn_Tlv_Data, elementLength)) {
       data.reset(new Data());
       data->wireDecode(element, elementLength, *TlvWireFormat::get());
-    }
-  }
-  else {
-    // Binary XML.
-    BinaryXmlDecoder decoder(element, elementLength);
-    if (decoder.peekDTag(ndn_BinaryXml_DTag_Interest)) {
-      interest.reset(new Interest());
-      interest->wireDecode(element, elementLength, *BinaryXmlWireFormat::get());
-    }
-    else if (decoder.peekDTag(ndn_BinaryXml_DTag_ContentObject)) {
-      data.reset(new Data());
-      data->wireDecode(element, elementLength, *BinaryXmlWireFormat::get());
     }
   }
 
