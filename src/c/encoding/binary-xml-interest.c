@@ -157,9 +157,6 @@ ndn_Error ndn_encodeBinaryXmlInterest
       return error;
   }
   else {
-    // This will skip encoding if there is no publisherPublicKeyDigest.
-    if ((error = ndn_encodeBinaryXmlPublisherPublicKeyDigest(&interest->publisherPublicKeyDigest, encoder)))
-      return error;
   }
 
   // This will skip encoding if there is no exclude.
@@ -212,16 +209,6 @@ ndn_Error ndn_decodeBinaryXmlInterest
   if ((error = ndn_BinaryXmlDecoder_readOptionalUnsignedIntegerDTagElement
       (decoder, ndn_BinaryXml_DTag_MaxSuffixComponents, &interest->maxSuffixComponents)))
     return error;
-
-  // Initially clear the keyLocator.
-  ndn_KeyLocator_initialize(&interest->keyLocator, interest->keyLocator.keyName.components, interest->keyLocator.keyName.maxComponents);
-  if ((error = ndn_decodeOptionalBinaryXmlPublisherPublicKeyDigest(&interest->publisherPublicKeyDigest, decoder)))
-    return error;
-  if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
-    // We keep the deprecated publisherPublicKeyDigest for backwards compatibility.  Also set the key locator.
-    interest->keyLocator.type = ndn_KeyLocatorType_KEY_LOCATOR_DIGEST;
-    interest->keyLocator.keyData = interest->publisherPublicKeyDigest.publisherPublicKeyDigest;
-  }
 
   if ((error = ndn_BinaryXmlDecoder_peekDTag(decoder, ndn_BinaryXml_DTag_Exclude, &gotExpectedTag)))
     return error;

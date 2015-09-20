@@ -23,7 +23,6 @@
 #define NDN_INTEREST_HPP
 
 #include "name.hpp"
-#include "publisher-public-key-digest.hpp"
 #include "key-locator.hpp"
 #include "c/interest-types.h"
 #include "encoding/wire-format.hpp"
@@ -40,26 +39,6 @@ namespace ndn {
  */
 class Interest {
 public:
-  /**
-   * Create a new Interest for the given name and values.
-   * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder
-   * generate a random nonce internally before sending the interest.
-   * This has PublisherPublicKeyDigest. Use KeyLocator.
-   * This also has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce);
-
-  /**
-   * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
-   * @deprecated This has PublisherPublicKeyDigest. Use KeyLocator.
-   * This also has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds);
-
   /**
    * Create a new Interest with the given name and values, and "none" for the nonce.
    * @deprecated This has answerOriginKind. Use setMustBeFresh().
@@ -93,7 +72,6 @@ public:
   Interest(const Interest& interest)
   : name_(interest.name_), minSuffixComponents_(interest.minSuffixComponents_),
     maxSuffixComponents_(interest.maxSuffixComponents_),
-    publisherPublicKeyDigest_(interest.publisherPublicKeyDigest_),
     keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
     childSelector_(interest.childSelector_),
     answerOriginKind_(interest.answerOriginKind_),
@@ -199,20 +177,6 @@ public:
 
   int
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
-
-  /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
-
-  /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  const PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
 
   const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
@@ -482,7 +446,6 @@ public:
   {
     // Make sure each of the checkChanged is called.
     bool changed = name_.checkChanged();
-    changed = publisherPublicKeyDigest_.checkChanged() || changed;
     changed = keyLocator_.checkChanged() || changed;
     changed = exclude_.checkChanged() || changed;
     if (changed)
@@ -520,9 +483,6 @@ private:
   ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
   ChangeCounter<KeyLocator> keyLocator_;
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */

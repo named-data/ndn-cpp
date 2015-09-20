@@ -30,32 +30,6 @@ using namespace std;
 namespace ndn {
 
 Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  nonce_(nonce), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
   const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
   int scope, Milliseconds interestLifetimeMilliseconds)
 : name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
@@ -73,7 +47,6 @@ Interest& Interest::operator=(const Interest& interest)
   setName(interest.name_.get());
   setMinSuffixComponents(interest.minSuffixComponents_);
   setMaxSuffixComponents(interest.maxSuffixComponents_);
-  publisherPublicKeyDigest_.set(interest.publisherPublicKeyDigest_.get());;
   setKeyLocator(interest.keyLocator_.get());
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
@@ -94,7 +67,6 @@ Interest::set(const struct ndn_Interest& interestStruct)
   setMinSuffixComponents(interestStruct.minSuffixComponents);
   setMaxSuffixComponents(interestStruct.maxSuffixComponents);
 
-  publisherPublicKeyDigest_.get().set(interestStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(interestStruct.keyLocator);
 
   exclude_.get().set(interestStruct.exclude);
@@ -114,7 +86,6 @@ Interest::get(struct ndn_Interest& interestStruct) const
   name_.get().get(interestStruct.name);
   interestStruct.minSuffixComponents = minSuffixComponents_;
   interestStruct.maxSuffixComponents = maxSuffixComponents_;
-  publisherPublicKeyDigest_.get().get(interestStruct.publisherPublicKeyDigest);
   keyLocator_.get().get(interestStruct.keyLocator);
   exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
@@ -197,10 +168,6 @@ Interest::toUri() const
     selectors << "&ndn.Scope=" << scope_;
   if (interestLifetimeMilliseconds_ >= 0)
     selectors << "&ndn.InterestLifetime=" << (uint64_t)round(interestLifetimeMilliseconds_);
-  if (publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest().size() > 0) {
-    selectors << "&ndn.PublisherPublicKeyDigest=";
-    Name::toEscapedString(*publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest(), selectors);
-  }
   if (getNonce().size() > 0) {
     selectors << "&ndn.Nonce=";
     Name::toEscapedString(*getNonce(), selectors);

@@ -22,7 +22,6 @@
 #define NDN_INTEREST_TYPES_H
 
 #include "name-types.h"
-#include "publisher-public-key-digest-types.h"
 #include "key-types.h"
 
 #ifdef __cplusplus
@@ -71,9 +70,6 @@ struct ndn_Interest {
   struct ndn_Name name;
   int minSuffixComponents;  /**< -1 for none */
   int maxSuffixComponents;  /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */

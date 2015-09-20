@@ -23,7 +23,6 @@
 
 #include <ndn-cpp/c/interest-types.h>
 #include "name.h"
-#include "publisher-public-key-digest.h"
 #include "key-locator.h"
 
 #ifdef __cplusplus
@@ -129,7 +128,6 @@ static __inline void ndn_Interest_initialize
   ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
   self->minSuffixComponents = -1;
   self->maxSuffixComponents = -1;
-  ndn_PublisherPublicKeyDigest_initialize(&self->publisherPublicKeyDigest);
   ndn_Exclude_initialize(&self->exclude, excludeEntries, maxExcludeEntries);
   self->childSelector = -1;
   self->answerOriginKind = -1;
@@ -200,7 +198,6 @@ ndn_Interest_setFromInterest
     return error;
   self->minSuffixComponents = other->minSuffixComponents;
   self->maxSuffixComponents = other->maxSuffixComponents;
-  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
   if ((error = ndn_Exclude_setFromExclude(&self->exclude, &other->exclude)))
     return error;
   self->childSelector = other->childSelector;
