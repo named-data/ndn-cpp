@@ -842,7 +842,6 @@ with_boost_function
 with_boost_regex
 with_sqlite3
 with_osx_keychain
-enable_tlv
 enable_doxygen_doc
 enable_doxygen_dot
 enable_doxygen_man
@@ -1502,8 +1501,6 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-tlv            force NDN-TLV as the default wire format [default:
-                          no]
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -18773,19 +18770,6 @@ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "have libprotobuf but no libpthread
 See \`config.log' for more details" "$LINENO" 5; }
 fi
-
-fi
-
-# Check whether --enable-tlv was given.
-if test "${enable_tlv+set}" = set; then :
-  enableval=$enable_tlv; default_tlv=${enableval}
-else
-  default_tlv=no
-fi
-
-if test "x${default_tlv}" = xyes; then
-
-$as_echo "#define USE_DEFAULT_TLV 1" >>confdefs.h
 
 fi
 

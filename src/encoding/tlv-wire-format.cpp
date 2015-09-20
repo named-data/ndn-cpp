@@ -23,15 +23,12 @@
 
 namespace ndn {
 
-// NDN_CPP_USE_DEFAULT_TLV takes precedence over NDN_CPP_USE_DEFAULT_BINARY_XML.
-#if (defined(NDN_CPP_USE_DEFAULT_TLV) || !defined(NDN_CPP_USE_DEFAULT_BINARY_XML))
 // This is declared in the WireFormat class.
 WireFormat*
 WireFormat::newInitialDefaultWireFormat()
 {
   return TlvWireFormat::get();
 }
-#endif
 
 TlvWireFormat* TlvWireFormat::instance_ = 0;
 
