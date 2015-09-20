@@ -20,7 +20,6 @@
  */
 
 #include "binary-xml.h"
-#include "binary-xml-structure-decoder.h"
 #include "binary-xml-name.h"
 #include "binary-xml-key-locator.h"
 
