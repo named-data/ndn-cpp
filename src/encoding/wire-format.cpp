@@ -88,18 +88,6 @@ WireFormat::decodeData
 }
 
 Blob
-WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
-{
-  throw logic_error("unimplemented");
-}
-
-void
-WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
-{
-  throw logic_error("unimplemented");
-}
-
-Blob
 WireFormat::encodeControlParameters(const ControlParameters& controlParameters)
 {
   throw logic_error("unimplemented");

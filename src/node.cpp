@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
-#include <ndn-cpp/forwarding-entry.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/control-parameters.hpp>

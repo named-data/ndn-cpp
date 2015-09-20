@@ -138,23 +138,6 @@ public:
   decodeData
     (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
 
-  /**
-   * Encode forwardingEntry in binary XML and return the encoding.
-   * @param forwardingEntry The ForwardingEntry object to encode.
-   * @return A Blob containing the encoding.
-   */
-  virtual Blob
-  encodeForwardingEntry(const ForwardingEntry& forwardingEntry);
-
-  /**
-   * Decode input as a forwarding entry in binary XML and set the fields of the forwardingEntry object.
-   * @param forwardingEntry The ForwardingEntry object whose fields are updated.
-   * @param input A pointer to the input buffer to decode.
-   * @param inputLength The number of bytes in input.
-   */
-  virtual void
-  decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
-
 private:
   static BinaryXmlWireFormat* instance_;
 };

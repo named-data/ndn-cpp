@@ -22,11 +22,9 @@
 #include <stdexcept>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
-#include <ndn-cpp/forwarding-entry.hpp>
 #include "../c/encoding/binary-xml-name.h"
 #include "../c/encoding/binary-xml-interest.h"
 #include "../c/encoding/binary-xml-data.h"
-#include "../c/encoding/binary-xml-forwarding-entry.h"
 #include "binary-xml-encoder.hpp"
 #include "binary-xml-decoder.hpp"
 #include <ndn-cpp/encoding/binary-xml-wire-format.hpp>
@@ -177,39 +175,6 @@ BinaryXmlWireFormat::decodeData
     throw runtime_error(ndn_getErrorString(error));
 
   data.set(dataStruct);
-}
-
-Blob
-BinaryXmlWireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
-{
-  struct ndn_NameComponent prefixNameComponents[100];
-  struct ndn_ForwardingEntry forwardingEntryStruct;
-  ndn_ForwardingEntry_initialize
-    (&forwardingEntryStruct, prefixNameComponents, sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-  forwardingEntry.get(forwardingEntryStruct);
-
-  BinaryXmlEncoder encoder;
-  ndn_Error error;
-  if ((error = ndn_encodeBinaryXmlForwardingEntry(&forwardingEntryStruct, &encoder)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return Blob(encoder.getOutput(), false);
-}
-
-void
-BinaryXmlWireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
-{
-  struct ndn_NameComponent prefixNameComponents[100];
-  struct ndn_ForwardingEntry forwardingEntryStruct;
-  ndn_ForwardingEntry_initialize
-    (&forwardingEntryStruct, prefixNameComponents, sizeof(prefixNameComponents) / sizeof(prefixNameComponents[0]));
-
-  BinaryXmlDecoder decoder(input, inputLength);
-  ndn_Error error;
-  if ((error = ndn_decodeBinaryXmlForwardingEntry(&forwardingEntryStruct, &decoder)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  forwardingEntry.set(forwardingEntryStruct);
 }
 
 }

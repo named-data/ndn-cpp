@@ -30,7 +30,6 @@ namespace ndn {
 class Name;
 class Interest;
 class Data;
-class ForwardingEntry;
 class ControlParameters;
 class Signature;
 
@@ -182,25 +181,6 @@ public:
     size_t dummyBeginOffset, dummyEndOffset;
     decodeData(data, input, inputLength, &dummyBeginOffset, &dummyEndOffset);
   }
-
-  /**
-   * Encode forwardingEntry and return the encoding.  Your derived class should override.
-   * @param forwardingEntry The ForwardingEntry object to encode.
-   * @return A Blob containing the encoding.
-   * @throws logic_error for unimplemented if the derived class does not override.
-   */
-  virtual Blob
-  encodeForwardingEntry(const ForwardingEntry& forwardingEntry);
-
-  /**
-   * Decode input as a forwarding entry and set the fields of the forwardingEntry object.  Your derived class should override.
-   * @param forwardingEntry The ForwardingEntry object whose fields are updated.
-   * @param input A pointer to the input buffer to decode.
-   * @param inputLength The number of bytes in input.
-   * @throws logic_error for unimplemented if the derived class does not override.
-   */
-  virtual void
-  decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength);
 
   /**
    * Encode controlParameters and return the encoding.
