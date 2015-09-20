@@ -42,7 +42,6 @@ static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct
   ndn_Blob_initialize(&self->digestAlgorithm, 0, 0);
   ndn_Blob_initialize(&self->witness, 0, 0);
   ndn_Blob_initialize(&self->signature, 0, 0);
-  ndn_PublisherPublicKeyDigest_initialize(&self->publisherPublicKeyDigest);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
 }
 
@@ -78,7 +77,6 @@ ndn_Signature_setFromSignature
   ndn_Blob_setFromBlob(&self->digestAlgorithm, &other->digestAlgorithm);
   ndn_Blob_setFromBlob(&self->witness, &other->witness);
   ndn_Blob_setFromBlob(&self->signature, &other->signature);
-  self->publisherPublicKeyDigest = other->publisherPublicKeyDigest;
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
     return error;

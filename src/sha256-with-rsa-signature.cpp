@@ -95,7 +95,6 @@ Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
   digestAlgorithm_.get(signatureStruct.digestAlgorithm);
   witness_.get(signatureStruct.witness);
   signature_.get(signatureStruct.signature);
-  publisherPublicKeyDigest_.get().get(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().get(signatureStruct.keyLocator);
 }
 
@@ -109,7 +108,6 @@ Sha256WithRsaSignature::set(const struct ndn_Signature& signatureStruct)
   digestAlgorithm_ = Blob(signatureStruct.digestAlgorithm);
   witness_ = Blob(signatureStruct.witness);
   setSignature(Blob(signatureStruct.signature));
-  publisherPublicKeyDigest_.get().set(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(signatureStruct.keyLocator);
 }
 
@@ -117,8 +115,7 @@ uint64_t
 Sha256WithRsaSignature::getChangeCount() const
 {
   // Make sure each of the checkChanged is called.
-  bool changed = publisherPublicKeyDigest_.checkChanged();
-  changed = keyLocator_.checkChanged() || changed;
+  bool changed = keyLocator_.checkChanged();
   if (changed)
     // A child object has changed, so update the change count.
     // This method can be called on a const object, but we want to be able to update the changeCount_.

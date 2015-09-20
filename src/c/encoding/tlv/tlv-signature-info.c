@@ -21,30 +21,6 @@
 #include "tlv-key-locator.h"
 #include "tlv-signature-info.h"
 
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-/**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest
- * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
- * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
- * @param encoder the ndn_TlvEncoder which is calling this.
- * @return 0 for success, else an error code.
- */
-static ndn_Error
-encodeKeyLocatorPublisherPublicKeyDigestValue
-  (const void *context, struct ndn_TlvEncoder *encoder)
-{
-  struct ndn_Signature *signatureInfo = (struct ndn_Signature *)context;
-
-  ndn_Error error;
-  if ((error = ndn_TlvEncoder_writeBlobTlv
-       (encoder, ndn_Tlv_KeyLocatorDigest,
-        &signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest)))
-    return error;
-
-  return NDN_ERROR_success;
-}
-#endif
-
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
  * in the body of a signature value which has a KeyLocator, e.g.
@@ -66,37 +42,10 @@ encodeSignatureWithKeyLocatorValue
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
        (encoder, ndn_Tlv_SignatureType, signature->type)))
     return error;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-  // Save the offset and set omitZeroLength true so we can detect if the key
-  //   locator is omitted.  (When we remove the deprecated
-  //   publisherPublicKeyDigest, we can call normally with omitZeroLength false.)
-  saveOffset = encoder->offset;
-  if ((error = ndn_TlvEncoder_writeNestedTlv
-       (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue,
-        &signature->keyLocator, 1)))
-    return error;
-  if (encoder->offset == saveOffset) {
-    // There is no keyLocator.  If there is a publisherPublicKeyDigest, then
-    //   encode as KEY_LOCATOR_DIGEST.
-    if (signature->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
-      if ((error = ndn_TlvEncoder_writeNestedTlv
-           (encoder, ndn_Tlv_KeyLocator,
-            encodeKeyLocatorPublisherPublicKeyDigestValue, signature, 0)))
-        return error;
-    }
-    else {
-      // Just encode an empty KeyLocator.
-      if ((error = ndn_TlvEncoder_writeTypeAndLength
-           (encoder, ndn_Tlv_KeyLocator, 0)))
-        return error;
-    }
-  }
-#else
   if ((error = ndn_TlvEncoder_writeNestedTlv
        (encoder, ndn_Tlv_KeyLocator, ndn_encodeTlvKeyLocatorValue,
         &signature->keyLocator, 0)))
     return error;
-#endif
 
   return NDN_ERROR_success;
 }
@@ -166,16 +115,6 @@ ndn_decodeTlvSignatureInfo
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_KeyLocator, &signatureInfo->keyLocator, decoder)))
       return error;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-    if (signatureInfo->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-      // For backwards compatibility, also set the publisherPublicKeyDigest.
-      signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest =
-        signatureInfo->keyLocator.keyData;
-    else
-      // Set publisherPublicKeyDigest to none.
-      ndn_Blob_initialize
-        (&signatureInfo->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
-#endif
   }
   else if (signatureType == ndn_Tlv_SignatureType_DigestSha256)
     signatureInfo->type = ndn_SignatureType_DigestSha256Signature;

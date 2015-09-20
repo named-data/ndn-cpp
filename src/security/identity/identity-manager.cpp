@@ -268,7 +268,6 @@ IdentityManager::createIdentityCertificate(const Name& certificatePrefix,
   keyLocator.setKeyName(signerCertificateName);
 
   sha256Sig->setKeyLocator(keyLocator);
-  sha256Sig->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest(publicKey.getDigest());
 
   certificate->setSignature(*sha256Sig);
 
@@ -580,8 +579,6 @@ IdentityManager::makeSignatureByCertificate
     signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
     signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
     // Ignore witness and leave the digestAlgorithm as the default.
-    signature->getPublisherPublicKeyDigest().setPublisherPublicKeyDigest
-      (publicKey->getDigest());
 
     return signature;
   }

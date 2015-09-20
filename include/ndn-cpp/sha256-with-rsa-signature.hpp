@@ -80,20 +80,6 @@ public:
   virtual const Blob&
   getSignature() const;
 
-  /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  const PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
-
-  /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
-
   const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
 
@@ -119,17 +105,6 @@ public:
   virtual void
   setSignature(const Blob& signature);
 
-  /**
-   * @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  void
-  DEPRECATED_IN_NDN_CPP setPublisherPublicKeyDigest(const PublisherPublicKeyDigest& publisherPublicKeyDigest)
-  {
-    publisherPublicKeyDigest_.set(publisherPublicKeyDigest);
-    ++changeCount_;
-  }
-
   void
   setKeyLocator(const KeyLocator& keyLocator)
   {
@@ -146,7 +121,6 @@ public:
     digestAlgorithm_.reset();
     witness_.reset();
     signature_.reset();
-    publisherPublicKeyDigest_.get().clear();
     keyLocator_.get().clear();
     ++changeCount_;
   }
@@ -163,9 +137,6 @@ private:
   /** @deprecated Witness is deprecated. */
   Blob witness_;
   Blob signature_;
-  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
   ChangeCounter<KeyLocator> keyLocator_;
   uint64_t changeCount_;
 };
