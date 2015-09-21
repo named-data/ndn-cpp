@@ -67,7 +67,6 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
   ndn_Error error;
-  size_t saveOffset;
 
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_MinSuffixComponents, interest->minSuffixComponents)))
@@ -78,7 +77,7 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
 
   if ((error = ndn_TlvEncoder_writeNestedTlv
        (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue,
-        &interest->keyLocator, 0)))
+        &interest->keyLocator, 1)))
     return error;
 
   if (interest->exclude.nEntries > 0)
@@ -223,7 +222,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
   ndn_Error error;
   size_t endOffset;
   int gotExpectedType;
-  int mustBeFresh;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Selectors, &endOffset)))
     return error;
