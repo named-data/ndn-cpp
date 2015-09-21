@@ -131,7 +131,6 @@ static __inline void ndn_Interest_initialize
   ndn_Exclude_initialize(&self->exclude, excludeEntries, maxExcludeEntries);
   self->childSelector = -1;
   self->mustBeFresh = 1;
-  self->scope = -1;
   self->interestLifetimeMilliseconds = -1.0;
   ndn_Blob_initialize(&self->nonce, 0, 0);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
@@ -185,7 +184,6 @@ ndn_Interest_setFromInterest
     return error;
   self->childSelector = other->childSelector;
   self->mustBeFresh = other->mustBeFresh;
-  self->scope = other->scope;
   self->interestLifetimeMilliseconds = other->interestLifetimeMilliseconds;
   ndn_Blob_setFromBlob(&self->nonce, &other->nonce);
   if ((error = ndn_KeyLocator_setFromKeyLocator

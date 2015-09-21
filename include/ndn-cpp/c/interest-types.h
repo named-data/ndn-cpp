@@ -66,8 +66,6 @@ struct ndn_Interest {
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
   int mustBeFresh;          /**< bool. Default true. */
-  /** @deprecated Scope is not used by NFD. */
-  int scope;                /**< -1 for none */
   ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
   struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
 };

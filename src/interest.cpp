@@ -38,7 +38,6 @@ Interest& Interest::operator=(const Interest& interest)
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
   mustBeFresh_ = interest.mustBeFresh_;
-  scope_ = interest.scope_;
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
   setDefaultWireEncoding
@@ -59,7 +58,6 @@ Interest::set(const struct ndn_Interest& interestStruct)
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
   mustBeFresh_ = (interestStruct.mustBeFresh != 0);
-  scope_ = interestStruct.scope;
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
   nonce_ = Blob(interestStruct.nonce);
@@ -77,7 +75,6 @@ Interest::get(struct ndn_Interest& interestStruct) const
   exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
   interestStruct.mustBeFresh = (mustBeFresh_ ? 1 : 0);
-  interestStruct.scope = scope_;
   interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
   getNonce().get(interestStruct.nonce);
 }
@@ -150,8 +147,6 @@ Interest::toUri() const
   if (childSelector_ >= 0)
     selectors << "&ndn.ChildSelector=" << childSelector_;
   selectors << "&ndn.MustBeFresh=" << (mustBeFresh_ ? 1 : 0);
-  if (scope_ >= 0)
-    selectors << "&ndn.Scope=" << scope_;
   if (interestLifetimeMilliseconds_ >= 0)
     selectors << "&ndn.InterestLifetime=" << (uint64_t)round(interestLifetimeMilliseconds_);
   if (getNonce().size() > 0) {
@@ -193,28 +188,6 @@ Interest::matchesName(const Name& name) const
     return false;
 
   return true;
-}
-
-int
-Interest::getScope() const
-{ 
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("getScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
-
-  return scope_;
-}
-
-Interest&
-Interest::setScope(int scope)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("setScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
-
-  scope_ = scope;
-  ++changeCount_;
-  return *this;
 }
 
 }

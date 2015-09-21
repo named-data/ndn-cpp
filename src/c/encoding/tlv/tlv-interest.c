@@ -150,9 +150,6 @@ encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_Nonce, &nonceBlob)))
     return error;
 
-  if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
-      (encoder, ndn_Tlv_Scope, interest->scope)))
-    return error;
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_InterestLifetime, interest->interestLifetimeMilliseconds)))
     return error;
@@ -310,9 +307,6 @@ ndn_decodeTlvInterest
   if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_Nonce, &interest->nonce)))
     return error;
 
-  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
-       (decoder, ndn_Tlv_Scope, endOffset, &interest->scope)))
-    return error;
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_InterestLifetime, endOffset, &interest->interestLifetimeMilliseconds)))
     return error;

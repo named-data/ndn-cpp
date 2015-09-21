@@ -67,7 +67,6 @@ public:
     keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
     childSelector_(interest.childSelector_),
     mustBeFresh_(interest.mustBeFresh_),
-    scope_(interest.scope_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
   {
@@ -192,12 +191,6 @@ public:
   bool
   getMustBeFresh() const { return mustBeFresh_; }
 
-  /**
-   * @deprecated Scope is not used by NFD.
-   */
-  int
-  DEPRECATED_IN_NDN_CPP getScope() const;
-
   Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds_; }
 
@@ -294,12 +287,6 @@ public:
     ++changeCount_;
     return *this;
   }
-
-  /**
-   * @deprecated Scope is not used by NFD.
-   */
-  Interest&
-  DEPRECATED_IN_NDN_CPP setScope(int scope);
 
   /**
    * Set the interest lifetime.
@@ -422,7 +409,6 @@ private:
     maxSuffixComponents_ = -1;
     childSelector_ = -1;
     mustBeFresh_ = true;
-    scope_ = -1;
     interestLifetimeMilliseconds_ = -1.0;
   }
 
@@ -445,8 +431,6 @@ private:
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
   bool mustBeFresh_;
-  /** @deprecated Scope is not used by NFD. */
-  int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;
