@@ -40,14 +40,6 @@ namespace ndn {
 class Interest {
 public:
   /**
-   * Create a new Interest with the given name and values, and "none" for the nonce.
-   * @deprecated This has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds);
-
-  /**
    * Create a new Interest with the given name and interest lifetime and "none" for other values.
    * @param name The name for the interest.
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
@@ -74,7 +66,7 @@ public:
     maxSuffixComponents_(interest.maxSuffixComponents_),
     keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
     childSelector_(interest.childSelector_),
-    answerOriginKind_(interest.answerOriginKind_),
+    mustBeFresh_(interest.mustBeFresh_),
     scope_(interest.scope_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
@@ -194,24 +186,11 @@ public:
   getChildSelector() const { return childSelector_; }
 
   /**
-   * @deprecated Use getMustBeFresh.
-   */
-  int
-  DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const;
-
-  /**
    * Return true if the content must be fresh. The default is true.
    * @return true if must be fresh, otherwise false.
    */
   bool
-  getMustBeFresh() const
-  {
-    // Imitate ndn_Interest_getMustBeFresh.
-    if (answerOriginKind_ < 0)
-      return true;
-    else
-      return (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
-  }
+  getMustBeFresh() const { return mustBeFresh_; }
 
   /**
    * @deprecated Scope is not used by NFD.
@@ -303,12 +282,6 @@ public:
   }
 
   /**
-   * @deprecated Use setMustBeFresh.
-   */
-  Interest&
-  DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind);
-
-  /**
    * Set the MustBeFresh flag.
    * @param mustBeFresh True if the content must be fresh, otherwise false. If
    * you do not set this flag, the default value is true.
@@ -317,23 +290,8 @@ public:
   Interest&
   setMustBeFresh(bool mustBeFresh)
   {
-    if (answerOriginKind_ < 0) {
-      // It is is already the default where MustBeFresh is true.
-      if (!mustBeFresh) {
-        // Set answerOriginKind_ so that getMustBeFresh returns false.
-        answerOriginKind_ = ndn_Interest_ANSWER_STALE;
-        ++changeCount_;
-      }
-    }
-    else {
-      if (mustBeFresh)
-        // Clear the stale bit.
-        answerOriginKind_ &= ~ndn_Interest_ANSWER_STALE;
-      else
-        // Set the stale bit.
-        answerOriginKind_ |= ndn_Interest_ANSWER_STALE;
-      ++changeCount_;
-    }
+    mustBeFresh_ = mustBeFresh;
+    ++changeCount_;
     return *this;
   }
 
@@ -463,7 +421,7 @@ private:
     minSuffixComponents_ = -1;
     maxSuffixComponents_ = -1;
     childSelector_ = -1;
-    answerOriginKind_ = -1;
+    mustBeFresh_ = true;
     scope_ = -1;
     interestLifetimeMilliseconds_ = -1.0;
   }
@@ -486,7 +444,7 @@ private:
   ChangeCounter<KeyLocator> keyLocator_;
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
-  int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
+  bool mustBeFresh_;
   /** @deprecated Scope is not used by NFD. */
   int scope_;               /**< -1 for none */
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */

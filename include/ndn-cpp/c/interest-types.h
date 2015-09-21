@@ -52,15 +52,7 @@ struct ndn_Exclude {
 
 enum {
   ndn_Interest_CHILD_SELECTOR_LEFT = 0,
-  ndn_Interest_CHILD_SELECTOR_RIGHT = 1,
-
-  ndn_Interest_ANSWER_NO_CONTENT_STORE = 0,
-  ndn_Interest_ANSWER_CONTENT_STORE = 1,
-  ndn_Interest_ANSWER_GENERATED = 2,
-  ndn_Interest_ANSWER_STALE = 4,    // Stale answer OK
-  ndn_Interest_MARK_STALE = 16,      // Must have scope 0.  Michael calls this a "hack"
-
-  ndn_Interest_DEFAULT_ANSWER_ORIGIN_KIND = ndn_Interest_ANSWER_CONTENT_STORE | ndn_Interest_ANSWER_GENERATED
+  ndn_Interest_CHILD_SELECTOR_RIGHT = 1
 };
 
 /**
@@ -73,7 +65,7 @@ struct ndn_Interest {
   struct ndn_KeyLocator keyLocator;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
-  int answerOriginKind;     /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
+  int mustBeFresh;          /**< bool. Default true. */
   /** @deprecated Scope is not used by NFD. */
   int scope;                /**< -1 for none */
   ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */

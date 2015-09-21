@@ -89,19 +89,11 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_ChildSelector, interest->childSelector)))
     return error;
 
-  // Instead of using ndn_Interest_getMustBeFresh, check answerOriginKind directly so that we can
-  //   return an error if unsupported bits are set.
-  if (interest->answerOriginKind < 0 || interest->answerOriginKind == 0) {
-    // MustBeFresh == true.
+  if (interest->mustBeFresh) {
     if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_MustBeFresh, 0)))
       return error;
   }
-  else if ((interest->answerOriginKind & ndn_Interest_ANSWER_STALE) != 0) {
-    // MustBeFresh == false, so nothing to encode.
-  }
-  else
-    // This error will be irrelevant when we drop support for binary XML answerOriginKind.
-    return NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh;
+  // else MustBeFresh == false, so nothing to encode.
 
   return NDN_ERROR_success;
 }
@@ -272,11 +264,9 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_ChildSelector, endOffset, &interest->childSelector)))
     return error;
 
-  if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_MustBeFresh, endOffset, &mustBeFresh)))
+  if ((error = ndn_TlvDecoder_readBooleanTlv
+       (decoder, ndn_Tlv_MustBeFresh, endOffset, &interest->mustBeFresh)))
     return error;
-  // Setting the ndn_Interest_ANSWER_STALE bit means mustBeFresh is false.
-  // -1 means not specified where mustBeFresh is default true.
-  interest->answerOriginKind = (!mustBeFresh ? ndn_Interest_ANSWER_STALE : -1);
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
@@ -313,7 +303,7 @@ ndn_decodeTlvInterest
     interest->maxSuffixComponents = -1;
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
-    interest->answerOriginKind = -1;
+    interest->mustBeFresh = 1;
   }
 
   // Require a Nonce, but don't force it to be 4 bytes.

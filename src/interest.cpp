@@ -29,19 +29,6 @@ using namespace std;
 
 namespace ndn {
 
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("answerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
 Interest& Interest::operator=(const Interest& interest)
 {
   setName(interest.name_.get());
@@ -50,7 +37,7 @@ Interest& Interest::operator=(const Interest& interest)
   setKeyLocator(interest.keyLocator_.get());
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
-  answerOriginKind_ = interest.answerOriginKind_;
+  mustBeFresh_ = interest.mustBeFresh_;
   scope_ = interest.scope_;
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
@@ -71,7 +58,7 @@ Interest::set(const struct ndn_Interest& interestStruct)
 
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
-  answerOriginKind_ = interestStruct.answerOriginKind;
+  mustBeFresh_ = (interestStruct.mustBeFresh != 0);
   scope_ = interestStruct.scope;
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
@@ -89,7 +76,7 @@ Interest::get(struct ndn_Interest& interestStruct) const
   keyLocator_.get().get(interestStruct.keyLocator);
   exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
-  interestStruct.answerOriginKind = answerOriginKind_;
+  interestStruct.mustBeFresh = (mustBeFresh_ ? 1 : 0);
   interestStruct.scope = scope_;
   interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
   getNonce().get(interestStruct.nonce);
@@ -162,8 +149,7 @@ Interest::toUri() const
     selectors << "&ndn.MaxSuffixComponents=" << maxSuffixComponents_;
   if (childSelector_ >= 0)
     selectors << "&ndn.ChildSelector=" << childSelector_;
-  if (answerOriginKind_ >= 0)
-    selectors << "&ndn.AnswerOriginKind=" << answerOriginKind_;
+  selectors << "&ndn.MustBeFresh=" << (mustBeFresh_ ? 1 : 0);
   if (scope_ >= 0)
     selectors << "&ndn.Scope=" << scope_;
   if (interestLifetimeMilliseconds_ >= 0)
@@ -210,16 +196,6 @@ Interest::matchesName(const Name& name) const
 }
 
 int
-Interest::getAnswerOriginKind() const
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("getAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's getMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-
-  return answerOriginKind_;
-}
-
-int
 Interest::getScope() const
 { 
   if (!WireFormat::ENABLE_NDNX)
@@ -227,18 +203,6 @@ Interest::getScope() const
       ("getScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
 
   return scope_;
-}
-
-Interest&
-Interest::setAnswerOriginKind(int answerOriginKind)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("setAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-
-  answerOriginKind_ = answerOriginKind;
-  ++changeCount_;
-  return *this;
 }
 
 Interest&

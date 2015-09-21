@@ -105,8 +105,6 @@ char *ndn_getErrorString(int error)
     return      "decodeSignatureInfo unrecognized SignatureInfo type";
   case NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType:
     return      "encodeSignatureInfo unrecognized SignatureType";
-  case NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh:
-    return      "Unsupported answerOriginKind bits for encoding TLV MustBeFresh";
   case NDN_ERROR_Unimplemented_operation:
     return      "Unimplemented operation";
   case NDN_ERROR_ElementReader_ElementListener_is_not_specified:

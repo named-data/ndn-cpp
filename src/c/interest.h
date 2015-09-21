@@ -130,7 +130,7 @@ static __inline void ndn_Interest_initialize
   self->maxSuffixComponents = -1;
   ndn_Exclude_initialize(&self->exclude, excludeEntries, maxExcludeEntries);
   self->childSelector = -1;
-  self->answerOriginKind = -1;
+  self->mustBeFresh = 1;
   self->scope = -1;
   self->interestLifetimeMilliseconds = -1.0;
   ndn_Blob_initialize(&self->nonce, 0, 0);
@@ -138,17 +138,13 @@ static __inline void ndn_Interest_initialize
 }
 
 /**
- * Return true if answerOriginKind indicates that the content must be fresh. If
- * answerOriginKind is not specified, the default is true.
+ * Get the MustBeFresh flag.
  * @param self A pointer to the ndn_Interest struct.
  * @return 1 if must be fresh, otherwise 0.
  */
 static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
 {
-  if (self->answerOriginKind < 0)
-    return 1;
-  else
-    return (self->answerOriginKind & ndn_Interest_ANSWER_STALE) == 0 ? 1 : 0;
+  return self->mustBeFresh;
 }
 
 /**
@@ -161,20 +157,7 @@ static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
 static __inline void
 ndn_Interest_setMustBeFresh(struct ndn_Interest *self, int mustBeFresh)
 {
-  if (self->answerOriginKind < 0) {
-    // It is is already the default where MustBeFresh is true.
-    if (!mustBeFresh)
-      // Set answerOriginKind so that getMustBeFresh returns false.
-      self->answerOriginKind = ndn_Interest_ANSWER_STALE;
-  }
-  else {
-    if (mustBeFresh)
-      // Clear the stale bit.
-      self->answerOriginKind &= ~ndn_Interest_ANSWER_STALE;
-    else
-      // Set the stale bit.
-      self->answerOriginKind |= ndn_Interest_ANSWER_STALE;
-  }
+  self->mustBeFresh = (mustBeFresh ? 1 : 0);
 }
 
 /**
@@ -201,7 +184,7 @@ ndn_Interest_setFromInterest
   if ((error = ndn_Exclude_setFromExclude(&self->exclude, &other->exclude)))
     return error;
   self->childSelector = other->childSelector;
-  self->answerOriginKind = other->answerOriginKind;
+  self->mustBeFresh = other->mustBeFresh;
   self->scope = other->scope;
   self->interestLifetimeMilliseconds = other->interestLifetimeMilliseconds;
   ndn_Blob_setFromBlob(&self->nonce, &other->nonce);
