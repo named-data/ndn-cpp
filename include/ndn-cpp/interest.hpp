@@ -23,7 +23,6 @@
 #define NDN_INTEREST_HPP
 
 #include "name.hpp"
-#include "publisher-public-key-digest.hpp"
 #include "key-locator.hpp"
 #include "c/interest-types.h"
 #include "encoding/wire-format.hpp"
@@ -40,34 +39,6 @@ namespace ndn {
  */
 class Interest {
 public:
-  /**
-   * Create a new Interest for the given name and values.
-   * @deprecated This constructor sets the nonce which is deprecated because you should let let the wire encoder
-   * generate a random nonce internally before sending the interest.
-   * This has PublisherPublicKeyDigest. Use KeyLocator.
-   * This also has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce);
-
-  /**
-   * Create a new Interest with the given name and values, and "none" for the nonce and keyLocator.
-   * @deprecated This has PublisherPublicKeyDigest. Use KeyLocator.
-   * This also has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds);
-
-  /**
-   * Create a new Interest with the given name and values, and "none" for the nonce.
-   * @deprecated This has answerOriginKind. Use setMustBeFresh().
-   */
-  DEPRECATED_IN_NDN_CPP Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-    const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
-    int scope, Milliseconds interestLifetimeMilliseconds);
-
   /**
    * Create a new Interest with the given name and interest lifetime and "none" for other values.
    * @param name The name for the interest.
@@ -93,11 +64,9 @@ public:
   Interest(const Interest& interest)
   : name_(interest.name_), minSuffixComponents_(interest.minSuffixComponents_),
     maxSuffixComponents_(interest.maxSuffixComponents_),
-    publisherPublicKeyDigest_(interest.publisherPublicKeyDigest_),
     keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
     childSelector_(interest.childSelector_),
-    answerOriginKind_(interest.answerOriginKind_),
-    scope_(interest.scope_),
+    mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
   {
@@ -200,20 +169,6 @@ public:
   int
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
 
-  /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() { return publisherPublicKeyDigest_.get(); }
-
-  /**
-   * @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest.
-   */
-  const PublisherPublicKeyDigest&
-  DEPRECATED_IN_NDN_CPP getPublisherPublicKeyDigest() const { return publisherPublicKeyDigest_.get(); }
-
   const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
 
@@ -230,30 +185,11 @@ public:
   getChildSelector() const { return childSelector_; }
 
   /**
-   * @deprecated Use getMustBeFresh.
-   */
-  int
-  DEPRECATED_IN_NDN_CPP getAnswerOriginKind() const;
-
-  /**
    * Return true if the content must be fresh. The default is true.
    * @return true if must be fresh, otherwise false.
    */
   bool
-  getMustBeFresh() const
-  {
-    // Imitate ndn_Interest_getMustBeFresh.
-    if (answerOriginKind_ < 0)
-      return true;
-    else
-      return (answerOriginKind_ & ndn_Interest_ANSWER_STALE) == 0;
-  }
-
-  /**
-   * @deprecated Scope is not used by NFD.
-   */
-  int
-  DEPRECATED_IN_NDN_CPP getScope() const;
+  getMustBeFresh() const { return mustBeFresh_; }
 
   Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds_; }
@@ -339,12 +275,6 @@ public:
   }
 
   /**
-   * @deprecated Use setMustBeFresh.
-   */
-  Interest&
-  DEPRECATED_IN_NDN_CPP setAnswerOriginKind(int answerOriginKind);
-
-  /**
    * Set the MustBeFresh flag.
    * @param mustBeFresh True if the content must be fresh, otherwise false. If
    * you do not set this flag, the default value is true.
@@ -353,31 +283,10 @@ public:
   Interest&
   setMustBeFresh(bool mustBeFresh)
   {
-    if (answerOriginKind_ < 0) {
-      // It is is already the default where MustBeFresh is true.
-      if (!mustBeFresh) {
-        // Set answerOriginKind_ so that getMustBeFresh returns false.
-        answerOriginKind_ = ndn_Interest_ANSWER_STALE;
-        ++changeCount_;
-      }
-    }
-    else {
-      if (mustBeFresh)
-        // Clear the stale bit.
-        answerOriginKind_ &= ~ndn_Interest_ANSWER_STALE;
-      else
-        // Set the stale bit.
-        answerOriginKind_ |= ndn_Interest_ANSWER_STALE;
-      ++changeCount_;
-    }
+    mustBeFresh_ = mustBeFresh;
+    ++changeCount_;
     return *this;
   }
-
-  /**
-   * @deprecated Scope is not used by NFD.
-   */
-  Interest&
-  DEPRECATED_IN_NDN_CPP setScope(int scope);
 
   /**
    * Set the interest lifetime.
@@ -482,7 +391,6 @@ public:
   {
     // Make sure each of the checkChanged is called.
     bool changed = name_.checkChanged();
-    changed = publisherPublicKeyDigest_.checkChanged() || changed;
     changed = keyLocator_.checkChanged() || changed;
     changed = exclude_.checkChanged() || changed;
     if (changed)
@@ -500,8 +408,7 @@ private:
     minSuffixComponents_ = -1;
     maxSuffixComponents_ = -1;
     childSelector_ = -1;
-    answerOriginKind_ = -1;
-    scope_ = -1;
+    mustBeFresh_ = true;
     interestLifetimeMilliseconds_ = -1.0;
   }
 
@@ -520,15 +427,10 @@ private:
   ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  ChangeCounter<PublisherPublicKeyDigest> publisherPublicKeyDigest_;
   ChangeCounter<KeyLocator> keyLocator_;
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
-  int answerOriginKind_;    /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
-  /** @deprecated Scope is not used by NFD. */
-  int scope_;               /**< -1 for none */
+  bool mustBeFresh_;
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;

@@ -26,8 +26,6 @@ using namespace std;
 
 namespace ndn {
 
-bool WireFormat::ENABLE_NDNX = false;
-
 static bool gotInitialDefaultWireFormat = false;
 
 WireFormat* WireFormat::defaultWireFormat_ = 0;
@@ -83,18 +81,6 @@ WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_
 void
 WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
-{
-  throw logic_error("unimplemented");
-}
-
-Blob
-WireFormat::encodeForwardingEntry(const ForwardingEntry& forwardingEntry)
-{
-  throw logic_error("unimplemented");
-}
-
-void
-WireFormat::decodeForwardingEntry(ForwardingEntry& forwardingEntry, const uint8_t *input, size_t inputLength)
 {
   throw logic_error("unimplemented");
 }

@@ -119,8 +119,7 @@ public:
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forwarded to the application.
    * @param wireFormat A WireFormat object used to encode the message.
-   * @param commandKeyChain The KeyChain object for signing interests.  If null,
-   * assume we are connected to a legacy NDNx forwarder.
+   * @param commandKeyChain The KeyChain object for signing interests.
    * @param commandCertificateName The certificate name for signing interests.
    * @param face The face which is passed to the onInterest callback. If
    * onInterest is null, this is ignored.
@@ -499,74 +498,6 @@ private:
   };
 
   /**
-   * An NdndIdFetcher receives the Data packet with the publisher public key digest for the connected NDN hub.
-   * This class is a function object for the callbacks. It only holds a pointer to an Info object, so it is OK to copy the pointer.
-   */
-  class NdndIdFetcher {
-  public:
-    class Info;
-    NdndIdFetcher(ptr_lib::shared_ptr<NdndIdFetcher::Info> info)
-    : info_(info)
-    {
-    }
-
-    /**
-     * We received the ndnd ID.
-     * @param interest
-     * @param data
-     */
-    void
-    operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& ndndIdData);
-
-    /**
-     * We timed out fetching the ndnd ID.
-     * @param interest
-     */
-    void
-    operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest);
-
-    class Info {
-    public:
-      /**
-       *
-       * @param node
-       * @param registeredPrefixId The getNextEntryId() which registerPrefix got
-       * so it could return it to the caller.
-       * @param prefix
-       * @param onInterest
-       * @param onRegisterFailed
-       * @param flags
-       * @param wireFormat
-       * @param flace
-       */
-      Info(Node *node, uint64_t registeredPrefixId,
-           const ptr_lib::shared_ptr<const Name>& prefix,
-           const OnInterestCallback& onInterest,
-           const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
-           WireFormat& wireFormat, Face* face)
-      : node_(*node), registeredPrefixId_(registeredPrefixId),
-        prefix_(prefix), onInterest_(onInterest),
-        onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), face_(face)
-      {
-      }
-
-      Node& node_;
-      uint64_t registeredPrefixId_;
-      ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterestCallback onInterest_;
-      const OnRegisterFailed onRegisterFailed_;
-      ForwardingFlags flags_;
-      WireFormat& wireFormat_;
-      Face* face_;
-    };
-
-  private:
-    ptr_lib::shared_ptr<Info> info_;
-  };
-
-
-  /**
    * A RegisterResponse receives the response Data packet from the register
    * prefix interest sent to the connected NDN hub.  If this gets a bad response
    * or a timeout, call onRegisterFailed.
@@ -601,11 +532,10 @@ private:
       Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
            const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed,
-           const ForwardingFlags& flags, WireFormat& wireFormat,
-           bool isNfdCommand, Face* face)
+           const ForwardingFlags& flags, WireFormat& wireFormat, Face* face)
       : node_(*node), prefix_(prefix), onInterest_(onInterest),
         onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), isNfdCommand_(isNfdCommand), face_(face)
+        wireFormat_(wireFormat), face_(face)
       {
       }
 
@@ -615,7 +545,6 @@ private:
       const OnRegisterFailed onRegisterFailed_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
-      bool isNfdCommand_;
       Face* face_;
     };
 
@@ -670,24 +599,6 @@ private:
      std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
 
   /**
-   * Do the work of registerPrefix to register with NDNx once we have an ndndId_.
-   * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
-   * it could return it to the caller. If this is 0, then don't add to
-   * registeredPrefixTable_ (assuming it has already been done).
-   * @param prefix
-   * @param onInterest
-   * @param onRegisterFailed
-   * @param flags
-   * @param wireFormat
-   * @param face
-   */
-  void
-  registerPrefixHelper
-    (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags, WireFormat& wireFormat, Face* face);
-
-  /**
    * Do the work of registerPrefix to register with NFD.
    * @param registeredPrefixId The getNextEntryId() which registerPrefix got so
    * it could return it to the caller. If this is 0, then don't add to
@@ -722,8 +633,6 @@ private:
   std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
   DelayedCall::Compare delayedCallCompare_;
   std::vector<Face::Callback> onConnectedCallbacks_;
-  ptr_lib::shared_ptr<const Interest> ndndIdFetcherInterest_;
-  Blob ndndId_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
   // lastEntryId_ is used to get the next unique ID. Use atomic_uint64_t to be

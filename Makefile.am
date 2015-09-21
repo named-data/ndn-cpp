@@ -43,7 +43,6 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/interest-types.h \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
-  include/ndn-cpp/c/publisher-public-key-digest-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
@@ -57,7 +56,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/digest-sha256-signature.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
-  include/ndn-cpp/forwarding-entry.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
@@ -65,12 +63,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
   include/ndn-cpp/control-parameters.hpp \
-  include/ndn-cpp/publisher-public-key-digest.hpp \
   include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/threadsafe-face.hpp \
-  include/ndn-cpp/encoding/binary-xml-wire-format.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
   include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
@@ -130,23 +126,11 @@ ndn_cpp_cpp_headers = \
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/errors.c src/c/errors.h \
-  src/c/forwarding-entry.h \
   src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
   src/c/control-parameters.h \
-  src/c/publisher-public-key-digest.h \
-  src/c/encoding/binary-xml-data.c src/c/encoding/binary-xml-data.h \
-  src/c/encoding/binary-xml-decoder.c src/c/encoding/binary-xml-decoder.h \
-  src/c/encoding/binary-xml-encoder.c src/c/encoding/binary-xml-encoder.h \
-  src/c/encoding/binary-xml-forwarding-entry.c src/c/encoding/binary-xml-forwarding-entry.h \
-  src/c/encoding/binary-xml-interest.c src/c/encoding/binary-xml-interest.h \
-  src/c/encoding/binary-xml-key-locator.c src/c/encoding/binary-xml-key-locator.h \
-  src/c/encoding/binary-xml-name.c src/c/encoding/binary-xml-name.h \
-  src/c/encoding/binary-xml-publisher-public-key-digest.c src/c/encoding/binary-xml-publisher-public-key-digest.h \
-  src/c/encoding/binary-xml-structure-decoder.c src/c/encoding/binary-xml-structure-decoder.h \
-  src/c/encoding/binary-xml.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_1_1-wire-format.c src/c/encoding/tlv-0_1_1-wire-format.h \
@@ -178,7 +162,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
-  src/forwarding-entry.cpp \
   src/forwarding-flags.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
@@ -187,15 +170,11 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/name.cpp \
   src/node.cpp src/node.hpp \
   src/control-parameters.cpp \
-  src/publisher-public-key-digest.cpp \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
   src/threadsafe-face.cpp \
   src/encoding/base64.cpp src/encoding/base64.hpp \
-  src/encoding/binary-xml-decoder.hpp \
-  src/encoding/binary-xml-encoder.hpp \
-  src/encoding/binary-xml-wire-format.cpp \
   src/encoding/element-listener.cpp src/encoding/element-listener.hpp \
   src/encoding/oid.cpp \
   src/encoding/protobuf-tlv.cpp \

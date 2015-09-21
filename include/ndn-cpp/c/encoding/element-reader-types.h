@@ -38,18 +38,6 @@ struct ndn_ElementListener {
   ndn_OnReceivedElement onReceivedElement; /**< see ndn_ElementListener_initialize */
 };
 
-struct ndn_BinaryXmlStructureDecoder {
-  int gotElementEnd; /**< boolean */
-  size_t offset;
-  int level;
-  int state;
-  size_t headerLength;
-  int useHeaderBuffer; /**< boolean */
-  // 10 bytes is enough to hold an encoded header with a type and a 64 bit value.
-  uint8_t headerBuffer[10];
-  int nBytesToRead;
-};
-
 struct ndn_TlvStructureDecoder {
   int gotElementEnd; /**< boolean */
   size_t offset;
@@ -64,19 +52,17 @@ struct ndn_TlvStructureDecoder {
 
 /**
  * A ndn_ElementReader lets you call ndn_ElementReader_onReceivedData multiple times which uses an
- * ndn_BinaryXmlStructureDecoder or ndn_TlvStructureDecoder as needed to detect the end of a binary XML or TLV element,
+ * ndn_TlvStructureDecoder as needed to detect the end of a TLV element,
  * and calls (*elementListener->onReceivedElement)(element, elementLength) with the element.
  * This handles the case where a single call to onReceivedData may contain multiple elements.
  */
 struct ndn_ElementReader {
   struct ndn_ElementListener *elementListener;
-  struct ndn_BinaryXmlStructureDecoder binaryXmlStructureDecoder;
   struct ndn_TlvStructureDecoder tlvStructureDecoder;
   int usePartialData;       /**< boolean */
   int gotPartialDataError;  /**< boolean. Only meaningful if usePartialData. */
   struct ndn_DynamicUInt8Array* partialData;
   size_t partialDataLength;
-  int useTlv; /**< boolean */
 };
 
 #ifdef __cplusplus

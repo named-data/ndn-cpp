@@ -29,56 +29,15 @@ using namespace std;
 
 namespace ndn {
 
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds, const Blob& nonce)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  nonce_(nonce), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const PublisherPublicKeyDigest& publisherPublicKeyDigest, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  publisherPublicKeyDigest_(publisherPublicKeyDigest), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("publisherPublicKeyDigest and answerOriginKind are for NDNx and are deprecated. To enable while you upgrade your code to use NFD's KeyLocator and setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
-Interest::Interest(const Name& name, int minSuffixComponents, int maxSuffixComponents,
-  const KeyLocator& keyLocator, const Exclude& exclude, int childSelector, int answerOriginKind,
-  int scope, Milliseconds interestLifetimeMilliseconds)
-: name_(name), minSuffixComponents_(minSuffixComponents), maxSuffixComponents_(maxSuffixComponents),
-  keyLocator_(keyLocator), exclude_(exclude), childSelector_(childSelector),
-  answerOriginKind_(answerOriginKind), scope_(scope), interestLifetimeMilliseconds_(interestLifetimeMilliseconds),
-  getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("answerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-}
-
 Interest& Interest::operator=(const Interest& interest)
 {
   setName(interest.name_.get());
   setMinSuffixComponents(interest.minSuffixComponents_);
   setMaxSuffixComponents(interest.maxSuffixComponents_);
-  publisherPublicKeyDigest_.set(interest.publisherPublicKeyDigest_.get());;
   setKeyLocator(interest.keyLocator_.get());
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
-  answerOriginKind_ = interest.answerOriginKind_;
-  scope_ = interest.scope_;
+  mustBeFresh_ = interest.mustBeFresh_;
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
   setDefaultWireEncoding
@@ -94,13 +53,11 @@ Interest::set(const struct ndn_Interest& interestStruct)
   setMinSuffixComponents(interestStruct.minSuffixComponents);
   setMaxSuffixComponents(interestStruct.maxSuffixComponents);
 
-  publisherPublicKeyDigest_.get().set(interestStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(interestStruct.keyLocator);
 
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
-  answerOriginKind_ = interestStruct.answerOriginKind;
-  scope_ = interestStruct.scope;
+  mustBeFresh_ = (interestStruct.mustBeFresh != 0);
   setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
   nonce_ = Blob(interestStruct.nonce);
@@ -114,12 +71,10 @@ Interest::get(struct ndn_Interest& interestStruct) const
   name_.get().get(interestStruct.name);
   interestStruct.minSuffixComponents = minSuffixComponents_;
   interestStruct.maxSuffixComponents = maxSuffixComponents_;
-  publisherPublicKeyDigest_.get().get(interestStruct.publisherPublicKeyDigest);
   keyLocator_.get().get(interestStruct.keyLocator);
   exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
-  interestStruct.answerOriginKind = answerOriginKind_;
-  interestStruct.scope = scope_;
+  interestStruct.mustBeFresh = (mustBeFresh_ ? 1 : 0);
   interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
   getNonce().get(interestStruct.nonce);
 }
@@ -191,16 +146,9 @@ Interest::toUri() const
     selectors << "&ndn.MaxSuffixComponents=" << maxSuffixComponents_;
   if (childSelector_ >= 0)
     selectors << "&ndn.ChildSelector=" << childSelector_;
-  if (answerOriginKind_ >= 0)
-    selectors << "&ndn.AnswerOriginKind=" << answerOriginKind_;
-  if (scope_ >= 0)
-    selectors << "&ndn.Scope=" << scope_;
+  selectors << "&ndn.MustBeFresh=" << (mustBeFresh_ ? 1 : 0);
   if (interestLifetimeMilliseconds_ >= 0)
     selectors << "&ndn.InterestLifetime=" << (uint64_t)round(interestLifetimeMilliseconds_);
-  if (publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest().size() > 0) {
-    selectors << "&ndn.PublisherPublicKeyDigest=";
-    Name::toEscapedString(*publisherPublicKeyDigest_.get().getPublisherPublicKeyDigest(), selectors);
-  }
   if (getNonce().size() > 0) {
     selectors << "&ndn.Nonce=";
     Name::toEscapedString(*getNonce(), selectors);
@@ -240,50 +188,6 @@ Interest::matchesName(const Name& name) const
     return false;
 
   return true;
-}
-
-int
-Interest::getAnswerOriginKind() const
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("getAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's getMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-
-  return answerOriginKind_;
-}
-
-int
-Interest::getScope() const
-{ 
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("getScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
-
-  return scope_;
-}
-
-Interest&
-Interest::setAnswerOriginKind(int answerOriginKind)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("setAnswerOriginKind is for NDNx and is deprecated. To enable while you upgrade your code to use NFD's setMustBeFresh(), set WireFormat::ENABLE_NDNX = true");
-
-  answerOriginKind_ = answerOriginKind;
-  ++changeCount_;
-  return *this;
-}
-
-Interest&
-Interest::setScope(int scope)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("setScope is for NDNx and is deprecated. To enable while you upgrade your code to not use Scope, set WireFormat::ENABLE_NDNX = true");
-
-  scope_ = scope;
-  ++changeCount_;
-  return *this;
 }
 
 }

@@ -34,51 +34,9 @@ Sha256WithRsaSignature::clone() const
 }
 
 const Blob&
-Sha256WithRsaSignature::getDigestAlgorithm() const
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("The Digest Algorithm is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
-
-  return digestAlgorithm_;
-}
-
-const Blob&
-Sha256WithRsaSignature::getWitness() const
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("The Witness is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
-
-  return witness_;
-}
-
-const Blob&
 Sha256WithRsaSignature::getSignature() const
 {
   return signature_;
-}
-
-void
-Sha256WithRsaSignature::setDigestAlgorithm(const Blob& digestAlgorithm)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("The Digest Algorithm is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
-
-  digestAlgorithm_ = digestAlgorithm;
-  ++changeCount_;
-}
-
-void
-Sha256WithRsaSignature::setWitness(const Blob& witness)
-{
-  if (!WireFormat::ENABLE_NDNX)
-    throw runtime_error
-      ("The Witness is for the NDNx wire format and is deprecated. To enable while you upgrade your code to use NDN-TLV, set WireFormat::ENABLE_NDNX = true");
-
-  witness_ = witness;
-  ++changeCount_;
 }
 
 void
@@ -92,10 +50,7 @@ void
 Sha256WithRsaSignature::get(struct ndn_Signature& signatureStruct) const
 {
   signatureStruct.type = ndn_SignatureType_Sha256WithRsaSignature;
-  digestAlgorithm_.get(signatureStruct.digestAlgorithm);
-  witness_.get(signatureStruct.witness);
   signature_.get(signatureStruct.signature);
-  publisherPublicKeyDigest_.get().get(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().get(signatureStruct.keyLocator);
 }
 
@@ -106,10 +61,7 @@ Sha256WithRsaSignature::set(const struct ndn_Signature& signatureStruct)
   if (signatureStruct.type != ndn_SignatureType_Sha256WithRsaSignature)
     throw runtime_error("signatureStruct is not the expected type Sha256WithRsaSignature");
 
-  digestAlgorithm_ = Blob(signatureStruct.digestAlgorithm);
-  witness_ = Blob(signatureStruct.witness);
   setSignature(Blob(signatureStruct.signature));
-  publisherPublicKeyDigest_.get().set(signatureStruct.publisherPublicKeyDigest);
   keyLocator_.get().set(signatureStruct.keyLocator);
 }
 
@@ -117,8 +69,7 @@ uint64_t
 Sha256WithRsaSignature::getChangeCount() const
 {
   // Make sure each of the checkChanged is called.
-  bool changed = publisherPublicKeyDigest_.checkChanged();
-  changed = keyLocator_.checkChanged() || changed;
+  bool changed = keyLocator_.checkChanged();
   if (changed)
     // A child object has changed, so update the change count.
     // This method can be called on a const object, but we want to be able to update the changeCount_.

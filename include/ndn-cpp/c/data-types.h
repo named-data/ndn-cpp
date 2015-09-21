@@ -22,7 +22,6 @@
 #define NDN_DATA_TYPES_H
 
 #include "key-types.h"
-#include "publisher-public-key-digest-types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,14 +32,9 @@ extern "C" {
  */
 typedef enum {
   ndn_ContentType_BLOB = 0,
-  // ContentType DATA is deprecated.  Use ndn_ContentType_BLOB.
-  ndn_ContentType_DATA = 0,
   ndn_ContentType_LINK = 1,
   ndn_ContentType_KEY =  2,
-  // ContentType ENCR, GONE and NACK are not supported in NDN-TLV encoding and are deprecated.
-  ndn_ContentType_ENCR = 3,
-  ndn_ContentType_GONE = 4,
-  ndn_ContentType_NACK = 5
+  ndn_ContentType_NACK = 3
 } ndn_ContentType;
 
 /** ndn_SignatureType defines constants for the Signature "type" field.
@@ -63,13 +57,7 @@ typedef enum {
  */
 struct ndn_Signature {
   ndn_SignatureType type;          /**< -1 for none */
-  struct ndn_Blob digestAlgorithm; /**< A Blob whose value is a pointer to a pre-allocated buffer.  0 for none.
-                                    *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
-  struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
   struct ndn_Blob signature;
-  /** @deprecated.  The Signature publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
 };
 

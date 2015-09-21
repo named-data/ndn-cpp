@@ -305,20 +305,6 @@ if test "$HAVE_PROTOBUF" == "1" ; then
                [AC_MSG_FAILURE([have libprotobuf but no libpthread])])
 fi
 
-AC_ARG_ENABLE([tlv],
-  [AS_HELP_STRING([--enable-tlv], [force NDN-TLV as the default wire format @<:@default: no@:>@])],
-  [default_tlv=${enableval}], [default_tlv=no])
-if test "x${default_tlv}" = xyes; then
-  AC_DEFINE([USE_DEFAULT_TLV], 1, [Define to 1 if TlvWireFormat should be the default WireFormat.])
-fi
-
-AC_ARG_ENABLE([binary-xml],
-  [AS_HELP_STRING([--enable-binary-xml], [force Binary XML as the default wire format @<:@default: no@:>@])],
-  [default_binary_xml=${enableval}], [default_binary_xml=no])
-if test "x${default_binary_xml}" = xyes; then
-  AC_DEFINE([USE_DEFAULT_BINARY_XML], 1, [Define to 1 if BinaryXmlWireFormat should be the default WireFormat.])
-fi
-
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)

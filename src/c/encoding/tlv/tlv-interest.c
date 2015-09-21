@@ -56,29 +56,6 @@ encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;
 }
 
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-/**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the publisherPublicKeyDigest as a KeyLocatorDigest
- * in the body of the KeyLocator value.  (When we remove the deprecated publisherPublicKeyDigest, we won't need this.)
- * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
- * @param encoder the ndn_TlvEncoder which is calling this.
- * @return 0 for success, else an error code.
- */
-static ndn_Error
-encodeKeyLocatorSelectorPublisherPublicKeyDigestValue
-  (const void *context, struct ndn_TlvEncoder *encoder)
-{
-  struct ndn_Interest *interest = (struct ndn_Interest *)context;
-
-  ndn_Error error;
-  if ((error = ndn_TlvEncoder_writeBlobTlv
-       (encoder, ndn_Tlv_KeyLocatorDigest, &interest->publisherPublicKeyDigest.publisherPublicKeyDigest)))
-    return error;
-
-  return NDN_ERROR_success;
-}
-#endif
-
 /**
  * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
  * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
@@ -90,7 +67,6 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
 {
   struct ndn_Interest *interest = (struct ndn_Interest *)context;
   ndn_Error error;
-  size_t saveOffset;
 
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_MinSuffixComponents, interest->minSuffixComponents)))
@@ -99,30 +75,10 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_MaxSuffixComponents, interest->maxSuffixComponents)))
     return error;
 
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-  // Save the offset and set omitZeroLength true so we can detect if the key locator is omitted to see if we need to
-  //   write the publisherPublicKeyDigest.  (When we remove the deprecated publisherPublicKeyDigest, we can call
-  //   with omitZeroLength true.)
-  saveOffset = encoder->offset;
   if ((error = ndn_TlvEncoder_writeNestedTlv
        (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue,
         &interest->keyLocator, 1)))
     return error;
-  if (encoder->offset == saveOffset) {
-    // There is no keyLocator.  If there is a publisherPublicKeyDigest, then encode as KEY_LOCATOR_DIGEST.
-    if (interest->publisherPublicKeyDigest.publisherPublicKeyDigest.length > 0) {
-      if ((error = ndn_TlvEncoder_writeNestedTlv
-           (encoder, ndn_Tlv_PublisherPublicKeyLocator,
-            encodeKeyLocatorSelectorPublisherPublicKeyDigestValue, interest, 0)))
-        return error;
-    }
-  }
-#else
-  if ((error = ndn_TlvEncoder_writeNestedTlv
-       (encoder, ndn_Tlv_PublisherPublicKeyLocator, ndn_encodeTlvKeyLocatorValue,
-        &interest->keyLocator, 0)))
-    return error;
-#endif
 
   if (interest->exclude.nEntries > 0)
     if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
@@ -132,19 +88,11 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_ChildSelector, interest->childSelector)))
     return error;
 
-  // Instead of using ndn_Interest_getMustBeFresh, check answerOriginKind directly so that we can
-  //   return an error if unsupported bits are set.
-  if (interest->answerOriginKind < 0 || interest->answerOriginKind == 0) {
-    // MustBeFresh == true.
+  if (interest->mustBeFresh) {
     if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_MustBeFresh, 0)))
       return error;
   }
-  else if ((interest->answerOriginKind & ndn_Interest_ANSWER_STALE) != 0) {
-    // MustBeFresh == false, so nothing to encode.
-  }
-  else
-    // This error will be irrelevant when we drop support for binary XML answerOriginKind.
-    return NDN_ERROR_Unsupported_answerOriginKind_bits_for_encoding_TLV_MustBeFresh;
+  // else MustBeFresh == false, so nothing to encode.
 
   return NDN_ERROR_success;
 }
@@ -201,9 +149,6 @@ encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
   if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_Nonce, &nonceBlob)))
     return error;
 
-  if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
-      (encoder, ndn_Tlv_Scope, interest->scope)))
-    return error;
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
       (encoder, ndn_Tlv_InterestLifetime, interest->interestLifetimeMilliseconds)))
     return error;
@@ -277,7 +222,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
   ndn_Error error;
   size_t endOffset;
   int gotExpectedType;
-  int mustBeFresh;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_Selectors, &endOffset)))
     return error;
@@ -289,10 +233,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_MaxSuffixComponents, endOffset, &interest->maxSuffixComponents)))
     return error;
 
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-  // Initially set publisherPublicKeyDigest to none.
-  ndn_Blob_initialize(&interest->publisherPublicKeyDigest.publisherPublicKeyDigest, 0, 0);
-#endif
   if ((error = ndn_TlvDecoder_peekType
        (decoder, ndn_Tlv_PublisherPublicKeyLocator, endOffset, &gotExpectedType)))
     return error;
@@ -300,11 +240,6 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_decodeTlvKeyLocator
          (ndn_Tlv_PublisherPublicKeyLocator, &interest->keyLocator, decoder)))
       return error;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-    if (interest->keyLocator.type == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST)
-      // For backwards compatibility, also set the publisherPublicKeyDigest.
-      interest->publisherPublicKeyDigest.publisherPublicKeyDigest = interest->keyLocator.keyData;
-#endif
   }
   else
     // Clear the key locator.
@@ -324,11 +259,9 @@ decodeSelectors(struct ndn_Interest *interest, struct ndn_TlvDecoder *decoder)
        (decoder, ndn_Tlv_ChildSelector, endOffset, &interest->childSelector)))
     return error;
 
-  if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_MustBeFresh, endOffset, &mustBeFresh)))
+  if ((error = ndn_TlvDecoder_readBooleanTlv
+       (decoder, ndn_Tlv_MustBeFresh, endOffset, &interest->mustBeFresh)))
     return error;
-  // Setting the ndn_Interest_ANSWER_STALE bit means mustBeFresh is false.
-  // -1 means not specified where mustBeFresh is default true.
-  interest->answerOriginKind = (!mustBeFresh ? ndn_Interest_ANSWER_STALE : -1);
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
@@ -363,21 +296,15 @@ ndn_decodeTlvInterest
     // Set selectors to none.
     interest->minSuffixComponents = -1;
     interest->maxSuffixComponents = -1;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-    ndn_PublisherPublicKeyDigest_initialize(&interest->publisherPublicKeyDigest);
-#endif
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
-    interest->answerOriginKind = -1;
+    interest->mustBeFresh = 1;
   }
 
   // Require a Nonce, but don't force it to be 4 bytes.
   if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_Nonce, &interest->nonce)))
     return error;
 
-  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
-       (decoder, ndn_Tlv_Scope, endOffset, &interest->scope)))
-    return error;
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_InterestLifetime, endOffset, &interest->interestLifetimeMilliseconds)))
     return error;

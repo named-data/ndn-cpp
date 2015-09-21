@@ -42,7 +42,7 @@ extern "C" {
  * name component and ends just before the final name component (which is
  * assumed to be a signature for a signed interest).
  * If you are not encoding in order to sign, you can ignore this returned value.
- * @param encoder A pointer to the ndn_BinaryXmlEncoder struct which receives
+ * @param encoder A pointer to the ndn_TlvEncoder struct which receives
  * the encoding.
  * @return 0 for success, else an error code.
  */

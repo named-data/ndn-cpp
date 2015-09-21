@@ -22,7 +22,6 @@
 #define NDN_INTEREST_TYPES_H
 
 #include "name-types.h"
-#include "publisher-public-key-digest-types.h"
 #include "key-types.h"
 
 #ifdef __cplusplus
@@ -53,15 +52,7 @@ struct ndn_Exclude {
 
 enum {
   ndn_Interest_CHILD_SELECTOR_LEFT = 0,
-  ndn_Interest_CHILD_SELECTOR_RIGHT = 1,
-
-  ndn_Interest_ANSWER_NO_CONTENT_STORE = 0,
-  ndn_Interest_ANSWER_CONTENT_STORE = 1,
-  ndn_Interest_ANSWER_GENERATED = 2,
-  ndn_Interest_ANSWER_STALE = 4,    // Stale answer OK
-  ndn_Interest_MARK_STALE = 16,      // Must have scope 0.  Michael calls this a "hack"
-
-  ndn_Interest_DEFAULT_ANSWER_ORIGIN_KIND = ndn_Interest_ANSWER_CONTENT_STORE | ndn_Interest_ANSWER_GENERATED
+  ndn_Interest_CHILD_SELECTOR_RIGHT = 1
 };
 
 /**
@@ -71,15 +62,10 @@ struct ndn_Interest {
   struct ndn_Name name;
   int minSuffixComponents;  /**< -1 for none */
   int maxSuffixComponents;  /**< -1 for none */
-  /** @deprecated.  The Interest publisherPublicKeyDigest is deprecated.  If you need a publisher public key digest,
-   * set the keyLocator keyLocatorType to KEY_LOCATOR_DIGEST and set its key data to the digest. */
-  struct ndn_PublisherPublicKeyDigest publisherPublicKeyDigest;
   struct ndn_KeyLocator keyLocator;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
-  int answerOriginKind;     /**< -1 for none. If >= 0 and the ndn_Interest_ANSWER_STALE bit is not set, then MustBeFresh. */
-  /** @deprecated Scope is not used by NFD. */
-  int scope;                /**< -1 for none */
+  int mustBeFresh;          /**< bool. Default true. */
   ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
   struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
 };

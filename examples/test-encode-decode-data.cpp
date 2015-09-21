@@ -183,14 +183,10 @@ static void dumpData(const Data& data)
   else
     cout << "content: <empty>" << endl;
 
-  if (!(data.getMetaInfo().getType() < 0 || data.getMetaInfo().getType() == ndn_ContentType_BLOB ||
-        data.getMetaInfo().getType() == ndn_ContentType_DATA)) {
+  if (!(data.getMetaInfo().getType() < 0 ||
+        data.getMetaInfo().getType() == ndn_ContentType_BLOB)) {
     cout << "metaInfo.type: ";
-    if (data.getMetaInfo().getType() == ndn_ContentType_ENCR)
-      cout << "ENCR" << endl;
-    else if (data.getMetaInfo().getType() == ndn_ContentType_GONE)
-      cout << "GONE" << endl;
-    else if (data.getMetaInfo().getType() == ndn_ContentType_KEY)
+    if (data.getMetaInfo().getType() == ndn_ContentType_KEY)
       cout << "KEY" << endl;
     else if (data.getMetaInfo().getType() == ndn_ContentType_LINK)
       cout << "LINK" << endl;

@@ -36,7 +36,7 @@ namespace ndn {
 class SignatureLite : private ndn_Signature {
 public:
   /**
-   * Create a SignatureLite with values for none and the default digestAlgorithm.
+   * Create a SignatureLite with values for none.
    * @param keyNameComponents The pre-allocated array of ndn_NameComponent for
    * the keyLocatorLite. Instead of an array of NameLite::Component, this is an
    * array of the underlying ndn_NameComponent struct so that it doesn't run the
@@ -56,12 +56,6 @@ public:
   getType() const { return type; }
 
   const BlobLite&
-  getDigestAlgorithm() const { return BlobLite::upCast(digestAlgorithm); }
-
-  const BlobLite&
-  getWitness() const { return BlobLite::upCast(witness); }
-
-  const BlobLite&
   getSignature() const { return BlobLite::upCast(signature); }
 
   const KeyLocatorLite&
@@ -72,28 +66,6 @@ public:
 
   void
   setType(ndn_SignatureType type) { this->type = type; }
-
-  /**
-   * Set the bytes of the digest algorithm.
-   * @param digestAlgorithm The bytes of the digest algorithm. This copies a
-   * pointer to the bytes, but does not copy the bytes.
-   */
-  void
-  setDigestAlgorithm(const BlobLite& digestAlgorithm)
-  {
-    BlobLite::upCast(this->digestAlgorithm) = digestAlgorithm;
-  }
-
-  /**
-   * Set the witness.
-   * @param witness The witness. This copies a pointer to the bytes, but does
-   * not copy the bytes.
-   */
-  void
-  setWitness(const BlobLite& witness)
-  {
-    BlobLite::upCast(this->witness) = witness;
-  }
 
   /**
    * Set the signature bytes.

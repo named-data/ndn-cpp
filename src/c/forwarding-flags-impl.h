@@ -34,7 +34,8 @@ extern "C" {
 #endif
 
 /**
- * Initialize an ndn_ForwardingFlags struct with the default with "active" and "childInherit" set and all other flags cleared.
+ * Initialize an ndn_ForwardingFlags struct with the default with "childInherit"
+ * set and all other flags cleared.
  * @param self A pointer to the ndn_ForwardingFlags struct.
  */
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self);

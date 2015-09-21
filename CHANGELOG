@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.7 (2015-09-15)
+Interim changes since NDN-CPP v0.7 (2015-09-21)
 -----------------------------------------------
 
 Changes
@@ -12,11 +12,21 @@ Changes
   configuration rules from a string.
 * In examples, added test-get-async-threadsafe which uses ThreadsafeFace and
   doesn't call processEvents. To run, you must install Boost with asio.
+* In Face.registerPrefix, removed deprecated support to register with NDNx.
+* In Interest, removed deprecated NDNx get/setPublisherPublicKeyDigest,
+  get/setScope and get/setAnswerOriginKind.
+* In Sha256WithRsaSignature, removed deprecated NDNx get/setPublisherPublicKeyDigest,
+  get/setWitness and get/setDigestAlgorithm.
+* In ForwardingFlags, removed deprecated NDNx flags active, advertise, last,
+  local, tap and captureOK.
+* In MetaInfo get/setType, removed deprecated NDNx types DATA, ENCR and GONE.
+* Removed deprecated NDNx ForwardingEntry.
+* Removed deprecated NDNx BinaryXmlWireFormat and support for binary XML packets.
+* In WireFormat, removed ENABLE_NDNX since all NDNx support is now removed.
 
 Deprecated
 * Deprecated KeyChain::createIdentity. Use createIdentityAndCertificate which
   returns the certificate name instead of the key name.
-* In Interest, deprecated get/setScope since it is for NDNx and NFD does not use it.
 
 Bug fixes
 * http://redmine.named-data.net/issues/2844 Build error in memory-content-cache.cpp

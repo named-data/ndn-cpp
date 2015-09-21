@@ -36,14 +36,8 @@ extern "C" {
  * bits are changed, amended or deprecated.
  */
 struct ndn_ForwardingFlags {
-  int active; /**< 1 if the flag is set, 0 if cleared. */
   int childInherit;
-  int advertise;
-  int last;
   int capture;
-  int local;
-  int tap;
-  int captureOk;
 };
 
 #ifdef __cplusplus

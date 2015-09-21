@@ -22,7 +22,6 @@
 #define NDN_ELEMENT_READER_H
 
 #include "element-listener.h"
-#include "binary-xml-structure-decoder.h"
 #include "tlv/tlv-structure-decoder.h"
 #include "../util/dynamic-uint8-array.h"
 #include <ndn-cpp/c/encoding/element-reader-types.h>
@@ -48,9 +47,6 @@ static __inline void ndn_ElementReader_initialize
    struct ndn_DynamicUInt8Array *buffer)
 {
   self->elementListener = elementListener;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-  ndn_BinaryXmlStructureDecoder_initialize(&self->binaryXmlStructureDecoder);
-#endif
   ndn_TlvStructureDecoder_initialize(&self->tlvStructureDecoder);
   self->partialData = buffer;
   self->usePartialData = 0;
@@ -68,9 +64,6 @@ static __inline void ndn_ElementReader_reset
   (struct ndn_ElementReader *self, struct ndn_ElementListener *elementListener)
 {
   self->elementListener = elementListener;
-#ifndef ARDUINO // Skip deprecated binary XML to save space. (We will soon remove binary XML completely.)
-  ndn_BinaryXmlStructureDecoder_reset(&self->binaryXmlStructureDecoder);
-#endif
   ndn_TlvStructureDecoder_reset(&self->tlvStructureDecoder);
   self->usePartialData = 0;
 }
