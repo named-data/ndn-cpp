@@ -578,7 +578,6 @@ IdentityManager::makeSignatureByCertificate
 
     signature->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
     signature->getKeyLocator().setKeyName(certificateName.getPrefix(-1));
-    // Ignore witness and leave the digestAlgorithm as the default.
 
     return signature;
   }

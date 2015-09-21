@@ -31,15 +31,13 @@ extern "C" {
 #endif
 
 /**
- * Initialize the ndn_Signature struct with values for none and the default digestAlgorithm.
+ * Initialize the ndn_Signature struct with values for none.
  * @param self A pointer to the ndn_Signature struct.
  * @param keyNameComponents The pre-allocated array of ndn_NameComponent for the keyLocator.
  * @param maxKeyNameComponents The number of elements in the allocated keyNameComponents array.
  */
 static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
   self->type = (ndn_SignatureType)-1;
-  ndn_Blob_initialize(&self->digestAlgorithm, 0, 0);
-  ndn_Blob_initialize(&self->witness, 0, 0);
   ndn_Blob_initialize(&self->signature, 0, 0);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
 }
@@ -73,8 +71,6 @@ ndn_Signature_setFromSignature
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
-  ndn_Blob_setFromBlob(&self->digestAlgorithm, &other->digestAlgorithm);
-  ndn_Blob_setFromBlob(&self->witness, &other->witness);
   ndn_Blob_setFromBlob(&self->signature, &other->signature);
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))

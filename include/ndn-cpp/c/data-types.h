@@ -62,9 +62,6 @@ typedef enum {
  */
 struct ndn_Signature {
   ndn_SignatureType type;          /**< -1 for none */
-  struct ndn_Blob digestAlgorithm; /**< A Blob whose value is a pointer to a pre-allocated buffer.  0 for none.
-                                    *   If none, default is 2.16.840.1.101.3.4.2.1 (sha-256). */
-  struct ndn_Blob witness;         /**< A Blob whose value is a pointer to pre-allocated buffer.  0 for none. */
   struct ndn_Blob signature;
   struct ndn_KeyLocator keyLocator;
 };

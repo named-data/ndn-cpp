@@ -49,10 +49,6 @@ Sha256WithEcdsaSignature::setSignature(const Blob& signature)
 void
 Sha256WithEcdsaSignature::get(struct ndn_Signature& signatureStruct) const
 {
-  // Initialize unused fields.
-  ndn_Blob_initialize(&signatureStruct.digestAlgorithm, 0, 0);
-  ndn_Blob_initialize(&signatureStruct.witness, 0, 0);
-
   signatureStruct.type = ndn_SignatureType_Sha256WithEcdsaSignature;
   signature_.get(signatureStruct.signature);
   keyLocator_.get().get(signatureStruct.keyLocator);
