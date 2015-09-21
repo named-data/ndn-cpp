@@ -23,14 +23,8 @@
 
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 {
-  self->active = 1;
   self->childInherit = 1;
-  self->advertise = 0;
-  self->last = 0;
   self->capture = 0;
-  self->local = 0;
-  self->tap = 0;
-  self->captureOk = 0;
 }
 
 int
