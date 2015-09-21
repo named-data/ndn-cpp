@@ -26,8 +26,6 @@ using namespace std;
 
 namespace ndn {
 
-bool WireFormat::ENABLE_NDNX = false;
-
 static bool gotInitialDefaultWireFormat = false;
 
 WireFormat* WireFormat::defaultWireFormat_ = 0;
