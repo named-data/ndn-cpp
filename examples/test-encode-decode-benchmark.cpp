@@ -415,7 +415,6 @@ benchmarkEncodeDataSecondsC
       cout << "Error in data.setKeyName: " << ndn_getErrorString(error) << endl;
       return 0;
     }
-    data.getSignature().getKeyLocator().setKeyNameType((ndn_KeyNameType)-1);
     if (useCrypto) {
       data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
 
