@@ -39,7 +39,6 @@ static __inline void ndn_KeyLocator_initialize
   self->type = (ndn_KeyLocatorType)-1;
   ndn_Blob_initialize(&self->keyData, 0, 0);
   ndn_Name_initialize(&self->keyName, keyNameComponents, maxKeyNameComponents);
-  self->keyNameType = (ndn_KeyNameType)-1;
 }
 
 /**
@@ -63,7 +62,6 @@ ndn_KeyLocator_setFromKeyLocator
   ndn_Blob_setFromBlob(&self->keyData, &other->keyData);
   if ((error = ndn_Name_setFromName(&self->keyName, &other->keyName)))
     return error;
-  self->keyNameType = other->keyNameType;
 
   return NDN_ERROR_success;
 }

@@ -36,7 +36,6 @@ KeyLocator::get(struct ndn_KeyLocator& keyLocatorStruct) const
   keyLocatorStruct.type = type_;
   keyData_.get(keyLocatorStruct.keyData);
   keyName_.get().get(keyLocatorStruct.keyName);
-  keyLocatorStruct.keyNameType = keyNameType_;
 }
 
 void
@@ -44,14 +43,10 @@ KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
 {
   setType(keyLocatorStruct.type);
   setKeyData(Blob(keyLocatorStruct.keyData));
-  if (keyLocatorStruct.type == ndn_KeyLocatorType_KEYNAME) {
+  if (keyLocatorStruct.type == ndn_KeyLocatorType_KEYNAME)
     keyName_.get().set(keyLocatorStruct.keyName);
-    keyNameType_ = keyLocatorStruct.keyNameType;
-  }
-  else {
+  else
     keyName_.get().clear();
-    keyNameType_ = (ndn_KeyNameType)-1;
-  }
 }
 
 bool

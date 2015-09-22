@@ -36,7 +36,7 @@ class Signature;
 class KeyLocator {
 public:
   KeyLocator()
-  : type_((ndn_KeyLocatorType)-1), keyNameType_((ndn_KeyNameType)-1), changeCount_(0)
+  : type_((ndn_KeyLocatorType)-1), changeCount_(0)
   {
   }
 
@@ -47,7 +47,6 @@ public:
   clear()
   {
     type_ = (ndn_KeyLocatorType)-1;
-    keyNameType_ = (ndn_KeyNameType)-1;
     keyData_.reset();
     setKeyName(Name());
     ++changeCount_;
@@ -80,13 +79,6 @@ public:
   Name&
   getKeyName() { return keyName_.get(); }
 
-  /**
-   * @deprecated The use of a digest attached to the KeyName is deprecated.  KEY_LOCATOR_DIGEST is supported
-   * as a keyLocatorType.
-   */
-  ndn_KeyNameType
-  DEPRECATED_IN_NDN_CPP getKeyNameType() const { return keyNameType_; }
-
   void
   setType(ndn_KeyLocatorType type)
   {
@@ -105,18 +97,6 @@ public:
   setKeyName(const Name &keyName)
   {
     keyName_.set(keyName);
-    ++changeCount_;
-  }
-
-  /**
-   * @deprecated The use of a digest attached to the KeyName is deprecated.
-   * If you need a publisher public key digest, set the keyLocatorType to KEY_LOCATOR_DIGEST and set the key data
-   * to the digest.
-   */
-  void
-  DEPRECATED_IN_NDN_CPP setKeyNameType(ndn_KeyNameType keyNameType)
-  {
-    keyNameType_ = keyNameType;
     ++changeCount_;
   }
 
@@ -162,17 +142,9 @@ public:
 private:
   ndn_KeyLocatorType type_; /**< -1 for none */
   Blob keyData_; /**< An array for the key data as follows:
-    *   If type_ is ndn_KeyLocatorType_KEY, the key data.
-    *   If type_ is ndn_KeyLocatorType_CERTIFICATE, the certificate data.
-    *   If type_ is ndn_KeyLocatorType_KEY_LOCATOR_DIGEST, the digest data.
-    *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_PUBLIC_KEY_DIGEST, the publisher public key digest.
-    *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_CERTIFICATE_DIGEST, the publisher certificate digest.
-    *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_ISSUER_KEY_DIGEST, the publisher issuer key digest.
-    *   If type_ is ndn_KeyLocatorType_KEYNAME and keyNameType_ is ndn_KeyNameType_PUBLISHER_ISSUER_CERTIFICATE_DIGEST, the publisher issuer certificate digest.
-                                */
+    * If type_ is ndn_KeyLocatorType_KEY_LOCATOR_DIGEST, the digest data.
+    */
   ChangeCounter<Name> keyName_; /**< The key name (only used if type_ is ndn_KeyLocatorType_KEYNAME.) */
-  /** @deprecated The use of a digest attached to the KeyName is deprecated. */
-  ndn_KeyNameType keyNameType_; /**< The type of data for keyName_, -1 for none. (only used if type_ is ndn_KeyLocatorType_KEYNAME.) */
   uint64_t changeCount_;
 };
 

@@ -57,9 +57,6 @@ public:
   const NameLite&
   getKeyName() const { return NameLite::upCast(keyName); }
 
-  ndn_KeyNameType
-  getKeyNameType() const { return keyNameType; }
-
   /**
    * Set this object's key name to have the values from the given keyName.
    * @param keyName The key name to get values from.
@@ -84,9 +81,6 @@ public:
   {
     BlobLite::upCast(this->keyData) = keyData;
   }
-
-  void
-  setKeyNameType(ndn_KeyNameType keyNameType) { this->keyNameType = keyNameType; }
 
   /**
    * Set this key locator to have the values from the other key locator.
