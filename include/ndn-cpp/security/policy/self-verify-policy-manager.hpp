@@ -29,10 +29,10 @@ namespace ndn {
 class IdentityStorage;
 
 /**
- * A SelfVerifyPolicyManager implements a PolicyManager to use the public key DER in the data packet's KeyLocator (if available)
- * or look in the IdentityStorage for the public key with the name in the KeyLocator (if available) and use
- * it to verify the data packet, without searching a certificate chain.  If the public key can't be found, the
- * verification fails.
+ * A SelfVerifyPolicyManager implements a PolicyManager to look in the
+ * IdentityStorage for the public key with the name in the KeyLocator (if
+ * available) and use it to verify the data packet, without searching a
+ * certificate chain.  If the public key can't be found, the verification fails.
  */
 class SelfVerifyPolicyManager : public PolicyManager {
 public:
@@ -42,8 +42,7 @@ public:
    * @param identityStorage (optional) The IdentityStorage for looking up the
    * public key.  This points to an object which must remain valid during the
    * life of this SelfVerifyPolicyManager. If omitted, then don't look for a
-   * public key with the name in the KeyLocator and rely on the KeyLocator
-   * having the full public key DER.
+   * public key with the name in the KeyLocator.
    */
   SelfVerifyPolicyManager(IdentityStorage* identityStorage = 0)
   : identityStorage_(identityStorage)
@@ -90,9 +89,9 @@ public:
   requireVerify(const Interest& interest);
 
   /**
-   * Use the public key DER in the data packet's KeyLocator (if available) or look in the IdentityStorage for the
-   * public key with the name in the KeyLocator (if available) and use it to verify the data packet.  If the public key can't
-   * be found, call onVerifyFailed.
+   * Look in the IdentityStorage for the public key with the name in the
+   * KeyLocator (if available) and use it to verify the data packet. If the
+   * public key can't be found, call onVerifyFailed.
    * @param data The Data object with the signature to check.
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
@@ -106,11 +105,9 @@ public:
 
   /**
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
-   * components of the signed interest. Use the public key DER in the signed
-   * interest SignatureInfo's KeyLocator (if available) or look in the
-   * IdentityStorage for the public key with the name in the KeyLocator
-   * (if available) and use it to verify the interest. If the public key can't
-   * be found, call onVerifyFailed.
+   * components of the signed interest. Look in the IdentityStorage for the
+   * public key with the name in the KeyLocator (if available) and use it to
+   * verify the interest. If the public key can't be found, call onVerifyFailed.
    * @param interest The interest with the signature to check.
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
@@ -143,12 +140,11 @@ public:
 
 private:
   /**
-   * Check the type of signatureInfo to get the KeyLocator. Use the public key
-   * DER in the KeyLocator (if available) or look in the IdentityStorage for the
-   * public key with the name in the KeyLocator (if available) and use it to
-   * verify the signedBlob. If the public key can't be found, return false.
-   * (This is a generalized method which can verify both a Data packet and an
-   * interest.)
+   * Check the type of signatureInfo to get the KeyLocator. Look in the
+   * IdentityStorage for the public key with the name in the KeyLocator
+   * (if available) and use it to verify the signedBlob. If the public key can't
+   * be found, return false. (This is a generalized method which can verify both
+   * a Data packet and an interest.)
    * @param signatureInfo An object of a subclass of Signature, e.g.
    * Sha256WithRsaSignature.
    * @param signedBlob the SignedBlob with the signed portion to verify.
@@ -158,9 +154,9 @@ private:
   verify(const Signature* signatureInfo, const SignedBlob& signedBlob);
 
   /**
-   * Return the public key DER in the KeyLocator (if available) or look in the
-   * IdentityStorage for the public key with the name in the KeyLocator
-   * (if available). If the public key can't be found, return and empty Blob.
+   * Look in the IdentityStorage for the public key with the name in the
+   * KeyLocator (if available). If the public key can't be found, return and
+   * empty Blob.
    * @param keyLocator The KeyLocator.
    * @return The public key DER or an empty Blob if not found.
    */
