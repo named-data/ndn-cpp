@@ -33,7 +33,7 @@ enum {
   ndn_Tlv_NameComponent =    8,
   ndn_Tlv_Selectors =        9,
   ndn_Tlv_Nonce =            10,
-  ndn_Tlv_Scope =            11,
+  // ndn_Tlv_<Unassigned> =  11,
   ndn_Tlv_InterestLifetime = 12,
   ndn_Tlv_MinSuffixComponents = 13,
   ndn_Tlv_MaxSuffixComponents = 14,
