@@ -22,10 +22,10 @@
 // Note: To compile this sketch, you must fix NDN_CPP_ROOT in ndn_cpp_root.h .
 /** 
  * This Arduino (Yun) sketch registers the prefix /testarduino/voltage. When it
- * receives an interest for /testarduino/voltage<reading number> it returns a 
+ * receives an interest for /testarduino/voltage/<reading number> it returns a
  * data packet where the content is the decimal reading of analogRead(0). The
  * <reading number> is encoded as a version number component. This keeps track
- * of the previously send <reading number> and only answers for newer numbers.
+ * of the previously sent <reading number> and only answers for newer numbers.
  * This communicates using the NDN-CPP Lite class ArduinoYunTcpTransportLite.
  * This works with examples/arduino/analog-reading-consumer.cpp .
  */
