@@ -344,7 +344,7 @@ BoostInfoParser::parseLine(const string& lineIn, BoostInfoTree* context)
 
     // If it is an "#include", load the new file instead of inserting keys.
     if (key == "#include") {
-      ifstream stream(val);
+      ifstream stream(val.c_str());
       context = read(stream, context);
       stream.close();
     }
