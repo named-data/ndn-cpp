@@ -28,6 +28,23 @@ using namespace ndn;
 
 static const uint8_t COMP2[] = { 0x00, 0x01, 0x02, 0x03 };
 
+class TestNameComponentMethods : public ::testing::Test {
+};
+
+TEST_F(TestNameComponentMethods, Compare)
+{
+  Name c7fName("/%7F");
+  Name c80Name("/%80");
+  Name c81Name("/%81");
+
+  const Name::Component& c7f = c7fName.get(0);
+  const Name::Component& c80 = c80Name.get(0);
+  const Name::Component& c81 = c81Name.get(0);
+
+  ASSERT_TRUE(c81.compare(c80) > 0) << "%81 should be greater than %80";
+  ASSERT_TRUE(c80.compare(c7f) > 0) << "%80 should be greater than %7f";
+}
+
 class TestNameMethods : public ::testing::Test {
 public:
   TestNameMethods()
