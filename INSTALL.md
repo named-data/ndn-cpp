@@ -58,7 +58,7 @@ In a new terminal, enter:
 
     sudo port install boost
 
-## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
+## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev
@@ -104,12 +104,6 @@ To build in a terminal, change directory to the NDN-CPP root.  Enter:
     make
     sudo make install
 
-NDN-CPP uses NDN-TLV as the default wire format:
-http://named-data.net/doc/ndn-tlv/tlv.html .
-To revert to Binary XML (ndnb) as the default wire format, instead of ./configure, use:
-
-    ./configure --enable-binary-xml=yes
-
 To run the unit tests, in a terminal enter:
 
     make check
@@ -132,7 +126,7 @@ This makes the following example programs:
 
 * bin/test-get-async: Connect to one of the NDN testbed hubs, express an interest and display the received data.
 * bin/test-publish-async-nfd: Connect to the local NFD hub, accept interests with prefix /testecho and echo back a data packet. See test-echo-consumer.
-* bin/test-echo-consumer: Prompt for a word, send the interest /testecho/word to the local hub which is echoed by test-publish-async-nfd (or test-publish-async-ndnx).
+* bin/test-echo-consumer: Prompt for a word, send the interest /testecho/word to the local hub which is echoed by test-publish-async-nfd.
 * bin/test-encode-decode-interest: Encode and decode an interest, testing interest selectors and the name URI.
 * bin/test-encode-decode-data: Encode and decode a data packet, including signing the data packet.
 * bin/test-encode-decode-fib-entry: Encode and decode a sample Protobuf message using ProtobufTlv.
