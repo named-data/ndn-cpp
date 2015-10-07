@@ -39,6 +39,29 @@ In a new terminal, enter:
 
     sudo port install boost
 
+## OS X 10.11
+Install Xcode.
+install MacPorts from http://www.macports.org/install.php .
+In a new terminal, enter:
+
+    sudo port install openssl
+
+Optional: To install Protobuf, in a terminal, enter:
+
+    sudo port install protobuf-cpp
+
+Optional: To install log4cxx, in a terminal, enter:
+
+    sudo port install log4cxx
+
+Optional: To install Doxygen, in a terminal, enter:
+
+    sudo port install doxygen
+
+Optional: To install Boost with asio, in a terminal, enter:
+
+    sudo port install boost
+
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
 In a terminal, enter:
 
