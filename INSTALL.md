@@ -16,25 +16,6 @@ Prerequisites
 
 Following are the detailed steps for each platform to install the prerequisites.
 
-## OS X 10.8.4
-Install Xcode.
-In Xcode Preferences > Downloads, install "Command Line Tools".
-
-Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install protobuf-cpp
-
-Optional: To install log4cxx, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install log4cxx
-
-Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install doxygen
-
 ## OS X 10.9.5, OS X 10.10.2
 Install Xcode.  (Xcode seems to already have the Command Line Tools.)
 
@@ -139,13 +120,13 @@ Development Prerequisites
 These steps are only needed to do development of NDN-CPP code and update the build system.
 First follow the Prerequisites above for your platforms.
 
-## Mac OS X 10.7.3, Mac OS X 10.8.4, Mac OS X 10.9
+## Mac OS X 10.9, OS X 10.10.2
 Install MacPorts from http://www.macports.org/install.php .
 In a terminal, enter:
 
     sudo port install automake autoconf libtool doxygen
 
-## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 13.04 (64 bit)
+## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
 In a terminal, enter:
 
     sudo apt-get install automake libtool doxygen
