@@ -128,6 +128,7 @@ public:
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
+     const OnRegisterSuccess& onRegisterSuccess,
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 

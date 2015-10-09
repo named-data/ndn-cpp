@@ -1,7 +1,9 @@
-Interim changes since NDN-CPP v0.8 (2015-10-07)
+Interim changes since NDN-CPP v0.8 (2015-10-09)
 -----------------------------------------------
 
 Changes
+* http://redmine.named-data.net/issues/3005 In Face.registerPrefix, added the
+  optional onRegisterSuccess callback.
 * INSTALL: Removed unsupported OS X 10.8.4.
 * INSTALL: Added OS X 10.11 and Ubuntu 15.04 (64 bit).
 

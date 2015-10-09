@@ -63,6 +63,12 @@ typedef func_lib::function<void
  */
 typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&)> OnRegisterFailed;
 
+/**
+ * An OnRegisterSuccess function object is used to report when registerPrefix succeeds.
+ */
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&, uint64_t)>
+  OnRegisterSuccess;
+
 class Node;
 class KeyChain;
 
@@ -227,17 +233,82 @@ public:
    * setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
-   * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use
-   * the default flags defined by the default ForwardingFlags constructor.
-   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @param onRegisterSuccess (optional) A function object to call registerPrefix
+   * receives a success message from the forwarder. This calls
+   * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
+   * registeredPrefixId are the values given to registerPrefix. If
+   * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
+   * @param flags (optional) The flags for finer control of which interests are
+   * forward to the application.  If omitted, use the default flags defined by
+   * the default ForwardingFlags constructor.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   virtual uint64_t
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
+     const OnRegisterSuccess& onRegisterSuccess,
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Register prefix with the connected NDN hub and call onInterest when a
+   * matching interest is received. To register a prefix with NFD, you must
+   * first call setCommandSigningInfo.
+   * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
+   * @param onInterest (optional) If not null, this creates an interest filter
+   * from prefix so that when an Interest is received which matches the filter,
+   * this calls the function object
+   * onInterest(prefix, interest, face, interestFilterId, filter).
+   * This copies the function object, so you may need to use func_lib::ref() as
+   * appropriate. If onInterest is null, it is ignored and you must call
+   * setInterestFilter.
+   * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
+   * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use
+   * the default flags defined by the default ForwardingFlags constructor.
+   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @return The registered prefix ID which can be used with removeRegisteredPrefix.
+   */
+  uint64_t
+  registerPrefix
+    (const Name& prefix, const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    return registerPrefix
+      (prefix, onInterest, onRegisterFailed, OnRegisterSuccess(), flags,
+       wireFormat);
+  }
+
+  /**
+   * Register prefix with the connected NDN hub and call onInterest when a
+   * matching interest is received. To register a prefix with NFD, you must
+   * first call setCommandSigningInfo.
+   * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
+   * @param onInterest (optional) If not null, this creates an interest filter
+   * from prefix so that when an Interest is received which matches the filter,
+   * this calls the function object
+   * onInterest(prefix, interest, face, interestFilterId, filter).
+   * This copies the function object, so you may need to use func_lib::ref() as
+   * appropriate. If onInterest is null, it is ignored and you must call
+   * setInterestFilter.
+   * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
+   * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @return The registered prefix ID which can be used with removeRegisteredPrefix.
+   */
+  uint64_t
+  registerPrefix
+    (const Name& prefix, const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed)
+  {
+    return registerPrefix
+      (prefix, onInterest, onRegisterFailed, OnRegisterSuccess(),
+       ForwardingFlags(), *WireFormat::getDefaultWireFormat());
+  }
 
   /**
    * @deprecated Use registerPrefix where onInterest is an OnInterestCallback
