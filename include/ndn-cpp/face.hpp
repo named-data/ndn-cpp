@@ -238,6 +238,8 @@ public:
    * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
    * registeredPrefixId are the values given to registerPrefix. If
    * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
+   * (The onRegisterSuccess parameter comes after onRegisterFailed because it
+   * can be empty or omitted, unlike onRegisterFailed.)
    * @param flags (optional) The flags for finer control of which interests are
    * forward to the application.  If omitted, use the default flags defined by
    * the default ForwardingFlags constructor.
@@ -269,7 +271,8 @@ public:
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use
    * the default flags defined by the default ForwardingFlags constructor.
-   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t
