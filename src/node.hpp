@@ -117,6 +117,11 @@ public:
    * setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @param onRegisterSuccess A function object to call when registerPrefix
+   * receives a success message from the forwarder. This calls
+   * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
+   * registeredPrefixId are the values given to registerPrefix. If
+   * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
    * @param flags The flags for finer control of which interests are forwarded to the application.
    * @param wireFormat A WireFormat object used to encode the message.
    * @param commandKeyChain The KeyChain object for signing interests.
@@ -129,7 +134,8 @@ public:
     (uint64_t registeredPrefixId, 
      const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
-     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     const OnRegisterFailed& onRegisterFailed, 
+     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
      const Name& commandCertificateName, Face* face);
 
@@ -142,13 +148,14 @@ public:
     (uint64_t registeredPrefixId,
      const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
-     const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+     const OnRegisterFailed& onRegisterFailed,
+     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
      WireFormat& wireFormat, Face* face)
   {
     registerPrefix
-      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, flags,
-       wireFormat, *face->getCommandKeyChain(), face->getCommandCertificateName(),
-       face);
+      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, 
+       onRegisterSuccess, flags, wireFormat, *face->getCommandKeyChain(),
+       face->getCommandCertificateName(), face);
   }
 
   /**
@@ -532,10 +539,14 @@ private:
       Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
            const OnInterestCallback& onInterest,
            const OnRegisterFailed& onRegisterFailed,
-           const ForwardingFlags& flags, WireFormat& wireFormat, Face* face)
+           const OnRegisterSuccess& onRegisterSuccess,
+           const ForwardingFlags& flags, WireFormat& wireFormat, Face* face,
+           uint64_t registeredPrefixId)
       : node_(*node), prefix_(prefix), onInterest_(onInterest),
-        onRegisterFailed_(onRegisterFailed), flags_(flags),
-        wireFormat_(wireFormat), face_(face)
+        onRegisterFailed_(onRegisterFailed), 
+        onRegisterSuccess_(onRegisterSuccess), flags_(flags),
+        wireFormat_(wireFormat), face_(face),
+        registeredPrefixId_(registeredPrefixId)
       {
       }
 
@@ -543,9 +554,11 @@ private:
       ptr_lib::shared_ptr<const Name> prefix_;
       const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
+      const OnRegisterSuccess onRegisterSuccess_;
       ForwardingFlags flags_;
       WireFormat& wireFormat_;
       Face* face_;
+      uint64_t registeredPrefixId_;
     };
 
   private:
@@ -606,6 +619,7 @@ private:
    * @param prefix
    * @param onInterest
    * @param onRegisterFailed
+   * @param onRegisterSuccess
    * @param flags
    * @param commandKeyChain
    * @param commandCertificateName
@@ -614,9 +628,11 @@ private:
   void
   nfdRegisterPrefix
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-     const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags, KeyChain& commandKeyChain,
-     const Name& commandCertificateName, WireFormat& wireFormat, Face* face);
+     const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+     KeyChain& commandKeyChain, const Name& commandCertificateName,
+     WireFormat& wireFormat, Face* face);
 
   /**
    * This is called by Transport::connect from expressInterest.

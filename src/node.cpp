@@ -123,13 +123,15 @@ Node::registerPrefix
   (uint64_t registeredPrefixId,
    const ptr_lib::shared_ptr<const Name>& prefixCopy,
    const OnInterestCallback& onInterest,
-   const OnRegisterFailed& onRegisterFailed, const ForwardingFlags& flags,
+   const OnRegisterFailed& onRegisterFailed,
+   const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
    WireFormat& wireFormat, KeyChain& commandKeyChain,
    const Name& commandCertificateName, Face* face)
 {
   nfdRegisterPrefix
-    (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, flags,
-     commandKeyChain, commandCertificateName, wireFormat, face);
+    (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, 
+     onRegisterSuccess, flags, commandKeyChain, commandCertificateName,
+     wireFormat, face);
 }
 
 void
@@ -240,6 +242,8 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
 
   _LOG_DEBUG("Register prefix succeeded with the NFD forwarder for prefix " <<
              info_->prefix_->toUri());
+  if (info_->onRegisterSuccess_)
+    info_->onRegisterSuccess_(info_->prefix_, info_->registeredPrefixId_);
 }
 
 void
@@ -253,8 +257,9 @@ void
 Node::nfdRegisterPrefix
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
    const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
-   const ForwardingFlags& flags, KeyChain& commandKeyChain,
-   const Name& commandCertificateName, WireFormat& wireFormat, Face* face)
+   const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+   KeyChain& commandKeyChain, const Name& commandCertificateName,
+   WireFormat& wireFormat, Face* face)
 {
   if (!&commandKeyChain)
     throw runtime_error
@@ -304,7 +309,8 @@ Node::nfdRegisterPrefix
   // Send the registration interest.
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (this, prefix, onInterest, onRegisterFailed, flags, wireFormat, face)));
+     (this, prefix, onInterest, onRegisterFailed, onRegisterSuccess, flags,
+      wireFormat, face, registeredPrefixId)));
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest
