@@ -6,6 +6,7 @@ Changes
   optional onRegisterSuccess callback.
 * INSTALL: Removed unsupported OS X 10.8.4.
 * INSTALL: Added OS X 10.11 and Ubuntu 15.04 (64 bit).
+* In unit-tests, added test-registration-callbacks.
 
 NDN-CPP v0.8 (2015-09-24)
 -------------------------
