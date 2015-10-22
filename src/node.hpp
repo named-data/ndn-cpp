@@ -536,28 +536,19 @@ private:
 
     class Info {
     public:
-      Info(Node* node, const ptr_lib::shared_ptr<const Name>& prefix,
-           const OnInterestCallback& onInterest,
+      Info(const ptr_lib::shared_ptr<const Name>& prefix,
            const OnRegisterFailed& onRegisterFailed,
            const OnRegisterSuccess& onRegisterSuccess,
-           const ForwardingFlags& flags, WireFormat& wireFormat, Face* face,
            uint64_t registeredPrefixId)
-      : node_(*node), prefix_(prefix), onInterest_(onInterest),
-        onRegisterFailed_(onRegisterFailed), 
-        onRegisterSuccess_(onRegisterSuccess), flags_(flags),
-        wireFormat_(wireFormat), face_(face),
+      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), 
+        onRegisterSuccess_(onRegisterSuccess),
         registeredPrefixId_(registeredPrefixId)
       {
       }
 
-      Node& node_;
       ptr_lib::shared_ptr<const Name> prefix_;
-      const OnInterestCallback onInterest_;
       const OnRegisterFailed onRegisterFailed_;
       const OnRegisterSuccess onRegisterSuccess_;
-      ForwardingFlags flags_;
-      WireFormat& wireFormat_;
-      Face* face_;
       uint64_t registeredPrefixId_;
     };
 
