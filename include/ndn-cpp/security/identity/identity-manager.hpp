@@ -91,7 +91,7 @@ public:
     return IdentityCertificate::certificateNameToPublicKeyName
       (createIdentityAndCertificate(identityName, params));
   }
-  
+
   /**
    * Use the keyName to get the public key from the identity storage and
    * prepare an unsigned identity certificate.
@@ -113,7 +113,7 @@ public:
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   prepareUnsignedIdentityCertificate
-    (const Name& keyName, const Name& signingIdentity, 
+    (const Name& keyName, const Name& signingIdentity,
      MillisecondsSince1970 notBefore, MillisecondsSince1970 notAfter,
      std::vector<CertificateSubjectDescription>& subjectDescription,
      const Name* certPrefix = 0);
@@ -141,7 +141,7 @@ public:
   prepareUnsignedIdentityCertificate
     (const Name& keyName, const PublicKey& publicKey,
      const Name& signingIdentity, MillisecondsSince1970 notBefore,
-     MillisecondsSince1970 notAfter, 
+     MillisecondsSince1970 notAfter,
      std::vector<CertificateSubjectDescription>& subjectDescription,
      const Name* certPrefix = 0);
 

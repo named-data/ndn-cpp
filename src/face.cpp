@@ -33,7 +33,7 @@ using namespace ndn::func_lib;
 
 namespace ndn {
 
-string 
+string
 Face::getUnixSocketFilePathForLocalhost()
 {
   string filePath = "/var/run/nfd.sock";

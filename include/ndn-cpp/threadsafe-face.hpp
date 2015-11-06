@@ -140,7 +140,7 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     // This is needed, otherwise C++ will try to use the signature with
-    // const OnInterestCallback&. Just call the Face method with the 
+    // const OnInterestCallback&. Just call the Face method with the
     // same signature as this.
     return Face::registerPrefix
       (prefix, onInterest, onRegisterFailed, flags, wireFormat);

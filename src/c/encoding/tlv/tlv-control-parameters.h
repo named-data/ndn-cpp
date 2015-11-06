@@ -47,7 +47,7 @@ ndn_encodeTlvControlParameters
  * ndn_ControlParameters struct.
  * @param controlParameters A pointer to the ndn_ControlParameters struct.
  * @param decoder A pointer to the ndn_TlvDecoder struct.
- * @return 0 for success, else an error code, including if the next element is 
+ * @return 0 for success, else an error code, including if the next element is
  * not ControlParameters.
  */
 ndn_Error

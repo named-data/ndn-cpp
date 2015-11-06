@@ -129,7 +129,7 @@ Node::registerPrefix
    const Name& commandCertificateName, Face* face)
 {
   nfdRegisterPrefix
-    (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, 
+    (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
      onRegisterSuccess, flags, commandKeyChain, commandCertificateName,
      wireFormat, face);
 }
@@ -160,7 +160,7 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 
 void
 Node::setInterestFilter
-  (uint64_t interestFilterId, 
+  (uint64_t interestFilterId,
    const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
    const OnInterestCallback& onInterest, Face* face)
 {
@@ -410,7 +410,7 @@ void
 Node::processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest)
 {
   if (pendingInterest->getIsRemoved())
-    // extractEntriesForExpressedInterest or removePendingInterest has removed 
+    // extractEntriesForExpressedInterest or removePendingInterest has removed
     // pendingInterest from pendingInterestTable_, so we don't need to look for
     // it. Do nothing.
     return;

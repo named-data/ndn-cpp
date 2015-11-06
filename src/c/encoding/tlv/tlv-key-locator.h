@@ -44,7 +44,7 @@ ndn_encodeTlvKeyLocatorValue(const void *context, struct ndn_TlvEncoder *encoder
  * or ndn_Tlv_PublisherPublicKeyLocator.
  * @param keyLocator A pointer to the ndn_KeyLocator struct.
  * @param decoder A pointer to the ndn_TlvDecoder struct.
- * @return 0 for success, else an error code, including if the next element is 
+ * @return 0 for success, else an error code, including if the next element is
  * not expectedType.
  */
 ndn_Error

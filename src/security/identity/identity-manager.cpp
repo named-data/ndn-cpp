@@ -318,7 +318,7 @@ IdentityManager::prepareUnsignedIdentityCertificate
   string keyIdPrefix = keyName.get(-1).toEscapedString().substr(0, 4);
   if (keyIdPrefix != "ksk-" && keyIdPrefix != "dsk-")
     return ptr_lib::shared_ptr<IdentityCertificate>();
-  
+
   ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
   Name certName;
 
@@ -363,7 +363,7 @@ IdentityManager::prepareUnsignedIdentityCertificate
   }
 
   certificate->encode();
-  
+
   return certificate;
 }
 

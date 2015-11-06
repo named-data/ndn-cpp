@@ -131,7 +131,7 @@ private:
    */
   void
   connectHandler
-    (const boost::system::error_code& errorCode, 
+    (const boost::system::error_code& errorCode,
      const Transport::OnConnected& onConnected)
   {
     if (errorCode != boost::system::errc::success)

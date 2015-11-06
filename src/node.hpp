@@ -131,10 +131,10 @@ public:
    */
   void
   registerPrefix
-    (uint64_t registeredPrefixId, 
+    (uint64_t registeredPrefixId,
      const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
-     const OnRegisterFailed& onRegisterFailed, 
+     const OnRegisterFailed& onRegisterFailed,
      const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
      const Name& commandCertificateName, Face* face);
@@ -153,7 +153,7 @@ public:
      WireFormat& wireFormat, Face* face)
   {
     registerPrefix
-      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed, 
+      (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
        onRegisterSuccess, flags, wireFormat, *face->getCommandKeyChain(),
        face->getCommandCertificateName(), face);
   }
@@ -188,7 +188,7 @@ public:
    */
   void
   setInterestFilter
-    (uint64_t interestFilterId, 
+    (uint64_t interestFilterId,
      const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
      const OnInterestCallback& onInterest, Face* face);
 
@@ -258,7 +258,7 @@ public:
   getMaxNdnPacketSize() { return MAX_NDN_PACKET_SIZE; }
 
   /**
-   * Call callback() after the given delay. This adds to delayedCallTable_ which 
+   * Call callback() after the given delay. This adds to delayedCallTable_ which
    * is used by processEvents().
    * @param delayMilliseconds The delay in milliseconds.
    * @param callback This calls callback() after the delay.
@@ -334,7 +334,7 @@ private:
   public:
     /**
      * Create a new PendingInterest.
-     * @param pendingInterestId A unique ID for this entry, which you should get 
+     * @param pendingInterestId A unique ID for this entry, which you should get
      * with getNextEntryId().
      * @param interest A shared_ptr for the interest.
      * @param onData A function object to call when a matching data packet is received.
@@ -393,7 +393,7 @@ private:
   public:
     /**
      * Create a new RegisteredPrefix with the given values.
-     * @param registeredPrefixId A unique ID for this entry, which you should 
+     * @param registeredPrefixId A unique ID for this entry, which you should
      * get with getNextEntryId().
      * @param prefix A shared_ptr for the prefix.
      * @param relatedInterestFilterId (optional) The related interestFilterId
@@ -540,7 +540,7 @@ private:
            const OnRegisterFailed& onRegisterFailed,
            const OnRegisterSuccess& onRegisterSuccess,
            uint64_t registeredPrefixId)
-      : prefix_(prefix), onRegisterFailed_(onRegisterFailed), 
+      : prefix_(prefix), onRegisterFailed_(onRegisterFailed),
         onRegisterSuccess_(onRegisterSuccess),
         registeredPrefixId_(registeredPrefixId)
       {
@@ -575,7 +575,7 @@ private:
    */
   void
   expressInterestHelper
-    (uint64_t pendingInterestId, 
+    (uint64_t pendingInterestId,
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
      const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
      Face* face);

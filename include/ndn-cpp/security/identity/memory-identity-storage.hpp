@@ -269,7 +269,7 @@ private:
     ptr_lib::shared_ptr<Name> defaultCertificate_;
   };
 
-  std::map<std::string, IdentityRecord> 
+  std::map<std::string, IdentityRecord>
     identityStore_; /**< The map key is the identityName.toUri(). The value is an IdentityRecord. */
   std::string defaultIdentity_;            /**< The default identity in identityStore_, or "" if not defined. */
   std::map<std::string, ptr_lib::shared_ptr<KeyRecord> > keyStore_; /**< The map key is the keyName.toUri() */

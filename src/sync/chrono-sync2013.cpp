@@ -275,7 +275,7 @@ ChronoSync2013::Impl::processRecoveryInterest
       if (interest.getName().get(-1).toEscapedString() == "00")
         // Limit the lifetime of replies to interest for "00" since they can be different.
         data.getMetaInfo().setFreshnessPeriod(1000);
-      
+
       keyChain_.sign(data, certificateName_);
       try {
         face.putData(data);

@@ -218,7 +218,7 @@ ndn_decodeTlvControlParameters
        (decoder, ndn_Tlv_ControlParameters_ExpirationPeriod, endOffset,
         &controlParameters->expirationPeriod)))
     return error;
-  
+
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
 
