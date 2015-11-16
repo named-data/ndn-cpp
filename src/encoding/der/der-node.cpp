@@ -265,6 +265,10 @@ DerNode::DerByteString::toVal()
 DerNode::DerInteger::DerInteger(int integer)
 : DerNode(DerNodeType_Integer)
 {
+  if (integer < 0)
+    throw DerEncodingException
+      ("DerInteger: Negative integers are not currently supported");
+
   // Convert the integer to bytes the easy/slow way.
   DynamicUInt8Vector temp(10);
   // We encode backwards from the back.
@@ -280,6 +284,13 @@ DerNode::DerInteger::DerInteger(int integer)
       break;
   }
 
+  if (temp[temp.get()->size() - length] >= 0x80) {
+    // Make it a non-negative integer.
+    ++length;
+    temp.ensureLengthFromBack(length);
+    temp[temp.get()->size() - length] = 0;
+  }
+
   payloadAppend(&temp[temp.get()->size() - length], length);
   encodeHeader(payloadPosition_);
 }
@@ -292,6 +303,10 @@ DerNode::DerInteger::DerInteger()
 int
 DerNode::DerInteger::toIntegerVal() const
 {
+  if (payloadPosition_ > 0 && payload_[0] >= 0x80)
+    throw DerDecodingException
+      ("DerInteger: Negative integers are not currently supported");
+
   int result = 0;
   for (int i = 0; i < payloadPosition_; ++i) {
     result <<= 8;
