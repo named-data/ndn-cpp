@@ -390,11 +390,17 @@ Node::expressInterestHelper
   ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
     (pendingInterestId, interestCopy, onData, onTimeout));
   pendingInterestTable_.push_back(pendingInterest);
-  if (interestCopy->getInterestLifetimeMilliseconds() >= 0.0)
+  if (onTimeout || interestCopy->getInterestLifetimeMilliseconds() >= 0.0) {
     // Set up the timeout.
+    double delayMilliseconds = interestCopy->getInterestLifetimeMilliseconds();
+    if (delayMilliseconds < 0.0)
+      // Use a default timeout delay.
+      delayMilliseconds = 4000.0;
+
     face->callLater
-      (interestCopy->getInterestLifetimeMilliseconds(),
+      (delayMilliseconds,
        bind(&Node::processInterestTimeout, this, pendingInterest));
+  }
 
   // Special case: For timeoutPrefix_ we don't actually send the interest.
   if (!timeoutPrefix_.match(interestCopy->getName())) {

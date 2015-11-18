@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.8 (2015-10-09)
+Interim changes since NDN-CPP v0.8 (2015-11-18)
 -----------------------------------------------
 
 Changes
@@ -7,6 +7,9 @@ Changes
 * INSTALL: Removed unsupported OS X 10.8.4.
 * INSTALL: Added OS X 10.11 and Ubuntu 15.04 (64 bit).
 * In unit-tests, added test-registration-callbacks.
+
+Bug fixes
+* http://redmine.named-data.net/issues/3342 In expressInterest, call onTimeout when there is no interest lifetime.
 
 NDN-CPP v0.8 (2015-09-24)
 -------------------------
