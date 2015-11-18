@@ -150,11 +150,11 @@ TEST_F(TestSqlIdentityStorage, IdentityCreateDelete)
   
   keyChain->deleteIdentity(identityName);
   ASSERT_FALSE(identityStorage->doesIdentityExist(identityName)) <<
-      "Identity still in IdentityStorage after revoking";
+      "Identity still in IdentityStorage after identity was deleted";
   ASSERT_FALSE(identityStorage->doesKeyExist(keyName)) <<
-      "Key still in IdentityStorage after identity was deletedInfo";
+      "Key still in IdentityStorage after identity was deleted";
   ASSERT_FALSE(identityStorage->doesCertificateExist(certificateName)) <<
-      "Certificate still in IdentityStorage after identity was deletedInfo";
+      "Certificate still in IdentityStorage after identity was deleted";
 
   ASSERT_THROW
     (identityManager->getDefaultCertificateNameForIdentity(identityName),
