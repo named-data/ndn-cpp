@@ -605,7 +605,7 @@ BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 {
   sqlite3_stmt *statement;
 
-  //Reset previous default identity
+  // Reset the previous default identity.
   sqlite3_prepare_v2(database_, "UPDATE Identity SET default_identity=0 WHERE default_identity=1", -1, &statement, 0);
 
   while (sqlite3_step(statement) == SQLITE_ROW)
@@ -613,7 +613,7 @@ BasicIdentityStorage::setDefaultIdentity(const Name& identityName)
 
   sqlite3_finalize(statement);
 
-  //Set current default identity
+  // Set the current default identity.
   sqlite3_prepare_v2(database_, "UPDATE Identity SET default_identity=1 WHERE identity_name=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
@@ -634,7 +634,7 @@ BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Na
 
   sqlite3_stmt *statement;
 
-  //Reset previous default Key
+  // Reset the previous default Key.
   sqlite3_prepare_v2(database_, "UPDATE Key SET default_key=0 WHERE default_key=1 and identity_name=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
@@ -644,7 +644,7 @@ BasicIdentityStorage::setDefaultKeyNameForIdentity(const Name& keyName, const Na
 
   sqlite3_finalize(statement);
 
-  //Set current default Key
+  // Set the current default Key.
   sqlite3_prepare_v2(database_, "UPDATE Key SET default_key=1 WHERE identity_name=? AND key_identifier=?", -1, &statement, 0);
 
   sqlite3_bind_text(statement, 1, identityName.toUri(), SQLITE_TRANSIENT);
