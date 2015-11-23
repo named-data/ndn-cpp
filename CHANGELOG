@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.8 (2015-11-18)
+Interim changes since NDN-CPP v0.8 (2015-11-23)
 -----------------------------------------------
 
 Changes
@@ -10,6 +10,7 @@ Changes
 
 Bug fixes
 * http://redmine.named-data.net/issues/3342 In expressInterest, call onTimeout when there is no interest lifetime.
+* In ThreadsafeFace, need explicit signatures for registerPrefix without OnRegisterSuccess. (Thanks Zhehao!)
 
 NDN-CPP v0.8 (2015-09-24)
 -------------------------

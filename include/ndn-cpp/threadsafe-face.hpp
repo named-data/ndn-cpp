@@ -133,6 +133,31 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   uint64_t
+  registerPrefix
+    (const Name& prefix, const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed,
+     const ForwardingFlags& flags,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    // This is needed, otherwise C++ will try to use the signature with
+    // const OnRegisterSuccess&. Just call the Face method with the same
+    // signature as this.
+    return Face::registerPrefix
+      (prefix, onInterest, onRegisterFailed, flags, wireFormat);
+  }
+
+  uint64_t
+  registerPrefix
+    (const Name& prefix, const OnInterestCallback& onInterest,
+     const OnRegisterFailed& onRegisterFailed)
+  {
+    // This is needed, otherwise C++ will try to use the signature with
+    // const OnRegisterSuccess&. Just call the Face method with the same
+    // signature as this.
+    return Face::registerPrefix(prefix, onInterest, onRegisterFailed);
+  }
+
+  uint64_t
   DEPRECATED_IN_NDN_CPP registerPrefix
     (const Name& prefix, const OnInterest& onInterest,
      const OnRegisterFailed& onRegisterFailed,
