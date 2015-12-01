@@ -12,7 +12,7 @@ Prerequisites
 * Optional: Protobuf (for the ProtobufTlv converter and ChronoSync)
 * Optional: log4cxx (for debugging and log output)
 * Optional: Doxygen (to make documentation)
-* Optional: Boost with asio (for ThreadsafeFace and async I/O)
+* Optional: Boost (min version 1.48) with asio (for ThreadsafeFace and async I/O)
 
 Following are the detailed steps for each platform to install the prerequisites.
 
@@ -62,7 +62,40 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     sudo port install boost
 
-## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
+## Ubuntu 12.04 (64 bit and 32 bit)
+In a terminal, enter:
+
+    sudo apt-get install build-essential libssl-dev
+
+Optional: To install libsqlite3, in a terminal, enter:
+
+    sudo apt-get install libsqlite3-dev
+
+Optional: To install Protobuf, in a terminal, enter:
+
+    sudo apt-get install libprotobuf-dev
+
+Optional: To install log4cxx, in a terminal, enter:
+
+    sudo apt-get install liblog4cxx10-dev
+
+Optional: To install Doxygen, in a terminal, enter:
+
+    sudo apt-get install doxygen
+
+Optional: To install Boost with asio, you need to build from source because 
+    apt-get only installs Boost version 1.46. In a browser, go to
+    http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz/download
+    and save boost_1_48_0.tar.gz in your home directory.  In a terminal, enter:
+
+    sudo apt-get remove libboost-all-dev
+    cd ~
+    tar xvfz boost_1_48_0.tar.gz
+    cd boost_1_48_0
+    sudo ./bootstrap.sh --prefix=/usr
+    sudo ./b2 install
+
+## Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev
