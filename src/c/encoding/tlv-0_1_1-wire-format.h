@@ -33,6 +33,50 @@ extern "C" {
 #endif
 
 /**
+ * Encode name as NDN-TLV.
+ * @param name A pointer to the name object to encode.
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
+ * beginning of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param signedPortionEndOffset Return the offset in the encoding of the end
+ * of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeName
+  (const struct ndn_Name *name, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength);
+
+/**
+ * Decode input as a name in NDN-TLV and set the fields of the name
+ * object.
+ * @param name A pointer to the name object whose fields are updated.
+ * @param input A pointer to the input buffer to decode.
+ * @param inputLength The number of bytes in input.
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
+ * beginning of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @param signedPortionEndOffset Return the offset in the encoding of the end
+ * of the signed portion. The signed portion starts from the first
+ * name component and ends just before the final name component (which is
+ * assumed to be a signature for a signed interest).
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeName
+  (struct ndn_Name *name, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
+
+/**
  * Encode interest as NDN-TLV.
  * @param interest A pointer to the interest object to encode.
  * @param signedPortionBeginOffset Return the offset in the encoding of the

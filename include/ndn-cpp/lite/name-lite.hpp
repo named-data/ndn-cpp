@@ -380,6 +380,9 @@ public:
   upCast(const ndn_Name& name) { return *(NameLite*)&name; }
 
 private:
+  // Declare friends who can downcast to the private base.
+  friend class Tlv0_1_1WireFormatLite;
+
   /**
    * Don't allow the copy constructor. Instead use set(const NameLite&) which
    * can return an error if there is no more room in the name components array.

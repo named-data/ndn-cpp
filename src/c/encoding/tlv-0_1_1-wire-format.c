@@ -18,9 +18,36 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "tlv/tlv-name.h"
 #include "tlv/tlv-interest.h"
 #include "tlv/tlv-data.h"
 #include "tlv-0_1_1-wire-format.h"
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeName
+  (const struct ndn_Name *name, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength)
+{
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  ndn_Error error = ndn_encodeTlvName
+    (name, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeName
+  (struct ndn_Name *name, const uint8_t *input, size_t inputLength,
+   size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  return ndn_decodeTlvName
+    (name, signedPortionBeginOffset, signedPortionEndOffset, &decoder);
+}
 
 ndn_Error
 ndn_Tlv0_1_1WireFormat_encodeInterest

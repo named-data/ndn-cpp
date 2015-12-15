@@ -25,6 +25,27 @@
 namespace ndn {
 
 ndn_Error
+Tlv0_1_1WireFormatLite::encodeName
+  (const NameLite& name, size_t* signedPortionBeginOffset,
+   size_t* signedPortionEndOffset, DynamicUInt8ArrayLite& output,
+   size_t* encodingLength)
+{
+  return ndn_Tlv0_1_1WireFormat_encodeName
+    (&name, signedPortionBeginOffset, signedPortionEndOffset,
+     &output, encodingLength);
+}
+
+ndn_Error
+Tlv0_1_1WireFormatLite::decodeName
+  (NameLite& name, const uint8_t* input, size_t inputLength,
+   size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset)
+{
+  return ndn_Tlv0_1_1WireFormat_decodeName
+    (&name, input, inputLength, signedPortionBeginOffset,
+     signedPortionEndOffset);
+}
+
+ndn_Error
 Tlv0_1_1WireFormatLite::encodeInterest
   (const InterestLite& interest, size_t* signedPortionBeginOffset,
    size_t* signedPortionEndOffset, DynamicUInt8ArrayLite& output,
