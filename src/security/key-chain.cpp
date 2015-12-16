@@ -40,21 +40,21 @@ KeyChain::KeyChain
   (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
    const ptr_lib::shared_ptr<PolicyManager>& policyManager)
 : identityManager_(identityManager), policyManager_(policyManager),
-  face_(0), maxSteps_(100)
+  face_(0)
 {
 }
 
 KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
 : identityManager_(identityManager),
   policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
-  face_(0), maxSteps_(100)
+  face_(0)
 {
 }
 
 KeyChain::KeyChain()
 : identityManager_(ptr_lib::make_shared<IdentityManager>()),
   policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
-  face_(0), maxSteps_(100)
+  face_(0)
 {
 }
 

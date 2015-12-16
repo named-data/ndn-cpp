@@ -511,7 +511,6 @@ private:
   ptr_lib::shared_ptr<IdentityManager> identityManager_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;
   Face* face_;
-  const int maxSteps_;
 };
 
 }
