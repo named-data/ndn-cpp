@@ -223,6 +223,14 @@ public:
   virtual void
   setDefaultCertificateNameForKey(const Name& keyName, const Name& certificateName) = 0;
 
+  /**
+   * Get the certificate of the default identity.
+   * @return The requested certificate. If not found, return a shared_ptr with
+   * a null pointer.
+   */
+  virtual ptr_lib::shared_ptr<IdentityCertificate>
+  getDefaultCertificate();
+
   /*****************************************
    *            Delete Methods             *
    *****************************************/

@@ -177,6 +177,17 @@ public:
   }
 
   /**
+   * Get the certificate of the default identity.
+   * @return The requested certificate. If not found, return a shared_ptr with
+   * a null pointer.
+   */
+  ptr_lib::shared_ptr<IdentityCertificate>
+  getDefaultCertificate()
+  {
+    return identityStorage_->getDefaultCertificate();
+  }
+
+  /**
    * Generate a pair of RSA keys for the specified identity.
    * @param identityName The name of the identity.
    * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false

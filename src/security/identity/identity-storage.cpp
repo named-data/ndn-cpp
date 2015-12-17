@@ -72,6 +72,20 @@ IdentityStorage::getDefaultCertificateNameForIdentity (const Name& identityName)
   return getDefaultCertificateNameForKey(keyName);
 }
 
+ptr_lib::shared_ptr<IdentityCertificate>
+IdentityStorage::getDefaultCertificate()
+{
+  Name certName;
+  try {
+    certName = getDefaultCertificateNameForIdentity(getDefaultIdentity());
+  } catch (SecurityException& ex) {
+    // The default is not defined.
+    return ptr_lib::shared_ptr<IdentityCertificate>();
+  }
+
+  return getCertificate(certName, true);
+}
+
 bool IdentityStorage::lastTimestampIsInitialized_ = false;
 uint64_t IdentityStorage::lastTimestamp_;
 
