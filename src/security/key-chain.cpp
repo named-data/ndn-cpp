@@ -69,7 +69,7 @@ KeyChain::sign(Data& data, WireFormat& wireFormat)
     signingCertificate = identityManager_->getDefaultCertificate();
   }
 
-  const Name& certificateName = signingCertificate->getName().getPrefix(-1);
+  const Name& certificateName = signingCertificate->getName();
   identityManager_->signByCertificate(data, certificateName, wireFormat);
 }
 
