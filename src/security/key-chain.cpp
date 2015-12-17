@@ -60,20 +60,6 @@ KeyChain::KeyChain()
 }
 
 void
-KeyChain::sign(Data& data, WireFormat& wireFormat)
-{
-  ptr_lib::shared_ptr<IdentityCertificate> signingCertificate =
-    identityManager_->getDefaultCertificate();
-  if (!signingCertificate) {
-    setDefaultCertificate();
-    signingCertificate = identityManager_->getDefaultCertificate();
-  }
-
-  const Name& certificateName = signingCertificate->getName();
-  identityManager_->signByCertificate(data, certificateName, wireFormat);
-}
-
-void
 KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireFormat)
 {
   Name signingCertificateName;
@@ -193,6 +179,19 @@ KeyChain::onCertificateInterestTimeoutForVerifyInterest
             _1, retry - 1, onVerifyFailed, originalInterest, nextStep));
   else
     onVerifyFailed(originalInterest);
+}
+
+Name
+KeyChain::prepareDefaultCertificateName()
+{
+  ptr_lib::shared_ptr<IdentityCertificate> signingCertificate =
+    identityManager_->getDefaultCertificate();
+  if (!signingCertificate) {
+    setDefaultCertificate();
+    signingCertificate = identityManager_->getDefaultCertificate();
+  }
+
+  return signingCertificate->getName();
 }
 
 void

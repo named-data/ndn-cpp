@@ -355,7 +355,11 @@ public:
    * If omitted, use WireFormat getDefaultWireFormat().
    */
   void
-  sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+  sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signByCertificate
+      (data, prepareDefaultCertificateName(), wireFormat);
+  }
 
   /**
    * Append a SignatureInfo to the Interest name, sign the name components and
@@ -518,6 +522,14 @@ private:
      const OnVerifyInterestFailed& onVerifyFailed,
      const ptr_lib::shared_ptr<Interest>& originalInterest,
      ptr_lib::shared_ptr<ValidationRequest> nextStep);
+
+  /**
+   * Get the default certificate from the identity storage and return its name.
+   * If there is no default identity or default certificate, then create one.
+   * @return The default certificate name.
+   */
+  Name
+  prepareDefaultCertificateName();
 
   /**
    * Create the default certificate if it is not initialized. If there is no
