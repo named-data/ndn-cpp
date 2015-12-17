@@ -380,6 +380,24 @@ public:
   }
 
   /**
+   * Append a SignatureInfo to the Interest name, sign the name components with
+   * the default identity and append a final name component with the signature
+   * bits.
+   * @param interest The Interest object to be signed. This appends name
+   * components of SignatureInfo and the signature bits.
+   * @param wireFormat (optional) A WireFormat object used to encode the input. If omitted,
+   * use WireFormat getDefaultWireFormat().
+   */
+  void
+  sign
+    (Interest& interest,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    identityManager_->signInterestByCertificate
+      (interest, prepareDefaultCertificateName(), wireFormat);
+  }
+
+  /**
    * Sign the byte array using a certificate name and return a Signature object.
    * @param buffer The byte array to be signed.
    * @param bufferLength the length of buffer.
