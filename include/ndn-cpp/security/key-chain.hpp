@@ -347,6 +347,17 @@ public:
   }
 
   /**
+   * Wire encode the Data object, sign it with the default identity and set its
+   * signature.
+   * @param data The Data object to be signed.  This updates its signature and
+   * key locator field and wireEncoding.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Append a SignatureInfo to the Interest name, sign the name components and
    * append a final name component with the signature bits.
    * @param interest The Interest object to be signed. This appends name
@@ -507,6 +518,13 @@ private:
      const OnVerifyInterestFailed& onVerifyFailed,
      const ptr_lib::shared_ptr<Interest>& originalInterest,
      ptr_lib::shared_ptr<ValidationRequest> nextStep);
+
+  /**
+   * Create the default certificate if it is not initialized. If there is no
+   * default identity yet, creating a new tmp-identity.
+   */
+  void
+  setDefaultCertificate();
 
   ptr_lib::shared_ptr<IdentityManager> identityManager_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;

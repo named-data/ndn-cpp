@@ -21,11 +21,12 @@
  */
 
 #include "../util/logging.hpp"
+#include "../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
-#include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/security/key-chain.hpp>
 
 INIT_LOGGER("ndn.KeyChain");
 
@@ -56,6 +57,20 @@ KeyChain::KeyChain()
   policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
   face_(0)
 {
+}
+
+void
+KeyChain::sign(Data& data, WireFormat& wireFormat)
+{
+  ptr_lib::shared_ptr<IdentityCertificate> signingCertificate =
+    identityManager_->getDefaultCertificate();
+  if (!signingCertificate) {
+    setDefaultCertificate();
+    signingCertificate = identityManager_->getDefaultCertificate();
+  }
+
+  const Name& certificateName = signingCertificate->getName().getPrefix(-1);
+  identityManager_->signByCertificate(data, certificateName, wireFormat);
 }
 
 void
@@ -178,6 +193,27 @@ KeyChain::onCertificateInterestTimeoutForVerifyInterest
             _1, retry - 1, onVerifyFailed, originalInterest, nextStep));
   else
     onVerifyFailed(originalInterest);
+}
+
+void
+KeyChain::setDefaultCertificate()
+{
+  if (!identityManager_->getDefaultCertificate()) {
+    Name defaultIdentity;
+    try {
+      defaultIdentity = identityManager_->getDefaultIdentity();
+    } catch (SecurityException& e) {
+      // Create a default identity name.
+      uint8_t randomComponent[4];
+      ndn_generateRandomBytes(randomComponent, sizeof(randomComponent));
+      defaultIdentity = Name();
+      defaultIdentity.append("tmp-identity")
+        .append(Blob(randomComponent, sizeof(randomComponent)));
+    }
+
+    createIdentityAndCertificate(defaultIdentity);
+    identityManager_->setDefaultIdentity(defaultIdentity);
+  }
 }
 
 }
