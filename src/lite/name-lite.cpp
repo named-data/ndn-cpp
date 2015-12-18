@@ -34,6 +34,11 @@ NameLite::Component::Component(const uint8_t* value, size_t valueLength)
   ndn_NameComponent_initialize(this, value, valueLength);
 }
 
+NameLite::Component::Component(const BlobLite& value)
+{
+  ndn_NameComponent_initialize(this, value.buf(), value.size());
+}
+
 uint64_t
 NameLite::Component::toNumber() const
 {

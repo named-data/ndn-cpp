@@ -50,6 +50,13 @@ public:
      */
     Component(const uint8_t* value, size_t valueLength);
 
+    /**
+     * Create a NameLite::Component taking the pointer and size from the
+     * BlobLite value.
+     * @param value The BlobLite with the pointer to use for this component.
+     */
+    Component(const BlobLite& value);
+
     const BlobLite&
     getValue() const { return BlobLite::upCast(value); }
 
