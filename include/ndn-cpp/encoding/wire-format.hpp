@@ -211,6 +211,18 @@ public:
   encodeSignatureInfo(const Signature& signature);
 
   /**
+   * Encode the signatureValue in the Signature object as a SignatureValue (the
+   * signature bits) and return the encoding.
+   * Your derived class should override.
+   * @param signature An object of a subclass of Signature with the signature
+   * value to encode.
+   * @return A Blob containing the encoding.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeSignatureValue(const Signature& signature);
+
+  /**
    * Decode signatureInfo as a signature info and signatureValue as the related
    * SignatureValue, and return a new object which is a subclass of Signature.
    * Your derived class should override.
@@ -241,18 +253,6 @@ public:
       (signatureInfo.buf(), signatureInfo.size(), signatureValue.buf(),
        signatureValue.size());
   }
-
-  /**
-   * Encode the signatureValue in the Signature object as a SignatureValue (the
-   * signature bits) and return the encoding.
-   * Your derived class should override.
-   * @param signature An object of a subclass of Signature with the signature
-   * value to encode.
-   * @return A Blob containing the encoding.
-   * @throws logic_error for unimplemented if the derived class does not override.
-   */
-  virtual Blob
-  encodeSignatureValue(const Signature& signature);
 
   /**
    * Set the static default WireFormat used by default encoding and decoding methods.

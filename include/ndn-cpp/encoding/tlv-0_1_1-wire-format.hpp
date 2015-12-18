@@ -154,6 +154,16 @@ public:
   encodeSignatureInfo(const Signature& signature);
 
   /**
+   * Encode the signatureValue in the Signature object as an NDN-TLV
+   * SignatureValue (the signature bits) and return the encoding.
+   * @param signature An object of a subclass of Signature with the signature
+   * value to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob
+  encodeSignatureValue(const Signature& signature);
+
+  /**
    * Decode signatureInfo as a signature info and signatureValue as the related
    * SignatureValue, and return a new object which is a subclass of Signature.
    * @param signatureInfo A pointer to the signature info input buffer to decode.
@@ -166,16 +176,6 @@ public:
   decodeSignatureInfoAndValue
     (const uint8_t *signatureInfo, size_t signatureInfoLength,
      const uint8_t *signatureValue, size_t signatureValueLength);
-
-  /**
-   * Encode the signatureValue in the Signature object as an NDN-TLV
-   * SignatureValue (the signature bits) and return the encoding.
-   * @param signature An object of a subclass of Signature with the signature
-   * value to encode.
-   * @return A Blob containing the encoding.
-   */
-  virtual Blob
-  encodeSignatureValue(const Signature& signature);
 
   /**
    * Get a singleton instance of a Tlv0_1_1WireFormat.  To always use the
