@@ -47,7 +47,7 @@ CommandInterestGenerator::generate
   // The timestamp is encoded as a TLV nonNegativeInteger.
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger((uint64_t)timestamp);
-  interest.getName().append(Blob(encoder.getOutput(), false));
+  interest.getName().append(Blob(encoder.finish()));
 
   // The random value is a TLV nonNegativeInteger too, but we know it is 8 bytes,
   //   so we don't need to call the nonNegativeInteger encoder.

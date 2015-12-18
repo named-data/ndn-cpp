@@ -119,7 +119,7 @@ ProtobufTlv::encode(const Message& message)
   TlvEncoder encoder(256);
 
   encodeMessageValue((void*)&message, encoder);
-  return Blob(encoder.getOutput(), false);
+  return encoder.finish();
 }
 
 static void

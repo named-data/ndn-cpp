@@ -47,15 +47,14 @@ public:
   }
 
   /**
-   * Resize the output vector to the correct encoding length and return.
-   * @return The encoding as a shared_ptr.  Assume that the caller now owns the vector.
+   * Resize the output vector to the correct encoding length, transfer the bytes
+   * to a Blob and return the Blob. This clear the internal pointer to the
+   * output vector, and further calls to write to it will throw an exception.
+   * @param size The final size of the allocated vector.
+   * @return A new Blob with the bytes from the vector.
    */
-  const ptr_lib::shared_ptr<std::vector<uint8_t> >&
-  getOutput()
-  {
-    output_.get()->resize(offset);
-    return output_.get();
-  }
+  Blob
+  finish() { return output_.finish(offset); }
 
   void
   writeTypeAndLength(unsigned int type, size_t length)
