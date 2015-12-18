@@ -208,7 +208,11 @@ public:
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
    */
   void
-  get(struct ndn_Blob& blobStruct) const;
+  get(struct ndn_Blob& blobStruct) const
+  {
+    blobStruct.length = size();
+    blobStruct.value = (size() > 0 ? buf() : 0);
+  }
 
   operator const BlobLite() const
   {
