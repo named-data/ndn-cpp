@@ -25,6 +25,7 @@
 #include <vector>
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
+#include <ndn-cpp/util/blob.hpp>
 #include "../c/util/dynamic-uint8-array.h"
 
 namespace ndn {
@@ -124,6 +125,21 @@ public:
    */
   ptr_lib::shared_ptr<std::vector<uint8_t> >&
   get() { return vector_; }
+
+  /**
+   * Resize the allocated vector to the given size, transfer the bytes to a Blob
+   * and return the Blob. Further calls to get() will return a null pointer.
+   * @param size The final size of the allocated vector.
+   * @return A new Blob with the bytes from the vector.
+   */
+  Blob
+  finish(size_t size)
+  {
+    vector_->resize(size);
+    Blob result(vector_, false);
+    vector_.reset();
+    return result;
+  }
 
   uint8_t&
   operator [] (size_t i) { return (*vector_)[i]; }
