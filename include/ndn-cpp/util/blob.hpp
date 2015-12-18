@@ -24,9 +24,8 @@
 
 #include <iostream>
 #include "../common.hpp"
+#include "../c/util/blob-types.h"
 #include "../lite/util/blob-lite.hpp"
-
-struct ndn_Blob;
 
 namespace ndn {
 
@@ -74,7 +73,21 @@ public:
    * Create a new Blob with an immutable copy of the array in the given Blob struct.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
    */
-  Blob(const struct ndn_Blob& blobStruct);
+  Blob(const struct ndn_Blob& blobStruct)
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >
+      (new std::vector<uint8_t>(blobStruct.value, blobStruct.value + blobStruct.length))
+  {
+  }
+
+  /**
+   * Create a new Blob with an immutable copy of the array in blobLite.
+   * @param blobStruct The C ndn_Blob struct to receive the pointer.
+   */
+  Blob(const BlobLite& blobLite)
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >
+      (new std::vector<uint8_t>(blobLite.buf(), blobLite.buf() + blobLite.size()))
+  {
+  }
 
   /**
    * Create a new Blob and take another pointer to the given blob's buffer.
