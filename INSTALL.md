@@ -83,17 +83,9 @@ Optional: To install Doxygen, in a terminal, enter:
 
     sudo apt-get install doxygen
 
-Optional: To install Boost with asio, you need to build from source because 
-    apt-get only installs Boost version 1.46. In a browser, go to
-    http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz/download
-    and save boost_1_48_0.tar.gz in your home directory.  In a terminal, enter:
+Optional: To install Boost with asio, in a terminal, enter:
 
-    sudo apt-get remove libboost-all-dev
-    cd ~
-    tar xvfz boost_1_48_0.tar.gz
-    cd boost_1_48_0
-    sudo ./bootstrap.sh --prefix=/usr
-    sudo ./b2 install
+    sudo apt-get install libboost1.48-all-dev
 
 ## Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
 In a terminal, enter:
