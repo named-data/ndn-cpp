@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include "../common.hpp"
+#include "../lite/util/blob-lite.hpp"
 
 struct ndn_Blob;
 
@@ -195,6 +196,14 @@ public:
    */
   void
   get(struct ndn_Blob& blobStruct) const;
+
+  operator const BlobLite() const
+  {
+    if (*this)
+      return BlobLite(&(*this)->front(), (*this)->size());
+    else
+      return BlobLite();
+  }
 };
 
 inline std::ostream&
