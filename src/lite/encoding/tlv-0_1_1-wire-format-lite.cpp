@@ -87,4 +87,33 @@ Tlv0_1_1WireFormatLite::decodeData
      signedPortionEndOffset);
 }
 
+ndn_Error
+Tlv0_1_1WireFormatLite::encodeSignatureInfo
+  (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
+   size_t* encodingLength)
+{
+  return ndn_Tlv0_1_1WireFormat_encodeSignatureInfo
+    (&signature, &output, encodingLength);
+}
+
+ndn_Error
+Tlv0_1_1WireFormatLite::encodeSignatureValue
+  (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
+   size_t* encodingLength)
+{
+  return ndn_Tlv0_1_1WireFormat_encodeSignatureValue
+    (&signature, &output, encodingLength);
+}
+
+ndn_Error
+Tlv0_1_1WireFormatLite::decodeSignatureInfoAndValue
+  (SignatureLite& signature, const uint8_t *signatureInfo,
+   size_t signatureInfoLength, const uint8_t *signatureValue,
+   size_t signatureValueLength)
+{
+  return ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
+    (&signature, signatureInfo, signatureInfoLength, signatureValue,
+     signatureValueLength);
+}
+
 }

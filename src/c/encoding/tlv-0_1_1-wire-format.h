@@ -159,6 +159,51 @@ ndn_Tlv0_1_1WireFormat_decodeData
   (struct ndn_Data *data, const uint8_t *input, size_t inputLength,
    size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset);
 
+/**
+ * Encode signature as an NDN-TLV SignatureInfo.
+ * @param signature The signature object to encode.
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeSignatureInfo
+  (const struct ndn_Signature *signature, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength);
+
+/**
+ * Encode the signatureValue in the Signature object as an NDN-TLV
+ * SignatureValue (the signature bits).
+ * @param signature The signature object with the signature bits.
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeSignatureValue
+  (const struct ndn_Signature *signature, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength);
+
+/**
+ * Decode signatureInfo as an NDN-TLV signature info and signatureValue as the
+ * related SignatureValue, and set the fields in the signature object.
+ * @param signature The signature object whose fields are updated.
+ * @param signatureInfo A pointer to the signature info input buffer to decode.
+ * @param signatureInfoLength The number of bytes in signatureInfo.
+ * @param signatureValue A pointer to the signature value input buffer to decode.
+ * @param signatureValueLength The number of bytes in signatureValue.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
+  (struct ndn_Signature *signature, const uint8_t *signatureInfo,
+   size_t signatureInfoLength, const uint8_t *signatureValue,
+   size_t signatureValueLength);
+
 #ifdef __cplusplus
 }
 #endif

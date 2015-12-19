@@ -21,6 +21,7 @@
 #include "tlv/tlv-name.h"
 #include "tlv/tlv-interest.h"
 #include "tlv/tlv-data.h"
+#include "tlv/tlv-signature-info.h"
 #include "tlv-0_1_1-wire-format.h"
 
 ndn_Error
@@ -29,9 +30,10 @@ ndn_Tlv0_1_1WireFormat_encodeName
    size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
    size_t *encodingLength)
 {
+  ndn_Error error;
   struct ndn_TlvEncoder encoder;
   ndn_TlvEncoder_initialize(&encoder, output);
-  ndn_Error error = ndn_encodeTlvName
+  error = ndn_encodeTlvName
     (name, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
   *encodingLength = encoder.offset;
 
@@ -55,9 +57,10 @@ ndn_Tlv0_1_1WireFormat_encodeInterest
    size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
    size_t *encodingLength)
 {
+  ndn_Error error;
   struct ndn_TlvEncoder encoder;
   ndn_TlvEncoder_initialize(&encoder, output);
-  ndn_Error error = ndn_encodeTlvInterest
+  error = ndn_encodeTlvInterest
     (interest, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
   *encodingLength = encoder.offset;
 
@@ -81,9 +84,10 @@ ndn_Tlv0_1_1WireFormat_encodeData
    size_t *signedPortionEndOffset, struct ndn_DynamicUInt8Array *output,
    size_t *encodingLength)
 {
+  ndn_Error error;
   struct ndn_TlvEncoder encoder;
   ndn_TlvEncoder_initialize(&encoder, output);
-  ndn_Error error = ndn_encodeTlvData
+  error = ndn_encodeTlvData
     (data, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
   *encodingLength = encoder.offset;
 
@@ -99,4 +103,51 @@ ndn_Tlv0_1_1WireFormat_decodeData
   ndn_TlvDecoder_initialize(&decoder, input, inputLength);
   return ndn_decodeTlvData
     (data, signedPortionBeginOffset, signedPortionEndOffset, &decoder);
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeSignatureInfo
+  (const struct ndn_Signature *signature, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength)
+{
+  ndn_Error error;
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  error = ndn_encodeTlvSignatureInfo(signature, &encoder);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeSignatureValue
+  (const struct ndn_Signature *signature, struct ndn_DynamicUInt8Array *output,
+   size_t *encodingLength)
+{
+  ndn_Error error;
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  error = ndn_TlvEncoder_writeBlobTlv
+    (&encoder, ndn_Tlv_SignatureValue, &signature->signature);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
+  (struct ndn_Signature *signature, const uint8_t *signatureInfo,
+   size_t signatureInfoLength, const uint8_t *signatureValue,
+   size_t signatureValueLength)
+{
+  ndn_Error error;
+  struct ndn_TlvDecoder decoder;
+
+  ndn_TlvDecoder_initialize(&decoder, signatureInfo, signatureInfoLength);
+  if ((error = ndn_decodeTlvSignatureInfo(signature, &decoder)))
+    return error;
+
+  ndn_TlvDecoder_initialize(&decoder, signatureValue, signatureValueLength);
+  return ndn_TlvDecoder_readBlobTlv
+    (&decoder, ndn_Tlv_SignatureValue, &signature->signature);
 }
