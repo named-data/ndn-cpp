@@ -26,8 +26,7 @@
 #include "c/key-types.h"
 #include "name.hpp"
 #include "util/change-counter.hpp"
-
-struct ndn_KeyLocator;
+#include "lite/key-locator-lite.hpp"
 
 namespace ndn {
 
@@ -53,19 +52,22 @@ public:
   }
 
   /**
-   * Set the keyLocatorStruct to point to the values in this key locator, without copying any memory.
-   * WARNING: The resulting pointers in keyLocatorStruct are invalid after a further use of this object which could reallocate memory.
-   * @param keyLocatorStruct a C ndn_KeyLocator struct where the name components array is already allocated.
+   * Set keyLocatorLite to point to the values in this key locator, without
+   * copying any memory.
+   * WARNING: The resulting pointers in keyLocatorLite are invalid after a
+   * further use of this object which could reallocate memory.
+   * @param keyLocatorLite A KeyLocatorLite where the name components array is
+   * already allocated.
    */
   void
-  get(struct ndn_KeyLocator& keyLocatorStruct) const;
+  get(KeyLocatorLite& keyLocatorLite) const;
 
   /**
-   * Clear this key locator, and set the values by copying from the ndn_KeyLocator struct.
-   * @param keyLocatorStruct a C ndn_KeyLocator struct
+   * Clear this key locator, and set the values by copying from keyLocatorLite.
+   * @param keyLocatorLite A KeyLocatorLite object.
    */
   void
-  set(const struct ndn_KeyLocator& keyLocatorStruct);
+  set(const KeyLocatorLite& keyLocatorLite);
 
   ndn_KeyLocatorType
   getType() const { return type_; }

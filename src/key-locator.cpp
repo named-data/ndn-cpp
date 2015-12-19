@@ -24,27 +24,26 @@
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/key-locator.hpp>
-#include "c/key-locator.h"
 
 using namespace std;
 
 namespace ndn {
 
 void
-KeyLocator::get(struct ndn_KeyLocator& keyLocatorStruct) const
+KeyLocator::get(KeyLocatorLite& keyLocatorLite) const
 {
-  keyLocatorStruct.type = type_;
-  keyData_.get(keyLocatorStruct.keyData);
-  keyName_.get().get(keyLocatorStruct.keyName);
+  keyLocatorLite.setType(type_);
+  keyLocatorLite.setKeyData(keyData_);
+  keyName_.get().get(keyLocatorLite.getKeyName());
 }
 
 void
-KeyLocator::set(const struct ndn_KeyLocator& keyLocatorStruct)
+KeyLocator::set(const KeyLocatorLite& keyLocatorLite)
 {
-  setType(keyLocatorStruct.type);
-  setKeyData(Blob(keyLocatorStruct.keyData));
-  if (keyLocatorStruct.type == ndn_KeyLocatorType_KEYNAME)
-    keyName_.get().set(keyLocatorStruct.keyName);
+  setType(keyLocatorLite.getType());
+  setKeyData(Blob(keyLocatorLite.getKeyData()));
+  if (keyLocatorLite.getType() == ndn_KeyLocatorType_KEYNAME)
+    keyName_.get().set(keyLocatorLite.getKeyName());
   else
     keyName_.get().clear();
 }
