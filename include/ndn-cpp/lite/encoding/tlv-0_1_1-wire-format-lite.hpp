@@ -24,6 +24,7 @@
 
 #include "../interest-lite.hpp"
 #include "../data-lite.hpp"
+#include "../signature-lite.hpp"
 #include "../util/dynamic-uint8-array-lite.hpp"
 
 namespace ndn {
@@ -160,6 +161,51 @@ public:
   decodeData
     (DataLite& data, const uint8_t* input, size_t inputLength,
      size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset);
+
+  /**
+   * Encode signature as an NDN-TLV SignatureInfo.
+   * @param signature The signature object to encode.
+   * @param output A DynamicUInt8ArrayLite object which receives the encoded
+   * output.  If the output's reallocFunction is null, its array must be large
+   * enough to receive the entire encoding.
+   * @param encodingLength Set encodingLength to the length of the encoded output.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  encodeSignatureInfo
+    (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
+     size_t* encodingLength);
+
+  /**
+   * Encode the signatureValue in the Signature object as an NDN-TLV
+   * SignatureValue (the signature bits).
+   * @param signature The signature object with the signature bits.
+   * @param output A DynamicUInt8ArrayLite object which receives the encoded
+   * output.  If the output's reallocFunction is null, its array must be large
+   * enough to receive the entire encoding.
+   * @param encodingLength Set encodingLength to the length of the encoded output.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  encodeSignatureValue
+    (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
+     size_t* encodingLength);
+
+  /**
+   * Decode signatureInfo as an NDN-TLV signature info and signatureValue as the
+   * related SignatureValue, and set the fields in the signature object.
+   * @param signature The signature object whose fields are updated.
+   * @param signatureInfo A pointer to the signature info input buffer to decode.
+   * @param signatureInfoLength The number of bytes in signatureInfo.
+   * @param signatureValue A pointer to the signature value input buffer to decode.
+   * @param signatureValueLength The number of bytes in signatureValue.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  decodeSignatureInfoAndValue
+    (SignatureLite& signature, const uint8_t *signatureInfo,
+     size_t signatureInfoLength, const uint8_t *signatureValue,
+     size_t signatureValueLength);
 };
 
 }
