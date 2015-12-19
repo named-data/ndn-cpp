@@ -47,22 +47,22 @@ Sha256WithEcdsaSignature::setSignature(const Blob& signature)
 }
 
 void
-Sha256WithEcdsaSignature::get(struct ndn_Signature& signatureStruct) const
+Sha256WithEcdsaSignature::get(SignatureLite& signatureLite) const
 {
-  signatureStruct.type = ndn_SignatureType_Sha256WithEcdsaSignature;
-  signature_.get(signatureStruct.signature);
-  keyLocator_.get().get(signatureStruct.keyLocator);
+  signatureLite.setType(ndn_SignatureType_Sha256WithEcdsaSignature);
+  signatureLite.setSignature(signature_);
+  keyLocator_.get().get(signatureLite.getKeyLocator());
 }
 
 void
-Sha256WithEcdsaSignature::set(const struct ndn_Signature& signatureStruct)
+Sha256WithEcdsaSignature::set(const SignatureLite& signatureLite)
 {
   // The caller should already have checked the type, but check again.
-  if (signatureStruct.type != ndn_SignatureType_Sha256WithEcdsaSignature)
-    throw runtime_error("signatureStruct is not the expected type Sha256WithEcdsaSignature");
+  if (signatureLite.getType() != ndn_SignatureType_Sha256WithEcdsaSignature)
+    throw runtime_error("signatureLite is not the expected type Sha256WithEcdsaSignature");
 
-  setSignature(Blob(signatureStruct.signature));
-  keyLocator_.get().set(signatureStruct.keyLocator);
+  setSignature(Blob(signatureLite.getSignature()));
+  keyLocator_.get().set(signatureLite.getKeyLocator());
 }
 
 uint64_t

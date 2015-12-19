@@ -47,23 +47,23 @@ DigestSha256Signature::setSignature(const Blob& signature)
 }
 
 void
-DigestSha256Signature::get(struct ndn_Signature& signatureStruct) const
+DigestSha256Signature::get(SignatureLite& signatureLite) const
 {
   // Initialize unused fields.
-  ndn_Signature_clear(&signatureStruct);
+  signatureLite.clear();
 
-  signatureStruct.type = ndn_SignatureType_DigestSha256Signature;
-  signature_.get(signatureStruct.signature);
+  signatureLite.setType(ndn_SignatureType_DigestSha256Signature);
+  signatureLite.setSignature(signature_);
 }
 
 void
-DigestSha256Signature::set(const struct ndn_Signature& signatureStruct)
+DigestSha256Signature::set(const SignatureLite& signatureLite)
 {
   // The caller should already have checked the type, but check again.
-  if (signatureStruct.type != ndn_SignatureType_DigestSha256Signature)
-    throw runtime_error("signatureStruct is not the expected type DigestSha256Signature");
+  if (signatureLite.getType() != ndn_SignatureType_DigestSha256Signature)
+    throw runtime_error("signatureLite is not the expected type DigestSha256Signature");
 
-  setSignature(Blob(signatureStruct.signature));
+  setSignature(Blob(signatureLite.getSignature()));
 }
 
 uint64_t

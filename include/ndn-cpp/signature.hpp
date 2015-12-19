@@ -24,8 +24,7 @@
 
 #include "common.hpp"
 #include "util/blob.hpp"
-
-struct ndn_Signature;
+#include "lite/signature-lite.hpp"
 
 namespace ndn {
 
@@ -63,21 +62,24 @@ public:
   setSignature(const Blob& signature) = 0;
 
   /**
-   * Set the signatureStruct to point to the values in this signature object, without copying any memory.
-   * WARNING: The resulting pointers in signatureStruct are invalid after a further use of this object which could reallocate memory.
+   * Set signatureLite to point to the values in this signature object, without
+   * copying any memory.
+   * WARNING: The resulting pointers in signatureLite are invalid after a
+   * further use of this object which could reallocate memory.
    * This is pure virtual, the subclass must implement it.
-   * @param signatureStruct a C ndn_Signature struct where the name components array is already allocated.
+   * @param signatureLite A SignatureLite object where the name components array
+   * is already allocated.
    */
   virtual void
-  get(struct ndn_Signature& signatureStruct) const = 0;
+  get(SignatureLite& signatureLite) const = 0;
 
   /**
-   * Clear this signature, and set the values by copying from the ndn_Signature struct.
+   * Clear this signature, and set the values by copying from signatureLite.
    * This is pure virtual, the subclass must implement it.
-   * @param signatureStruct a C ndn_Signature struct
+   * @param signatureStruct A SignatureLite object.
    */
   virtual void
-  set(const struct ndn_Signature& signatureStruct) = 0;
+  set(const SignatureLite& signatureLite) = 0;
 
   /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.

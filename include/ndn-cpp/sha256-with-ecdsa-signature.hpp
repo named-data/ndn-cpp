@@ -47,23 +47,22 @@ public:
   clone() const;
 
   /**
-   * Set the signatureStruct to point to the values in this signature object,
-   * without copying any memory.
-   * WARNING: The resulting pointers in signatureStruct are invalid after a
+   * Set signatureLite to point to the values in this signature object, without
+   * copying any memory.
+   * WARNING: The resulting pointers in signatureLite are invalid after a
    * further use of this object which could reallocate memory.
-   * @param signatureStruct a C ndn_Signature struct where the name components
-   * array is already allocated.
+   * @param signatureLite A SignatureLite object where the name components array
+   * is already allocated.
    */
   virtual void
-  get(struct ndn_Signature& signatureStruct) const;
+  get(SignatureLite& signatureLite) const;
 
   /**
-   * Clear this signature, and set the values by copying from the ndn_Signature
-   * struct.
-   * @param signatureStruct a C ndn_Signature struct
+   * Clear this signature, and set the values by copying from signatureLite.
+   * @param signatureStruct A SignatureLite object.
    */
   virtual void
-  set(const struct ndn_Signature& signatureStruct);
+  set(const SignatureLite& signatureLite);
 
   /**
    * Get the signature bytes.
