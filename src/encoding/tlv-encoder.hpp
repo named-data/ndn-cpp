@@ -41,7 +41,7 @@ public:
    * @param initialLength The initial size of the output.  If omitted, use 16.
    */
   TlvEncoder(size_t initialLength = 16)
-  : output_(16)
+  : output_(initialLength)
   {
     ndn_TlvEncoder_initialize(this, &output_);
   }
