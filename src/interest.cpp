@@ -49,11 +49,11 @@ Interest& Interest::operator=(const Interest& interest)
 void
 Interest::set(const struct ndn_Interest& interestStruct)
 {
-  name_.get().set(interestStruct.name);
+  name_.get().set(NameLite::upCast(interestStruct.name));
   setMinSuffixComponents(interestStruct.minSuffixComponents);
   setMaxSuffixComponents(interestStruct.maxSuffixComponents);
 
-  keyLocator_.get().set(interestStruct.keyLocator);
+  keyLocator_.get().set(KeyLocatorLite::upCast(interestStruct.keyLocator));
 
   exclude_.get().set(interestStruct.exclude);
   setChildSelector(interestStruct.childSelector);
@@ -68,10 +68,10 @@ Interest::set(const struct ndn_Interest& interestStruct)
 void
 Interest::get(struct ndn_Interest& interestStruct) const
 {
-  name_.get().get(interestStruct.name);
+  name_.get().get(NameLite::upCast(interestStruct.name));
   interestStruct.minSuffixComponents = minSuffixComponents_;
   interestStruct.maxSuffixComponents = maxSuffixComponents_;
-  keyLocator_.get().get(interestStruct.keyLocator);
+  keyLocator_.get().get(KeyLocatorLite::upCast(interestStruct.keyLocator));
   exclude_.get().get(interestStruct.exclude);
   interestStruct.childSelector = childSelector_;
   interestStruct.mustBeFresh = (mustBeFresh_ ? 1 : 0);

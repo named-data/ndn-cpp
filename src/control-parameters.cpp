@@ -33,7 +33,7 @@ ControlParameters::get
   (struct ndn_ControlParameters& controlParametersStruct) const
 {
   controlParametersStruct.hasName = hasName_ ? 1 : 0;
-  name_.get(controlParametersStruct.name);
+  name_.get(NameLite::upCast(controlParametersStruct.name));
   controlParametersStruct.faceId = faceId_;
   // Store the uri_ string as an ndn_Blob.
   controlParametersStruct.uri.value = (const uint8_t*)uri_.c_str();
@@ -42,7 +42,7 @@ ControlParameters::get
   controlParametersStruct.origin = origin_;
   controlParametersStruct.cost = cost_;
   controlParametersStruct.flags = flags_;
-  strategy_.get(controlParametersStruct.strategy);
+  strategy_.get(NameLite::upCast(controlParametersStruct.strategy));
   controlParametersStruct.expirationPeriod = expirationPeriod_;
 }
 
@@ -51,7 +51,7 @@ ControlParameters::set
   (const struct ndn_ControlParameters& controlParametersStruct)
 {
   hasName_ = controlParametersStruct.hasName != 0 ? true : false;
-  name_.set(controlParametersStruct.name);
+  name_.set(NameLite::upCast(controlParametersStruct.name));
   faceId_ = controlParametersStruct.faceId;
   // Convert the ndn_Blob to the uri_ string.
   uri_.assign
@@ -61,7 +61,7 @@ ControlParameters::set
   origin_ = controlParametersStruct.origin;
   cost_ = controlParametersStruct.cost;
   flags_ = controlParametersStruct.flags;
-  strategy_.set(controlParametersStruct.strategy);
+  strategy_.set(NameLite::upCast(controlParametersStruct.strategy));
   expirationPeriod_ = controlParametersStruct.expirationPeriod;
 }
 

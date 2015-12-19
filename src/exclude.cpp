@@ -33,7 +33,7 @@ Exclude::Entry::get(struct ndn_ExcludeEntry& excludeEntryStruct) const
 {
   excludeEntryStruct.type = type_;
   if (type_ == ndn_Exclude_COMPONENT)
-    component_.get(excludeEntryStruct.component);
+    component_.get(NameLite::Component::upCast(excludeEntryStruct.component));
 }
 
 void
