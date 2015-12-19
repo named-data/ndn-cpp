@@ -26,8 +26,12 @@ using namespace std;
 namespace ndn {
 
 DynamicUInt8Vector::DynamicUInt8Vector(size_t initialLength)
-: vector_(new vector<uint8_t>(initialLength))
+: vector_(new vector<uint8_t>())
 {
+  // Note: Don't know why, but it is much faster to set the initial length with
+  // resize() than in the constructor.
+  vector_->resize(initialLength);
+
   ndn_DynamicUInt8Array_initialize(this, &vector_->front(), initialLength, DynamicUInt8Vector::realloc);
 }
 
