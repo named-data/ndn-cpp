@@ -27,21 +27,25 @@ using namespace std;
 namespace ndn {
 
 void
-MetaInfo::get(struct ndn_MetaInfo& metaInfoStruct) const
+MetaInfo::get(MetaInfoLite& metaInfoLite) const
 {
-  metaInfoStruct.timestampMilliseconds = timestampMilliseconds_;
-  metaInfoStruct.type = type_;
-  metaInfoStruct.freshnessPeriod = freshnessPeriod_;
-  finalBlockId_.get(metaInfoStruct.finalBlockId);
+  // Set the deprecated timestamp from the struct ndn_MetaInfo since
+  //   MetaInfoLite doesn't expose it.
+  ((struct ndn_MetaInfo *)&metaInfoLite)->timestampMilliseconds = timestampMilliseconds_;
+  metaInfoLite.setType(type_);
+  metaInfoLite.setFreshnessPeriod(freshnessPeriod_);
+  metaInfoLite.setFinalBlockId(NameLite::Component(finalBlockId_.getValue()));
 }
 
 void
-MetaInfo::set(const struct ndn_MetaInfo& metaInfoStruct)
+MetaInfo::set(const MetaInfoLite& metaInfoLite)
 {
-  timestampMilliseconds_ = metaInfoStruct.timestampMilliseconds;
-  setType(metaInfoStruct.type);
-  setFreshnessPeriod(metaInfoStruct.freshnessPeriod);
-  setFinalBlockId(Name::Component(Blob(metaInfoStruct.finalBlockId.value)));
+  // Get the deprecated timestamp from the struct ndn_MetaInfo since
+  //   MetaInfoLite doesn't expose it.
+  timestampMilliseconds_ = ((struct ndn_MetaInfo *)&metaInfoLite)->timestampMilliseconds;
+  setType(metaInfoLite.getType());
+  setFreshnessPeriod(metaInfoLite.getFreshnessPeriod());
+  setFinalBlockId(Name::Component(Blob(metaInfoLite.getFinalBlockId().getValue())));
 }
 
 }

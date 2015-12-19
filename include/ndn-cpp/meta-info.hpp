@@ -25,8 +25,7 @@
 #include <math.h>
 #include "name.hpp"
 #include "c/data-types.h"
-
-struct ndn_MetaInfo;
+#include "lite/meta-info-lite.hpp"
 
 namespace ndn {
 
@@ -44,19 +43,21 @@ public:
   }
 
   /**
-   * Set the metaInfoStruct to point to the values in this meta info object, without copying any memory.
-   * WARNING: The resulting pointers in metaInfoStruct are invalid after a further use of this object which could reallocate memory.
-   * @param metaInfoStruct a C ndn_MetaInfo struct where the name components array is already allocated.
+   * Set metaInfoLite to point to the values in this meta info object, without
+   * copying any memory.
+   * WARNING: The resulting pointers in metaInfoLite are invalid after a further
+   * use of this object which could reallocate memory.
+   * @param metaInfoLite The MetaInfoLite object which receives the values.
    */
   void
-  get(struct ndn_MetaInfo& metaInfoStruct) const;
+  get(MetaInfoLite& metaInfoLite) const;
 
   /**
-   * Clear this meta info, and set the values by copying from the ndn_MetaInfo struct.
-   * @param metaInfoStruct a C ndn_MetaInfo struct
+   * Clear this meta info, and set the values by copying from metaInfoLite.
+   * @param metaInfoLite A MetaInfoLite object.
    */
   void
-  set(const struct ndn_MetaInfo& metaInfoStruct);
+  set(const MetaInfoLite& metaInfoLite);
 
   /**
    * @deprecated Use the application-specific content to store a timestamp.
