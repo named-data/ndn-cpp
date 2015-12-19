@@ -26,11 +26,9 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
-#include "../c/encoding/tlv/tlv-name.h"
+#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
-#include "../c/encoding/tlv/tlv-data.h"
 #include "../c/encoding/tlv/tlv-control-parameters.h"
-#include "../c/encoding/tlv/tlv-signature-info.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
@@ -43,19 +41,19 @@ Blob
 Tlv0_1_1WireFormat::encodeName(const Name& name)
 {
   struct ndn_NameComponent nameComponents[100];
-  struct ndn_Name nameStruct;
-  ndn_Name_initialize
-    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
-  name.get(nameStruct);
+  NameLite nameLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+  name.get(nameLite);
 
-  TlvEncoder encoder(256);
+  DynamicUInt8Vector output(16);
   ndn_Error error;
-  size_t dummyBeginOffset, dummyEndOffset;
-  if ((error = ndn_encodeTlvName
-       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &encoder)))
+  size_t dummyBeginOffset, dummyEndOffset, encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeName
+       (nameLite, &dummyBeginOffset, &dummyEndOffset, 
+        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return Blob(encoder.getOutput(), false);
+  return output.finish(encodingLength);
 }
 
 void
@@ -63,18 +61,16 @@ Tlv0_1_1WireFormat::decodeName
   (Name& name, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
-  struct ndn_Name nameStruct;
-  ndn_Name_initialize
-    (&nameStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+  NameLite nameLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
 
-  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset;
-  if ((error = ndn_decodeTlvName
-       (&nameStruct, &dummyBeginOffset, &dummyEndOffset, &decoder)))
+  if ((error = Tlv0_1_1WireFormatLite::decodeName
+       (nameLite, input, inputLength, &dummyBeginOffset, &dummyEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
-  name.set(nameStruct);
+  name.set(nameLite);
 }
 
 Blob
@@ -92,14 +88,14 @@ Tlv0_1_1WireFormat::encodeInterest
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
-  TlvEncoder encoder(256);
+  TlvEncoder encoder(16);
   ndn_Error error;
   if ((error = ndn_encodeTlvInterest
        (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
         &encoder)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return Blob(encoder.getOutput(), false);
+  return encoder.finish();
 }
 
 void
@@ -131,18 +127,24 @@ Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
-  struct ndn_Data dataStruct;
-  ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+  DataLite dataLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-  data.get(dataStruct);
+  data.get(dataLite);
 
-  TlvEncoder encoder(1500);
+#if 0 // debug
+  DynamicUInt8Vector output(1500);
+#else
+  DynamicUInt8Vector output(16);
+#endif
   ndn_Error error;
-  if ((error = ndn_encodeTlvData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &encoder)))
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeData
+       (dataLite, signedPortionBeginOffset, signedPortionEndOffset,
+        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return Blob(encoder.getOutput(), false);
+  return output.finish(encodingLength);
 }
 
 void
@@ -151,17 +153,17 @@ Tlv0_1_1WireFormat::decodeData
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
-  struct ndn_Data dataStruct;
-  ndn_Data_initialize
-    (&dataStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+  DataLite dataLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
-  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
-  if ((error = ndn_decodeTlvData(&dataStruct, signedPortionBeginOffset, signedPortionEndOffset, &decoder)))
+  if ((error = Tlv0_1_1WireFormatLite::decodeData
+       (dataLite, input, inputLength, signedPortionBeginOffset,
+        signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
-  data.set(dataStruct);
+  data.set(dataLite);
 }
 
 Blob
@@ -177,13 +179,13 @@ Tlv0_1_1WireFormat::encodeControlParameters
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
   controlParameters.get(controlParametersStruct);
 
-  TlvEncoder encoder(256);
+  TlvEncoder encoder(16);
   ndn_Error error;
   if ((error = ndn_encodeTlvControlParameters
        (&controlParametersStruct, &encoder)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return Blob(encoder.getOutput(), false);
+  return encoder.finish();
 }
 
 void
@@ -210,19 +212,37 @@ Tlv0_1_1WireFormat::decodeControlParameters
 Blob
 Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
 {
-  struct ndn_Signature signatureStruct;
-  struct ndn_NameComponent nameComponents[100];
-  ndn_Signature_initialize
-    (&signatureStruct, nameComponents,
-     sizeof(nameComponents) / sizeof(nameComponents[0]));
-  signature.get(signatureStruct);
+  struct ndn_NameComponent keyNameComponents[100];
+  SignatureLite signatureLite
+    (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+  signature.get(signatureLite);
 
-  TlvEncoder encoder(256);
+  DynamicUInt8Vector output(16);
   ndn_Error error;
-  if ((error = ndn_encodeTlvSignatureInfo(&signatureStruct, &encoder)))
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeSignatureInfo
+       (signatureLite, DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return Blob(encoder.getOutput(), false);
+  return output.finish(encodingLength);
+}
+
+Blob
+Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
+{
+  struct ndn_NameComponent keyNameComponents[100];
+  SignatureLite signatureLite
+    (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+  signature.get(signatureLite);
+
+  DynamicUInt8Vector output(16);
+  ndn_Error error;
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeSignatureValue
+       (signatureLite, DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return output.finish(encodingLength);
 }
 
 ptr_lib::shared_ptr<Signature>
@@ -231,52 +251,28 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
    const uint8_t *signatureValue, size_t signatureValueLength)
 {
   struct ndn_NameComponent keyNameComponents[100];
-  struct ndn_Signature signatureStruct;
-  ndn_Error error;
-  ndn_Signature_initialize
-    (&signatureStruct,
-     keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+  SignatureLite signatureLite
+    (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
-  {
-    TlvDecoder decoder(signatureInfo, signatureInfoLength);
-    if ((error = ndn_decodeTlvSignatureInfo(&signatureStruct, &decoder)))
-      throw runtime_error(ndn_getErrorString(error));
-  }
-  {
-    TlvDecoder decoder(signatureValue, signatureValueLength);
-    if ((error = ndn_TlvDecoder_readBlobTlv
-         (&decoder, ndn_Tlv_SignatureValue, &signatureStruct.signature)))
-      throw runtime_error(ndn_getErrorString(error));
-  }
+  ndn_Error error;
+  if ((error = Tlv0_1_1WireFormatLite::decodeSignatureInfoAndValue
+       (signatureLite, signatureInfo, signatureInfoLength, signatureValue,
+        signatureValueLength)))
+    throw runtime_error(ndn_getErrorString(error));
 
   ptr_lib::shared_ptr<Signature> result;
-  if (signatureStruct.type == ndn_SignatureType_Sha256WithRsaSignature)
+  if (signatureLite.getType() == ndn_SignatureType_Sha256WithRsaSignature)
     result.reset(new Sha256WithRsaSignature());
-  else if (signatureStruct.type == ndn_SignatureType_Sha256WithEcdsaSignature)
+  else if (signatureLite.getType() == ndn_SignatureType_Sha256WithEcdsaSignature)
     result.reset(new Sha256WithEcdsaSignature());
-  else if (signatureStruct.type == ndn_SignatureType_DigestSha256Signature)
+  else if (signatureLite.getType() == ndn_SignatureType_DigestSha256Signature)
     result.reset(new DigestSha256Signature());
   else
     // We don't expect this to happen.
     throw runtime_error("signatureStruct.type has an unrecognized value");
 
-  result->set(signatureStruct);
+  result->set(signatureLite);
   return result;
-}
-
-Blob
-Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
-{
-  struct ndn_Blob signatureStruct;
-  signature.getSignature().get(signatureStruct);
-
-  TlvEncoder encoder(256);
-  ndn_Error error;
-  if ((error = ndn_TlvEncoder_writeBlobTlv
-       (&encoder, ndn_Tlv_SignatureValue, &signatureStruct)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return Blob(encoder.getOutput(), false);
 }
 
 Tlv0_1_1WireFormat* Tlv0_1_1WireFormat::instance_ = 0;
