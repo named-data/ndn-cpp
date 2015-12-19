@@ -30,9 +30,7 @@
 #include <sstream>
 #include "util/blob.hpp"
 #include "encoding/wire-format.hpp"
-
-struct ndn_NameComponent;
-struct ndn_Name;
+#include "lite/name-lite.hpp"
 
 namespace ndn {
 
@@ -107,12 +105,13 @@ public:
     }
 
     /**
-     * Set the componentStruct to point to this component, without copying any memory.
-     * WARNING: The resulting pointer in componentStruct is invalid after a further use of this object which could reallocate memory.
-     * @param componentStruct The C ndn_NameComponent struct to receive the pointer.
+     * Set componentLite to point to this component, without copying any memory.
+     * WARNING: The resulting pointer in componentLite is invalid after a
+     * further use of this object which could reallocate memory.
+     * @param componentLite The NameLite::Component to receive the pointer.
      */
     void
-    get(struct ndn_NameComponent& componentStruct) const;
+    get(NameLite::Component& componentLite) const;
 
     const Blob&
     getValue() const { return value_; }
@@ -429,19 +428,21 @@ public:
   }
 
   /**
-   * Set the nameStruct to point to the components in this name, without copying any memory.
-   * WARNING: The resulting pointers in nameStruct are invalid after a further use of this object which could reallocate memory.
-   * @param nameStruct A C ndn_Name struct where the components array is already allocated.
+   * Set nameLite to point to the components in this name, without copying
+   * any memory.
+   * WARNING: The resulting pointers in nameLite are invalid after a further use
+   * of this object which could reallocate memory.
+   * @param nameLite A NameLite where the components array is already allocated.
    */
   void
-  get(struct ndn_Name& nameStruct) const;
+  get(NameLite& nameLite) const;
 
   /**
-   * Clear this name, and set the components by copying from the name struct.
-   * @param nameStruct A C ndn_Name struct
+   * Clear this name, and set the components by copying from nameLite.
+   * @param nameLite A NameLite object.
    */
   void
-  set(const struct ndn_Name& nameStruct);
+  set(const NameLite& nameLite);
 
   /**
    * Parse the uri according to the NDN URI Scheme and set the name with the components.

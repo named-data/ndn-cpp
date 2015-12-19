@@ -25,7 +25,6 @@
 #include <string.h>
 #include <stdexcept>
 #include <ndn-cpp/name.hpp>
-#include "c/name.h"
 #include "c/util/ndn_memory.h"
 #include "encoding/tlv-encoder.hpp"
 
@@ -135,12 +134,12 @@ size_t Name::Component::FINAL_SEGMENT_PREFIX_LENGTH = sizeof(Name::Component::FI
 uint64_t
 Name::Component::toNumberWithMarker(uint8_t marker) const
 {
-  struct ndn_NameComponent componentStruct;
-  get(componentStruct);
+  NameLite::Component componentLite;
+  get(componentLite);
   uint64_t result;
 
   ndn_Error error;
-  if ((error = ndn_NameComponent_toNumberWithMarker(&componentStruct, marker, &result)))
+  if ((error = componentLite.toNumberWithMarker(marker, result)))
     throw runtime_error(ndn_getErrorString(error));
 
   return result;
@@ -149,12 +148,12 @@ Name::Component::toNumberWithMarker(uint8_t marker) const
 uint64_t
 Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) const
 {
-  struct ndn_NameComponent componentStruct;
-  get(componentStruct);
+  NameLite::Component componentLite;
+  get(componentLite);
   uint64_t result;
 
   ndn_Error error;
-  if ((error = ndn_NameComponent_toNumberWithPrefix(&componentStruct, prefix, prefixLength, &result)))
+  if ((error = componentLite.toNumberWithPrefix(prefix, prefixLength, result)))
     throw runtime_error(ndn_getErrorString(error));
 
   return result;
@@ -163,9 +162,9 @@ Name::Component::toNumberWithPrefix(const uint8_t* prefix, size_t prefixLength) 
 bool
 Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
 {
-  struct ndn_NameComponent componentStruct;
-  get(componentStruct);
-  return ndn_NameComponent_hasPrefix(&componentStruct, prefix, prefixLength) != 0;
+  NameLite::Component componentLite;
+  get(componentLite);
+  return componentLite.hasPrefix(prefix, prefixLength) != 0;
 }
 
 Name::Component
@@ -173,7 +172,7 @@ Name::Component::fromNumber(uint64_t number)
 {
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger(number);
-  return Name::Component(Blob(encoder.getOutput(), false));
+  return Name::Component(Blob(encoder.finish()));
 }
 
 Name::Component
@@ -183,7 +182,7 @@ Name::Component::fromNumberWithMarker(uint64_t number, uint8_t marker)
   // Add the leading marker.
   encoder.writeNonNegativeInteger(marker & 0xff);
   encoder.writeNonNegativeInteger(number);
-  return Name::Component(Blob(encoder.getOutput(), false));
+  return Name::Component(encoder.finish());
 }
 
 Name::Component
@@ -204,17 +203,17 @@ Name::Component::fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, si
 }
 
 void
-Name::Component::get(struct ndn_NameComponent& componentStruct) const
+Name::Component::get(NameLite::Component& componentLite) const
 {
-  value_.get(componentStruct.value);
+  componentLite = NameLite::Component(value_);
 }
 
 uint64_t
 Name::Component::toNumber() const
 {
-  struct ndn_NameComponent componentStruct;
-  get(componentStruct);
-  return ndn_NameComponent_toNumber(&componentStruct);
+  NameLite::Component componentLite;
+  get(componentLite);
+  return componentLite.toNumber();
 }
 
 int
@@ -289,22 +288,23 @@ Name::set(const char *uri_cstr)
 }
 
 void
-Name::get(struct ndn_Name& nameStruct) const
+Name::get(NameLite& nameLite) const
 {
-  if (nameStruct.maxComponents < components_.size())
-    throw runtime_error("nameStruct.maxComponents must be >= this name getNComponents()");
-
-  nameStruct.nComponents = components_.size();
-  for (size_t i = 0; i < nameStruct.nComponents; ++i)
-    components_[i].get(nameStruct.components[i]);
+  nameLite.clear();
+  for (size_t i = 0; i < components_.size(); ++i) {
+    ndn_Error error;
+    if ((error = nameLite.append
+         (components_[i].getValue().buf(), components_[i].getValue().size())))
+      throw runtime_error(ndn_getErrorString(error));
+  }
 }
 
 void
-Name::set(const struct ndn_Name& nameStruct)
+Name::set(const NameLite& nameLite)
 {
   clear();
-  for (size_t i = 0; i < nameStruct.nComponents; ++i)
-    append(nameStruct.components[i].value.value, nameStruct.components[i].value.length);
+  for (size_t i = 0; i < nameLite.size(); ++i)
+    append(nameLite.get(i).getValue().buf(), nameLite.get(i).getValue().size());
 }
 
 Name&
