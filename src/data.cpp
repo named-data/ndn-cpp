@@ -73,32 +73,32 @@ Data& Data::operator=(const Data& data)
 }
 
 void
-Data::get(struct ndn_Data& dataStruct) const
+Data::get(DataLite& dataLite) const
 {
-  signature_.get()->get(dataStruct.signature);
-  name_.get().get(dataStruct.name);
-  metaInfo_.get().get(dataStruct.metaInfo);
-  content_.get(dataStruct.content);
+  signature_.get()->get(dataLite.getSignature());
+  name_.get().get(dataLite.getName());
+  metaInfo_.get().get(dataLite.getMetaInfo());
+  dataLite.setContent(content_);
 }
 
 void
-Data::set(const struct ndn_Data& dataStruct)
+Data::set(const DataLite& dataLite)
 {
-  if (dataStruct.signature.type == ndn_SignatureType_Sha256WithRsaSignature)
+  if (dataLite.getSignature().getType() == ndn_SignatureType_Sha256WithRsaSignature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature()));
-  else if (dataStruct.signature.type == ndn_SignatureType_Sha256WithEcdsaSignature)
+  else if (dataLite.getSignature().getType() == ndn_SignatureType_Sha256WithEcdsaSignature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithEcdsaSignature()));
-  else if (dataStruct.signature.type == ndn_SignatureType_DigestSha256Signature)
+  else if (dataLite.getSignature().getType() == ndn_SignatureType_DigestSha256Signature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new DigestSha256Signature()));
   else
     // We don't expect this to happen.
-    throw runtime_error("dataStruct.signature.type has an unrecognized value");
+    throw runtime_error("dataLite.getSignature().getType() has an unrecognized value");
 
-  signature_.get()->set(dataStruct.signature);
+  signature_.get()->set(dataLite.getSignature());
 
-  name_.get().set(dataStruct.name);
-  metaInfo_.get().set(dataStruct.metaInfo);
-  setContent(Blob(dataStruct.content));
+  name_.get().set(dataLite.getName());
+  metaInfo_.get().set(dataLite.getMetaInfo());
+  setContent(Blob(dataLite.getContent()));
 }
 
 Data&

@@ -28,8 +28,7 @@
 #include "util/signed-blob.hpp"
 #include "encoding/wire-format.hpp"
 #include "util/change-counter.hpp"
-
-struct ndn_Data;
+#include "lite/data-lite.hpp"
 
 namespace ndn {
 
@@ -111,19 +110,22 @@ public:
   }
 
   /**
-   * Set the dataStruct to point to the values in this interest, without copying any memory.
-   * WARNING: The resulting pointers in dataStruct are invalid after a further use of this object which could reallocate memory.
-   * @param dataStruct a C ndn_Data struct where the name components array is already allocated.
+   * Set dataLite to point to the values in this Data object, without copying
+   * any memory.
+   * WARNING: The resulting pointers in dataLite are invalid after a further use
+   * of this object which could reallocate memory.
+   * @param dataLite a DataLite object where the name components array is
+   * already allocated.
    */
   void
-  get(struct ndn_Data& dataStruct) const;
+  get(DataLite& dataLite) const;
 
   /**
-   * Clear this data object, and set the values by copying from the ndn_Data struct.
-   * @param dataStruct a C ndn_Data struct
+   * Clear this data object, and set the values by copying from dataLite.
+   * @param dataLite A DataLite object.
    */
   void
-  set(const struct ndn_Data& dataStruct);
+  set(const DataLite& dataLite);
 
   const Signature*
   getSignature() const { return signature_.get(); }
