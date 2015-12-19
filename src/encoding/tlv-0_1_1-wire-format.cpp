@@ -45,7 +45,7 @@ Tlv0_1_1WireFormat::encodeName(const Name& name)
     (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
   name.get(nameLite);
 
-  DynamicUInt8Vector output(16);
+  DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset, encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeName
@@ -88,7 +88,7 @@ Tlv0_1_1WireFormat::encodeInterest
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   interest.get(interestStruct);
 
-  TlvEncoder encoder(16);
+  TlvEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeTlvInterest
        (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
@@ -132,11 +132,7 @@ Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   data.get(dataLite);
 
-#if 0 // debug
   DynamicUInt8Vector output(1500);
-#else
-  DynamicUInt8Vector output(16);
-#endif
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeData
@@ -179,7 +175,7 @@ Tlv0_1_1WireFormat::encodeControlParameters
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
   controlParameters.get(controlParametersStruct);
 
-  TlvEncoder encoder(16);
+  TlvEncoder encoder(256);
   ndn_Error error;
   if ((error = ndn_encodeTlvControlParameters
        (&controlParametersStruct, &encoder)))
@@ -217,7 +213,7 @@ Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
     (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   signature.get(signatureLite);
 
-  DynamicUInt8Vector output(16);
+  DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeSignatureInfo
@@ -235,7 +231,7 @@ Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
     (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
   signature.get(signatureLite);
 
-  DynamicUInt8Vector output(16);
+  DynamicUInt8Vector output(300);
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeSignatureValue
