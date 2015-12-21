@@ -41,20 +41,6 @@ extern "C" {
 void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self);
 
 /**
- * Get an integer with the bits set according to the flags as used by the ForwardingEntry message.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @return An integer with the bits set.
- */
-int ndn_ForwardingFlags_getForwardingEntryFlags(const struct ndn_ForwardingFlags *self);
-
-/**
- * Set the flags according to the bits in forwardingEntryFlags as used by the ForwardingEntry message.
- * @param self A pointer to the ndn_ForwardingFlags struct.
- * @param flags An integer with the bits set.
- */
-void ndn_ForwardingFlags_setForwardingEntryFlags(struct ndn_ForwardingFlags *self, int forwardingEntryFlags);
-
-/**
  * Get an integer with the bits set according to the NFD forwarding flags as
  * used in the ControlParameters of the command interest.
  * @param self A pointer to the ndn_ForwardingFlags struct.
