@@ -27,7 +27,6 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
-#include "../c/encoding/tlv/tlv-interest.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
@@ -80,21 +79,21 @@ Tlv0_1_1WireFormat::encodeInterest
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
   struct ndn_NameComponent keyNameComponents[100];
-  struct ndn_Interest interestStruct;
-  ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+  InterestLite interestLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-  interest.get(interestStruct);
+  interest.get(interestLite);
 
-  TlvEncoder encoder(256);
+  DynamicUInt8Vector output(256);
   ndn_Error error;
-  if ((error = ndn_encodeTlvInterest
-       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
-        &encoder)))
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeInterest
+       (interestLite, signedPortionBeginOffset, signedPortionEndOffset,
+        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return encoder.finish();
+  return output.finish(encodingLength);
 }
 
 void
@@ -105,20 +104,19 @@ Tlv0_1_1WireFormat::decodeInterest
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
   struct ndn_NameComponent keyNameComponents[100];
-  struct ndn_Interest interestStruct;
-  ndn_Interest_initialize
-    (&interestStruct, nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
+  InterestLite interestLite
+    (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
   TlvDecoder decoder(input, inputLength);
   ndn_Error error;
-  if ((error = ndn_decodeTlvInterest
-       (&interestStruct, signedPortionBeginOffset, signedPortionEndOffset,
-        &decoder)))
+  if ((error = Tlv0_1_1WireFormatLite::decodeInterest
+       (interestLite, input, inputLength, signedPortionBeginOffset,
+        signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
-  interest.set(interestStruct);
+  interest.set(interestLite);
 }
 
 Blob

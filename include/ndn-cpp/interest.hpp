@@ -24,13 +24,11 @@
 
 #include "name.hpp"
 #include "key-locator.hpp"
-#include "c/interest-types.h"
+#include "lite/interest-lite.hpp"
 #include "encoding/wire-format.hpp"
 #include "util/signed-blob.hpp"
 #include "util/change-counter.hpp"
 #include "exclude.hpp"
-
-struct ndn_Interest;
 
 namespace ndn {
 
@@ -150,12 +148,22 @@ public:
   toUri() const;
 
   /**
-   * Set the interestStruct to point to the components in this interest, without copying any memory.
-   * WARNING: The resulting pointers in interestStruct are invalid after a further use of this object which could reallocate memory.
-   * @param interestStruct a C ndn_Interest struct where the name components array is already allocated.
+   * Set interestLite to point to the values and name components in this
+   * interest, without copying any memory.
+   * WARNING: The resulting pointers in interestLite are invalid after a further
+   * use of this object which could reallocate memory.
+   * @param interestLite A InterestLite where the name components array is
+   * already allocated.
    */
   void
-  get(struct ndn_Interest& interestStruct) const;
+  get(InterestLite& interestLite) const;
+
+  /**
+   * Clear this interest, and set the values by copying from interestLite.
+   * @param interestLite An InterestLite object.
+   */
+  void
+  set(const InterestLite& interestLite);
 
   Name&
   getName() { return name_.get(); }
@@ -211,13 +219,6 @@ public:
 
     return nonce_;
   }
-
-  /**
-   * Clear this interest, and set the values by copying from the interest struct.
-   * @param interestStruct a C ndn_Interest struct
-   */
-  void
-  set(const struct ndn_Interest& interestStruct);
 
   /**
    * Set the interest name.

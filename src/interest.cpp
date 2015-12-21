@@ -22,7 +22,6 @@
 #include <math.h>
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
-#include "c/interest.h"
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -47,36 +46,36 @@ Interest& Interest::operator=(const Interest& interest)
 }
 
 void
-Interest::set(const struct ndn_Interest& interestStruct)
+Interest::get(InterestLite& interestLite) const
 {
-  name_.get().set(NameLite::upCast(interestStruct.name));
-  setMinSuffixComponents(interestStruct.minSuffixComponents);
-  setMaxSuffixComponents(interestStruct.maxSuffixComponents);
-
-  keyLocator_.get().set(KeyLocatorLite::upCast(interestStruct.keyLocator));
-
-  exclude_.get().set(interestStruct.exclude);
-  setChildSelector(interestStruct.childSelector);
-  mustBeFresh_ = (interestStruct.mustBeFresh != 0);
-  setInterestLifetimeMilliseconds(interestStruct.interestLifetimeMilliseconds);
-  // Set the nonce last so that getNonceChangeCount_ is set correctly.
-  nonce_ = Blob(interestStruct.nonce);
-  // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
-  getNonceChangeCount_ = getChangeCount();
+  name_.get().get(interestLite.getName());
+  interestLite.setMinSuffixComponents(minSuffixComponents_);
+  interestLite.setMaxSuffixComponents(maxSuffixComponents_);
+  keyLocator_.get().get(interestLite.getKeyLocator());
+  exclude_.get().get(interestLite.getExclude());
+  interestLite.setChildSelector(childSelector_);
+  interestLite.setMustBeFresh(mustBeFresh_);
+  interestLite.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
+  interestLite.setNonce(nonce_);
 }
 
 void
-Interest::get(struct ndn_Interest& interestStruct) const
+Interest::set(const InterestLite& interestLite)
 {
-  name_.get().get(NameLite::upCast(interestStruct.name));
-  interestStruct.minSuffixComponents = minSuffixComponents_;
-  interestStruct.maxSuffixComponents = maxSuffixComponents_;
-  keyLocator_.get().get(KeyLocatorLite::upCast(interestStruct.keyLocator));
-  exclude_.get().get(interestStruct.exclude);
-  interestStruct.childSelector = childSelector_;
-  interestStruct.mustBeFresh = (mustBeFresh_ ? 1 : 0);
-  interestStruct.interestLifetimeMilliseconds = interestLifetimeMilliseconds_;
-  getNonce().get(interestStruct.nonce);
+  name_.get().set(interestLite.getName());
+  setMinSuffixComponents(interestLite.getMinSuffixComponents());
+  setMaxSuffixComponents(interestLite.getMaxSuffixComponents());
+
+  keyLocator_.get().set(interestLite.getKeyLocator());
+
+  exclude_.get().set(interestLite.getExclude());
+  setChildSelector(interestLite.getChildSelector());
+  mustBeFresh_ = (interestLite.getMustBeFresh());
+  setInterestLifetimeMilliseconds(interestLite.getInterestLifetimeMilliseconds());
+  // Set the nonce last so that getNonceChangeCount_ is set correctly.
+  nonce_ = Blob(interestLite.getNonce());
+  // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
+  getNonceChangeCount_ = getChangeCount();
 }
 
 SignedBlob
