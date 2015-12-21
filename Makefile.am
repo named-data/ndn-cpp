@@ -76,6 +76,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
   include/ndn-cpp/lite/forwarding-flags-lite.hpp \
   include/ndn-cpp/lite/interest-lite.hpp \
@@ -188,6 +189,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/lite/control-parameters-lite.cpp \
   src/lite/data-lite.cpp \
   src/lite/exclude-lite.cpp \
   src/lite/forwarding-flags-lite.cpp \
