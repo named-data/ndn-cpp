@@ -110,7 +110,7 @@ public:
    * @param hasName True if the name is specified, false if not.
    */
   void
-  setHasName(bool hasName) { hasName = hasName ? 1 : 0; }
+  setHasName(bool hasName) { this->hasName = hasName ? 1 : 0; }
 
   /**
    * Set the name to have the values from the given name. This also calls
@@ -250,6 +250,10 @@ public:
   {
     return *(ControlParametersLite*)&controlParameters;
   }
+
+private:
+  // Declare friends who can downcast to the private base.
+  friend class Tlv0_1_1WireFormatLite;
 };
 
 }
