@@ -76,6 +76,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
+  include/ndn-cpp/lite/forwarding-flags-lite.hpp \
   include/ndn-cpp/lite/interest-lite.hpp \
   include/ndn-cpp/lite/key-locator-lite.hpp \
   include/ndn-cpp/lite/meta-info-lite.hpp \
@@ -188,6 +189,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/lite/data-lite.cpp \
   src/lite/exclude-lite.cpp \
+  src/lite/forwarding-flags-lite.cpp \
   src/lite/interest-lite.cpp \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \

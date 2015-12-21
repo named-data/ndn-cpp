@@ -227,9 +227,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/lite/data-lite.lo src/lite/exclude-lite.lo \
-	src/lite/interest-lite.lo src/lite/key-locator-lite.lo \
-	src/lite/meta-info-lite.lo src/lite/name-lite.lo \
-	src/lite/signature-lite.lo \
+	src/lite/forwarding-flags-lite.lo src/lite/interest-lite.lo \
+	src/lite/key-locator-lite.lo src/lite/meta-info-lite.lo \
+	src/lite/name-lite.lo src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
 	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
@@ -997,6 +997,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
+  include/ndn-cpp/lite/forwarding-flags-lite.hpp \
   include/ndn-cpp/lite/interest-lite.hpp \
   include/ndn-cpp/lite/key-locator-lite.hpp \
   include/ndn-cpp/lite/meta-info-lite.hpp \
@@ -1111,6 +1112,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/lite/data-lite.cpp \
   src/lite/exclude-lite.cpp \
+  src/lite/forwarding-flags-lite.cpp \
   src/lite/interest-lite.cpp \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \
@@ -1458,6 +1460,8 @@ src/lite/$(DEPDIR)/$(am__dirstamp):
 src/lite/data-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/exclude-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/forwarding-flags-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/interest-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
@@ -2045,6 +2049,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/data-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/exclude-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/forwarding-flags-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/interest-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/key-locator-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/meta-info-lite.Plo@am__quote@
