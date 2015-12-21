@@ -57,6 +57,13 @@ public:
      */
     Entry(const uint8_t *component, size_t componentLength);
 
+    /**
+     * Create an ExcludeLite::Entry of type ndn_Exclude_COMPONENT, taking the
+     * component pointer and size from the BlobLite value.
+     * @param component The BlobLite with the pointer to use for the component.
+     */
+    Entry(const BlobLite& component);
+
     ndn_ExcludeType
     getType() const { return type; }
 

@@ -35,6 +35,12 @@ ExcludeLite::Entry::Entry(const uint8_t *component, size_t componentLength)
     (this, ndn_Exclude_COMPONENT, component, componentLength);
 }
 
+ExcludeLite::Entry::Entry(const BlobLite& component)
+{
+  ndn_ExcludeEntry_initialize
+    (this, ndn_Exclude_COMPONENT, component.buf(), component.size());
+}
+
 ExcludeLite::ExcludeLite(ndn_ExcludeEntry* entries, size_t maxEntries)
 {
   ndn_Exclude_initialize(this, entries, maxEntries);
