@@ -21,7 +21,6 @@
 
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
-#include "c/interest.h"
 #include <ndn-cpp/exclude.hpp>
 
 using namespace std;
@@ -29,34 +28,33 @@ using namespace std;
 namespace ndn {
 
 void
-Exclude::Entry::get(struct ndn_ExcludeEntry& excludeEntryStruct) const
+Exclude::get(ExcludeLite& excludeLite) const
 {
-  excludeEntryStruct.type = type_;
-  if (type_ == ndn_Exclude_COMPONENT)
-    component_.get(NameLite::Component::upCast(excludeEntryStruct.component));
+  excludeLite.clear();
+  for (size_t i = 0; i < entries_.size(); ++i) {
+    ndn_Error error;
+    if (entries_[i].getType() == ndn_Exclude_COMPONENT) {
+      if ((error = excludeLite.appendComponent
+           (NameLite::Component(entries_[i].getComponent().getValue()))))
+        throw runtime_error(ndn_getErrorString(error));
+    }
+    else {
+      if ((error = excludeLite.appendAny()))
+        throw runtime_error(ndn_getErrorString(error));
+    }
+  }
 }
 
 void
-Exclude::get(struct ndn_Exclude& excludeStruct) const
-{
-  if (excludeStruct.maxEntries < entries_.size())
-    throw runtime_error("excludeStruct.maxEntries must be >= this exclude getEntryCount()");
-
-  excludeStruct.nEntries = entries_.size();
-  for (size_t i = 0; i < excludeStruct.nEntries; ++i)
-    entries_[i].get(excludeStruct.entries[i]);
-}
-
-void
-Exclude::set(const struct ndn_Exclude& excludeStruct)
+Exclude::set(const ExcludeLite& excludeLite)
 {
   clear();
-  for (size_t i = 0; i < excludeStruct.nEntries; ++i) {
-    ndn_ExcludeEntry *entry = &excludeStruct.entries[i];
+  for (size_t i = 0; i < excludeLite.size(); ++i) {
+    const ExcludeLite::Entry& entry = excludeLite.get(i);
 
-    if (entry->type == ndn_Exclude_COMPONENT)
-      appendComponent(entry->component.value.value, entry->component.value.length);
-    else if (entry->type == ndn_Exclude_ANY)
+    if (entry.getType() == ndn_Exclude_COMPONENT)
+      appendComponent(Name::Component(entry.getComponent().getValue()));
+    else if (entry.getType() == ndn_Exclude_ANY)
       appendAny();
     else
       throw runtime_error("unrecognized ndn_ExcludeType");

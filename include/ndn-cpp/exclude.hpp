@@ -23,10 +23,7 @@
 #define NDN_EXCLUDE_HPP
 
 #include "name.hpp"
-#include "c/interest-types.h"
-
-struct ndn_ExcludeEntry;
-struct ndn_Exclude;
+#include "lite/exclude-lite.hpp"
 
 namespace ndn {
 
@@ -72,14 +69,6 @@ public:
     {
     }
 
-    /**
-     * Set the type in the excludeEntryStruct and to point to this entry, without copying any memory.
-     * WARNING: The resulting pointer in excludeEntryStruct is invalid after a further use of this object which could reallocate memory.
-     * @param excludeEntryStruct the C ndn_ExcludeEntry struct to receive the pointer
-     */
-    void
-    get(struct ndn_ExcludeEntry& excludeEntryStruct) const;
-
     ndn_ExcludeType
     getType() const { return type_; }
 
@@ -119,19 +108,22 @@ public:
   DEPRECATED_IN_NDN_CPP getEntry(size_t i) const { return entries_[i]; }
 
   /**
-   * Set the excludeStruct to point to the entries in this Exclude, without copying any memory.
-   * WARNING: The resulting pointers in excludeStruct are invalid after a further use of this object which could reallocate memory.
-   * @param excludeStruct a C ndn_Exclude struct where the entries array is already allocated
+   * Set excludeLite to have the values and point to the entries in this Exclude,
+   * without copying any memory.
+   * WARNING: The resulting pointers in excludeLite are invalid after a further
+   * use of this object which could reallocate memory.
+   * @param excludeLite A ExcludeLite object where the entries array is already
+   * allocated
    */
   void
-  get(struct ndn_Exclude& excludeStruct) const;
+  get(ExcludeLite& excludeLite) const;
 
   /**
-   * Clear this Exclude, and set the entries by copying from the ndn_Exclude struct.
-   * @param excludeStruct a C ndn_Exclude struct
+   * Clear this Exclude, and set the entries by copying from excludeLite.
+   * @param excludeLite An ExcludeLite object.
    */
   void
-  set(const struct ndn_Exclude& excludeStruct);
+  set(const ExcludeLite& excludeLite);
 
   /**
    * Append a new entry of type ndn_Exclude_ANY.
