@@ -165,7 +165,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
-  src/forwarding-flags.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \

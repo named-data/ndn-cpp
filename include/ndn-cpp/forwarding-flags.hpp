@@ -22,50 +22,70 @@
 #ifndef NDN_FORWARDING_FLAGS_HPP
 #define NDN_FORWARDING_FLAGS_HPP
 
-#include "c/forwarding-flags.h"
+#include "lite/forwarding-flags-lite.hpp"
 
 namespace ndn {
 
 /**
- * A ForwardingFlags object holds the flags which specify how the forwarding daemon should forward an interest for
- * a registered prefix.  We use a separate ForwardingFlags object to retain future compatibility if the daemon forwarding
- * bits are changed, amended or deprecated.
+ * A ForwardingFlags object holds the flags which specify how the forwarding
+ * daemon should forward an interest for a registered prefix.  We use a separate
+ * ForwardingFlags object to retain future compatibility if the daemon
+ * forwarding bits are changed, amended or deprecated.
  */
-class ForwardingFlags : public ndn_ForwardingFlags {
+class ForwardingFlags {
 public:
   /**
    * Create a new ForwardingFlags with "childInherit" set and all other flags cleared.
    */
-  ForwardingFlags();
-
-  ForwardingFlags(const struct ndn_ForwardingFlags &forwardingFlagsStruct)
-  : ndn_ForwardingFlags(forwardingFlagsStruct)
-  {
-  }
+  ForwardingFlags() {}
 
   /**
    * Get the value of the "childInherit" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getChildInherit() const { return childInherit != 0; }
+  bool getChildInherit() const { return flags_.getChildInherit(); }
 
   /**
    * Get the value of the "capture" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getCapture() const { return capture != 0; }
+  bool getCapture() const { return flags_.getCapture(); }
 
   /**
    * Set the value of the "childInherit" flag
    * @param childInherit true to set the flag, false to clear it.
    */
-  void setChildInherit(bool childInherit) { this->childInherit = childInherit ? 1 : 0; }
+  void setChildInherit(bool childInherit) { flags_.setChildInherit(childInherit); }
 
   /**
    * Set the value of the "capture" flag
    * @param capture true to set the flag, false to clear it.
    */
-  void setCapture(bool capture) { this->capture = capture ? 1 : 0; }
+  void setCapture(bool capture) { flags_.setCapture(capture); }
+
+  /**
+   * Set forwardingFlagsLite to have the values in this meta info object.
+   * @param forwardingFlagsLite The ForwardingFlagsLite object which receives
+   * the values.
+   */
+  void
+  get(ForwardingFlagsLite& forwardingFlagsLite) const
+  {
+    forwardingFlagsLite = flags_;
+  }
+
+  /**
+   * Set the values in this ForwardingFlags by copying from forwardingFlagsLite.
+   * @param forwardingFlagsLite A ForwardingFlagsLite object.
+   */
+  void
+  set(const ForwardingFlagsLite& forwardingFlagsLite)
+  {
+    flags_ = forwardingFlagsLite;
+  }
+
+private:
+  ForwardingFlagsLite flags_;
 };
 
 }

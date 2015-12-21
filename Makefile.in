@@ -214,11 +214,10 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/util/ndn_realloc.lo src/c/util/time.lo
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/data.lo src/digest-sha256-signature.lo \
-	src/exclude.lo src/face.lo src/forwarding-flags.lo \
-	src/interest-filter.lo src/interest.lo src/key-locator.lo \
-	src/meta-info.lo src/name.lo src/node.lo \
-	src/control-parameters.lo src/signature.lo \
-	src/sha256-with-ecdsa-signature.lo \
+	src/exclude.lo src/face.lo src/interest-filter.lo \
+	src/interest.lo src/key-locator.lo src/meta-info.lo \
+	src/name.lo src/node.lo src/control-parameters.lo \
+	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/threadsafe-face.lo \
 	src/encoding/base64.lo src/encoding/element-listener.lo \
 	src/encoding/oid.lo src/encoding/protobuf-tlv.lo \
@@ -1089,7 +1088,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
-  src/forwarding-flags.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
@@ -1405,8 +1403,6 @@ src/digest-sha256-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/forwarding-flags.lo: src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
 src/interest-filter.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -2010,7 +2006,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/digest-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/forwarding-flags.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
