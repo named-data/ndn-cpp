@@ -174,6 +174,18 @@ public:
   }
 
   /**
+   * Set the interest nonce.
+   * @param nonce The nonce value. This does not copy the bytes of the nonce.
+   * @return This InterestLite so that you can chain calls to update values.
+   */
+  InterestLite&
+  setNonce(const BlobLite& nonce)
+  {
+    BlobLite::upCast(this->nonce) = nonce;
+    return *this;
+  }
+
+  /**
    * Set this interest object to have the values from the other interest.
    * @param other The other InterestLite to get values from.
    * @return 0 for success, or an error code if there is not enough room in this
