@@ -21,36 +21,13 @@
 #ifndef NDN_CONTROL_PARAMETERS_OPTIONS_H
 #define NDN_CONTROL_PARAMETERS_OPTIONS_H
 
-#include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/control-parameters-types.h>
 #include "forwarding-flags-impl.h"
 #include "name.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum {
-  ndn_NfdForwardingFlags_CHILD_INHERIT = 1,
-  ndn_NfdForwardingFlags_CAPTURE       = 2,
-} ndn_NfdForwardingFlags;
-
-/**
- * An ndn_ControlParameters holds fields for a ControlParameters which is
- * used in the command interest such as to register a prefix with a forwarder.
- */
-struct ndn_ControlParameters {
-  int hasName;
-  struct ndn_Name name;              /**< Only used if hasName */
-  int faceId;                        /**< -1 for none. */
-  struct ndn_Blob uri;               /**< A Blob whose value is a pointer to pre-allocated buffer.
-                                          0 for none. */
-  int localControlFeature;           /**< -1 for none. */
-  int origin;                        /**< -1 for none. */
-  int cost;                          /**< -1 for none. */
-  struct ndn_ForwardingFlags flags;
-  struct ndn_Name strategy;          /**< nComponents == 0 for none. */
-  ndn_Milliseconds expirationPeriod; /**< -1 for none. */
-};
 
 /**
  * Initialize an ndn_ControlParameters struct with the pre-allocated

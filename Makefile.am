@@ -37,6 +37,7 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
 ndn_cpp_c_headers = \
   include/ndn-cpp/ndn-cpp-config.h \
   include/ndn-cpp/c/common.h \
+  include/ndn-cpp/c/control-parameters-types.h \
   include/ndn-cpp/c/data-types.h \
   include/ndn-cpp/c/errors.h \
   include/ndn-cpp/c/forwarding-flags.h \
