@@ -33,9 +33,14 @@ extern "C" {
  * Initialize an ndn_ControlParameters struct with the pre-allocated
  * nameComponents, and defaults for all the values.
  * @param self A pointer to the ndn_ControlParameters struct.
- * @param nameComponents the pre-allocated array of ndn_NameComponent.
+ * @param nameComponents the pre-allocated array of ndn_NameComponent for the
+ * main name.
  * @param maxNameComponents the number of elements in the allocated
  * nameComponents array.
+ * @param strategyNameComponents the pre-allocated array of ndn_NameComponent
+ * for the strategy name.
+ * @param strategyMaxNameComponents the number of elements in the allocated
+ * strategyNameComponents array.
  */
 static __inline void
 ndn_ControlParameters_initialize
