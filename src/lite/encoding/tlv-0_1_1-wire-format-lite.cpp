@@ -88,6 +88,24 @@ Tlv0_1_1WireFormatLite::decodeData
 }
 
 ndn_Error
+Tlv0_1_1WireFormatLite::encodeControlParameters
+  (const ControlParametersLite& controlParameters,
+   DynamicUInt8ArrayLite& output, size_t* encodingLength)
+{
+  return ndn_Tlv0_1_1WireFormat_encodeControlParameters
+    (&controlParameters, &output, encodingLength);
+}
+
+ndn_Error
+Tlv0_1_1WireFormatLite::decodeControlParameters
+  (ControlParametersLite& controlParameters, const uint8_t* input,
+   size_t inputLength)
+{
+  return ndn_Tlv0_1_1WireFormat_decodeControlParameters
+    (&controlParameters, input, inputLength);
+}
+
+ndn_Error
 Tlv0_1_1WireFormatLite::encodeSignatureInfo
   (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
    size_t* encodingLength)

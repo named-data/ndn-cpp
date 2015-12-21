@@ -25,6 +25,7 @@
 #include "../interest-lite.hpp"
 #include "../data-lite.hpp"
 #include "../signature-lite.hpp"
+#include "../control-parameters-lite.hpp"
 #include "../util/dynamic-uint8-array-lite.hpp"
 
 namespace ndn {
@@ -161,6 +162,34 @@ public:
   decodeData
     (DataLite& data, const uint8_t* input, size_t inputLength,
      size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset);
+
+  /**
+   * Encode controlParameters as an NDN-TLV ControlParameters.
+   * @param controlParameters The control parameters struct to encode.
+   * @param output A DynamicUInt8ArrayLite object which receives the encoded
+   * output.  If the output's reallocFunction is null, its array must be large
+   * enough to receive the entire encoding.
+   * @param encodingLength Set encodingLength to the length of the encoded output.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  encodeControlParameters
+    (const ControlParametersLite& controlParameters, 
+     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+
+  /**
+   * Decode input as a TLV ControlParameters and set the fields in the
+   * controlParameters object.
+   * @param controlParameters The control parameters object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  decodeControlParameters
+    (ControlParametersLite& controlParameters, const uint8_t* input,
+     size_t inputLength);
 
   /**
    * Encode signature as an NDN-TLV SignatureInfo.
