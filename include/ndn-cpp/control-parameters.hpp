@@ -25,8 +25,7 @@
 #include "name.hpp"
 #include "forwarding-flags.hpp"
 #include "encoding/wire-format.hpp"
-
-struct ndn_ControlParameters;
+#include "lite/control-parameters-lite.hpp"
 
 namespace ndn {
 
@@ -70,15 +69,23 @@ public:
   }
 
   /**
-   * Set the controlParametersStruct to point to the components in this
+   * Set controlParametersLite to point to the components in this
    * ControlParameters, without copying any memory.
-   * WARNING: The resulting pointers in controlParametersStruct are
-   * invalid after a further use of this object which could reallocate memory.
-   * @param controlParametersStruct a C ndn_ControlParameters
-   * struct where the name components array is already allocated.
+   * WARNING: The resulting pointers in controlParametersLite are invalid after
+   * a further use of this object which could reallocate memory.
+   * @param controlParametersLite The ControlParametersLite object which
+   * receives the values. where the name components arrays are already allocated.
    */
   void
-  get(struct ndn_ControlParameters& controlParametersStruct) const;
+  get(ControlParametersLite& controlParametersLite) const;
+
+  /**
+   * Clear this ControlParameters, and set the values by copying from
+   * controlParametersLite.
+   * @param controlParametersLite A ControlParametersLite object.
+   */
+  void
+  set(const ControlParametersLite& controlParametersLite);
 
   /**
    * Check if the name is specified.
@@ -123,15 +130,6 @@ public:
 
   Milliseconds
   getExpirationPeriod() const { return expirationPeriod_; }
-
-  /**
-   * Clear this ControlParameters, and set the values by copying from
-   * controlParametersStruct.
-   * @param controlParametersStruct a C ndn_ControlParameters
-   * struct.
-   */
-  void
-  set(const struct ndn_ControlParameters& controlParametersStruct);
 
   /**
    * Set the flag for whether the name is specified. Note that setName

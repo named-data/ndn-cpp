@@ -28,7 +28,6 @@
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include "../c/encoding/tlv/tlv-interest.h"
-#include "../c/encoding/tlv/tlv-control-parameters.h"
 #include "tlv-encoder.hpp"
 #include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
@@ -168,20 +167,21 @@ Tlv0_1_1WireFormat::encodeControlParameters
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent strategyNameComponents[100];
-  struct ndn_ControlParameters controlParametersStruct;
-  ndn_ControlParameters_initialize
-    (&controlParametersStruct, nameComponents,
+  ControlParametersLite controlParametersLite
+    (nameComponents,
      sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
-  controlParameters.get(controlParametersStruct);
+  controlParameters.get(controlParametersLite);
 
-  TlvEncoder encoder(256);
+  DynamicUInt8Vector output(256);
   ndn_Error error;
-  if ((error = ndn_encodeTlvControlParameters
-       (&controlParametersStruct, &encoder)))
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeControlParameters
+       (controlParametersLite, DynamicUInt8ArrayLite::upCast(output),
+        &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  return encoder.finish();
+  return output.finish(encodingLength);
 }
 
 void
@@ -191,18 +191,18 @@ Tlv0_1_1WireFormat::decodeControlParameters
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent strategyNameComponents[100];
-  struct ndn_ControlParameters controlParametersStruct;
-  ndn_ControlParameters_initialize
-    (&controlParametersStruct, nameComponents,
+  ControlParametersLite controlParametersLite
+    (nameComponents,
      sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
 
   TlvDecoder decoder(input, inputLength);
   ndn_Error error;
-  if ((error = ndn_decodeTlvControlParameters(&controlParametersStruct, &decoder)))
+  if ((error = Tlv0_1_1WireFormatLite::decodeControlParameters
+       (controlParametersLite, input, inputLength)))
     throw runtime_error(ndn_getErrorString(error));
 
-  controlParameters.set(controlParametersStruct);
+  controlParameters.set(controlParametersLite);
 }
 
 Blob

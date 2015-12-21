@@ -21,7 +21,6 @@
 
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
-#include "c/control-parameters.h"
 #include <ndn-cpp/control-parameters.hpp>
 
 using namespace std;
@@ -30,39 +29,38 @@ namespace ndn {
 
 void
 ControlParameters::get
-  (struct ndn_ControlParameters& controlParametersStruct) const
+  (ControlParametersLite& controlParametersLite) const
 {
-  controlParametersStruct.hasName = hasName_ ? 1 : 0;
-  name_.get(NameLite::upCast(controlParametersStruct.name));
-  controlParametersStruct.faceId = faceId_;
+  controlParametersLite.setHasName(hasName_);
+  name_.get(controlParametersLite.getName());
+  controlParametersLite.setFaceId(faceId_);
   // Store the uri_ string as an ndn_Blob.
-  controlParametersStruct.uri.value = (const uint8_t*)uri_.c_str();
-  controlParametersStruct.uri.length = uri_.size();
-  controlParametersStruct.localControlFeature = localControlFeature_;
-  controlParametersStruct.origin = origin_;
-  controlParametersStruct.cost = cost_;
-  controlParametersStruct.flags = flags_;
-  strategy_.get(NameLite::upCast(controlParametersStruct.strategy));
-  controlParametersStruct.expirationPeriod = expirationPeriod_;
+  controlParametersLite.setUri
+    (BlobLite((const uint8_t*)uri_.c_str(), uri_.size()));
+  controlParametersLite.setLocalControlFeature(localControlFeature_);
+  controlParametersLite.setOrigin(origin_);
+  controlParametersLite.setCost(cost_);
+  flags_.get(controlParametersLite.getForwardingFlags());
+  strategy_.get(controlParametersLite.getStrategy());
+  controlParametersLite.setExpirationPeriod(expirationPeriod_);
 }
 
 void
-ControlParameters::set
-  (const struct ndn_ControlParameters& controlParametersStruct)
+ControlParameters::set(const ControlParametersLite& controlParametersLite)
 {
-  hasName_ = controlParametersStruct.hasName != 0 ? true : false;
-  name_.set(NameLite::upCast(controlParametersStruct.name));
-  faceId_ = controlParametersStruct.faceId;
-  // Convert the ndn_Blob to the uri_ string.
+  hasName_ = controlParametersLite.getHasName();
+  name_.set(controlParametersLite.getName());
+  faceId_ = controlParametersLite.getFaceId();
+  // Convert the BlobLite to the uri_ string.
   uri_.assign
-    ((const char*)controlParametersStruct.uri.value,
-     controlParametersStruct.uri.length);
-  localControlFeature_ = controlParametersStruct.localControlFeature;
-  origin_ = controlParametersStruct.origin;
-  cost_ = controlParametersStruct.cost;
-  flags_ = controlParametersStruct.flags;
-  strategy_.set(NameLite::upCast(controlParametersStruct.strategy));
-  expirationPeriod_ = controlParametersStruct.expirationPeriod;
+    ((const char*)controlParametersLite.getUri().buf(),
+     controlParametersLite.getUri().size());
+  localControlFeature_ = controlParametersLite.getLocalControlFeature();
+  origin_ = controlParametersLite.getOrigin();
+  cost_ = controlParametersLite.getCost();
+  flags_.set(controlParametersLite.getForwardingFlags());
+  strategy_.set(controlParametersLite.getStrategy());
+  expirationPeriod_ = controlParametersLite.getExpirationPeriod();
 }
 
 }
