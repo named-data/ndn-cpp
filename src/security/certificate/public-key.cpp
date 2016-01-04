@@ -54,7 +54,7 @@ PublicKey::PublicKey(const Blob& keyDer)
   }
   catch (DerDecodingException& ex) {
     throw UnrecognizedKeyFormatException
-      (string("PublicKey: Error decoding the public key") + ex.what());
+      (string("PublicKey: Error decoding the public key: ") + ex.what());
   }
 
   // Verify that the we can decode.
