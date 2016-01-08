@@ -78,7 +78,8 @@ typedef enum {
  * @param error the error code
  * @return the error string or "unrecognized ndn_Error code"
  */
-char *ndn_getErrorString(int error);
+const char *
+ndn_getErrorString(int error);
 
 #ifdef __cplusplus
 }

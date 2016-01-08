@@ -20,7 +20,8 @@
 
 #include <ndn-cpp/c/errors.h>
 
-char *ndn_getErrorString(int error)
+const char *
+ndn_getErrorString(int error)
 {
   switch (error) {
   case NDN_ERROR_success:
