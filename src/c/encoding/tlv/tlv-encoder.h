@@ -210,6 +210,41 @@ ndn_TlvEncoder_sizeOfBlobTlv(unsigned int type, const struct ndn_Blob *value)
 }
 
 /**
+ * A private function to do the work of writeArray, assuming that
+ * self->enableOutput is 1.
+ * @param self pointer to the ndn_TlvEncoder struct.
+ * @param array the array to copy.
+ * @param arrayLength the length of the array.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_TlvEncoder_writeArrayEnabled
+  (struct ndn_TlvEncoder *self, const uint8_t *array, size_t arrayLength);
+
+/**
+ * Copy the array to the output. Note that this does not encode a type and
+ * length; for that see writeBlobTlv. If self->enableOutput is 0, then just
+ * advance self->offset without writing to output.
+ * @param self pointer to the ndn_TlvEncoder struct.
+ * @param array the array to copy.
+ * @param arrayLength the length of the array.
+ * @return 0 for success, else an error code. If self->enableOutput is 0, this
+ * always returns NDN_ERROR_success.
+ */
+static __inline ndn_Error
+ndn_TlvEncoder_writeArray
+  (struct ndn_TlvEncoder *self, const uint8_t *array, size_t arrayLength)
+{
+  if (self->enableOutput)
+    return ndn_TlvEncoder_writeArrayEnabled(self, array, arrayLength);
+  else
+    // Just advance offset.
+    self->offset += arrayLength;
+
+  return NDN_ERROR_success;
+}
+
+/**
  * A private function to do the work of writeBlobTlv, assuming that self->enableOutput is 1.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.

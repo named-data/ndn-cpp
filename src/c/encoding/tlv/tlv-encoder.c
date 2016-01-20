@@ -186,6 +186,14 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
 }
 
 ndn_Error
+ndn_TlvEncoder_writeArrayEnabled
+  (struct ndn_TlvEncoder *self, const uint8_t *array, size_t arrayLength)
+{
+  // This just provides a public version in the header. Call the static version.
+  return writeArrayEnabled(self, array, arrayLength);
+}
+
+ndn_Error
 ndn_TlvEncoder_writeBlobTlvEnabled
   (struct ndn_TlvEncoder *self, unsigned int type, const struct ndn_Blob *value)
 {
