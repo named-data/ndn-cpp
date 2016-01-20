@@ -101,6 +101,12 @@ public:
   const BlobLite&
   getNonce() const { return BlobLite::upCast(nonce); }
 
+  const BlobLite&
+  getLinkWireEncoding() const { return BlobLite::upCast(linkWireEncoding); }
+
+  int
+  getSelectedDelegationIndex() const { return selectedDelegationIndex; }
+
   /**
    * Set this interest's name to have the values from the given name.
    * @param name The name to get values from.
@@ -182,6 +188,32 @@ public:
   setNonce(const BlobLite& nonce)
   {
     BlobLite::upCast(this->nonce) = nonce;
+    return *this;
+  }
+
+  /**
+   * Set the link wire encoding.
+   * @param linkWireEncoding The encoding value. This does not copy the bytes of
+   * the encoding.
+   * @return This InterestLite so that you can chain calls to update values.
+   */
+  InterestLite&
+  setLinkWireEncoding(const BlobLite& linkWireEncoding)
+  {
+    BlobLite::upCast(this->linkWireEncoding) = linkWireEncoding;
+    return *this;
+  }
+
+  /**
+   * Set the selected delegation index.
+   * @param selectedDelegationIndex The selected delegation index. If not
+   * specified, set to -1.
+   * @return This InterestLite so that you can chain calls to update values.
+   */
+  InterestLite&
+  setSelectedDelegationIndex(int selectedDelegationIndex)
+  {
+    this->selectedDelegationIndex = selectedDelegationIndex;
     return *this;
   }
 

@@ -68,6 +68,8 @@ struct ndn_Interest {
   int mustBeFresh;          /**< bool. Default true. */
   ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
   struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
+  struct ndn_Blob linkWireEncoding; /**< The link whose value is a pointer to a pre-allocated buffer.  0 for none */
+  int selectedDelegationIndex; /**< -1 for none */
 };
 
 #ifdef __cplusplus
