@@ -70,7 +70,8 @@ typedef enum {
   NDN_ERROR_encodeSignatureInfo_unrecognized_SignatureType,
   NDN_ERROR_Unimplemented_operation,
   NDN_ERROR_ElementReader_ElementListener_is_not_specified,
-  NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize
+  NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize,
+  NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object
 } ndn_Error;
 
 /**

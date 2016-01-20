@@ -112,6 +112,8 @@ ndn_getErrorString(int error)
     return      "ElementReader ElementListener is not specified";
   case NDN_ERROR_ElementReader_The_incoming_packet_exceeds_the_maximum_limit_getMaxNdnPacketSize:
     return      "ElementReader The incoming packet exceeds the maximum limit Face::getMaxNdnPacketSize()";
+  case NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object:
+    return      "Interest has a selected delegation but no link object";
   default:
     return "unrecognized ndn_Error code";
   }
