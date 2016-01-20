@@ -32,6 +32,7 @@ class Interest;
 class Data;
 class ControlParameters;
 class Signature;
+class DelegationSet;
 
 class WireFormat {
 public:
@@ -253,6 +254,28 @@ public:
       (signatureInfo.buf(), signatureInfo.size(), signatureValue.buf(),
        signatureValue.size());
   }
+
+  /**
+   * Encode delegationSet and return the encoding.
+   * Your derived class should override.
+   * @param delegationSet The DelegationSet object to encode.
+   * @return A Blob containing the encoding.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeDelegationSet(const DelegationSet& delegationSet);
+
+  /**
+   * Decode input as a delegation set and set the fields of the delegationSet
+   * object.  Your derived class should override.
+   * @param delegationSet The DelegationSet object whose fields are updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual void
+  decodeDelegationSet
+    (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
 
   /**
    * Set the static default WireFormat used by default encoding and decoding methods.

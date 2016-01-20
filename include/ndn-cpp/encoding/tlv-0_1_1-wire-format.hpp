@@ -178,6 +178,31 @@ public:
      const uint8_t *signatureValue, size_t signatureValueLength);
 
   /**
+   * Encode delegationSet as a sequence of NDN-TLV Delegation, and return the
+   * encoding. Note that the sequence of Delegation does not have an outer TLV
+   * type and length because it is intended to use the type and length of a Data
+   * packet's Content.
+   * @param delegationSet The DelegationSet object to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob
+  encodeDelegationSet(const DelegationSet& delegationSet);
+
+  /**
+   * Decode input as a sequence of NDN-TLV Delegation and set the fields of the
+   * delegationSet object. Note that the sequence of Delegation does not have an
+   * outer TLV type and length because it is intended to use the type and length
+   * of a Data packet's Content. This ignores any elements after the sequence
+   * of Delegation and before inputLength.
+   * @param delegationSet The DelegationSet object whose fields are updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  virtual void
+  decodeDelegationSet
+    (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
+
+  /**
    * Get a singleton instance of a Tlv0_1_1WireFormat.  To always use the
    * preferred version NDN-TLV, you should use TlvWireFormat::get().
    * @return A pointer to the singleton instance.

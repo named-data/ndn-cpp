@@ -119,4 +119,17 @@ WireFormat::encodeSignatureValue(const Signature& signature)
   throw logic_error("unimplemented");
 }
 
+Blob
+WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
+{
+  throw logic_error("unimplemented");
+}
+
+void
+WireFormat::decodeDelegationSet
+  (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
 }

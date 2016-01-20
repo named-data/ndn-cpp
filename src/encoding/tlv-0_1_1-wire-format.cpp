@@ -26,9 +26,9 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/delegation-set.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include "tlv-encoder.hpp"
-#include "tlv-decoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
 
 using namespace std;
@@ -109,7 +109,6 @@ Tlv0_1_1WireFormat::decodeInterest
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
-  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = Tlv0_1_1WireFormatLite::decodeInterest
        (interestLite, input, inputLength, signedPortionBeginOffset,
@@ -194,7 +193,6 @@ Tlv0_1_1WireFormat::decodeControlParameters
      sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
 
-  TlvDecoder decoder(input, inputLength);
   ndn_Error error;
   if ((error = Tlv0_1_1WireFormatLite::decodeControlParameters
        (controlParametersLite, input, inputLength)))
@@ -267,6 +265,57 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
 
   result->set(signatureLite);
   return result;
+}
+
+Blob
+Tlv0_1_1WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
+{
+  DynamicUInt8Vector output(256);
+  size_t encodingLength = 0;
+
+  // Encode a series of Delegation.
+  for (size_t i = 0; i < delegationSet.size(); ++i) {
+    struct ndn_NameComponent nameComponents[100];
+    DelegationSetLite::Delegation delegationLite
+      (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+    delegationSet.get(i).get(delegationLite);
+
+    size_t delegationEncodingLength;
+    ndn_Error error;
+    if ((error = Tlv0_1_1WireFormatLite::encodeDelegationSet_Delegation
+         (delegationLite, DynamicUInt8ArrayLite::upCast(output), encodingLength,
+          &delegationEncodingLength)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    encodingLength += delegationEncodingLength;
+  }
+
+  return output.finish(encodingLength);
+}
+
+void
+Tlv0_1_1WireFormat::decodeDelegationSet
+  (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength)
+{
+  delegationSet.clear();
+  
+  // Decode a series of Delegation
+  size_t offset = 0;
+  while (offset < inputLength) {
+    struct ndn_NameComponent nameComponents[100];
+    DelegationSetLite::Delegation delegationLite
+      (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
+
+    size_t encodingLength;
+    ndn_Error error;
+    if ((error = Tlv0_1_1WireFormatLite::decodeDelegationSet_Delegation
+         (delegationLite, input + offset, inputLength - offset, &encodingLength)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    offset += encodingLength;
+    delegationSet.addUnsorted
+      (ptr_lib::make_shared<DelegationSet::Delegation>(delegationLite));
+  }
 }
 
 Tlv0_1_1WireFormat* Tlv0_1_1WireFormat::instance_ = 0;
