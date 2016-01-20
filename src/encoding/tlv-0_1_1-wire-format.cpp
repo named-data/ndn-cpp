@@ -83,7 +83,7 @@ Tlv0_1_1WireFormat::encodeInterest
     (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-  interest.get(interestLite);
+  interest.get(interestLite, *this);
 
   DynamicUInt8Vector output(256);
   ndn_Error error;
@@ -115,7 +115,7 @@ Tlv0_1_1WireFormat::decodeInterest
         signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
-  interest.set(interestLite);
+  interest.set(interestLite, *this);
 }
 
 Blob

@@ -52,6 +52,7 @@ enum {
   ndn_Tlv_SignatureType =    27,
   ndn_Tlv_KeyLocator =       28,
   ndn_Tlv_KeyLocatorDigest = 29,
+  ndn_Tlv_SelectedDelegation = 32
 };
 
 enum {

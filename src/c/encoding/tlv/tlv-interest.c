@@ -153,6 +153,16 @@ encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
       (encoder, ndn_Tlv_InterestLifetime, interest->interestLifetimeMilliseconds)))
     return error;
 
+  if (interest->linkWireEncoding.value) {
+    // Encode the entire link as is.
+    if ((error = ndn_TlvEncoder_writeArray
+        (encoder, interest->linkWireEncoding.value, interest->linkWireEncoding.length)))
+      return error;
+  }
+  if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
+      (encoder, ndn_Tlv_SelectedDelegation, interest->selectedDelegationIndex)))
+    return error;
+
   return NDN_ERROR_success;
 }
 
@@ -308,6 +318,30 @@ ndn_decodeTlvInterest
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_InterestLifetime, endOffset, &interest->interestLifetimeMilliseconds)))
     return error;
+
+  if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_Data, endOffset, &gotExpectedType)))
+    return error;
+  if (gotExpectedType) {
+    // Get the bytes of the Link TLV.
+    size_t linkBeginOffset = decoder->offset;
+    size_t linkEndOffset;
+    if ((error = ndn_TlvDecoder_readNestedTlvsStart
+         (decoder, ndn_Tlv_Data, &linkEndOffset)))
+      return error;
+    ndn_TlvDecoder_seek(decoder, linkEndOffset);
+
+    ndn_Blob_initialize
+      (&interest->linkWireEncoding, decoder->input + linkBeginOffset,
+       linkEndOffset - linkBeginOffset);
+  }
+  else
+    ndn_Blob_initialize(&interest->linkWireEncoding, 0, 0);
+  if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
+       (decoder, ndn_Tlv_SelectedDelegation, endOffset,
+        &interest->selectedDelegationIndex)))
+    return error;
+  if (interest->selectedDelegationIndex >= 0 && !interest->linkWireEncoding.value)
+    return NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object;
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
