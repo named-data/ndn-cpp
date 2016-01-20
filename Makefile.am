@@ -18,9 +18,9 @@ SUBDIRS = include
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
-   bin/unit-tests/test-data-methods \
-  bin/unit-tests/test-der-encode-decode bin/unit-tests/test-face-methods \
-  bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
+  bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
+  bin/unit-tests/test-face-methods bin/unit-tests/test-identity-methods \
+  bin/unit-tests/test-interest-methods bin/unit-tests/test-link \
   bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-verification-rules
 
@@ -39,6 +39,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/common.h \
   include/ndn-cpp/c/control-parameters-types.h \
   include/ndn-cpp/c/data-types.h \
+  include/ndn-cpp/c/delegation-set-types.h \
   include/ndn-cpp/c/errors.h \
   include/ndn-cpp/c/forwarding-flags.h \
   include/ndn-cpp/c/interest-types.h \
@@ -53,7 +54,9 @@ ndn_cpp_c_headers = \
 # NOTE: If a new directory is added, then add it to ndn_cpp_cpp_headers in include/Makefile.am.
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
+  include/ndn-cpp/control-parameters.hpp \
   include/ndn-cpp/data.hpp \
+  include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
@@ -61,9 +64,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
+  include/ndn-cpp/link.hpp \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
-  include/ndn-cpp/control-parameters.hpp \
   include/ndn-cpp/signature.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
@@ -75,8 +78,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
-  include/ndn-cpp/lite/data-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
+  include/ndn-cpp/lite/data-lite.hpp \
+  include/ndn-cpp/lite/delegation-set-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
   include/ndn-cpp/lite/forwarding-flags-lite.hpp \
   include/ndn-cpp/lite/interest-lite.hpp \
@@ -127,23 +131,25 @@ ndn_cpp_cpp_headers = \
 
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
+  src/c/control-parameters.h \
   src/c/data.h \
+  src/c/delegation-set.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
   src/c/interest.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name.c src/c/name.h \
-  src/c/control-parameters.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_1_1-wire-format.c src/c/encoding/tlv-0_1_1-wire-format.h \
+  src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
+  src/c/encoding/tlv/tlv-delegation-set.c src/c/encoding/tlv/tlv-delegation-set.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
-  src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
@@ -161,17 +167,19 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
 # C++ code and also the C code.
 libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
+  src/control-parameters.cpp \
   src/data.cpp \
+  src/delegation-set.cpp \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
+  src/link.cpp \
   src/meta-info.cpp \
   src/name.cpp \
   src/node.cpp src/node.hpp \
-  src/control-parameters.cpp \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
   src/sha256-with-rsa-signature.cpp \
@@ -190,6 +198,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/data-lite.cpp \
+  src/lite/delegation-set-lite.cpp \
   src/lite/exclude-lite.cpp \
   src/lite/forwarding-flags-lite.cpp \
   src/lite/interest-lite.cpp \
@@ -317,6 +326,10 @@ bin_unit_tests_test_identity_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_interest_methods_SOURCES = tests/unit-tests/test-interest-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_link_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_name_conventions_SOURCES = tests/unit-tests/test-name-conventions.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_name_conventions_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
