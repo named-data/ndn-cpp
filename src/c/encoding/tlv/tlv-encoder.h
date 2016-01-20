@@ -59,6 +59,27 @@ ndn_TlvEncoder_initialize(struct ndn_TlvEncoder *self, struct ndn_DynamicUInt8Ar
 }
 
 /**
+ * Set self->offset to the given offset. This is typically called immediately
+ * after initialize to set the location in the output to put the encoding.
+ * @param self A pointer to the ndn_TlvEncoder struct.
+ * @param offset The new value for self->offset.
+ * @return 0 for success, else an error if this cannot ensure offset bytes in
+ * the output buffer.
+ */
+static __inline ndn_Error
+ndn_TlvEncoder_seek(struct ndn_TlvEncoder *self, size_t offset)
+{
+  ndn_Error error;
+  if (self->enableOutput) {
+    if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, offset)))
+      return error;
+  }
+  
+  self->offset = offset;
+  return NDN_ERROR_success;
+}
+
+/**
  * Return the number of bytes to encode varNumber as a VAR-NUMBER in NDN-TLV.
  * @param varNumber The number to encode.
  * @return The number of bytes to encode varNumber.
