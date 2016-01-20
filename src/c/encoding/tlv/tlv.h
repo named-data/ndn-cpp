@@ -93,6 +93,11 @@ enum {
   ndn_Tlv_LocalControlHeader_NoCache = 96
 };
 
+enum {
+  ndn_Tlv_Link_Preference = 30,
+  ndn_Tlv_Link_Delegation = 31
+};
+
 #ifdef __cplusplus
 }
 #endif

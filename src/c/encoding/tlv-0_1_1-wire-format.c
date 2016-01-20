@@ -23,6 +23,7 @@
 #include "tlv/tlv-data.h"
 #include "tlv/tlv-control-parameters.h"
 #include "tlv/tlv-signature-info.h"
+#include "tlv/tlv-delegation-set.h"
 #include "tlv-0_1_1-wire-format.h"
 
 ndn_Error
@@ -175,4 +176,36 @@ ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
   ndn_TlvDecoder_initialize(&decoder, signatureValue, signatureValueLength);
   return ndn_TlvDecoder_readBlobTlv
     (&decoder, ndn_Tlv_SignatureValue, &signature->signature);
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeDelegationSet_Delegation
+  (const struct ndn_DelegationSet_Delegation *delegation,
+   struct ndn_DynamicUInt8Array *output, size_t offset, size_t *encodingLength)
+{
+  ndn_Error error;
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  if ((error = ndn_TlvEncoder_seek(&encoder, offset)))
+    return error;
+
+  error = ndn_encodeTlvDelegationSet_Delegation(delegation, &encoder);
+  *encodingLength = encoder.offset - offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeDelegationSet_Delegation
+  (struct ndn_DelegationSet_Delegation *delegation, const uint8_t *input,
+   size_t inputLength, size_t *encodingLength)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_Error error;
+
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  error = ndn_decodeTlvDelegationSet_Delegation(delegation, &decoder);
+  *encodingLength = decoder.offset;
+
+  return error;
 }
