@@ -1,3 +1,12 @@
+Interim changes since NDN-CPP v0.9 (2016-01-20)
+-----------------------------------------------
+
+Changes
+* Added classes Link and DelegationSet to support link objects.
+* In Interest, added methods to support link objects and SelectedDelegation:
+  hasLink, getLink, unsetLink, get/setLinkWireEncoding, get/setSelectedDelegationIndex.
+* Unit tests: Added test-link.
+
 NDN-CPP v0.9 (2016-01-07)
 -------------------------
 
