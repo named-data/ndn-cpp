@@ -23,6 +23,7 @@
 #define NDN_INTEREST_HPP
 
 #include "name.hpp"
+#include "link.hpp"
 #include "key-locator.hpp"
 #include "lite/interest-lite.hpp"
 #include "encoding/wire-format.hpp"
@@ -66,8 +67,15 @@ public:
     childSelector_(interest.childSelector_),
     mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
-    nonce_(interest.nonce_), getNonceChangeCount_(0), changeCount_(0)
+    nonce_(interest.nonce_), getNonceChangeCount_(0),
+    linkWireEncoding_(interest.linkWireEncoding_),
+    linkWireEncodingFormat_(interest.linkWireEncodingFormat_),
+    selectedDelegationIndex_(interest.selectedDelegationIndex_),
+    changeCount_(0)
   {
+    if (interest.link_.get())
+      link_.set(ptr_lib::make_shared<Link>(*interest.link_.get()));
+
     setDefaultWireEncoding
       (interest.getDefaultWireEncoding(), interest.defaultWireEncodingFormat_);
   }
@@ -154,16 +162,20 @@ public:
    * use of this object which could reallocate memory.
    * @param interestLite A InterestLite where the name components array is
    * already allocated.
+   * @param wireFormat The desired wire format for encoding the link object (if
+   * necessary).
    */
   void
-  get(InterestLite& interestLite) const;
+  get(InterestLite& interestLite, WireFormat& wireFormat) const;
 
   /**
    * Clear this interest, and set the values by copying from interestLite.
    * @param interestLite An InterestLite object.
+   * @param wireFormat The wire format of the encoding, to be used later if
+   * necessary to decode the link wire encoding.
    */
   void
-  set(const InterestLite& interestLite);
+  set(const InterestLite& interestLite, WireFormat& wireFormat);
 
   Name&
   getName() { return name_.get(); }
@@ -219,6 +231,50 @@ public:
 
     return nonce_;
   }
+
+  /**
+   * Check if this interest has a link object (or a link wire encoding which
+   * can be decoded to make the link object).
+   * @return True if this interest has a link object, false if not.
+   */
+  bool
+  hasLink() const
+  {
+    return link_.get() || !linkWireEncoding_.isNull();
+  }
+
+
+  /**
+   * Get the link object. If necessary, decode it from the link wire encoding.
+   * @return  The link object, or 0 if not specified.
+   * @throws runtime_error For error decoding the link wire encoding (if
+   * necessary).
+   */
+  Link*
+  getLink();
+
+  const Link*
+  getLink() const { return getLink(); }
+
+  /**
+   * Get the wire encoding of the link object. If there is already a wire
+   * encoding then return it. Otherwise encode from the link object (if
+   * available).
+   * @param wireFormat (optional) The desired wire format for the encoding.
+   * If omitted, use WireFormat::getDefaultWireFormat().
+   * @return The wire encoding, or an isNull Blob if the link is not specified.
+   * @throws runtime_error for error encoding the link object.
+   */
+  Blob
+  getLinkWireEncoding
+    (WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
+
+  /**
+   * Get the selected delegation index.
+   * @return The selected delegation index. If not specified, return -1.
+   */
+  int
+  getSelectedDelegationIndex() const { return selectedDelegationIndex_; }
 
   /**
    * Set the interest name.
@@ -349,6 +405,57 @@ public:
   }
 
   /**
+   * Set the link wire encoding bytes, without decoding them. If there is
+   * a link object, set it to 0. If you later call getLink(), it will
+   * decode the wireEncoding to create the link object.
+   * @param encoding The buffer with the bytes of the link wire encoding.
+   * If no link is specified, set to an empty Blob() or call unsetLink().
+   * @param wireFormat (optional) The wire format of the encoding, to be used
+   * later if necessary to decode. If omitted, use
+   * WireFormat::getDefaultWireFormat().
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  setLinkWireEncoding
+    (Blob encoding,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    linkWireEncoding_ = encoding;
+    linkWireEncodingFormat_ = &wireFormat;
+
+    // Clear the link object, assuming that it has a different encoding.
+    link_.set(ptr_lib::shared_ptr<Link>());
+
+    ++changeCount_;
+    return *this;
+  }
+
+  /**
+   * Clear the link wire encoding and link object so that getLink() returns null.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  unsetLink()
+  {
+    WireFormat* wireFormat = 0;
+    return setLinkWireEncoding(Blob(), *wireFormat);
+  }
+
+  /**
+   * Set the selected delegation index.
+   * @param selectedDelegationIndex The selected delegation index. If not
+   * specified, set to -1.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest*
+  setSelectedDelegationIndex(int selectedDelegationIndex)
+  {
+    selectedDelegationIndex_ = selectedDelegationIndex;
+    ++changeCount_;
+    return this;
+  }
+
+  /**
    * Check if this Interest's name matches the given name (using Name::match)
    * and the given name also conforms to the interest selectors.
    * @param name The name to check.
@@ -394,6 +501,7 @@ public:
     bool changed = name_.checkChanged();
     changed = keyLocator_.checkChanged() || changed;
     changed = exclude_.checkChanged() || changed;
+    changed = link_.checkChanged() || changed;
     if (changed)
       // A child object has changed, so update the change count.
       // This method can be called on a const object, but we want to be able to update the changeCount_.
@@ -411,6 +519,8 @@ private:
     childSelector_ = -1;
     mustBeFresh_ = true;
     interestLifetimeMilliseconds_ = -1.0;
+    linkWireEncodingFormat_ = 0;
+    selectedDelegationIndex_ = -1;
   }
 
   void
@@ -435,6 +545,10 @@ private:
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;
+  Blob linkWireEncoding_;
+  WireFormat* linkWireEncodingFormat_;
+  SharedPointerChangeCounter<Link> link_;
+  int selectedDelegationIndex_; /**< -1 for none */
   SignedBlob defaultWireEncoding_;
   WireFormat *defaultWireEncodingFormat_;
   uint64_t getDefaultWireEncodingChangeCount_;

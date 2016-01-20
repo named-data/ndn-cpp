@@ -39,6 +39,13 @@ Interest& Interest::operator=(const Interest& interest)
   mustBeFresh_ = interest.mustBeFresh_;
   setInterestLifetimeMilliseconds(interest.interestLifetimeMilliseconds_);
   setNonce(interest.nonce_);
+
+  linkWireEncoding_ = interest.linkWireEncoding_;
+  linkWireEncodingFormat_ = interest.linkWireEncodingFormat_;
+  if (interest.link_.get())
+    link_.set(ptr_lib::make_shared<Link>(*interest.link_.get()));
+  setSelectedDelegationIndex(interest.selectedDelegationIndex_);
+
   setDefaultWireEncoding
     (interest.getDefaultWireEncoding(), interest.defaultWireEncodingFormat_);
 
@@ -46,7 +53,7 @@ Interest& Interest::operator=(const Interest& interest)
 }
 
 void
-Interest::get(InterestLite& interestLite) const
+Interest::get(InterestLite& interestLite, WireFormat& wireFormat) const
 {
   name_.get().get(interestLite.getName());
   interestLite.setMinSuffixComponents(minSuffixComponents_);
@@ -57,10 +64,17 @@ Interest::get(InterestLite& interestLite) const
   interestLite.setMustBeFresh(mustBeFresh_);
   interestLite.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
   interestLite.setNonce(nonce_);
+  try {
+    interestLite.setLinkWireEncoding(getLinkWireEncoding(wireFormat));
+  } catch (...) {
+    // Can't encode the link object.
+    interestLite.setLinkWireEncoding(Blob());
+  }
+  interestLite.setSelectedDelegationIndex(selectedDelegationIndex_);
 }
 
 void
-Interest::set(const InterestLite& interestLite)
+Interest::set(const InterestLite& interestLite, WireFormat& wireFormat)
 {
   name_.get().set(interestLite.getName());
   setMinSuffixComponents(interestLite.getMinSuffixComponents());
@@ -72,6 +86,12 @@ Interest::set(const InterestLite& interestLite)
   setChildSelector(interestLite.getChildSelector());
   mustBeFresh_ = (interestLite.getMustBeFresh());
   setInterestLifetimeMilliseconds(interestLite.getInterestLifetimeMilliseconds());
+  if (interestLite.getLinkWireEncoding().buf())
+    setLinkWireEncoding(interestLite.getLinkWireEncoding(), wireFormat);
+  else
+    unsetLink();
+  setSelectedDelegationIndex(interestLite.getSelectedDelegationIndex());
+
   // Set the nonce last so that getNonceChangeCount_ is set correctly.
   nonce_ = Blob(interestLite.getNonce());
   // Set getNonceChangeCount_ so that the next call to getNonce() won't clear nonce_.
@@ -187,6 +207,40 @@ Interest::matchesName(const Name& name) const
     return false;
 
   return true;
+}
+
+Link*
+Interest::getLink()
+{
+  if (link_.get())
+    return link_.get();
+  else if (!linkWireEncoding_.isNull()) {
+    // Decode the link object from linkWireEncoding_.
+    ptr_lib::shared_ptr<Link> link(new Link());
+    link->wireDecode(linkWireEncoding_, *linkWireEncodingFormat_);
+    link_.set(link);
+
+    // Clear linkWireEncoding_ since it is now managed by the link object.
+    linkWireEncoding_ = Blob();
+    linkWireEncodingFormat_ = 0;
+
+    return link.get();
+  }
+  else
+    return 0;
+}
+
+Blob
+Interest::getLinkWireEncoding(WireFormat& wireFormat) const
+{
+  if (!linkWireEncoding_.isNull() && linkWireEncodingFormat_ == &wireFormat)
+    return linkWireEncoding_;
+
+  const Link* link = getLink();
+  if (link)
+    return link->wireEncode(wireFormat);
+  else
+    return Blob();
 }
 
 }
