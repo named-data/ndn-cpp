@@ -261,7 +261,8 @@ Node::nfdRegisterPrefix
    KeyChain& commandKeyChain, const Name& commandCertificateName,
    WireFormat& wireFormat, Face* face)
 {
-  if (!&commandKeyChain)
+  KeyChain* commandKeyChainPointer = &commandKeyChain;
+  if (!commandKeyChainPointer)
     throw runtime_error
       ("registerPrefix: The command KeyChain has not been set. You must call setCommandSigningInfo.");
   if (commandCertificateName.size() == 0)
