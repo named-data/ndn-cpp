@@ -36,7 +36,20 @@ void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 #include <openssl/ssl.h>
 #include <openssl/rand.h>
 
-void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
+static int CURVE_OID_224[] = { OBJ_secp224r1 };
+static int CURVE_OID_256[] = { OBJ_X9_62_prime256v1 };
+static int CURVE_OID_384[] = { OBJ_secp384r1 };
+static int CURVE_OID_521[] = { OBJ_secp521r1 };
+
+struct ndn_EcKeyInfo EC_KEY_INFO[] = {
+  { 224, NID_secp224r1, CURVE_OID_224, sizeof(CURVE_OID_224) / sizeof(CURVE_OID_224[0]) },
+  { 256, NID_X9_62_prime256v1, CURVE_OID_256, sizeof(CURVE_OID_256) / sizeof(CURVE_OID_256[0]) },
+  { 384, NID_secp384r1, CURVE_OID_384, sizeof(CURVE_OID_384) / sizeof(CURVE_OID_384[0]) },
+  { 521, NID_secp521r1, CURVE_OID_521, sizeof(CURVE_OID_521) / sizeof(CURVE_OID_521[0]) }
+};
+
+void
+ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
 {
   SHA256_CTX sha256;
   SHA256_Init(&sha256);
@@ -44,9 +57,16 @@ void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
   SHA256_Final(digest, &sha256);
 }
 
-void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+void
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
   RAND_bytes(buffer, (int)bufferLength);
 }
+
+size_t
+ndn_getEcKeyInfoCount() { return sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); }
+
+const struct ndn_EcKeyInfo *
+ndn_getEcKeyInfo(int i) { return EC_KEY_INFO + i; }
 
 #endif

@@ -28,6 +28,16 @@ extern "C" {
 #endif
 
 /**
+ * The ndn_EcKeyInfo struct has fields to relate EC key size, curve IDs and OIDs.
+ */
+struct ndn_EcKeyInfo {
+  int keySize;
+  int curveId;
+  int *oidIntegerList;
+  size_t oidIntegerListLength;
+};
+
+/**
  * Compute the sha-256 digest of data.
  * @param data Pointer to the input byte array.
  * @param dataLength The length of data.
@@ -56,7 +66,24 @@ ndn_computeHmacWithSha256
  * @param buffer Write the random bytes to this buffer.
  * @param bufferLength The number of bytes to write to buffer.
  */
-void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+void
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+
+/**
+ * Get the number of ndn_EcKeyInfo struct entries in the array.
+ * @return The number of entries.
+ */
+size_t
+ndn_getEcKeyInfoCount();
+
+/**
+ * Get the ndn_EcKeyInfo at the given index.
+ * @param i The index into the array of ndn_EcKeyInfo struct, from zero to
+ * ndn_getEcKeyInfoCount() - 1.
+ * @return A pointer to the ndn_EcKeyInfo struct.
+ */
+const struct ndn_EcKeyInfo *
+ndn_getEcKeyInfo(int i);
 
 #ifdef __cplusplus
 }
