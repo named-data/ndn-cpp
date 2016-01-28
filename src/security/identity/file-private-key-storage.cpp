@@ -39,8 +39,6 @@ using namespace std;
 
 namespace ndn {
 
-typedef DerNode::DerSequence DerSequence;
-
 static const char *WHITESPACE_CHARS = " \n\r\t";
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
@@ -383,88 +381,6 @@ FilePrivateKeyStorage::nameTransform
   std::replace(digest.begin(), digest.end(), '/', '%');
 
   return keyStorePath_ + "/" + digest + extension;
-}
-
-Blob
-FilePrivateKeyStorage::encodePkcs8PrivateKey
-  (const vector<uint8_t>& privateKeyDer, const OID& oid,
-   const ptr_lib::shared_ptr<DerNode>& parameters)
-{
-  ptr_lib::shared_ptr<DerSequence> algorithmIdentifier(new DerSequence());
-  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerOid>(oid));
-  algorithmIdentifier->addChild(parameters);
-
-  DerSequence result;
-  result.addChild(ptr_lib::make_shared<DerNode::DerInteger>(0));
-  result.addChild(algorithmIdentifier);
-  result.addChild(ptr_lib::make_shared<DerNode::DerOctetString>
-    (&privateKeyDer[0], privateKeyDer.size()));
-
-  return result.encode();
-}
-
-Blob
-FilePrivateKeyStorage::encodeSubjectPublicKeyInfo
-  (const OID& oid, const ptr_lib::shared_ptr<DerNode>& parameters,
-   const ptr_lib::shared_ptr<DerNode>& bitString)
-{
-  ptr_lib::shared_ptr<DerSequence> algorithmIdentifier(new DerSequence());
-  algorithmIdentifier->addChild(ptr_lib::make_shared<DerNode::DerOid>(oid));
-  algorithmIdentifier->addChild(parameters);
-
-  DerSequence result;
-  result.addChild(algorithmIdentifier);
-  result.addChild(bitString);
-
-  return result.encode();
-}
-
-ec_key_st*
-FilePrivateKeyStorage::decodeEcPrivateKey
-  (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
-   const Blob& privateKeyDer)
-{
-  // Find the curveId in EC_KEY_INFO.
-  int curveId = -1;
-  string oidString = algorithmParameters->toVal().toRawStr();
-  for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
-    const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
-    OID curveOid(info->oidIntegerList, info->oidIntegerListLength);
-    if (curveOid.toString() == oidString) {
-      curveId = info->curveId;
-      break;
-    }
-  }
-  if (curveId == -1)
-    throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Unrecognized EC algorithm parameters");
-
-  // Get the value in the octet string.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(privateKeyDer.buf(), 0);
-  DerNode::DerOctetString* octetString = dynamic_cast<DerNode::DerOctetString*>
-    (parsedNode->getChildren()[1].get());
-  if (!octetString)
-    throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't get the private key octet string");
-  Blob octetStringValue = octetString->toVal();
-
-  BIGNUM* keyBignum = BN_bin2bn(octetStringValue.buf(), octetStringValue.size(), NULL);
-  if (!keyBignum) {
-    // We don't expect this to happen.
-    throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create a BIGNUM for the private key value");
-  }
-  EC_KEY* privateKey = EC_KEY_new_by_curve_name(curveId);
-  if (!privateKey) {
-    // We don't expect this to happen.
-    BN_free(keyBignum);
-    throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create an EC key for the curve ID");
-  }
-  EC_KEY_set_private_key(privateKey, keyBignum);
-  BN_free(keyBignum);
-
-  return privateKey;
 }
 
 }

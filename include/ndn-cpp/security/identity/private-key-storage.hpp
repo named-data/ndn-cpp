@@ -24,13 +24,18 @@
 #define NDN_PRIVATE_KEY_STORAGE_HPP
 
 #include <string>
+#include "../../encoding/oid.hpp"
 #include "../../util/blob.hpp"
 #include "../certificate/public-key.hpp"
 #include "../security-common.hpp"
 #include "../key-params.hpp"
 #include "../../name.hpp"
 
+struct ec_key_st;
+
 namespace ndn {
+
+class DerNode;
 
 class PrivateKeyStorage {
 public:
@@ -130,6 +135,48 @@ public:
    */
   virtual bool
   doesKeyExist(const Name& keyName, KeyClass keyClass) = 0;
+
+protected:
+  /**
+   * Encode the private key to a PKCS #8 private key. We do this explicitly here
+   * to avoid linking to extra OpenSSL libraries.
+   * @param privateKeyDer The input private key DER.
+   * @param oid The OID of the privateKey.
+   * @param parameters The DerNode of the parameters for the OID.
+   * @return The PKCS #8 private key DER.
+   */
+  static Blob
+  encodePkcs8PrivateKey
+    (const std::vector<uint8_t>& privateKeyDer, const OID& oid,
+     const ptr_lib::shared_ptr<DerNode>& parameters);
+
+  /**
+   * Encode the bitString into a SubjectPublicKeyInfo.
+   * @param oid The OID of the privateKey.
+   * @param parameters The DerNode of the parameters for the OID.
+   * @param bitstring The public key bitString which is already in a
+   * DerNode::DerBitString.
+   * @return The subject public key info DER.
+   */
+  static Blob
+  encodeSubjectPublicKeyInfo
+    (const OID& oid, const ptr_lib::shared_ptr<DerNode>& parameters,
+     const ptr_lib::shared_ptr<DerNode>& bitString);
+
+  /**
+   * Create an EC key using the curve in the algorithmParameters, decode the
+   * privateKeyDer and set the private key value. This is necessary because
+   * d2i_ECPrivateKey does not seem to work with the "parameterless" private
+   * key encoding produced by NFD.
+   * @param algorithmParameters The parameters from the PKCS #8 AlgorithmIdentifier.
+   * @param privateKeyDer The bytes of the inner PKCS #8 private key.
+   * @return A new ec_key_st. You must call EC_KEY_free.
+   * @throws SecurityException if can't decode the private key.
+   */
+  static ec_key_st*
+  decodeEcPrivateKey
+    (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
+     const Blob& privateKeyDer);
 };
 
 }
