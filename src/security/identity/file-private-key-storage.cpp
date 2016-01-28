@@ -128,6 +128,7 @@ FilePrivateKeyStorage::generateKeyPair
 
     BIGNUM* exponent = 0;
     RSA* rsa = 0;
+    bool success = false;
 
     exponent = BN_new();
     if (BN_set_word(exponent, RSA_F4) == 1) {
@@ -147,11 +148,14 @@ FilePrivateKeyStorage::generateKeyPair
         privateKeyDer = encodePkcs8PrivateKey
           (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
            ptr_lib::make_shared<DerNode::DerNull>());
+        success = true;
       }
     }
 
     BN_free(exponent);
     RSA_free(rsa);
+    if (!success)
+      throw SecurityException("FilePrivateKeyStorage: Error generating RSA key pair");
   }
   else if (params.getKeyType() == KEY_TYPE_ECDSA) {
     const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
@@ -173,6 +177,7 @@ FilePrivateKeyStorage::generateKeyPair
     if (curveId == -1)
       throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
 
+    bool success = false;
     EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
     if (ecKey != NULL) {
       if (EC_KEY_generate_key(ecKey) == 1) {
@@ -200,10 +205,13 @@ FilePrivateKeyStorage::generateKeyPair
         privateKeyDer = encodePkcs8PrivateKey
           (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
            ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
+        success = true;
       }
     }
 
     EC_KEY_free(ecKey);
+    if (!success)
+      throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
   }
   else
     throw SecurityException("Unsupported key type");
