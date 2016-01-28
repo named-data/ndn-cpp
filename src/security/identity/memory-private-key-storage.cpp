@@ -25,13 +25,15 @@
 #include "../../c/util/crypto.h"
 #include <openssl/ssl.h>
 #include <openssl/ec.h>
-#include <ndn-cpp/encoding/oid.hpp>
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
 using namespace std;
 
 namespace ndn {
+
+static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
 MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 {
@@ -71,6 +73,7 @@ MemoryPrivateKeyStorage::generateKeyPair
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
     BIGNUM* exponent = 0;
     RSA* rsa = 0;
+    bool success = false;
 
     exponent = BN_new();
     if (BN_set_word(exponent, RSA_F4) == 1) {
@@ -87,11 +90,67 @@ MemoryPrivateKeyStorage::generateKeyPair
         privateKeyDer.resize(length);
         derPointer = &privateKeyDer[0];
         i2d_RSAPrivateKey(rsa, &derPointer);
+        success = true;
       }
     }
 
     BN_free(exponent);
     RSA_free(rsa);
+    if (!success)
+      throw SecurityException("FilePrivateKeyStorage: Error generating RSA key pair");
+  }
+  else if (params.getKeyType() == KEY_TYPE_ECDSA) {
+    const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
+
+    OID parametersOid;
+    int curveId = -1;
+
+    // Find the entry in EC_KEY_INFO.
+    for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
+      const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
+      if (info->keySize == ecdsaParams.getKeySize()) {
+        curveId = info->curveId;
+        parametersOid.setIntegerList
+          (info->oidIntegerList, info->oidIntegerListLength);
+
+        break;
+      }
+    }
+    if (curveId == -1)
+      throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
+
+    bool success = false;
+    EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
+    if (ecKey != NULL) {
+      if (EC_KEY_generate_key(ecKey) == 1) {
+        // Encode the public key.
+        int length = i2d_EC_PUBKEY(ecKey, NULL);
+        vector<uint8_t> opensslPublicKeyDer(length);
+        uint8_t* derPointer = &opensslPublicKeyDer[0];
+        i2d_EC_PUBKEY(ecKey, &derPointer);
+        // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
+        // Find the bit string which is the second child.
+        ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+          (&opensslPublicKeyDer[0], 0);
+        const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
+          parsedNode->getChildren();
+        publicKeyDer = *encodeSubjectPublicKeyInfo
+          (OID(EC_ENCRYPTION_OID),
+           ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
+
+        // Encode the private key.
+        length = i2d_ECPrivateKey(ecKey, NULL);
+        privateKeyDer.resize(length);
+        derPointer = &privateKeyDer[0];
+        i2d_ECPrivateKey(ecKey, &derPointer);
+        cout << "debug privateKeyDer " << Blob(privateKeyDer).toHex() << endl;
+        success = true;
+      }
+    }
+
+    EC_KEY_free(ecKey);
+    if (!success)
+      throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
   }
   else
     throw SecurityException("Unsupported key type");
