@@ -71,6 +71,7 @@ ndn_Signature_setFromSignature
     // Setting to itself. Do nothing.
     return NDN_ERROR_success;
 
+  self->type = other->type;
   ndn_Blob_setFromBlob(&self->signature, &other->signature);
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
