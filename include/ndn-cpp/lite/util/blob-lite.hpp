@@ -61,6 +61,13 @@ public:
   size() const { return length; }
 
   /**
+   * Check if the array pointer is null.
+   * @return true if the buffer pointer is null, otherwise false.
+   */
+  bool
+  isNull() const { return !value; }
+
+  /**
    * Upcast the reference to the ndn_Blob struct to a BlobLite.
    * @param blob A reference to the ndn_Blob struct.
    * @return The same reference as BlobLite.
