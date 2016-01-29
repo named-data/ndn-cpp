@@ -33,6 +33,7 @@ class Data;
 class ControlParameters;
 class Signature;
 class DelegationSet;
+class EncryptedContent;
 
 class WireFormat {
 public:
@@ -184,8 +185,7 @@ public:
    * @throws logic_error for unimplemented if the derived class does not override.
    */
   virtual Blob
-  encodeControlParameters
-    (const ControlParameters& controlParameters);
+  encodeControlParameters(const ControlParameters& controlParameters);
 
   /**
    * Decode input as a command parameters and set the fields of the
@@ -276,6 +276,30 @@ public:
   virtual void
   decodeDelegationSet
     (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
+
+  /**
+   * Encode encryptedContent and return the encoding. Your derived class should
+   * override.
+   * @param encryptedContent The EncryptedContent object to encode.
+   * @return A Blob containing the encoding.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeEncryptedContent(const EncryptedContent& encryptedContent);
+
+  /**
+   * Decode input as an EncryptedContent and set the fields of the
+   * encryptedContent object. Your derived class should override.
+   * @param encryptedContent The EncryptedContent object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual void
+  decodeEncryptedContent
+    (EncryptedContent& encryptedContent, const uint8_t *input,
+     size_t inputLength);
 
   /**
    * Set the static default WireFormat used by default encoding and decoding methods.

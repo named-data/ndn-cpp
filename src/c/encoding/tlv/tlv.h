@@ -99,6 +99,13 @@ enum {
   ndn_Tlv_Link_Delegation = 31
 };
 
+enum {
+  ndn_Tlv_Encrypt_EncryptedContent =    130,
+  ndn_Tlv_Encrypt_EncryptionAlgorithm = 131,
+  ndn_Tlv_Encrypt_EncryptedPayload =    132,
+  ndn_Tlv_Encrypt_InitialVector =       133
+};
+
 #ifdef __cplusplus
 }
 #endif

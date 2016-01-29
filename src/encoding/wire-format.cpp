@@ -132,4 +132,18 @@ WireFormat::decodeDelegationSet
   throw logic_error("unimplemented");
 }
 
+Blob
+WireFormat::encodeEncryptedContent(const EncryptedContent& encryptedContent)
+{
+  throw logic_error("unimplemented");
+}
+
+void
+WireFormat::decodeEncryptedContent
+  (EncryptedContent& encryptedContent, const uint8_t *input,
+   size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
 }

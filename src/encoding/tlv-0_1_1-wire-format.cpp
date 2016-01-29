@@ -27,6 +27,7 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/delegation-set.hpp>
+#include <ndn-cpp/encrypt/encrypted-content.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include "tlv-encoder.hpp"
 #include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
@@ -316,6 +317,45 @@ Tlv0_1_1WireFormat::decodeDelegationSet
     delegationSet.addUnsorted
       (ptr_lib::make_shared<DelegationSet::Delegation>(delegationLite));
   }
+}
+
+Blob
+Tlv0_1_1WireFormat::encodeEncryptedContent
+  (const EncryptedContent& encryptedContent)
+{
+  struct ndn_NameComponent keyNameComponents[100];
+  EncryptedContentLite encryptedContentLite
+    (keyNameComponents,
+     sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+  encryptedContent.get(encryptedContentLite);
+
+  DynamicUInt8Vector output(256);
+  ndn_Error error;
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeEncryptedContent
+       (encryptedContentLite, DynamicUInt8ArrayLite::upCast(output),
+        &encodingLength)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return output.finish(encodingLength);
+}
+
+void
+Tlv0_1_1WireFormat::decodeEncryptedContent
+  (EncryptedContent& encryptedContent, const uint8_t *input,
+   size_t inputLength)
+{
+  struct ndn_NameComponent keyNameComponents[100];
+  EncryptedContentLite encryptedContentLite
+    (keyNameComponents,
+     sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
+
+  ndn_Error error;
+  if ((error = Tlv0_1_1WireFormatLite::decodeEncryptedContent
+       (encryptedContentLite, input, inputLength)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  encryptedContent.set(encryptedContentLite);
 }
 
 Tlv0_1_1WireFormat* Tlv0_1_1WireFormat::instance_ = 0;

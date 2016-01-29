@@ -24,6 +24,7 @@
 #include "tlv/tlv-control-parameters.h"
 #include "tlv/tlv-signature-info.h"
 #include "tlv/tlv-delegation-set.h"
+#include "tlv/tlv-encrypted-content.h"
 #include "tlv-0_1_1-wire-format.h"
 
 ndn_Error
@@ -208,4 +209,28 @@ ndn_Tlv0_1_1WireFormat_decodeDelegationSet_Delegation
   *encodingLength = decoder.offset;
 
   return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeEncryptedContent
+  (const struct ndn_EncryptedContent *encryptedContent,
+   struct ndn_DynamicUInt8Array *output, size_t *encodingLength)
+{
+  ndn_Error error;
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  error = ndn_encodeTlvEncryptedContent(encryptedContent, &encoder);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeEncryptedContent
+  (struct ndn_EncryptedContent *encryptedContent, const uint8_t *input,
+   size_t inputLength)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  return ndn_decodeTlvEncryptedContent(encryptedContent, &decoder);
 }

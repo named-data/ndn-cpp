@@ -124,16 +124,14 @@ public:
 
   /**
    * Encode controlParameters as NDN-TLV and return the encoding.
-   * @param controlParameters The ControlParameters object to
-   * encode.
+   * @param controlParameters The ControlParameters object to encode.
    * @return A Blob containing the encoding.
    */
   virtual Blob
-  encodeControlParameters
-    (const ControlParameters& controlParameters);
+  encodeControlParameters(const ControlParameters& controlParameters);
 
   /**
-   * Decode input as a command parameters and set the fields of the
+   * Decode input as an NDN-TLV ControlParameters and set the fields of the
    * controlParameters object.
    * @param controlParameters The ControlParameters object whose fields are
    * updated.
@@ -201,6 +199,27 @@ public:
   virtual void
   decodeDelegationSet
     (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
+
+  /**
+   * Encode encryptedContent as NDN-TLV and return the encoding.
+   * @param encryptedContent The EncryptedContent object to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob
+  encodeEncryptedContent(const EncryptedContent& encryptedContent);
+
+  /**
+   * Decode input as an NDN-TLV EncryptedContent and set the fields of the
+   * encryptedContent object.
+   * @param encryptedContent The EncryptedContent object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  virtual void
+  decodeEncryptedContent
+    (EncryptedContent& encryptedContent, const uint8_t *input,
+     size_t inputLength);
 
   /**
    * Get a singleton instance of a Tlv0_1_1WireFormat.  To always use the

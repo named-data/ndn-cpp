@@ -28,6 +28,7 @@ struct ndn_Interest;
 struct ndn_Data;
 struct ndn_ControlParameters;
 struct ndn_DelegationSet_Delegation;
+struct ndn_EncryptedContent;
 struct ndn_DynamicUInt8Array;
 
 #ifdef __cplusplus
@@ -266,6 +267,35 @@ ndn_Error
 ndn_Tlv0_1_1WireFormat_decodeDelegationSet_Delegation
   (struct ndn_DelegationSet_Delegation *delegation, const uint8_t *input,
    size_t inputLength, size_t *encodingLength);
+
+/**
+ * Encode encryptedContent as an NDN-TLV EncryptedContent.
+ * @param encryptedContent A pointer to the ndn_EncryptedContent struct to encode.
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output,
+ * starting from offset.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeEncryptedContent
+  (const struct ndn_EncryptedContent *encryptedContent,
+   struct ndn_DynamicUInt8Array *output, size_t *encodingLength);
+
+/**
+ * Decode input as an NDN-TLV EncryptedContent and set the fields in the
+ * EncryptedContent struct.
+ * @param encryptedContent A pointer to the encrypted content struct whose
+ * fields are updated.
+ * @param input A pointer to the input buffer to decode.
+ * @param inputLength The number of bytes in input.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeEncryptedContent
+  (struct ndn_EncryptedContent *encryptedContent, const uint8_t *input,
+   size_t inputLength);
 
 #ifdef __cplusplus
 }
