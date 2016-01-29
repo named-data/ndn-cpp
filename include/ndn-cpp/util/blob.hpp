@@ -50,11 +50,13 @@ public:
 
   /**
    * Create a new Blob with an immutable copy of the given array.
-   * @param value A pointer to the byte array which is copied.
+   * @param value A pointer to the byte array which is copied. However, if value
+   * is 0 then create a Blob where isNull() is true.
    * @param valueLength The length of value.
    */
   Blob(const uint8_t* value, size_t valueLength)
-  : ptr_lib::shared_ptr<const std::vector<uint8_t> >(new std::vector<uint8_t>(value, value + valueLength))
+  : ptr_lib::shared_ptr<const std::vector<uint8_t> >
+      (value ? new std::vector<uint8_t>(value, value + valueLength) : 0)
   {
   }
 
@@ -71,21 +73,26 @@ public:
 
   /**
    * Create a new Blob with an immutable copy of the array in the given Blob struct.
-   * @param blobStruct The C ndn_Blob struct to receive the pointer.
+   * @param blobStruct The C ndn_Blob struct to receive the pointer. However, if
+   * blobStruct.value is 0 then create a Blob where isNull() is true.
    */
   Blob(const struct ndn_Blob& blobStruct)
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >
-      (new std::vector<uint8_t>(blobStruct.value, blobStruct.value + blobStruct.length))
+      (blobStruct.value ? 
+        new std::vector<uint8_t>(blobStruct.value, blobStruct.value + blobStruct.length)
+        : 0)
   {
   }
 
   /**
    * Create a new Blob with an immutable copy of the array in blobLite.
-   * @param blobStruct The C ndn_Blob struct to receive the pointer.
+   * @param blobStruct The C ndn_Blob struct to receive the pointer. However, if
+   * blobLite.isNull() then create a Blob where isNull() is true.
    */
   Blob(const BlobLite& blobLite)
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >
-      (new std::vector<uint8_t>(blobLite.buf(), blobLite.buf() + blobLite.size()))
+      (blobLite.isNull() ? 0
+        : new std::vector<uint8_t>(blobLite.buf(), blobLite.buf() + blobLite.size()))
   {
   }
 
