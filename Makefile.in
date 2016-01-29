@@ -97,6 +97,7 @@ check_PROGRAMS =  \
 	bin/unit-tests/test-data-methods$(EXEEXT) \
 	bin/unit-tests/test-der-encode-decode$(EXEEXT) \
 	bin/unit-tests/test-face-methods$(EXEEXT) \
+	bin/unit-tests/test-encrypted-content$(EXEEXT) \
 	bin/unit-tests/test-identity-methods$(EXEEXT) \
 	bin/unit-tests/test-interest-methods$(EXEEXT) \
 	bin/unit-tests/test-link$(EXEEXT) \
@@ -182,6 +183,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-delegation-set.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
+	src/c/encoding/tlv/tlv-encrypted-content.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-key-locator.lo \
 	src/c/encoding/tlv/tlv-name.lo \
@@ -206,6 +208,7 @@ am__objects_2 = $(am__objects_1) src/c/errors.lo \
 	src/c/encoding/tlv/tlv-delegation-set.lo \
 	src/c/encoding/tlv/tlv-decoder.lo \
 	src/c/encoding/tlv/tlv-encoder.lo \
+	src/c/encoding/tlv/tlv-encrypted-content.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-key-locator.lo \
 	src/c/encoding/tlv/tlv-name.lo \
@@ -229,6 +232,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-0_1_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
+	src/encrypt/encrypted-content.lo \
 	src/lite/control-parameters-lite.lo src/lite/data-lite.lo \
 	src/lite/delegation-set-lite.lo src/lite/exclude-lite.lo \
 	src/lite/forwarding-flags-lite.lo src/lite/interest-lite.lo \
@@ -236,6 +240,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/name-lite.lo src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
 	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
+	src/lite/encrypt/encrypted-content-lite.lo \
+	src/lite/encrypt/algo/encrypt-params-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
@@ -360,6 +366,11 @@ am_bin_unit_tests_test_der_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tes
 bin_unit_tests_test_der_encode_decode_OBJECTS =  \
 	$(am_bin_unit_tests_test_der_encode_decode_OBJECTS)
 bin_unit_tests_test_der_encode_decode_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_encrypted_content_OBJECTS = tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.$(OBJEXT)
+bin_unit_tests_test_encrypted_content_OBJECTS =  \
+	$(am_bin_unit_tests_test_encrypted_content_OBJECTS)
+bin_unit_tests_test_encrypted_content_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_face_methods_OBJECTS = tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_face_methods-gtest-all.$(OBJEXT)
 bin_unit_tests_test_face_methods_OBJECTS =  \
@@ -477,6 +488,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
+	$(bin_unit_tests_test_encrypted_content_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
@@ -503,6 +515,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
+	$(bin_unit_tests_test_encrypted_content_SOURCES) \
 	$(bin_unit_tests_test_face_methods_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
@@ -979,6 +992,8 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
+  include/ndn-cpp/c/encrypt/encrypted-content-types.h \
+  include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -992,6 +1007,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/data.hpp \
   include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
+  include/ndn-cpp/encrypted-content.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
@@ -1011,6 +1027,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
@@ -1024,6 +1041,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -1082,12 +1101,15 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-delegation-set.c src/c/encoding/tlv/tlv-delegation-set.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
+  src/c/encoding/tlv/tlv-encrypted-content.c src/c/encoding/tlv/tlv-encrypted-content.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
+  src/c/encrypt/encrypted-content.h \
+  src/c/encrypt/algo/encrypt-params.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -1132,6 +1154,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/encrypted-content.cpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/data-lite.cpp \
   src/lite/delegation-set-lite.cpp \
@@ -1144,6 +1167,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/encrypt/encrypted-content-lite.cpp \
+  src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -1236,6 +1261,9 @@ bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_der_encode_decode_SOURCES = tests/unit-tests/test-der-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_der_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_der_encode_decode_LDADD = libndn-cpp.la
+bin_unit_tests_test_encrypted_content_SOURCES = tests/unit-tests/test-encrypted-content.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_encrypted_content_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_encrypted_content_LDADD = libndn-cpp.la
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_face_methods_LDADD = libndn-cpp.la
@@ -1377,6 +1405,9 @@ src/c/encoding/tlv/tlv-decoder.lo: src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/tlv-encoder.lo: src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
+src/c/encoding/tlv/tlv-encrypted-content.lo:  \
+	src/c/encoding/tlv/$(am__dirstamp) \
+	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/tlv-interest.lo:  \
 	src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
@@ -1483,6 +1514,14 @@ src/encoding/der/der-exception.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 src/encoding/der/der-node.lo: src/encoding/der/$(am__dirstamp) \
 	src/encoding/der/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/$(am__dirstamp):
+	@$(MKDIR_P) src/encrypt
+	@: > src/encrypt/$(am__dirstamp)
+src/encrypt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/encrypt/$(DEPDIR)
+	@: > src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/encrypted-content.lo: src/encrypt/$(am__dirstamp) \
+	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/lite/$(am__dirstamp):
 	@$(MKDIR_P) src/lite
 	@: > src/lite/$(am__dirstamp)
@@ -1521,6 +1560,24 @@ src/lite/encoding/element-listener-lite.lo:  \
 src/lite/encoding/tlv-0_1_1-wire-format-lite.lo:  \
 	src/lite/encoding/$(am__dirstamp) \
 	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
+src/lite/encrypt/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encrypt
+	@: > src/lite/encrypt/$(am__dirstamp)
+src/lite/encrypt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encrypt/$(DEPDIR)
+	@: > src/lite/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/lite/encrypt/encrypted-content-lite.lo:  \
+	src/lite/encrypt/$(am__dirstamp) \
+	src/lite/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/lite/encrypt/algo/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encrypt/algo
+	@: > src/lite/encrypt/algo/$(am__dirstamp)
+src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/encrypt/algo/$(DEPDIR)
+	@: > src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/lite/encrypt/algo/encrypt-params-lite.lo:  \
+	src/lite/encrypt/algo/$(am__dirstamp) \
+	src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/lite/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/transport
 	@: > src/lite/transport/$(am__dirstamp)
@@ -1875,6 +1932,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-
 bin/unit-tests/test-der-encode-decode$(EXEEXT): $(bin_unit_tests_test_der_encode_decode_OBJECTS) $(bin_unit_tests_test_der_encode_decode_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_der_encode_decode_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-der-encode-decode$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_der_encode_decode_OBJECTS) $(bin_unit_tests_test_der_encode_decode_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-encrypted-content$(EXEEXT): $(bin_unit_tests_test_encrypted_content_OBJECTS) $(bin_unit_tests_test_encrypted_content_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_encrypted_content_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-encrypted-content$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_encrypted_content_OBJECTS) $(bin_unit_tests_test_encrypted_content_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -1985,10 +2052,16 @@ mostlyclean-compile:
 	-rm -f src/encoding/*.lo
 	-rm -f src/encoding/der/*.$(OBJEXT)
 	-rm -f src/encoding/der/*.lo
+	-rm -f src/encrypt/*.$(OBJEXT)
+	-rm -f src/encrypt/*.lo
 	-rm -f src/lite/*.$(OBJEXT)
 	-rm -f src/lite/*.lo
 	-rm -f src/lite/encoding/*.$(OBJEXT)
 	-rm -f src/lite/encoding/*.lo
+	-rm -f src/lite/encrypt/*.$(OBJEXT)
+	-rm -f src/lite/encrypt/*.lo
+	-rm -f src/lite/encrypt/algo/*.$(OBJEXT)
+	-rm -f src/lite/encrypt/algo/*.lo
 	-rm -f src/lite/transport/*.$(OBJEXT)
 	-rm -f src/lite/transport/*.lo
 	-rm -f src/lite/util/*.$(OBJEXT)
@@ -2015,6 +2088,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_face_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po@am__quote@
@@ -2077,6 +2151,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-delegation-set.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-encoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-encrypted-content.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-key-locator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-name.Plo@am__quote@
@@ -2099,6 +2174,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/encrypted-content.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/control-parameters-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/data-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/delegation-set-lite.Plo@am__quote@
@@ -2111,6 +2187,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
@@ -2154,6 +2232,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-test-der-encode-decode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@
@@ -2294,6 +2373,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_der_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_der_encode_decode-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.o: tests/unit-tests/test-encrypted-content.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Tpo -c -o tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.o `test -f 'tests/unit-tests/test-encrypted-content.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-encrypted-content.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-encrypted-content.cpp' object='tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.o `test -f 'tests/unit-tests/test-encrypted-content.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-encrypted-content.cpp
+
+tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.obj: tests/unit-tests/test-encrypted-content.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Tpo -c -o tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.obj `if test -f 'tests/unit-tests/test-encrypted-content.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-encrypted-content.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-encrypted-content.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_encrypted_content-test-encrypted-content.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-encrypted-content.cpp' object='tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_encrypted_content-test-encrypted-content.obj `if test -f 'tests/unit-tests/test-encrypted-content.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-encrypted-content.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-encrypted-content.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_encrypted_content-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_encrypted_content_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_encrypted_content-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o: tests/unit-tests/test-face-methods.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_face_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_face_methods-test-face-methods.Tpo -c -o tests/unit-tests/bin_unit_tests_test_face_methods-test-face-methods.o `test -f 'tests/unit-tests/test-face-methods.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-face-methods.cpp
@@ -2558,8 +2665,11 @@ clean-libtool:
 	-rm -rf src/c/util/.libs src/c/util/_libs
 	-rm -rf src/encoding/.libs src/encoding/_libs
 	-rm -rf src/encoding/der/.libs src/encoding/der/_libs
+	-rm -rf src/encrypt/.libs src/encrypt/_libs
 	-rm -rf src/lite/.libs src/lite/_libs
 	-rm -rf src/lite/encoding/.libs src/lite/encoding/_libs
+	-rm -rf src/lite/encrypt/.libs src/lite/encrypt/_libs
+	-rm -rf src/lite/encrypt/algo/.libs src/lite/encrypt/algo/_libs
 	-rm -rf src/lite/transport/.libs src/lite/transport/_libs
 	-rm -rf src/lite/util/.libs src/lite/util/_libs
 	-rm -rf src/security/.libs src/security/_libs
@@ -2844,6 +2954,13 @@ bin/unit-tests/test-der-encode-decode.log: bin/unit-tests/test-der-encode-decode
 bin/unit-tests/test-face-methods.log: bin/unit-tests/test-face-methods$(EXEEXT)
 	@p='bin/unit-tests/test-face-methods$(EXEEXT)'; \
 	b='bin/unit-tests/test-face-methods'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-encrypted-content.log: bin/unit-tests/test-encrypted-content$(EXEEXT)
+	@p='bin/unit-tests/test-encrypted-content$(EXEEXT)'; \
+	b='bin/unit-tests/test-encrypted-content'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3165,10 +3282,16 @@ distclean-generic:
 	-rm -f src/encoding/$(am__dirstamp)
 	-rm -f src/encoding/der/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/encoding/der/$(am__dirstamp)
+	-rm -f src/encrypt/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/encrypt/$(am__dirstamp)
 	-rm -f src/lite/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/$(am__dirstamp)
 	-rm -f src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/encoding/$(am__dirstamp)
+	-rm -f src/lite/encrypt/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/encrypt/$(am__dirstamp)
+	-rm -f src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/encrypt/algo/$(am__dirstamp)
 	-rm -f src/lite/transport/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/transport/$(am__dirstamp)
 	-rm -f src/lite/util/$(DEPDIR)/$(am__dirstamp)
@@ -3200,7 +3323,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -3248,7 +3371,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

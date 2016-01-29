@@ -19,10 +19,11 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
-  bin/unit-tests/test-face-methods bin/unit-tests/test-identity-methods \
-  bin/unit-tests/test-interest-methods bin/unit-tests/test-link \
-  bin/unit-tests/test-name-conventions bin/unit-tests/test-name-methods \
-  bin/unit-tests/test-policy-manager bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-face-methods bin/unit-tests/test-encrypted-content \
+  bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
+  bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
+  bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
+  bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
@@ -46,6 +47,8 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
+  include/ndn-cpp/c/encrypt/encrypted-content-types.h \
+  include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -58,6 +61,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/data.hpp \
   include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
+  include/ndn-cpp/encrypted-content.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
@@ -77,6 +81,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
@@ -90,6 +95,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -147,12 +154,15 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-delegation-set.c src/c/encoding/tlv/tlv-delegation-set.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
   src/c/encoding/tlv/tlv-encoder.c src/c/encoding/tlv/tlv-encoder.h \
+  src/c/encoding/tlv/tlv-encrypted-content.c src/c/encoding/tlv/tlv-encrypted-content.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
+  src/c/encrypt/encrypted-content.h \
+  src/c/encrypt/algo/encrypt-params.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -196,6 +206,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/encrypted-content.cpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/data-lite.cpp \
   src/lite/delegation-set-lite.cpp \
@@ -208,6 +219,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/encrypt/encrypted-content-lite.cpp \
+  src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -315,6 +328,10 @@ bin_unit_tests_test_data_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_der_encode_decode_SOURCES = tests/unit-tests/test-der-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_der_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_der_encode_decode_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_encrypted_content_SOURCES = tests/unit-tests/test-encrypted-content.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_encrypted_content_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_encrypted_content_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
