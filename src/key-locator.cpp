@@ -23,6 +23,7 @@
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/key-locator.hpp>
 
 using namespace std;
@@ -52,7 +53,8 @@ bool
 KeyLocator::canGetFromSignature(const Signature* signature)
 {
   return dynamic_cast<const Sha256WithRsaSignature *>(signature) ||
-         dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+         dynamic_cast<const Sha256WithEcdsaSignature *>(signature) ||
+         dynamic_cast<const HmacWithSha256Signature *>(signature);
 }
 
 const KeyLocator&
@@ -67,6 +69,12 @@ KeyLocator::getFromSignature(const Signature* signature)
   {
     const Sha256WithEcdsaSignature *castSignature =
       dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+    if (castSignature)
+      return castSignature->getKeyLocator();
+  }
+  {
+    const HmacWithSha256Signature *castSignature =
+      dynamic_cast<const HmacWithSha256Signature *>(signature);
     if (castSignature)
       return castSignature->getKeyLocator();
   }
