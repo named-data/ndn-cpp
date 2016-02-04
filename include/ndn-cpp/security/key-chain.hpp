@@ -490,7 +490,13 @@ public:
    * We use callback functions because verify may fetch information to check the signature.
    * @param data The Data object with the signature to check.
    * @param onVerified If the signature is verified, this calls onVerified(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    */
   void
   verifyData
@@ -502,7 +508,13 @@ public:
    * information to check the signature.
    * @param interest The interest with the signature to check.
    * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    */
   void
   verifyInterest

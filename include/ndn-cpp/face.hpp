@@ -107,8 +107,14 @@ public:
    * @param interest A reference to the Interest.  This copies the Interest.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
@@ -126,8 +132,14 @@ public:
    * @param interestTemplate if not 0, copy interest selectors from the template.   This does not keep a pointer to the Interest object.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
@@ -144,8 +156,14 @@ public:
    * @param name A reference to a Name for the interest.  This copies the Name.
    * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
    * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
    * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds getMaxNdnPacketSize().
@@ -231,8 +249,14 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onRegisterSuccess (optional) A function object to call registerPrefix
    * receives a success message from the forwarder. This calls
    * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
@@ -240,6 +264,9 @@ public:
    * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
    * (The onRegisterSuccess parameter comes after onRegisterFailed because it
    * can be empty or omitted, unlike onRegisterFailed.)
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param flags (optional) The flags for finer control of which interests are
    * forward to the application.  If omitted, use the default flags defined by
    * the default ForwardingFlags constructor.
@@ -267,8 +294,14 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use
    * the default flags defined by the default ForwardingFlags constructor.
    * @param wireFormat (optional) A WireFormat object used to encode the message.
@@ -299,8 +332,14 @@ public:
    * This copies the function object, so you may need to use func_lib::ref() as
    * appropriate. If onInterest is null, it is ignored and you must call
    * setInterestFilter.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
    */
   uint64_t
@@ -347,6 +386,9 @@ public:
    * @param onInterest When an Interest is received which matches the filter,
    * this calls
    * onInterest(prefix, interest, face, interestFilterId, filter).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   virtual uint64_t
@@ -364,6 +406,9 @@ public:
    * @param onInterest This creates an interest filter from prefix so that when
    * an Interest is received which matches the filter, this calls
    * onInterest(prefix, interest, face, interestFilterId, filter).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return The interest filter ID which can be used with unsetInterestFilter.
    */
   virtual uint64_t

@@ -119,11 +119,20 @@ public:
    * verifySegment(data). If it returns false then abort fetching and call
    * onError with SEGMENT_VERIFICATION_FAILED. If data validation is not
    * required, use DontVerifySegment.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onComplete When all segments are received, call
    * onComplete(content) where content is the concatenation of the content of
    * all the segments.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onError Call onError(errorCode, message) for timeout or an error
    * processing segments.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    */
   static void
   fetch

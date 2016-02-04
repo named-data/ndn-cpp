@@ -118,6 +118,9 @@ public:
    * @param onRegisterFailed A function object to call if failed to retrieve the
    * connected hub’s ID or failed to register the prefix. This calls
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onDataNotFound (optional) If a data packet for an interest is not
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
@@ -129,6 +132,9 @@ public:
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
    * OnInterest(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param flags (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
