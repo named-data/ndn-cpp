@@ -519,8 +519,8 @@ public:
   setFace(Face* face) { face_ = face; }
 
   /**
-   * Wire encode the Data object, compute an HmacWithSha256 and the signature
-   * value.
+   * Wire encode the Data object, compute an HmacWithSha256 and update the
+   * signature value.
    * @param data The Data object to be signed. This updates its signature and
    * wireEncoding.
    * @param key The key for the HmacWithSha256.
