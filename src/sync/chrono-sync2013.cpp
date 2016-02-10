@@ -427,8 +427,15 @@ ChronoSync2013::Impl::initialOndata
       content2->set_type(Sync::SyncState_ActionType_UPDATE);
       content2->mutable_seqno()->set_seq(content.Get(i).seqno().seq() + 1);
       content2->mutable_seqno()->set_session(sessionNo_);
-      if (update(tempContent.ss()))
-        onInitialized_();
+      if (update(tempContent.ss())) {
+        try {
+          onInitialized_();
+        } catch (const std::exception& ex) {
+          _LOG_ERROR("ChronoSync2013::Impl::initialOndata: Error in onInitialized: " << ex.what());
+        } catch (...) {
+          _LOG_ERROR("ChronoSync2013::Impl::initialOndata: Error in onInitialized.");
+        }
+      }
     }
   }
 
@@ -462,8 +469,15 @@ ChronoSync2013::Impl::initialOndata
     content2->mutable_seqno()->set_seq(sequenceNo_);
     content2->mutable_seqno()->set_session(sessionNo_);
 
-    if (update(tempContent.ss()))
-      onInitialized_();
+    if (update(tempContent.ss())) {
+      try {
+        onInitialized_();
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ChronoSync2013::Impl::initialOndata: Error in onInitialized: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ChronoSync2013::Impl::initialOndata: Error in onInitialized.");
+      }
+    }
   }
 }
 
@@ -490,7 +504,13 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
   content->mutable_seqno()->set_session(sessionNo_);
   update(tempContent.ss());
 
-  onInitialized_();
+  try {
+    onInitialized_();
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("ChronoSync2013::Impl::initialTimeOut: Error in onInitialized: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("ChronoSync2013::Impl::initialTimeOut: Error in onInitialized.");
+  }
 
   Name name(applicationBroadcastPrefix_);
   name.append(digestTree_->getRoot());

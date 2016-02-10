@@ -161,8 +161,14 @@ public:
    * @param stepCount The number of verification steps that have been done, used
    * to track the verification progress.
    * @param onVerified If the signature is verified, this calls onVerified(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails, this calls
    * onVerifyFailed(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return the indication of next verification step, null if there is no
    * further step.
    */
@@ -178,8 +184,14 @@ public:
    * @param stepCount The number of verification steps that have been done, used
    * to track the verification progress.
    * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails, this calls
    * onVerifyFailed(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return the indication of next verification step, null if there is no
    * further step.
    */

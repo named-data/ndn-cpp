@@ -118,6 +118,50 @@ public:
    * @param onRegisterFailed A function object to call if failed to retrieve the
    * connected hub’s ID or failed to register the prefix. This calls
    * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onDataNotFound (optional) If a data packet for an interest is not
+   * found in the cache, this forwards the interest by calling
+   * onDataNotFound(prefix, interest, face, interestFilterId, filter).
+   * Your callback can find the Data packet for the interest and call
+   * transport.send.  If your callback cannot find the Data packet, it can
+   * optionally call storePendingInterest(interest, face) to store the pending
+   * interest in this object to be satisfied by a later call to add(data). If
+   * you want to automatically store all pending interests, you can simply use
+   * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
+   * OnInterest(), this does not use it. This copies the function object, so you
+   * may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param flags (optional) See Face::registerPrefix.
+   * @param wireFormat (optional) See Face::registerPrefix.
+   */
+  void
+  registerPrefix
+    (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
+     const OnInterestCallback& onDataNotFound = OnInterestCallback(),
+     const ForwardingFlags& flags = ForwardingFlags(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    registerPrefix
+      (prefix, onRegisterFailed, OnRegisterSuccess(), onDataNotFound, flags,
+       wireFormat);
+  }
+
+  /**
+   * Call registerPrefix on the Face given to the constructor so that this
+   * MemoryContentCache will answer interests whose name has the prefix.
+   * @param prefix The Name for the prefix to register. This copies the Name.
+   * @param onRegisterFailed A function object to call if failed to retrieve the
+   * connected hub’s ID or failed to register the prefix. This calls
+   * onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
+   * @param onRegisterSuccess (optional) A function object to call registerPrefix
+   * receives a success message from the forwarder. This calls
+   * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
+   * registeredPrefixId are the values given to registerPrefix. If
+   * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
    * @param onDataNotFound (optional) If a data packet for an interest is not
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
@@ -135,6 +179,7 @@ public:
   void
   registerPrefix
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
+     const OnRegisterSuccess& onRegisterSuccess,
      const OnInterestCallback& onDataNotFound = OnInterestCallback(),
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
@@ -143,7 +188,8 @@ public:
     // TODO: After we remove the registerPrefix with the deprecated OnInterest,
     // we can remove the explicit cast to OnInterestCallback (needed for boost).
     uint64_t registeredPrefixId = face_->registerPrefix
-      (prefix, (const OnInterestCallback&)func_lib::ref(*this), onRegisterFailed, flags, wireFormat);
+      (prefix, (const OnInterestCallback&)func_lib::ref(*this), onRegisterFailed,
+       onRegisterSuccess, flags, wireFormat);
     // Remember the registeredPrefixId so unregisterAll can remove it.
     registeredPrefixIdList_.push_back(registeredPrefixId);
   }

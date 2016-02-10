@@ -33,6 +33,7 @@
 #include "../../util/boost-info-parser.hpp"
 #include "../../c/util/time.h"
 #include "../../encoding/base64.hpp"
+#include "../../util/logging.hpp"
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
 
 // Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher.hpp.
@@ -40,6 +41,8 @@
 
 using namespace std;
 using namespace ndn::func_lib;
+
+INIT_LOGGER("ndn.ConfigPolicyManager");
 
 namespace ndn {
 
@@ -55,7 +58,13 @@ onVerifyInterestFailedWrapper
    const OnVerifyInterestFailed& onVerifyFailed,
    const ptr_lib::shared_ptr<Interest>& interest)
 {
-  onVerifyFailed(interest);
+  try {
+    onVerifyFailed(interest);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed.");
+  }
 }
 
 ConfigPolicyManager::ConfigPolicyManager
@@ -142,7 +151,13 @@ ConfigPolicyManager::checkVerificationPolicy
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
     (stepCount, "data", data->getName(), data->getSignature());
   if (!certificateInterest) {
-    onVerifyFailed(data);
+    try {
+      onVerifyFailed(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+    }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
@@ -155,10 +170,24 @@ ConfigPolicyManager::checkVerificationPolicy
   else {
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
-    if (verify(data->getSignature(), data->wireEncode()))
-      onVerified(data);
-    else
-      onVerifyFailed(data);
+    if (verify(data->getSignature(), data->wireEncode())) {
+      try {
+        onVerified(data);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerified.");
+      }
+    }
+    else {
+      try {
+        onVerifyFailed(data);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      }
+    }
 
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -174,7 +203,13 @@ ConfigPolicyManager::checkVerificationPolicy
     (*interest, wireFormat);
   if (!signature) {
     // Can't get the signature from the interest name.
-    onVerifyFailed(interest);
+    try {
+      onVerifyFailed(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+    }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
@@ -183,7 +218,13 @@ ConfigPolicyManager::checkVerificationPolicy
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
     (stepCount, "interest", interest->getName().getPrefix(-4), signature.get());
   if (!certificateInterest) {
-    onVerifyFailed(interest);
+    try {
+      onVerifyFailed(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+    }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
 
@@ -203,18 +244,37 @@ ConfigPolicyManager::checkVerificationPolicy
     MillisecondsSince1970 timestamp = interest->getName().get(-4).toNumber();
 
     if (!interestTimestampIsFresh(keyName, timestamp)) {
-      onVerifyFailed(interest);
+      try {
+        onVerifyFailed(interest);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      }
       return ptr_lib::shared_ptr<ValidationRequest>();
     }
 
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
     if (verify(signature.get(), interest->wireEncode())) {
-      onVerified(interest);
+      try {
+        onVerified(interest);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerified.");
+      }
       updateTimestampForKey(keyName, timestamp);
     }
-    else
-      onVerifyFailed(interest);
+    else {
+      try {
+        onVerifyFailed(interest);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      }
+    }
 
     return ptr_lib::shared_ptr<ValidationRequest>();
   }

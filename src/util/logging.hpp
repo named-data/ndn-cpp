@@ -69,7 +69,6 @@ INIT_LOGGERS ();
 #define _LOG_FUNCTION_NOARGS
 #define _LOG_TRACE(x)
 #define INIT_LOGGERS(x)
-#define _LOG_ERROR(x)
 #define _LOG_ERROR_COND(cond,x)
 #define _LOG_DEBUG_COND(cond,x)
 
@@ -83,9 +82,11 @@ INIT_LOGGERS ();
 
 #define _LOG_DEBUG(x) \
   { time_t now = time(0); std::string s = std::string(ctime(&now)); std::clog << s.substr(0, s.size() - 1) << " " << x << std::endl; }
+#define _LOG_ERROR(x) _LOG_DEBUG(x)
 
 #else
 #define _LOG_DEBUG(x)
+#define _LOG_ERROR(x)
 #endif
 
 #endif // NDN_CPP_HAVE_LOG4CXX

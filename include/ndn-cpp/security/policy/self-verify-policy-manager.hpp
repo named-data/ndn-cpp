@@ -96,7 +96,13 @@ public:
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
    * @param onVerified If the signature is verified, this calls onVerified(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails or can't find the public key, this calls onVerifyFailed(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return null for no further step for looking up a certificate chain.
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
@@ -112,7 +118,13 @@ public:
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
    * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed If the signature check fails or can't find the public key, this calls onVerifyFailed(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @return null for no further step for looking up a certificate chain.
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
