@@ -22,10 +22,13 @@
 
 #include <stdexcept>
 #include "../c/util/ndn_memory.h"
+#include "logging.hpp"
 #include <ndn-cpp/util/segment-fetcher.hpp>
 
 using namespace std;
 using namespace ndn::func_lib;
+
+INIT_LOGGER("ndn.SegmentFetcher");
 
 namespace ndn {
 
@@ -82,26 +85,45 @@ SegmentFetcher::onSegmentReceived
    const ptr_lib::shared_ptr<Data>& data)
 {
   if (!verifySegment_(data)) {
-    onError_(SEGMENT_VERIFICATION_FAILED, "Segment verification failed");
+    try {
+      onError_(SEGMENT_VERIFICATION_FAILED, "Segment verification failed");
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
+    }
     return;
   }
 
-  if (!endsWithSegmentNumber(data->getName()))
+  if (!endsWithSegmentNumber(data->getName())) {
     // We don't expect a name without a segment number.  Treat it as a bad packet.
-    onError_
-      (DATA_HAS_NO_SEGMENT,
-       string("Got an unexpected packet without a segment number: ") +
-         data->getName().toUri());
+    try {
+      onError_
+        (DATA_HAS_NO_SEGMENT,
+         string("Got an unexpected packet without a segment number: ") +
+           data->getName().toUri());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
+    }
+  }
   else {
     uint64_t currentSegment;
     try {
       currentSegment = data->getName().get(-1).toSegment();
     }
     catch (runtime_error& ex) {
-      onError_
-        (DATA_HAS_NO_SEGMENT,
-         string("Error decoding the name segment number ") +
-         data->getName().get(-1).toEscapedString() + ": " + ex.what());
+      try {
+        onError_
+          (DATA_HAS_NO_SEGMENT,
+           string("Error decoding the name segment number ") +
+           data->getName().get(-1).toEscapedString() + ": " + ex.what());
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
+      }
       return;
     }
 
@@ -120,11 +142,17 @@ SegmentFetcher::onSegmentReceived
           finalSegmentNumber = data->getMetaInfo().getFinalBlockId().toSegment();
         }
         catch (runtime_error& ex) {
-          onError_
-            (DATA_HAS_NO_SEGMENT,
-             string("Error decoding the FinalBlockId segment number ") +
-             data->getMetaInfo().getFinalBlockId().toEscapedString() + ": " +
-             ex.what());
+          try {
+            onError_
+              (DATA_HAS_NO_SEGMENT,
+               string("Error decoding the FinalBlockId segment number ") +
+               data->getMetaInfo().getFinalBlockId().toEscapedString() + ": " +
+               ex.what());
+          } catch (const std::exception& ex) {
+            _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
+          } catch (...) {
+            _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
+          }
           return;
         }
 
@@ -144,7 +172,13 @@ SegmentFetcher::onSegmentReceived
             offset += part.size();
           }
 
-          onComplete_(Blob(content, false));
+          try {
+            onComplete_(Blob(content, false));
+          } catch (const std::exception& ex) {
+            _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onComplete: " << ex.what());
+          } catch (...) {
+            _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onComplete.");
+          }
           return;
         }
       }
@@ -159,9 +193,15 @@ SegmentFetcher::onSegmentReceived
 void
 SegmentFetcher::onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
 {
-  onError_
-    (INTEREST_TIMEOUT,
-     string("Time out for interest ") + interest->getName().toUri());
+  try {
+    onError_
+      (INTEREST_TIMEOUT,
+       string("Time out for interest ") + interest->getName().toUri());
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("SegmentFetcher::onTimeout: Error in onError: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("SegmentFetcher::onTimeout: Error in onError.");
+  }
 }
 
 }

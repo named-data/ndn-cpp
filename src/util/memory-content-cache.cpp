@@ -194,8 +194,15 @@ MemoryContentCache::operator()
     map<string, OnInterestCallback>::iterator onDataNotFound =
       onDataNotFoundForPrefix_.find(prefix->toUri());
     if (onDataNotFound != onDataNotFoundForPrefix_.end() &&
-        onDataNotFound->second)
-      onDataNotFound->second(prefix, interest, face, interestFilterId, filter);
+        onDataNotFound->second) {
+      try {
+        onDataNotFound->second(prefix, interest, face, interestFilterId, filter);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("MemoryContentCache::operator(): Error in onDataNotFound: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("MemoryContentCache::operator(): Error in onDataNotFound.");
+      }
+    }
   }
 }
 

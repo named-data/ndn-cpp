@@ -20,9 +20,12 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "../../util/logging.hpp"
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 
 using namespace std;
+
+INIT_LOGGER("ndn.NoVerifyPolicyManager");
 
 namespace ndn {
 
@@ -58,7 +61,13 @@ ptr_lib::shared_ptr<ValidationRequest>
 NoVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
-  onVerified(data);
+  try {
+    onVerified(data);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("NoVerifyPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("NoVerifyPolicyManager::checkVerificationPolicy: Error in onVerified.");
+  }
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
 
@@ -68,7 +77,13 @@ NoVerifyPolicyManager::checkVerificationPolicy
    const OnVerifiedInterest& onVerified,
    const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
 {
-  onVerified(interest);
+  try {
+    onVerified(interest);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("NoVerifyPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("NoVerifyPolicyManager::checkVerificationPolicy: Error in onVerified.");
+  }
   return ptr_lib::shared_ptr<ValidationRequest>();
 }
 
