@@ -254,7 +254,7 @@ public:
   getLink();
 
   const Link*
-  getLink() const { return getLink(); }
+  getLink() const { return const_cast<Interest*>(this)->getLink(); }
 
   /**
    * Get the wire encoding of the link object. If there is already a wire

@@ -6,6 +6,7 @@ Changes
 * In Interest, added methods to support link objects and SelectedDelegation:
   hasLink, getLink, unsetLink, get/setLinkWireEncoding, get/setSelectedDelegationIndex.
 * In MemoryPrivateKeyStorage::generateKeyPair, support KEY_TYPE_ECDSA.
+* In MemoryContentCache.registerPrefix, added optional onRegisterSuccess.
 * Unit tests: Added test-link.
 
 NDN-CPP v0.9 (2016-01-07)
