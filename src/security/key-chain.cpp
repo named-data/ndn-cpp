@@ -109,10 +109,24 @@ KeyChain::verifyData
          bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
          bind(&KeyChain::onCertificateInterestTimeout, this, _1, nextStep->retry_, onVerifyFailed, data, nextStep));
   }
-  else if (policyManager_->skipVerifyAndTrust(*data))
-    onVerified(data);
-  else
-    onVerifyFailed(data);
+  else if (policyManager_->skipVerifyAndTrust(*data)) {
+    try {
+      onVerified(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::verifyData: Error in onVerified: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::verifyData: Error in onVerified.");
+    }
+  }
+  else {
+    try {
+      onVerifyFailed(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::verifyData: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::verifyData: Error in onVerifyFailed.");
+    }
+  }
 }
 
 void
@@ -135,10 +149,24 @@ KeyChain::verifyInterest
          bind(&KeyChain::onCertificateInterestTimeoutForVerifyInterest, this,
               _1, nextStep->retry_, onVerifyFailed, interest, nextStep));
   }
-  else if (policyManager_->skipVerifyAndTrust(*interest))
-    onVerified(interest);
-  else
-    onVerifyFailed(interest);
+  else if (policyManager_->skipVerifyAndTrust(*interest)) {
+    try {
+      onVerified(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::verifyInterest: Error in onVerified: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::verifyInterest: Error in onVerified.");
+    }
+  }
+  else {
+    try {
+      onVerifyFailed(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::verifyInterest: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::verifyInterest: Error in onVerifyFailed.");
+    }
+  }
 }
 
 void
@@ -159,8 +187,15 @@ KeyChain::onCertificateInterestTimeout
       (*interest,
        bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
        bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, onVerifyFailed, data, nextStep));
-  else
-    onVerifyFailed(data);
+  else {
+    try {
+      onVerifyFailed(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onVerifyFailed.");
+    }
+  }
 }
 
 void
@@ -177,8 +212,15 @@ KeyChain::onCertificateInterestTimeoutForVerifyInterest
        bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
        bind(&KeyChain::onCertificateInterestTimeoutForVerifyInterest, this,
             _1, retry - 1, onVerifyFailed, originalInterest, nextStep));
-  else
-    onVerifyFailed(originalInterest);
+  else {
+    try {
+      onVerifyFailed(originalInterest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeoutForVerifyInterest: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeoutForVerifyInterest: Error in onVerifyFailed.");
+    }
+  }
 }
 
 Name

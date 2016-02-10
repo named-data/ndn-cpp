@@ -23,9 +23,12 @@
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/identity-storage.hpp>
+#include "../../util/logging.hpp"
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 
 using namespace std;
+
+INIT_LOGGER("ndn.SelfVerifyPolicyManager");
 
 namespace ndn {
 
@@ -62,10 +65,24 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
 {
   // wireEncode returns the cached encoding if available.
-  if (verify(data->getSignature(), data->wireEncode()))
-    onVerified(data);
-  else
-    onVerifyFailed(data);
+  if (verify(data->getSignature(), data->wireEncode())) {
+    try {
+      onVerified(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerified.");
+    }
+  }
+  else {
+    try {
+      onVerifyFailed(data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+    }
+  }
 
   // No more steps, so return a null ValidationRequest.
   return ptr_lib::shared_ptr<ValidationRequest>();
@@ -84,10 +101,24 @@ SelfVerifyPolicyManager::checkVerificationPolicy
        interest->getName().get(-1).getValue());
 
   // wireEncode returns the cached encoding if available.
-  if (verify(signature.get(), interest->wireEncode()))
-    onVerified(interest);
-  else
-    onVerifyFailed(interest);
+  if (verify(signature.get(), interest->wireEncode())) {
+    try {
+      onVerified(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerified: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerified.");
+    }
+  }
+  else {
+    try {
+      onVerifyFailed(interest);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+    }
+  }
 
   // No more steps, so return a null ValidationRequest.
   return ptr_lib::shared_ptr<ValidationRequest>();

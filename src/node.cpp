@@ -218,7 +218,13 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     _LOG_DEBUG
       ("Register prefix failed: Error decoding the NFD response: " <<
        ndn_getErrorString(error));
-    info_->onRegisterFailed_(info_->prefix_);
+    try {
+      info_->onRegisterFailed_(info_->prefix_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed.");
+    }
     return;
   }
   uint64_t statusCode;
@@ -227,7 +233,13 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     _LOG_DEBUG
       ("Register prefix failed: Error decoding the NFD response: " <<
        ndn_getErrorString(error));
-    info_->onRegisterFailed_(info_->prefix_);
+    try {
+      info_->onRegisterFailed_(info_->prefix_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed.");
+    }
     return;
   }
 
@@ -236,21 +248,40 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     _LOG_DEBUG
       ("Register prefix failed: Expected NFD status code 200, got: " <<
        statusCode);
-    info_->onRegisterFailed_(info_->prefix_);
+    try {
+      info_->onRegisterFailed_(info_->prefix_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed.");
+    }
     return;
   }
 
   _LOG_DEBUG("Register prefix succeeded with the NFD forwarder for prefix " <<
              info_->prefix_->toUri());
-  if (info_->onRegisterSuccess_)
-    info_->onRegisterSuccess_(info_->prefix_, info_->registeredPrefixId_);
+  if (info_->onRegisterSuccess_) {
+    try {
+      info_->onRegisterSuccess_(info_->prefix_, info_->registeredPrefixId_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterSuccess: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterSuccess.");
+    }
+  }
 }
 
 void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& timedOutInterest)
 {
   _LOG_DEBUG("Timeout for NFD register prefix command.");
-  info_->onRegisterFailed_(info_->prefix_);
+  try {
+    info_->onRegisterFailed_(info_->prefix_);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed.");
+  }
 }
 
 void
@@ -361,17 +392,31 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
     // Call all interest filter callbacks which match.
     for (size_t i = 0; i < interestFilterTable_.size(); ++i) {
       InterestFilterEntry &entry = *interestFilterTable_[i];
-      if (entry.getFilter()->doesMatch(interest->getName()))
-        entry.getOnInterest()
-          (entry.getPrefix(), interest, entry.getFace(),
-           entry.getInterestFilterId(), entry.getFilter());
+      if (entry.getFilter()->doesMatch(interest->getName())) {
+        try {
+          entry.getOnInterest()
+            (entry.getPrefix(), interest, entry.getFace(),
+             entry.getInterestFilterId(), entry.getFilter());
+        } catch (const std::exception& ex) {
+          _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
+        } catch (...) {
+          _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
+        }
+      }
     }
   }
   else if (data) {
     vector<ptr_lib::shared_ptr<PendingInterest> > pitEntries;
     extractEntriesForExpressedInterest(data->getName(), pitEntries);
-    for (size_t i = 0; i < pitEntries.size(); ++i)
-      pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
+    for (size_t i = 0; i < pitEntries.size(); ++i) {
+      try {
+        pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onData: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onData.");
+      }
+    }
   }
 }
 
@@ -483,11 +528,13 @@ void
 Node::PendingInterest::callTimeout()
 {
   if (onTimeout_) {
-    // Ignore all exceptions.
     try {
       onTimeout_(interest_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout.");
     }
-    catch (...) { }
   }
 }
 

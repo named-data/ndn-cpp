@@ -72,6 +72,9 @@ public:
    * @param data The Data object with the signature (to ignore).
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * @param onVerified This does override to call onVerified(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed Override to ignore this.
    * @return null for no further step.
    */
@@ -86,6 +89,9 @@ public:
    * @param stepCount The number of verification steps that have been done, used
    * to track the verification progress.
    * @param onVerified This does override to call onVerified(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onVerifyFailed Override to ignore this.
    * @return null for no further step.
    */
