@@ -239,7 +239,13 @@ ChronoSync2013::Impl::onData
         (content.Get(i).name(), content.Get(i).seqno().session(),
          content.Get(i).seqno().seq()));
   }
-  onReceivedSyncState_(syncStates, isRecovery);
+  try {
+    onReceivedSyncState_(syncStates, isRecovery);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("ChronoSync2013::Impl::onData: Error in onReceivedSyncState: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("ChronoSync2013::Impl::onData: Error in onReceivedSyncState.");
+  }
 
   Name name(applicationBroadcastPrefix_);
   name.append(digestTree_->getRoot());
