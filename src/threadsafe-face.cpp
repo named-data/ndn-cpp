@@ -82,6 +82,7 @@ ThreadsafeFace::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
    WireFormat& wireFormat)
 {
+  // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t pendingInterestId = node_->getNextEntryId();
 
   // This copies the interest as required by Node.expressInterest.
@@ -99,6 +100,7 @@ ThreadsafeFace::expressInterest
   (const Name& name, const Interest *interestTemplate, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat)
 {
+  // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t pendingInterestId = node_->getNextEntryId();
 
   // This copies the name object as required by Node.expressInterest.
@@ -125,6 +127,7 @@ ThreadsafeFace::registerPrefix
    const OnRegisterSuccess& onRegisterSuccess,
    const ForwardingFlags& flags, WireFormat& wireFormat)
 {
+  // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t registeredPrefixId = node_->getNextEntryId();
 
   // This copies the prefix object as required by Node.registerPrefix.
@@ -148,6 +151,7 @@ uint64_t
 ThreadsafeFace::setInterestFilter
   (const InterestFilter& filter, const OnInterestCallback& onInterest)
 {
+  // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t interestFilterId = node_->getNextEntryId();
 
   //This copies the filter as required by Node.setInterestFilter.
@@ -163,6 +167,7 @@ uint64_t
 ThreadsafeFace::setInterestFilter
   (const Name& prefix, const OnInterestCallback& onInterest)
 {
+  // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t interestFilterId = node_->getNextEntryId();
 
   // This copies the prefix object as required by Node.setInterestFilter.
