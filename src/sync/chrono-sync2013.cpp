@@ -63,7 +63,7 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
   //   as the onDataNotFound fallback.
   contentCache_.registerPrefix
     (applicationBroadcastPrefix_, onRegisterFailed,
-     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
+     (OnInterestCallback)bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
