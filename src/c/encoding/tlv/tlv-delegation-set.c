@@ -73,7 +73,7 @@ ndn_decodeTlvDelegationSet_Delegation
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (decoder, ndn_Tlv_Link_Preference, &unsignedPreference)))
     return error;
-  delegation->preference = unsignedPreference;
+  delegation->preference = (int)unsignedPreference;
 
   if ((error = ndn_decodeTlvName
        (&delegation->name, &dummyBeginOffset, &dummyEndOffset, decoder)))
