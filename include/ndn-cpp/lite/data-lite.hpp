@@ -127,7 +127,6 @@ private:
    * which can return an error if there is no more room in the name components
    * array.
    */
-  DataLite(DataLite& other);
   DataLite(const DataLite& other);
 
   /**

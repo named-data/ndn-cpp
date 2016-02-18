@@ -99,7 +99,6 @@ public:
      * which can return an error if there is no more room in the name components
      * array.
      */
-    Delegation(Delegation& other);
     Delegation(const Delegation& other);
 
     /**

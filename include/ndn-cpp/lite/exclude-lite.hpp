@@ -166,7 +166,6 @@ private:
    * Don't allow the copy constructor. Instead use set(const ExcludeLite&)
    * which can return an error if there is no more room in the entries array.
    */
-  ExcludeLite(ExcludeLite& other);
   ExcludeLite(const ExcludeLite& other);
 
   /**
