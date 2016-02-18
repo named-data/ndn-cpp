@@ -62,7 +62,7 @@ NameLite::Component::toNumberWithPrefix
 bool
 NameLite::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
 {
-  return ndn_NameComponent_hasPrefix(this, prefix, prefixLength);
+  return ndn_NameComponent_hasPrefix(this, prefix, prefixLength) != 0;
 }
 
 ndn_Error
