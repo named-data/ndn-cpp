@@ -126,20 +126,20 @@ BoostInfoTree::operator [] (const string& keyIn) const
 
   if (path.size() == 1) {
     // Copy the pointers.
-    for (int i = 0; i < (*subtrees).size(); ++i)
+    for (size_t i = 0; i < (*subtrees).size(); ++i)
       foundVals.push_back((*subtrees)[i].get());
     return foundVals;
   }
 
   // newPath = '/'.join(path[1:])
   string newPath;
-  for (int i = 1; i < path.size(); ++i) {
+  for (size_t i = 1; i < path.size(); ++i) {
     if (i > 1)
       newPath += "/";
     newPath += path[i];
   }
 
-  for (int i = 0; i < (*subtrees).size(); ++i) {
+  for (size_t i = 0; i < (*subtrees).size(); ++i) {
     const BoostInfoTree& t = *(*subtrees)[i];
     vector<const BoostInfoTree*> partial = t[newPath];
     foundVals.insert(foundVals.end(), partial.begin(), partial.end());
