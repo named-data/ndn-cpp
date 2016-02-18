@@ -143,12 +143,12 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/delegation-set.h \
   src/c/errors.c src/c/errors.h \
   src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
-  src/c/interest.c src/c/interest.h \
+  src/c/interest_c.c src/c/interest.h \
   src/c/key-locator.h \
-  src/c/name.c src/c/name.h \
+  src/c/name_c.c src/c/name.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
-  src/c/encoding/tlv-0_1_1-wire-format.c src/c/encoding/tlv-0_1_1-wire-format.h \
+  src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
   src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-delegation-set.c src/c/encoding/tlv/tlv-delegation-set.h \
@@ -164,7 +164,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/encrypt-params.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
-  src/c/transport/tcp-transport.c src/c/transport/tcp-transport.h \
+  src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
   src/c/transport/unix-transport.h \
   src/c/util/blob.h \
