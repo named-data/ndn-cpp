@@ -3,6 +3,10 @@
  * according to the OpenSSL license [found in ../../LICENSE].
  * ====================================================================
  */
+// Only compile if the main OpenSSL library is not available.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if !NDN_CPP_HAVE_LIBCRYPTO
+
 #if 0
 #include <openssl/opensslconf.h>
 
@@ -405,3 +409,5 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in,
 
 # endif
 #endif                         /* SHA256_ASM */
+
+#endif NDN_CPP_HAVE_LIBCRYPTO

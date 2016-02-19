@@ -55,8 +55,8 @@
  * [including the GNU Public Licence.]
  */
 
-#ifndef HEADER_SHA_H
-# define HEADER_SHA_H
+#ifndef SHA_H
+#define SHA_H
 
 #if 0
 # include <openssl/e_os2.h>
