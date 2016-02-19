@@ -21,7 +21,6 @@
 #ifndef NDN_SOCKETTRANSPORT_H
 #define NDN_SOCKETTRANSPORT_H
 
-#include <sys/socket.h>
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
 #include <ndn-cpp/c/transport/transport-types.h>
