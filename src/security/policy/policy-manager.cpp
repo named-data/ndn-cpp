@@ -19,13 +19,15 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <openssl/ssl.h>
 #include "../../c/util/crypto.h"
 #include "../../c/util/ndn_memory.h"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#endif
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
 using namespace std;
@@ -37,7 +39,10 @@ PolicyManager::verifySignature
   (const Signature* signature, const SignedBlob& signedBlob,
    const Blob& publicKeyDer)
 {
-  if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
+  if (dynamic_cast<const DigestSha256Signature *>(signature))
+    return verifyDigestSha256Signature(signature->getSignature(), signedBlob);
+#if NDN_CPP_HAVE_LIBCRYPTO
+  else if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
     return verifySha256WithRsaSignature
@@ -49,18 +54,18 @@ PolicyManager::verifySignature
     return verifySha256WithEcdsaSignature
       (signature->getSignature(), signedBlob, publicKeyDer);
   }
-  else if (dynamic_cast<const DigestSha256Signature *>(signature))
-    return verifyDigestSha256Signature(signature->getSignature(), signedBlob);
   else
+#endif
     throw SecurityException("PolicyManager::verify: Signature type is unknown");
 }
 
+#if NDN_CPP_HAVE_LIBCRYPTO
 bool
 PolicyManager::verifySha256WithEcdsaSignature
   (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
   // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256
     (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
@@ -86,7 +91,7 @@ PolicyManager::verifySha256WithRsaSignature
   (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
 {
   // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256
     (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 
@@ -105,13 +110,14 @@ PolicyManager::verifySha256WithRsaSignature
   // RSA_verify returns 1 for a valid signature.
   return (success == 1);
 }
+#endif
 
 bool
 PolicyManager::verifyDigestSha256Signature
   (const Blob& signature, const SignedBlob& signedBlob)
 {
   // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256
     (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
 

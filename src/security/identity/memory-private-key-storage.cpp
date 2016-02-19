@@ -19,14 +19,14 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#if 1
 #include <stdexcept>
-#endif
 #include "../../c/util/crypto.h"
-#include <openssl/ssl.h>
-#include <openssl/ec.h>
 #include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#include <openssl/ec.h>
+#endif
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
 using namespace std;
@@ -69,6 +69,7 @@ MemoryPrivateKeyStorage::generateKeyPair
   vector<uint8_t> publicKeyDer;
   vector<uint8_t> privateKeyDer;
 
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
     BIGNUM* exponent = 0;
@@ -153,6 +154,7 @@ MemoryPrivateKeyStorage::generateKeyPair
       throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
   }
   else
+#endif
     throw SecurityException("Unsupported key type");
 
   setKeyPairForKeyName
@@ -185,7 +187,7 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
     throw SecurityException
       ("MemoryPrivateKeyStorage::sign: Unsupported digest algorithm");
 
-  uint8_t digest[SHA256_DIGEST_LENGTH];
+  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, digest);
   // TODO: use RSA_size to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
@@ -195,6 +197,7 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
   map<string, ptr_lib::shared_ptr<PrivateKey> >::iterator privateKey = privateKeyStore_.find(keyName.toUri());
   if (privateKey == privateKeyStore_.end())
     throw SecurityException(string("MemoryPrivateKeyStorage: Cannot find private key ") + keyName.toUri());
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (privateKey->second->getKeyType() == KEY_TYPE_RSA) {
     if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBits,
                   &signatureBitsLength, privateKey->second->getRsaPrivateKey()))
@@ -207,6 +210,7 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
   }
   else
     // We don't expect this to happen.
+#endif
     throw SecurityException("Unrecognized private key type");
 
   return Blob(signatureBits, (size_t)signatureBitsLength);
@@ -215,25 +219,19 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
 Blob
 MemoryPrivateKeyStorage::decrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric)
 {
-#if 1
   throw runtime_error("MemoryPrivateKeyStorage::decrypt not implemented");
-#endif
 }
 
 Blob
 MemoryPrivateKeyStorage::encrypt(const Name& keyName, const uint8_t* data, size_t dataLength, bool isSymmetric)
 {
-#if 1
   throw runtime_error("MemoryPrivateKeyStorage::encrypt not implemented");
-#endif
 }
 
 void
 MemoryPrivateKeyStorage::generateKey(const Name& keyName, const KeyParams& params)
 {
-#if 1
   throw runtime_error("MemoryPrivateKeyStorage::generateKey not implemented");
-#endif
 }
 
 bool
@@ -257,6 +255,7 @@ MemoryPrivateKeyStorage::PrivateKey::PrivateKey
 
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer;
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (keyType == KEY_TYPE_RSA) {
     rsaPrivateKey_ = d2i_RSAPrivateKey(NULL, &derPointer, keyDerLength);
     if (!rsaPrivateKey_)
@@ -268,15 +267,18 @@ MemoryPrivateKeyStorage::PrivateKey::PrivateKey
       throw SecurityException("PrivateKey constructor: Error decoding EC private key DER");
   }
   else
+#endif
     throw SecurityException("PrivateKey constructor: Unrecognized keyType");
 }
 
 MemoryPrivateKeyStorage::PrivateKey::~PrivateKey()
 {
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (rsaPrivateKey_)
     RSA_free(rsaPrivateKey_);
   if (ecPrivateKey_)
     EC_KEY_free(ecPrivateKey_);
+#endif
 }
 
 }

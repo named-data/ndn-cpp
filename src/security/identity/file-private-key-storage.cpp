@@ -23,13 +23,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <openssl/ssl.h>
 #include <algorithm>
 #include <fstream>
 #include "../../c/util/crypto.h"
 #include "../../encoding/base64.hpp"
 #include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#endif
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
 using namespace std;
@@ -120,6 +122,7 @@ FilePrivateKeyStorage::generateKeyPair
   Blob publicKeyDer;
   Blob privateKeyDer;
 
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
 
@@ -211,6 +214,7 @@ FilePrivateKeyStorage::generateKeyPair
       throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
   }
   else
+#endif
     throw SecurityException("Unsupported key type");
 
   string keyUri = keyName.toUri();
@@ -292,13 +296,14 @@ FilePrivateKeyStorage::sign
   Blob privateKeyDer = pkcs8Children[2]->toVal();
 
   // Get the digest to sign.
-  uint8_t digest[SHA256_DIGEST_LENGTH];
+  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, digest);
   // TODO: use RSA_size, etc. to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
   unsigned int signatureBitsLength;
 
   // Decode the private key and sign.
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (oidString == RSA_ENCRYPTION_OID) {
     // Use a temporary pointer since d2i updates it.
     const uint8_t* derPointer = privateKeyDer.buf();
@@ -326,6 +331,7 @@ FilePrivateKeyStorage::sign
       throw SecurityException("FilePrivateKeyStorage::sign: Error in ECDSA_sign");
   }
   else
+#endif
     throw SecurityException
       ("FilePrivateKeyStorage::sign: Unrecognized private key OID");
 
@@ -376,7 +382,7 @@ string
 FilePrivateKeyStorage::nameTransform
   (const string& keyName, const string& extension)
 {
-  uint8_t hash[SHA256_DIGEST_LENGTH];
+  uint8_t hash[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256((uint8_t*)&keyName[0], keyName.size(), hash);
 
   string digest = toBase64(hash, sizeof(hash));
