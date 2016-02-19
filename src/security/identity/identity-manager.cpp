@@ -358,7 +358,7 @@ IdentityManager::prepareUnsignedIdentityCertificate
     certificate->addSubjectDescription(CertificateSubjectDescription
       ("2.5.4.41", keyName.getPrefix(-1).toUri()));
   else {
-    for (int i = 0; i < subjectDescription.size(); ++i)
+    for (size_t i = 0; i < subjectDescription.size(); ++i)
       certificate->addSubjectDescription(subjectDescription[i]);
   }
 
@@ -546,7 +546,7 @@ IdentityManager::getKeyNameFromCertificatePrefix(const Name & certificatePrefix)
   Name result;
 
   string keyString("KEY");
-  int i = 0;
+  size_t i = 0;
   for(; i < certificatePrefix.size(); i++) {
     if (certificatePrefix.get(i).toEscapedString() == keyString)
       break;
