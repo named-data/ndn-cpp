@@ -115,7 +115,7 @@
 
 /* Define to 1 if you have the `round' function. */
 #ifndef NDN_CPP_HAVE_ROUND
-#define NDN_CPP_HAVE_ROUND 0
+#define NDN_CPP_HAVE_ROUND 1
 #endif
 
 /* Have the SQLITE3 library */
