@@ -226,8 +226,10 @@ FilePrivateKeyStorage::generateKeyPair
   ofstream privateKeyFile(privateKeyFilePath.c_str());
   privateKeyFile << toBase64(privateKeyDer.buf(), privateKeyDer.size(), true);
 
+#if !defined(_WIN32) // Windows doesn't have Unix group permissions.
   ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
   ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
+#endif
 }
 
 void
