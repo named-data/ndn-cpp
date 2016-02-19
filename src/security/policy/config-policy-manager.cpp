@@ -21,6 +21,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <ndn-cpp/ndn-cpp-config.h>
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -35,9 +39,6 @@
 #include "../../encoding/base64.hpp"
 #include "../../util/logging.hpp"
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
-
-// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher.hpp.
-#if NDN_CPP_HAVE_REGEX_LIB
 
 using namespace std;
 using namespace ndn::func_lib;
