@@ -100,7 +100,7 @@ Certificate::toDer()
   root->addChild(validity);
 
   ptr_lib::shared_ptr<DerSequence> subjectList(new DerSequence());
-  for (int i = 0; i < subjectDescriptionList_.size(); ++i)
+  for (size_t i = 0; i < subjectDescriptionList_.size(); ++i)
     subjectList->addChild(subjectDescriptionList_[i].toDer());
 
   root->addChild(subjectList);
@@ -108,7 +108,7 @@ Certificate::toDer()
 
   if (extensionList_.size() > 0) {
     ptr_lib::shared_ptr<DerSequence> extensionList(new DerSequence());
-    for (int i = 0; i < extensionList_.size(); ++i)
+    for (size_t i = 0; i < extensionList_.size(); ++i)
       extensionList->addChild(extensionList_[i].toDer());
     root->addChild(extensionList);
   }
@@ -140,7 +140,7 @@ Certificate::decode()
   // 2nd: subjectList
   const std::vector<ptr_lib::shared_ptr<DerNode> >& subjectChildren =
     DerNode::getSequence(rootChildren, 1).getChildren();
-  for (int i = 0; i < subjectChildren.size(); ++i) {
+  for (size_t i = 0; i < subjectChildren.size(); ++i) {
     DerSequence& sd = DerNode::getSequence(subjectChildren, i);
     const std::vector<ptr_lib::shared_ptr<DerNode> >& descriptionChildren =
       sd.getChildren();
@@ -158,7 +158,7 @@ Certificate::decode()
   if (rootChildren.size() > 3) {
     const std::vector<ptr_lib::shared_ptr<DerNode> >& extensionChildren =
       DerNode::getSequence(rootChildren, 3).getChildren();
-    for (int i = 0; i < extensionChildren.size(); ++i) {
+    for (size_t i = 0; i < extensionChildren.size(); ++i) {
       DerSequence& extInfo = DerNode::getSequence(extensionChildren, i);
 
       const std::vector<ptr_lib::shared_ptr<DerNode> >& children =

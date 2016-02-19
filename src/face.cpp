@@ -21,18 +21,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdexcept>
 #include "node.hpp"
 #include <ndn-cpp/transport/tcp-transport.hpp>
 #include <ndn-cpp/transport/unix-transport.hpp>
 #include <ndn-cpp/face.hpp>
+#if NDN_CPP_HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 using namespace std;
 using namespace ndn::func_lib;
 
 namespace ndn {
 
+// Only compile the default Face constructor if we have Unix support.
+#if NDN_CPP_HAVE_UNISTD_H
 string
 Face::getUnixSocketFilePathForLocalhost()
 {
@@ -68,8 +72,9 @@ Face::getDefaultConnectionInfo()
       (new UnixTransport::ConnectionInfo(filePath.c_str()));
 }
 
-Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
-: node_(new Node(transport, connectionInfo)), commandKeyChain_(0)
+Face::Face()
+: node_(new Node(getDefaultTransport(), getDefaultConnectionInfo())),
+  commandKeyChain_(0)
 {
 }
 
@@ -79,10 +84,10 @@ Face::Face(const char *host, unsigned short port)
   commandKeyChain_(0)
 {
 }
+#endif
 
-Face::Face()
-: node_(new Node(getDefaultTransport(), getDefaultConnectionInfo())),
-  commandKeyChain_(0)
+Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
+: node_(new Node(transport, connectionInfo)), commandKeyChain_(0)
 {
 }
 

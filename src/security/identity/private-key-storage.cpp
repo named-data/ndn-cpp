@@ -19,10 +19,12 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <openssl/ssl.h>
 #include "../../encoding/der/der-node.hpp"
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#endif
 #include <ndn-cpp/security/identity/private-key-storage.hpp>
 
 using namespace std;
@@ -65,6 +67,7 @@ PrivateKeyStorage::encodeSubjectPublicKeyInfo
   return result.encode();
 }
 
+#if NDN_CPP_HAVE_LIBCRYPTO
 ec_key_st*
 PrivateKeyStorage::decodeEcPrivateKey
   (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
@@ -112,5 +115,6 @@ PrivateKeyStorage::decodeEcPrivateKey
 
   return privateKey;
 }
+#endif
 
 }

@@ -18,6 +18,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+// Only compile if we have Unix socket support.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_UNISTD_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -65,3 +69,5 @@ ndn_TcpTransport_isLocal(const char *host, int *result)
   freeaddrinfo(serverInfo);
   return NDN_ERROR_success;
 }
+
+#endif // NDN_CPP_HAVE_UNISTD_H

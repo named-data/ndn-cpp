@@ -61,7 +61,7 @@ IdentityCertificate::isCorrectName(const Name& name)
   if (i < 0)
     return false;
 
-  int keyIdx = 0;
+  size_t keyIdx = 0;
   string keyString("KEY");
   for (; keyIdx < name.size(); keyIdx++) {
     if(name.get(keyIdx).toEscapedString() == keyString)

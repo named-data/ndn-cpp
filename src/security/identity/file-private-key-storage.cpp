@@ -19,20 +19,19 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#if 1
 #include <stdexcept>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <openssl/ssl.h>
 #include <algorithm>
 #include <fstream>
 #include "../../c/util/crypto.h"
 #include "../../encoding/base64.hpp"
 #include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#endif
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
 using namespace std;
@@ -123,6 +122,7 @@ FilePrivateKeyStorage::generateKeyPair
   Blob publicKeyDer;
   Blob privateKeyDer;
 
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
 
@@ -214,6 +214,7 @@ FilePrivateKeyStorage::generateKeyPair
       throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
   }
   else
+#endif
     throw SecurityException("Unsupported key type");
 
   string keyUri = keyName.toUri();
@@ -225,8 +226,10 @@ FilePrivateKeyStorage::generateKeyPair
   ofstream privateKeyFile(privateKeyFilePath.c_str());
   privateKeyFile << toBase64(privateKeyDer.buf(), privateKeyDer.size(), true);
 
+#if !defined(_WIN32) // Windows doesn't have Unix group permissions.
   ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
   ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
+#endif
 }
 
 void
@@ -295,13 +298,14 @@ FilePrivateKeyStorage::sign
   Blob privateKeyDer = pkcs8Children[2]->toVal();
 
   // Get the digest to sign.
-  uint8_t digest[SHA256_DIGEST_LENGTH];
+  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, digest);
   // TODO: use RSA_size, etc. to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
   unsigned int signatureBitsLength;
 
   // Decode the private key and sign.
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (oidString == RSA_ENCRYPTION_OID) {
     // Use a temporary pointer since d2i updates it.
     const uint8_t* derPointer = privateKeyDer.buf();
@@ -329,6 +333,7 @@ FilePrivateKeyStorage::sign
       throw SecurityException("FilePrivateKeyStorage::sign: Error in ECDSA_sign");
   }
   else
+#endif
     throw SecurityException
       ("FilePrivateKeyStorage::sign: Unrecognized private key OID");
 
@@ -340,9 +345,7 @@ FilePrivateKeyStorage::decrypt
   (const Name& keyName, const uint8_t* data, size_t dataLength,
    bool isSymmetric)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::decrypt not implemented");
-#endif
 }
 
 Blob
@@ -350,38 +353,38 @@ FilePrivateKeyStorage::encrypt
   (const Name& keyName, const uint8_t* data, size_t dataLength,
    bool isSymmetric)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::encrypt not implemented");
-#endif
 }
 
 void
 FilePrivateKeyStorage::generateKey(const Name& keyName, const KeyParams& params)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::generateKey not implemented");
-#endif
 }
 
 bool
 FilePrivateKeyStorage::doesKeyExist(const Name& keyName, KeyClass keyClass)
 {
   string keyURI = keyName.toUri();
+  string filePath;
   if (keyClass == KEY_CLASS_PUBLIC)
-    return ::access(nameTransform(keyURI, ".pub").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".pub");
   else if (keyClass == KEY_CLASS_PRIVATE)
-    return ::access(nameTransform(keyURI, ".pri").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".pri");
   else if (keyClass == KEY_CLASS_SYMMETRIC)
-    return ::access(nameTransform(keyURI, ".key").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".key").c_str();
   else
     return false;
+
+  ifstream file(filePath.c_str());
+  return file.good();
 }
 
 string
 FilePrivateKeyStorage::nameTransform
   (const string& keyName, const string& extension)
 {
-  uint8_t hash[SHA256_DIGEST_LENGTH];
+  uint8_t hash[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256((uint8_t*)&keyName[0], keyName.size(), hash);
 
   string digest = toBase64(hash, sizeof(hash));

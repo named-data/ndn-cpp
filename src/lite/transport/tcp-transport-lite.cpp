@@ -19,6 +19,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+// Only compile if we have Unix socket support.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_UNISTD_H
+
 #include "../../c/transport/tcp-transport.h"
 #include <ndn-cpp/lite/transport/tcp-transport-lite.hpp>
 
@@ -62,3 +66,5 @@ ndn_Error
 TcpTransportLite::close() { return ndn_TcpTransport_close(this); }
 
 }
+
+#endif // NDN_CPP_HAVE_UNISTD_H

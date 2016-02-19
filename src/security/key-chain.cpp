@@ -278,7 +278,7 @@ KeyChain::setDefaultCertificate()
     Name defaultIdentity;
     try {
       defaultIdentity = identityManager_->getDefaultIdentity();
-    } catch (SecurityException& e) {
+    } catch (SecurityException&) {
       // Create a default identity name.
       uint8_t randomComponent[4];
       ndn_generateRandomBytes(randomComponent, sizeof(randomComponent));

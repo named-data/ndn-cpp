@@ -20,12 +20,14 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <openssl/ssl.h>
-#include <openssl/ec.h>
 #include <ndn-cpp/security//security-exception.hpp>
 #include "../../c/util/crypto.h"
 #include "../../encoding/der/der-node.hpp"
 #include "../../encoding/der/der-exception.hpp"
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#include <openssl/ec.h>
+#endif
 #include <ndn-cpp/security/certificate/public-key.hpp>
 
 using namespace std;
@@ -60,6 +62,7 @@ PublicKey::PublicKey(const Blob& keyDer)
   // Verify that the we can decode.
   // Use a temporary pointer since d2i updates it.
   const uint8_t *derPointer = keyDer.buf();
+#if NDN_CPP_HAVE_LIBCRYPTO
   if (oidString == RSA_ENCRYPTION_OID) {
     keyType_ = KEY_TYPE_RSA;
 
@@ -77,6 +80,7 @@ PublicKey::PublicKey(const Blob& keyDer)
     EC_KEY_free(publicKey);
   }
   else
+#endif
     throw UnrecognizedKeyFormatException("PublicKey: Unrecognized OID");
 }
 
@@ -90,7 +94,7 @@ Blob
 PublicKey::getDigest(DigestAlgorithm digestAlgorithm) const
 {
   if (digestAlgorithm == DIGEST_ALGORITHM_SHA256) {
-    uint8_t digest[SHA256_DIGEST_LENGTH];
+    uint8_t digest[ndn_SHA256_DIGEST_SIZE];
     ndn_digestSha256(keyDer_.buf(), keyDer_.size(), digest);
 
     return Blob(digest, sizeof(digest));

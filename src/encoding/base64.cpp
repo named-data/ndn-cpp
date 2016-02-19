@@ -21,9 +21,11 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include "base64.hpp"
+#if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/bio.h>
 #include <openssl/evp.h>
-#include "base64.hpp"
+#endif
 
 using namespace std;
 
@@ -32,6 +34,7 @@ namespace ndn {
 string
 toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines)
 {
+#if NDN_CPP_HAVE_LIBCRYPTO
   BIO *base64 = BIO_new(BIO_f_base64());
   if (!base64)
     throw runtime_error("toBase64: BIO_new failed");
@@ -58,11 +61,15 @@ toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines)
   string result(bufferPointer, bufferSize);
   BIO_free_all(outputBuffer);
   return result;
+#else
+  throw runtime_error("toBase64: The OpenSSL base64 encoder is not available");
+#endif
 }
 
 void
 fromBase64(const string& input, vector<uint8_t>& output)
 {
+#if NDN_CPP_HAVE_LIBCRYPTO
   // openssl doesn't like whitespace, so remove it.
   string cleanInput(input);
   cleanInput.erase
@@ -91,6 +98,9 @@ fromBase64(const string& input, vector<uint8_t>& output)
 
   output.resize(outputLength);
   BIO_free_all(inputBuffer);
+#else
+  throw runtime_error("fromBase64: The OpenSSL base64 decoder is not available");
+#endif
 }
 
 }

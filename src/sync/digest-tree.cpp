@@ -21,8 +21,12 @@
  */
 
 #include <algorithm>
-#include <openssl/ssl.h>
 #include "../util/logging.hpp"
+#if NDN_CPP_HAVE_LIBCRYPTO
+#include <openssl/ssl.h>
+#else
+#include "../../contrib/openssl/sha.h"
+#endif
 #include "digest-tree.hpp"
 
 INIT_LOGGER("ndn.DigestTree");
