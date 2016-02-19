@@ -130,7 +130,7 @@ IdentityManager::createIdentityAndCertificate
     if (key.getKeyType() == params.getKeyType())
       // The key exists and has the same type, so don't need to generate one.
       generateKey = false;
-  } catch (const SecurityException& ex) {}
+  } catch (const SecurityException&) {}
 
   if (generateKey) {
     keyName = generateKeyPair(identityName, true, params);
@@ -143,7 +143,7 @@ IdentityManager::createIdentityAndCertificate
     certName = identityStorage_->getDefaultCertificateNameForKey(keyName);
     // The cert exists, so don't need to make it.
     makeCert = false;
-  } catch (const SecurityException& ex) {}
+  } catch (const SecurityException&) {}
 
   if (makeCert) {
     ptr_lib::shared_ptr<IdentityCertificate> selfCert = selfSign(keyName);
@@ -162,7 +162,7 @@ IdentityManager::deleteIdentity(const Name& identityName)
       // Don't delete the default identity!
       return;
   }
-  catch (SecurityException& ex) {
+  catch (SecurityException&) {
     // There is no default identity to check.
   }
 
@@ -295,7 +295,7 @@ IdentityManager::prepareUnsignedIdentityCertificate
   try {
     publicKey = PublicKey(identityStorage_->getKey(keyName));
   }
-  catch (const SecurityException& e) {
+  catch (const SecurityException&) {
     return ptr_lib::shared_ptr<IdentityCertificate>();
   }
 

@@ -103,7 +103,7 @@ DerNode::getSequence
   try {
     return dynamic_cast<DerSequence&>(*children[index]);
   }
-  catch (std::exception& e) {
+  catch (std::exception&) {
     throw DerDecodingException("getSequence: Child DerNode is not a DerSequence");
   }
 }

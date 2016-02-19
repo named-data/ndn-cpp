@@ -78,7 +78,7 @@ IdentityStorage::getDefaultCertificate()
   Name certName;
   try {
     certName = getDefaultCertificateNameForIdentity(getDefaultIdentity());
-  } catch (SecurityException& ex) {
+  } catch (SecurityException&) {
     // The default is not defined.
     return ptr_lib::shared_ptr<IdentityCertificate>();
   }
