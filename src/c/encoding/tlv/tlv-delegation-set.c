@@ -64,16 +64,16 @@ ndn_decodeTlvDelegationSet_Delegation
   ndn_Error error;
   size_t endOffset;
   size_t dummyBeginOffset, dummyEndOffset;
+  uint64_t unsignedPreference;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
        (decoder, ndn_Tlv_Link_Delegation, &endOffset)))
     return error;
 
-  uint64_t unsignedPreference;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (decoder, ndn_Tlv_Link_Preference, &unsignedPreference)))
     return error;
-  delegation->preference = unsignedPreference;
+  delegation->preference = (int)unsignedPreference;
 
   if ((error = ndn_decodeTlvName
        (&delegation->name, &dummyBeginOffset, &dummyEndOffset, decoder)))

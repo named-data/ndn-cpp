@@ -46,7 +46,7 @@ struct ndn_TlvStructureDecoder {
   int useHeaderBuffer; /**< boolean */
   // 8 bytes is enough to hold the extended bytes in the length encoding where it is an 8-byte number.
   uint8_t headerBuffer[8];
-  int nBytesToRead;
+  size_t nBytesToRead;
   unsigned int firstOctet;
 };
 

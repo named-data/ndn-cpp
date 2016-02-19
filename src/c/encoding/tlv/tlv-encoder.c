@@ -125,7 +125,7 @@ ndn_TlvEncoder_writeNonNegativeIntegerEnabled(struct ndn_TlvEncoder *self, uint6
   if (value <= 0xff) {
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, self->offset + 1)))
       return error;
-    self->output->array[self->offset] = value;
+    self->output->array[self->offset] = (uint8_t)value;
     self->offset += 1;
   }
   else if (value <= 0xffff) {

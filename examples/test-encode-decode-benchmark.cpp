@@ -48,6 +48,34 @@ getNowSeconds()
 }
 
 static bool
+verifyEcdsaSignature
+  (const uint8_t* signedPortion, size_t signedPortionLength, const uint8_t* signatureBits, size_t signatureBitsLength,
+   const uint8_t* publicKeyDer, size_t publicKeyDerLength)
+{
+  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
+  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
+  ndn_digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
+
+  // Verify the signedPortionDigest.
+  // Use a temporary pointer since d2i updates it.
+  const uint8_t *derPointer = publicKeyDer;
+  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDerLength);
+  if (!ecPublicKey) {
+    // Don't expect this to happen.
+    cout << "Error decoding public key in d2i_EC_PUBKEY" << endl;
+    return 0;
+  }
+  int success = ECDSA_verify
+    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), 
+     (uint8_t*)signatureBits, signatureBitsLength, ecPublicKey);
+  // Free the public key before checking for success.
+  EC_KEY_free(ecPublicKey);
+
+  // RSA_verify returns 1 for a valid signature.
+  return (success == 1);
+}
+
+static bool
 verifyRsaSignature
   (const uint8_t* signedPortion, size_t signedPortionLength, const uint8_t* signatureBits, size_t signatureBitsLength,
    const uint8_t* publicKeyDer, size_t publicKeyDerLength)
@@ -198,11 +226,14 @@ static uint8_t DEFAULT_EC_PRIVATE_KEY_DER[] = {
  * @param useComplex If true, use a large name, large content and all fields.  If false, use a small name, small content
  * and only required fields.
  * @param useCrypto If true, sign the data packet.  If false, use a blank signature.
+ * @param keyType KeyType.RSA or EC, used if useCrypto is true.
  * @param encoding Set this to the wire encoding.
  * @return The number of seconds for all iterations.
  */
 static double
-benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, Blob& encoding)
+benchmarkEncodeDataSecondsCpp
+  (int nIterations, bool useComplex, bool useCrypto, KeyType keyType,
+   Blob& encoding)
 {
   Name name;
   Blob content;
@@ -234,9 +265,15 @@ benchmarkEncodeDataSecondsCpp(int nIterations, bool useComplex, bool useCrypto, 
   Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
     (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
   privateKeyStorage->setKeyPairForKeyName
-    (keyName, KEY_TYPE_RSA, DEFAULT_RSA_PUBLIC_KEY_DER,
-     sizeof(DEFAULT_RSA_PUBLIC_KEY_DER), DEFAULT_RSA_PRIVATE_KEY_DER,
-     sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+    (keyName, keyType,
+     keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+                               : DEFAULT_RSA_PUBLIC_KEY_DER,
+     keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+                               : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
+     keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
+                               : DEFAULT_RSA_PRIVATE_KEY_DER,
+     keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
+                               : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
 
   uint8_t signatureBitsArray[256];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
@@ -287,11 +324,13 @@ onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
  * Loop to decode a data packet nIterations times using C++.
  * @param nIterations The number of iterations.
  * @param useCrypto If true, verify the signature.  If false, don't verify.
+ * @param keyType KeyType.RSA or EC, used if useCrypto is true.
  * @param encoding The wire encoding to decode.
  * @return The number of seconds for all iterations.
  */
 static double
-benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encoding)
+benchmarkDecodeDataSecondsCpp
+  (int nIterations, bool useCrypto, KeyType keyType, const Blob& encoding)
 {
   // Initialize the KeyChain storage in case useCrypto is true.
   ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage(new MemoryIdentityStorage());
@@ -300,7 +339,12 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
     (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage),
      ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
   Name keyName("/testname/DSK-123");
-  identityStorage->addKey(keyName, KEY_TYPE_RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
+  identityStorage->addKey
+    (keyName, keyType, Blob
+      (keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+                                 : DEFAULT_RSA_PUBLIC_KEY_DER,
+       keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+                                 : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
@@ -321,6 +365,7 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
  * @param useComplex If true, use a large name, large content and all fields.  If false, use a small name, small content
  * and only required fields.
  * @param useCrypto If true, sign the data packet.  If false, use a blank signature.
+ * @param keyType KeyType.RSA or EC, used if useCrypto is true.
  * @param encoding Output buffer for the wire encoding.
  * @param maxEncodingLength The size of the encoding buffer.
  * @param encodingLength Return the number of output bytes in encoding.
@@ -328,7 +373,8 @@ benchmarkDecodeDataSecondsCpp(int nIterations, bool useCrypto, const Blob& encod
  */
 static double
 benchmarkEncodeDataSecondsC
-  (int nIterations, bool useComplex, bool useCrypto, uint8_t* encoding, size_t maxEncodingLength, size_t *encodingLength)
+  (int nIterations, bool useComplex, bool useCrypto, KeyType keyType,
+   uint8_t* encoding, size_t maxEncodingLength, size_t *encodingLength)
 {
   ndn_Error error;
   NameLite::Component finalBlockId((uint8_t*)"\x00", 1);
@@ -380,12 +426,27 @@ benchmarkEncodeDataSecondsC
 
   // Set up the private key now in case useCrypto is true.
   // Use a temporary pointer since d2i updates it.
-  const uint8_t *privateKeyDerPointer = DEFAULT_RSA_PRIVATE_KEY_DER;
-  RSA *privateKey = d2i_RSAPrivateKey(NULL, &privateKeyDerPointer, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
-  if (!privateKey) {
-    // Don't expect this to happen.
-    cout << "Error decoding private key DER" << endl;
-    return 0;
+  EC_KEY *ecPrivateKey = 0;
+  RSA *rsaPrivateKey = 0;
+  if (keyType == KEY_TYPE_ECDSA) {
+    const uint8_t *privateKeyDerPointer = DEFAULT_EC_PRIVATE_KEY_DER;
+    ecPrivateKey = d2i_ECPrivateKey
+      (NULL, &privateKeyDerPointer,  sizeof(DEFAULT_EC_PRIVATE_KEY_DER));
+    if (!ecPrivateKey) {
+      // Don't expect this to happen.
+      cout << "Error decoding EC private key DER" << endl;
+      return 0;
+    }
+  }
+  else {
+    const uint8_t *privateKeyDerPointer = DEFAULT_RSA_PRIVATE_KEY_DER;
+    rsaPrivateKey = d2i_RSAPrivateKey
+      (NULL, &privateKeyDerPointer,  sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+    if (!rsaPrivateKey) {
+      // Don't expect this to happen.
+      cout << "Error decoding RSA private key DER" << endl;
+      return 0;
+    }
   }
 
   double start = getNowSeconds();
@@ -431,10 +492,23 @@ benchmarkEncodeDataSecondsC
       uint8_t digest[SHA256_DIGEST_LENGTH];
       ndn_digestSha256(encoding + signedPortionBeginOffset, signedPortionEndOffset - signedPortionBeginOffset, digest);
       unsigned int signatureBitsLength;
-      if (!RSA_sign(NID_sha256, digest, sizeof(digest), signatureBitsArray, &signatureBitsLength, privateKey)) {
-        // Don't expect this to happen.
-        cout << "Error in RSA_sign" << endl;
-        return 0;
+      if (keyType == KEY_TYPE_ECDSA) {
+        if (!ECDSA_sign
+            (NID_sha256, digest, sizeof(digest), signatureBitsArray,
+             &signatureBitsLength, ecPrivateKey)) {
+          // Don't expect this to happen.
+          cout << "Error in RSA_sign" << endl;
+          return 0;
+        }
+      }
+      else {
+        if (!RSA_sign
+            (NID_sha256, digest, sizeof(digest), signatureBitsArray,
+             &signatureBitsLength, rsaPrivateKey)) {
+          // Don't expect this to happen.
+          cout << "Error in RSA_sign" << endl;
+          return 0;
+        }
       }
 
       data.getSignature().setSignature(BlobLite(signatureBitsArray, signatureBitsLength));
@@ -442,7 +516,9 @@ benchmarkEncodeDataSecondsC
     else {
       // Set up the signature, but don't sign.
       data.getSignature().setSignature(BlobLite(signatureBitsArray, sizeof(signatureBitsArray)));
-      data.getSignature().setType(ndn_SignatureType_Sha256WithRsaSignature);
+      data.getSignature().setType
+        (keyType == KEY_TYPE_ECDSA ? ndn_SignatureType_Sha256WithRsaSignature
+                                   : ndn_SignatureType_Sha256WithEcdsaSignature);
     }
 
     if ((error = Tlv0_1_1WireFormatLite::encodeData
@@ -454,8 +530,10 @@ benchmarkEncodeDataSecondsC
   }
   double finish = getNowSeconds();
 
-  if (privateKey)
-    RSA_free(privateKey);
+  if (ecPrivateKey)
+    EC_KEY_free(ecPrivateKey);
+  if (rsaPrivateKey)
+    RSA_free(rsaPrivateKey);
 
   return finish - start;
 }
@@ -464,12 +542,15 @@ benchmarkEncodeDataSecondsC
  * Loop to decode a data packet nIterations times using C.
  * @param nIterations The number of iterations.
  * @param useCrypto If true, verify the signature.  If false, don't verify.
+ * @param keyType KeyType.RSA or EC, used if useCrypto is true.
  * @param encoding The buffer with wire encoding to decode.
  * @param encodingLength The number of bytes in the encoding.
  * @return The number of seconds for all iterations.
  */
 static double
-benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, size_t encodingLength)
+benchmarkDecodeDataSecondsC
+  (int nIterations, bool useCrypto, KeyType keyType, uint8_t* encoding,
+   size_t encodingLength)
 {
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
@@ -488,12 +569,24 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
     }
 
     if (useCrypto) {
-      if (!verifyRsaSignature
-          (encoding + signedPortionBeginOffset, signedPortionEndOffset - signedPortionBeginOffset,
-           data.getSignature().getSignature().buf(),
-           data.getSignature().getSignature().size(),
-           DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)))
-        cout << "Signature verification: FAILED" << endl;
+      if (keyType == KEY_TYPE_ECDSA) {
+        if (!verifyEcdsaSignature
+            (encoding + signedPortionBeginOffset,
+             signedPortionEndOffset - signedPortionBeginOffset,
+             data.getSignature().getSignature().buf(),
+             data.getSignature().getSignature().size(),
+             DEFAULT_EC_PUBLIC_KEY_DER, sizeof(DEFAULT_EC_PUBLIC_KEY_DER)))
+          cout << "Signature verification: FAILED" << endl;
+      }
+      else {
+        if (!verifyRsaSignature
+            (encoding + signedPortionBeginOffset,
+             signedPortionEndOffset - signedPortionBeginOffset,
+             data.getSignature().getSignature().buf(),
+             data.getSignature().getSignature().size(),
+             DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)))
+          cout << "Signature verification: FAILED" << endl;
+      }
     }
   }
   double finish = getNowSeconds();
@@ -506,23 +599,34 @@ benchmarkDecodeDataSecondsC(int nIterations, bool useCrypto, uint8_t* encoding, 
  * results to cout.
  * @param useComplex See benchmarkEncodeDataSecondsCpp.
  * @param useCrypto See benchmarkEncodeDataSecondsCpp and benchmarkDecodeDataSecondsCpp.
+ * @param keyType See benchmarkEncodeDataSecondsCpp and benchmarkDecodeDataSecondsCpp.
  */
 static void
-benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
+benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto, KeyType keyType)
 {
   const char *format = "TLV";
   Blob encoding;
   {
-    int nIterations = useCrypto ? 5000 : 2000000;
-    double duration = benchmarkEncodeDataSecondsCpp(nIterations, useComplex, useCrypto, encoding);
-    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ")
-         << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 5000)
+                                : 2000000;
+    double duration = benchmarkEncodeDataSecondsCpp
+      (nIterations, useComplex, useCrypto, keyType, encoding);
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format
+         << " data C++: Crypto? " 
+         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << ", Duration sec, Hz: " << duration << ", "
+         << (nIterations / duration) << endl;
   }
   {
-    int nIterations = useCrypto ? 50000 : 2000000;
-    double duration = benchmarkDecodeDataSecondsCpp(nIterations, useCrypto, encoding);
-    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C++: Crypto? " << (useCrypto ? "RSA" : "no ")
-         << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 5000 : 50000)
+                                : 1000000;
+    double duration = benchmarkDecodeDataSecondsCpp
+      (nIterations, useCrypto, keyType, encoding);
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format
+         << " data C++: Crypto? "
+         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << ", Duration sec, Hz: " << duration << ", "
+         << (nIterations / duration) << endl;
   }
 }
 
@@ -531,24 +635,36 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto)
  * results to cout.
  * @param useComplex See benchmarkEncodeDataSecondsC.
  * @param useCrypto See benchmarkEncodeDataSecondsC and benchmarkDecodeDataSecondsC.
+ * @param keyType See benchmarkEncodeDataSecondsC and benchmarkDecodeDataSecondsC.
  */
 static void
-benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto)
+benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto, KeyType keyType)
 {
   const char *format = "TLV";
   uint8_t encoding[1600];
   size_t encodingLength;
   {
-    int nIterations = useCrypto ? 5000 : 10000000;
-    double duration = benchmarkEncodeDataSecondsC(nIterations, useComplex, useCrypto, encoding, sizeof(encoding), &encodingLength);
-    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ")
-         << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 5000)
+                                : 10000000;
+    double duration = benchmarkEncodeDataSecondsC
+      (nIterations, useComplex, useCrypto, keyType, encoding, sizeof(encoding),
+       &encodingLength);
+    cout << "Encode " << (useComplex ? "complex " : "simple  ") << format
+         << " data C:   Crypto? "
+         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << ", Duration sec, Hz: " << duration << ", "
+         << (nIterations / duration) << endl;
   }
   {
-    int nIterations = useCrypto ? 100000 : 25000000;
-    double duration = benchmarkDecodeDataSecondsC(nIterations, useCrypto, encoding, encodingLength);
-    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format << " data C:   Crypto? " << (useCrypto ? "RSA" : "no ")
-         << ", Duration sec, Hz: " << duration << ", " << (nIterations / duration) << endl;
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 100000)
+                                : 25000000;
+    double duration = benchmarkDecodeDataSecondsC
+      (nIterations, useCrypto, keyType, encoding, encodingLength);
+    cout << "Decode " << (useComplex ? "complex " : "simple  ") << format
+         << " data C:   Crypto? "
+         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << ", Duration sec, Hz: " << duration << ", "
+         << (nIterations / duration) << endl;
   }
 }
 
@@ -556,15 +672,19 @@ int
 main(int argc, char** argv)
 {
   try {
-    benchmarkEncodeDecodeDataCpp(false, false);
-    benchmarkEncodeDecodeDataCpp(true, false);
-    benchmarkEncodeDecodeDataCpp(false, true);
-    benchmarkEncodeDecodeDataCpp(true, true);
+    benchmarkEncodeDecodeDataCpp(false, false, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataCpp(true, false, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataCpp(false, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataCpp(true, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataCpp(false, true, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataCpp(true, true, KEY_TYPE_RSA);
 
-    benchmarkEncodeDecodeDataC(false, false);
-    benchmarkEncodeDecodeDataC(true, false);
-    benchmarkEncodeDecodeDataC(false, true);
-    benchmarkEncodeDecodeDataC(true, true);
+    benchmarkEncodeDecodeDataC(false, false, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataC(true, false, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataC(false, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataC(true, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataC(false, true, KEY_TYPE_RSA);
+    benchmarkEncodeDecodeDataC(true, true, KEY_TYPE_RSA);
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }

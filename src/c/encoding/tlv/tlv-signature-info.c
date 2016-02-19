@@ -37,7 +37,6 @@ encodeSignatureWithKeyLocatorValue
 {
   struct ndn_Signature *signature = (struct ndn_Signature *)context;
   ndn_Error error;
-  size_t saveOffset;
 
   if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
        (encoder, ndn_Tlv_SignatureType, signature->type)))

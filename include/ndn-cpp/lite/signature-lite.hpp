@@ -107,7 +107,6 @@ private:
    * which can return an error if there is no more room in the name components
    * array.
    */
-  SignatureLite(SignatureLite& other);
   SignatureLite(const SignatureLite& other);
 
   /**

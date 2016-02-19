@@ -394,7 +394,6 @@ private:
    * Don't allow the copy constructor. Instead use set(const NameLite&) which
    * can return an error if there is no more room in the name components array.
    */
-  NameLite(NameLite& other);
   NameLite(const NameLite& other);
 
   /**

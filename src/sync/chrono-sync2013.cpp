@@ -63,7 +63,7 @@ ChronoSync2013::Impl::initialize(const OnRegisterFailed& onRegisterFailed)
   //   as the onDataNotFound fallback.
   contentCache_.registerPrefix
     (applicationBroadcastPrefix_, onRegisterFailed,
-     bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
+     (OnInterestCallback)bind(&ChronoSync2013::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
 
   Interest interest(applicationBroadcastPrefix_);
   interest.getName().append("00");
@@ -239,7 +239,13 @@ ChronoSync2013::Impl::onData
         (content.Get(i).name(), content.Get(i).seqno().session(),
          content.Get(i).seqno().seq()));
   }
-  onReceivedSyncState_(syncStates, isRecovery);
+  try {
+    onReceivedSyncState_(syncStates, isRecovery);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("ChronoSync2013::Impl::onData: Error in onReceivedSyncState: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("ChronoSync2013::Impl::onData: Error in onReceivedSyncState.");
+  }
 
   Name name(applicationBroadcastPrefix_);
   name.append(digestTree_->getRoot());

@@ -31,7 +31,7 @@ void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
     buffer[i] = random(0, 256);
 }
 
-#else
+#elif NDN_CPP_HAVE_LIBCRYPTO
 
 #include <openssl/ssl.h>
 #include <openssl/rand.h>
@@ -81,5 +81,43 @@ ndn_getEcKeyInfoCount() { return sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); }
 
 const struct ndn_EcKeyInfo *
 ndn_getEcKeyInfo(int i) { return EC_KEY_INFO + i; }
+
+#else
+
+#include <stdlib.h>
+#include "time.h"
+// Use the openssl code in contrib.
+#include "../../../contrib/openssl/sha.h"
+
+void
+ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
+{
+  SHA256_CTX sha256;
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, data, dataLength);
+  SHA256_Final(digest, &sha256);
+}
+
+static int didRandomSeed = 0;
+void
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+{
+  // NOTE: This is not cryptographically strong.
+  size_t i;
+  if (!didRandomSeed) {
+    uint64_t milliseconds = (uint64_t)ndn_getNowMilliseconds();
+    srand((int)milliseconds);
+    didRandomSeed = 1;
+  }
+
+  for (i = 0; i < bufferLength; ++i)
+    buffer[i] = (uint8_t)rand();
+}
+
+size_t
+ndn_getEcKeyInfoCount() { return 0; }
+
+const struct ndn_EcKeyInfo *
+ndn_getEcKeyInfo(int i) { return 0; }
 
 #endif

@@ -246,7 +246,6 @@ private:
    * which can return an error if there is no more room in the name components
    * array.
    */
-  InterestLite(InterestLite& other);
   InterestLite(const InterestLite& other);
 
   /**

@@ -155,7 +155,6 @@ private:
    * set(const EncryptedContentLite&) which can return an error if there is no
    * more room in the name components array.
    */
-  EncryptedContentLite(EncryptedContentLite& other);
   EncryptedContentLite(const EncryptedContentLite& other);
 
   /**

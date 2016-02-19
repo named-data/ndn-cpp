@@ -308,7 +308,7 @@ DerNode::DerInteger::toIntegerVal() const
       ("DerInteger: Negative integers are not currently supported");
 
   int result = 0;
-  for (int i = 0; i < payloadPosition_; ++i) {
+  for (size_t i = 0; i < payloadPosition_; ++i) {
     result <<= 8;
     result += payload_[i];
   }
@@ -336,7 +336,7 @@ DerNode::DerOid::toVal()
 
   ostringstream result;
   result << firstDigit << "." << secondDigit;
-  for (int i = 1; i < components.size(); ++i)
+  for (size_t i = 1; i < components.size(); ++i)
     result << "." << components[i];
 
   string resultString = result.str();
@@ -368,7 +368,7 @@ DerNode::DerOid::prepareEncoding(const vector<int>& value)
   position = encodedBuffer.copy(encode128(firstNumber), position);
 
   if (value.size() > 2) {
-    for (int i = 2; i < value.size(); ++i)
+    for (size_t i = 2; i < value.size(); ++i)
       position = encodedBuffer.copy(encode128(value[i]), position);
   }
 

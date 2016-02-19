@@ -25,6 +25,9 @@
 #if NDN_CPP_HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -33,10 +36,22 @@
 ndn_MillisecondsSince1970
 ndn_getNowMilliseconds()
 {
+#if defined(_WIN32)
+  // From http://stackoverflow.com/questions/1676036/what-should-i-use-to-replace-gettimeofday-on-windows
+  static const unsigned __int64 epoch = ((unsigned __int64)116444736000000000ULL);
+  FILETIME fileTime;
+  ULARGE_INTEGER ularge;
+
+  GetSystemTimeAsFileTime(&fileTime);
+  ularge.LowPart = fileTime.dwLowDateTime;
+  ularge.HighPart = fileTime.dwHighDateTime;
+  return (double)(ularge.QuadPart - epoch) / 10000.0;
+#else
   struct timeval t;
   // Note: configure.ac requires gettimeofday.
   gettimeofday(&t, 0);
   return t.tv_sec * 1000.0 + t.tv_usec / 1000.0;
+#endif
 }
 
 ndn_Error

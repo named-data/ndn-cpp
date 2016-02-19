@@ -2,10 +2,10 @@
 
 #include "ndn_cpp_root.h"
 
-#include NDN_CPP_ROOT(pp/src/c/interest.c)
-#include NDN_CPP_ROOT(pp/src/c/name.c)
+#include NDN_CPP_ROOT(pp/src/c/interest_c.c)
+#include NDN_CPP_ROOT(pp/src/c/name_c.c)
 #include NDN_CPP_ROOT(pp/src/c/encoding/element-reader.c)
-#include NDN_CPP_ROOT(pp/src/c/encoding/tlv-0_1_1-wire-format.c)
+#include NDN_CPP_ROOT(pp/src/c/encoding/tlv-0_1_1-wire-format_c.c)
 #include NDN_CPP_ROOT(pp/src/c/encoding/tlv/tlv-data.c)
 #include NDN_CPP_ROOT(pp/src/c/encoding/tlv/tlv-decoder.c)
 #include NDN_CPP_ROOT(pp/src/c/encoding/tlv/tlv-encoder.c)

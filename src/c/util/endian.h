@@ -63,8 +63,8 @@ extern "C" {
 #endif
 
 // htons(1) == 1 is true for big endian systems.
-static __inline uint64_t htobe64(uint64_t x) { return htons(1) == 1 ? x : (((uint64_t)htonl(x)) << 32) + htonl(x >> 32); }
-static __inline uint64_t be64toh(uint64_t x) { return htons(1) == 1 ? x : (((uint64_t)ntohl(x)) << 32) + ntohl(x >> 32); }
+static __inline uint64_t htobe64(uint64_t x) { return htons(1) == 1 ? x : (((uint64_t)htonl((u_long)x)) << 32) + htonl(x >> 32); }
+static __inline uint64_t be64toh(uint64_t x) { return htons(1) == 1 ? x : (((uint64_t)ntohl((u_long)x)) << 32) + ntohl(x >> 32); }
 
 #ifdef  __cplusplus
 }

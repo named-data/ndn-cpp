@@ -24,7 +24,10 @@
 
 #include <map>
 #include <deque>
-#include <ndnboost/atomic.hpp>
+#include <ndn-cpp/ndn-cpp-config.h>
+#ifdef NDN_CPP_HAVE_BOOST_ASIO
+#include <boost/atomic.hpp>
+#endif
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
@@ -642,11 +645,15 @@ private:
   std::vector<Face::Callback> onConnectedCallbacks_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
-  // lastEntryId_ is used to get the next unique ID. Use atomic_uint64_t to be
-  // thread safe. This is not exposed in the public API or shared with the
-  // application, so use ndnboost. */
-  ndnboost::atomic_uint64_t lastEntryId_;
   ConnectStatus connectStatus_;
+#ifdef NDN_CPP_HAVE_BOOST_ASIO
+  // ThreadsafeFace accesses lastEntryId_ outside of a thread safe dispatch, so
+  // use atomic_uint64_t to be thread safe.
+  boost::atomic_uint64_t lastEntryId_;
+#else
+  // Not using Boost asio to dispatch, so we can use a normal uint64_t.
+  uint64_t lastEntryId_;
+#endif
 };
 
 }

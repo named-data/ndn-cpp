@@ -70,6 +70,7 @@ ndn_decodeTlvEncryptedContent
 {
   ndn_Error error;
   size_t endOffset;
+  uint64_t algorithmType;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
        (decoder, ndn_Tlv_Encrypt_EncryptedContent, &endOffset)))
@@ -79,7 +80,6 @@ ndn_decodeTlvEncryptedContent
        (ndn_Tlv_KeyLocator, &encryptedContent->keyLocator, decoder)))
     return error;
 
-  uint64_t algorithmType;
   if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
        (decoder, ndn_Tlv_Encrypt_EncryptionAlgorithm, &algorithmType)))
     return error;
