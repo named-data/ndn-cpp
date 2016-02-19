@@ -45,7 +45,7 @@ MemoryContentCache::MemoryContentCache
 void
 MemoryContentCache::unregisterAll()
 {
-  for (int i = 0; i < registeredPrefixIdList_.size(); ++i)
+  for (size_t i = 0; i < registeredPrefixIdList_.size(); ++i)
     face_->removeRegisteredPrefix(registeredPrefixIdList_[i]);
   registeredPrefixIdList_.clear();
 

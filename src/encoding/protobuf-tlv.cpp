@@ -42,12 +42,12 @@ encodeMessageValue(const void *context, TlvEncoder &encoder)
   const Reflection& reflection = *message.GetReflection();
   const Descriptor& descriptor = *message.GetDescriptor();
 
-  for (int iField = 0; iField < descriptor.field_count(); ++iField) {
+  for (size_t iField = 0; iField < descriptor.field_count(); ++iField) {
     const FieldDescriptor* field = descriptor.field(iField);
     int tlvType = field->number();
 
     if (field->is_repeated()) {
-      for (int i = 0; i < reflection.FieldSize(message, field); ++i) {
+      for (size_t i = 0; i < reflection.FieldSize(message, field); ++i) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE)
           encoder.writeNestedTlv
             (tlvType, encodeMessageValue,
@@ -129,7 +129,7 @@ decodeMessageValue
   const Reflection& reflection = *message.GetReflection();
   const Descriptor& descriptor = *message.GetDescriptor();
 
-  for (int iField = 0; iField < descriptor.field_count(); ++iField) {
+  for (size_t iField = 0; iField < descriptor.field_count(); ++iField) {
     const FieldDescriptor* field = descriptor.field(iField);
     int tlvType = field->number();
 

@@ -161,7 +161,7 @@ SegmentFetcher::onSegmentReceived
 
           // Get the total size and concatenate to get the content.
           int totalSize = 0;
-          for (int i = 0; i < contentParts_.size(); ++i)
+          for (size_t i = 0; i < contentParts_.size(); ++i)
             totalSize += contentParts_[i].size();
           ptr_lib::shared_ptr<vector<uint8_t> > content
             (new std::vector<uint8_t>(totalSize));

@@ -548,7 +548,7 @@ ConfigPolicyManager::findMatchingRule
   (const Name& objName, const string& matchType) const
 {
   vector<const BoostInfoTree*> rules = config_->getRoot()["validator/rule"];
-  for (int iRule = 0; iRule < rules.size(); ++iRule) {
+  for (size_t iRule = 0; iRule < rules.size(); ++iRule) {
     const BoostInfoTree& r = *rules[iRule];
 
     if (r["for"][0]->getValue() == matchType) {
@@ -558,7 +558,7 @@ ConfigPolicyManager::findMatchingRule
         // no filters means we pass!
         return &r;
       else {
-        for (int iFilter = 0; iFilter < filters.size(); ++iFilter) {
+        for (size_t iFilter = 0; iFilter < filters.size(); ++iFilter) {
           const BoostInfoTree& f = *filters[iFilter];
 
           // Don't check the type - it can only be name for now.
@@ -669,7 +669,7 @@ ConfigPolicyManager::updateTimestampForKey
     }
 
     // Now erase.
-    for (int i = 0; i < keysToErase.size(); ++i)
+    for (size_t i = 0; i < keysToErase.size(); ++i)
       keyTimestamps_.erase(keysToErase[i]);
 
     if (keyTimestamps_.size() > maxTrackedKeys_ && oldestKey != "")
@@ -798,7 +798,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::refreshAnchors()
   }
 
   // Now that we are done with the iterator, add to refreshDirectories_.
-  for (int i = 0; i < directoriesToAdd.size(); ++i)
+  for (size_t i = 0; i < directoriesToAdd.size(); ++i)
     addDirectory(directoriesToAdd[i], refreshPeriodsToAdd[i]);
 }
 
