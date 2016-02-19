@@ -19,12 +19,9 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#if 1
 #include <stdexcept>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <openssl/ssl.h>
 #include <algorithm>
@@ -340,9 +337,7 @@ FilePrivateKeyStorage::decrypt
   (const Name& keyName, const uint8_t* data, size_t dataLength,
    bool isSymmetric)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::decrypt not implemented");
-#endif
 }
 
 Blob
@@ -350,31 +345,31 @@ FilePrivateKeyStorage::encrypt
   (const Name& keyName, const uint8_t* data, size_t dataLength,
    bool isSymmetric)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::encrypt not implemented");
-#endif
 }
 
 void
 FilePrivateKeyStorage::generateKey(const Name& keyName, const KeyParams& params)
 {
-#if 1
   throw runtime_error("FilePrivateKeyStorage::generateKey not implemented");
-#endif
 }
 
 bool
 FilePrivateKeyStorage::doesKeyExist(const Name& keyName, KeyClass keyClass)
 {
   string keyURI = keyName.toUri();
+  string filePath;
   if (keyClass == KEY_CLASS_PUBLIC)
-    return ::access(nameTransform(keyURI, ".pub").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".pub");
   else if (keyClass == KEY_CLASS_PRIVATE)
-    return ::access(nameTransform(keyURI, ".pri").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".pri");
   else if (keyClass == KEY_CLASS_SYMMETRIC)
-    return ::access(nameTransform(keyURI, ".key").c_str(), R_OK) == 0;
+    filePath = nameTransform(keyURI, ".key").c_str();
   else
     return false;
+
+  ifstream file(filePath.c_str());
+  return file.good();
 }
 
 string
