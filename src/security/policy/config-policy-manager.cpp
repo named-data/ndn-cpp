@@ -21,7 +21,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <ndn-cpp/ndn-cpp-config.h>
+#include "../../util/ndn-regex-matcher.hpp"
 // Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher.hpp.
 #if NDN_CPP_HAVE_REGEX_LIB
 
@@ -33,7 +33,6 @@
 #include <fstream>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/certificate/identity-certificate.hpp>
-#include "../../util/ndn-regex-matcher.hpp"
 #include "../../util/boost-info-parser.hpp"
 #include "../../c/util/time.h"
 #include "../../encoding/base64.hpp"
