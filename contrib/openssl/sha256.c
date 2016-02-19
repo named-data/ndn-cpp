@@ -410,4 +410,4 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in,
 # endif
 #endif                         /* SHA256_ASM */
 
-#endif NDN_CPP_HAVE_LIBCRYPTO
+#endif // NDN_CPP_HAVE_LIBCRYPTO
