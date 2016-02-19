@@ -33,14 +33,14 @@ IdentityStorage::IdentityStorage()
 {
   if (!lastTimestampIsInitialized_) {
     lastTimestampIsInitialized_ = true;
-    lastTimestamp_ = ::floor(ndn_getNowMilliseconds() / 1000.0);
+    lastTimestamp_ = (uint64_t)::floor(ndn_getNowMilliseconds() / 1000.0);
   }
 }
 
 Name
 IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
 {
-  uint64_t timestamp = ::floor(ndn_getNowMilliseconds() / 1000.0);
+  uint64_t timestamp = (uint64_t)::floor(ndn_getNowMilliseconds() / 1000.0);
   while (timestamp <= lastTimestamp_)
     // Make the timestamp unique.
     timestamp += 1;
