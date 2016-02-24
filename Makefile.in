@@ -174,9 +174,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libndn_c_la_LIBADD =
 am__objects_1 =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libndn_c_la_OBJECTS = $(am__objects_1) src/c/errors.lo \
-	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
-	src/c/encoding/element-reader.lo \
+am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
+	src/c/errors.lo src/c/forwarding-flags.lo src/c/interest_c.lo \
+	src/c/name_c.lo src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-data.lo \
@@ -199,9 +199,9 @@ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
 libndn_cpp_la_LIBADD =
-am__objects_2 = $(am__objects_1) src/c/errors.lo \
-	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
-	src/c/encoding/element-reader.lo \
+am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
+	src/c/errors.lo src/c/forwarding-flags.lo src/c/interest_c.lo \
+	src/c/name_c.lo src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-data.lo \
@@ -1085,6 +1085,7 @@ ndn_cpp_cpp_headers = \
 
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
+  contrib/apache/apr_base64.c contrib/apache/apr_base64.h \
   src/c/control-parameters.h \
   src/c/data.h \
   src/c/delegation-set.h \
@@ -1364,6 +1365,14 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+contrib/apache/$(am__dirstamp):
+	@$(MKDIR_P) contrib/apache
+	@: > contrib/apache/$(am__dirstamp)
+contrib/apache/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) contrib/apache/$(DEPDIR)
+	@: > contrib/apache/$(DEPDIR)/$(am__dirstamp)
+contrib/apache/apr_base64.lo: contrib/apache/$(am__dirstamp) \
+	contrib/apache/$(DEPDIR)/$(am__dirstamp)
 src/c/$(am__dirstamp):
 	@$(MKDIR_P) src/c
 	@: > src/c/$(am__dirstamp)
@@ -2032,6 +2041,8 @@ bin/watched-insertion$(EXEEXT): $(bin_watched_insertion_OBJECTS) $(bin_watched_i
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f contrib/apache/*.$(OBJEXT)
+	-rm -f contrib/apache/*.lo
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/*.$(OBJEXT)
 	-rm -f examples/*.$(OBJEXT)
 	-rm -f examples/arduino/*.$(OBJEXT)
@@ -2085,6 +2096,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/apache/$(DEPDIR)/apr_base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_der_encode_decode-gtest-all.Po@am__quote@
@@ -2657,6 +2669,7 @@ clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf bin/.libs bin/_libs
 	-rm -rf bin/unit-tests/.libs bin/unit-tests/_libs
+	-rm -rf contrib/apache/.libs contrib/apache/_libs
 	-rm -rf src/.libs src/_libs
 	-rm -rf src/c/.libs src/c/_libs
 	-rm -rf src/c/encoding/.libs src/c/encoding/_libs
@@ -3258,6 +3271,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f bin/$(am__dirstamp)
 	-rm -f bin/unit-tests/$(am__dirstamp)
+	-rm -f contrib/apache/$(DEPDIR)/$(am__dirstamp)
+	-rm -f contrib/apache/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
 	-rm -f examples/$(DEPDIR)/$(am__dirstamp)
@@ -3323,7 +3338,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -3371,7 +3386,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
