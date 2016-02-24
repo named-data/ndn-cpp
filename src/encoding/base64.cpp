@@ -21,11 +21,10 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <vector>
+#include <sstream>
+#include "../../contrib/apache/apr_base64.h"
 #include "base64.hpp"
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#endif
 
 using namespace std;
 
@@ -34,73 +33,63 @@ namespace ndn {
 string
 toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines)
 {
-#if NDN_CPP_HAVE_LIBCRYPTO
-  BIO *base64 = BIO_new(BIO_f_base64());
-  if (!base64)
-    throw runtime_error("toBase64: BIO_new failed");
+  vector<char> output(::apr_base64_encode_len(arrayLength));
+  // Don't include the null terminator in the length.
+  size_t outputLength = (size_t)::apr_base64_encode_binary
+    (&output[0], (const unsigned char *)array, arrayLength) - 1;
+  if (addNewlines) {
+    ostringstream withNewlines;
+    for (size_t i = 0; i < outputLength; i += 64) {
+      size_t lineLength = 64;
+      if (i + lineLength > outputLength)
+        lineLength = outputLength - i;
 
-  if (!addNewlines)
-    BIO_set_flags(base64, BIO_FLAGS_BASE64_NO_NL);
+      withNewlines.write(&output[i], lineLength);
+      withNewlines << '\n';
+    }
 
-  BIO *outputBuffer = BIO_new(BIO_s_mem());
-  if (!outputBuffer) {
-    BIO_free(base64);
-    throw runtime_error("toBase64: BIO_new failed");
+    return withNewlines.str();
   }
-  outputBuffer = BIO_push(base64, outputBuffer);
-
-  if (BIO_write(base64, array, arrayLength) <= 0) {
-    BIO_free_all(outputBuffer);
-    throw runtime_error("toBase64: BIO_write failed");
-  }
-
-  BIO_flush(base64);
-  char *bufferPointer;
-  size_t bufferSize = BIO_get_mem_data(outputBuffer, &bufferPointer);
-
-  string result(bufferPointer, bufferSize);
-  BIO_free_all(outputBuffer);
-  return result;
-#else
-  throw runtime_error("toBase64: The OpenSSL base64 encoder is not available");
-#endif
+  else
+    return string(output.begin(), output.begin() + outputLength);
 }
 
 void
 fromBase64(const string& input, vector<uint8_t>& output)
 {
-#if NDN_CPP_HAVE_LIBCRYPTO
-  // openssl doesn't like whitespace, so remove it.
-  string cleanInput(input);
-  cleanInput.erase
-    (remove_if(cleanInput.begin(), cleanInput.end(), ::isspace),
-     cleanInput.end());
-
-  BIO *base64 = BIO_new(BIO_f_base64());
-  if (!base64)
-    throw runtime_error("fromBase64: BIO_new failed");
-  BIO_set_flags(base64, BIO_FLAGS_BASE64_NO_NL);
-
-  BIO *inputBuffer = BIO_new_mem_buf((char*)&cleanInput[0], cleanInput.size());
-  if (!inputBuffer) {
-    BIO_free(base64);
-    throw runtime_error("fromBase64: BIO_new_mem_buf failed");
-  }
-  inputBuffer = BIO_push(base64, inputBuffer);
-
-  // The output will be shorter than the input.
-  output.resize(cleanInput.size());
-  int outputLength = BIO_read(inputBuffer, &output[0], cleanInput.size());
-  if (outputLength < 0) {
-    BIO_free_all(inputBuffer);
-    throw runtime_error("fromBase64: BIO_read failed to decode");
+  // We are only concerned with whitespace characters which are all less than 
+  // the first base64 character '+'. If we find whitespace, then we'll copy
+  // non-whitespace to noWhitespaceStream.
+  ostringstream noWhitespaceStream;
+  bool gotWhitespace = false;
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (input[i] < '+') {
+      if (!gotWhitespace) {
+        // We need to use the noWitespaceStream. Initialize it.
+        gotWhitespace = true;
+        noWhitespaceStream.write(&input[0], i);
+      }
+    }
+    else {
+      if (gotWhitespace)
+        noWhitespaceStream << input[i];
+    }
   }
 
+  string noWhitespace;
+  const char* inputCString;
+  if (gotWhitespace) {
+    noWhitespace = noWhitespaceStream.str();
+    inputCString = noWhitespace.c_str();
+  }
+  else
+    // The input didn't have any whitespace, so use it as is.
+    inputCString = input.c_str();
+
+  output.resize(::apr_base64_decode_len(inputCString));
+  size_t outputLength = (size_t)::apr_base64_decode_binary
+    (&output[0], inputCString);
   output.resize(outputLength);
-  BIO_free_all(inputBuffer);
-#else
-  throw runtime_error("fromBase64: The OpenSSL base64 decoder is not available");
-#endif
 }
 
 }
