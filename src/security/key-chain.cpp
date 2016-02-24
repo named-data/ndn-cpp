@@ -26,6 +26,7 @@
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 
 INIT_LOGGER("ndn.KeyChain");
@@ -167,6 +168,40 @@ KeyChain::verifyInterest
       _LOG_ERROR("KeyChain::verifyInterest: Error in onVerifyFailed.");
     }
   }
+}
+
+void
+KeyChain::signWithHmacWithSha256
+  (Data& data, const Blob& key, WireFormat& wireFormat)
+{
+  // Encode once to get the signed portion.
+  SignedBlob encoding = data.wireEncode(wireFormat);
+
+  ptr_lib::shared_ptr<vector<uint8_t>> signatureBits
+    (new vector<uint8_t>(ndn_SHA256_DIGEST_SIZE));
+  ndn_computeHmacWithSha256
+    (key.buf(), key.size(), encoding.signedBuf(), encoding.signedSize(),
+     &signatureBits->front());
+  data.getSignature()->setSignature(Blob(signatureBits, false));
+
+  // Encode again to include the signature.
+  data.wireEncode(wireFormat);
+}
+
+bool
+KeyChain::verifyDataWithHmacWithSha256
+  (const Data& data, const Blob& key, WireFormat& wireFormat)
+{
+  // wireEncode returns the cached encoding if available.
+  SignedBlob encoding = data.wireEncode(wireFormat);
+
+  vector<uint8_t> newSignatureBits(ndn_SHA256_DIGEST_SIZE);
+  ndn_computeHmacWithSha256
+    (key.buf(), key.size(), encoding.signedBuf(), encoding.signedSize(),
+     &newSignatureBits.front());
+
+  // Use the vector equals operator.
+  return newSignatureBits == *data.getSignature()->getSignature();
 }
 
 void

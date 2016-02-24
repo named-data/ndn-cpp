@@ -28,6 +28,7 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 
 using namespace std;
@@ -217,6 +218,15 @@ static void dumpData(const Data& data)
       dynamic_cast<const Sha256WithEcdsaSignature*>(data.getSignature());
     if (signature) {
       cout << "Sha256WithEcdsa signature.signature: "
+           << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+      keyLocator = &signature->getKeyLocator();
+    }
+  }
+  {
+    const HmacWithSha256Signature *signature =
+      dynamic_cast<const HmacWithSha256Signature*>(data.getSignature());
+    if (signature) {
+      cout << "HmacWithSha256 signature.signature: "
            << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
       keyLocator = &signature->getKeyLocator();
     }

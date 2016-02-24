@@ -24,6 +24,7 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include "c/data.h"
 #include <ndn-cpp/data.hpp>
 
@@ -88,6 +89,8 @@ Data::set(const DataLite& dataLite)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature()));
   else if (dataLite.getSignature().getType() == ndn_SignatureType_Sha256WithEcdsaSignature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new Sha256WithEcdsaSignature()));
+  else if (dataLite.getSignature().getType() == ndn_SignatureType_HmacWithSha256Signature)
+    signature_.set(ptr_lib::shared_ptr<Signature>(new HmacWithSha256Signature()));
   else if (dataLite.getSignature().getType() == ndn_SignatureType_DigestSha256Signature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new DigestSha256Signature()));
   else

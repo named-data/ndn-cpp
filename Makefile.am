@@ -30,8 +30,8 @@ noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
   bin/test-get-async bin/test-get-async-threadsafe bin/test-list-channels \
   bin/test-list-faces bin/test-list-rib bin/test-publish-async-nfd \
-  bin/test-register-route bin/analog-reading-consumer bin/basic-insertion \
-  bin/watched-insertion
+  bin/test-register-route bin/test-sign-verify-data-hmac \
+  bin/analog-reading-consumer bin/basic-insertion bin/watched-insertion
 
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
@@ -65,6 +65,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/hmac-with-sha256-signature.hpp \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
@@ -184,6 +185,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
+  src/hmac-with-sha256-signature.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
@@ -302,6 +304,9 @@ bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 
 bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
 bin_analog_reading_consumer_LDADD = libndn-cpp.la
+
+bin_test_sign_verify_data_hmac_SOURCES = examples/test-sign-verify-data-hmac.cpp
+bin_test_sign_verify_data_hmac_LDADD = libndn-cpp.la
 
 bin_basic_insertion_SOURCES = examples/repo-ng/basic-insertion.cpp \
   examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc

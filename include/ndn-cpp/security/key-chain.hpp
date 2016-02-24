@@ -530,6 +530,35 @@ public:
   void
   setFace(Face* face) { face_ = face; }
 
+  /**
+   * Wire encode the Data object, compute an HmacWithSha256 and update the
+   * signature value.
+   * @param data The Data object to be signed. This updates its signature and
+   * wireEncoding.
+   * @param key The key for the HmacWithSha256.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @note This method is an experimental feature. The API may change.
+   */
+  static void
+  signWithHmacWithSha256
+    (Data& data, const Blob& key,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Compute a new HmacWithSha256 for the data packet and verify it against
+   * the signature value.
+   * @param data The Data object to verify.
+   * @param key The key for the HmacWithSha256.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @note This method is an experimental feature. The API may change.
+   */
+  static bool
+  verifyDataWithHmacWithSha256
+    (const Data& data, const Blob& key,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
   static const RsaKeyParams DEFAULT_KEY_PARAMS;
 
 private:

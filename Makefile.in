@@ -116,6 +116,7 @@ noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-list-channels$(EXEEXT) bin/test-list-faces$(EXEEXT) \
 	bin/test-list-rib$(EXEEXT) bin/test-publish-async-nfd$(EXEEXT) \
 	bin/test-register-route$(EXEEXT) \
+	bin/test-sign-verify-data-hmac$(EXEEXT) \
 	bin/analog-reading-consumer$(EXEEXT) \
 	bin/basic-insertion$(EXEEXT) bin/watched-insertion$(EXEEXT)
 TESTS = $(check_PROGRAMS)
@@ -221,10 +222,10 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/control-parameters.lo src/data.lo \
 	src/delegation-set.lo src/digest-sha256-signature.lo \
-	src/exclude.lo src/face.lo src/interest-filter.lo \
-	src/interest.lo src/key-locator.lo src/link.lo \
-	src/meta-info.lo src/name.lo src/node.lo src/signature.lo \
-	src/sha256-with-ecdsa-signature.lo \
+	src/exclude.lo src/face.lo src/hmac-with-sha256-signature.lo \
+	src/interest-filter.lo src/interest.lo src/key-locator.lo \
+	src/link.lo src/meta-info.lo src/name.lo src/node.lo \
+	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/threadsafe-face.lo \
 	src/encoding/base64.lo src/encoding/element-listener.lo \
 	src/encoding/oid.lo src/encoding/protobuf-tlv.lo \
@@ -351,6 +352,11 @@ am_bin_test_register_route_OBJECTS =  \
 bin_test_register_route_OBJECTS =  \
 	$(am_bin_test_register_route_OBJECTS)
 bin_test_register_route_DEPENDENCIES = libndn-cpp.la
+am_bin_test_sign_verify_data_hmac_OBJECTS =  \
+	examples/test-sign-verify-data-hmac.$(OBJEXT)
+bin_test_sign_verify_data_hmac_OBJECTS =  \
+	$(am_bin_test_sign_verify_data_hmac_OBJECTS)
+bin_test_sign_verify_data_hmac_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT)
 bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = $(am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS)
@@ -485,6 +491,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
+	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
@@ -512,6 +519,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
+	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
 	$(bin_unit_tests_test_der_encode_decode_SOURCES) \
@@ -1011,6 +1019,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/hmac-with-sha256-signature.hpp \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
   include/ndn-cpp/key-locator.hpp \
@@ -1132,6 +1141,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
+  src/hmac-with-sha256-signature.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
   src/key-locator.cpp \
@@ -1238,6 +1248,8 @@ bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
 bin_analog_reading_consumer_LDADD = libndn-cpp.la
+bin_test_sign_verify_data_hmac_SOURCES = examples/test-sign-verify-data-hmac.cpp
+bin_test_sign_verify_data_hmac_LDADD = libndn-cpp.la
 bin_basic_insertion_SOURCES = examples/repo-ng/basic-insertion.cpp \
   examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
 
@@ -1476,6 +1488,8 @@ src/digest-sha256-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/hmac-with-sha256-signature.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/interest-filter.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
@@ -1896,6 +1910,12 @@ examples/face-query-filter.pb.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-register-route$(EXEEXT): $(bin_test_register_route_OBJECTS) $(bin_test_register_route_DEPENDENCIES) $(EXTRA_bin_test_register_route_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-register-route$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_register_route_OBJECTS) $(bin_test_register_route_LDADD) $(LIBS)
+examples/test-sign-verify-data-hmac.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-sign-verify-data-hmac$(EXEEXT): $(bin_test_sign_verify_data_hmac_OBJECTS) $(bin_test_sign_verify_data_hmac_DEPENDENCIES) $(EXTRA_bin_test_sign_verify_data_hmac_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-sign-verify-data-hmac$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_sign_verify_data_hmac_OBJECTS) $(bin_test_sign_verify_data_hmac_LDADD) $(LIBS)
 tests/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests
 	@: > tests/unit-tests/$(am__dirstamp)
@@ -2129,6 +2149,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-sign-verify-data-hmac.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/arduino/$(DEPDIR)/analog-reading-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/repo-ng/$(DEPDIR)/basic-insertion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/repo-ng/$(DEPDIR)/repo-command-parameter.pb.Po@am__quote@
@@ -2141,6 +2162,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/digest-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/hmac-with-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/key-locator.Plo@am__quote@
