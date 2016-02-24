@@ -170,6 +170,7 @@ KeyChain::verifyInterest
   }
 }
 
+#if NDN_CPP_HAVE_LIBCRYPTO
 void
 KeyChain::signWithHmacWithSha256
   (Data& data, const Blob& key, WireFormat& wireFormat)
@@ -203,6 +204,7 @@ KeyChain::verifyDataWithHmacWithSha256
   // Use the vector equals operator.
   return newSignatureBits == *data.getSignature()->getSignature();
 }
+#endif
 
 void
 KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep)
