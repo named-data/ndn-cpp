@@ -745,12 +745,24 @@ public:
   equals(const Name& name) const;
 
   /**
-   * Check if the N components of this name are the same as the first N components of the given name.
+   * Check if the N components of this name are the same as the first N
+   * components of the given name.
    * @param name The Name to check.
-   * @return true if this matches the given name, otherwise false.  This always returns true if this name is empty.
+   * @return true if this matches the given name, otherwise false. This always
+   * returns true if this name is empty.
    */
   bool
   match(const Name& name) const;
+
+  /**
+   * Check if the N components of this name are the same as the first N
+   * components of the given name.
+   * @param name The Name to check.
+   * @return true if this matches the given name, otherwise false. This always
+   * returns true if this name is empty.
+   */
+  bool
+  isPrefixOf(const Name& name) const { return match(name); }
 
   /**
    * Make a Blob value by decoding the escapedString between beginOffset and endOffset according to the NDN URI Scheme.
