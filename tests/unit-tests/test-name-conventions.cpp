@@ -41,6 +41,7 @@ TEST_F(TestNameConventions, NumberWithMarker)
 TEST_F(TestNameConventions, Segment)
 {
   const Name& expected("/%00%27%10");
+  ASSERT_TRUE(expected.get(0).isSegment());
   uint64_t number = 10000;
   ASSERT_EQ(Name().appendSegment(number), expected) << "appendSegment did not create the expected component";
   ASSERT_EQ(expected[0].toSegment(), number) << "toSegment did not return the expected value";
@@ -49,6 +50,7 @@ TEST_F(TestNameConventions, Segment)
 TEST_F(TestNameConventions, SegmentOffset)
 {
   const Name& expected("/%FB%00%01%86%A0");
+  ASSERT_TRUE(expected.get(0).isSegmentOffset());
   uint64_t number = 100000;
   ASSERT_EQ(Name().appendSegmentOffset(number), expected) << "appendSegmentOffset did not create the expected component";
   ASSERT_EQ(expected[0].toSegmentOffset(), number) << "toSegmentOffset did not return the expected value";
@@ -57,6 +59,7 @@ TEST_F(TestNameConventions, SegmentOffset)
 TEST_F(TestNameConventions, Version)
 {
   const Name& expected("/%FD%00%0FB%40");
+  ASSERT_TRUE(expected.get(0).isVersion());
   uint64_t number = 1000000;
   ASSERT_EQ(Name().appendVersion(number), expected) << "appendVersion did not create the expected component";
   ASSERT_EQ(expected[0].toVersion(), number) << "toVersion did not return the expected value";
@@ -65,6 +68,7 @@ TEST_F(TestNameConventions, Version)
 TEST_F(TestNameConventions, SequenceNumber)
 {
   const Name& expected("/%FE%00%98%96%80");
+  ASSERT_TRUE(expected.get(0).isSequenceNumber());
   uint64_t number = 10000000;
   ASSERT_EQ(Name().appendSequenceNumber(number), expected) << "appendSequenceNumber did not create the expected component";
   ASSERT_EQ(expected[0].toSequenceNumber(), number) << "toSequenceNumber did not return the expected value";
@@ -73,6 +77,7 @@ TEST_F(TestNameConventions, SequenceNumber)
 TEST_F(TestNameConventions, Timestamp)
 {
   const Name& expected("/%FC%00%04%7BE%E3%1B%00%00");
+  ASSERT_TRUE(expected.get(0).isTimestamp());
   // 40 years (not counting leap years) in microseconds.
   uint64_t number = (uint64_t)40 * 365 * 24 * 3600 * 1000000;
   ASSERT_EQ(Name().appendTimestamp(number), expected) << "appendTimestamp did not create the expected component";
