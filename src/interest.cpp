@@ -22,6 +22,7 @@
 #include <math.h>
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
+#include "c/util/crypto.h"
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -241,6 +242,29 @@ Interest::getLinkWireEncoding(WireFormat& wireFormat) const
     return link->wireEncode(wireFormat);
   else
     return Blob();
+}
+
+void
+Interest::refreshNonce()
+{
+  Blob currentNonce = getNonce();
+  if (currentNonce.size() == 0)
+    return;
+
+  ptr_lib::shared_ptr<vector<uint8_t> > newNonce
+    (new vector<uint8_t>(currentNonce.size()));
+  while (true) {
+    ndn_generateRandomBytes(&newNonce->front(), newNonce->size());
+    // Use the vector equals operator.
+    if (*newNonce != *currentNonce)
+      break;
+  }
+
+  nonce_ = Blob(newNonce, false);
+  // Set getNonceChangeCount_ so that the next call to getNonce() won't clear
+  // nonce_.
+  ++changeCount_;
+  getNonceChangeCount_ = getChangeCount();
 }
 
 }

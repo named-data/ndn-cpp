@@ -273,6 +273,19 @@ TEST_F(TestInterestMethods, SetRemovesNonce)
   ASSERT_TRUE(interest.getNonce().isNull()) << "Interest should not have a nonce after changing fields";
 }
 
+TEST_F(TestInterestMethods, RefreshNonce)
+{
+  Interest interest(referenceInterest);
+  Blob oldNonce = interest.getNonce();
+  ASSERT_EQ(4, oldNonce.size());
+
+  interest.refreshNonce();
+  ASSERT_EQ(oldNonce.size(), interest.getNonce().size()) <<
+            "The refreshed nonce should be the same size";
+  ASSERT_FALSE(interest.getNonce().equals(oldNonce)) <<
+               "The refreshed nonce should be different";
+}
+
 TEST_F(TestInterestMethods, ExcludeMatches)
 {
   Exclude exclude;
