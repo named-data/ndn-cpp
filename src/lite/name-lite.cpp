@@ -39,6 +39,36 @@ NameLite::Component::Component(const BlobLite& value)
   ndn_NameComponent_initialize(this, value.buf(), value.size());
 }
 
+bool
+NameLite::Component::isSegment() const
+{
+  return ndn_NameComponent_isSegment(this) != 0;
+}
+
+bool
+NameLite::Component::isSegmentOffset() const
+{
+  return ndn_NameComponent_isSegmentOffset(this) != 0;
+}
+
+bool
+NameLite::Component::isVersion() const
+{
+  return ndn_NameComponent_isVersion(this) != 0;
+}
+
+bool
+NameLite::Component::isTimestamp() const
+{
+  return ndn_NameComponent_isTimestamp(this) != 0;
+}
+
+bool
+NameLite::Component::isSequenceNumber() const
+{
+  return ndn_NameComponent_isSequenceNumber(this) != 0;
+}
+
 uint64_t
 NameLite::Component::toNumber() const
 {

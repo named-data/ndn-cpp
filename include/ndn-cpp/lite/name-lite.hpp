@@ -61,6 +61,51 @@ public:
     getValue() const { return BlobLite::upCast(value); }
 
     /**
+     * Check if this component is a segment number according to NDN naming
+     * conventions for "Segment number" (marker 0x00) and return an integer.
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return True if this is a segment number.
+     */
+    bool
+    isSegment() const;
+
+    /**
+     * Check if this component is a segment byte offset according to NDN naming
+     * conventions for "Byte offset" (marker 0xFB) and return an integer.
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return True if this is a segment byte offset.
+     */
+    bool
+    isSegmentOffset() const;
+
+    /**
+     * Check if this component is a version number according to NDN naming
+     * conventions for "Versioning" (marker 0xFD) and return an integer.
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return True if this is a version number.
+     */
+    bool
+    isVersion() const;
+
+    /**
+     * Check if this component is a timestamp according to NDN naming
+     * conventions for "Timestamp" (marker 0xFC) and return an integer.
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return True if this is a timestamp.
+     */
+    bool
+    isTimestamp() const;
+
+    /**
+     * Check if this component is a sequence number according to NDN naming
+     * conventions for "Sequencing" (marker 0xFE) and return an integer.
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @return True if this is a sequence number.
+     */
+    bool
+    isSequenceNumber() const;
+
+    /**
      * Interpret the name component as a network-ordered number and return an integer.
      * @return The integer number.
      */

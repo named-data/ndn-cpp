@@ -41,6 +41,71 @@ static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self
 }
 
 /**
+ * Check if this component is a segment number according to NDN naming
+ * conventions for "Segment number" (marker 0x00) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @return 1 if this is a segment number, else 0.
+ */
+static __inline int
+ndn_NameComponent_isSegment(const struct ndn_NameComponent *self)
+{
+  return self->value.length >= 1 && self->value.value[0] == 0x00 ? 1 : 0;
+}
+
+/**
+ * Check if this component is a segment byte offset according to NDN naming
+ * conventions for "Byte offset" (marker 0xFB) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @return 1 if this is a segment byte offset, else 0.
+ */
+static __inline int
+ndn_NameComponent_isSegmentOffset(const struct ndn_NameComponent *self)
+{
+  return self->value.length >= 1 && self->value.value[0] == 0xFB ? 1 : 0;
+}
+
+/**
+ * Check if this component is a version number according to NDN naming
+ * conventions for "Versioning" (marker 0xFD) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @return 1 if this is a version number, else 0.
+ */
+static __inline int
+ndn_NameComponent_isVersion(const struct ndn_NameComponent *self)
+{
+  return self->value.length >= 1 && self->value.value[0] == 0xFD ? 1 : 0;
+}
+
+/**
+ * Check if this component is a timestamp according to NDN naming
+ * conventions for "Timestamp" (marker 0xFC) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @return 1 if this is a timestamp, else 0.
+ */
+static __inline int
+ndn_NameComponent_isTimestamp(const struct ndn_NameComponent *self)
+{
+  return self->value.length >= 1 && self->value.value[0] == 0xFC ? 1 : 0;
+}
+
+/**
+ * Check if this component is a sequence number according to NDN naming
+ * conventions for "Sequencing" (marker 0xFE) and return an integer.
+ * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+ * @param self A pointer to the ndn_NameComponent struct.
+ * @return 1 if this is a sequence number, else 0.
+ */
+static __inline int
+ndn_NameComponent_isSequenceNumber(const struct ndn_NameComponent *self)
+{
+  return self->value.length >= 1 && self->value.value[0] == 0xFE ? 1 : 0;
+}
+
+/**
  * Interpret the name component as a network-ordered number and return an integer.
  * @param self A pointer to the ndn_NameComponent struct.
  * @return The integer number.
