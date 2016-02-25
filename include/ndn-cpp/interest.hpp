@@ -456,6 +456,14 @@ public:
   }
 
   /**
+   * Update the bytes of the nonce with new random values. This ensures that the
+   * new nonce value is different than the current one. If the current nonce is
+   * not specified, this does nothing.
+   */
+  void
+  refreshNonce();
+
+  /**
    * Check if this Interest's name matches the given name (using Name::match)
    * and the given name also conforms to the interest selectors.
    * @param name The name to check.
