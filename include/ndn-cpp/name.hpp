@@ -661,6 +661,7 @@ public:
    * iStartComponent is -N then return return components starting from
    * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
+   * If greater than the size of this name, get until the end of the name.
    * @return A new name.
    */
   Name

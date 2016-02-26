@@ -242,10 +242,8 @@ Name::Component::getSuccessor() const
       (*result)[i] = value_.buf()[i] + 1;
       carry = ((*result)[i] == 0);
     }
-    else {
+    else
       (*result)[i] = value_.buf()[i];
-      carry = false;
-    }
   }
 
   if (carry)
@@ -385,15 +383,7 @@ Name::getSubName(int iStartComponent, size_t nComponents) const
 Name
 Name::getSubName(int iStartComponent) const
 {
-  if (iStartComponent < 0)
-    iStartComponent = components_.size() - (-iStartComponent);
-
-  Name result;
-
-  for (size_t i = iStartComponent; i < components_.size(); ++i)
-    result.components_.push_back(components_[i]);
-
-  return result;
+  return getSubName(iStartComponent, components_.size());
 }
 
 bool
