@@ -153,6 +153,52 @@ TEST_F(TestNameMethods, Compare)
     sortedURIs.push_back(names[i].toUri());
 
   ASSERT_EQ(sortedURIs, expectedOrder) << "Name comparison gave incorrect order";
+
+  // Tests from ndn-cxx name.t.cpp Compare.
+  ASSERT_EQ(Name("/A")  .compare(Name("/A")),   0);
+  ASSERT_EQ(Name("/A")  .compare(Name("/A")),   0);
+  ASSERT_LT(Name("/A")  .compare(Name("/B")),   0);
+  ASSERT_GT(Name("/B")  .compare(Name("/A")),   0);
+  ASSERT_LT(Name("/A")  .compare(Name("/AA")),  0);
+  ASSERT_GT(Name("/AA") .compare(Name("/A")),   0);
+  ASSERT_LT(Name("/A")  .compare(Name("/A/C")), 0);
+  ASSERT_GT(Name("/A/C").compare(Name("/A")),   0);
+
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/A")),   0);
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/B")),   0);
+  ASSERT_GT(Name("/Z/B/Y")  .compare(1, 1, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/AA")),  0);
+  ASSERT_GT(Name("/Z/AA/Y") .compare(1, 1, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/A/C")), 0);
+  ASSERT_GT(Name("/Z/A/C/Y").compare(1, 2, Name("/A")),   0);
+
+  ASSERT_EQ(Name("/Z/A")  .compare(1, 9, Name("/A")),   0);
+  ASSERT_EQ(Name("/Z/A")  .compare(1, 9, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A")  .compare(1, 9, Name("/B")),   0);
+  ASSERT_GT(Name("/Z/B")  .compare(1, 9, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A")  .compare(1, 9, Name("/AA")),  0);
+  ASSERT_GT(Name("/Z/AA") .compare(1, 9, Name("/A")),   0);
+  ASSERT_LT(Name("/Z/A")  .compare(1, 9, Name("/A/C")), 0);
+  ASSERT_GT(Name("/Z/A/C").compare(1, 9, Name("/A")),   0);
+
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A/W"),   1, 1), 0);
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A/W"),   1, 1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/B/W"),   1, 1), 0);
+  ASSERT_GT(Name("/Z/B/Y")  .compare(1, 1, Name("/X/A/W"),   1, 1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/AA/W"),  1, 1), 0);
+  ASSERT_GT(Name("/Z/AA/Y") .compare(1, 1, Name("/X/A/W"),   1, 1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A/C/W"), 1, 2), 0);
+  ASSERT_GT(Name("/Z/A/C/Y").compare(1, 2, Name("/X/A/W"),   1, 1), 0);
+
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A"),   1), 0);
+  ASSERT_EQ(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A"),   1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/B"),   1), 0);
+  ASSERT_GT(Name("/Z/B/Y")  .compare(1, 1, Name("/X/A"),   1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/AA"),  1), 0);
+  ASSERT_GT(Name("/Z/AA/Y") .compare(1, 1, Name("/X/A"),   1), 0);
+  ASSERT_LT(Name("/Z/A/Y")  .compare(1, 1, Name("/X/A/C"), 1), 0);
+  ASSERT_GT(Name("/Z/A/C/Y").compare(1, 2, Name("/X/A"),   1), 0);
 }
 
 TEST_F(TestNameMethods, Match)
