@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.9 (2016-02-25)
+Interim changes since NDN-CPP v0.9 (2016-02-26)
 -----------------------------------------------
 
 Changes
@@ -9,6 +9,8 @@ Changes
 * In MemoryContentCache.registerPrefix, added optional onRegisterSuccess.
 * Added HmacWithSha256Signature. In KeyChain, added experimental static methods
   sign/verifyDataWithHmacWithSha256.
+* http://redmine.named-data.net/issues/3449 Added Name.isPrefixOf, getSuccessor
+  and compare(int, size_t, Name, int, size_t).
 * http://redmine.named-data.net/issues/3450 Added Name.Component.isSegment,
   isSegmentOffset, isVersion, isTimestamp and isSequenceNumber.
 * http://redmine.named-data.net/issues/3452 Added Interest::refreshNonce.
