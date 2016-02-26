@@ -38,54 +38,8 @@ using namespace std;
 
 namespace ndn {
 
-static const char *WHITESPACE_CHARS = " \n\r\t";
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
-
-/**
- * Modify str in place to erase whitespace on the left.
- * @param str
- */
-static __inline void
-trimLeft(string& str)
-{
-  size_t found = str.find_first_not_of(WHITESPACE_CHARS);
-  if (found != string::npos) {
-    if (found > 0)
-      str.erase(0, found);
-  }
-  else
-    // All whitespace
-    str.clear();
-}
-
-/**
- * Modify str in place to erase whitespace on the right.
- * @param str
- */
-static __inline void
-trimRight(string& str)
-{
-  size_t found = str.find_last_not_of(WHITESPACE_CHARS);
-  if (found != string::npos) {
-    if (found + 1 < str.size())
-      str.erase(found + 1);
-  }
-  else
-    // All whitespace
-    str.clear();
-}
-
-/**
- * Modify str in place to erase whitespace on the left and right.
- * @param str
- */
-static void
-trim(string& str)
-{
-  trimLeft(str);
-  trimRight(str);
-}
 
 FilePrivateKeyStorage::FilePrivateKeyStorage()
 {

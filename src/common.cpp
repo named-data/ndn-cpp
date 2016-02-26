@@ -44,4 +44,47 @@ toHex(const uint8_t* array, size_t arrayLength)
   return result.str();
 }
 
+static const char *WHITESPACE_CHARS = " \t\n\r";
+
+/**
+ * Modify str in place to erase whitespace on the left.
+ * @param str The string to modify.
+ */
+static __inline void
+trimLeft(string& str)
+{
+  size_t found = str.find_first_not_of(WHITESPACE_CHARS);
+  if (found != string::npos) {
+    if (found > 0)
+      str.erase(0, found);
+  }
+  else
+    // All whitespace
+    str.clear();
+}
+
+/**
+ * Modify str in place to erase whitespace on the right.
+ * @param str The string to modify.
+ */
+static __inline void
+trimRight(string& str)
+{
+  size_t found = str.find_last_not_of(WHITESPACE_CHARS);
+  if (found != string::npos) {
+    if (found + 1 < str.size())
+      str.erase(found + 1);
+  }
+  else
+    // All whitespace
+    str.clear();
+}
+
+void
+trim(string& str)
+{
+  trimLeft(str);
+  trimRight(str);
+}
+
 }

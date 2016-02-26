@@ -135,6 +135,13 @@ toHex(const std::vector<uint8_t>& array)
   return toHex(&array[0], array.size());
 }
 
+/**
+ * Modify str in place to erase whitespace on the left and right.
+ * @param str The string to modify.
+ */
+void
+trim(std::string& str);
+
 }
 
 #endif
