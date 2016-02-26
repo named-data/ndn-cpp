@@ -373,17 +373,11 @@ Name::getSubName(int iStartComponent, size_t nComponents) const
 
   Name result;
 
-  size_t iEnd = iStartComponent + nComponents;
-  for (size_t i = iStartComponent; i < iEnd && i < components_.size(); ++i)
+  size_t iEnd = min(iStartComponent + nComponents, components_.size());
+  for (size_t i = iStartComponent; i < iEnd; ++i)
     result.components_.push_back(components_[i]);
 
   return result;
-}
-
-Name
-Name::getSubName(int iStartComponent) const
-{
-  return getSubName(iStartComponent, components_.size());
 }
 
 bool
@@ -526,10 +520,22 @@ Name::get(int i) const
 }
 
 int
-Name::compare(const Name& other) const
+Name::compare
+  (int iStartComponent, size_t nComponents, const Name& other,
+   int iOtherStartComponent, size_t nOtherComponents) const
 {
-  for (size_t i = 0; i < size() && i < other.size(); ++i) {
-    int comparison = components_[i].compare(other.components_[i]);
+  if (iStartComponent < 0)
+    iStartComponent = components_.size() - (-iStartComponent);
+  if (iStartComponent < 0)
+    iOtherStartComponent = other.components_.size() - (-iOtherStartComponent);
+
+  nComponents = min(nComponents, size() - iStartComponent);
+  nOtherComponents = min(nOtherComponents, other.size() - iOtherStartComponent);
+
+  size_t count = min(nComponents, nOtherComponents);
+  for (size_t i = 0; i < count; ++i) {
+    int comparison = components_[iStartComponent + i].compare
+      (other.components_[iOtherStartComponent + i]);
     if (comparison == 0)
       // The components at this index are equal, so check the next components.
       continue;
@@ -538,10 +544,11 @@ Name::compare(const Name& other) const
     return comparison;
   }
 
-  // The components up to min(this.size(), other.size()) are equal, so the shorter name is less.
-  if (size() < other.size())
+  // The components up to min(this.size(), other.size()) are equal, so the
+  // shorter name is less.
+  if (nComponents < nOtherComponents)
     return -1;
-  else if (size() > other.size())
+  else if (nComponents > nOtherComponents)
     return 1;
   else
     return 0;

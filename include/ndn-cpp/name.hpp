@@ -675,7 +675,10 @@ public:
    * @return A new name.
    */
   Name
-  getSubName(int iStartComponent) const;
+  getSubName(int iStartComponent) const
+  {
+    return getSubName(iStartComponent, components_.size());
+  }
 
   /**
    * Return a new Name with the first nComponents components of this Name.
@@ -971,21 +974,81 @@ public:
   getChangeCount() const { return changeCount_; }
 
   /**
-   * Compare this to the other Name using NDN canonical ordering.  If the first components of each name are not equal,
-   * this returns -1 if the first comes before the second using the NDN canonical ordering for name components, or 1 if it comes after.
-   * If they are equal, this compares the second components of each name, etc.  If both names are the same up to
-   * the size of the shorter name, this returns -1 if the first name is shorter than the second or 1 if it is longer.
-   * For example, std::sort gives: /a/b/d /a/b/cc /c /c/a /bb .  This is intuitive because all names
-   * with the prefix /a are next to each other.  But it may be also be counter-intuitive because /c comes before /bb
-   * according to NDN canonical ordering since it is shorter.
+   * Compare this to the other Name using NDN canonical ordering. If the first 
+   * components of each name are not equal, this returns -1 if the first comes
+   * before the second using the NDN canonical ordering for name components, or
+   * 1 if it comes after. If they are equal, this compares the second components
+   * of each name, etc.  If both names are the same up to the size of the
+   * shorter name, this returns -1 if the first name is shorter than the second
+   * or 1 if it is longer. For example, std::sort gives:
+   * /a/b/d /a/b/cc /c /c/a /bb .  This is intuitive because all names with the
+   * prefix /a are next to each other. But it may be also be counter-intuitive
+   * because /c comes before /bb according to NDN canonical ordering since it is
+   * shorter.
    * @param other The other Name to compare with.
-   * @return 0 If they compare equal, -1 if *this comes before other in the canonical ordering, or
-   * 1 if *this comes after other in the canonical ordering.
+   * @return 0 If they compare equal, -1 if *this comes before other in the 
+   * canonical ordering, or 1 if *this comes after other in the canonical
+   * ordering.
    *
    * @see http://named-data.net/doc/0.2/technical/CanonicalOrder.html
    */
   int
-  compare(const Name& other) const;
+  compare(const Name& other) const
+  {
+    return compare(0, components_.size(), other);
+  }
+
+  /**
+   * Compare a subset of this name to a subset of the other name, equivalent to
+   * this->getSubName(iStartComponent, nComponents).compare
+   * (other.getSubName(iOtherStartComponent, nOtherComponents)).
+   * @param iStartComponent The index if the first component of this name to
+   * get. If iStartComponent is -N then return return components starting from
+   * name.size() - N.
+   * @param nComponents The number of components starting at iStartComponent.
+   * If greater than the size of this name, get until the end of the name.
+   * @param other The other Name to compare with.
+   * @param iOtherStartComponent The index if the first component of the other
+   * name to get. If iOtherStartComponent is -N then return return components
+   * starting from other.size() - N.
+   * @param nOtherComponents The number of components starting at
+   * iOtherStartComponent. If greater than the size of the other name, get until
+   * the end of the name.
+   * @return 0 If the sub names compare equal, -1 if this sub name comes before
+   * the other sub name in the canonical ordering, or 1 if after.
+   */
+  int
+  compare
+    (int iStartComponent, size_t nComponents, const Name& other,
+     int iOtherStartComponent, size_t nOtherComponents) const;
+
+
+  /**
+   * Compare a subset of this name to a subset of the other name, equivalent to
+   * this->getSubName(iStartComponent, nComponents).compare
+   * (other.getSubName(iOtherStartComponent)), getting all components of other
+   * from iOtherStartComponent to the end of the name.
+   * @param iStartComponent The index if the first component of this name to
+   * get. If iStartComponent is -N then return return components starting from
+   * name.size() - N.
+   * @param nComponents The number of components starting at iStartComponent.
+   * If greater than the size of this name, get until the end of the name.
+   * @param other The other Name to compare with.
+   * @param iOtherStartComponent (optional) The index if the first component of
+   * the other name to get. If iOtherStartComponent is -N then return return 
+   * components starting from other.size() - N. If omitted, use 0.
+   * @return 0 If the sub names compare equal, -1 if this sub name comes before
+   * the other sub name in the canonical ordering, or 1 if after.
+   */
+  int
+  compare
+    (int iStartComponent, size_t nComponents, const Name& other,
+     int iOtherStartComponent = 0) const
+  {
+    return compare
+      (iStartComponent, nComponents, other, iOtherStartComponent,
+       other.components_.size());
+  }
 
   const Component&
   operator [] (int i) const
