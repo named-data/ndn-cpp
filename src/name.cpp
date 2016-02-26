@@ -229,6 +229,36 @@ Name::Component::compare(const Name::Component& other) const
   return ndn_memcmp(value_.buf(), other.value_.buf(), value_.size());
 }
 
+Name::Component
+Name::Component::getSuccessor() const
+{
+  // Allocate an extra byte in case the result is larger.
+  ptr_lib::shared_ptr<vector<uint8_t> > result
+    (new vector<uint8_t>(value_.size() + 1));
+
+  bool carry = true;
+  for (int i = (int)value_.size() - 1; i >= 0; --i) {
+    if (carry) {
+      (*result)[i] = value_.buf()[i] + 1;
+      carry = ((*result)[i] == 0);
+    }
+    else {
+      (*result)[i] = value_.buf()[i];
+      carry = false;
+    }
+  }
+
+  if (carry)
+    // Assume all the bytes were set to zero (or the component was empty).
+    // In NDN ordering, carry does not mean to prepend a 1, but to make a
+    // component one byte longer of all zeros.
+    (*result)[result->size() - 1] = 0;
+  else
+    // We didn't need the extra byte.
+    result->resize(value_.size());
+
+  return Component(Blob(result, false));
+}
 
 void
 Name::set(const char *uri_cstr)
@@ -379,6 +409,19 @@ Name::equals(const Name& name) const
   }
 
   return true;
+}
+
+Name
+Name::getSuccessor() const
+{
+  if (size() == 0) {
+    // Return "/%00".
+    Name result;
+    result.append((const uint8_t*)"\0", 1);
+    return result;
+  }
+  else
+    return getPrefix(-1).append(get(-1).getSuccessor());
 }
 
 bool

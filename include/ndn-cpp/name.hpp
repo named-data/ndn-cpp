@@ -352,6 +352,13 @@ public:
     getFinalSegmentPrefixLength() { return FINAL_SEGMENT_PREFIX_LENGTH; }
 
     /**
+     * Get the successor of this component, as described in Name::getSuccessor.
+     * @return A new Name::Component which is the successor of this.
+     */
+    Component
+    getSuccessor() const;
+
+    /**
      * Check if this is the same component as other.
      * @param other The other Component to compare with.
      * @return true if the components are equal, otherwise false.
@@ -788,6 +795,28 @@ public:
    */
   bool
   equals(const Name& name) const;
+
+  /**
+   * Get the successor of this name which is defined as follows.
+   *
+   *     N represents the set of NDN Names, and X,Y ∈ N.
+   *     Operator < is defined by the NDN canonical order on N.
+   *     Y is the successor of X, if (a) X < Y, and (b) ∄ Z ∈ N s.t. X < Z < Y.
+   *
+   * In plain words, the successor of a name is the same name, but with its last
+   * component advanced to a next possible value.
+   *
+   * Examples:
+   *
+   * - The successor of / is /%00
+   * - The successor of /%00%01/%01%02 is /%00%01/%01%03
+   * - The successor of /%00%01/%01%FF is /%00%01/%02%00
+   * - The successor of /%00%01/%FF%FF is /%00%01/%00%00%00
+   *
+   * @return A new name which is the successor of this.
+   */
+  Name
+  getSuccessor() const;
 
   /**
    * Check if the N components of this name are the same as the first N
