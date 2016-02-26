@@ -167,6 +167,15 @@ TEST_F(TestNameMethods, Match)
   ASSERT_TRUE(Name().match(name)) << "Empty name should always match another";
 }
 
+TEST_F(TestNameMethods, GetSuccessor)
+{
+  ASSERT_EQ(Name("ndn:/%00%01/%01%03"), Name("ndn:/%00%01/%01%02").getSuccessor());
+  ASSERT_EQ(Name("ndn:/%00%01/%02%00"), Name("ndn:/%00%01/%01%FF").getSuccessor());
+  ASSERT_EQ(Name("ndn:/%00%01/%00%00%00"), Name("ndn:/%00%01/%FF%FF").getSuccessor());
+  ASSERT_EQ(Name("/%00"), Name().getSuccessor());
+  ASSERT_EQ(Name("/%00%01/%00"), Name("/%00%01/...").getSuccessor());
+}
+
 int
 main(int argc, char **argv)
 {
