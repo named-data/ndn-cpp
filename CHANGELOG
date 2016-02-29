@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.9 (2016-02-26)
+Interim changes since NDN-CPP v0.9 (2016-02-29)
 -----------------------------------------------
 
 Changes
@@ -13,6 +13,8 @@ Changes
   and compare(int, size_t, Name, int, size_t).
 * http://redmine.named-data.net/issues/3450 Added Name.Component.isSegment,
   isSegmentOffset, isVersion, isTimestamp and isSequenceNumber.
+* http://redmine.named-data.net/issues/3451 Added static Name.Component.fromSegment,
+  fromSegmentOffset, fromVersion, fromTimestamp and fromSequenceNumber.
 * http://redmine.named-data.net/issues/3452 Added Interest::refreshNonce.
 * Renamed the following .c file to avoid linker conflicts with the same named .cpp file:
   name.c -> name_c.c, interest.c -> interest_c.c,
