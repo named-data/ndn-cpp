@@ -53,68 +53,40 @@ IdentityManager::IdentityManager
 {
 }
 
+IdentityManager::IdentityManager
+  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
+: identityStorage_(identityStorage)
+{
+  privateKeyStorage_ = getDefaultPrivateKeyStorage();
+}
+
+IdentityManager::IdentityManager()
+{
+  identityStorage_ = getDefaultIdentityStorage();
+  privateKeyStorage_ = getDefaultPrivateKeyStorage();
+}
+
+ptr_lib::shared_ptr<IdentityStorage>
+IdentityManager::getDefaultIdentityStorage()
+{
 #ifdef NDN_CPP_HAVE_SQLITE3
-
-#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::make_shared<BasicIdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
+  return ptr_lib::make_shared<BasicIdentityStorage>();
 #else
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::make_shared<BasicIdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
-}
-#endif
-
-#else
-// No SQLite, so we can't use BasicIdentityStorage.
-
-#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-{
+  // No SQLite, so we can't use BasicIdentityStorage.
   throw SecurityException
     ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
+#endif
 }
+
+ptr_lib::shared_ptr<PrivateKeyStorage>
+IdentityManager::getDefaultPrivateKeyStorage()
+{
+#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
+  return ptr_lib::make_shared<OSXPrivateKeyStorage>();
 #else
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-{
-  throw SecurityException
-    ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
-}
+  return ptr_lib::make_shared<FilePrivateKeyStorage>();
 #endif
-
-#endif
+}
 
 Name
 IdentityManager::createIdentityAndCertificate

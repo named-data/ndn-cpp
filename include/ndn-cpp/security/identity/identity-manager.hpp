@@ -483,6 +483,12 @@ private:
   makeSignatureByCertificate
     (const Name& certificateName, DigestAlgorithm& digestAlgorithm);
 
+  static ptr_lib::shared_ptr<IdentityStorage>
+  getDefaultIdentityStorage();
+
+  static ptr_lib::shared_ptr<PrivateKeyStorage>
+  getDefaultPrivateKeyStorage();
+
   ptr_lib::shared_ptr<IdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<PrivateKeyStorage> privateKeyStorage_;
 };
