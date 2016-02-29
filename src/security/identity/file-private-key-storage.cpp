@@ -342,7 +342,7 @@ FilePrivateKeyStorage::nameTransform
   ndn_digestSha256((uint8_t*)&keyName[0], keyName.size(), hash);
 
   string digest = toBase64(hash, sizeof(hash));
-  trim(digest);
+  ndn_trim(digest);
   std::replace(digest.begin(), digest.end(), '/', '%');
 
   return keyStorePath_ + "/" + digest + extension;

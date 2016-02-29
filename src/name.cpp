@@ -217,7 +217,7 @@ Name::set(const char *uri_cstr)
   clear();
 
   string uri = uri_cstr;
-  trim(uri);
+  ndn_trim(uri);
   if (uri.size() == 0)
     return;
 
@@ -228,7 +228,7 @@ Name::set(const char *uri_cstr)
     if (iFirstSlash == string::npos || iColon < iFirstSlash) {
       // Omit the leading protocol such as ndn:
       uri.erase(0, iColon + 1);
-      trim(uri);
+      ndn_trim(uri);
     }
   }
 
@@ -242,12 +242,12 @@ Name::set(const char *uri_cstr)
         return;
       else {
         uri.erase(0, iAfterAuthority + 1);
-        trim(uri);
+        ndn_trim(uri);
       }
     }
     else {
       uri.erase(0, 1);
-      trim(uri);
+      ndn_trim(uri);
     }
   }
 
@@ -384,7 +384,7 @@ Blob
 Name::fromEscapedString(const char *escapedString, size_t beginOffset, size_t endOffset)
 {
   string trimmedString(escapedString + beginOffset, escapedString + endOffset);
-  trim(trimmedString);
+  ndn_trim(trimmedString);
   string value = unescape(trimmedString);
 
   if (value.find_first_not_of(".") == string::npos) {
