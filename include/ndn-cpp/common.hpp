@@ -140,7 +140,7 @@ toHex(const std::vector<uint8_t>& array)
  * @param str The string to modify.
  */
 void
-trim(std::string& str);
+ndn_trim(std::string& str);
 
 }
 

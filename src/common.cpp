@@ -81,7 +81,7 @@ trimRight(string& str)
 }
 
 void
-trim(string& str)
+ndn_trim(string& str)
 {
   trimLeft(str);
   trimRight(str);

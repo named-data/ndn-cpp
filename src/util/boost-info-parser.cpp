@@ -177,7 +177,7 @@ BoostInfoParser::read(istream& stream, BoostInfoTree* ctx)
 {
   string line;
   while (getline(stream, line)) {
-    trim(line);
+    ndn_trim(line);
     ctx = parseLine(line, ctx);
   }
 
@@ -274,7 +274,7 @@ BoostInfoParser::parseLine(const string& lineIn, BoostInfoTree* context)
   size_t commentStart = line.find_first_of(';');
   if (commentStart != string::npos) {
     line = line.substr(0, commentStart);
-    trim(line);
+    ndn_trim(line);
   }
   if (line.size() == 0)
     return context;
