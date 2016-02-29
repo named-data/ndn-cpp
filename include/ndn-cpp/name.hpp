@@ -1003,17 +1003,17 @@ public:
    * this->getSubName(iStartComponent, nComponents).compare
    * (other.getSubName(iOtherStartComponent, nOtherComponents)).
    * @param iStartComponent The index if the first component of this name to
-   * get. If iStartComponent is -N then return return components starting from
+   * compare. If iStartComponent is -N then compare components starting from
    * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
    * If greater than the size of this name, get until the end of the name.
    * @param other The other Name to compare with.
    * @param iOtherStartComponent The index if the first component of the other
-   * name to get. If iOtherStartComponent is -N then return return components
+   * name to compare. If iOtherStartComponent is -N then compare components
    * starting from other.size() - N.
    * @param nOtherComponents The number of components starting at
-   * iOtherStartComponent. If greater than the size of the other name, get until
-   * the end of the name.
+   * iOtherStartComponent. If greater than the size of the other name, compare
+   * until the end of the name.
    * @return 0 If the sub names compare equal, -1 if this sub name comes before
    * the other sub name in the canonical ordering, or 1 if after.
    */
@@ -1022,20 +1022,19 @@ public:
     (int iStartComponent, size_t nComponents, const Name& other,
      int iOtherStartComponent, size_t nOtherComponents) const;
 
-
   /**
    * Compare a subset of this name to a subset of the other name, equivalent to
    * this->getSubName(iStartComponent, nComponents).compare
    * (other.getSubName(iOtherStartComponent)), getting all components of other
    * from iOtherStartComponent to the end of the name.
    * @param iStartComponent The index if the first component of this name to
-   * get. If iStartComponent is -N then return return components starting from
+   * compare. If iStartComponent is -N then compare components starting from
    * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
-   * If greater than the size of this name, get until the end of the name.
+   * If greater than the size of this name, compare until the end of the name.
    * @param other The other Name to compare with.
    * @param iOtherStartComponent (optional) The index if the first component of
-   * the other name to get. If iOtherStartComponent is -N then return return 
+   * the other name to compare. If iOtherStartComponent is -N then compare
    * components starting from other.size() - N. If omitted, use 0.
    * @return 0 If the sub names compare equal, -1 if this sub name comes before
    * the other sub name in the canonical ordering, or 1 if after.
