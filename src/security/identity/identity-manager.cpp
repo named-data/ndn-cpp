@@ -38,6 +38,7 @@
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
+#include "../../util/config-file.hpp"
 #include "../../c/util/time.h"
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/identity/identity-manager.hpp>
@@ -57,18 +58,28 @@ IdentityManager::IdentityManager
   (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
 : identityStorage_(identityStorage)
 {
-  privateKeyStorage_ = getDefaultPrivateKeyStorage();
+  ConfigFile config;
+  privateKeyStorage_ = getDefaultPrivateKeyStorage(config);
 }
 
 IdentityManager::IdentityManager()
 {
-  identityStorage_ = getDefaultIdentityStorage();
-  privateKeyStorage_ = getDefaultPrivateKeyStorage();
+  ConfigFile config;
+  identityStorage_ = getDefaultIdentityStorage(config);
+  privateKeyStorage_ = getDefaultPrivateKeyStorage(config);
 }
 
 ptr_lib::shared_ptr<IdentityStorage>
-IdentityManager::getDefaultIdentityStorage()
+IdentityManager::getDefaultIdentityStorage(ConfigFile& config)
 {
+  string pibLocator = config.get("pib", "");
+
+  if (pibLocator != "") {
+    if (pibLocator != "pib-sqlite3")
+      throw SecurityException
+        ("Invalid config file pib value: " + pibLocator);
+  }
+
 #ifdef NDN_CPP_HAVE_SQLITE3
   return ptr_lib::make_shared<BasicIdentityStorage>();
 #else
@@ -79,13 +90,31 @@ IdentityManager::getDefaultIdentityStorage()
 }
 
 ptr_lib::shared_ptr<PrivateKeyStorage>
-IdentityManager::getDefaultPrivateKeyStorage()
+IdentityManager::getDefaultPrivateKeyStorage(ConfigFile& config)
 {
+  string tpmLocator = config.get("tpm", "");
+
+  if (tpmLocator == "") {
+    // Use the system default.
 #if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
-  return ptr_lib::make_shared<OSXPrivateKeyStorage>();
+    return ptr_lib::make_shared<OSXPrivateKeyStorage>();
 #else
-  return ptr_lib::make_shared<FilePrivateKeyStorage>();
+    return ptr_lib::make_shared<FilePrivateKeyStorage>();
 #endif
+  }
+  else if (tpmLocator == "tpm-osxkeychain") {
+#if NDN_CPP_HAVE_OSX_SECURITY
+    return ptr_lib::make_shared<OSXPrivateKeyStorage>();
+#else
+    throw SecurityException
+      ("Can't use config file tpm=tpm-osxkeychain because the system doesn't support it.");
+#endif
+  }
+  else if (tpmLocator == "tpm-file")
+    return ptr_lib::make_shared<FilePrivateKeyStorage>();
+  else
+    throw SecurityException
+      ("Invalid config file tpm value: " + tpmLocator);
 }
 
 Name

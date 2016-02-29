@@ -31,6 +31,8 @@
 
 namespace ndn {
 
+class ConfigFile;
+
 /**
  * An IdentityManager is the interface of operations related to identity, keys, and certificates.
  */
@@ -484,10 +486,10 @@ private:
     (const Name& certificateName, DigestAlgorithm& digestAlgorithm);
 
   static ptr_lib::shared_ptr<IdentityStorage>
-  getDefaultIdentityStorage();
+  getDefaultIdentityStorage(ConfigFile& config);
 
   static ptr_lib::shared_ptr<PrivateKeyStorage>
-  getDefaultPrivateKeyStorage();
+  getDefaultPrivateKeyStorage(ConfigFile& config);
 
   ptr_lib::shared_ptr<IdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<PrivateKeyStorage> privateKeyStorage_;
