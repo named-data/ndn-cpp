@@ -60,6 +60,7 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/control-parameters.hpp \
+  include/ndn-cpp/control-response.hpp \
   include/ndn-cpp/data.hpp \
   include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
@@ -185,6 +186,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
 libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
   src/control-parameters.cpp \
+  src/control-response.cpp \
   src/data.cpp \
   src/delegation-set.cpp \
   src/digest-sha256-signature.cpp \
