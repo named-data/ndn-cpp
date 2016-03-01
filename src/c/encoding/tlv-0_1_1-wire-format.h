@@ -27,6 +27,7 @@
 struct ndn_Interest;
 struct ndn_Data;
 struct ndn_ControlParameters;
+struct ndn_ControlResponse;
 struct ndn_DelegationSet_Delegation;
 struct ndn_EncryptedContent;
 struct ndn_DynamicUInt8Array;
@@ -188,6 +189,34 @@ ndn_Tlv0_1_1WireFormat_encodeControlParameters
 ndn_Error
 ndn_Tlv0_1_1WireFormat_decodeControlParameters
   (struct ndn_ControlParameters *controlParameters, const uint8_t *input,
+   size_t inputLength);
+
+/**
+ * Encode the control parameters as NDN-TLV.
+ * @param controlResponse A pointer to the control parameters struct to encode.
+ * @param output A pointer to a ndn_DynamicUInt8Array struct which receives the
+ * encoded output.  If the output->realloc function pointer is null, its array
+ * must be large enough to receive the entire encoding.
+ * @param encodingLength Set encodingLength to the length of the encoded output.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeControlResponse
+  (const struct ndn_ControlResponse *controlResponse,
+   struct ndn_DynamicUInt8Array *output, size_t *encodingLength);
+
+/**
+ * Decode input as a control parameters in NDN-TLV and set the fields in the
+ * control parameters struct.
+ * @param controlResponse A pointer to the control parameters struct whose
+ * fields are updated.
+ * @param input A pointer to the input buffer to decode.
+ * @param inputLength The number of bytes in input.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeControlResponse
+  (struct ndn_ControlResponse *controlResponse, const uint8_t *input,
    size_t inputLength);
 
 /**
