@@ -61,6 +61,19 @@ ndn_ControlParameters_initialize
   self->expirationPeriod = -1.0;
 }
 
+/**
+ * Set this control parameters to have the values from the other control
+ * parameters.
+ * @param self A pointer to the ndn_ControlParameters struct.
+ * @param other A pointer to the other ndn_ControlParameters struct to get
+ * values from.
+ * @return 0 for success, or an error code if there is not enough room in this
+ * object's components array.
+ */
+ndn_Error
+ndn_ControlParameters_setFromControlParameters
+  (struct ndn_ControlParameters *self, const struct ndn_ControlParameters *other);
+
 #ifdef __cplusplus
 }
 #endif

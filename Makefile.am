@@ -140,7 +140,7 @@ ndn_cpp_cpp_headers = \
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   contrib/apache/apr_base64.c contrib/apache/apr_base64.h \
-  src/c/control-parameters.h \
+  src/c/control-parameters_c.c src/c/control-parameters.h \
   src/c/data.h \
   src/c/delegation-set.h \
   src/c/errors.c src/c/errors.h \
