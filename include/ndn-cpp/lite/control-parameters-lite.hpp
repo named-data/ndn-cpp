@@ -234,6 +234,16 @@ public:
   }
 
   /**
+   * Set this control parameters to have the values from the other control
+   * parameters.
+   * @param other The other ControlParametersLite to get values from.
+   * @return 0 for success, or an error code if there is not enough room in this
+   * object's components array.
+   */
+  ndn_Error
+  set(const ControlParametersLite& other);
+
+  /**
    * Upcast the reference to the ndn_ControlParameters struct to a
    * ControlParametersLite.
    * @param controlParameters A reference to the ndn_ControlParameters struct.

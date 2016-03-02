@@ -100,6 +100,20 @@ WireFormat::decodeControlParameters
 }
 
 Blob
+WireFormat::encodeControlResponse(const ControlResponse& controlResponse)
+{
+  throw logic_error("unimplemented");
+}
+
+void
+WireFormat::decodeControlResponse
+  (ControlResponse& controlResponse, const uint8_t *input,
+   size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
+Blob
 WireFormat::encodeSignatureInfo(const Signature& signature)
 {
   throw logic_error("unimplemented");

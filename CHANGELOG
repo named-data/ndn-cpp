@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.9 (2016-02-29)
+Interim changes since NDN-CPP v0.9 (2016-03-01)
 -----------------------------------------------
 
 Changes
@@ -16,11 +16,13 @@ Changes
 * http://redmine.named-data.net/issues/3451 Added static Name.Component.fromSegment,
   fromSegmentOffset, fromVersion, fromTimestamp and fromSequenceNumber.
 * http://redmine.named-data.net/issues/3452 Added Interest::refreshNonce.
+* http://redmine.named-data.net/issues/3455 Added ControlResponse.
 * Renamed the following .c file to avoid linker conflicts with the same named .cpp file:
   name.c -> name_c.c, interest.c -> interest_c.c,
   tcp-transport.c -> tcp-transport_c.c, tlv-0_1_1-wire-format.c -> tlv-0_1_1-wire-format_c.c
 * http://redmine.named-data.net/issues/3152 In API callbacks, catch and log exceptions.
 * Unit tests: Added test-link.
+* Unit tests: Added test-control-response.
 * Examples: Added test-sign-verify-data-hmac.
 
 NDN-CPP v0.9 (2016-01-07)

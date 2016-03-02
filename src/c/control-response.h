@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013-2016 Regents of the University of California.
+ * Copyright (C) 2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,20 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_CONTROL_PARAMETERS_OPTIONS_H
-#define NDN_CONTROL_PARAMETERS_OPTIONS_H
+#ifndef NDN_CONTROL_RESPONSE_H
+#define NDN_CONTROL_RESPONSE_H
 
-#include <ndn-cpp/c/control-parameters-types.h>
-#include "forwarding-flags-impl.h"
-#include "name.h"
+#include <ndn-cpp/c/control-response-types.h>
+#include "control-parameters.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Initialize an ndn_ControlParameters struct with the pre-allocated
- * nameComponents, and defaults for all the values.
- * @param self A pointer to the ndn_ControlParameters struct.
+ * Initialize an ndn_ControlResponse struct with the pre-allocated
+ * nameComponents used for the ControlParameters, and defaults for all the values.
+ * @param self A pointer to the ndn_ControlResponse struct.
  * @param nameComponents the pre-allocated array of ndn_NameComponent for the
  * main name.
  * @param maxNameComponents the number of elements in the allocated
@@ -43,36 +42,18 @@ extern "C" {
  * strategyNameComponents array.
  */
 static __inline void
-ndn_ControlParameters_initialize
-  (struct ndn_ControlParameters *self, struct ndn_NameComponent *nameComponents,
+ndn_ControlResponse_initialize
+  (struct ndn_ControlResponse *self, struct ndn_NameComponent *nameComponents,
    size_t maxNameComponents, struct ndn_NameComponent *strategyNameComponents,
    size_t strategyMaxNameComponents)
 {
-  self->hasName = 0;
-  ndn_Name_initialize(&self->name, nameComponents, maxNameComponents);
-  self->faceId = -1;
-  ndn_Blob_initialize(&self->uri, 0, 0);
-  self->localControlFeature = -1;
-  self->origin = -1;
-  self->cost = -1;
-  ndn_ForwardingFlags_initialize(&self->flags);
-  ndn_Name_initialize
-    (&self->strategy, strategyNameComponents, strategyMaxNameComponents);
-  self->expirationPeriod = -1.0;
+  self->statusCode = -1;
+  ndn_Blob_initialize(&self->statusText, 0, 0);
+  self->hasBodyAsControlParameters = 0;
+  ndn_ControlParameters_initialize
+    (&self->bodyAsControlParameters, nameComponents, maxNameComponents,
+     strategyNameComponents, strategyMaxNameComponents);
 }
-
-/**
- * Set this control parameters to have the values from the other control
- * parameters.
- * @param self A pointer to the ndn_ControlParameters struct.
- * @param other A pointer to the other ndn_ControlParameters struct to get
- * values from.
- * @return 0 for success, or an error code if there is not enough room in this
- * object's components array.
- */
-ndn_Error
-ndn_ControlParameters_setFromControlParameters
-  (struct ndn_ControlParameters *self, const struct ndn_ControlParameters *other);
 
 #ifdef __cplusplus
 }
