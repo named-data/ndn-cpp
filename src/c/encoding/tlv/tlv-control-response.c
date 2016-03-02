@@ -90,6 +90,7 @@ ndn_decodeTlvControlResponse
         &gotExpectedType)))
     return error;
   if (gotExpectedType) {
+    controlResponse->hasBodyAsControlParameters = 1;
     if ((error = ndn_decodeTlvControlParameters
          (&controlResponse->bodyAsControlParameters, decoder)))
       return error;
