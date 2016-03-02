@@ -115,7 +115,7 @@ public:
      ElementListener& elementListener, const OnConnected& onConnected);
 
   /**
-   * Set data to the host. To be thread-safe, this must be called from a
+   * Send data to the host. To be thread-safe, this must be called from a
    * dispatch to the ioService which was given to the constructor, as is done by
    * ThreadsafeFace.
    * @param data A pointer to the buffer of data to send.

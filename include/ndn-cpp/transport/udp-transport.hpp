@@ -97,7 +97,7 @@ public:
           ElementListener& elementListener, const OnConnected& onConnected);
 
   /**
-   * Set data to the host
+   * Send data to the host
    * @param data A pointer to the buffer of data to send.
    * @param dataLength The number of bytes in data.
    */
