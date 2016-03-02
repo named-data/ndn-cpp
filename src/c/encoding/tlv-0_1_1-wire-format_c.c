@@ -22,6 +22,7 @@
 #include "tlv/tlv-interest.h"
 #include "tlv/tlv-data.h"
 #include "tlv/tlv-control-parameters.h"
+#include "tlv/tlv-control-response.h"
 #include "tlv/tlv-signature-info.h"
 #include "tlv/tlv-delegation-set.h"
 #include "tlv/tlv-encrypted-content.h"
@@ -130,6 +131,30 @@ ndn_Tlv0_1_1WireFormat_decodeControlParameters
   struct ndn_TlvDecoder decoder;
   ndn_TlvDecoder_initialize(&decoder, input, inputLength);
   return ndn_decodeTlvControlParameters(controlParameters, &decoder);
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_encodeControlResponse
+  (const struct ndn_ControlResponse *controlResponse,
+   struct ndn_DynamicUInt8Array *output, size_t *encodingLength)
+{
+  ndn_Error error;
+  struct ndn_TlvEncoder encoder;
+  ndn_TlvEncoder_initialize(&encoder, output);
+  error = ndn_encodeTlvControlResponse(controlResponse, &encoder);
+  *encodingLength = encoder.offset;
+
+  return error;
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeControlResponse
+  (struct ndn_ControlResponse *controlResponse, const uint8_t *input,
+   size_t inputLength)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  return ndn_decodeTlvControlResponse(controlResponse, &decoder);
 }
 
 ndn_Error

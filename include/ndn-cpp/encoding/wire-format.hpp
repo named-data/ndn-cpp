@@ -31,6 +31,7 @@ class Name;
 class Interest;
 class Data;
 class ControlParameters;
+class ControlResponse;
 class Signature;
 class DelegationSet;
 class EncryptedContent;
@@ -188,7 +189,7 @@ public:
   encodeControlParameters(const ControlParameters& controlParameters);
 
   /**
-   * Decode input as a command parameters and set the fields of the
+   * Decode input as a control parameters and set the fields of the
    * controlParameters object.  Your derived class should override.
    * @param controlParameters The ControlParameters object whose fields are
    * updated.
@@ -199,6 +200,30 @@ public:
   virtual void
   decodeControlParameters
     (ControlParameters& controlParameters, const uint8_t *input,
+     size_t inputLength);
+
+  /**
+   * Encode controlResponse and return the encoding.
+   * Your derived class should override.
+   * @param controlResponse The ControlResponse object to encode.
+   * @return A Blob containing the encoding.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeControlResponse(const ControlResponse& controlResponse);
+
+  /**
+   * Decode input as a control response and set the fields of the
+   * controlResponse object.  Your derived class should override.
+   * @param controlResponse The ControlResponse object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual void
+  decodeControlResponse
+    (ControlResponse& controlResponse, const uint8_t *input,
      size_t inputLength);
 
   /**

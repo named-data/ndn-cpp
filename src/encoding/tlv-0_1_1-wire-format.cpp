@@ -23,6 +23,7 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/control-parameters.hpp>
+#include <ndn-cpp/control-response.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
@@ -200,6 +201,48 @@ Tlv0_1_1WireFormat::decodeControlParameters
     throw runtime_error(ndn_getErrorString(error));
 
   controlParameters.set(controlParametersLite);
+}
+
+Blob
+Tlv0_1_1WireFormat::encodeControlResponse(const ControlResponse& controlResponse)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_NameComponent strategyNameComponents[100];
+  ControlResponseLite controlResponseLite
+    (nameComponents,
+     sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
+     sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
+  controlResponse.get(controlResponseLite);
+
+  DynamicUInt8Vector output(256);
+  ndn_Error error;
+  size_t encodingLength;
+  if ((error = Tlv0_1_1WireFormatLite::encodeControlResponse
+       (controlResponseLite, DynamicUInt8ArrayLite::upCast(output),
+        &encodingLength)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return output.finish(encodingLength);
+}
+
+void
+Tlv0_1_1WireFormat::decodeControlResponse
+  (ControlResponse& controlResponse, const uint8_t *input,
+   size_t inputLength)
+{
+  struct ndn_NameComponent nameComponents[100];
+  struct ndn_NameComponent strategyNameComponents[100];
+  ControlResponseLite controlResponseLite
+    (nameComponents,
+     sizeof(nameComponents) / sizeof(nameComponents[0]), strategyNameComponents,
+     sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
+
+  ndn_Error error;
+  if ((error = Tlv0_1_1WireFormatLite::decodeControlResponse
+       (controlResponseLite, input, inputLength)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  controlResponse.set(controlResponseLite);
 }
 
 Blob

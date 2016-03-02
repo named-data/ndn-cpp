@@ -26,6 +26,7 @@
 #include "../data-lite.hpp"
 #include "../signature-lite.hpp"
 #include "../control-parameters-lite.hpp"
+#include "../control-response-lite.hpp"
 #include "../delegation-set-lite.hpp"
 #include "../encrypt/encrypted-content-lite.hpp"
 #include "../util/dynamic-uint8-array-lite.hpp"
@@ -191,6 +192,34 @@ public:
   static ndn_Error
   decodeControlParameters
     (ControlParametersLite& controlParameters, const uint8_t* input,
+     size_t inputLength);
+
+  /**
+   * Encode controlResponse as an NDN-TLV ControlResponse.
+   * @param controlResponse The control parameters object to encode.
+   * @param output A DynamicUInt8ArrayLite object which receives the encoded
+   * output.  If the output's reallocFunction is null, its array must be large
+   * enough to receive the entire encoding.
+   * @param encodingLength Set encodingLength to the length of the encoded output.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  encodeControlResponse
+    (const ControlResponseLite& controlResponse,
+     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+
+  /**
+   * Decode input as a TLV ControlResponse and set the fields in the
+   * controlResponse object.
+   * @param controlResponse The control parameters object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @return 0 for success, else an error code.
+   */
+  static ndn_Error
+  decodeControlResponse
+    (ControlResponseLite& controlResponse, const uint8_t* input,
      size_t inputLength);
 
   /**

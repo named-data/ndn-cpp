@@ -144,6 +144,7 @@ ndn_decodeTlvControlParameters
        (decoder, ndn_Tlv_Name, endOffset, &gotExpectedType)))
     return error;
   if (gotExpectedType) {
+    controlParameters->hasName = 1;
     if ((error = ndn_decodeTlvName
          (&controlParameters->name, &dummyBeginOffset, &dummyEndOffset, decoder)))
       return error;
