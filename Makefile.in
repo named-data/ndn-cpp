@@ -279,7 +279,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
 	src/transport/udp-transport.lo src/transport/unix-transport.lo \
 	src/util/boost-info-parser.lo \
-	src/util/command-interest-generator.lo \
+	src/util/command-interest-generator.lo src/util/config-file.lo \
 	src/util/dynamic-uint8-vector.lo src/util/logging.lo \
 	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo \
 	src/util/segment-fetcher.lo
@@ -1237,6 +1237,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/blob-stream.hpp \
   src/util/boost-info-parser.cpp src/util/boost-info-parser.hpp \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
+  src/util/config-file.cpp src/util/config-file.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
@@ -1779,6 +1780,8 @@ src/util/boost-info-parser.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/command-interest-generator.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/config-file.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/dynamic-uint8-vector.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/logging.lo: src/util/$(am__dirstamp) \
@@ -2306,6 +2309,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/unix-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/boost-info-parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/command-interest-generator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/config-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/dynamic-uint8-vector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
