@@ -340,6 +340,74 @@ public:
     fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, size_t prefixLength);
 
     /**
+     * Create a component with the encoded segment number according to NDN
+     * naming conventions for "Segment number" (marker 0x00).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param segment The segment number.
+     * @return The new Component.
+     */
+    static Component
+    fromSegment(long segment)
+    {
+      return fromNumberWithMarker(segment, 0x00);
+    }
+
+    /**
+     * Create a component with the encoded segment byte offset according to NDN
+     * naming conventions for segment "Byte offset" (marker 0xFB).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param segmentOffset The segment byte offset.
+     * @return The new Component.
+     */
+    static Component
+    fromSegmentOffset(long segmentOffset)
+    {
+      return fromNumberWithMarker(segmentOffset, 0xFB);
+    }
+
+    /**
+     * Create a component with the encoded version number according to NDN
+     * naming conventions for "Versioning" (marker 0xFD).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * Note that this encodes the exact value of version without converting from a
+     * time representation.
+     * @param version The version number.
+     * @return The new Component.
+     */
+    static Component
+    fromVersion(long version)
+    {
+      return fromNumberWithMarker(version, 0xFD);
+    }
+
+    /**
+     * Create a component with the encoded timestamp according to NDN naming
+     * conventions for "Timestamp" (marker 0xFC).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param timestamp The number of microseconds since the UNIX epoch (Thursday,
+     * 1 January 1970) not counting leap seconds.
+     * @return The new Component.
+     */
+    static Component
+    fromTimestamp(long timestamp)
+    {
+      return fromNumberWithMarker(timestamp, 0xFC);
+    }
+
+    /**
+     * Create a component with the encoded sequence number according to NDN naming
+     * conventions for "Sequencing" (marker 0xFE).
+     * http://named-data.net/doc/tech-memos/naming-conventions.pdf
+     * @param sequenceNumber The sequence number.
+     * @return The new Component.
+     */
+    static Component
+    fromSequenceNumber(long sequenceNumber)
+    {
+      return fromNumberWithMarker(sequenceNumber, 0xFE);
+    }
+
+    /**
      * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     static const uint8_t*
@@ -725,7 +793,7 @@ public:
   Name&
   appendSegment(uint64_t segment)
   {
-    return append(Component::fromNumberWithMarker(segment, 0x00));
+    return append(Component::fromSegment(segment));
   }
 
   /**
@@ -738,7 +806,7 @@ public:
   Name&
   appendSegmentOffset(uint64_t segmentOffset)
   {
-    return append(Component::fromNumberWithMarker(segmentOffset, 0xFB));
+    return append(Component::fromSegmentOffset(segmentOffset));
   }
 
   /**
@@ -762,7 +830,7 @@ public:
   Name&
   appendVersion(uint64_t version)
   {
-    return append(Component::fromNumberWithMarker(version, 0xFD));
+    return append(Component::fromVersion(version));
   }
 
   /**
@@ -776,7 +844,7 @@ public:
   Name&
   appendTimestamp(uint64_t timestamp)
   {
-    return append(Component::fromNumberWithMarker(timestamp, 0xFC));
+    return append(Component::fromTimestamp(timestamp));
   }
 
   /**
@@ -789,7 +857,7 @@ public:
   Name&
   appendSequenceNumber(uint64_t sequenceNumber)
   {
-    return append(Component::fromNumberWithMarker(sequenceNumber, 0xFE));
+    return append(Component::fromSequenceNumber(sequenceNumber));
   }
 
   /**
@@ -974,7 +1042,7 @@ public:
   getChangeCount() const { return changeCount_; }
 
   /**
-   * Compare this to the other Name using NDN canonical ordering. If the first 
+   * Compare this to the other Name using NDN canonical ordering. If the first
    * components of each name are not equal, this returns -1 if the first comes
    * before the second using the NDN canonical ordering for name components, or
    * 1 if it comes after. If they are equal, this compares the second components
@@ -986,7 +1054,7 @@ public:
    * because /c comes before /bb according to NDN canonical ordering since it is
    * shorter.
    * @param other The other Name to compare with.
-   * @return 0 If they compare equal, -1 if *this comes before other in the 
+   * @return 0 If they compare equal, -1 if *this comes before other in the
    * canonical ordering, or 1 if *this comes after other in the canonical
    * ordering.
    *
@@ -1003,17 +1071,17 @@ public:
    * this->getSubName(iStartComponent, nComponents).compare
    * (other.getSubName(iOtherStartComponent, nOtherComponents)).
    * @param iStartComponent The index if the first component of this name to
-   * compare. If iStartComponent is -N then compare components starting from
+   * get. If iStartComponent is -N then return return components starting from
    * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
    * If greater than the size of this name, get until the end of the name.
    * @param other The other Name to compare with.
    * @param iOtherStartComponent The index if the first component of the other
-   * name to compare. If iOtherStartComponent is -N then compare components
+   * name to get. If iOtherStartComponent is -N then return return components
    * starting from other.size() - N.
    * @param nOtherComponents The number of components starting at
-   * iOtherStartComponent. If greater than the size of the other name, compare
-   * until the end of the name.
+   * iOtherStartComponent. If greater than the size of the other name, get until
+   * the end of the name.
    * @return 0 If the sub names compare equal, -1 if this sub name comes before
    * the other sub name in the canonical ordering, or 1 if after.
    */
@@ -1022,19 +1090,20 @@ public:
     (int iStartComponent, size_t nComponents, const Name& other,
      int iOtherStartComponent, size_t nOtherComponents) const;
 
+
   /**
    * Compare a subset of this name to a subset of the other name, equivalent to
    * this->getSubName(iStartComponent, nComponents).compare
    * (other.getSubName(iOtherStartComponent)), getting all components of other
    * from iOtherStartComponent to the end of the name.
    * @param iStartComponent The index if the first component of this name to
-   * compare. If iStartComponent is -N then compare components starting from
+   * get. If iStartComponent is -N then return return components starting from
    * name.size() - N.
    * @param nComponents The number of components starting at iStartComponent.
-   * If greater than the size of this name, compare until the end of the name.
+   * If greater than the size of this name, get until the end of the name.
    * @param other The other Name to compare with.
    * @param iOtherStartComponent (optional) The index if the first component of
-   * the other name to compare. If iOtherStartComponent is -N then compare
+   * the other name to get. If iOtherStartComponent is -N then return return
    * components starting from other.size() - N. If omitted, use 0.
    * @return 0 If the sub names compare equal, -1 if this sub name comes before
    * the other sub name in the canonical ordering, or 1 if after.
