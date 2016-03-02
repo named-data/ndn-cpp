@@ -18,6 +18,7 @@ SUBDIRS = include
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
 check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
+  bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
   bin/unit-tests/test-face-methods bin/unit-tests/test-encrypted-content \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
@@ -39,6 +40,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/ndn-cpp-config.h \
   include/ndn-cpp/c/common.h \
   include/ndn-cpp/c/control-parameters-types.h \
+  include/ndn-cpp/c/control-response-types.h \
   include/ndn-cpp/c/data-types.h \
   include/ndn-cpp/c/delegation-set-types.h \
   include/ndn-cpp/c/errors.h \
@@ -58,6 +60,7 @@ ndn_cpp_c_headers = \
 ndn_cpp_cpp_headers = \
   include/ndn-cpp/common.hpp \
   include/ndn-cpp/control-parameters.hpp \
+  include/ndn-cpp/control-response.hpp \
   include/ndn-cpp/data.hpp \
   include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
@@ -85,6 +88,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
+  include/ndn-cpp/lite/control-response-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \
   include/ndn-cpp/lite/delegation-set-lite.hpp \
   include/ndn-cpp/lite/exclude-lite.hpp \
@@ -140,7 +144,8 @@ ndn_cpp_cpp_headers = \
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   contrib/apache/apr_base64.c contrib/apache/apr_base64.h \
-  src/c/control-parameters.h \
+  src/c/control-parameters_c.c src/c/control-parameters.h \
+  src/c/control-response.h \
   src/c/data.h \
   src/c/delegation-set.h \
   src/c/errors.c src/c/errors.h \
@@ -152,6 +157,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
   src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
+  src/c/encoding/tlv/tlv-control-response.c src/c/encoding/tlv/tlv-control-response.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
   src/c/encoding/tlv/tlv-delegation-set.c src/c/encoding/tlv/tlv-delegation-set.h \
   src/c/encoding/tlv/tlv-decoder.c src/c/encoding/tlv/tlv-decoder.h \
@@ -180,6 +186,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
 libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/common.cpp \
   src/control-parameters.cpp \
+  src/control-response.cpp \
   src/data.cpp \
   src/delegation-set.cpp \
   src/digest-sha256-signature.cpp \
@@ -211,6 +218,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
   src/lite/control-parameters-lite.cpp \
+  src/lite/control-response-lite.cpp \
   src/lite/data-lite.cpp \
   src/lite/delegation-set-lite.cpp \
   src/lite/exclude-lite.cpp \
@@ -260,7 +268,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/blob-stream.hpp \
   src/util/boost-info-parser.cpp src/util/boost-info-parser.hpp \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
-  src/util/config-file.cpp src/util/config-file.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \
@@ -327,6 +334,10 @@ bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_control_parameters_encode_decode_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_control_response_SOURCES = tests/unit-tests/test-control-response.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_control_response_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_control_response_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_data_methods_SOURCES = tests/unit-tests/test-data-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_data_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
