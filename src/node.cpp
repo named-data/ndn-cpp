@@ -22,12 +22,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
-#include <ndn-cpp/security/key-chain.hpp>
-#include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include <ndn-cpp/control-parameters.hpp>
-#include "c/name.h"
-#include "c/interest.h"
-#include "c/util/crypto.h"
+#include <ndn-cpp/control-response.hpp>
 #include "c/util/time.h"
 #include "encoding/tlv-decoder.hpp"
 #include "util/logging.hpp"
@@ -206,33 +201,13 @@ void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
 {
   // Decode responseData->getContent() and check for a success code.
-  // TODO: Move this into the TLV code.
-  struct ndn_TlvDecoder decoder;
-  ndn_TlvDecoder_initialize
-    (&decoder, responseData->getContent().buf(),
-     responseData->getContent().size());
-  ndn_Error error;
-  size_t endOffset;
-  if ((error = ndn_TlvDecoder_readNestedTlvsStart
-      (&decoder, ndn_Tlv_NfdCommand_ControlResponse, &endOffset))) {
-    _LOG_DEBUG
-      ("Register prefix failed: Error decoding the NFD response: " <<
-       ndn_getErrorString(error));
-    try {
-      info_->onRegisterFailed_(info_->prefix_);
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("Node::RegisterResponse::operator(): Error in onRegisterFailed.");
-    }
-    return;
+  ControlResponse controlResponse;
+  try {
+    controlResponse.wireDecode(responseData->getContent(), *TlvWireFormat::get());
   }
-  uint64_t statusCode;
-  if ((error = ndn_TlvDecoder_readNonNegativeIntegerTlv
-       (&decoder, ndn_Tlv_NfdCommand_StatusCode, &statusCode))) {
+  catch (runtime_error& ex) {
     _LOG_DEBUG
-      ("Register prefix failed: Error decoding the NFD response: " <<
-       ndn_getErrorString(error));
+      ("Register prefix failed: Error decoding the NFD response: " <<  ex.what());
     try {
       info_->onRegisterFailed_(info_->prefix_);
     } catch (const std::exception& ex) {
@@ -244,10 +219,10 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
   }
 
   // Status code 200 is "OK".
-  if (statusCode != 200) {
+  if (controlResponse.getStatusCode() != 200) {
     _LOG_DEBUG
       ("Register prefix failed: Expected NFD status code 200, got: " <<
-       statusCode);
+       controlResponse.getStatusCode());
     try {
       info_->onRegisterFailed_(info_->prefix_);
     } catch (const std::exception& ex) {
