@@ -49,7 +49,7 @@ Tlv0_1_1WireFormat::encodeName(const Name& name)
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset, encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeName
-       (nameLite, &dummyBeginOffset, &dummyEndOffset, 
+       (nameLite, &dummyBeginOffset, &dummyEndOffset,
         DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -342,7 +342,7 @@ Tlv0_1_1WireFormat::decodeDelegationSet
   (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength)
 {
   delegationSet.clear();
-  
+
   // Decode a series of Delegation
   size_t offset = 0;
   while (offset < inputLength) {

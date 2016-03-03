@@ -69,7 +69,7 @@ public:
    * used in the ControlParameters of the command interest.
    * @return An integer with the bits set.
    */
-  int 
+  int
   getNfdForwardingFlags() const;
 
   /**
@@ -77,7 +77,7 @@ public:
    * ControlParameters of the command interest.
    * @param nfdForwardingFlags An integer with the bits set.
    */
-  void 
+  void
   setNfdForwardingFlags(int nfdForwardingFlags);
 
   /**

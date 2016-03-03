@@ -177,7 +177,7 @@ public:
    */
   static ndn_Error
   encodeControlParameters
-    (const ControlParametersLite& controlParameters, 
+    (const ControlParametersLite& controlParameters,
      DynamicUInt8ArrayLite& output, size_t* encodingLength);
 
   /**

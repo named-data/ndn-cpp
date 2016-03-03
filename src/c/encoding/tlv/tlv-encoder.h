@@ -74,7 +74,7 @@ ndn_TlvEncoder_seek(struct ndn_TlvEncoder *self, size_t offset)
     if ((error = ndn_DynamicUInt8Array_ensureLength(self->output, offset)))
       return error;
   }
-  
+
   self->offset = offset;
   return NDN_ERROR_success;
 }

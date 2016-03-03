@@ -33,7 +33,7 @@ extern "C" {
  * nameComponents, and defaults for all the values.
  * @param self A pointer to the ndn_DelegationSet_Delegation struct.
  * @param nameComponents The pre-allocated array of ndn_NameComponent.
- * @param maxNameComponents The number of elements in the allocated 
+ * @param maxNameComponents The number of elements in the allocated
  * nameComponents array.
  */
 static __inline void ndn_DelegationSet_Delegation_initialize
