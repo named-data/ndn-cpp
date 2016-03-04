@@ -144,6 +144,13 @@ public:
   virtual ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name &certificateName, bool allowAny = false) = 0;
 
+  /**
+   * Get the TPM locator associated with this storage.
+   * @return The TPM locator
+   * @throws SecurityException if the TPM locator doesn't exist.
+   */
+  virtual std::string
+  getTpmLocator() = 0;
 
   /*****************************************
    *           Get/Set Default             *
