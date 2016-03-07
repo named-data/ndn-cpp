@@ -485,11 +485,36 @@ private:
   makeSignatureByCertificate
     (const Name& certificateName, DigestAlgorithm& digestAlgorithm);
 
+  /**
+   * Get the IdentityStorage from the pib value in the configuration file if
+   * supplied. Otherwise, get the default for this platform.
+   * @param config The configuration file to check.
+   * @return A new IdentityStorage.
+   */
   static ptr_lib::shared_ptr<IdentityStorage>
   getDefaultIdentityStorage(ConfigFile& config);
 
+  /**
+   * Get the PrivateKeyStorage from the tpm value in the configuration file if
+   * supplied. Otherwise, get the default for this platform.
+   * @param config The configuration file to check.
+   * @param canonicalTpmLocator Set canonicalTpmLocator to the canonical value
+   * including the colon, * e.g. "tpm-file:".
+   * @return A new PrivateKeyStorage.
+   */
   static ptr_lib::shared_ptr<PrivateKeyStorage>
-  getDefaultPrivateKeyStorage(ConfigFile& config);
+  getDefaultPrivateKeyStorage
+    (ConfigFile& config, std::string& canonicalTpmLocator);
+
+  /**
+   * Check that identityStorage_->getTpmLocator() (if defined) matches the
+   * canonicalTpmLocator.
+   * @param canonicalTpmLocator The canonical locator from
+   * getDefaultPrivateKeyStorage(),
+   * @throws SecurityException if the private key storage does not match.
+   */
+  void
+  checkTpm(const std::string& canonicalTpmLocator);
 
   ptr_lib::shared_ptr<IdentityStorage> identityStorage_;
   ptr_lib::shared_ptr<PrivateKeyStorage> privateKeyStorage_;
