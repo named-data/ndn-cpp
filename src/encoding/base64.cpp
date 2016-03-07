@@ -57,7 +57,7 @@ toBase64(const uint8_t* array, size_t arrayLength, bool addNewlines)
 void
 fromBase64(const string& input, vector<uint8_t>& output)
 {
-  // We are only concerned with whitespace characters which are all less than 
+  // We are only concerned with whitespace characters which are all less than
   // the first base64 character '+'. If we find whitespace, then we'll copy
   // non-whitespace to noWhitespaceStream.
   ostringstream noWhitespaceStream;

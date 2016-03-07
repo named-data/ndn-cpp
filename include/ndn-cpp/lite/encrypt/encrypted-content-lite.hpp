@@ -151,14 +151,14 @@ private:
   friend class Tlv0_1_1WireFormatLite;
 
   /**
-   * Don't allow the copy constructor. Instead use 
+   * Don't allow the copy constructor. Instead use
    * set(const EncryptedContentLite&) which can return an error if there is no
    * more room in the name components array.
    */
   EncryptedContentLite(const EncryptedContentLite& other);
 
   /**
-   * Don't allow the assignment operator. Instead use 
+   * Don't allow the assignment operator. Instead use
    * set(const EncryptedContentLite&) which can return an error if there is no
    * more room in the name components array.
    */

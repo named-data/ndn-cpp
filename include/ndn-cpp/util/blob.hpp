@@ -78,7 +78,7 @@ public:
    */
   Blob(const struct ndn_Blob& blobStruct)
   : ptr_lib::shared_ptr<const std::vector<uint8_t> >
-      (blobStruct.value ? 
+      (blobStruct.value ?
         new std::vector<uint8_t>(blobStruct.value, blobStruct.value + blobStruct.length)
         : 0)
   {
