@@ -20,7 +20,6 @@
  */
 
 #include <stdexcept>
-#include "c/data.h"
 #include <ndn-cpp/digest-sha256-signature.hpp>
 
 using namespace std;
