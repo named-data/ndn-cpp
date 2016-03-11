@@ -58,6 +58,25 @@ public:
   const BlobLite&
   getSignature() const { return BlobLite::upCast(signature); }
 
+  /**
+   * Get the bytes of the entire signature info encoding (including the type
+   * code). This is only meaningful if getType() is ndn_SignatureType_Generic.
+   * @return The encoding bytes. If not specified, the value isNull().
+   */
+  const BlobLite&
+  getSignatureInfoEncoding() const { return BlobLite::upCast(signatureInfoEncoding); }
+
+  /**
+   * Get the type code of the generic signature. When wire decode calls
+   * setSignatureInfoEncoding, it sets the type code. Note that the type code
+   * is ignored during wire encode, which simply uses getSignatureInfoEncoding()
+   * where the encoding already has the type code. This is only meaningful if
+   * getType() is ndn_SignatureType_Generic.
+   * @return The type code, or -1 if not known.
+   */
+  int
+  getGenericTypeCode() const { return genericTypeCode; }
+
   const KeyLocatorLite&
   getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }
 
@@ -76,6 +95,23 @@ public:
   setSignature(const BlobLite& signature)
   {
     BlobLite::upCast(this->signature) = signature;
+  }
+
+  /**
+   * Set the bytes of the entire signature info encoding (including the type
+   * code). This is only meaningful if getType() is ndn_SignatureType_Generic.
+   * @param signatureInfoEncoding The encoding bytes. This copies a pointer to
+   * the bytes, but does not copy the bytes.
+   * @param genericTypeCode (optional) The type code of the signature type, or
+   * -1 if not known. (When a Generic signature is created by wire decoding, it
+   * sets the typeCode.)
+   */
+  void
+  setSignatureInfoEncoding
+    (const BlobLite& signatureInfoEncoding, int genericTypeCode)
+  {
+    BlobLite::upCast(this->signatureInfoEncoding) = signatureInfoEncoding;
+    this->genericTypeCode = genericTypeCode;
   }
 
   /**
