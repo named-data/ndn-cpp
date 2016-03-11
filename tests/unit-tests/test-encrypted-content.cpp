@@ -281,17 +281,11 @@ TEST_F(TestEncyptedContent, SetterGetter)
   ASSERT_EQ(content.getPayload().isNull(), true);
   ASSERT_EQ(content.getInitialVector().isNull(), true);
 
-  Blob payload(message, sizeof(message));
-  content.setPayload(payload);
+  content.setPayload(Blob(message, sizeof(message)));
+  ASSERT_TRUE(content.getPayload().equals(Blob(message, sizeof(message))));
 
-  Blob contentPayload = content.getPayload();
-  ASSERT_TRUE(contentPayload.equals(payload));
-
-  Blob initialVector(iv, sizeof(iv));
-  content.setInitialVector(initialVector);
-
-  Blob contentInitialVector = content.getInitialVector();
-  ASSERT_TRUE(contentInitialVector.equals(initialVector));
+  content.setInitialVector(Blob(iv, sizeof(iv)));
+  ASSERT_TRUE(content.getInitialVector().equals(Blob(iv, sizeof(iv))));
 
   Blob encoded = content.wireEncode();
   Blob contentBlob(encrypted, sizeof(encrypted));
