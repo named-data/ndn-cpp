@@ -81,24 +81,18 @@ TEST_F(TestEncyptedContent, Constructor)
   ASSERT_EQ(content.getKeyLocator().getType(), (ndn_KeyLocatorType)-1);
 
   // Check an encrypted content with IV.
-  Blob payload(message, sizeof(message));
-  Blob initialVector(iv, sizeof(iv));
-
   KeyLocator keyLocator;
   keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
   keyLocator.getKeyName().set("/test/key/locator");
-  content.setAlgorithmType(ndn_EncryptAlgorithmType_RsaOaep)
-    .setKeyLocator(keyLocator).setPayload(payload)
-    .setInitialVector(initialVector);
-
-  // Test the copy constructor.
-  EncryptedContent rsaOaepContent(content);
-  Blob contentPayload = rsaOaepContent.getPayload();
-  Blob contentInitialVector = rsaOaepContent.getInitialVector();
+  EncryptedContent rsaOaepContent;
+  rsaOaepContent.setAlgorithmType(ndn_EncryptAlgorithmType_RsaOaep)
+    .setKeyLocator(keyLocator).setPayload(Blob(message, sizeof(message)))
+    .setInitialVector(Blob(iv, sizeof(iv)));
 
   ASSERT_EQ(rsaOaepContent.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
-  ASSERT_TRUE(contentPayload.equals(payload));
-  ASSERT_TRUE(contentInitialVector.equals(initialVector));
+  ASSERT_TRUE(rsaOaepContent.getPayload().equals(Blob(message, sizeof(message))));
+  ASSERT_TRUE(rsaOaepContent.getInitialVector().equals
+              (Blob(iv, sizeof(iv))));
   ASSERT_TRUE(rsaOaepContent.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
   ASSERT_TRUE(rsaOaepContent.getKeyLocator().getKeyName().equals
               (Name("/test/key/locator")));
@@ -110,46 +104,39 @@ TEST_F(TestEncyptedContent, Constructor)
   ASSERT_TRUE(encryptedBlob.equals(encoded));
 
   // Decoding.
-  rsaOaepContent = EncryptedContent();
-  rsaOaepContent.wireDecode(encryptedBlob);
-  contentPayload = rsaOaepContent.getPayload();
-  contentInitialVector = rsaOaepContent.getInitialVector();
-
+  EncryptedContent rsaOaepContent2;
+  rsaOaepContent2.wireDecode(encryptedBlob);
   ASSERT_EQ(rsaOaepContent.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
-  ASSERT_TRUE(contentPayload.equals(payload));
-  ASSERT_TRUE(contentInitialVector.equals(initialVector));
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getKeyName().equals
+  ASSERT_TRUE(rsaOaepContent2.getPayload().equals(Blob(message, sizeof(message))));
+  ASSERT_TRUE(rsaOaepContent2.getInitialVector().equals(Blob(iv, sizeof(iv))));
+  ASSERT_TRUE(rsaOaepContent2.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
+  ASSERT_TRUE(rsaOaepContent2.getKeyLocator().getKeyName().equals
               (Name("/test/key/locator")));
 
   // Check the no IV case.
-  rsaOaepContent = EncryptedContent();
-  rsaOaepContent.setAlgorithmType(ndn_EncryptAlgorithmType_RsaOaep)
-    .setKeyLocator(keyLocator).setPayload(payload);
-  contentPayload = rsaOaepContent.getPayload();
-
-  ASSERT_EQ(rsaOaepContent.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
-  ASSERT_TRUE(contentPayload.equals(payload));
-  ASSERT_TRUE(rsaOaepContent.getInitialVector().isNull());
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getKeyName().equals
+  EncryptedContent rsaOaepContentNoIv;
+  rsaOaepContentNoIv.setAlgorithmType(ndn_EncryptAlgorithmType_RsaOaep)
+    .setKeyLocator(keyLocator).setPayload(Blob(message, sizeof(message)));
+  ASSERT_EQ(rsaOaepContentNoIv.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
+  ASSERT_TRUE(rsaOaepContentNoIv.getPayload().equals(Blob(message, sizeof(message))));
+  ASSERT_TRUE(rsaOaepContentNoIv.getInitialVector().isNull());
+  ASSERT_TRUE(rsaOaepContentNoIv.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
+  ASSERT_TRUE(rsaOaepContentNoIv.getKeyLocator().getKeyName().equals
              (Name("/test/key/locator")));
 
   // Encoding.
-  encryptedBlob = Blob(encryptedNoIv, sizeof(encryptedNoIv));
-  Blob encodedNoIV = rsaOaepContent.wireEncode();
-  ASSERT_TRUE(encryptedBlob.equals(encodedNoIV));
+  Blob encryptedBlob2(encryptedNoIv, sizeof(encryptedNoIv));
+  Blob encodedNoIV = rsaOaepContentNoIv.wireEncode();
+  ASSERT_TRUE(encryptedBlob2.equals(encodedNoIV));
 
   // Decoding.
-  rsaOaepContent = EncryptedContent();
-  rsaOaepContent.wireDecode(encryptedBlob);
-  Blob contentPayloadNoIV = rsaOaepContent.getPayload();
-
-  ASSERT_EQ(rsaOaepContent.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
-  ASSERT_TRUE(contentPayloadNoIV.equals(payload));
-  ASSERT_TRUE(rsaOaepContent.getInitialVector().isNull());
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
-  ASSERT_TRUE(rsaOaepContent.getKeyLocator().getKeyName().equals
+  EncryptedContent rsaOaepContentNoIv2;
+  rsaOaepContentNoIv2.wireDecode(encryptedBlob2);
+  ASSERT_EQ(rsaOaepContentNoIv2.getAlgorithmType(), ndn_EncryptAlgorithmType_RsaOaep);
+  ASSERT_TRUE(rsaOaepContentNoIv2.getPayload().equals(Blob(message, sizeof(message))));
+  ASSERT_TRUE(rsaOaepContentNoIv2.getInitialVector().isNull());
+  ASSERT_TRUE(rsaOaepContentNoIv2.getKeyLocator().getType() != (ndn_KeyLocatorType)-1);
+  ASSERT_TRUE(rsaOaepContentNoIv2.getKeyLocator().getKeyName().equals
              (Name("/test/key/locator")));
 }
 
