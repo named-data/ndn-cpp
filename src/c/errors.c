@@ -114,6 +114,8 @@ ndn_getErrorString(int error)
     return      "ElementReader The incoming packet exceeds the maximum limit Face::getMaxNdnPacketSize()";
   case NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object:
     return      "Interest has a selected delegation but no link object";
+  case NDN_ERROR_The_Generic_signature_encoding_is_not_a_valid_NDN_TLV_SignatureInfo:
+    return      "The Generic signature encoding is not a valid NDN-TLV SignatureInfo";
   default:
     return "unrecognized ndn_Error code";
   }
