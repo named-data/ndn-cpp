@@ -27,6 +27,7 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/generic-signature.hpp>
 #include <ndn-cpp/delegation-set.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
@@ -303,6 +304,8 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
     result.reset(new Sha256WithEcdsaSignature());
   else if (signatureLite.getType() == ndn_SignatureType_DigestSha256Signature)
     result.reset(new DigestSha256Signature());
+  else if (signatureLite.getType() == ndn_SignatureType_Generic)
+    result.reset(new GenericSignature());
   else
     // We don't expect this to happen.
     throw runtime_error("signatureStruct.type has an unrecognized value");
