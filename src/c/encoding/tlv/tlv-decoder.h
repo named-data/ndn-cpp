@@ -437,6 +437,33 @@ static __inline void ndn_TlvDecoder_seek(struct ndn_TlvDecoder *self, size_t off
   self->offset = offset;
 }
 
+/**
+ * Set slice to a slice of the input for the given offset range.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param beginOffset The offset in the input of the beginning of the slice.
+ * @param endOffset The offset in the input of the end of the slice.
+ * @param value Set value.value to a pointer to the binary data inside self's input buffer and set value.length to the length.
+ * @return 0 for success, else an error code, including an error if beginOffset
+ * or endOffset exceeds the length of the input.
+ */
+static __inline ndn_Error
+ndn_TlvDecoder_getSlice
+  (struct ndn_TlvDecoder *self, size_t beginOffset, size_t endOffset,
+   struct ndn_Blob *slice)
+{
+  if (beginOffset > self->inputLength || endOffset > self->inputLength)
+    return NDN_ERROR_read_past_the_end_of_the_input;
+
+  slice->value = self->input + beginOffset;
+  if (beginOffset > endOffset)
+    // We don't expect this to happen.
+    slice->length = 0;
+  else
+    slice->length = endOffset - beginOffset;
+
+  return NDN_ERROR_success;
+}
+
 #ifdef  __cplusplus
 }
 #endif
