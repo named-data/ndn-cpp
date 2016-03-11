@@ -25,6 +25,7 @@
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
+#include <ndn-cpp/generic-signature.hpp>
 #include "c/data.h"
 #include <ndn-cpp/data.hpp>
 
@@ -93,6 +94,8 @@ Data::set(const DataLite& dataLite)
     signature_.set(ptr_lib::shared_ptr<Signature>(new HmacWithSha256Signature()));
   else if (dataLite.getSignature().getType() == ndn_SignatureType_DigestSha256Signature)
     signature_.set(ptr_lib::shared_ptr<Signature>(new DigestSha256Signature()));
+  else if (dataLite.getSignature().getType() == ndn_SignatureType_Generic)
+    signature_.set(ptr_lib::shared_ptr<Signature>(new GenericSignature()));
   else
     // We don't expect this to happen.
     throw runtime_error("dataLite.getSignature().getType() has an unrecognized value");

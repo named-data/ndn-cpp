@@ -27,6 +27,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/generic-signature.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -190,6 +191,24 @@ static const uint8_t codedData[] = {
     0x31, 0xCB, 0x6C, 0x1C, 0x0A, 0xA4, 0x01, 0x10, 0xFC, 0xC8, 0x66, 0xCE, 0x2E, 0x9C, 0x0B, 0x2D,
     0x7F, 0xB4, 0x64, 0xA0, 0xEE, 0x22, 0x82, 0xC8, 0x34, 0xF7, 0x9A, 0xF5, 0x51, 0x12, 0x2A, 0x84,
 1
+};
+
+static const int experimentalSignatureType = 100;
+static const uint8_t experimentalSignatureInfo[] = {
+0x16, 0x08, // SignatureInfo
+  0x1B, 0x01, experimentalSignatureType, // SignatureType
+  0x81, 0x03, 1, 2, 3 // Experimental info
+};
+
+static const uint8_t experimentalSignatureInfoNoSignatureType[] = {
+0x16, 0x05, // SignatureInfo
+  0x81, 0x03, 1, 2, 3 // Experimental info
+};
+
+static const uint8_t experimentalSignatureInfoBadTlv[] = {
+0x16, 0x08, // SignatureInfo
+  0x1B, 0x01, experimentalSignatureType, // SignatureType
+  0x81, 0x10, 1, 2, 3 // Bad TLV encoding (length 0x10 doesn't match the value length.
 };
 
 static string dump(const string& s1) { return s1; }
@@ -479,6 +498,52 @@ TEST_F(TestDataMethods, VerifyDigestSha256)
      bind(&VerifyCounter::onVerifyFailed, &counter, _1));
   ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
+}
+
+
+TEST_F(TestDataMethods, GenericSignature)
+{
+  // Test correct encoding.
+  ptr_lib::shared_ptr<GenericSignature> signature(new GenericSignature());
+  signature->setSignatureInfoEncoding
+    (Blob(experimentalSignatureInfo, sizeof(experimentalSignatureInfo)), -1);
+  uint8_t signatureValueBytes[] = { 1, 2, 3, 4 };
+  Blob signatureValue(signatureValueBytes, sizeof(signatureValueBytes));
+  signature->setSignature(signatureValue);
+
+  freshData->setSignature(*signature);
+  Blob encoding = freshData->wireEncode();
+
+  Data decodedData;
+  decodedData.wireDecode(encoding);
+
+  const GenericSignature *decodedSignature =
+    dynamic_cast<const GenericSignature*>(decodedData.getSignature());
+  ASSERT_EQ(decodedSignature->getTypeCode(), experimentalSignatureType);
+  ASSERT_TRUE(Blob(experimentalSignatureInfo, sizeof(experimentalSignatureInfo)).equals
+             (decodedSignature->getSignatureInfoEncoding()));
+  ASSERT_TRUE(signatureValue.equals(decodedSignature->getSignature()));
+
+  // Test bad encoding.
+  signature.reset(new GenericSignature());
+  signature->setSignatureInfoEncoding
+    (Blob(experimentalSignatureInfoNoSignatureType, sizeof(experimentalSignatureInfoNoSignatureType)),
+     -1);
+  signature->setSignature(signatureValue);
+  freshData->setSignature(*signature);
+  ASSERT_THROW
+    (freshData->wireEncode(),
+    runtime_error) << "Expected encoding error for experimentalSignatureInfoNoSignatureType";
+
+  signature.reset(new GenericSignature());
+  signature->setSignatureInfoEncoding
+    (Blob(experimentalSignatureInfoBadTlv, sizeof(experimentalSignatureInfoBadTlv)),
+     -1);
+  signature->setSignature(signatureValue);
+  freshData->setSignature(*signature);
+  ASSERT_THROW
+    (freshData->wireEncode(),
+    runtime_error) << "Expected encoding error for experimentalSignatureInfoBadTlv";
 }
 
 int

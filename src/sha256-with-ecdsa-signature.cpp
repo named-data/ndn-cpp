@@ -20,7 +20,6 @@
  */
 
 #include <stdexcept>
-#include "c/data.h"
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 
 using namespace std;

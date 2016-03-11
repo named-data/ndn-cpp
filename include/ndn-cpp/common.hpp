@@ -24,7 +24,7 @@
 
 #include <vector>
 #include <string>
-// common.h include ndn-cpp-config.h.
+// common.h includes ndn-cpp-config.h.
 #include "c/common.h"
 
 // Depending on where ./configure found shared_ptr and the options --with-std-shared-ptr

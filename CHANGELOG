@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.9 (2016-03-01)
+Interim changes since NDN-CPP v0.9 (2016-03-11)
 -----------------------------------------------
 
 Changes
@@ -17,12 +17,14 @@ Changes
   fromSegmentOffset, fromVersion, fromTimestamp and fromSequenceNumber.
 * http://redmine.named-data.net/issues/3452 Added Interest::refreshNonce.
 * http://redmine.named-data.net/issues/3455 Added ControlResponse.
-* Renamed the following .c file to avoid linker conflicts with the same named .cpp file:
+* http://redmine.named-data.net/issues/3260 Added GenericSignature.
+* Renamed the following .c files to avoid linker conflicts with the same named .cpp file:
   name.c -> name_c.c, interest.c -> interest_c.c,
   tcp-transport.c -> tcp-transport_c.c, tlv-0_1_1-wire-format.c -> tlv-0_1_1-wire-format_c.c
 * http://redmine.named-data.net/issues/3152 In API callbacks, catch and log exceptions.
 * Unit tests: Added test-link.
 * Unit tests: Added test-control-response.
+* Unit tests: In test-data-methods, added test GenericSignature.
 * Examples: Added test-sign-verify-data-hmac.
 
 NDN-CPP v0.9 (2016-01-07)

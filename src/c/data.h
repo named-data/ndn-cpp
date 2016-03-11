@@ -39,6 +39,8 @@ extern "C" {
 static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents) {
   self->type = (ndn_SignatureType)-1;
   ndn_Blob_initialize(&self->signature, 0, 0);
+  ndn_Blob_initialize(&self->signatureInfoEncoding, 0, 0);
+  self->genericTypeCode = -1;
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
 }
 
@@ -73,6 +75,8 @@ ndn_Signature_setFromSignature
 
   self->type = other->type;
   ndn_Blob_setFromBlob(&self->signature, &other->signature);
+  ndn_Blob_setFromBlob(&self->signatureInfoEncoding, &other->signatureInfoEncoding);
+  self->genericTypeCode = other->genericTypeCode;
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
     return error;
