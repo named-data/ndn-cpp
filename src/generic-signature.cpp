@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2013-2016 Regents of the University of California.
+ * Copyright (C) 2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,60 +20,59 @@
  */
 
 #include <stdexcept>
-#include <ndn-cpp/sha256-with-rsa-signature.hpp>
-
-using namespace std;
+#include <ndn-cpp/generic-signature.hpp>
 
 namespace ndn {
 
+
 ptr_lib::shared_ptr<Signature>
-Sha256WithRsaSignature::clone() const
+GenericSignature::clone() const
 {
-  return ptr_lib::shared_ptr<Signature>(new Sha256WithRsaSignature(*this));
+  return ptr_lib::shared_ptr<Signature>(new GenericSignature(*this));
 }
 
 const Blob&
-Sha256WithRsaSignature::getSignature() const
+GenericSignature::getSignature() const
 {
   return signature_;
 }
 
 void
-Sha256WithRsaSignature::setSignature(const Blob& signature)
+GenericSignature::setSignature(const Blob& signature)
 {
   signature_ = signature;
   ++changeCount_;
 }
 
 void
-Sha256WithRsaSignature::get(SignatureLite& signatureLite) const
+GenericSignature::get(SignatureLite& signatureLite) const
 {
-  signatureLite.setType(ndn_SignatureType_Sha256WithRsaSignature);
+  // Initialize unused fields.
+  signatureLite.clear();
+
+  signatureLite.setType(ndn_SignatureType_Generic);
   signatureLite.setSignature(signature_);
-  keyLocator_.get().get(signatureLite.getKeyLocator());
+  signatureLite.setSignatureInfoEncoding(signatureInfoEncoding_, typeCode_);
 }
 
 void
-Sha256WithRsaSignature::set(const SignatureLite& signatureLite)
+GenericSignature::set(const SignatureLite& signatureLite)
 {
   // The caller should already have checked the type, but check again.
-  if (signatureLite.getType() != ndn_SignatureType_Sha256WithRsaSignature)
-    throw runtime_error("signatureLite is not the expected type Sha256WithRsaSignature");
+#if 0 // debug
+  if (signatureLite.getType() != ndn_SignatureType_Generic)
+    throw runtime_error("signatureLite is not the expected type Generic");
+#endif
 
   setSignature(Blob(signatureLite.getSignature()));
-  keyLocator_.get().set(signatureLite.getKeyLocator());
+  setSignatureInfoEncoding
+    (Blob(signatureLite.getSignatureInfoEncoding()),
+     signatureLite.getGenericTypeCode());
 }
 
 uint64_t
-Sha256WithRsaSignature::getChangeCount() const
+GenericSignature::getChangeCount() const
 {
-  // Make sure each of the checkChanged is called.
-  bool changed = keyLocator_.checkChanged();
-  if (changed)
-    // A child object has changed, so update the change count.
-    // This method can be called on a const object, but we want to be able to update the changeCount_.
-    ++const_cast<Sha256WithRsaSignature*>(this)->changeCount_;
-
   return changeCount_;
 }
 

@@ -142,7 +142,7 @@ public:
 
   /**
    * Remove every DelegationSet::Delegation with the given name.
-   * @param name Then name to match the name of the delegation(s) to be removed.
+   * @param name The name to match the name of the delegation(s) to be removed.
    * @return True if a DelegationSet::Delegation was removed, otherwise false.
    */
   bool

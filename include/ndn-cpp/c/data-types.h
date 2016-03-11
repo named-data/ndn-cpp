@@ -45,7 +45,8 @@ typedef enum {
   ndn_SignatureType_DigestSha256Signature = 0,
   ndn_SignatureType_Sha256WithRsaSignature = 1,
   ndn_SignatureType_Sha256WithEcdsaSignature = 3,
-  ndn_SignatureType_HmacWithSha256Signature = 4
+  ndn_SignatureType_HmacWithSha256Signature = 4,
+  ndn_SignatureType_Generic = 0x7fff
 } ndn_SignatureType;
 
 /**
@@ -56,9 +57,12 @@ typedef enum {
  * subclasses and virtual methods.
  */
 struct ndn_Signature {
-  ndn_SignatureType type;          /**< -1 for none */
+  ndn_SignatureType type;                /**< -1 for unspecified */
   struct ndn_Blob signature;
-  struct ndn_KeyLocator keyLocator;
+  struct ndn_Blob signatureInfoEncoding; /**< used with Generic */
+  int genericTypeCode;                   /**< used with Generic. -1 for not known. */
+  struct ndn_KeyLocator keyLocator; /**< used with Sha256WithRsaSignature,
+                                     * Sha256WithEcdsaSignature, HmacWithSha256Signature */
 };
 
 /**

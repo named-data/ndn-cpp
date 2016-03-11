@@ -228,10 +228,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/control-parameters.lo \
 	src/control-response.lo src/data.lo src/delegation-set.lo \
 	src/digest-sha256-signature.lo src/exclude.lo src/face.lo \
-	src/hmac-with-sha256-signature.lo src/interest-filter.lo \
-	src/interest.lo src/key-locator.lo src/link.lo \
-	src/meta-info.lo src/name.lo src/node.lo src/signature.lo \
-	src/sha256-with-ecdsa-signature.lo \
+	src/generic-signature.lo src/hmac-with-sha256-signature.lo \
+	src/interest-filter.lo src/interest.lo src/key-locator.lo \
+	src/link.lo src/meta-info.lo src/name.lo src/node.lo \
+	src/signature.lo src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/threadsafe-face.lo \
 	src/encoding/base64.lo src/encoding/element-listener.lo \
 	src/encoding/oid.lo src/encoding/protobuf-tlv.lo \
@@ -1035,6 +1035,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/generic-signature.hpp \
   include/ndn-cpp/hmac-with-sha256-signature.hpp \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
@@ -1161,6 +1162,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
+  src/generic-signature.cpp \
   src/hmac-with-sha256-signature.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \
@@ -1520,6 +1522,8 @@ src/digest-sha256-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/exclude.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/face.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/generic-signature.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/hmac-with-sha256-signature.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/interest-filter.lo: src/$(am__dirstamp) \
@@ -2210,6 +2214,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/digest-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exclude.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/face.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/generic-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/hmac-with-sha256-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest-filter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/interest.Plo@am__quote@

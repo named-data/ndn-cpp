@@ -73,6 +73,29 @@ ndn_Error
 ndn_encodeTlvSignatureInfo
   (const struct ndn_Signature *signatureInfo, struct ndn_TlvEncoder *encoder)
 {
+  if (signatureInfo->type == ndn_SignatureType_Generic) {
+    // Handle a Generic signature separately since it has the entire encoding.
+    const struct ndn_Blob *encoding = &signatureInfo->signatureInfoEncoding;
+    ndn_Error error;
+    size_t endOffset;
+    uint64_t signatureType;
+
+    // Do a test decoding to sanity check that it is valid TLV.
+    struct ndn_TlvDecoder decoder;
+    ndn_TlvDecoder_initialize(&decoder, encoding->value, encoding->length);
+    error = ndn_TlvDecoder_readNestedTlvsStart
+      (&decoder, ndn_Tlv_SignatureInfo, &endOffset);
+    if (!error)
+      error = ndn_TlvDecoder_readNonNegativeIntegerTlv
+        (&decoder, ndn_Tlv_SignatureType, &signatureType);
+    if (!error)
+      error = ndn_TlvDecoder_finishNestedTlvs(&decoder, endOffset);
+    if (error)
+      return NDN_ERROR_The_Generic_signature_encoding_is_not_a_valid_NDN_TLV_SignatureInfo;
+
+    return ndn_TlvEncoder_writeArray(encoder, encoding->value, encoding->length);
+  }
+
   if (signatureInfo->type == ndn_SignatureType_Sha256WithRsaSignature ||
       signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature ||
       signatureInfo->type == ndn_SignatureType_HmacWithSha256Signature)
@@ -92,11 +115,13 @@ ndn_decodeTlvSignatureInfo
   (struct ndn_Signature *signatureInfo, struct ndn_TlvDecoder *decoder)
 {
   ndn_Error error;
+  size_t beginOffset;
   size_t endOffset;
   uint64_t signatureType;
 
   ndn_Signature_clear(signatureInfo);
 
+  beginOffset = decoder->offset;
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
        (decoder, ndn_Tlv_SignatureInfo, &endOffset)))
     return error;
@@ -117,8 +142,15 @@ ndn_decodeTlvSignatureInfo
   }
   else if (signatureType == ndn_Tlv_SignatureType_DigestSha256)
     signatureInfo->type = ndn_SignatureType_DigestSha256Signature;
-  else
-    return NDN_ERROR_decodeSignatureInfo_unrecognized_SignatureInfo_type;
+  else {
+    signatureInfo->type = ndn_SignatureType_Generic;
+    signatureInfo->genericTypeCode = signatureType;
+
+    // Get the bytes of the SignatureInfo TLV.
+    if ((error = ndn_TlvDecoder_getSlice
+         (decoder, beginOffset, endOffset, &signatureInfo->signatureInfoEncoding)))
+      return error;
+  }
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;

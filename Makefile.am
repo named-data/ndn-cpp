@@ -68,6 +68,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
+  include/ndn-cpp/generic-signature.hpp \
   include/ndn-cpp/hmac-with-sha256-signature.hpp \
   include/ndn-cpp/interest-filter.hpp \
   include/ndn-cpp/interest.hpp \
@@ -192,6 +193,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/digest-sha256-signature.cpp \
   src/exclude.cpp \
   src/face.cpp \
+  src/generic-signature.cpp \
   src/hmac-with-sha256-signature.cpp \
   src/interest-filter.cpp \
   src/interest.cpp \

@@ -330,9 +330,9 @@ ndn_decodeTlvInterest
       return error;
     ndn_TlvDecoder_seek(decoder, linkEndOffset);
 
-    ndn_Blob_initialize
-      (&interest->linkWireEncoding, decoder->input + linkBeginOffset,
-       linkEndOffset - linkBeginOffset);
+    if ((error = ndn_TlvDecoder_getSlice
+         (decoder, linkBeginOffset, linkEndOffset, &interest->linkWireEncoding)))
+      return error;
   }
   else
     ndn_Blob_initialize(&interest->linkWireEncoding, 0, 0);
