@@ -620,6 +620,32 @@ BasicIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 }
 
 void
+BasicIdentityStorage::getAllIdentities(vector<Name>& nameList, bool isDefault)
+{
+  sqlite3_stmt* statement;
+
+  if (isDefault)
+    sqlite3_prepare_v2
+      (database_,
+       "SELECT identity_name FROM Identity WHERE default_identity=1",
+       -1, &statement, 0);
+  else
+    sqlite3_prepare_v2
+      (database_,
+       "SELECT identity_name FROM Identity WHERE default_identity=0",
+       -1, &statement, 0);
+
+  while (sqlite3_step(statement) == SQLITE_ROW) {
+    Name keyName
+      (string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
+       sqlite3_column_bytes(statement, 0)));
+    nameList.push_back(keyName);
+  }
+
+  sqlite3_finalize(statement);
+}
+
+void
 BasicIdentityStorage::getAllKeyNamesOfIdentity
   (const Name& identityName, vector<Name>& nameList, bool isDefault)
 {
@@ -643,6 +669,46 @@ BasicIdentityStorage::getAllKeyNamesOfIdentity
   while (sqlite3_step(statement) == SQLITE_ROW) {
     Name keyName(identityName);
     keyName.append
+      (string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
+       sqlite3_column_bytes(statement, 0)));
+    nameList.push_back(keyName);
+  }
+
+  sqlite3_finalize(statement);
+}
+
+void
+BasicIdentityStorage::getAllCertificateNamesOfKey
+  (const Name& keyName, vector<Name>& nameList, bool isDefault)
+{
+  if (keyName.size() == 0)
+    return;
+
+  sqlite3_stmt* statement;
+
+  if (isDefault)
+    sqlite3_prepare_v2
+      (database_,
+        "SELECT cert_name FROM Certificate \
+         WHERE default_cert=1 and identity_name=? and key_identifier=?",
+       -1, &statement, 0);
+  else
+    sqlite3_prepare_v2
+      (database_,
+       "SELECT cert_name FROM Certificate \
+        WHERE default_cert=0 and identity_name=? and key_identifier=?",
+       -1, &statement, 0);
+
+  string identityUri = keyName.getPrefix(-1).toUri();
+  sqlite3_bind_text
+    (statement, 1, identityUri.c_str(), identityUri.size(), SQLITE_TRANSIENT);
+
+  string baseKeyNameUri = keyName.get(-1).toEscapedString();
+  sqlite3_bind_text
+    (statement, 2, baseKeyNameUri.c_str(), baseKeyNameUri.size(), SQLITE_TRANSIENT);
+
+  while (sqlite3_step(statement) == SQLITE_ROW) {
+    Name keyName
       (string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
        sqlite3_column_bytes(statement, 0)));
     nameList.push_back(keyName);

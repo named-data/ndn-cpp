@@ -195,11 +195,28 @@ MemoryIdentityStorage::getDefaultCertificateNameForKey(const Name& keyName)
 }
 
 void
+MemoryIdentityStorage::getAllIdentities(vector<Name>& nameList, bool isDefault)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::getAllIdentities not implemented");
+#endif
+}
+
+void
 MemoryIdentityStorage::getAllKeyNamesOfIdentity
-  (const Name& identityName, std::vector<Name>& nameList, bool isDefault)
+  (const Name& identityName, vector<Name>& nameList, bool isDefault)
 {
 #if 1
   throw runtime_error("MemoryIdentityStorage::getAllKeyNamesOfIdentity not implemented");
+#endif
+}
+
+void
+MemoryIdentityStorage::getAllCertificateNamesOfKey
+  (const Name& keyName, vector<Name>& nameList, bool isDefault)
+{
+#if 1
+  throw runtime_error("MemoryIdentityStorage::getAllCertificateNamesOfKey not implemented");
 #endif
 }
 
