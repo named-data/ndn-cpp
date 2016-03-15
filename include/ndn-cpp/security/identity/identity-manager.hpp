@@ -380,6 +380,46 @@ public:
   }
 
   /**
+   * Append all the identity names to the nameList.
+   * @param nameList Append result names to nameList.
+   * @param isDefault If true, add only the default key name. If false, add only
+   * the non-default key names.
+   */
+  void
+  getAllIdentities(std::vector<Name>& nameList, bool isDefault)
+  {
+    identityStorage_->getAllIdentities(nameList, isDefault);
+  }
+
+  /**
+   * Append all the key names of a particular identity to the nameList.
+   * @param identityName The identity name to search for.
+   * @param nameList Append result names to nameList.
+   * @param isDefault If true, add only the default key name. If false, add only
+   * the non-default key names.
+   */
+  void
+  getAllKeyNamesOfIdentity
+    (const Name& identityName, std::vector<Name>& nameList, bool isDefault)
+  {
+    identityStorage_->getAllKeyNamesOfIdentity(identityName, nameList, isDefault);
+  }
+
+  /**
+   * Append all the certificate names of a particular key name to the nameList.
+   * @param keyName The key name to search for.
+   * @param nameList Append result names to nameList.
+   * @param isDefault If true, add only the default certificate name. If false,
+   * add only the non-default certificate names.
+   */
+  void
+  getAllCertificateNamesOfKey
+    (const Name& keyName, std::vector<Name>& nameList, bool isDefault)
+  {
+    identityStorage_->getAllCertificateNamesOfKey(keyName, nameList, isDefault);
+  }
+
+  /**
    * Sign the byte array data based on the certificate name.
    * @param buffer The byte array to be signed.
    * @param bufferLength the length of buffer.

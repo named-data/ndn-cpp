@@ -18,6 +18,7 @@ Changes
 * http://redmine.named-data.net/issues/3452 Added Interest::refreshNonce.
 * http://redmine.named-data.net/issues/3455 Added ControlResponse.
 * http://redmine.named-data.net/issues/3260 Added GenericSignature.
+* In IdentityManager, added getAllIdentities, getAllKeyNamesOfIdentity and getAllCertificateNamesOfKey.
 * Renamed the following .c files to avoid linker conflicts with the same named .cpp file:
   name.c -> name_c.c, interest.c -> interest_c.c,
   tcp-transport.c -> tcp-transport_c.c, tlv-0_1_1-wire-format.c -> tlv-0_1_1-wire-format_c.c
