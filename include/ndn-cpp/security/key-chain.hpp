@@ -552,6 +552,7 @@ public:
    * @param key The key for the HmacWithSha256.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
+   * @return True if the signature verifies, otherwise false.
    * @note This method is an experimental feature. The API may change.
    */
   static bool
