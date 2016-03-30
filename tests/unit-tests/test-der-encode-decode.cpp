@@ -243,6 +243,36 @@ TEST_F(TestCertificate, Oid)
     "Incorrect decoded OID";
 }
 
+TEST_F(TestCertificate, PrepareUnsignedCertificate)
+{
+  ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
+    (new MemoryIdentityStorage());
+  ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage
+    (new MemoryPrivateKeyStorage());
+  IdentityManager identityManager(identityStorage, privateKeyStorage);
+  Name keyName("/test/ksk-1457560485494");
+  identityStorage->addKey
+    (keyName, KEY_TYPE_RSA, Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY)));
+
+  vector<CertificateSubjectDescription> subjectDescriptions;
+  subjectDescriptions.push_back(CertificateSubjectDescription
+    (TEST_OID, "TEST NAME"));
+  ptr_lib::shared_ptr<IdentityCertificate> newCertificate =
+    identityManager.prepareUnsignedIdentityCertificate
+      (keyName, keyName.getPrefix(1), toyCertNotBefore, toyCertNotAfter,
+       subjectDescriptions);
+
+  // Update the generated certificate version to equal the one in toyCert.
+  newCertificate->setName
+    (Name(newCertificate->getName().getPrefix(-1).append
+     (toyCert.getName().get(-1))));
+
+  // Make a copy to test encoding.
+  IdentityCertificate certificateCopy(*newCertificate);
+  ASSERT_EQ(getCertificateString(toyCert), getCertificateString(certificateCopy)) <<
+    "Prepared unsigned certificate dump does not have the expected format";
+}
+
 int
 main(int argc, char **argv)
 {
