@@ -338,7 +338,7 @@ public:
   ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name& certificateName)
   {
-    return identityStorage_->getCertificate(certificateName, false);
+    return identityStorage_->getCertificate(certificateName);
   }
 
   /**

@@ -135,11 +135,10 @@ public:
   /**
    * Get a certificate from the identity storage.
    * @param certificateName The name of the requested certificate.
-   * @param allowAny If false, only a valid certificate will be returned, otherwise validity is disregarded.
    * @return The requested certificate.  If not found, return a shared_ptr with a null pointer.
    */
   virtual ptr_lib::shared_ptr<IdentityCertificate>
-  getCertificate(const Name &certificateName, bool allowAny = false);
+  getCertificate(const Name &certificateName);
 
 
   /*****************************************

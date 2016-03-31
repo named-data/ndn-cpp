@@ -421,26 +421,13 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 }
 
 ptr_lib::shared_ptr<IdentityCertificate>
-BasicIdentityStorage::getCertificate(const Name &certificateName, bool allowAny)
+BasicIdentityStorage::getCertificate(const Name &certificateName)
 {
   if (doesCertificateExist(certificateName)) {
     sqlite3_stmt *statement;
-    if (!allowAny) {
-      sqlite3_prepare_v2(database_,
-                          "SELECT certificate_data FROM Certificate \
-                           WHERE cert_name=? AND not_before<datetime(?, 'unixepoch') AND not_after>datetime(?, 'unixepoch') and valid_flag=1",
-                          -1, &statement, 0);
-
-      sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
-      sqlite3_bind_int64(statement, 2, (sqlite3_int64)floor(ndn_getNowMilliseconds() / 1000.0));
-      sqlite3_bind_int64(statement, 3, (sqlite3_int64)floor(ndn_getNowMilliseconds() / 1000.0));
-    }
-    else {
-      sqlite3_prepare_v2(database_,
-                          "SELECT certificate_data FROM Certificate WHERE cert_name=?", -1, &statement, 0);
-
-      sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
-    }
+    sqlite3_prepare_v2(database_,
+                        "SELECT certificate_data FROM Certificate WHERE cert_name=?", -1, &statement, 0);
+    sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
     int res = sqlite3_step(statement);
 
