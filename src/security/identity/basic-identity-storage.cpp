@@ -371,42 +371,6 @@ BasicIdentityStorage::doesCertificateExist(const Name& certificateName)
 }
 
 void
-BasicIdentityStorage::addAnyCertificate(const IdentityCertificate& certificate)
-{
-  const Name& certificateName = certificate.getName();
-  Name keyName = certificate.getPublicKeyName();
-
-  string keyId = keyName.get(-1).toEscapedString();
-  Name identityName = keyName.getPrefix(-1);
-
-  sqlite3_stmt *statement;
-  sqlite3_prepare_v2(database_,
-                      "INSERT INTO Certificate (cert_name, cert_issuer, identity_name, key_identifier, not_before, not_after, certificate_data)\
-                       values (?, ?, ?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'), ?)",
-                      -1, &statement, 0);
-
-
-  sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
-
-  const Name& signerName = KeyLocator::getFromSignature(certificate.getSignature()).getKeyName();
-  sqlite3_bind_text(statement, 2, signerName.toUri(), SQLITE_TRANSIENT);
-
-  sqlite3_bind_text(statement, 3, identityName.toUri(), SQLITE_TRANSIENT);
-  sqlite3_bind_text(statement, 4, keyId, SQLITE_TRANSIENT);
-
-  // Convert from milliseconds to seconds since 1/1/1970.
-  sqlite3_bind_int64(statement, 5, (sqlite3_int64)floor(certificate.getNotBefore() / 1000.0));
-  sqlite3_bind_int64(statement, 6, (sqlite3_int64)floor(certificate.getNotAfter() / 1000.0));
-
-  // wireEncode returns the cached encoding if available.
-  sqlite3_bind_blob(statement, 7, certificate.wireEncode().buf(), certificate.wireEncode().size(), SQLITE_TRANSIENT);
-
-  int res = sqlite3_step(statement);
-
-  sqlite3_finalize(statement);
-}
-
-void
 BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 {
   const Name& certificateName = certificate.getName();
