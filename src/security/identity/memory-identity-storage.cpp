@@ -68,12 +68,15 @@ MemoryIdentityStorage::doesKeyExist(const Name& keyName)
 void
 MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer)
 {
+  if (keyName.size() == 0)
+    return;
+
+  if (doesKeyExist(keyName))
+    return;
+
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
 
   addIdentity(identityName);
-
-  if (doesKeyExist(keyName))
-    throw SecurityException("a key with the same name already exists!");
 
   keyStore_[keyName.toUri()] = ptr_lib::make_shared<KeyRecord>(keyType, publicKeyDer);
 }

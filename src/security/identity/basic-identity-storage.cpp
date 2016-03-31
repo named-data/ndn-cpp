@@ -272,7 +272,7 @@ BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& p
     return;
 
   if (doesKeyExist(keyName))
-    throw SecurityException("a key with the same name already exists!");
+    return;
 
   string keyId = keyName.get(-1).toEscapedString();
   Name identityName = keyName.getPrefix(-1);
@@ -287,7 +287,7 @@ BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& p
   sqlite3_bind_int(statement, 3, (int)keyType);
   sqlite3_bind_blob(statement, 4, publicKeyDer.buf(), publicKeyDer.size(), SQLITE_TRANSIENT);
 
-  int res = sqlite3_step(statement);
+  sqlite3_step(statement);
 
   sqlite3_finalize(statement);
 }
