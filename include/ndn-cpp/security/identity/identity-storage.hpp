@@ -127,9 +127,10 @@ public:
   doesCertificateExist(const Name& certificateName) = 0;
 
   /**
-   * Add a certificate to the identity storage.
+   * Add a certificate to the identity storage. Also call addKey to ensure that
+   * the certificate key exists. If the certificate is already installed, don't
+   * replace it.
    * @param certificate The certificate to be added.  This makes a copy of the certificate.
-   * @throws SecurityException if the certificate is already installed.
    */
   virtual void
   addCertificate(const IdentityCertificate& certificate) = 0;

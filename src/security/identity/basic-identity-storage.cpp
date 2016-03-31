@@ -376,22 +376,14 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   const Name& certificateName = certificate.getName();
   Name keyName = certificate.getPublicKeyName();
 
-  if (!doesKeyExist(keyName))
-    throw SecurityException("No corresponding Key record for certificate!" + keyName.toUri() + " " + certificateName.toUri());
+  addKey(keyName, certificate.getPublicKeyInfo().getKeyType(),
+         certificate.getPublicKeyInfo().getKeyDer());
 
-  // Check if the certificate already exists.
   if (doesCertificateExist(certificateName))
-    throw SecurityException("Certificate has already been installed!");
+    return;
 
   string keyId = keyName.get(-1).toEscapedString();
   Name identity = keyName.getPrefix(-1);
-
-  // Check if the public key of certificate is the same as the key record
-
-  Blob keyBlob = getKey(keyName);
-
-  if (!keyBlob || (*keyBlob) != *(certificate.getPublicKeyInfo().getKeyDer()))
-    throw SecurityException("Certificate does not match the public key!");
 
   // Insert the certificate
   sqlite3_stmt *statement;

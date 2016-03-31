@@ -120,17 +120,11 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   const Name& certificateName = certificate.getName();
   Name keyName = certificate.getPublicKeyName();
 
-  if (!doesKeyExist(keyName))
-    throw SecurityException("No corresponding Key record for certificate! " + keyName.toUri() + " " + certificateName.toUri());
+  addKey(keyName, certificate.getPublicKeyInfo().getKeyType(),
+         certificate.getPublicKeyInfo().getKeyDer());
 
-  // Check if certificate already exists.
   if (doesCertificateExist(certificateName))
-    throw SecurityException("Certificate has already been installed!");
-
-  // Check if the public key of certificate is the same as the key record.
-  Blob keyBlob = getKey(keyName);
-  if (!keyBlob || (*keyBlob) != *(certificate.getPublicKeyInfo().getKeyDer()))
-    throw SecurityException("Certificate does not match the public key!");
+    return;
 
   // Insert the certificate.
   // wireEncode returns the cached encoding if available.
