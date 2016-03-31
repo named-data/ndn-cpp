@@ -153,11 +153,17 @@ SelfVerifyPolicyManager::verify
 Blob
 SelfVerifyPolicyManager::getPublicKeyDer(const KeyLocator& keyLocator)
 {
-  if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME && identityStorage_)
-    // Assume the key name is a certificate name.
-    return identityStorage_->getKey
-      (IdentityCertificate::certificateNameToPublicKeyName
-       (keyLocator.getKeyName()));
+  if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME && identityStorage_) {
+    try {
+      // Assume the key name is a certificate name.
+      return identityStorage_->getKey
+        (IdentityCertificate::certificateNameToPublicKeyName
+         (keyLocator.getKeyName()));
+    } catch (SecurityException&) {
+      // The storage doesn't have the key.
+      return Blob();
+    }
+  }
   else
     // Can't find a key to verify.
     return Blob();
