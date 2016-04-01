@@ -83,7 +83,7 @@ IdentityStorage::getDefaultCertificate()
     return ptr_lib::shared_ptr<IdentityCertificate>();
   }
 
-  return getCertificate(certName, true);
+  return getCertificate(certName);
 }
 
 bool IdentityStorage::lastTimestampIsInitialized_ = false;

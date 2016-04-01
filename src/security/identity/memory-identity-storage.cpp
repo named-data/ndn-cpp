@@ -68,12 +68,15 @@ MemoryIdentityStorage::doesKeyExist(const Name& keyName)
 void
 MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer)
 {
+  if (keyName.size() == 0)
+    return;
+
+  if (doesKeyExist(keyName))
+    return;
+
   Name identityName = keyName.getSubName(0, keyName.size() - 1);
 
   addIdentity(identityName);
-
-  if (doesKeyExist(keyName))
-    throw SecurityException("a key with the same name already exists!");
 
   keyStore_[keyName.toUri()] = ptr_lib::make_shared<KeyRecord>(keyType, publicKeyDer);
 }
@@ -81,10 +84,12 @@ MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& 
 Blob
 MemoryIdentityStorage::getKey(const Name& keyName)
 {
+  if (keyName.size() == 0)
+    throw SecurityException("MemoryIdentityStorage::getKey: Empty keyName");
+
   map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record = keyStore_.find(keyName.toUri());
   if (record == keyStore_.end())
-    // Not found.  Silently return null.
-    return Blob();
+    throw SecurityException("MemoryIdentityStorage::getKey: The key does not exist");
 
   return record->second->getKeyDer();
 }
@@ -117,17 +122,11 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
   const Name& certificateName = certificate.getName();
   Name keyName = certificate.getPublicKeyName();
 
-  if (!doesKeyExist(keyName))
-    throw SecurityException("No corresponding Key record for certificate! " + keyName.toUri() + " " + certificateName.toUri());
+  addKey(keyName, certificate.getPublicKeyInfo().getKeyType(),
+         certificate.getPublicKeyInfo().getKeyDer());
 
-  // Check if certificate already exists.
   if (doesCertificateExist(certificateName))
-    throw SecurityException("Certificate has already been installed!");
-
-  // Check if the public key of certificate is the same as the key record.
-  Blob keyBlob = getKey(keyName);
-  if (!keyBlob || (*keyBlob) != *(certificate.getPublicKeyInfo().getKeyDer()))
-    throw SecurityException("Certificate does not match the public key!");
+    return;
 
   // Insert the certificate.
   // wireEncode returns the cached encoding if available.
@@ -135,20 +134,21 @@ MemoryIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 }
 
 ptr_lib::shared_ptr<IdentityCertificate>
-MemoryIdentityStorage::getCertificate(const Name& certificateName, bool allowAny)
+MemoryIdentityStorage::getCertificate(const Name& certificateName)
 {
-  if (!allowAny)
-    throw runtime_error
-      ("MemoryIdentityStorage.getCertificate for !allowAny is not implemented");
-
   map<string, Blob>::iterator record = certificateStore_.find(certificateName.toUri());
   if (record == certificateStore_.end())
-    // Not found.  Silently return null.
-    return ptr_lib::shared_ptr<IdentityCertificate>();
+    throw SecurityException
+      ("MemoryIdentityStorage::getCertificate: The certificate does not exist");
 
-  ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
-  data->wireDecode(*record->second);
-  return data;
+  ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
+  try {
+    certificate->wireDecode(*record->second);
+  } catch (...) {
+    throw SecurityException
+      ("MemoryIdentityStorage::getCertificate: The certificate cannot be decoded");
+  }
+  return certificate;
 }
 
 string

@@ -87,11 +87,11 @@ public:
 
   /**
    * Add a public key to the identity storage. Also call addIdentity to ensure
-   * that the identityName for the key exists.
+   * that the identityName for the key exists. However, if the key already
+   * exists, do nothing.
    * @param keyName The name of the public key to be added.
    * @param keyType Type of the public key to be added.
    * @param publicKeyDer A blob of the public key DER to be added.
-   * @throws SecurityException if a key with the keyName already exists.
    */
   virtual void
   addKey(const Name& keyName, KeyType keyType, const Blob& publicKeyDer) = 0;
@@ -99,7 +99,8 @@ public:
   /**
    * Get the public key DER blob from the identity storage.
    * @param keyName The name of the requested public key.
-   * @return The DER Blob.  If not found, return a Blob with a null pointer.
+   * @return The DER Blob.
+   * @throws SecurityException if the key doesn't exist.
    */
   virtual Blob
   getKey(const Name& keyName) = 0;
@@ -127,9 +128,10 @@ public:
   doesCertificateExist(const Name& certificateName) = 0;
 
   /**
-   * Add a certificate to the identity storage.
+   * Add a certificate to the identity storage. Also call addKey to ensure that
+   * the certificate key exists. If the certificate is already installed, don't
+   * replace it.
    * @param certificate The certificate to be added.  This makes a copy of the certificate.
-   * @throws SecurityException if the certificate is already installed.
    */
   virtual void
   addCertificate(const IdentityCertificate& certificate) = 0;
@@ -137,12 +139,11 @@ public:
   /**
    * Get a certificate from the identity storage.
    * @param certificateName The name of the requested certificate.
-   * @param allowAny (optional) If false, only a valid certificate will be returned,
-   *   otherwise validity is disregarded. If omitted, allowAny is false.
-   * @return The requested certificate.  If not found, return a shared_ptr with a null pointer.
+   * @return The requested certificate.
+   * @throws SecurityException if the certificate doesn't exist.
    */
   virtual ptr_lib::shared_ptr<IdentityCertificate>
-  getCertificate(const Name &certificateName, bool allowAny = false) = 0;
+  getCertificate(const Name &certificateName) = 0;
 
   /**
    * Get the TPM locator associated with this storage.

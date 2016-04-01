@@ -335,23 +335,12 @@ public:
   /**
    * Get a certificate with the specified name.
    * @param certificateName The name of the requested certificate.
-   * @return the requested certificate which is valid.
+   * @return the requested certificate.
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name& certificateName)
   {
-    return identityStorage_->getCertificate(certificateName, false);
-  }
-
-  /**
-   * Get a certificate even if the certificate is not valid anymore.
-   * @param certificateName The name of the requested certificate.
-   * @return the requested certificate.
-   */
-  ptr_lib::shared_ptr<IdentityCertificate>
-  getAnyCertificate(const Name& certificateName)
-  {
-    return identityStorage_->getCertificate(certificateName, true);
+    return identityStorage_->getCertificate(certificateName);
   }
 
   /**
