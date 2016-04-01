@@ -84,10 +84,12 @@ MemoryIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& 
 Blob
 MemoryIdentityStorage::getKey(const Name& keyName)
 {
+  if (keyName.size() == 0)
+    throw SecurityException("MemoryIdentityStorage::getKey: Empty keyName");
+
   map<string, ptr_lib::shared_ptr<KeyRecord> >::iterator record = keyStore_.find(keyName.toUri());
   if (record == keyStore_.end())
-    // Not found.  Silently return null.
-    return Blob();
+    throw SecurityException("MemoryIdentityStorage::getKey: The key does not exist");
 
   return record->second->getKeyDer();
 }
@@ -136,12 +138,17 @@ MemoryIdentityStorage::getCertificate(const Name& certificateName)
 {
   map<string, Blob>::iterator record = certificateStore_.find(certificateName.toUri());
   if (record == certificateStore_.end())
-    // Not found.  Silently return null.
-    return ptr_lib::shared_ptr<IdentityCertificate>();
+    throw SecurityException
+      ("MemoryIdentityStorage::getCertificate: The certificate does not exist");
 
-  ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
-  data->wireDecode(*record->second);
-  return data;
+  ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
+  try {
+    certificate->wireDecode(*record->second);
+  } catch (...) {
+    throw SecurityException
+      ("MemoryIdentityStorage::getCertificate: The certificate cannot be decoded");
+  }
+  return certificate;
 }
 
 Name

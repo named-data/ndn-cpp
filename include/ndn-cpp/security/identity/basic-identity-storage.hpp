@@ -97,7 +97,8 @@ public:
   /**
    * Get the public key DER blob from the identity storage.
    * @param keyName The name of the requested public key.
-   * @return The DER Blob.  If not found, return a Blob with a null pointer.
+   * @return The DER Blob.
+   * @throws SecurityException if the key doesn't exist.
    */
   virtual Blob
   getKey(const Name& keyName);
@@ -136,7 +137,8 @@ public:
   /**
    * Get a certificate from the identity storage.
    * @param certificateName The name of the requested certificate.
-   * @return The requested certificate.  If not found, return a shared_ptr with a null pointer.
+   * @return The requested certificate.
+   * @throws SecurityException if the certificate doesn't exist.
    */
   virtual ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name &certificateName);

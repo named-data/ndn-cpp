@@ -295,8 +295,8 @@ BasicIdentityStorage::addKey(const Name& keyName, KeyType keyType, const Blob& p
 Blob
 BasicIdentityStorage::getKey(const Name& keyName)
 {
-  if (!doesKeyExist(keyName))
-    return Blob();
+  if (keyName.size() == 0)
+    throw SecurityException("BasicIdentityStorage::getKey: Empty keyName");
 
   string keyId = keyName.get(-1).toEscapedString();
   Name identityName = keyName.getPrefix(-1);
@@ -309,13 +309,15 @@ BasicIdentityStorage::getKey(const Name& keyName)
 
   int res = sqlite3_step(statement);
 
-  Blob result;
-  if (res == SQLITE_ROW)
-    result = Blob(static_cast<const uint8_t*>(sqlite3_column_blob(statement, 0)), sqlite3_column_bytes(statement, 0));
-
-  sqlite3_finalize(statement);
-
-  return result;
+  if (res == SQLITE_ROW) {
+    Blob result = Blob
+      (static_cast<const uint8_t*>(sqlite3_column_blob(statement, 0)),
+       sqlite3_column_bytes(statement, 0));
+    sqlite3_finalize(statement);
+    return result;
+  }
+  else
+    throw SecurityException("BasicIdentityStorage::getKey: The key does not exist");
 }
 
 void
@@ -415,26 +417,33 @@ BasicIdentityStorage::addCertificate(const IdentityCertificate& certificate)
 ptr_lib::shared_ptr<IdentityCertificate>
 BasicIdentityStorage::getCertificate(const Name &certificateName)
 {
-  if (doesCertificateExist(certificateName)) {
-    sqlite3_stmt *statement;
-    sqlite3_prepare_v2(database_,
-                        "SELECT certificate_data FROM Certificate WHERE cert_name=?", -1, &statement, 0);
-    sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2(database_,
+                      "SELECT certificate_data FROM Certificate WHERE cert_name=?", -1, &statement, 0);
+  sqlite3_bind_text(statement, 1, certificateName.toUri(), SQLITE_TRANSIENT);
 
-    int res = sqlite3_step(statement);
+  int res = sqlite3_step(statement);
 
-    ptr_lib::shared_ptr<IdentityCertificate> data(new IdentityCertificate());
-
-    if (res == SQLITE_ROW)
-      data->wireDecode
+  if (res == SQLITE_ROW) {
+    ptr_lib::shared_ptr<IdentityCertificate> certificate(new IdentityCertificate());
+    try {
+      certificate->wireDecode
         (Blob((const uint8_t*)sqlite3_column_blob(statement, 0),
               sqlite3_column_bytes(statement, 0)));
-    sqlite3_finalize(statement);
+    } catch (...) {
+      sqlite3_finalize(statement);
+      throw SecurityException
+        ("BasicIdentityStorage::getCertificate: The certificate cannot be decoded");
+    }
 
-    return data;
+    sqlite3_finalize(statement);
+    return certificate;
   }
-  else
-    return ptr_lib::shared_ptr<IdentityCertificate>();
+  else {
+    sqlite3_finalize(statement);
+    throw SecurityException
+      ("BasicIdentityStorage::getCertificate: The certificate does not exist");
+  }
 }
 
 Name
