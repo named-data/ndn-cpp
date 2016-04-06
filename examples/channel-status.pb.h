@@ -8,7 +8,7 @@
 
 #include <google/protobuf/stubs/common.h>
 
-// For backwards compatibility with system that install an older Protobuf (e.g. Ubuntu)),
+// For backwards compatibility with systems that install an older Protobuf (e.g. Ubuntu)),
 //   include the older output from protoc so that the sample program compiles.
 #if GOOGLE_PROTOBUF_VERSION < 2005000
 
