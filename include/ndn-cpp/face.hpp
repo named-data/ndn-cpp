@@ -242,13 +242,13 @@ public:
    * matching interest is received. To register a prefix with NFD, you must
    * first call setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
-   * @param onInterest (optional) If not null, this creates an interest filter
-   * from prefix so that when an Interest is received which matches the filter,
-   * this calls the function object
+   * @param onInterest (optional) If not an empty OnInterestCallback(), this
+   * creates an interest filter from prefix so that when an Interest is received
+   * which matches the filter, this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate. If onInterest is null, it is ignored and you must call
-   * setInterestFilter.
+   * appropriate. If onInterest is an empty OnInterestCallback(), it is ignored
+   * and you must call setInterestFilter.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -287,13 +287,13 @@ public:
    * matching interest is received. To register a prefix with NFD, you must
    * first call setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
-   * @param onInterest (optional) If not null, this creates an interest filter
-   * from prefix so that when an Interest is received which matches the filter,
-   * this calls the function object
+   * @param onInterest (optional) If not an empty OnInterestCallback(), this
+   * creates an interest filter from prefix so that when an Interest is received
+   * which matches the filter, this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate. If onInterest is null, it is ignored and you must call
-   * setInterestFilter.
+   * appropriate. If onInterest is an empty OnInterestCallback(), it is ignored
+   * and you must call setInterestFilter.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -325,13 +325,13 @@ public:
    * matching interest is received. To register a prefix with NFD, you must
    * first call setCommandSigningInfo.
    * @param prefix A reference to a Name for the prefix to register.  This copies the Name.
-   * @param onInterest (optional) If not null, this creates an interest filter
-   * from prefix so that when an Interest is received which matches the filter,
-   * this calls the function object
+   * @param onInterest (optional) If not an empty OnInterestCallback(), this
+   * creates an interest filter from prefix so that when an Interest is received
+   * which matches the filter, this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate. If onInterest is null, it is ignored and you must call
-   * setInterestFilter.
+   * appropriate. If onInterest is an empty OnInterestCallback(), it is ignored
+   * and you must call setInterestFilter.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.

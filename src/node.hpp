@@ -111,13 +111,13 @@ public:
    * @param prefixCopy The Name for the prefix to register,  which is NOT copied
    * for this internal Node method. The Face registerPrefix is responsible for
    * making a copy and passing a shared_ptr for Node to use.
-   * @param onInterest (optional) If not null, this creates an interest filter
-   * from prefix so that when an Interest is received which matches the filter,
-   * this calls the function object
+   * @param onInterest (optional) If not an empty OnInterestCallback(), this
+   * creates an interest filter from prefix so that when an Interest is received
+   * which matches the filter, this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate. If onInterest is null, it is ignored and you must call
-   * setInterestFilter.
+   * appropriate. If onInterest is an empty OnInterestCallback(), it is ignored
+   * and you must call setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onRegisterSuccess A function object to call when registerPrefix
