@@ -347,7 +347,7 @@ public:
      * @return The new Component.
      */
     static Component
-    fromSegment(long segment)
+    fromSegment(uint64_t segment)
     {
       return fromNumberWithMarker(segment, 0x00);
     }
@@ -360,7 +360,7 @@ public:
      * @return The new Component.
      */
     static Component
-    fromSegmentOffset(long segmentOffset)
+    fromSegmentOffset(uint64_t segmentOffset)
     {
       return fromNumberWithMarker(segmentOffset, 0xFB);
     }
@@ -375,7 +375,7 @@ public:
      * @return The new Component.
      */
     static Component
-    fromVersion(long version)
+    fromVersion(uint64_t version)
     {
       return fromNumberWithMarker(version, 0xFD);
     }
@@ -389,7 +389,7 @@ public:
      * @return The new Component.
      */
     static Component
-    fromTimestamp(long timestamp)
+    fromTimestamp(uint64_t timestamp)
     {
       return fromNumberWithMarker(timestamp, 0xFC);
     }
@@ -402,7 +402,7 @@ public:
      * @return The new Component.
      */
     static Component
-    fromSequenceNumber(long sequenceNumber)
+    fromSequenceNumber(uint64_t sequenceNumber)
     {
       return fromNumberWithMarker(sequenceNumber, 0xFE);
     }
