@@ -8,7 +8,7 @@
 
 #include <google/protobuf/stubs/common.h>
 
-// For backwards compatibility with system that install an older Protobuf (e.g. Ubuntu)),
+// For backwards compatibility with systems that install an older Protobuf (e.g. Ubuntu)),
 //   include the older output from protoc so that the sample program compiles.
 #if GOOGLE_PROTOBUF_VERSION < 2005000
 
@@ -166,6 +166,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 n_in_datas() const;
   inline void set_n_in_datas(::google::protobuf::uint64 value);
 
+  // required uint64 n_in_nacks = 151;
+  inline bool has_n_in_nacks() const;
+  inline void clear_n_in_nacks();
+  static const int kNInNacksFieldNumber = 151;
+  inline ::google::protobuf::uint64 n_in_nacks() const;
+  inline void set_n_in_nacks(::google::protobuf::uint64 value);
+
   // required uint64 n_out_interests = 146;
   inline bool has_n_out_interests() const;
   inline void clear_n_out_interests();
@@ -179,6 +186,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   static const int kNOutDatasFieldNumber = 147;
   inline ::google::protobuf::uint64 n_out_datas() const;
   inline void set_n_out_datas(::google::protobuf::uint64 value);
+
+  // required uint64 n_out_nacks = 152;
+  inline bool has_n_out_nacks() const;
+  inline void clear_n_out_nacks();
+  static const int kNOutNacksFieldNumber = 152;
+  inline ::google::protobuf::uint64 n_out_nacks() const;
+  inline void set_n_out_nacks(::google::protobuf::uint64 value);
 
   // required uint64 n_in_bytes = 148;
   inline bool has_n_in_bytes() const;
@@ -214,10 +228,14 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline void clear_has_n_in_interests();
   inline void set_has_n_in_datas();
   inline void clear_has_n_in_datas();
+  inline void set_has_n_in_nacks();
+  inline void clear_has_n_in_nacks();
   inline void set_has_n_out_interests();
   inline void clear_has_n_out_interests();
   inline void set_has_n_out_datas();
   inline void clear_has_n_out_datas();
+  inline void set_has_n_out_nacks();
+  inline void clear_has_n_out_nacks();
   inline void set_has_n_in_bytes();
   inline void clear_has_n_in_bytes();
   inline void set_has_n_out_bytes();
@@ -234,13 +252,15 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint64 link_type_;
   ::google::protobuf::uint64 n_in_interests_;
   ::google::protobuf::uint64 n_in_datas_;
+  ::google::protobuf::uint64 n_in_nacks_;
   ::google::protobuf::uint64 n_out_interests_;
   ::google::protobuf::uint64 n_out_datas_;
+  ::google::protobuf::uint64 n_out_nacks_;
   ::google::protobuf::uint64 n_in_bytes_;
   ::google::protobuf::uint64 n_out_bytes_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(15 + 31) / 32];
 
   friend void  protobuf_AddDesc_face_2dstatus_2eproto();
   friend void protobuf_AssignDesc_face_2dstatus_2eproto();
@@ -613,15 +633,37 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_datas(::google::protobuf::uin
   n_in_datas_ = value;
 }
 
-// required uint64 n_out_interests = 146;
-inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+// required uint64 n_in_nacks = 151;
+inline bool FaceStatusMessage_FaceStatus::has_n_in_nacks() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
-inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::set_has_n_in_nacks() {
   _has_bits_[0] |= 0x00000200u;
 }
-inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::clear_has_n_in_nacks() {
   _has_bits_[0] &= ~0x00000200u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_in_nacks() {
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_in_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_in_nacks() const {
+  return n_in_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_in_nacks(::google::protobuf::uint64 value) {
+  set_has_n_in_nacks();
+  n_in_nacks_ = value;
+}
+
+// required uint64 n_out_interests = 146;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_interests() {
   n_out_interests_ = GOOGLE_ULONGLONG(0);
@@ -637,13 +679,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_interests(::google::protobuf
 
 // required uint64 n_out_datas = 147;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_datas() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_datas() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_datas() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_datas() {
   n_out_datas_ = GOOGLE_ULONGLONG(0);
@@ -657,15 +699,37 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_datas(::google::protobuf::ui
   n_out_datas_ = value;
 }
 
+// required uint64 n_out_nacks = 152;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_nacks() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_nacks() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_nacks() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_out_nacks() {
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_out_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_out_nacks() const {
+  return n_out_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_out_nacks(::google::protobuf::uint64 value) {
+  set_has_n_out_nacks();
+  n_out_nacks_ = value;
+}
+
 // required uint64 n_in_bytes = 148;
 inline bool FaceStatusMessage_FaceStatus::has_n_in_bytes() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_in_bytes() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_in_bytes() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_in_bytes() {
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
@@ -681,13 +745,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_bytes(::google::protobuf::uin
 
 // required uint64 n_out_bytes = 149;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_bytes() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_bytes() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_bytes() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_bytes() {
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
@@ -905,6 +969,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 n_in_datas() const;
   inline void set_n_in_datas(::google::protobuf::uint64 value);
 
+  // required uint64 n_in_nacks = 151;
+  inline bool has_n_in_nacks() const;
+  inline void clear_n_in_nacks();
+  static const int kNInNacksFieldNumber = 151;
+  inline ::google::protobuf::uint64 n_in_nacks() const;
+  inline void set_n_in_nacks(::google::protobuf::uint64 value);
+
   // required uint64 n_out_interests = 146;
   inline bool has_n_out_interests() const;
   inline void clear_n_out_interests();
@@ -918,6 +989,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   static const int kNOutDatasFieldNumber = 147;
   inline ::google::protobuf::uint64 n_out_datas() const;
   inline void set_n_out_datas(::google::protobuf::uint64 value);
+
+  // required uint64 n_out_nacks = 152;
+  inline bool has_n_out_nacks() const;
+  inline void clear_n_out_nacks();
+  static const int kNOutNacksFieldNumber = 152;
+  inline ::google::protobuf::uint64 n_out_nacks() const;
+  inline void set_n_out_nacks(::google::protobuf::uint64 value);
 
   // required uint64 n_in_bytes = 148;
   inline bool has_n_in_bytes() const;
@@ -953,10 +1031,14 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline void clear_has_n_in_interests();
   inline void set_has_n_in_datas();
   inline void clear_has_n_in_datas();
+  inline void set_has_n_in_nacks();
+  inline void clear_has_n_in_nacks();
   inline void set_has_n_out_interests();
   inline void clear_has_n_out_interests();
   inline void set_has_n_out_datas();
   inline void clear_has_n_out_datas();
+  inline void set_has_n_out_nacks();
+  inline void clear_has_n_out_nacks();
   inline void set_has_n_in_bytes();
   inline void clear_has_n_in_bytes();
   inline void set_has_n_out_bytes();
@@ -973,13 +1055,15 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint64 link_type_;
   ::google::protobuf::uint64 n_in_interests_;
   ::google::protobuf::uint64 n_in_datas_;
+  ::google::protobuf::uint64 n_in_nacks_;
   ::google::protobuf::uint64 n_out_interests_;
   ::google::protobuf::uint64 n_out_datas_;
+  ::google::protobuf::uint64 n_out_nacks_;
   ::google::protobuf::uint64 n_in_bytes_;
   ::google::protobuf::uint64 n_out_bytes_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(15 + 31) / 32];
 
   friend void  protobuf_AddDesc_face_2dstatus_2eproto();
   friend void protobuf_AssignDesc_face_2dstatus_2eproto();
@@ -1376,15 +1460,37 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_datas(::google::protobuf::uin
   n_in_datas_ = value;
 }
 
-// required uint64 n_out_interests = 146;
-inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+// required uint64 n_in_nacks = 151;
+inline bool FaceStatusMessage_FaceStatus::has_n_in_nacks() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
-inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::set_has_n_in_nacks() {
   _has_bits_[0] |= 0x00000200u;
 }
-inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::clear_has_n_in_nacks() {
   _has_bits_[0] &= ~0x00000200u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_in_nacks() {
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_in_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_in_nacks() const {
+  return n_in_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_in_nacks(::google::protobuf::uint64 value) {
+  set_has_n_in_nacks();
+  n_in_nacks_ = value;
+}
+
+// required uint64 n_out_interests = 146;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_interests() {
   n_out_interests_ = GOOGLE_ULONGLONG(0);
@@ -1400,13 +1506,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_interests(::google::protobuf
 
 // required uint64 n_out_datas = 147;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_datas() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_datas() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_datas() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_datas() {
   n_out_datas_ = GOOGLE_ULONGLONG(0);
@@ -1420,15 +1526,37 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_datas(::google::protobuf::ui
   n_out_datas_ = value;
 }
 
+// required uint64 n_out_nacks = 152;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_nacks() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_nacks() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_nacks() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_out_nacks() {
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_out_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_out_nacks() const {
+  return n_out_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_out_nacks(::google::protobuf::uint64 value) {
+  set_has_n_out_nacks();
+  n_out_nacks_ = value;
+}
+
 // required uint64 n_in_bytes = 148;
 inline bool FaceStatusMessage_FaceStatus::has_n_in_bytes() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_in_bytes() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_in_bytes() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_in_bytes() {
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
@@ -1444,13 +1572,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_bytes(::google::protobuf::uin
 
 // required uint64 n_out_bytes = 149;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_bytes() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_bytes() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_bytes() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_bytes() {
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
@@ -1667,6 +1795,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 n_in_datas() const;
   inline void set_n_in_datas(::google::protobuf::uint64 value);
 
+  // required uint64 n_in_nacks = 151;
+  inline bool has_n_in_nacks() const;
+  inline void clear_n_in_nacks();
+  static const int kNInNacksFieldNumber = 151;
+  inline ::google::protobuf::uint64 n_in_nacks() const;
+  inline void set_n_in_nacks(::google::protobuf::uint64 value);
+
   // required uint64 n_out_interests = 146;
   inline bool has_n_out_interests() const;
   inline void clear_n_out_interests();
@@ -1680,6 +1815,13 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   static const int kNOutDatasFieldNumber = 147;
   inline ::google::protobuf::uint64 n_out_datas() const;
   inline void set_n_out_datas(::google::protobuf::uint64 value);
+
+  // required uint64 n_out_nacks = 152;
+  inline bool has_n_out_nacks() const;
+  inline void clear_n_out_nacks();
+  static const int kNOutNacksFieldNumber = 152;
+  inline ::google::protobuf::uint64 n_out_nacks() const;
+  inline void set_n_out_nacks(::google::protobuf::uint64 value);
 
   // required uint64 n_in_bytes = 148;
   inline bool has_n_in_bytes() const;
@@ -1715,10 +1857,14 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   inline void clear_has_n_in_interests();
   inline void set_has_n_in_datas();
   inline void clear_has_n_in_datas();
+  inline void set_has_n_in_nacks();
+  inline void clear_has_n_in_nacks();
   inline void set_has_n_out_interests();
   inline void clear_has_n_out_interests();
   inline void set_has_n_out_datas();
   inline void clear_has_n_out_datas();
+  inline void set_has_n_out_nacks();
+  inline void clear_has_n_out_nacks();
   inline void set_has_n_in_bytes();
   inline void clear_has_n_in_bytes();
   inline void set_has_n_out_bytes();
@@ -1737,8 +1883,10 @@ class FaceStatusMessage_FaceStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint64 link_type_;
   ::google::protobuf::uint64 n_in_interests_;
   ::google::protobuf::uint64 n_in_datas_;
+  ::google::protobuf::uint64 n_in_nacks_;
   ::google::protobuf::uint64 n_out_interests_;
   ::google::protobuf::uint64 n_out_datas_;
+  ::google::protobuf::uint64 n_out_nacks_;
   ::google::protobuf::uint64 n_in_bytes_;
   ::google::protobuf::uint64 n_out_bytes_;
   friend void  protobuf_AddDesc_face_2dstatus_2eproto();
@@ -2159,15 +2307,39 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_datas(::google::protobuf::uin
   // @@protoc_insertion_point(field_set:ndn_message.FaceStatusMessage.FaceStatus.n_in_datas)
 }
 
-// required uint64 n_out_interests = 146;
-inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+// required uint64 n_in_nacks = 151;
+inline bool FaceStatusMessage_FaceStatus::has_n_in_nacks() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
-inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::set_has_n_in_nacks() {
   _has_bits_[0] |= 0x00000200u;
 }
-inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+inline void FaceStatusMessage_FaceStatus::clear_has_n_in_nacks() {
   _has_bits_[0] &= ~0x00000200u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_in_nacks() {
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_in_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_in_nacks() const {
+  // @@protoc_insertion_point(field_get:ndn_message.FaceStatusMessage.FaceStatus.n_in_nacks)
+  return n_in_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_in_nacks(::google::protobuf::uint64 value) {
+  set_has_n_in_nacks();
+  n_in_nacks_ = value;
+  // @@protoc_insertion_point(field_set:ndn_message.FaceStatusMessage.FaceStatus.n_in_nacks)
+}
+
+// required uint64 n_out_interests = 146;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_interests() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_interests() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_interests() {
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_interests() {
   n_out_interests_ = GOOGLE_ULONGLONG(0);
@@ -2185,13 +2357,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_interests(::google::protobuf
 
 // required uint64 n_out_datas = 147;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_datas() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_datas() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_datas() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_datas() {
   n_out_datas_ = GOOGLE_ULONGLONG(0);
@@ -2207,15 +2379,39 @@ inline void FaceStatusMessage_FaceStatus::set_n_out_datas(::google::protobuf::ui
   // @@protoc_insertion_point(field_set:ndn_message.FaceStatusMessage.FaceStatus.n_out_datas)
 }
 
+// required uint64 n_out_nacks = 152;
+inline bool FaceStatusMessage_FaceStatus::has_n_out_nacks() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void FaceStatusMessage_FaceStatus::set_has_n_out_nacks() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_has_n_out_nacks() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void FaceStatusMessage_FaceStatus::clear_n_out_nacks() {
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
+  clear_has_n_out_nacks();
+}
+inline ::google::protobuf::uint64 FaceStatusMessage_FaceStatus::n_out_nacks() const {
+  // @@protoc_insertion_point(field_get:ndn_message.FaceStatusMessage.FaceStatus.n_out_nacks)
+  return n_out_nacks_;
+}
+inline void FaceStatusMessage_FaceStatus::set_n_out_nacks(::google::protobuf::uint64 value) {
+  set_has_n_out_nacks();
+  n_out_nacks_ = value;
+  // @@protoc_insertion_point(field_set:ndn_message.FaceStatusMessage.FaceStatus.n_out_nacks)
+}
+
 // required uint64 n_in_bytes = 148;
 inline bool FaceStatusMessage_FaceStatus::has_n_in_bytes() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_in_bytes() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_in_bytes() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_in_bytes() {
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
@@ -2233,13 +2429,13 @@ inline void FaceStatusMessage_FaceStatus::set_n_in_bytes(::google::protobuf::uin
 
 // required uint64 n_out_bytes = 149;
 inline bool FaceStatusMessage_FaceStatus::has_n_out_bytes() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 inline void FaceStatusMessage_FaceStatus::set_has_n_out_bytes() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_has_n_out_bytes() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline void FaceStatusMessage_FaceStatus::clear_n_out_bytes() {
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
