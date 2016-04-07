@@ -45,6 +45,10 @@ MemoryContentCache::MemoryContentCache
 void
 MemoryContentCache::unregisterAll()
 {
+  for (size_t i = 0; i < interestFilterIdList_.size(); ++i)
+    face_->unsetInterestFilter(interestFilterIdList_[i]);
+  interestFilterIdList_.clear();
+
   for (size_t i = 0; i < registeredPrefixIdList_.size(); ++i)
     face_->removeRegisteredPrefix(registeredPrefixIdList_[i]);
   registeredPrefixIdList_.clear();

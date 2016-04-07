@@ -39,8 +39,8 @@ class MemoryContentCache {
 public:
   /**
    * Create a new MemoryContentCache to use the given Face.
-   * @param face The Face to use to call registerPrefix and which will call
-   * the OnInterest callback.
+   * @param face The Face to use to call registerPrefix and setInterestFilter,
+   * and which will call this object's OnInterest callback.
    * @param cleanupIntervalMilliseconds (optional) The interval in milliseconds
    * between each check to clean up stale content in the cache. If omitted,
    * use a default of 1000 milliseconds. If this is a large number, then
@@ -114,6 +114,8 @@ public:
   /**
    * Call registerPrefix on the Face given to the constructor so that this
    * MemoryContentCache will answer interests whose name has the prefix.
+   * Alternatively, if the Face's registerPrefix has already been called, then
+   * you can call this object's setInterestFilter.
    * @param prefix The Name for the prefix to register. This copies the Name.
    * @param onRegisterFailed A function object to call if failed to retrieve the
    * connected hub’s ID or failed to register the prefix. This calls
@@ -153,6 +155,8 @@ public:
   /**
    * Call registerPrefix on the Face given to the constructor so that this
    * MemoryContentCache will answer interests whose name has the prefix.
+   * Alternatively, if the Face's registerPrefix has already been called, then
+   * you can call this object's setInterestFilter.
    * @param prefix The Name for the prefix to register. This copies the Name.
    * @param onRegisterFailed A function object to call if failed to retrieve the
    * connected hub’s ID or failed to register the prefix. This calls
@@ -195,10 +199,77 @@ public:
   }
 
   /**
-   * Call Face.removeRegisteredPrefix for all the prefixes given to the
-   * registerPrefix method on this MemoryContentCache object so that it will not
-   * receive interests any more. You can call this if you want to "shut down"
-   * this MemoryContentCache while your application is still running.
+   * Call setInterestFilter on the Face given to the constructor so that this
+   * MemoryContentCache will answer interests whose name has the prefix.
+   * @param filter The InterestFilter with a prefix and optional regex filter
+   * used to match the name of an incoming Interest. This makes a copy of filter.
+   * @param onDataNotFound (optional) If a data packet for an interest is not
+   * found in the cache, this forwards the interest by calling
+   * onDataNotFound(prefix, interest, face, interestFilterId, filter).
+   * Your callback can find the Data packet for the interest and call
+   * transport.send.  Note: I you call setInterestFilter multiple times where
+   * filter.getPrefix() is the same, it is undetermined which onDataNotFound
+   * will be called. If your callback cannot find the Data packet, it can
+   * optionally call storePendingInterest(interest, face) to store the pending
+   * interest in this object to be satisfied by a later call to add(data). If
+   * you want to automatically store all pending interests, you can simply use
+   * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
+   * OnInterest(), this does not use it. This copies the function object, so you
+   * may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   */
+  void
+  setInterestFilter
+    (const InterestFilter& filter,
+     const OnInterestCallback& onDataNotFound = OnInterestCallback())
+  {
+    onDataNotFoundForPrefix_[filter.getPrefix().toUri()] = onDataNotFound;
+    uint64_t interestFilterId = face_->setInterestFilter
+      (filter, func_lib::ref(*this));
+    // Remember the registeredPrefixId so unregisterAll can remove it.
+    interestFilterIdList_.push_back(interestFilterId);
+  }
+
+  /**
+   * Call setInterestFilter on the Face given to the constructor so that this
+   * MemoryContentCache will answer interests whose name has the prefix.
+   * @param prefix The Name prefix used to match the name of an incoming
+   * Interest. This copies the Name.
+   * @param onDataNotFound (optional) If a data packet for an interest is not
+   * found in the cache, this forwards the interest by calling
+   * onDataNotFound(prefix, interest, face, interestFilterId, filter).
+   * Your callback can find the Data packet for the interest and call
+   * transport.send.  If your callback cannot find the Data packet, it can
+   * optionally call storePendingInterest(interest, face) to store the pending
+   * interest in this object to be satisfied by a later call to add(data). If
+   * you want to automatically store all pending interests, you can simply use
+   * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
+   * OnInterest(), this does not use it. This copies the function object, so you
+   * may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   */
+  void
+  setInterestFilter
+    (const Name& prefix,
+     const OnInterestCallback& onDataNotFound = OnInterestCallback())
+  {
+    onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
+    uint64_t interestFilterId = face_->setInterestFilter
+      (prefix, func_lib::ref(*this));
+    // Remember the registeredPrefixId so unregisterAll can remove it.
+    interestFilterIdList_.push_back(interestFilterId);
+  }
+
+  /**
+   * Call Face.unsetInterestFilter and Face.removeRegisteredPrefix for all the
+   * prefixes given to the setInterestFilter and registerPrefix method on this
+   * MemoryContentCache object so that it will not receive interests any more.
+   * You can call this if you want to "shut down" this MemoryContentCache while
+   * your application is still running.
    */
   void
   unregisterAll();
@@ -385,6 +456,7 @@ private:
   Milliseconds cleanupIntervalMilliseconds_;
   MillisecondsSince1970 nextCleanupTime_;
   std::map<std::string, OnInterestCallback> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
+  std::vector<uint64_t> interestFilterIdList_;
   std::vector<uint64_t> registeredPrefixIdList_;
   std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
   // Use a deque so we can efficiently remove from the front.
