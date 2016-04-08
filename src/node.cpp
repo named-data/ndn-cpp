@@ -37,7 +37,8 @@ namespace ndn {
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
   timeoutPrefix_(Name("/local/timeout")),
-  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED)
+  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED),
+  registeredPrefixTable_(interestFilterTable_)
 {
 }
 
@@ -106,30 +107,6 @@ Node::registerPrefix
     (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
      onRegisterSuccess, flags, commandKeyChain, commandCertificateName,
      wireFormat, face);
-}
-
-void
-Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though registeredPrefixId should be unique.
-  for (int i = (int)registeredPrefixTable_.size() - 1; i >= 0; --i) {
-    RegisteredPrefix& entry = *registeredPrefixTable_[i];
-
-    if (entry.getRegisteredPrefixId() == registeredPrefixId) {
-      ++count;
-
-      if (entry.getRelatedInterestFilterId() > 0)
-        // Remove the related interest filter.
-        unsetInterestFilter(entry.getRelatedInterestFilterId());
-
-      registeredPrefixTable_.erase(registeredPrefixTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
 }
 
 void
@@ -260,9 +237,7 @@ Node::nfdRegisterPrefix
          onInterest, face);
     }
 
-    registeredPrefixTable_.push_back
-      (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
-        (registeredPrefixId, prefix, interestFilterId)));
+    registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId);
   }
 
   // Send the registration interest.

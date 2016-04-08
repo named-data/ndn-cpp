@@ -37,6 +37,7 @@
 #include "impl/delayed-call-table.hpp"
 #include "impl/interest-filter-table.hpp"
 #include "impl/pending-interest-table.hpp"
+#include "impl/registered-prefix-table.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -175,7 +176,10 @@ public:
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
-  removeRegisteredPrefix(uint64_t registeredPrefixId);
+  removeRegisteredPrefix(uint64_t registeredPrefixId)
+  {
+    registeredPrefixTable_.removeRegisteredPrefix(registeredPrefixId);
+  }
 
   /**
    * Add an entry to the local interest filter table to call the onInterest
@@ -303,58 +307,6 @@ private:
   };
 
   /**
-   * A RegisteredPrefix holds a registeredPrefixId and information necessary
-   * to remove the registration later. It optionally holds a related
-   * interestFilterId if the InterestFilter was set in the same registerPrefix
-   * operation.
-   */
-  class RegisteredPrefix {
-  public:
-    /**
-     * Create a new RegisteredPrefix with the given values.
-     * @param registeredPrefixId A unique ID for this entry, which you should
-     * get with getNextEntryId().
-     * @param prefix A shared_ptr for the prefix.
-     * @param relatedInterestFilterId (optional) The related interestFilterId
-     * for the filter set in the same registerPrefix operation. If omitted, set
-     * to 0.
-     */
-    RegisteredPrefix
-      (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-       uint64_t relatedInterestFilterId)
-    : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
-      relatedInterestFilterId_(relatedInterestFilterId)
-    {
-    }
-
-    /**
-     * Return the registeredPrefixId given to the constructor.
-     * @return The registeredPrefixId.
-     */
-    uint64_t
-    getRegisteredPrefixId() { return registeredPrefixId_; }
-
-    /**
-     * Get the name prefix given to the constructor.
-     * @return The name prefix.
-     */
-    const ptr_lib::shared_ptr<const Name>&
-    getPrefix() { return prefix_; }
-
-    /**
-     * Get the related interestFilterId given to the constructor.
-     * @return The related interestFilterId.
-     */
-    uint64_t
-    getRelatedInterestFilterId() { return relatedInterestFilterId_; }
-
-  private:
-    uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
-    ptr_lib::shared_ptr<const Name> prefix_;
-    uint64_t relatedInterestFilterId_;
-  };
-
-  /**
    * A RegisterResponse receives the response Data packet from the register
    * prefix interest sent to the connected NDN hub.  If this gets a bad response
    * or a timeout, call onRegisterFailed.
@@ -471,7 +423,7 @@ private:
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   PendingInterestTable pendingInterestTable_;
-  std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
+  RegisteredPrefixTable registeredPrefixTable_;
   InterestFilterTable interestFilterTable_;
   DelayedCallTable delayedCallTable_;
   std::vector<Face::Callback> onConnectedCallbacks_;
