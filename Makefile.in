@@ -240,6 +240,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/encrypt/encrypted-content.lo \
+	src/impl/delayed-call-table.lo \
 	src/impl/pending-interest-table.lo \
 	src/lite/control-parameters-lite.lo \
 	src/lite/control-response-lite.lo src/lite/data-lite.lo \
@@ -1189,6 +1190,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/impl/delayed-call-table.cpp src/impl/delayed-call-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/control-response-lite.cpp \
@@ -1588,6 +1590,8 @@ src/impl/$(am__dirstamp):
 src/impl/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/impl/$(DEPDIR)
 	@: > src/impl/$(DEPDIR)/$(am__dirstamp)
+src/impl/delayed-call-table.lo: src/impl/$(am__dirstamp) \
+	src/impl/$(DEPDIR)/$(am__dirstamp)
 src/impl/pending-interest-table.lo: src/impl/$(am__dirstamp) \
 	src/impl/$(DEPDIR)/$(am__dirstamp)
 src/lite/$(am__dirstamp):
@@ -2273,6 +2277,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/encrypted-content.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/delayed-call-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/pending-interest-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/control-parameters-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/control-response-lite.Plo@am__quote@

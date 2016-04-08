@@ -19,7 +19,6 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <algorithm>
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/control-response.hpp>
@@ -308,19 +307,9 @@ Node::processEvents()
 {
   transport_->processEvents();
 
-  // Check for delayed calls. Since callLater does a sorted insert into
-  // delayedCallTable_, the check for timeouts is quick and does not require
-  // searching the entire table. If callLater is overridden to use a different
-  // mechanism, then processEvents is not needed to check for delayed calls.
-  MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  // delayedCallTable_ is sorted on _callTime, so we only need to process
-  // the timed-out entries at the front, then quit.
-  while (delayedCallTable_.size() > 0 &&
-         delayedCallTable_.front()->getCallTime() <= now) {
-    ptr_lib::shared_ptr<DelayedCall> delayedCall = delayedCallTable_.front();
-    delayedCallTable_.erase(delayedCallTable_.begin());
-    delayedCall->callCallback();
-  }
+  // If Face::callLater is overridden to use a different mechanism, then
+  // processEvents is not needed to check for delayed calls.
+  delayedCallTable_.callTimedOut();
 }
 
 void
@@ -419,25 +408,6 @@ Node::processInterestTimeout
 {
   if (pendingInterestTable_.removeEntry(pendingInterest))
     pendingInterest->callTimeout();
-}
-
-void
-Node::callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
-{
-  ptr_lib::shared_ptr<DelayedCall> delayedCall
-    (new DelayedCall(delayMilliseconds, callback));
-  // Insert into delayedCallTable_, sorted on delayedCall.getCallTime().
-  delayedCallTable_.insert
-    (std::lower_bound(delayedCallTable_.begin(), delayedCallTable_.end(),
-                      delayedCall, delayedCallCompare_),
-     delayedCall);
-}
-
-Node::DelayedCall::DelayedCall
-  (Milliseconds delayMilliseconds, const Face::Callback& callback)
-  : callback_(callback),
-    callTime_(ndn_getNowMilliseconds() + delayMilliseconds)
-{
 }
 
 }

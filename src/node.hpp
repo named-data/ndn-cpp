@@ -23,7 +23,6 @@
 #define NDN_NODE_HPP
 
 #include <map>
-#include <deque>
 #include <ndn-cpp/ndn-cpp-config.h>
 #ifdef NDN_CPP_HAVE_BOOST_ASIO
 #include <boost/atomic.hpp>
@@ -36,6 +35,7 @@
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
 #include "impl/pending-interest-table.hpp"
+#include "impl/delayed-call-table.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -271,7 +271,10 @@ public:
    * @param callback This calls callback() after the delay.
    */
   void
-  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
+  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
+  {
+    delayedCallTable_.callLater(delayMilliseconds, callback);
+  }
 
   /**
    * Get the next unique entry ID for the pending interest table, interest
@@ -289,52 +292,6 @@ private:
     ConnectStatus_UNCONNECTED = 1,
     ConnectStatus_CONNECT_REQUESTED = 2,
     ConnectStatus_CONNECT_COMPLETE = 3
-  };
-
-  /**
-   * DelayedCall is a class for the members of the delayedCallTable_.
-   */
-  class DelayedCall {
-  public:
-    /**
-     * Create a new DelayedCall and set the call time based on the current time
-     * and the delayMilliseconds.
-     * @param delayMilliseconds The delay in milliseconds.
-     * @param callback This calls callback() after the delay.
-     */
-    DelayedCall(Milliseconds delayMilliseconds, const Face::Callback& callback);
-
-    /**
-     * Get the time at which the callback should be called.
-     * @return The call time in milliseconds, similar to ndn_getNowMilliseconds.
-     */
-    MillisecondsSince1970
-    getCallTime() const { return callTime_; }
-
-    /**
-     * Call the callback given to the constructor. This does not catch
-     * exceptions.
-     */
-    void
-    callCallback() const { callback_(); }
-
-    /**
-     * Compare shared_ptrs to DelayedCall based only on callTime_.
-     */
-    class Compare {
-    public:
-      bool
-      operator()
-        (const ptr_lib::shared_ptr<const DelayedCall>& x,
-         const ptr_lib::shared_ptr<const DelayedCall>& y) const
-      {
-        return x->callTime_ < y->callTime_;
-      }
-    };
-
-  private:
-    const Face::Callback callback_;
-    MillisecondsSince1970 callTime_;
   };
 
   /**
@@ -577,9 +534,7 @@ private:
   PendingInterestTable pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
-  // Use a deque so we can efficiently remove from the front.
-  std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
-  DelayedCall::Compare delayedCallCompare_;
+  DelayedCallTable delayedCallTable_;
   std::vector<Face::Callback> onConnectedCallbacks_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
