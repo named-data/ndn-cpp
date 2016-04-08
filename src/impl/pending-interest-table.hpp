@@ -1,0 +1,164 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
+/**
+ * Copyright (C) 2016 Regents of the University of California.
+ * @author: Jeff Thompson <jefft0@remap.ucla.edu>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version, with the additional exemption that
+ * compiling, linking, and/or using OpenSSL is allowed.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * A copy of the GNU Lesser General Public License is in the file COPYING.
+ */
+
+#ifndef NDN_PENDING_INTEREST_TABLE_HPP
+#define NDN_PENDING_INTEREST_TABLE_HPP
+
+#include <ndn-cpp/face.hpp>
+
+namespace ndn {
+
+/**
+ * A PendingInterestTable is an internal class to hold a list of pending
+ * interests with their callbacks.
+ */
+class PendingInterestTable {
+public:
+  /**
+   * Entry holds the callbacks and other fields for an entry in the pending
+   * interest table.
+   */
+  class Entry {
+  public:
+    /**
+     * Create a new Entry with the given fields. Note: You should not call this
+     * directly but call PendingInterestTable::add.
+     */
+    Entry
+      (uint64_t pendingInterestId,
+       const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
+       const OnTimeout& onTimeout)
+    : pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData),
+      onTimeout_(onTimeout), isRemoved_(false)
+    {
+    }
+
+    /**
+     * Get the pendingInterestId given to the constructor.
+     * @return The pendingInterestId.
+     */
+    uint64_t
+    getPendingInterestId() { return pendingInterestId_; }
+
+    /**
+     * Get the interest given to the constructor (from Face.expressInterest).
+     * @return The interest. NOTE: You must not change the interest object - if
+     * you need to change it then make a copy.
+     */
+    const ptr_lib::shared_ptr<const Interest>&
+    getInterest() { return interest_; }
+
+    /**
+     * Get the OnData callback given to the constructor.
+     * @return The OnData callback.
+     */
+    const OnData&
+    getOnData() { return onData_; }
+
+    /**
+     * Set the isRemoved flag which is returned by getIsRemoved().
+     */
+    void
+    setIsRemoved() { isRemoved_ = true; }
+
+    /**
+     * Check if setIsRemoved() was called.
+     * @return True if setIsRemoved() was called.
+     */
+    bool
+    getIsRemoved() { return isRemoved_; }
+
+    /**
+     * Call onTimeout_ (if defined).  This ignores exceptions from the call to
+     * onTimeout_.
+     */
+    void
+    callTimeout();
+
+  private:
+    ptr_lib::shared_ptr<const Interest> interest_;
+    uint64_t pendingInterestId_;  /**< A unique identifier for this entry so it can be deleted */
+    const OnData onData_;
+    const OnTimeout onTimeout_;
+    bool isRemoved_;
+  };
+
+  /**
+   * Add a new entry to the pending interest table.
+   * @param pendingInterestId The getNextEntryId() for the pending interest ID
+   * which Face got so it could return it to the caller.
+   * @param interestCopy The Interest which was sent, which has already been
+   * copied by expressInterest.
+   * @param onData This calls onData when a matching data packet is received.
+   * @param onTimeout This calls onTimeout if the interest times out. If
+   * onTimeout is an empty OnTimeout(), this does not use it.
+   * @return The new PendingInterestTable::Entry.
+   */
+  ptr_lib::shared_ptr<Entry>
+  add(uint64_t pendingInterestId,
+      const ptr_lib::shared_ptr<const Interest>& interestCopy,
+      const OnData& onData, const OnTimeout& onTimeout)
+  {
+    ptr_lib::shared_ptr<Entry> entry(new Entry
+      (pendingInterestId, interestCopy, onData, onTimeout));
+    table_.push_back(entry);
+    return entry;
+  }
+
+  /**
+   * Find all entries from the pending interest table where the name conforms to
+   * the entry's interest selectors, remove the entries from the table, set each
+   * entry's isRemoved flag, and add to the entries list.
+   * @param name The name to find the interest for (from the incoming data packet).
+   * @param entries Add matching PendingInterestTable::Entry from the pending
+   * interest table.  The caller should pass in a reference to an empty vector.
+   */
+  void
+  extractEntriesForExpressedInterest
+    (const Name& name, std::vector<ptr_lib::shared_ptr<Entry> > &entries);
+
+  /**
+   * Remove the pending interest entry with the pendingInterestId from the
+   * pending interest table and set its isRemoved flag. This does not affect
+   * another pending interest with a different pendingInterestId, even if it has
+   * the same interest name. If there is no entry with the pendingInterestId, do
+   * nothing.
+   * @param pendingInterestId The ID returned from expressInterest.
+   */
+  void
+  removePendingInterest(uint64_t pendingInterestId);
+
+  /**
+   * Remove the specific pendingInterest entry from the table and set its
+   * isRemoved flag. However, if the pendingInterest isRemoved flag is already
+   * true or the entry is not in the pending interest table then do nothing.
+   * @return
+   */
+  bool
+  removeEntry(const ptr_lib::shared_ptr<Entry>& pendingInterest);
+
+private:
+  std::vector<ptr_lib::shared_ptr<Entry> > table_;
+};
+
+}
+
+#endif

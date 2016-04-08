@@ -35,6 +35,7 @@
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
+#include "impl/pending-interest-table.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -83,7 +84,10 @@ public:
    * @param pendingInterestId The ID returned from expressInterest.
    */
   void
-  removePendingInterest(uint64_t pendingInterestId);
+  removePendingInterest(uint64_t pendingInterestId)
+  {
+    pendingInterestTable_.removePendingInterest(pendingInterestId);
+  }
 
   /**
    * Append a timestamp component and a random value component to interest's
@@ -333,59 +337,6 @@ private:
     MillisecondsSince1970 callTime_;
   };
 
-  class PendingInterest {
-  public:
-    /**
-     * Create a new PendingInterest.
-     * @param pendingInterestId A unique ID for this entry, which you should get
-     * with getNextEntryId().
-     * @param interest A shared_ptr for the interest.
-     * @param onData A function object to call when a matching data packet is received.
-     * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-     */
-    PendingInterest
-      (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
-       const OnTimeout& onTimeout);
-
-    /**
-     * Return the pendingInterestId given to the constructor.
-     */
-    uint64_t
-    getPendingInterestId() { return pendingInterestId_; }
-
-    const ptr_lib::shared_ptr<const Interest>&
-    getInterest() { return interest_; }
-
-    const OnData&
-    getOnData() { return onData_; }
-
-    /**
-     * Set the isRemoved flag which is returned by getIsRemoved().
-     */
-    void
-    setIsRemoved() { isRemoved_ = true; }
-
-    /**
-     * Check if setIsRemoved() was called.
-     * @return True if setIsRemoved() was called.
-     */
-    bool
-    getIsRemoved() { return isRemoved_; }
-
-    /**
-     * Call onTimeout_ (if defined).  This ignores exceptions from the onTimeout_.
-     */
-    void
-    callTimeout();
-
-  private:
-    ptr_lib::shared_ptr<const Interest> interest_;
-    uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
-    const OnData onData_;
-    const OnTimeout onTimeout_;
-    bool isRemoved_;
-  };
-
   /**
    * A RegisteredPrefix holds a registeredPrefixId and information necessary
    * to remove the registration later. It optionally holds a related
@@ -590,20 +541,7 @@ private:
    * @param pendingInterest The pending interest to check.
    */
   void
-  processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest);
-
-  /**
-   * Find all entries from pendingInterestTable_ where the name conforms to the
-   * entry's interest selectors, remove the entries from the table and add to
-   * the entries vector.
-   * @param name The name to find the interest for (from the incoming data packet).
-   * @param entries Add matching entries from pendingInterestTable_.  The caller
-   * should pass in a reference to an empty vector.
-   */
-  void
-  extractEntriesForExpressedInterest
-    (const Name& name,
-     std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
+  processInterestTimeout(ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest);
 
   /**
    * Do the work of registerPrefix to register with NFD.
@@ -636,7 +574,7 @@ private:
 
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
-  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
+  PendingInterestTable pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
   std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
   // Use a deque so we can efficiently remove from the front.

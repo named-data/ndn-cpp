@@ -219,6 +219,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/control-response-lite.cpp \
   src/lite/data-lite.cpp \

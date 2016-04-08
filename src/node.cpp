@@ -94,26 +94,6 @@ Node::onConnected()
 }
 
 void
-Node::removePendingInterest(uint64_t pendingInterestId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though pendingInterestId should be unique.
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId) {
-      ++count;
-      // For efficiency, mark this as removed so that processInterestTimeout
-      // doesn't look for it.
-      pendingInterestTable_[i]->setIsRemoved();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
-}
-
-void
 Node::registerPrefix
   (uint64_t registeredPrefixId,
    const ptr_lib::shared_ptr<const Name>& prefixCopy,
@@ -381,8 +361,9 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
     }
   }
   else if (data) {
-    vector<ptr_lib::shared_ptr<PendingInterest> > pitEntries;
-    extractEntriesForExpressedInterest(data->getName(), pitEntries);
+    vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
+    pendingInterestTable_.extractEntriesForExpressedInterest
+      (data->getName(), pitEntries);
     for (size_t i = 0; i < pitEntries.size(); ++i) {
       try {
         pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
@@ -408,9 +389,8 @@ Node::expressInterestHelper
    const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
    Face* face)
 {
-  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
-    (pendingInterestId, interestCopy, onData, onTimeout));
-  pendingInterestTable_.push_back(pendingInterest);
+  ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest =
+    pendingInterestTable_.add(pendingInterestId, interestCopy, onData, onTimeout);
   if (onTimeout || interestCopy->getInterestLifetimeMilliseconds() >= 0.0) {
     // Set up the timeout.
     double delayMilliseconds = interestCopy->getInterestLifetimeMilliseconds();
@@ -434,43 +414,11 @@ Node::expressInterestHelper
 }
 
 void
-Node::processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest)
+Node::processInterestTimeout
+  (ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest)
 {
-  if (pendingInterest->getIsRemoved())
-    // extractEntriesForExpressedInterest or removePendingInterest has removed
-    // pendingInterest from pendingInterestTable_, so we don't need to look for
-    // it. Do nothing.
-    return;
-
-  // Find the entry.
-  for (vector<ptr_lib::shared_ptr<PendingInterest> >::iterator entry =
-         pendingInterestTable_.begin();
-       entry != pendingInterestTable_.end();
-       ++entry) {
-    if (entry->get() == pendingInterest.get()) {
-      pendingInterestTable_.erase(entry);
-      pendingInterest->callTimeout();
-      return;
-    }
-  }
-
-  // The pending interest has been removed. Do nothing.
-}
-
-void
-Node::extractEntriesForExpressedInterest
-  (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
-{
-  // Go backwards through the list so we can erase entries.
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->getInterest()->matchesName(name)) {
-      entries.push_back(pendingInterestTable_[i]);
-      // We let the callback from callLater call _processInterestTimeout, but
-      // for efficiency, mark this as removed so that it returns right away.
-      pendingInterestTable_[i]->setIsRemoved();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-    }
-  }
+  if (pendingInterestTable_.removeEntry(pendingInterest))
+    pendingInterest->callTimeout();
 }
 
 void
@@ -490,27 +438,6 @@ Node::DelayedCall::DelayedCall
   : callback_(callback),
     callTime_(ndn_getNowMilliseconds() + delayMilliseconds)
 {
-}
-
-Node::PendingInterest::PendingInterest
-  (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
-: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout),
-  isRemoved_(false)
-{
-}
-
-void
-Node::PendingInterest::callTimeout()
-{
-  if (onTimeout_) {
-    try {
-      onTimeout_(interest_);
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout.");
-    }
-  }
 }
 
 }
