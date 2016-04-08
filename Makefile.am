@@ -220,6 +220,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
   src/impl/delayed-call-table.cpp src/impl/delayed-call-table.hpp \
+  src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/control-response-lite.cpp \

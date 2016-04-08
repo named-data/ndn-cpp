@@ -133,33 +133,6 @@ Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
 }
 
 void
-Node::setInterestFilter
-  (uint64_t interestFilterId,
-   const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
-   const OnInterestCallback& onInterest, Face* face)
-{
-  interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
-    (interestFilterId, filterCopy, onInterest, face));
-}
-
-void
-Node::unsetInterestFilter(uint64_t interestFilterId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though interestFilterId should be unique.
-  for (int i = (int)interestFilterTable_.size() - 1; i >= 0; --i) {
-    if (interestFilterTable_[i]->getInterestFilterId() == interestFilterId) {
-      ++count;
-      interestFilterTable_.erase(interestFilterTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("unsetInterestFilter: Didn't find interestFilterId " << interestFilterId);
-}
-
-void
 Node::send(const uint8_t *encoding, size_t encodingLength)
 {
   if (encodingLength > getMaxNdnPacketSize())
@@ -334,18 +307,19 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   // Now process as Interest or Data.
   if (interest) {
     // Call all interest filter callbacks which match.
-    for (size_t i = 0; i < interestFilterTable_.size(); ++i) {
-      InterestFilterEntry &entry = *interestFilterTable_[i];
-      if (entry.getFilter()->doesMatch(interest->getName())) {
-        try {
-          entry.getOnInterest()
-            (entry.getPrefix(), interest, entry.getFace(),
-             entry.getInterestFilterId(), entry.getFilter());
-        } catch (const std::exception& ex) {
-          _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
-        } catch (...) {
-          _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
-        }
+    vector<ptr_lib::shared_ptr<InterestFilterTable::Entry> > matchedFilters;
+    interestFilterTable_.getMatchedFilters(*interest, matchedFilters);
+
+    for (size_t i = 0; i < matchedFilters.size(); ++i) {
+      InterestFilterTable::Entry &entry = *matchedFilters[i];
+      try {
+        entry.getOnInterest()
+          (entry.getPrefix(), interest, entry.getFace(),
+           entry.getInterestFilterId(), entry.getFilter());
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
       }
     }
   }

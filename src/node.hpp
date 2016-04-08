@@ -34,8 +34,9 @@
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
-#include "impl/pending-interest-table.hpp"
 #include "impl/delayed-call-table.hpp"
+#include "impl/interest-filter-table.hpp"
+#include "impl/pending-interest-table.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -197,7 +198,11 @@ public:
   setInterestFilter
     (uint64_t interestFilterId,
      const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
-     const OnInterestCallback& onInterest, Face* face);
+     const OnInterestCallback& onInterest, Face* face)
+  {
+    interestFilterTable_.setInterestFilter
+      (interestFilterId, filterCopy, onInterest, face);
+  }
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -207,7 +212,10 @@ public:
    * @param interestFilterId The ID returned from setInterestFilter.
    */
   void
-  unsetInterestFilter(uint64_t interestFilterId);
+  unsetInterestFilter(uint64_t interestFilterId)
+  {
+    interestFilterTable_.unsetInterestFilter(interestFilterId);
+  }
 
   /**
    * Send the encoded packet out through the face.
@@ -347,75 +355,6 @@ private:
   };
 
   /**
-   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and the
-   * OnInterestCallback with its related Face.
-   */
-  class InterestFilterEntry {
-  public:
-    /**
-     * Create a new InterestFilterEntry with the given values.
-     * @param interestFilterId The ID from getNextEntryId().
-     * @param filter A shared_ptr for the InterestFilter for this entry.
-     * @param onInterest A function object to call when a matching data packet
-     * is received.
-     * @param face The face on which was called registerPrefix or
-     * setInterestFilter which is passed to the onInterest callback.
-     */
-    InterestFilterEntry
-      (uint64_t interestFilterId,
-       const ptr_lib::shared_ptr<const InterestFilter>& filter,
-       const OnInterestCallback& onInterest, Face* face)
-    : interestFilterId_(interestFilterId), filter_(filter),
-      prefix_(new Name(filter->getPrefix())), onInterest_(onInterest), face_(face)
-    {
-    }
-
-    /**
-     * Return the interestFilterId given to the constructor.
-     * @return The interestFilterId.
-     */
-    uint64_t
-    getInterestFilterId() { return interestFilterId_; }
-
-    /**
-     * Get the InterestFilter given to the constructor.
-     * @return The InterestFilter.
-     */
-    const ptr_lib::shared_ptr<const InterestFilter>&
-    getFilter() { return filter_; }
-
-    /**
-     * Get the prefix from the filter as a shared_ptr. We keep this cached value
-     * so that we don't have to copy the name to pass a shared_ptr each time
-     * we call the OnInterestCallback.
-     * @return The filter's prefix.
-     */
-    const ptr_lib::shared_ptr<const Name>&
-    getPrefix() { return prefix_; }
-
-    /**
-     * Get the OnInterestCallback given to the constructor.
-     * @return The OnInterest callback.
-     */
-    const OnInterestCallback&
-    getOnInterest() { return onInterest_; }
-
-    /**
-     * Get the Face given to the constructor.
-     * @return The Face.
-     */
-    Face&
-    getFace() { return *face_; }
-
-  private:
-    uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
-    ptr_lib::shared_ptr<const InterestFilter> filter_;
-    ptr_lib::shared_ptr<const Name> prefix_;
-    const OnInterestCallback onInterest_;
-    Face* face_;
-  };
-
-  /**
    * A RegisterResponse receives the response Data packet from the register
    * prefix interest sent to the connected NDN hub.  If this gets a bad response
    * or a timeout, call onRegisterFailed.
@@ -533,7 +472,7 @@ private:
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   PendingInterestTable pendingInterestTable_;
   std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
-  std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
+  InterestFilterTable interestFilterTable_;
   DelayedCallTable delayedCallTable_;
   std::vector<Face::Callback> onConnectedCallbacks_;
   CommandInterestGenerator commandInterestGenerator_;
