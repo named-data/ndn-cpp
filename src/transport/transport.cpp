@@ -36,6 +36,12 @@ Transport::isLocal(const Transport::ConnectionInfo& connectionInfo)
   throw logic_error("unimplemented");
 }
 
+bool
+Transport::isAsync()
+{
+  throw logic_error("unimplemented");
+}
+
 void
 Transport::connect
   (const Transport::ConnectionInfo& connectionInfo,

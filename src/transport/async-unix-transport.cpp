@@ -54,6 +54,9 @@ AsyncUnixTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
   return ndn_UnixTransport_isLocal() != 0;
 }
 
+bool
+AsyncUnixTransport::isAsync() { return true; }
+
 void
 AsyncUnixTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,

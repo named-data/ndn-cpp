@@ -100,6 +100,13 @@ public:
   isLocal(const Transport::ConnectionInfo& connectionInfo);
 
   /**
+   * Override to return true since connect needs to use the onConnected callback.
+   * @return True.
+   */
+  virtual bool
+  isAsync();
+
+  /**
    * Connect according to the info in connectionInfo, and use elementListener.
    * To be thread-safe, this must be called from a dispatch to the ioService
    * which was given to the constructor, as is done by ThreadsafeFace.

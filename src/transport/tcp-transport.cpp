@@ -68,6 +68,9 @@ TcpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
   return isLocal_;
 }
 
+bool
+TcpTransport::isAsync() { return false; }
+
 void
 TcpTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,
@@ -83,7 +86,8 @@ TcpTransport::connect
     throw runtime_error(ndn_getErrorString(error));
 
   isConnected_ = true;
-  onConnected();
+  if (onConnected)
+    onConnected();
 }
 
 void
