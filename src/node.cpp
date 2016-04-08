@@ -48,7 +48,6 @@ Node::expressInterest
    const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
-  // TODO: Properly check if we are already connected to the expected host.
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
     expressInterestHelper
@@ -56,6 +55,19 @@ Node::expressInterest
     return;
   }
 
+  // TODO: Properly check if we are already connected to the expected host.
+  if (!transport_->isAsync()) {
+    // The simple case: Just do a blocking connect and express.
+    transport_->connect(*connectionInfo_, *this, Transport::OnConnected());
+    expressInterestHelper
+      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+    // Make future calls to expressInterest send directly to the Transport.
+    connectStatus_ = ConnectStatus_CONNECT_COMPLETE;
+
+    return;
+  }
+
+  // Handle the async case.
   if (connectStatus_ == ConnectStatus_UNCONNECTED) {
     connectStatus_ = ConnectStatus_CONNECT_REQUESTED;
 
