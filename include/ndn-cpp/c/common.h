@@ -50,6 +50,15 @@ typedef double ndn_Milliseconds;
 typedef double ndn_MillisecondsSince1970;
 
 /**
+ * Get the current time in milliseconds. (For efficiency, this does not convert
+ * to UTC time.)
+ * @return The current time in milliseconds since 1/1/1970, including fractions
+ * of a millisecond (according to timeval.tv_usec).
+ */
+ndn_MillisecondsSince1970
+ndn_getNowMilliseconds();
+
+/**
  * The practical limit of the size of a network-layer packet. If a packet is
  * larger than this, the library or application MAY drop it. This constant is
  * defined in this low-level header file so that internal code can use it, but
