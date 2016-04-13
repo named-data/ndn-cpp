@@ -267,7 +267,7 @@ public:
 
 TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
 {
-  Name prefixName("/test");
+  Name prefixName("/testregister");
 
   RegisterCounter registerCounter(keyChain);
 
