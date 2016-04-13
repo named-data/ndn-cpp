@@ -90,8 +90,9 @@ public:
   void
   onInterest
     (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Transport& transport,
-     uint64_t interestFilterId)
+     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+     uint64_t interestFilterId,
+     const ptr_lib::shared_ptr<const InterestFilter>& filter)
   {
     ++onInterestCallCount_;
 
@@ -99,8 +100,7 @@ public:
     string content("SUCCESS");
     data.setContent((const uint8_t *)&content[0], content.size());
     keyChain_.sign(data, keyChain_.getDefaultCertificateName());
-    Blob encodedData = data.wireEncode();
-    transport.send(*encodedData);
+    face.putData(data);
   }
 
   void
@@ -244,11 +244,12 @@ TEST_F(TestFaceInterestMethods, MaxNdnPacketSize)
     "expressInterest didn't throw an exception when the interest size exceeds getMaxNdnPacketSize()";
 }
 
-#if 0
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
   TestFaceRegisterMethods()
   {
+    faceIn.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName());
+    faceOut.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName());
   }
 
   virtual void
@@ -261,59 +262,74 @@ public:
   Face faceIn;
   Face faceOut;
   KeyChain keyChain;
+  Name certificateName;
 };
 
 TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
 {
-  // gotta sign it (WAT)
   Name prefixName("/test");
-  faceIn.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName());
 
   RegisterCounter registerCounter(keyChain);
 
   faceIn.registerPrefix
     (prefixName,
-     bind(&RegisterCounter::onInterest, &registerCounter, _1, _2, _3, _4),
+     bind(&RegisterCounter::onInterest, &registerCounter, _1, _2, _3, _4, _5),
      bind(&RegisterCounter::onRegisterFailed, &registerCounter, _1));
 
-  // give the 'server' time to register the interest
+  // Give the "server" time to register the interest.
+  Milliseconds timeout = 1000;
   MillisecondsSince1970 startTime = getNowMilliseconds();
-  while (getNowMilliseconds() - startTime < 1000 &&
-         registerCounter.onInterestCallCount_ == 0 &&
-         registerCounter.onRegisterFailedCallCount_ == 0) {
+  while (getNowMilliseconds() - startTime < timeout) {
     faceIn.processEvents();
     usleep(10000);
   }
 
+  // Now express an interest on this new face, and see if onInterest is called.
   CallbackCounter counter;
-
-  // now express an interest on this new face, and see if onInterest is called
-  Name interestName = Name(prefixName).append("hello");
+  // Add the timestamp so it is unique and we don't get a cached response.
+  ostringstream component;
+  component << "hello" << getNowMilliseconds();
+  Name interestName = Name(prefixName).append(component.str());
   faceOut.expressInterest
     (interestName, bind(&CallbackCounter::onData, &counter, _1, _2),
      bind(&CallbackCounter::onTimeout, &counter, _1));
 
+  // Process events for the in and out faces.
+  timeout = 10000;
   startTime = getNowMilliseconds();
-  while (getNowMilliseconds() - startTime < 10000 &&
-         counter.onDataCallCount_ == 0 && counter.onTimeoutCallCount_ == 0) {
+  while (getNowMilliseconds() - startTime < timeout) {
     faceIn.processEvents();
     faceOut.processEvents();
+
+    bool done = true;
+    if (registerCounter.onInterestCallCount_ == 0 &&
+        registerCounter.onRegisterFailedCallCount_ == 0)
+      // Still processing faceIn.
+      done = false;
+    if (counter.onDataCallCount_ == 0 && counter.onTimeoutCallCount_ == 0)
+      // Still processing face_out.
+      done = false;
+
+    if (done)
+        break;
+
     usleep(10000);
   }
 
-  ASSERT_EQ(registerCounter.onRegisterFailedCallCount_, 0) << "Failed to register prefix at all";
+  ASSERT_EQ(registerCounter.onRegisterFailedCallCount_, 0) <<
+            "Failed to register prefix at all";
+  ASSERT_EQ(registerCounter.onInterestCallCount_, 1) <<
+            "Expected 1 onInterest callback";
+  ASSERT_EQ(counter.onDataCallCount_, 1) <<
+            "Expected 1 onData callback";
 
-  ASSERT_EQ(registerCounter.onInterestCallCount_, 1) << "Expected 1 onInterest callback, got " << registerCounter.onInterestCallCount_;
-
-  ASSERT_EQ(counter.onDataCallCount_, 1) << "Expected 1 onData callback, got " << counter.onDataCallCount_;
-
-  // check the message content
+  // Check the message content.
   Data& data = counter.data_;
   string content("SUCCESS");
   Blob expectedBlob((const uint8_t *)&content[0], content.size());
-  ASSERT_TRUE(expectedBlob.equals(data.getContent())) << "Data received on face does not match expected format";
+  ASSERT_TRUE(expectedBlob.equals(data.getContent())) <<
+              "Data received on face does not match expected format";
 }
-#endif
 
 int
 main(int argc, char **argv)
