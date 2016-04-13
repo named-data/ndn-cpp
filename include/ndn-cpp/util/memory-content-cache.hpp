@@ -78,7 +78,8 @@ public:
      * Return the time when this pending interest entry was created (the time
      * when the unsatisfied interest arrived and was added to the pending
      * interest table). The interest timeout is based on this value.
-     * @return The timeout period start time in milliseconds since 1/1/1970.
+     * @return The timeout period start time in milliseconds since 1/1/1970,
+     * as returned by ndn_getNowMilliseconds.
      */
     MillisecondsSince1970
     getTimeoutPeriodStart() const { return timeoutPeriodStart_; }
