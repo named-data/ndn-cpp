@@ -55,6 +55,14 @@ public:
   isLocal(const Transport::ConnectionInfo& connectionInfo);
 
   /**
+   * Check if this transport is async where connect needs to use the onConnected
+   * callback.
+   * @return True if transport connect is async, false if not.
+   */
+  virtual bool
+  isAsync();
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to an object of a subclass of

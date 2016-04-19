@@ -59,7 +59,7 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FaceStatusMessage));
   FaceStatusMessage_FaceStatus_descriptor_ = FaceStatusMessage_descriptor_->nested_type(0);
-  static const int FaceStatusMessage_FaceStatus_offsets_[13] = {
+  static const int FaceStatusMessage_FaceStatus_offsets_[15] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, face_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, uri_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, local_uri_),
@@ -69,8 +69,10 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, link_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_bytes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_bytes_),
   };
@@ -119,17 +121,18 @@ void protobuf_AddDesc_face_2dstatus_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021face-status.proto\022\013ndn_message\"\375\002\n\021Fac"
+    "\n\021face-status.proto\022\013ndn_message\"\250\003\n\021Fac"
     "eStatusMessage\022\?\n\013face_status\030\200\001 \003(\0132).n"
     "dn_message.FaceStatusMessage.FaceStatus\032"
-    "\246\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
+    "\321\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
     " \002(\t\022\022\n\tlocal_uri\030\201\001 \002(\t\022\031\n\021expiration_p"
     "eriod\030m \001(\004\022\023\n\nface_scope\030\204\001 \002(\004\022\031\n\020face"
     "_persistency\030\205\001 \002(\004\022\022\n\tlink_type\030\206\001 \002(\004\022"
     "\027\n\016n_in_interests\030\220\001 \002(\004\022\023\n\nn_in_datas\030\221"
-    "\001 \002(\004\022\030\n\017n_out_interests\030\222\001 \002(\004\022\024\n\013n_out"
-    "_datas\030\223\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n\013n_"
-    "out_bytes\030\225\001 \002(\004", 416);
+    "\001 \002(\004\022\023\n\nn_in_nacks\030\227\001 \002(\004\022\030\n\017n_out_inte"
+    "rests\030\222\001 \002(\004\022\024\n\013n_out_datas\030\223\001 \002(\004\022\024\n\013n_"
+    "out_nacks\030\230\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n"
+    "\013n_out_bytes\030\225\001 \002(\004", 459);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "face-status.proto", &protobuf_RegisterTypes);
   FaceStatusMessage::default_instance_ = new FaceStatusMessage();
@@ -159,8 +162,10 @@ const int FaceStatusMessage_FaceStatus::kFacePersistencyFieldNumber;
 const int FaceStatusMessage_FaceStatus::kLinkTypeFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNInNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNOutNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInBytesFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutBytesFieldNumber;
 #endif  // !_MSC_VER
@@ -190,8 +195,10 @@ void FaceStatusMessage_FaceStatus::SharedCtor() {
   link_type_ = GOOGLE_ULONGLONG(0);
   n_in_interests_ = GOOGLE_ULONGLONG(0);
   n_in_datas_ = GOOGLE_ULONGLONG(0);
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
   n_out_interests_ = GOOGLE_ULONGLONG(0);
   n_out_datas_ = GOOGLE_ULONGLONG(0);
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -253,8 +260,10 @@ void FaceStatusMessage_FaceStatus::Clear() {
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     n_in_datas_ = GOOGLE_ULONGLONG(0);
+    n_in_nacks_ = GOOGLE_ULONGLONG(0);
     n_out_interests_ = GOOGLE_ULONGLONG(0);
     n_out_datas_ = GOOGLE_ULONGLONG(0);
+    n_out_nacks_ = GOOGLE_ULONGLONG(0);
     n_in_bytes_ = GOOGLE_ULONGLONG(0);
     n_out_bytes_ = GOOGLE_ULONGLONG(0);
   }
@@ -473,6 +482,38 @@ bool FaceStatusMessage_FaceStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(1208)) goto parse_n_in_nacks;
+        break;
+      }
+
+      // required uint64 n_in_nacks = 151;
+      case 151: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_n_in_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_in_nacks_)));
+          set_has_n_in_nacks();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(1216)) goto parse_n_out_nacks;
+        break;
+      }
+
+      // required uint64 n_out_nacks = 152;
+      case 152: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_n_out_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_out_nacks_)));
+          set_has_n_out_nacks();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -568,6 +609,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(149, this->n_out_bytes(), output);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(151, this->n_in_nacks(), output);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(152, this->n_out_nacks(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -651,6 +702,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(149, this->n_out_bytes(), target);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(151, this->n_in_nacks(), target);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(152, this->n_out_nacks(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -727,6 +788,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
           this->n_in_datas());
     }
 
+    // required uint64 n_in_nacks = 151;
+    if (has_n_in_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_in_nacks());
+    }
+
     // required uint64 n_out_interests = 146;
     if (has_n_out_interests()) {
       total_size += 2 +
@@ -739,6 +807,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->n_out_datas());
+    }
+
+    // required uint64 n_out_nacks = 152;
+    if (has_n_out_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_out_nacks());
     }
 
     // required uint64 n_in_bytes = 148;
@@ -811,11 +886,17 @@ void FaceStatusMessage_FaceStatus::MergeFrom(const FaceStatusMessage_FaceStatus&
     if (from.has_n_in_datas()) {
       set_n_in_datas(from.n_in_datas());
     }
+    if (from.has_n_in_nacks()) {
+      set_n_in_nacks(from.n_in_nacks());
+    }
     if (from.has_n_out_interests()) {
       set_n_out_interests(from.n_out_interests());
     }
     if (from.has_n_out_datas()) {
       set_n_out_datas(from.n_out_datas());
+    }
+    if (from.has_n_out_nacks()) {
+      set_n_out_nacks(from.n_out_nacks());
     }
     if (from.has_n_in_bytes()) {
       set_n_in_bytes(from.n_in_bytes());
@@ -840,7 +921,7 @@ void FaceStatusMessage_FaceStatus::CopyFrom(const FaceStatusMessage_FaceStatus& 
 }
 
 bool FaceStatusMessage_FaceStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00001ff7) != 0x00001ff7) return false;
+  if ((_has_bits_[0] & 0x00007ff7) != 0x00007ff7) return false;
 
   return true;
 }
@@ -856,8 +937,10 @@ void FaceStatusMessage_FaceStatus::Swap(FaceStatusMessage_FaceStatus* other) {
     std::swap(link_type_, other->link_type_);
     std::swap(n_in_interests_, other->n_in_interests_);
     std::swap(n_in_datas_, other->n_in_datas_);
+    std::swap(n_in_nacks_, other->n_in_nacks_);
     std::swap(n_out_interests_, other->n_out_interests_);
     std::swap(n_out_datas_, other->n_out_datas_);
+    std::swap(n_out_nacks_, other->n_out_nacks_);
     std::swap(n_in_bytes_, other->n_in_bytes_);
     std::swap(n_out_bytes_, other->n_out_bytes_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
@@ -1136,7 +1219,7 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FaceStatusMessage));
   FaceStatusMessage_FaceStatus_descriptor_ = FaceStatusMessage_descriptor_->nested_type(0);
-  static const int FaceStatusMessage_FaceStatus_offsets_[13] = {
+  static const int FaceStatusMessage_FaceStatus_offsets_[15] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, face_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, uri_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, local_uri_),
@@ -1146,8 +1229,10 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, link_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_bytes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_bytes_),
   };
@@ -1196,17 +1281,18 @@ void protobuf_AddDesc_face_2dstatus_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021face-status.proto\022\013ndn_message\"\375\002\n\021Fac"
+    "\n\021face-status.proto\022\013ndn_message\"\250\003\n\021Fac"
     "eStatusMessage\022\?\n\013face_status\030\200\001 \003(\0132).n"
     "dn_message.FaceStatusMessage.FaceStatus\032"
-    "\246\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
+    "\321\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
     " \002(\t\022\022\n\tlocal_uri\030\201\001 \002(\t\022\031\n\021expiration_p"
     "eriod\030m \001(\004\022\023\n\nface_scope\030\204\001 \002(\004\022\031\n\020face"
     "_persistency\030\205\001 \002(\004\022\022\n\tlink_type\030\206\001 \002(\004\022"
     "\027\n\016n_in_interests\030\220\001 \002(\004\022\023\n\nn_in_datas\030\221"
-    "\001 \002(\004\022\030\n\017n_out_interests\030\222\001 \002(\004\022\024\n\013n_out"
-    "_datas\030\223\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n\013n_"
-    "out_bytes\030\225\001 \002(\004", 416);
+    "\001 \002(\004\022\023\n\nn_in_nacks\030\227\001 \002(\004\022\030\n\017n_out_inte"
+    "rests\030\222\001 \002(\004\022\024\n\013n_out_datas\030\223\001 \002(\004\022\024\n\013n_"
+    "out_nacks\030\230\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n"
+    "\013n_out_bytes\030\225\001 \002(\004", 459);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "face-status.proto", &protobuf_RegisterTypes);
   FaceStatusMessage::default_instance_ = new FaceStatusMessage();
@@ -1235,8 +1321,10 @@ const int FaceStatusMessage_FaceStatus::kFacePersistencyFieldNumber;
 const int FaceStatusMessage_FaceStatus::kLinkTypeFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNInNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNOutNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInBytesFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutBytesFieldNumber;
 #endif  // !_MSC_VER
@@ -1266,8 +1354,10 @@ void FaceStatusMessage_FaceStatus::SharedCtor() {
   link_type_ = GOOGLE_ULONGLONG(0);
   n_in_interests_ = GOOGLE_ULONGLONG(0);
   n_in_datas_ = GOOGLE_ULONGLONG(0);
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
   n_out_interests_ = GOOGLE_ULONGLONG(0);
   n_out_datas_ = GOOGLE_ULONGLONG(0);
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1330,8 +1420,10 @@ void FaceStatusMessage_FaceStatus::Clear() {
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     n_in_datas_ = GOOGLE_ULONGLONG(0);
+    n_in_nacks_ = GOOGLE_ULONGLONG(0);
     n_out_interests_ = GOOGLE_ULONGLONG(0);
     n_out_datas_ = GOOGLE_ULONGLONG(0);
+    n_out_nacks_ = GOOGLE_ULONGLONG(0);
     n_in_bytes_ = GOOGLE_ULONGLONG(0);
     n_out_bytes_ = GOOGLE_ULONGLONG(0);
   }
@@ -1550,6 +1642,38 @@ bool FaceStatusMessage_FaceStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(1208)) goto parse_n_in_nacks;
+        break;
+      }
+
+      // required uint64 n_in_nacks = 151;
+      case 151: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_n_in_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_in_nacks_)));
+          set_has_n_in_nacks();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(1216)) goto parse_n_out_nacks;
+        break;
+      }
+
+      // required uint64 n_out_nacks = 152;
+      case 152: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_n_out_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_out_nacks_)));
+          set_has_n_out_nacks();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1645,6 +1769,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(149, this->n_out_bytes(), output);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(151, this->n_in_nacks(), output);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(152, this->n_out_nacks(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1728,6 +1862,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(149, this->n_out_bytes(), target);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(151, this->n_in_nacks(), target);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(152, this->n_out_nacks(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -1804,6 +1948,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
           this->n_in_datas());
     }
 
+    // required uint64 n_in_nacks = 151;
+    if (has_n_in_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_in_nacks());
+    }
+
     // required uint64 n_out_interests = 146;
     if (has_n_out_interests()) {
       total_size += 2 +
@@ -1816,6 +1967,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->n_out_datas());
+    }
+
+    // required uint64 n_out_nacks = 152;
+    if (has_n_out_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_out_nacks());
     }
 
     // required uint64 n_in_bytes = 148;
@@ -1888,11 +2046,17 @@ void FaceStatusMessage_FaceStatus::MergeFrom(const FaceStatusMessage_FaceStatus&
     if (from.has_n_in_datas()) {
       set_n_in_datas(from.n_in_datas());
     }
+    if (from.has_n_in_nacks()) {
+      set_n_in_nacks(from.n_in_nacks());
+    }
     if (from.has_n_out_interests()) {
       set_n_out_interests(from.n_out_interests());
     }
     if (from.has_n_out_datas()) {
       set_n_out_datas(from.n_out_datas());
+    }
+    if (from.has_n_out_nacks()) {
+      set_n_out_nacks(from.n_out_nacks());
     }
     if (from.has_n_in_bytes()) {
       set_n_in_bytes(from.n_in_bytes());
@@ -1917,7 +2081,7 @@ void FaceStatusMessage_FaceStatus::CopyFrom(const FaceStatusMessage_FaceStatus& 
 }
 
 bool FaceStatusMessage_FaceStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00001ff7) != 0x00001ff7) return false;
+  if ((_has_bits_[0] & 0x00007ff7) != 0x00007ff7) return false;
 
   return true;
 }
@@ -1933,8 +2097,10 @@ void FaceStatusMessage_FaceStatus::Swap(FaceStatusMessage_FaceStatus* other) {
     std::swap(link_type_, other->link_type_);
     std::swap(n_in_interests_, other->n_in_interests_);
     std::swap(n_in_datas_, other->n_in_datas_);
+    std::swap(n_in_nacks_, other->n_in_nacks_);
     std::swap(n_out_interests_, other->n_out_interests_);
     std::swap(n_out_datas_, other->n_out_datas_);
+    std::swap(n_out_nacks_, other->n_out_nacks_);
     std::swap(n_in_bytes_, other->n_in_bytes_);
     std::swap(n_out_bytes_, other->n_out_bytes_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
@@ -2214,7 +2380,7 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FaceStatusMessage));
   FaceStatusMessage_FaceStatus_descriptor_ = FaceStatusMessage_descriptor_->nested_type(0);
-  static const int FaceStatusMessage_FaceStatus_offsets_[13] = {
+  static const int FaceStatusMessage_FaceStatus_offsets_[15] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, face_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, uri_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, local_uri_),
@@ -2224,8 +2390,10 @@ void protobuf_AssignDesc_face_2dstatus_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, link_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_interests_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_datas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_nacks_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_in_bytes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FaceStatusMessage_FaceStatus, n_out_bytes_),
   };
@@ -2274,17 +2442,18 @@ void protobuf_AddDesc_face_2dstatus_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021face-status.proto\022\013ndn_message\"\375\002\n\021Fac"
+    "\n\021face-status.proto\022\013ndn_message\"\250\003\n\021Fac"
     "eStatusMessage\022\?\n\013face_status\030\200\001 \003(\0132).n"
     "dn_message.FaceStatusMessage.FaceStatus\032"
-    "\246\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
+    "\321\002\n\nFaceStatus\022\017\n\007face_id\030i \002(\004\022\013\n\003uri\030r"
     " \002(\t\022\022\n\tlocal_uri\030\201\001 \002(\t\022\031\n\021expiration_p"
     "eriod\030m \001(\004\022\023\n\nface_scope\030\204\001 \002(\004\022\031\n\020face"
     "_persistency\030\205\001 \002(\004\022\022\n\tlink_type\030\206\001 \002(\004\022"
     "\027\n\016n_in_interests\030\220\001 \002(\004\022\023\n\nn_in_datas\030\221"
-    "\001 \002(\004\022\030\n\017n_out_interests\030\222\001 \002(\004\022\024\n\013n_out"
-    "_datas\030\223\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n\013n_"
-    "out_bytes\030\225\001 \002(\004", 416);
+    "\001 \002(\004\022\023\n\nn_in_nacks\030\227\001 \002(\004\022\030\n\017n_out_inte"
+    "rests\030\222\001 \002(\004\022\024\n\013n_out_datas\030\223\001 \002(\004\022\024\n\013n_"
+    "out_nacks\030\230\001 \002(\004\022\023\n\nn_in_bytes\030\224\001 \002(\004\022\024\n"
+    "\013n_out_bytes\030\225\001 \002(\004", 459);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "face-status.proto", &protobuf_RegisterTypes);
   FaceStatusMessage::default_instance_ = new FaceStatusMessage();
@@ -2313,8 +2482,10 @@ const int FaceStatusMessage_FaceStatus::kFacePersistencyFieldNumber;
 const int FaceStatusMessage_FaceStatus::kLinkTypeFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNInNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutInterestsFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutDatasFieldNumber;
+const int FaceStatusMessage_FaceStatus::kNOutNacksFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNInBytesFieldNumber;
 const int FaceStatusMessage_FaceStatus::kNOutBytesFieldNumber;
 #endif  // !_MSC_VER
@@ -2347,8 +2518,10 @@ void FaceStatusMessage_FaceStatus::SharedCtor() {
   link_type_ = GOOGLE_ULONGLONG(0);
   n_in_interests_ = GOOGLE_ULONGLONG(0);
   n_in_datas_ = GOOGLE_ULONGLONG(0);
+  n_in_nacks_ = GOOGLE_ULONGLONG(0);
   n_out_interests_ = GOOGLE_ULONGLONG(0);
   n_out_datas_ = GOOGLE_ULONGLONG(0);
+  n_out_nacks_ = GOOGLE_ULONGLONG(0);
   n_in_bytes_ = GOOGLE_ULONGLONG(0);
   n_out_bytes_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2416,7 +2589,7 @@ void FaceStatusMessage_FaceStatus::Clear() {
       }
     }
   }
-  if (_has_bits_[8 / 32] & 7936) {
+  if (_has_bits_[8 / 32] & 32512) {
     ZR_(n_in_datas_, n_out_bytes_);
   }
 
@@ -2631,6 +2804,36 @@ bool FaceStatusMessage_FaceStatus::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(1208)) goto parse_n_in_nacks;
+        break;
+      }
+
+      // required uint64 n_in_nacks = 151;
+      case 151: {
+        if (tag == 1208) {
+         parse_n_in_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_in_nacks_)));
+          set_has_n_in_nacks();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(1216)) goto parse_n_out_nacks;
+        break;
+      }
+
+      // required uint64 n_out_nacks = 152;
+      case 152: {
+        if (tag == 1216) {
+         parse_n_out_nacks:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &n_out_nacks_)));
+          set_has_n_out_nacks();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2735,6 +2938,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(149, this->n_out_bytes(), output);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(151, this->n_in_nacks(), output);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(152, this->n_out_nacks(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2822,6 +3035,16 @@ void FaceStatusMessage_FaceStatus::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(149, this->n_out_bytes(), target);
   }
 
+  // required uint64 n_in_nacks = 151;
+  if (has_n_in_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(151, this->n_in_nacks(), target);
+  }
+
+  // required uint64 n_out_nacks = 152;
+  if (has_n_out_nacks()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(152, this->n_out_nacks(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2899,6 +3122,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
           this->n_in_datas());
     }
 
+    // required uint64 n_in_nacks = 151;
+    if (has_n_in_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_in_nacks());
+    }
+
     // required uint64 n_out_interests = 146;
     if (has_n_out_interests()) {
       total_size += 2 +
@@ -2911,6 +3141,13 @@ int FaceStatusMessage_FaceStatus::ByteSize() const {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->n_out_datas());
+    }
+
+    // required uint64 n_out_nacks = 152;
+    if (has_n_out_nacks()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->n_out_nacks());
     }
 
     // required uint64 n_in_bytes = 148;
@@ -2983,11 +3220,17 @@ void FaceStatusMessage_FaceStatus::MergeFrom(const FaceStatusMessage_FaceStatus&
     if (from.has_n_in_datas()) {
       set_n_in_datas(from.n_in_datas());
     }
+    if (from.has_n_in_nacks()) {
+      set_n_in_nacks(from.n_in_nacks());
+    }
     if (from.has_n_out_interests()) {
       set_n_out_interests(from.n_out_interests());
     }
     if (from.has_n_out_datas()) {
       set_n_out_datas(from.n_out_datas());
+    }
+    if (from.has_n_out_nacks()) {
+      set_n_out_nacks(from.n_out_nacks());
     }
     if (from.has_n_in_bytes()) {
       set_n_in_bytes(from.n_in_bytes());
@@ -3012,7 +3255,7 @@ void FaceStatusMessage_FaceStatus::CopyFrom(const FaceStatusMessage_FaceStatus& 
 }
 
 bool FaceStatusMessage_FaceStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00001ff7) != 0x00001ff7) return false;
+  if ((_has_bits_[0] & 0x00007ff7) != 0x00007ff7) return false;
 
   return true;
 }
@@ -3028,8 +3271,10 @@ void FaceStatusMessage_FaceStatus::Swap(FaceStatusMessage_FaceStatus* other) {
     std::swap(link_type_, other->link_type_);
     std::swap(n_in_interests_, other->n_in_interests_);
     std::swap(n_in_datas_, other->n_in_datas_);
+    std::swap(n_in_nacks_, other->n_in_nacks_);
     std::swap(n_out_interests_, other->n_out_interests_);
     std::swap(n_out_datas_, other->n_out_datas_);
+    std::swap(n_out_nacks_, other->n_out_nacks_);
     std::swap(n_in_bytes_, other->n_in_bytes_);
     std::swap(n_out_bytes_, other->n_out_bytes_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

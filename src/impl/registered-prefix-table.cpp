@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2013-2016 Regents of the University of California.
+ * Copyright (C) 2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,62 +19,37 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <stdexcept>
-#include <ndn-cpp/transport/transport.hpp>
+#include "../util/logging.hpp"
+#include "registered-prefix-table.hpp"
+
+INIT_LOGGER("ndn.RegisteredPrefixTable");
 
 using namespace std;
 
 namespace ndn {
 
-Transport::ConnectionInfo::~ConnectionInfo()
-{
-}
-
-bool
-Transport::isLocal(const Transport::ConnectionInfo& connectionInfo)
-{
-  throw logic_error("unimplemented");
-}
-
-bool
-Transport::isAsync()
-{
-  throw logic_error("unimplemented");
-}
-
 void
-Transport::connect
-  (const Transport::ConnectionInfo& connectionInfo,
-   ElementListener& elementListener, const OnConnected& onConnected)
+RegisteredPrefixTable::removeRegisteredPrefix(uint64_t registeredPrefixId)
 {
-  throw logic_error("unimplemented");
-}
+  int count = 0;
+  // Go backwards through the list so we can erase entries.
+  // Remove all entries even though registeredPrefixId should be unique.
+  for (int i = (int)table_.size() - 1; i >= 0; --i) {
+    Entry& entry = *table_[i];
 
-void
-Transport::send(const uint8_t *data, size_t dataLength)
-{
-  throw logic_error("unimplemented");
-}
+    if (entry.getRegisteredPrefixId() == registeredPrefixId) {
+      ++count;
 
-void
-Transport::processEvents()
-{
-  throw logic_error("unimplemented");
-}
+      if (entry.getRelatedInterestFilterId() > 0)
+        // Remove the related interest filter.
+        interestFilterTable_.unsetInterestFilter(entry.getRelatedInterestFilterId());
 
-bool
-Transport::getIsConnected()
-{
-  throw logic_error("unimplemented");
-}
+      table_.erase(table_.begin() + i);
+    }
+  }
 
-void
-Transport::close()
-{
-}
-
-Transport::~Transport()
-{
+  if (count == 0)
+    _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
 }
 
 }

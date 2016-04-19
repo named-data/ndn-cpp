@@ -89,6 +89,14 @@ public:
   isLocal(const Transport::ConnectionInfo& connectionInfo);
 
   /**
+   * Override to return false since connect does not need to use the onConnected
+   * callback.
+   * @return False.
+   */
+  virtual bool
+  isAsync();
+
+  /**
    * Connect according to the info in ConnectionInfo, and processEvents() will
    * use elementListener.
    * @param connectionInfo A reference to a TcpTransport::ConnectionInfo.

@@ -23,7 +23,6 @@
 #define NDN_NODE_HPP
 
 #include <map>
-#include <deque>
 #include <ndn-cpp/ndn-cpp-config.h>
 #ifdef NDN_CPP_HAVE_BOOST_ASIO
 #include <boost/atomic.hpp>
@@ -35,6 +34,10 @@
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
+#include "impl/delayed-call-table.hpp"
+#include "impl/interest-filter-table.hpp"
+#include "impl/pending-interest-table.hpp"
+#include "impl/registered-prefix-table.hpp"
 #include "encoding/element-listener.hpp"
 
 struct ndn_Interest;
@@ -83,7 +86,10 @@ public:
    * @param pendingInterestId The ID returned from expressInterest.
    */
   void
-  removePendingInterest(uint64_t pendingInterestId);
+  removePendingInterest(uint64_t pendingInterestId)
+  {
+    pendingInterestTable_.removePendingInterest(pendingInterestId);
+  }
 
   /**
    * Append a timestamp component and a random value component to interest's
@@ -111,13 +117,13 @@ public:
    * @param prefixCopy The Name for the prefix to register,  which is NOT copied
    * for this internal Node method. The Face registerPrefix is responsible for
    * making a copy and passing a shared_ptr for Node to use.
-   * @param onInterest (optional) If not null, this creates an interest filter
-   * from prefix so that when an Interest is received which matches the filter,
-   * this calls the function object
+   * @param onInterest (optional) If not an empty OnInterestCallback(), this
+   * creates an interest filter from prefix so that when an Interest is received
+   * which matches the filter, this calls the function object
    * onInterest(prefix, interest, face, interestFilterId, filter).
    * This copies the function object, so you may need to use func_lib::ref() as
-   * appropriate. If onInterest is null, it is ignored and you must call
-   * setInterestFilter.
+   * appropriate. If onInterest is an empty OnInterestCallback(), it is ignored
+   * and you must call setInterestFilter.
    * @param onRegisterFailed A function object to call if failed to retrieve the connected hub’s ID or failed to register the prefix.
    * This calls onRegisterFailed(prefix) where prefix is the prefix given to registerPrefix.
    * @param onRegisterSuccess A function object to call when registerPrefix
@@ -170,7 +176,10 @@ public:
    * @param registeredPrefixId The ID returned from registerPrefix.
    */
   void
-  removeRegisteredPrefix(uint64_t registeredPrefixId);
+  removeRegisteredPrefix(uint64_t registeredPrefixId)
+  {
+    registeredPrefixTable_.removeRegisteredPrefix(registeredPrefixId);
+  }
 
   /**
    * Add an entry to the local interest filter table to call the onInterest
@@ -193,7 +202,11 @@ public:
   setInterestFilter
     (uint64_t interestFilterId,
      const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
-     const OnInterestCallback& onInterest, Face* face);
+     const OnInterestCallback& onInterest, Face* face)
+  {
+    interestFilterTable_.setInterestFilter
+      (interestFilterId, filterCopy, onInterest, face);
+  }
 
   /**
    * Remove the interest filter entry which has the interestFilterId from the
@@ -203,7 +216,10 @@ public:
    * @param interestFilterId The ID returned from setInterestFilter.
    */
   void
-  unsetInterestFilter(uint64_t interestFilterId);
+  unsetInterestFilter(uint64_t interestFilterId)
+  {
+    interestFilterTable_.unsetInterestFilter(interestFilterId);
+  }
 
   /**
    * Send the encoded packet out through the face.
@@ -267,7 +283,10 @@ public:
    * @param callback This calls callback() after the delay.
    */
   void
-  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback);
+  callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
+  {
+    delayedCallTable_.callLater(delayMilliseconds, callback);
+  }
 
   /**
    * Get the next unique entry ID for the pending interest table, interest
@@ -285,226 +304,6 @@ private:
     ConnectStatus_UNCONNECTED = 1,
     ConnectStatus_CONNECT_REQUESTED = 2,
     ConnectStatus_CONNECT_COMPLETE = 3
-  };
-
-  /**
-   * DelayedCall is a class for the members of the delayedCallTable_.
-   */
-  class DelayedCall {
-  public:
-    /**
-     * Create a new DelayedCall and set the call time based on the current time
-     * and the delayMilliseconds.
-     * @param delayMilliseconds The delay in milliseconds.
-     * @param callback This calls callback() after the delay.
-     */
-    DelayedCall(Milliseconds delayMilliseconds, const Face::Callback& callback);
-
-    /**
-     * Get the time at which the callback should be called.
-     * @return The call time in milliseconds, similar to ndn_getNowMilliseconds.
-     */
-    MillisecondsSince1970
-    getCallTime() const { return callTime_; }
-
-    /**
-     * Call the callback given to the constructor. This does not catch
-     * exceptions.
-     */
-    void
-    callCallback() const { callback_(); }
-
-    /**
-     * Compare shared_ptrs to DelayedCall based only on callTime_.
-     */
-    class Compare {
-    public:
-      bool
-      operator()
-        (const ptr_lib::shared_ptr<const DelayedCall>& x,
-         const ptr_lib::shared_ptr<const DelayedCall>& y) const
-      {
-        return x->callTime_ < y->callTime_;
-      }
-    };
-
-  private:
-    const Face::Callback callback_;
-    MillisecondsSince1970 callTime_;
-  };
-
-  class PendingInterest {
-  public:
-    /**
-     * Create a new PendingInterest.
-     * @param pendingInterestId A unique ID for this entry, which you should get
-     * with getNextEntryId().
-     * @param interest A shared_ptr for the interest.
-     * @param onData A function object to call when a matching data packet is received.
-     * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-     */
-    PendingInterest
-      (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
-       const OnTimeout& onTimeout);
-
-    /**
-     * Return the pendingInterestId given to the constructor.
-     */
-    uint64_t
-    getPendingInterestId() { return pendingInterestId_; }
-
-    const ptr_lib::shared_ptr<const Interest>&
-    getInterest() { return interest_; }
-
-    const OnData&
-    getOnData() { return onData_; }
-
-    /**
-     * Set the isRemoved flag which is returned by getIsRemoved().
-     */
-    void
-    setIsRemoved() { isRemoved_ = true; }
-
-    /**
-     * Check if setIsRemoved() was called.
-     * @return True if setIsRemoved() was called.
-     */
-    bool
-    getIsRemoved() { return isRemoved_; }
-
-    /**
-     * Call onTimeout_ (if defined).  This ignores exceptions from the onTimeout_.
-     */
-    void
-    callTimeout();
-
-  private:
-    ptr_lib::shared_ptr<const Interest> interest_;
-    uint64_t pendingInterestId_;            /**< A unique identifier for this entry so it can be deleted */
-    const OnData onData_;
-    const OnTimeout onTimeout_;
-    bool isRemoved_;
-  };
-
-  /**
-   * A RegisteredPrefix holds a registeredPrefixId and information necessary
-   * to remove the registration later. It optionally holds a related
-   * interestFilterId if the InterestFilter was set in the same registerPrefix
-   * operation.
-   */
-  class RegisteredPrefix {
-  public:
-    /**
-     * Create a new RegisteredPrefix with the given values.
-     * @param registeredPrefixId A unique ID for this entry, which you should
-     * get with getNextEntryId().
-     * @param prefix A shared_ptr for the prefix.
-     * @param relatedInterestFilterId (optional) The related interestFilterId
-     * for the filter set in the same registerPrefix operation. If omitted, set
-     * to 0.
-     */
-    RegisteredPrefix
-      (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-       uint64_t relatedInterestFilterId)
-    : registeredPrefixId_(registeredPrefixId), prefix_(prefix),
-      relatedInterestFilterId_(relatedInterestFilterId)
-    {
-    }
-
-    /**
-     * Return the registeredPrefixId given to the constructor.
-     * @return The registeredPrefixId.
-     */
-    uint64_t
-    getRegisteredPrefixId() { return registeredPrefixId_; }
-
-    /**
-     * Get the name prefix given to the constructor.
-     * @return The name prefix.
-     */
-    const ptr_lib::shared_ptr<const Name>&
-    getPrefix() { return prefix_; }
-
-    /**
-     * Get the related interestFilterId given to the constructor.
-     * @return The related interestFilterId.
-     */
-    uint64_t
-    getRelatedInterestFilterId() { return relatedInterestFilterId_; }
-
-  private:
-    uint64_t registeredPrefixId_;            /**< A unique identifier for this entry so it can be deleted */
-    ptr_lib::shared_ptr<const Name> prefix_;
-    uint64_t relatedInterestFilterId_;
-  };
-
-  /**
-   * An InterestFilterEntry holds an interestFilterId, an InterestFilter and the
-   * OnInterestCallback with its related Face.
-   */
-  class InterestFilterEntry {
-  public:
-    /**
-     * Create a new InterestFilterEntry with the given values.
-     * @param interestFilterId The ID from getNextEntryId().
-     * @param filter A shared_ptr for the InterestFilter for this entry.
-     * @param onInterest A function object to call when a matching data packet
-     * is received.
-     * @param face The face on which was called registerPrefix or
-     * setInterestFilter which is passed to the onInterest callback.
-     */
-    InterestFilterEntry
-      (uint64_t interestFilterId,
-       const ptr_lib::shared_ptr<const InterestFilter>& filter,
-       const OnInterestCallback& onInterest, Face* face)
-    : interestFilterId_(interestFilterId), filter_(filter),
-      prefix_(new Name(filter->getPrefix())), onInterest_(onInterest), face_(face)
-    {
-    }
-
-    /**
-     * Return the interestFilterId given to the constructor.
-     * @return The interestFilterId.
-     */
-    uint64_t
-    getInterestFilterId() { return interestFilterId_; }
-
-    /**
-     * Get the InterestFilter given to the constructor.
-     * @return The InterestFilter.
-     */
-    const ptr_lib::shared_ptr<const InterestFilter>&
-    getFilter() { return filter_; }
-
-    /**
-     * Get the prefix from the filter as a shared_ptr. We keep this cached value
-     * so that we don't have to copy the name to pass a shared_ptr each time
-     * we call the OnInterestCallback.
-     * @return The filter's prefix.
-     */
-    const ptr_lib::shared_ptr<const Name>&
-    getPrefix() { return prefix_; }
-
-    /**
-     * Get the OnInterestCallback given to the constructor.
-     * @return The OnInterest callback.
-     */
-    const OnInterestCallback&
-    getOnInterest() { return onInterest_; }
-
-    /**
-     * Get the Face given to the constructor.
-     * @return The Face.
-     */
-    Face&
-    getFace() { return *face_; }
-
-  private:
-    uint64_t interestFilterId_;  /**< A unique identifier for this entry so it can be deleted */
-    ptr_lib::shared_ptr<const InterestFilter> filter_;
-    ptr_lib::shared_ptr<const Name> prefix_;
-    const OnInterestCallback onInterest_;
-    Face* face_;
   };
 
   /**
@@ -590,20 +389,7 @@ private:
    * @param pendingInterest The pending interest to check.
    */
   void
-  processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest);
-
-  /**
-   * Find all entries from pendingInterestTable_ where the name conforms to the
-   * entry's interest selectors, remove the entries from the table and add to
-   * the entries vector.
-   * @param name The name to find the interest for (from the incoming data packet).
-   * @param entries Add matching entries from pendingInterestTable_.  The caller
-   * should pass in a reference to an empty vector.
-   */
-  void
-  extractEntriesForExpressedInterest
-    (const Name& name,
-     std::vector<ptr_lib::shared_ptr<PendingInterest> > &entries);
+  processInterestTimeout(ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest);
 
   /**
    * Do the work of registerPrefix to register with NFD.
@@ -636,12 +422,10 @@ private:
 
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
-  std::vector<ptr_lib::shared_ptr<PendingInterest> > pendingInterestTable_;
-  std::vector<ptr_lib::shared_ptr<RegisteredPrefix> > registeredPrefixTable_;
-  std::vector<ptr_lib::shared_ptr<InterestFilterEntry> > interestFilterTable_;
-  // Use a deque so we can efficiently remove from the front.
-  std::deque<ptr_lib::shared_ptr<DelayedCall> > delayedCallTable_;
-  DelayedCall::Compare delayedCallCompare_;
+  PendingInterestTable pendingInterestTable_;
+  RegisteredPrefixTable registeredPrefixTable_;
+  InterestFilterTable interestFilterTable_;
+  DelayedCallTable delayedCallTable_;
   std::vector<Face::Callback> onConnectedCallbacks_;
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;

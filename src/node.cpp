@@ -19,7 +19,6 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <algorithm>
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/control-response.hpp>
@@ -38,7 +37,8 @@ namespace ndn {
 Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : transport_(transport), connectionInfo_(connectionInfo),
   timeoutPrefix_(Name("/local/timeout")),
-  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED)
+  lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED),
+  registeredPrefixTable_(interestFilterTable_)
 {
 }
 
@@ -48,7 +48,6 @@ Node::expressInterest
    const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
-  // TODO: Properly check if we are already connected to the expected host.
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
     expressInterestHelper
@@ -56,6 +55,19 @@ Node::expressInterest
     return;
   }
 
+  // TODO: Properly check if we are already connected to the expected host.
+  if (!transport_->isAsync()) {
+    // The simple case: Just do a blocking connect and express.
+    transport_->connect(*connectionInfo_, *this, Transport::OnConnected());
+    expressInterestHelper
+      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+    // Make future calls to expressInterest send directly to the Transport.
+    connectStatus_ = ConnectStatus_CONNECT_COMPLETE;
+
+    return;
+  }
+
+  // Handle the async case.
   if (connectStatus_ == ConnectStatus_UNCONNECTED) {
     connectStatus_ = ConnectStatus_CONNECT_REQUESTED;
 
@@ -94,26 +106,6 @@ Node::onConnected()
 }
 
 void
-Node::removePendingInterest(uint64_t pendingInterestId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though pendingInterestId should be unique.
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->getPendingInterestId() == pendingInterestId) {
-      ++count;
-      // For efficiency, mark this as removed so that processInterestTimeout
-      // doesn't look for it.
-      pendingInterestTable_[i]->setIsRemoved();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
-}
-
-void
 Node::registerPrefix
   (uint64_t registeredPrefixId,
    const ptr_lib::shared_ptr<const Name>& prefixCopy,
@@ -127,57 +119,6 @@ Node::registerPrefix
     (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
      onRegisterSuccess, flags, commandKeyChain, commandCertificateName,
      wireFormat, face);
-}
-
-void
-Node::removeRegisteredPrefix(uint64_t registeredPrefixId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though registeredPrefixId should be unique.
-  for (int i = (int)registeredPrefixTable_.size() - 1; i >= 0; --i) {
-    RegisteredPrefix& entry = *registeredPrefixTable_[i];
-
-    if (entry.getRegisteredPrefixId() == registeredPrefixId) {
-      ++count;
-
-      if (entry.getRelatedInterestFilterId() > 0)
-        // Remove the related interest filter.
-        unsetInterestFilter(entry.getRelatedInterestFilterId());
-
-      registeredPrefixTable_.erase(registeredPrefixTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
-}
-
-void
-Node::setInterestFilter
-  (uint64_t interestFilterId,
-   const ptr_lib::shared_ptr<const InterestFilter>& filterCopy,
-   const OnInterestCallback& onInterest, Face* face)
-{
-  interestFilterTable_.push_back(ptr_lib::make_shared<InterestFilterEntry>
-    (interestFilterId, filterCopy, onInterest, face));
-}
-
-void
-Node::unsetInterestFilter(uint64_t interestFilterId)
-{
-  int count = 0;
-  // Go backwards through the list so we can erase entries.
-  // Remove all entries even though interestFilterId should be unique.
-  for (int i = (int)interestFilterTable_.size() - 1; i >= 0; --i) {
-    if (interestFilterTable_[i]->getInterestFilterId() == interestFilterId) {
-      ++count;
-      interestFilterTable_.erase(interestFilterTable_.begin() + i);
-    }
-  }
-
-  if (count == 0)
-    _LOG_DEBUG("unsetInterestFilter: Didn't find interestFilterId " << interestFilterId);
 }
 
 void
@@ -308,9 +249,7 @@ Node::nfdRegisterPrefix
          onInterest, face);
     }
 
-    registeredPrefixTable_.push_back
-      (ptr_lib::shared_ptr<RegisteredPrefix>(new RegisteredPrefix
-        (registeredPrefixId, prefix, interestFilterId)));
+    registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId);
   }
 
   // Send the registration interest.
@@ -328,19 +267,9 @@ Node::processEvents()
 {
   transport_->processEvents();
 
-  // Check for delayed calls. Since callLater does a sorted insert into
-  // delayedCallTable_, the check for timeouts is quick and does not require
-  // searching the entire table. If callLater is overridden to use a different
-  // mechanism, then processEvents is not needed to check for delayed calls.
-  MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  // delayedCallTable_ is sorted on _callTime, so we only need to process
-  // the timed-out entries at the front, then quit.
-  while (delayedCallTable_.size() > 0 &&
-         delayedCallTable_.front()->getCallTime() <= now) {
-    ptr_lib::shared_ptr<DelayedCall> delayedCall = delayedCallTable_.front();
-    delayedCallTable_.erase(delayedCallTable_.begin());
-    delayedCall->callCallback();
-  }
+  // If Face::callLater is overridden to use a different mechanism, then
+  // processEvents is not needed to check for delayed calls.
+  delayedCallTable_.callTimedOut();
 }
 
 void
@@ -365,24 +294,26 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   // Now process as Interest or Data.
   if (interest) {
     // Call all interest filter callbacks which match.
-    for (size_t i = 0; i < interestFilterTable_.size(); ++i) {
-      InterestFilterEntry &entry = *interestFilterTable_[i];
-      if (entry.getFilter()->doesMatch(interest->getName())) {
-        try {
-          entry.getOnInterest()
-            (entry.getPrefix(), interest, entry.getFace(),
-             entry.getInterestFilterId(), entry.getFilter());
-        } catch (const std::exception& ex) {
-          _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
-        } catch (...) {
-          _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
-        }
+    vector<ptr_lib::shared_ptr<InterestFilterTable::Entry> > matchedFilters;
+    interestFilterTable_.getMatchedFilters(*interest, matchedFilters);
+
+    for (size_t i = 0; i < matchedFilters.size(); ++i) {
+      InterestFilterTable::Entry &entry = *matchedFilters[i];
+      try {
+        entry.getOnInterest()
+          (entry.getPrefix(), interest, entry.getFace(),
+           entry.getInterestFilterId(), entry.getFilter());
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
       }
     }
   }
   else if (data) {
-    vector<ptr_lib::shared_ptr<PendingInterest> > pitEntries;
-    extractEntriesForExpressedInterest(data->getName(), pitEntries);
+    vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
+    pendingInterestTable_.extractEntriesForExpressedInterest
+      (data->getName(), pitEntries);
     for (size_t i = 0; i < pitEntries.size(); ++i) {
       try {
         pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
@@ -408,9 +339,8 @@ Node::expressInterestHelper
    const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
    Face* face)
 {
-  ptr_lib::shared_ptr<PendingInterest> pendingInterest(new PendingInterest
-    (pendingInterestId, interestCopy, onData, onTimeout));
-  pendingInterestTable_.push_back(pendingInterest);
+  ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest =
+    pendingInterestTable_.add(pendingInterestId, interestCopy, onData, onTimeout);
   if (onTimeout || interestCopy->getInterestLifetimeMilliseconds() >= 0.0) {
     // Set up the timeout.
     double delayMilliseconds = interestCopy->getInterestLifetimeMilliseconds();
@@ -434,83 +364,11 @@ Node::expressInterestHelper
 }
 
 void
-Node::processInterestTimeout(ptr_lib::shared_ptr<PendingInterest> pendingInterest)
+Node::processInterestTimeout
+  (ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest)
 {
-  if (pendingInterest->getIsRemoved())
-    // extractEntriesForExpressedInterest or removePendingInterest has removed
-    // pendingInterest from pendingInterestTable_, so we don't need to look for
-    // it. Do nothing.
-    return;
-
-  // Find the entry.
-  for (vector<ptr_lib::shared_ptr<PendingInterest> >::iterator entry =
-         pendingInterestTable_.begin();
-       entry != pendingInterestTable_.end();
-       ++entry) {
-    if (entry->get() == pendingInterest.get()) {
-      pendingInterestTable_.erase(entry);
-      pendingInterest->callTimeout();
-      return;
-    }
-  }
-
-  // The pending interest has been removed. Do nothing.
-}
-
-void
-Node::extractEntriesForExpressedInterest
-  (const Name& name, vector<ptr_lib::shared_ptr<PendingInterest> > &entries)
-{
-  // Go backwards through the list so we can erase entries.
-  for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
-    if (pendingInterestTable_[i]->getInterest()->matchesName(name)) {
-      entries.push_back(pendingInterestTable_[i]);
-      // We let the callback from callLater call _processInterestTimeout, but
-      // for efficiency, mark this as removed so that it returns right away.
-      pendingInterestTable_[i]->setIsRemoved();
-      pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
-    }
-  }
-}
-
-void
-Node::callLater(Milliseconds delayMilliseconds, const Face::Callback& callback)
-{
-  ptr_lib::shared_ptr<DelayedCall> delayedCall
-    (new DelayedCall(delayMilliseconds, callback));
-  // Insert into delayedCallTable_, sorted on delayedCall.getCallTime().
-  delayedCallTable_.insert
-    (std::lower_bound(delayedCallTable_.begin(), delayedCallTable_.end(),
-                      delayedCall, delayedCallCompare_),
-     delayedCall);
-}
-
-Node::DelayedCall::DelayedCall
-  (Milliseconds delayMilliseconds, const Face::Callback& callback)
-  : callback_(callback),
-    callTime_(ndn_getNowMilliseconds() + delayMilliseconds)
-{
-}
-
-Node::PendingInterest::PendingInterest
-  (uint64_t pendingInterestId, const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData, const OnTimeout& onTimeout)
-: pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData), onTimeout_(onTimeout),
-  isRemoved_(false)
-{
-}
-
-void
-Node::PendingInterest::callTimeout()
-{
-  if (onTimeout_) {
-    try {
-      onTimeout_(interest_);
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("Node::PendingInterest::callTimeout: Error in onTimeout.");
-    }
-  }
+  if (pendingInterestTable_.removeEntry(pendingInterest))
+    pendingInterest->callTimeout();
 }
 
 }

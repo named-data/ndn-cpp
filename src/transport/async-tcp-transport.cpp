@@ -86,6 +86,9 @@ AsyncTcpTransport::isLocal(const Transport::ConnectionInfo& connectionInfo)
   return isLocal_;
 }
 
+bool
+AsyncTcpTransport::isAsync() { return true; }
+
 void
 AsyncTcpTransport::connect
   (const Transport::ConnectionInfo& connectionInfo,

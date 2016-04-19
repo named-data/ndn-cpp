@@ -219,7 +219,7 @@ public:
   /**
    * Create a public key signing request.
    * @param keyName The name of the key.
-   * @returns The signing request data.
+   * @return The signing request data.
    */
   Blob
   createSigningRequest(const Name& keyName)

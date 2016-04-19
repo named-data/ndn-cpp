@@ -588,10 +588,10 @@ BasicIdentityStorage::getAllIdentities(vector<Name>& nameList, bool isDefault)
        -1, &statement, 0);
 
   while (sqlite3_step(statement) == SQLITE_ROW) {
-    Name keyName
+    Name identityName
       (string(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
        sqlite3_column_bytes(statement, 0)));
-    nameList.push_back(keyName);
+    nameList.push_back(identityName);
   }
 
   sqlite3_finalize(statement);

@@ -233,7 +233,7 @@ public:
    * @param keyClass the class of key, e.g. Private Key
    * @param acl the new acl of the key
    * @param appPath the absolute path to the application
-   * @returns true if setting succeeds
+   * @return true if setting succeeds
    */
   bool
   setACL(const Name & keyName, KeyClass keyClass, int acl, const std::string & appPath);
@@ -252,7 +252,7 @@ public:
    * Get key
    * @param keyName the name of the key
    * @param keyClass the class of the key
-   * @returns 0 if not found,  otherwise a Keychain ref to the key. You
+   * @return 0 if not found,  otherwise a Keychain ref to the key. You
    * must use CFRelease to free it.
    */
   CFReleaser<SecKeychainItemRef>
@@ -261,7 +261,7 @@ public:
   /**
    * convert keyType to MAC OS symmetric key key type
    * @param keyType
-   * @returns MAC OS key type
+   * @return MAC OS key type
    */
   const CFTypeRef
   getSymmetricKeyType(KeyType keyType);
@@ -269,7 +269,7 @@ public:
   /**
    * convert keyType to MAC OS asymmetirc key type
    * @param keyType
-   * @returns MAC OS key type
+   * @return MAC OS key type
    */
   const CFTypeRef
   getAsymmetricKeyType(KeyType keyType);
@@ -277,7 +277,7 @@ public:
   /**
    * convert keyClass to MAC OS key class
    * @param keyClass
-   * @returns MAC OS key class
+   * @return MAC OS key class
    */
   const CFTypeRef
   getKeyClass(KeyClass keyClass);
@@ -285,7 +285,7 @@ public:
   /**
    * convert digestAlgorithm to MAC OS algorithm id
    * @param digestAlgorithm
-   * @returns MAC OS algorithm id
+   * @return MAC OS algorithm id
    */
   const CFStringRef
   getDigestAlgorithm(DigestAlgorithm digestAlgorithm);
