@@ -102,7 +102,9 @@ public:
   };
 
   /**
-   * Add a new entry to the pending interest table.
+   * Add a new entry to the pending interest table. However, if
+   * removePendingInterest was already called with the pendingInterestId, don't
+   * add an entry and return null.
    * @param pendingInterestId The getNextEntryId() for the pending interest ID
    * which Face got so it could return it to the caller.
    * @param interestCopy The Interest which was sent, which has already been
@@ -110,18 +112,13 @@ public:
    * @param onData This calls onData when a matching data packet is received.
    * @param onTimeout This calls onTimeout if the interest times out. If
    * onTimeout is an empty OnTimeout(), this does not use it.
-   * @return The new PendingInterestTable::Entry.
+   * @return The new PendingInterestTable::Entry, or null if
+   * removePendingInterest was already called with the pendingInterestId.
    */
   ptr_lib::shared_ptr<Entry>
   add(uint64_t pendingInterestId,
       const ptr_lib::shared_ptr<const Interest>& interestCopy,
-      const OnData& onData, const OnTimeout& onTimeout)
-  {
-    ptr_lib::shared_ptr<Entry> entry(new Entry
-      (pendingInterestId, interestCopy, onData, onTimeout));
-    table_.push_back(entry);
-    return entry;
-  }
+      const OnData& onData, const OnTimeout& onTimeout);
 
   /**
    * Find all entries from the pending interest table where the name conforms to
@@ -157,6 +154,7 @@ public:
 
 private:
   std::vector<ptr_lib::shared_ptr<Entry> > table_;
+  std::vector<uint64_t> removeRequests_;
 };
 
 }

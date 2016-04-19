@@ -341,6 +341,10 @@ Node::expressInterestHelper
 {
   ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest =
     pendingInterestTable_.add(pendingInterestId, interestCopy, onData, onTimeout);
+  if (!pendingInterest)
+    // removePendingInterest was already called with the pendingInterestId.
+    return;
+
   if (onTimeout || interestCopy->getInterestLifetimeMilliseconds() >= 0.0) {
     // Set up the timeout.
     double delayMilliseconds = interestCopy->getInterestLifetimeMilliseconds();

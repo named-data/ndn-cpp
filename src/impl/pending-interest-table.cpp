@@ -43,6 +43,27 @@ PendingInterestTable::Entry::callTimeout()
   }
 }
 
+ptr_lib::shared_ptr<PendingInterestTable::Entry>
+PendingInterestTable::add
+  (uint64_t pendingInterestId,
+   const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
+   const OnTimeout& onTimeout)
+{
+  vector<uint64_t>::iterator removeRequestIterator =
+    ::find(removeRequests_.begin(), removeRequests_.end(), pendingInterestId);
+  if (removeRequestIterator != removeRequests_.end()) {
+    // removePendingInterest was called with the pendingInterestId returned by
+    //   expressInterest before we got here, so don't add a PIT entry.
+    removeRequests_.erase(removeRequestIterator);
+    return ptr_lib::shared_ptr<Entry>();
+  }
+
+  ptr_lib::shared_ptr<Entry> entry(new Entry
+    (pendingInterestId, interestCopy, onData, onTimeout));
+  table_.push_back(entry);
+  return entry;
+}
+
 void
 PendingInterestTable::extractEntriesForExpressedInterest
   (const Name& name, vector<ptr_lib::shared_ptr<Entry> > &entries)
@@ -77,6 +98,16 @@ PendingInterestTable::removePendingInterest(uint64_t pendingInterestId)
 
   if (count == 0)
     _LOG_DEBUG("removePendingInterest: Didn't find pendingInterestId " << pendingInterestId);
+
+  if (count == 0) {
+    // The pendingInterestId was not found. Perhaps this has been called before
+    //   the callback in expressInterest can add to the PIT. Add this
+    //   removal request which will be checked before adding to the PIT.
+    if (::find(removeRequests_.begin(), removeRequests_.end(), pendingInterestId)
+        == removeRequests_.end())
+      // Not already requested, so add the request.
+      removeRequests_.push_back(pendingInterestId);
+  }
 }
 
 bool
