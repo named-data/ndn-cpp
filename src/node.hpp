@@ -315,8 +315,9 @@ private:
   class RegisterResponse {
   public:
     class Info;
-    RegisterResponse(ptr_lib::shared_ptr<RegisterResponse::Info> info)
-    : info_(info)
+    RegisterResponse
+      (ptr_lib::shared_ptr<RegisterResponse::Info> info, Node& parent)
+    : info_(info), parent_(parent)
     {
     }
 
@@ -341,10 +342,12 @@ private:
       Info(const ptr_lib::shared_ptr<const Name>& prefix,
            const OnRegisterFailed& onRegisterFailed,
            const OnRegisterSuccess& onRegisterSuccess,
-           uint64_t registeredPrefixId)
+           uint64_t registeredPrefixId, const OnInterestCallback& onInterest,
+           Face* face)
       : prefix_(prefix), onRegisterFailed_(onRegisterFailed),
         onRegisterSuccess_(onRegisterSuccess),
-        registeredPrefixId_(registeredPrefixId)
+        registeredPrefixId_(registeredPrefixId), onInterest_(onInterest),
+        face_(face)
       {
       }
 
@@ -352,10 +355,13 @@ private:
       const OnRegisterFailed onRegisterFailed_;
       const OnRegisterSuccess onRegisterSuccess_;
       uint64_t registeredPrefixId_;
+      const OnInterestCallback onInterest_;
+      Face* face_;
     };
 
   private:
     ptr_lib::shared_ptr<Info> info_;
+    Node& parent_;
   };
 
   /**
