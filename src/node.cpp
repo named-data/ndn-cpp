@@ -249,7 +249,8 @@ Node::nfdRegisterPrefix
          onInterest, face);
     }
 
-    registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId);
+    if (!registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId))
+      return;
   }
 
   // Send the registration interest.

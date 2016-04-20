@@ -44,20 +44,19 @@ public:
   }
 
   /**
-   * Add a new entry to the table.
+   * Add a new entry to the table. However, if removeRegisteredPrefix was already
+   * called with the registeredPrefixId, don't add an entry and return false.
    * @param registeredPrefixId The ID from Node::getNextEntryId().
    * @param prefix A shared_ptr for the prefix.
    * @param relatedInterestFilterId (optional) The related interestFilterId
    * for the filter set in the same registerPrefix operation. If omitted, set
    * to 0.
+   * @return True if added an entry, false if removeRegisteredPrefix was already
+   * called with the registeredPrefixId.
    */
-  void
+  bool
   add(uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
-      uint64_t relatedInterestFilterId)
-  {
-    table_.push_back(ptr_lib::make_shared<Entry>
-      (registeredPrefixId, prefix, relatedInterestFilterId));
-  }
+      uint64_t relatedInterestFilterId);
 
   /**
    * Remove the registered prefix entry with the registeredPrefixId from the
@@ -125,6 +124,7 @@ private:
 
   std::vector<ptr_lib::shared_ptr<Entry> > table_;
   InterestFilterTable& interestFilterTable_;
+  std::vector<uint64_t> removeRequests_;
 };
 
 }

@@ -28,6 +28,26 @@ using namespace std;
 
 namespace ndn {
 
+bool
+RegisteredPrefixTable::add
+  (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
+   uint64_t relatedInterestFilterId)
+{
+  vector<uint64_t>::iterator removeRequestIterator =
+    ::find(removeRequests_.begin(), removeRequests_.end(), registeredPrefixId);
+  if (removeRequestIterator != removeRequests_.end()) {
+    // removeRegisteredPrefix was called with the registeredPrefixId returned
+    //   by registerPrefix before we got here, so don't add a registered
+    //   prefix table entry.
+    removeRequests_.erase(removeRequestIterator);
+    return false;
+  }
+
+  table_.push_back(ptr_lib::make_shared<Entry>
+    (registeredPrefixId, prefix, relatedInterestFilterId));
+  return true;
+}
+
 void
 RegisteredPrefixTable::removeRegisteredPrefix(uint64_t registeredPrefixId)
 {
@@ -50,6 +70,17 @@ RegisteredPrefixTable::removeRegisteredPrefix(uint64_t registeredPrefixId)
 
   if (count == 0)
     _LOG_DEBUG("removeRegisteredPrefix: Didn't find registeredPrefixId " << registeredPrefixId);
+
+  if (count == 0) {
+    // The registeredPrefixId was not found. Perhaps this has been called before
+    //   the callback in registerPrefix can add to the registered prefix table.
+    //   Add this removal request which will be checked before adding to the
+    //   registered prefix table.
+    if (::find(removeRequests_.begin(), removeRequests_.end(), registeredPrefixId)
+        == removeRequests_.end())
+      // Not already requested, so add the request.
+      removeRequests_.push_back(registeredPrefixId);
+  }
 }
 
 }
