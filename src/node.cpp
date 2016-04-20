@@ -249,8 +249,14 @@ Node::nfdRegisterPrefix
          onInterest, face);
     }
 
-    if (!registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId))
+    if (!registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId)) {
+      // removeRegisteredPrefix was already called with the registeredPrefixId.
+      if (interestFilterId > 0)
+        // Remove the related interest filter we just added.
+        unsetInterestFilter(interestFilterId);
+
       return;
+    }
   }
 
   // Send the registration interest.
