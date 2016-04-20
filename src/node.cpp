@@ -174,6 +174,7 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     return;
   }
 
+  // Success, so we can add to the registered prefix table.
   if (info_->registeredPrefixId_ != 0) {
     uint64_t interestFilterId = 0;
     if (info_->onInterest_) {
