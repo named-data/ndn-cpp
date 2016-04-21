@@ -19,6 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <algorithm>
 #include "../util/logging.hpp"
 #include "registered-prefix-table.hpp"
 
