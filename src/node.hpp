@@ -436,6 +436,7 @@ private:
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
   ConnectStatus connectStatus_;
+  Blob nonceTemplate_;
 #ifdef NDN_CPP_HAVE_BOOST_ASIO
   // ThreadsafeFace accesses lastEntryId_ outside of a thread safe dispatch, so
   // use atomic_uint64_t to be thread safe.

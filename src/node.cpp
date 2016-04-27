@@ -38,7 +38,8 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 : transport_(transport), connectionInfo_(connectionInfo),
   timeoutPrefix_(Name("/local/timeout")),
   lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED),
-  registeredPrefixTable_(interestFilterTable_)
+  registeredPrefixTable_(interestFilterTable_),
+  nonceTemplate_((const uint8_t*)"\0\0\0\0", 4)
 {
 }
 
@@ -48,6 +49,10 @@ Node::expressInterest
    const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
    const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
 {
+  // Set the nonce in our copy of the Interest so it is saved in the PIT.
+  const_cast<Interest*>(interestCopy.get())->setNonce(nonceTemplate_);
+  const_cast<Interest*>(interestCopy.get())->refreshNonce();
+
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
     expressInterestHelper
