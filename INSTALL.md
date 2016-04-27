@@ -87,7 +87,7 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     sudo apt-get install libboost1.48-all-dev
 
-## Ubuntu 14.04 (64 bit and 32 bit), Ubuntu 15.04 (64 bit)
+## Ubuntu 14.04 (64 bit and 32 bit), 15.04 (64 bit) and 16.04 (64 bit and 32 bit)
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev

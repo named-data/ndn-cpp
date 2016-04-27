@@ -174,6 +174,30 @@ Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& in
     return;
   }
 
+  // Success, so we can add to the registered prefix table.
+  if (info_->registeredPrefixId_ != 0) {
+    uint64_t interestFilterId = 0;
+    if (info_->onInterest_) {
+      // registerPrefix was called with the "combined" form that includes the
+      // callback, so add an InterestFilterEntry.
+      interestFilterId = parent_.getNextEntryId();
+      parent_.setInterestFilter
+        (interestFilterId,
+         ptr_lib::make_shared<const InterestFilter>(*info_->prefix_),
+         info_->onInterest_, info_->face_);
+    }
+
+    if (!parent_.registeredPrefixTable_.add
+        (info_->registeredPrefixId_, info_->prefix_, interestFilterId)) {
+      // removeRegisteredPrefix was already called with the registeredPrefixId.
+      if (interestFilterId > 0)
+        // Remove the related interest filter we just added.
+        parent_.unsetInterestFilter(interestFilterId);
+
+      return;
+    }
+  }
+
   _LOG_DEBUG("Register prefix succeeded with the NFD forwarder for prefix " <<
              info_->prefix_->toUri());
   if (info_->onRegisterSuccess_) {
@@ -238,24 +262,12 @@ Node::nfdRegisterPrefix
     (*commandInterest, commandKeyChain, commandCertificateName,
      *TlvWireFormat::get());
 
-  if (registeredPrefixId != 0) {
-    uint64_t interestFilterId = 0;
-    if (onInterest) {
-      // registerPrefix was called with the "combined" form that includes the
-      // callback, so add an InterestFilterEntry.
-      interestFilterId = getNextEntryId();
-      setInterestFilter
-        (interestFilterId, ptr_lib::make_shared<const InterestFilter>(*prefix),
-         onInterest, face);
-    }
-
-    registeredPrefixTable_.add(registeredPrefixId, prefix, interestFilterId);
-  }
-
   // Send the registration interest.
   RegisterResponse response
     (ptr_lib::shared_ptr<RegisterResponse::Info>(new RegisterResponse::Info
-     (prefix, onRegisterFailed, onRegisterSuccess, registeredPrefixId)));
+     (prefix, onRegisterFailed, onRegisterSuccess, registeredPrefixId,
+      onInterest, face)),
+     *this);
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest
@@ -341,6 +353,10 @@ Node::expressInterestHelper
 {
   ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest =
     pendingInterestTable_.add(pendingInterestId, interestCopy, onData, onTimeout);
+  if (!pendingInterest)
+    // removePendingInterest was already called with the pendingInterestId.
+    return;
+
   if (onTimeout || interestCopy->getInterestLifetimeMilliseconds() >= 0.0) {
     // Set up the timeout.
     double delayMilliseconds = interestCopy->getInterestLifetimeMilliseconds();

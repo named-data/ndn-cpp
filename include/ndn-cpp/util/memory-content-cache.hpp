@@ -128,7 +128,7 @@ public:
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
    * Your callback can find the Data packet for the interest and call
-   * transport.send.  If your callback cannot find the Data packet, it can
+   * face.putData(data).  If your callback cannot find the Data packet, it can
    * optionally call storePendingInterest(interest, face) to store the pending
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
@@ -171,7 +171,7 @@ public:
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
    * Your callback can find the Data packet for the interest and call
-   * transport.send.  If your callback cannot find the Data packet, it can
+   * face.putData(data).  If your callback cannot find the Data packet, it can
    * optionally call storePendingInterest(interest, face) to store the pending
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
@@ -201,14 +201,14 @@ public:
 
   /**
    * Call setInterestFilter on the Face given to the constructor so that this
-   * MemoryContentCache will answer interests whose name has the prefix.
+   * MemoryContentCache will answer interests whose name matches the filter.
    * @param filter The InterestFilter with a prefix and optional regex filter
    * used to match the name of an incoming Interest. This makes a copy of filter.
    * @param onDataNotFound (optional) If a data packet for an interest is not
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
    * Your callback can find the Data packet for the interest and call
-   * transport.send.  Note: I you call setInterestFilter multiple times where
+   * face.putData(data).  Note: If you call setInterestFilter multiple times where
    * filter.getPrefix() is the same, it is undetermined which onDataNotFound
    * will be called. If your callback cannot find the Data packet, it can
    * optionally call storePendingInterest(interest, face) to store the pending
@@ -229,7 +229,7 @@ public:
     onDataNotFoundForPrefix_[filter.getPrefix().toUri()] = onDataNotFound;
     uint64_t interestFilterId = face_->setInterestFilter
       (filter, func_lib::ref(*this));
-    // Remember the registeredPrefixId so unregisterAll can remove it.
+    // Remember the interestFilterId so unregisterAll can remove it.
     interestFilterIdList_.push_back(interestFilterId);
   }
 
@@ -242,7 +242,7 @@ public:
    * found in the cache, this forwards the interest by calling
    * onDataNotFound(prefix, interest, face, interestFilterId, filter).
    * Your callback can find the Data packet for the interest and call
-   * transport.send.  If your callback cannot find the Data packet, it can
+   * face.putData(data).  If your callback cannot find the Data packet, it can
    * optionally call storePendingInterest(interest, face) to store the pending
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
@@ -261,7 +261,7 @@ public:
     onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
     uint64_t interestFilterId = face_->setInterestFilter
       (prefix, func_lib::ref(*this));
-    // Remember the registeredPrefixId so unregisterAll can remove it.
+    // Remember the interestFilterId so unregisterAll can remove it.
     interestFilterIdList_.push_back(interestFilterId);
   }
 
