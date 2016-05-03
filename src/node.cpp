@@ -24,6 +24,7 @@
 #include <ndn-cpp/control-response.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include <ndn-cpp/lite/lp/lp-packet-lite.hpp>
+#include <ndn-cpp/network-nack.hpp>
 #include "c/util/time.h"
 #include "encoding/tlv-decoder.hpp"
 #include "util/logging.hpp"
@@ -50,7 +51,8 @@ void
 Node::expressInterest
   (uint64_t pendingInterestId,
    const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
-   const OnTimeout& onTimeout, WireFormat& wireFormat, Face* face)
+   const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
+   WireFormat& wireFormat, Face* face)
 {
   // Set the nonce in our copy of the Interest so it is saved in the PIT.
   const_cast<Interest*>(interestCopy.get())->setNonce(nonceTemplate_);
@@ -59,7 +61,8 @@ Node::expressInterest
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
     expressInterestHelper
-      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+      (pendingInterestId, interestCopy, onData, onTimeout, onNetworkNack,
+       &wireFormat, face);
     return;
   }
 
@@ -68,7 +71,8 @@ Node::expressInterest
     // The simple case: Just do a blocking connect and express.
     transport_->connect(*connectionInfo_, *this, Transport::OnConnected());
     expressInterestHelper
-      (pendingInterestId, interestCopy, onData, onTimeout, &wireFormat, face);
+      (pendingInterestId, interestCopy, onData, onTimeout, onNetworkNack,
+       &wireFormat, face);
     // Make future calls to expressInterest send directly to the Transport.
     connectStatus_ = ConnectStatus_CONNECT_COMPLETE;
 
@@ -82,7 +86,7 @@ Node::expressInterest
     // expressInterestHelper will be called by onConnected.
     onConnectedCallbacks_.push_back(bind
       (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
-       onData, onTimeout, &wireFormat, face));
+       onData, onTimeout, onNetworkNack, &wireFormat, face));
 
     transport_->connect
       (*connectionInfo_, *this, bind(&Node::onConnected, this));
@@ -91,7 +95,7 @@ Node::expressInterest
     // Still connecting. add to the interests to express by onConnected.
     onConnectedCallbacks_.push_back(bind
       (&Node::expressInterestHelper, this, pendingInterestId, interestCopy,
-       onData, onTimeout, &wireFormat, face));
+       onData, onTimeout, onNetworkNack, &wireFormat, face));
   }
   else
     // Don't expect this to happen.
@@ -279,7 +283,8 @@ Node::nfdRegisterPrefix
   // It is OK for func_lib::function make a copy of the function object because
   //   the Info is in a ptr_lib::shared_ptr.
   expressInterest
-    (getNextEntryId(), commandInterest, response, response, wireFormat, face);
+    (getNextEntryId(), commandInterest, response, response, OnNetworkNack(),
+     wireFormat, face);
 }
 
 void
@@ -339,6 +344,32 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
     }
   }
 
+  if (lpPacket) {
+    ptr_lib::shared_ptr<NetworkNack> networkNack =
+      NetworkNack::getFirstHeader(*lpPacket);
+    if (networkNack) {
+      if (!interest)
+        // We got a Nack but not for an Interest, so drop the packet.
+        return;
+
+      vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
+      pendingInterestTable_.extractEntriesForNackInterest(*interest, pitEntries);
+      for (size_t i = 0; i < pitEntries.size(); ++i) {
+        try {
+          pitEntries[i]->getOnNetworkNack()
+            (pitEntries[i]->getInterest(), networkNack);
+        } catch (const std::exception& ex) {
+          _LOG_ERROR("Node::onReceivedElement: Error in onNetworkNack: " << ex.what());
+        } catch (...) {
+          _LOG_ERROR("Node::onReceivedElement: Error in onNetworkNack.");
+        }
+      }
+
+      // We have process the network Nack packet.
+      return;
+    }
+  }
+
   // Now process as Interest or Data.
   if (interest) {
     // Call all interest filter callbacks which match.
@@ -384,11 +415,12 @@ void
 Node::expressInterestHelper
   (uint64_t pendingInterestId,
    const ptr_lib::shared_ptr<const Interest>& interestCopy,
-   const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
-   Face* face)
+   const OnData& onData, const OnTimeout& onTimeout, 
+   const OnNetworkNack& onNetworkNack, WireFormat* wireFormat, Face* face)
 {
   ptr_lib::shared_ptr<PendingInterestTable::Entry> pendingInterest =
-    pendingInterestTable_.add(pendingInterestId, interestCopy, onData, onTimeout);
+    pendingInterestTable_.add
+      (pendingInterestId, interestCopy, onData, onTimeout, onNetworkNack);
   if (!pendingInterest)
     // removePendingInterest was already called with the pendingInterestId.
     return;
