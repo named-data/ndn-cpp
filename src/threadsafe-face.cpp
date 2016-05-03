@@ -80,7 +80,7 @@ ThreadsafeFace::ThreadsafeFace(boost::asio::io_service& ioService)
 uint64_t
 ThreadsafeFace::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
-   WireFormat& wireFormat)
+   const OnNetworkNack& onNetworkNack, WireFormat& wireFormat)
 {
   // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t pendingInterestId = node_->getNextEntryId();
@@ -90,7 +90,7 @@ ThreadsafeFace::expressInterest
     (boost::bind
      (&Node::expressInterest, node_, pendingInterestId,
       ptr_lib::make_shared<const Interest>(interest), onData, onTimeout,
-      boost::ref(wireFormat), this));
+      onNetworkNack, boost::ref(wireFormat), this));
 
   return pendingInterestId;
 }
@@ -98,7 +98,8 @@ ThreadsafeFace::expressInterest
 uint64_t
 ThreadsafeFace::expressInterest
   (const Name& name, const Interest *interestTemplate, const OnData& onData,
-   const OnTimeout& onTimeout, WireFormat& wireFormat)
+   const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
+   WireFormat& wireFormat)
 {
   // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t pendingInterestId = node_->getNextEntryId();
@@ -107,7 +108,7 @@ ThreadsafeFace::expressInterest
   ioService_.dispatch
     (boost::bind
      (&Node::expressInterest, node_, pendingInterestId,
-      getInterestCopy(name, interestTemplate), onData, onTimeout,
+      getInterestCopy(name, interestTemplate), onData, onTimeout, onNetworkNack,
       boost::ref(wireFormat), this));
 
   return pendingInterestId;
