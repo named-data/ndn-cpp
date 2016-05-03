@@ -447,12 +447,12 @@ public:
    * specified, set to -1.
    * @return This Interest so that you can chain calls to update values.
    */
-  Interest*
+  Interest&
   setSelectedDelegationIndex(int selectedDelegationIndex)
   {
     selectedDelegationIndex_ = selectedDelegationIndex;
     ++changeCount_;
-    return this;
+    return *this;
   }
 
   /**
