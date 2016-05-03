@@ -179,7 +179,7 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
-	src/c/encoding/element-reader.lo \
+	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-control-response.lo \
@@ -190,9 +190,11 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-encrypted-content.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-key-locator.lo \
+	src/c/encoding/tlv/tlv-lp-packet.lo \
 	src/c/encoding/tlv/tlv-name.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
+	src/c/lp/incoming-face-id_c.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
@@ -206,7 +208,7 @@ libndn_cpp_la_LIBADD =
 am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
-	src/c/encoding/element-reader.lo \
+	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
 	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-control-response.lo \
@@ -217,9 +219,11 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-encrypted-content.lo \
 	src/c/encoding/tlv/tlv-interest.lo \
 	src/c/encoding/tlv/tlv-key-locator.lo \
+	src/c/encoding/tlv/tlv-lp-packet.lo \
 	src/c/encoding/tlv/tlv-name.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
+	src/c/lp/incoming-face-id_c.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
@@ -230,8 +234,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/digest-sha256-signature.lo src/exclude.lo src/face.lo \
 	src/generic-signature.lo src/hmac-with-sha256-signature.lo \
 	src/interest-filter.lo src/interest.lo src/key-locator.lo \
-	src/link.lo src/meta-info.lo src/name.lo src/node.lo \
-	src/signature.lo src/sha256-with-ecdsa-signature.lo \
+	src/link.lo src/meta-info.lo src/name.lo src/network-nack.lo \
+	src/node.lo src/signature.lo \
+	src/sha256-with-ecdsa-signature.lo \
 	src/sha256-with-rsa-signature.lo src/threadsafe-face.lo \
 	src/encoding/base64.lo src/encoding/element-listener.lo \
 	src/encoding/oid.lo src/encoding/protobuf-tlv.lo \
@@ -249,16 +254,20 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/delegation-set-lite.lo src/lite/exclude-lite.lo \
 	src/lite/forwarding-flags-lite.lo src/lite/interest-lite.lo \
 	src/lite/key-locator-lite.lo src/lite/meta-info-lite.lo \
-	src/lite/name-lite.lo src/lite/signature-lite.lo \
+	src/lite/name-lite.lo src/lite/network-nack-lite.lo \
+	src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
 	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
 	src/lite/encrypt/encrypted-content-lite.lo \
 	src/lite/encrypt/algo/encrypt-params-lite.lo \
+	src/lite/lp/incoming-face-id-lite.lo \
+	src/lite/lp/lp-packet-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
 	src/lite/util/blob-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
+	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
@@ -1018,9 +1027,12 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/interest-types.h \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
+  include/ndn-cpp/c/network-nack-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/encrypt/encrypted-content-types.h \
   include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
+  include/ndn-cpp/c/lp/incoming-face-id-types.h \
+  include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -1047,9 +1059,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/link.hpp \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
-  include/ndn-cpp/signature.hpp \
+  include/ndn-cpp/network-nack.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
+  include/ndn-cpp/signature.hpp \
   include/ndn-cpp/threadsafe-face.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
@@ -1069,11 +1082,14 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/key-locator-lite.hpp \
   include/ndn-cpp/lite/meta-info-lite.hpp \
   include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/network-nack-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
+  include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
+  include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -1126,6 +1142,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/interest_c.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name_c.c src/c/name.h \
+  src/c/network-nack_c.c src/c/network-nack.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
@@ -1138,12 +1155,15 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-encrypted-content.c src/c/encoding/tlv/tlv-encrypted-content.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
+  src/c/encoding/tlv/tlv-lp-packet.c src/c/encoding/tlv/tlv-lp-packet.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/encrypt-params.h \
+  src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
+  src/c/lp/lp-packet.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -1174,6 +1194,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/link.cpp \
   src/meta-info.cpp \
   src/name.cpp \
+  src/network-nack.cpp \
   src/node.cpp src/node.hpp \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
@@ -1206,16 +1227,21 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \
   src/lite/name-lite.cpp \
+  src/lite/network-nack-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
+  src/lite/lp/incoming-face-id-lite.cpp \
+  src/lite/lp/lp-packet-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
+  src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -1433,6 +1459,8 @@ src/c/forwarding-flags.lo: src/c/$(am__dirstamp) \
 src/c/interest_c.lo: src/c/$(am__dirstamp) \
 	src/c/$(DEPDIR)/$(am__dirstamp)
 src/c/name_c.lo: src/c/$(am__dirstamp) src/c/$(DEPDIR)/$(am__dirstamp)
+src/c/network-nack_c.lo: src/c/$(am__dirstamp) \
+	src/c/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/$(am__dirstamp):
 	@$(MKDIR_P) src/c/encoding
 	@: > src/c/encoding/$(am__dirstamp)
@@ -1474,6 +1502,9 @@ src/c/encoding/tlv/tlv-interest.lo:  \
 src/c/encoding/tlv/tlv-key-locator.lo:  \
 	src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
+src/c/encoding/tlv/tlv-lp-packet.lo:  \
+	src/c/encoding/tlv/$(am__dirstamp) \
+	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/tlv-name.lo: src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/tlv-signature-info.lo:  \
@@ -1482,6 +1513,14 @@ src/c/encoding/tlv/tlv-signature-info.lo:  \
 src/c/encoding/tlv/tlv-structure-decoder.lo:  \
 	src/c/encoding/tlv/$(am__dirstamp) \
 	src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
+src/c/lp/$(am__dirstamp):
+	@$(MKDIR_P) src/c/lp
+	@: > src/c/lp/$(am__dirstamp)
+src/c/lp/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/c/lp/$(DEPDIR)
+	@: > src/c/lp/$(DEPDIR)/$(am__dirstamp)
+src/c/lp/incoming-face-id_c.lo: src/c/lp/$(am__dirstamp) \
+	src/c/lp/$(DEPDIR)/$(am__dirstamp)
 src/c/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/c/transport
 	@: > src/c/transport/$(am__dirstamp)
@@ -1540,6 +1579,7 @@ src/key-locator.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/link.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/meta-info.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/name.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/network-nack.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/node.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/signature.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/sha256-with-ecdsa-signature.lo: src/$(am__dirstamp) \
@@ -1628,6 +1668,8 @@ src/lite/meta-info-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/name-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
+src/lite/network-nack-lite.lo: src/lite/$(am__dirstamp) \
+	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/signature-lite.lo: src/lite/$(am__dirstamp) \
 	src/lite/$(DEPDIR)/$(am__dirstamp)
 src/lite/encoding/$(am__dirstamp):
@@ -1660,6 +1702,16 @@ src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
 src/lite/encrypt/algo/encrypt-params-lite.lo:  \
 	src/lite/encrypt/algo/$(am__dirstamp) \
 	src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/lite/lp/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/lp
+	@: > src/lite/lp/$(am__dirstamp)
+src/lite/lp/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lite/lp/$(DEPDIR)
+	@: > src/lite/lp/$(DEPDIR)/$(am__dirstamp)
+src/lite/lp/incoming-face-id-lite.lo: src/lite/lp/$(am__dirstamp) \
+	src/lite/lp/$(DEPDIR)/$(am__dirstamp)
+src/lite/lp/lp-packet-lite.lo: src/lite/lp/$(am__dirstamp) \
+	src/lite/lp/$(DEPDIR)/$(am__dirstamp)
 src/lite/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/transport
 	@: > src/lite/transport/$(am__dirstamp)
@@ -1686,6 +1738,16 @@ src/lite/util/blob-lite.lo: src/lite/util/$(am__dirstamp) \
 src/lite/util/dynamic-uint8-array-lite.lo:  \
 	src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lp/$(am__dirstamp):
+	@$(MKDIR_P) src/lp
+	@: > src/lp/$(am__dirstamp)
+src/lp/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/lp/$(DEPDIR)
+	@: > src/lp/$(DEPDIR)/$(am__dirstamp)
+src/lp/incoming-face-id.lo: src/lp/$(am__dirstamp) \
+	src/lp/$(DEPDIR)/$(am__dirstamp)
+src/lp/lp-packet.lo: src/lp/$(am__dirstamp) \
+	src/lp/$(DEPDIR)/$(am__dirstamp)
 src/security/$(am__dirstamp):
 	@$(MKDIR_P) src/security
 	@: > src/security/$(am__dirstamp)
@@ -2144,6 +2206,8 @@ mostlyclean-compile:
 	-rm -f src/c/encoding/*.lo
 	-rm -f src/c/encoding/tlv/*.$(OBJEXT)
 	-rm -f src/c/encoding/tlv/*.lo
+	-rm -f src/c/lp/*.$(OBJEXT)
+	-rm -f src/c/lp/*.lo
 	-rm -f src/c/transport/*.$(OBJEXT)
 	-rm -f src/c/transport/*.lo
 	-rm -f src/c/util/*.$(OBJEXT)
@@ -2164,10 +2228,14 @@ mostlyclean-compile:
 	-rm -f src/lite/encrypt/*.lo
 	-rm -f src/lite/encrypt/algo/*.$(OBJEXT)
 	-rm -f src/lite/encrypt/algo/*.lo
+	-rm -f src/lite/lp/*.$(OBJEXT)
+	-rm -f src/lite/lp/*.lo
 	-rm -f src/lite/transport/*.$(OBJEXT)
 	-rm -f src/lite/transport/*.lo
 	-rm -f src/lite/util/*.$(OBJEXT)
 	-rm -f src/lite/util/*.lo
+	-rm -f src/lp/*.$(OBJEXT)
+	-rm -f src/lp/*.lo
 	-rm -f src/security/*.$(OBJEXT)
 	-rm -f src/security/*.lo
 	-rm -f src/security/certificate/*.$(OBJEXT)
@@ -2243,6 +2311,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/link.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/meta-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/name.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/network-nack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-ecdsa-signature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha256-with-rsa-signature.Plo@am__quote@
@@ -2253,6 +2322,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/forwarding-flags.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/interest_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/name_c.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/network-nack_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/element-reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/tlv-0_1_1-wire-format_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-control-parameters.Plo@am__quote@
@@ -2264,9 +2334,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-encrypted-content.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-key-locator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-name.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/socket-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/tcp-transport_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/crypto.Plo@am__quote@
@@ -2299,16 +2371,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/key-locator-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/meta-info-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/name-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/network-nack-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/lp-packet-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
@@ -2806,6 +2883,7 @@ clean-libtool:
 	-rm -rf src/c/.libs src/c/_libs
 	-rm -rf src/c/encoding/.libs src/c/encoding/_libs
 	-rm -rf src/c/encoding/tlv/.libs src/c/encoding/tlv/_libs
+	-rm -rf src/c/lp/.libs src/c/lp/_libs
 	-rm -rf src/c/transport/.libs src/c/transport/_libs
 	-rm -rf src/c/util/.libs src/c/util/_libs
 	-rm -rf src/encoding/.libs src/encoding/_libs
@@ -2816,8 +2894,10 @@ clean-libtool:
 	-rm -rf src/lite/encoding/.libs src/lite/encoding/_libs
 	-rm -rf src/lite/encrypt/.libs src/lite/encrypt/_libs
 	-rm -rf src/lite/encrypt/algo/.libs src/lite/encrypt/algo/_libs
+	-rm -rf src/lite/lp/.libs src/lite/lp/_libs
 	-rm -rf src/lite/transport/.libs src/lite/transport/_libs
 	-rm -rf src/lite/util/.libs src/lite/util/_libs
+	-rm -rf src/lp/.libs src/lp/_libs
 	-rm -rf src/security/.libs src/security/_libs
 	-rm -rf src/security/certificate/.libs src/security/certificate/_libs
 	-rm -rf src/security/identity/.libs src/security/identity/_libs
@@ -3429,6 +3509,8 @@ distclean-generic:
 	-rm -f src/c/encoding/$(am__dirstamp)
 	-rm -f src/c/encoding/tlv/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/c/encoding/tlv/$(am__dirstamp)
+	-rm -f src/c/lp/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/c/lp/$(am__dirstamp)
 	-rm -f src/c/transport/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/c/transport/$(am__dirstamp)
 	-rm -f src/c/util/$(DEPDIR)/$(am__dirstamp)
@@ -3449,10 +3531,14 @@ distclean-generic:
 	-rm -f src/lite/encrypt/$(am__dirstamp)
 	-rm -f src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/encrypt/algo/$(am__dirstamp)
+	-rm -f src/lite/lp/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lite/lp/$(am__dirstamp)
 	-rm -f src/lite/transport/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/transport/$(am__dirstamp)
 	-rm -f src/lite/util/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/util/$(am__dirstamp)
+	-rm -f src/lp/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/lp/$(am__dirstamp)
 	-rm -f src/security/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/$(am__dirstamp)
 	-rm -f src/security/certificate/$(DEPDIR)/$(am__dirstamp)
@@ -3480,7 +3566,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -3528,7 +3614,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
