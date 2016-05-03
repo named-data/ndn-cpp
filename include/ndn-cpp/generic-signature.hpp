@@ -64,7 +64,7 @@ public:
 
   /**
    * Clear this signature, and set the values by copying from signatureLite.
-   * @param signatureStruct A SignatureLite object.
+   * @param signatureLite A SignatureLite object.
    */
   virtual void
   set(const SignatureLite& signatureLite);
