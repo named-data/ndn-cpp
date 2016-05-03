@@ -27,6 +27,7 @@
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/generic-signature.hpp>
 #include "c/data.h"
+#include "lp/incoming-face-id.hpp"
 #include <ndn-cpp/data.hpp>
 
 using namespace std;
@@ -72,6 +73,16 @@ Data& Data::operator=(const Data& data)
     (data.defaultWireEncoding_, data.defaultWireEncodingFormat_);
 
   return *this;
+}
+
+uint64_t
+Data::getIncomingFaceId() const
+{
+  ptr_lib::shared_ptr<IncomingFaceId> field;
+  if (lpPacket_)
+    field = IncomingFaceId::getFirstHeader(*lpPacket_);
+
+  return field ? field->getFaceId() : (uint64_t)-1;
 }
 
 void

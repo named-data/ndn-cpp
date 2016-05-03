@@ -32,6 +32,8 @@
 
 namespace ndn {
 
+class LpPacket;
+
 class Data {
 public:
   /**
@@ -148,6 +150,13 @@ public:
   getContent() const { return content_; }
 
   /**
+   * Get the incoming face ID according to the incoming packet header.
+   * @return The incoming face ID. If not specified, return (uint64_t)-1.
+   */
+  uint64_t
+  getIncomingFaceId() const;
+
+  /**
    * Return a reference to the defaultWireEncoding, which was encoded with
    * getDefaultWireEncodingFormat().  The SignedBlob may have a null pointer.
    */
@@ -233,6 +242,21 @@ public:
   }
 
   /**
+   * An internal library method to set the LpPacket for an incoming packet. The
+   * application should not call this.
+   * @param lpPacket The LpPacket. This does not make a copy.
+   * @return This Data so that you can chain calls to update values.
+   * @note This is an experimental feature. This API may change in the future.
+   */
+  Data&
+  setLpPacket(const ptr_lib::shared_ptr<LpPacket>& lpPacket)
+  {
+    lpPacket_ = lpPacket;
+    // Don't update changeCount_ since this doesn't affect the wire encoding.
+    return *this;
+  }
+
+  /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.
    * @return The change count.
    */
@@ -271,6 +295,7 @@ private:
   SignedBlob defaultWireEncoding_;
   WireFormat *defaultWireEncodingFormat_;
   uint64_t getDefaultWireEncodingChangeCount_;
+  ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;
 };
 
