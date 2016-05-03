@@ -24,6 +24,7 @@
 #include "tlv/tlv-control-parameters.h"
 #include "tlv/tlv-control-response.h"
 #include "tlv/tlv-signature-info.h"
+#include "tlv/tlv-lp-packet.h"
 #include "tlv/tlv-delegation-set.h"
 #include "tlv/tlv-encrypted-content.h"
 #include "tlv-0_1_1-wire-format.h"
@@ -202,6 +203,15 @@ ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
   ndn_TlvDecoder_initialize(&decoder, signatureValue, signatureValueLength);
   return ndn_TlvDecoder_readBlobTlv
     (&decoder, ndn_Tlv_SignatureValue, &signature->signature);
+}
+
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeLpPacket
+  (struct ndn_LpPacket *lpPacket, const uint8_t *input, size_t inputLength)
+{
+  struct ndn_TlvDecoder decoder;
+  ndn_TlvDecoder_initialize(&decoder, input, inputLength);
+  return ndn_decodeTlvLpPacket(lpPacket, &decoder);
 }
 
 ndn_Error
