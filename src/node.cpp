@@ -22,9 +22,12 @@
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/control-response.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
+#include <ndn-cpp/lite/lp/lp-packet-lite.hpp>
 #include "c/util/time.h"
 #include "encoding/tlv-decoder.hpp"
 #include "util/logging.hpp"
+#include "lp/lp-packet.hpp"
 #include "node.hpp"
 
 INIT_LOGGER("ndn.Node");
@@ -292,6 +295,28 @@ Node::processEvents()
 void
 Node::onReceivedElement(const uint8_t *element, size_t elementLength)
 {
+  ptr_lib::shared_ptr<LpPacket> lpPacket;
+  if (element[0] == ndn_Tlv_LpPacket_LpPacket) {
+    // Decode the LpPacket and replace element with the fragment.
+    // Use LpPacketLite to avoid copying the fragment.
+    struct ndn_LpPacketHeaderField headerFields[5];
+    LpPacketLite lpPacketLite
+      (headerFields, sizeof(headerFields) / sizeof(headerFields[0]));
+
+    ndn_Error error;
+    if ((error = Tlv0_1_1WireFormatLite::decodeLpPacket
+         (lpPacketLite, element, elementLength)))
+      throw runtime_error(ndn_getErrorString(error));
+    element = lpPacketLite.getFragmentWireEncoding().buf();
+    elementLength = lpPacketLite.getFragmentWireEncoding().size();
+
+    // We have saved the wire encoding, so clear to copy it to lpPacket.
+    lpPacketLite.setFragmentWireEncoding(BlobLite());
+
+    lpPacket.reset(new LpPacket());
+    lpPacket->set(lpPacketLite);
+  }
+
   // First, decode as Interest or Data.
   ptr_lib::shared_ptr<Interest> interest;
   ptr_lib::shared_ptr<Data> data;
@@ -301,10 +326,16 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
     if (decoder.peekType(ndn_Tlv_Interest, elementLength)) {
       interest.reset(new Interest());
       interest->wireDecode(element, elementLength, *TlvWireFormat::get());
+
+      if (lpPacket)
+        interest->setLpPacket(lpPacket);
     }
     else if (decoder.peekType(ndn_Tlv_Data, elementLength)) {
       data.reset(new Data());
       data->wireDecode(element, elementLength, *TlvWireFormat::get());
+
+      if (lpPacket)
+        data->setLpPacket(lpPacket);
     }
   }
 
