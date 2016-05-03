@@ -45,9 +45,9 @@ public:
     Entry
       (uint64_t pendingInterestId,
        const ptr_lib::shared_ptr<const Interest>& interest, const OnData& onData,
-       const OnTimeout& onTimeout)
+       const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack)
     : pendingInterestId_(pendingInterestId), interest_(interest), onData_(onData),
-      onTimeout_(onTimeout), isRemoved_(false)
+      onTimeout_(onTimeout), onNetworkNack_(onNetworkNack), isRemoved_(false)
     {
     }
 
@@ -74,6 +74,13 @@ public:
     getOnData() { return onData_; }
 
     /**
+     * Get the OnNetworkNack callback given to the constructor.
+     * @return The OnNetworkNack callback.
+     */
+    const OnNetworkNack&
+    getOnNetworkNack() { return onNetworkNack_; }
+
+    /**
      * Set the isRemoved flag which is returned by getIsRemoved().
      */
     void
@@ -98,6 +105,7 @@ public:
     uint64_t pendingInterestId_;  /**< A unique identifier for this entry so it can be deleted */
     const OnData onData_;
     const OnTimeout onTimeout_;
+    const OnNetworkNack onNetworkNack_;
     bool isRemoved_;
   };
 
@@ -110,15 +118,18 @@ public:
    * @param interestCopy The Interest which was sent, which has already been
    * copied by expressInterest.
    * @param onData This calls onData when a matching data packet is received.
-   * @param onTimeout This calls onTimeout if the interest times out. If
-   * onTimeout is an empty OnTimeout(), this does not use it.
+   * @param onTimeout Call onTimeout if the interest times out. If onTimeout is
+   * an empty OnTimeout(), this does not use it.
+   * @param onNetworkNack Call onNetworkNack.onNetworkNack when a network Nack
+   * packet is received.
    * @return The new PendingInterestTable::Entry, or null if
    * removePendingInterest was already called with the pendingInterestId.
    */
   ptr_lib::shared_ptr<Entry>
   add(uint64_t pendingInterestId,
       const ptr_lib::shared_ptr<const Interest>& interestCopy,
-      const OnData& onData, const OnTimeout& onTimeout);
+      const OnData& onData, const OnTimeout& onTimeout,
+      const OnNetworkNack& onNetworkNack);
 
   /**
    * Find all entries from the pending interest table where the name conforms to
@@ -131,6 +142,23 @@ public:
   void
   extractEntriesForExpressedInterest
     (const Name& name, std::vector<ptr_lib::shared_ptr<Entry> > &entries);
+
+  /**
+   * Find all entries from the pending interest table where the OnNetworkNack
+   * callback is not an empty OnNetworkNack() and the entry's interest is the
+   * same as the given interest, remove the entries from the table, set each
+   * entry's isRemoved flag, and add to the entries list. (We don't remove the
+   * entry if the OnNetworkNack callback is an empty OnNetworkNack() so that
+   * OnTimeout will be called later.) The interests are the same if their
+   * default wire encoding is the same (which has everything including the name,
+   * nonce, link object and selectors).
+   * @param interest The Interest to search for (typically from a Nack packet).
+   * @param entries Add matching PendingInterestTable::Entry from the pending
+   * interest table.  The caller should pass in a reference to an empty vector.
+   */
+  void
+  extractEntriesForNackInterest
+    (const Interest& interest, std::vector<ptr_lib::shared_ptr<Entry> > &entries);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the
