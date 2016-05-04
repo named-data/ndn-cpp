@@ -98,21 +98,23 @@ Face::~Face()
 
 uint64_t
 Face::expressInterest
-  (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat)
+  (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
+   const OnNetworkNack& onNetworkNack, WireFormat& wireFormat)
 {
   uint64_t pendingInterestId = node_->getNextEntryId();
 
   // This copies the interest as required by Node.expressInterest.
   node_->expressInterest
     (pendingInterestId, ptr_lib::make_shared<const Interest>(interest), onData,
-     onTimeout, wireFormat, this);
+     onTimeout, onNetworkNack, wireFormat, this);
 
   return pendingInterestId;
 }
 
 uint64_t
 Face::expressInterest
-  (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout,
+  (const Name& name, const Interest *interestTemplate, const OnData& onData, 
+   const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
    WireFormat& wireFormat)
 {
   uint64_t pendingInterestId = node_->getNextEntryId();
@@ -120,7 +122,7 @@ Face::expressInterest
   // This copies the name object as required by Node.expressInterest.
   node_->expressInterest
     (pendingInterestId, getInterestCopy(name, interestTemplate), onData,
-     onTimeout, wireFormat, this);
+     onTimeout, onNetworkNack, wireFormat, this);
 
   return pendingInterestId;
 }

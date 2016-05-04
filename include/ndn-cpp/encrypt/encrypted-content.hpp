@@ -203,7 +203,7 @@ public:
   /**
    * Clear this EncryptedContent, and set the values by copying from
    * encryptedContentLite.
-   * @param encryptedContentStruct A EncryptedContentLite object.
+   * @param encryptedContentLite An EncryptedContentLite object.
    */
   void
   set(const EncryptedContentLite& encryptedContentLite);

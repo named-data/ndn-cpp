@@ -87,11 +87,19 @@ enum {
 };
 
 enum {
-  ndn_Tlv_LocalControlHeader_LocalControlHeader = 80,
-  ndn_Tlv_LocalControlHeader_IncomingFaceId = 81,
-  ndn_Tlv_LocalControlHeader_NextHopFaceId = 82,
-  ndn_Tlv_LocalControlHeader_CachingPolicy = 83,
-  ndn_Tlv_LocalControlHeader_NoCache = 96
+  ndn_Tlv_LpPacket_LpPacket =        100,
+  ndn_Tlv_LpPacket_Fragment =         80,
+  ndn_Tlv_LpPacket_Sequence =         81,
+  ndn_Tlv_LpPacket_FragIndex =        82,
+  ndn_Tlv_LpPacket_FragCount =        83,
+  ndn_Tlv_LpPacket_Nack =            800,
+  ndn_Tlv_LpPacket_NackReason =      801,
+  ndn_Tlv_LpPacket_NextHopFaceId =   816,
+  ndn_Tlv_LpPacket_IncomingFaceId =  817,
+  ndn_Tlv_LpPacket_CachePolicy =     820,
+  ndn_Tlv_LpPacket_CachePolicyType = 821,
+  ndn_Tlv_LpPacket_IGNORE_MIN =      800,
+  ndn_Tlv_LpPacket_IGNORE_MAX =      959
 };
 
 enum {

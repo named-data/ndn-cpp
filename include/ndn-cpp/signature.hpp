@@ -76,7 +76,7 @@ public:
   /**
    * Clear this signature, and set the values by copying from signatureLite.
    * This is pure virtual, the subclass must implement it.
-   * @param signatureStruct A SignatureLite object.
+   * @param signatureLite A SignatureLite object.
    */
   virtual void
   set(const SignatureLite& signatureLite) = 0;

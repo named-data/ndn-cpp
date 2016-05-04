@@ -56,16 +56,28 @@ public:
   Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo);
 
   /**
-   * Send the Interest through the transport, read the entire response and call onData(interest, data).
+   * Send the Interest through the transport, read the entire response and call
+   * onData, onTimeout or onNetworkNack as described below.
    * @param pendingInterestId The getNextEntryId() for the pending interest ID
    * which Face got so it could return it to the caller.
    * @param interestCopy The Interest which is NOT copied for this internal Node
    * method. The Face expressInterest is responsible for making a copy and
    * passing a shared_ptr for Node to use.
-   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
-   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onTimeout If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is an empty OnTimeout(), this does
+   * not use it. This copies the function object, so you may need to use
+   * func_lib::ref() as appropriate.
+   * @param onNetworkNack When a network Nack packet for the interest is
+   * received and onNetworkNack is not null, this calls
+   * onNetworkNack(interest, networkNack) and does not call onTimeout. However,
+   * if a network Nack is received and onNetworkNack is an empty OnNetworkNack(),
+   * do nothing and wait for the interest to time out. This copies the function
+   * object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
    * @param face The face which has the callLater method, used for interest
    * timeouts. The callLater method may be overridden in a subclass of Face.
@@ -76,8 +88,8 @@ public:
   expressInterest
     (uint64_t pendingInterestId,
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
-     const OnData& onData, const OnTimeout& onTimeout, WireFormat& wireFormat,
-     Face* face);
+     const OnData& onData, const OnTimeout& onTimeout, 
+     const OnNetworkNack& onNetworkNack, WireFormat& wireFormat, Face* face);
 
   /**
    * Remove the pending interest entry with the pendingInterestId from the pending interest table.
@@ -371,10 +383,21 @@ private:
    * which Face got so it could return it to the caller.
    * @param interestCopy The Interest to send, which has already been copied and put
    * in a shared_ptr.
-   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
-   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onTimeout If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is an empty OnTimeout(), this does
+   * not use it. This copies the function object, so you may need to use
+   * func_lib::ref() as appropriate.
+   * @param onNetworkNack When a network Nack packet for the interest is
+   * received and onNetworkNack is not null, this calls
+   * onNetworkNack(interest, networkNack) and does not call onTimeout. However,
+   * if a network Nack is received and onNetworkNack is an empty OnNetworkNack(),
+   * do nothing and wait for the interest to time out. This copies the function
+   * object, so you may need to use func_lib::ref() as appropriate.
    * @param wireFormat A WireFormat object used to encode the message.
    * @param face The face which has the callLater method, used for interest
    * timeouts. The callLater method may be overridden in a subclass of Face.
@@ -385,8 +408,8 @@ private:
   expressInterestHelper
     (uint64_t pendingInterestId,
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
-     const OnData& onData, const OnTimeout& onTimeout, WireFormat* wireFormat,
-     Face* face);
+     const OnData& onData, const OnTimeout& onTimeout, 
+     const OnNetworkNack& onNetworkNack, WireFormat* wireFormat, Face* face);
 
   /**
    * This is used in callLater for when the pending interest expires. If the

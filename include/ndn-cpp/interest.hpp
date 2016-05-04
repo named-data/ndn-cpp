@@ -33,6 +33,8 @@
 
 namespace ndn {
 
+class LpPacket;
+
 /**
  * An Interest holds a Name and other fields for an interest.
  */
@@ -277,6 +279,13 @@ public:
   getSelectedDelegationIndex() const { return selectedDelegationIndex_; }
 
   /**
+   * Get the incoming face ID according to the incoming packet header.
+   * @return The incoming face ID. If not specified, return (uint64_t)-1.
+   */
+  uint64_t
+  getIncomingFaceId() const;
+
+  /**
    * Set the interest name.
    * @note You can also call getName and change the name values directly.
    * @param name The interest name. This makes a copy of the name.
@@ -447,12 +456,27 @@ public:
    * specified, set to -1.
    * @return This Interest so that you can chain calls to update values.
    */
-  Interest*
+  Interest&
   setSelectedDelegationIndex(int selectedDelegationIndex)
   {
     selectedDelegationIndex_ = selectedDelegationIndex;
     ++changeCount_;
-    return this;
+    return *this;
+  }
+
+  /**
+   * An internal library method to set the LpPacket for an incoming packet. The
+   * application should not call this.
+   * @param lpPacket The LpPacket. This does not make a copy.
+   * @return This Interest so that you can chain calls to update values.
+   * @note This is an experimental feature. This API may change in the future.
+   */
+  Interest&
+  setLpPacket(const ptr_lib::shared_ptr<LpPacket>& lpPacket)
+  {
+    lpPacket_ = lpPacket;
+    // Don't update changeCount_ since this doesn't affect the wire encoding.
+    return *this;
   }
 
   /**
@@ -560,6 +584,7 @@ private:
   SignedBlob defaultWireEncoding_;
   WireFormat *defaultWireEncodingFormat_;
   uint64_t getDefaultWireEncodingChangeCount_;
+  ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;
 };
 

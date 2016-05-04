@@ -48,6 +48,8 @@ ndn_getErrorString(int error)
     return      "Attempt to add a component past the maximum number of components allowed in the name";
   case NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_exclude:
     return      "Cannot add an entry past the maximum number of entries allowed in the exclude";
+  case NDN_ERROR_cannot_add_an_entry_past_the_maximum_number_of_entries_allowed_in_the_LpPacket:
+    return      "Cannot add an entry past the maximum number of entries allowed in the LpPacket";
   case NDN_ERROR_findElementEnd_unexpected_close_tag:
     return      "FindElementEnd unexpected close tag";
   case NDN_ERROR_cannot_store_more_header_bytes_than_the_size_of_headerBuffer:

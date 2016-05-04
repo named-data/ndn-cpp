@@ -48,9 +48,12 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/interest-types.h \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
+  include/ndn-cpp/c/network-nack-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/encrypt/encrypted-content-types.h \
   include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
+  include/ndn-cpp/c/lp/incoming-face-id-types.h \
+  include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -76,9 +79,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/link.hpp \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
-  include/ndn-cpp/signature.hpp \
+  include/ndn-cpp/network-nack.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
+  include/ndn-cpp/signature.hpp \
   include/ndn-cpp/threadsafe-face.hpp \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
@@ -98,11 +102,14 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/key-locator-lite.hpp \
   include/ndn-cpp/lite/meta-info-lite.hpp \
   include/ndn-cpp/lite/name-lite.hpp \
+  include/ndn-cpp/lite/network-nack-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
+  include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
+  include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -154,6 +161,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/interest_c.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name_c.c src/c/name.h \
+  src/c/network-nack_c.c src/c/network-nack.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
@@ -166,12 +174,15 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-encrypted-content.c src/c/encoding/tlv/tlv-encrypted-content.h \
   src/c/encoding/tlv/tlv-interest.c src/c/encoding/tlv/tlv-interest.h \
   src/c/encoding/tlv/tlv-key-locator.c src/c/encoding/tlv/tlv-key-locator.h \
+  src/c/encoding/tlv/tlv-lp-packet.c src/c/encoding/tlv/tlv-lp-packet.h \
   src/c/encoding/tlv/tlv-name.c src/c/encoding/tlv/tlv-name.h \
   src/c/encoding/tlv/tlv-signature-info.c src/c/encoding/tlv/tlv-signature-info.h \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/encrypt-params.h \
+  src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
+  src/c/lp/lp-packet.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -201,6 +212,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/link.cpp \
   src/meta-info.cpp \
   src/name.cpp \
+  src/network-nack.cpp \
   src/node.cpp src/node.hpp \
   src/signature.cpp \
   src/sha256-with-ecdsa-signature.cpp \
@@ -233,16 +245,21 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \
   src/lite/name-lite.cpp \
+  src/lite/network-nack-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
+  src/lite/lp/incoming-face-id-lite.cpp \
+  src/lite/lp/lp-packet-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
+  src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
   src/security/certificate/certificate-extension.cpp \

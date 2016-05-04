@@ -53,6 +53,7 @@ public:
   {
     onDataCallCount_ = 0;
     onTimeoutCallCount_ = 0;
+    onNetworkNackCallCount_ = 0;
   }
 
   void
@@ -71,10 +72,22 @@ public:
     ++onTimeoutCallCount_;
   }
 
+  void
+  onNetworkNack(const ptr_lib::shared_ptr<const Interest>& interest,
+                const ptr_lib::shared_ptr<NetworkNack>& networkNack)
+  {
+    interest_ = *interest;
+    networkNack_ = *networkNack;
+    ++onNetworkNackCallCount_;
+  }
+
   int onDataCallCount_;
   int onTimeoutCallCount_;
+  int onNetworkNackCallCount_;
   Interest interest_;
   Data data_;
+  NetworkNack networkNack_;
+
 };
 
 class RegisterCounter
@@ -117,13 +130,21 @@ public:
 
 // Returns a CallbackCounter object so we can test data callback and timeout behavior.
 CallbackCounter
-runExpressNameTest(Face& face, const string& interestName, Milliseconds timeout = 10000)
+runExpressNameTest
+  (Face& face, const string& interestName, Milliseconds timeout = 10000,
+   bool useOnNack = false)
 {
   Name name(interestName);
   CallbackCounter counter;
-  face.expressInterest
-    (name, bind(&CallbackCounter::onData, &counter, _1, _2),
-     bind(&CallbackCounter::onTimeout, &counter, _1));
+  if (useOnNack)
+    face.expressInterest
+      (name, bind(&CallbackCounter::onData, &counter, _1, _2),
+       bind(&CallbackCounter::onTimeout, &counter, _1),
+       bind(&CallbackCounter::onNetworkNack, &counter, _1, _2));
+  else
+    face.expressInterest
+      (name, bind(&CallbackCounter::onData, &counter, _1, _2),
+       bind(&CallbackCounter::onTimeout, &counter, _1));
 
   MillisecondsSince1970 startTime = getNowMilliseconds();
   while (getNowMilliseconds() - startTime < timeout &&
@@ -343,6 +364,25 @@ TEST_F(TestFaceInterestMethods, MaxNdnPacketSize)
       bind(&CallbackCounter::onTimeout, &counter, _1)),
      runtime_error) <<
     "expressInterest didn't throw an exception when the interest size exceeds getMaxNdnPacketSize()";
+}
+
+TEST_F(TestFaceInterestMethods, NetworkNack)
+{
+  ostringstream uri;
+  uri << "/noroute" << getNowMilliseconds();
+    // Use a short timeout since we expect an immediate Nack.
+  CallbackCounter counter = runExpressNameTest(face, uri.str(), 1000, true);
+
+  // We're expecting a network Nack callback, and only 1.
+  ASSERT_EQ(0, counter.onDataCallCount_) <<
+            "Data callback called for unroutable interest";
+  ASSERT_EQ(0, counter.onTimeoutCallCount_) <<
+            "Timeout callback called for unroutable interest";
+  ASSERT_EQ(1, counter.onNetworkNackCallCount_) <<
+            "Expected 1 network Nack call";
+
+  ASSERT_EQ(counter.networkNack_.getReason(), ndn_NetworkNackReason_NO_ROUTE) <<
+            "Network Nack has unexpected reason";
 }
 
 class TestFaceRegisterMethods : public ::testing::Test {

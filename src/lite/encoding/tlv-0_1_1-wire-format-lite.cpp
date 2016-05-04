@@ -153,6 +153,13 @@ Tlv0_1_1WireFormatLite::decodeSignatureInfoAndValue
 }
 
 ndn_Error
+Tlv0_1_1WireFormatLite::decodeLpPacket
+  (LpPacketLite& lpPacket, const uint8_t* input, size_t inputLength)
+{
+  return ndn_Tlv0_1_1WireFormat_decodeLpPacket(&lpPacket, input, inputLength);
+}
+
+ndn_Error
 Tlv0_1_1WireFormatLite::encodeDelegationSet_Delegation
   (const DelegationSetLite::Delegation& delegation,
    DynamicUInt8ArrayLite& output, size_t offset, size_t* encodingLength)

@@ -48,7 +48,7 @@ ptr_lib::shared_ptr<PendingInterestTable::Entry>
 PendingInterestTable::add
   (uint64_t pendingInterestId,
    const ptr_lib::shared_ptr<const Interest>& interestCopy, const OnData& onData,
-   const OnTimeout& onTimeout)
+   const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack)
 {
   vector<uint64_t>::iterator removeRequestIterator =
     ::find(removeRequests_.begin(), removeRequests_.end(), pendingInterestId);
@@ -60,7 +60,7 @@ PendingInterestTable::add
   }
 
   ptr_lib::shared_ptr<Entry> entry(new Entry
-    (pendingInterestId, interestCopy, onData, onTimeout));
+    (pendingInterestId, interestCopy, onData, onTimeout, onNetworkNack));
   table_.push_back(entry);
   return entry;
 }
@@ -71,11 +71,36 @@ PendingInterestTable::extractEntriesForExpressedInterest
 {
   // Go backwards through the list so we can erase entries.
   for (int i = (int)table_.size() - 1; i >= 0; --i) {
-    if (table_[i]->getInterest()->matchesName(name)) {
-      entries.push_back(table_[i]);
+    ptr_lib::shared_ptr<Entry>& pendingInterest = table_[i];
+    if (pendingInterest->getInterest()->matchesName(name)) {
+      entries.push_back(pendingInterest);
       // We let the callback from callLater call _processInterestTimeout, but
       // for efficiency, mark this as removed so that it returns right away.
-      table_[i]->setIsRemoved();
+      pendingInterest->setIsRemoved();
+      table_.erase(table_.begin() + i);
+    }
+  }
+}
+
+void
+PendingInterestTable::extractEntriesForNackInterest
+  (const Interest& interest, vector<ptr_lib::shared_ptr<Entry> > &entries)
+{
+  SignedBlob encoding = interest.wireEncode();
+
+  // Go backwards through the list so we can erase entries.
+  for (int i = (int)table_.size() - 1; i >= 0; --i) {
+    ptr_lib::shared_ptr<Entry>& pendingInterest = table_[i];
+    if (!pendingInterest->getOnNetworkNack())
+      continue;
+
+    // wireEncode returns the encoding cached when the interest was sent (if
+    // it was the default wire encoding).
+    if (pendingInterest->getInterest()->wireEncode().equals(encoding)) {
+      entries.push_back(pendingInterest);
+      // We let the callback from callLater call _processInterestTimeout, but
+      // for efficiency, mark this as removed so that it returns right away.
+      pendingInterest->setIsRemoved();
       table_.erase(table_.begin() + i);
     }
   }

@@ -28,6 +28,7 @@ struct ndn_Interest;
 struct ndn_Data;
 struct ndn_ControlParameters;
 struct ndn_ControlResponse;
+struct ndn_LpPacket;
 struct ndn_DelegationSet_Delegation;
 struct ndn_EncryptedContent;
 struct ndn_DynamicUInt8Array;
@@ -263,6 +264,17 @@ ndn_Tlv0_1_1WireFormat_decodeSignatureInfoAndValue
   (struct ndn_Signature *signature, const uint8_t *signatureInfo,
    size_t signatureInfoLength, const uint8_t *signatureValue,
    size_t signatureValueLength);
+
+/**
+ * Decode input as an NDN-TLV LpPacket and set the fields in the lpPacket struct.
+ * @param lpPacket A pointer to the ndn_LpPacket struct whose fields are updated.
+ * @param input A pointer to the input buffer to decode.
+ * @param inputLength The number of bytes in input.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_Tlv0_1_1WireFormat_decodeLpPacket
+  (struct ndn_LpPacket *lpPacket, const uint8_t *input, size_t inputLength);
 
 /**
  * Encode the delegation as an NDN-TLV Delegation.

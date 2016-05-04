@@ -24,6 +24,7 @@
 
 #include "interest.hpp"
 #include "data.hpp"
+#include "network-nack.hpp"
 #include "forwarding-flags.hpp"
 #include "encoding/wire-format.hpp"
 #include "interest-filter.hpp"
@@ -36,12 +37,19 @@ class Face;
 /**
  * An OnData function object is used to pass a callback to expressInterest.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&, const ptr_lib::shared_ptr<Data>&)> OnData;
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&,
+                                const ptr_lib::shared_ptr<Data>&)> OnData;
 
 /**
  * An OnTimeout function object is used to pass a callback to expressInterest.
  */
 typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&)> OnTimeout;
+
+/**
+ * An OnNetworkNack function object is used to pass a callback to expressInterest.
+ */
+typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&,
+                                const ptr_lib::shared_ptr<NetworkNack>&)> OnNetworkNack;
 
 /**
  * @deprecated Use OnInterestCallback.
@@ -103,77 +111,237 @@ public:
   virtual ~Face();
 
   /**
-   * Send the Interest through the transport, read the entire response and call onData(interest, data).
+   * Send the Interest through the transport, read the entire response and call
+   * onData, onTimeout or onNetworkNack as described below.
    * @param interest A reference to the Interest.  This copies the Interest.
-   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onTimeout If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is an empty OnTimeout(), this does
+   * not use it. This copies the function object, so you may need to use
+   * func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @param onNetworkNack When a network Nack packet for the interest is
+   * received and onNetworkNack is not null, this calls
+   * onNetworkNack(interest, networkNack) and does not call onTimeout. However,
+   * if a network Nack is received and onNetworkNack is an empty OnNetworkNack(),
+   * do nothing and wait for the interest to time out. This copies the function
+   * object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
   virtual uint64_t
   expressInterest
-    (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
+    (const Interest& interest, const OnData& onData, 
+     const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
-   * Encode name as an Interest. If interestTemplate is not 0, use its interest selectors.
-   * Send the interest through the transport, read the entire response and call onData(interest, data).
+   * Encode name as an Interest. If interestTemplate is not 0, use its interest
+   * selectors.
+   * Send the Interest through the transport, read the entire response and call
+   * onData, onTimeout or onNetworkNack as described below.
    * @param name A reference to a Name for the interest.  This copies the Name.
    * @param interestTemplate if not 0, copy interest selectors from the template.   This does not keep a pointer to the Interest object.
-   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onTimeout If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is an empty OnTimeout(), this does
+   * not use it. This copies the function object, so you may need to use
+   * func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @param onNetworkNack When a network Nack packet for the interest is
+   * received and onNetworkNack is not null, this calls
+   * onNetworkNack(interest, networkNack) and does not call onTimeout. However,
+   * if a network Nack is received and onNetworkNack is an empty OnNetworkNack(),
+   * do nothing and wait for the interest to time out. This copies the function
+   * object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds
    * getMaxNdnPacketSize().
    */
   virtual uint64_t
   expressInterest
-    (const Name& name, const Interest *interestTemplate, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
+    (const Name& name, const Interest *interestTemplate, const OnData& onData, 
+     const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Encode name as an Interest, using a default interest lifetime.
-   * Send the interest through the transport, read the entire response and call onData(interest, data).
+   * Send the Interest through the transport, read the entire response and call
+   * onData, onTimeout or onNetworkNack as described below.
    * @param name A reference to a Name for the interest.  This copies the Name.
-   * @param onData A function object to call when a matching data packet is received.  This copies the function object, so you may need to
-   * use func_lib::ref() as appropriate.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onTimeout A function object to call if the interest times out.  If onTimeout is an empty OnTimeout(), this does not use it.
-   * This copies the function object, so you may need to use func_lib::ref() as appropriate.
+   * @param onTimeout If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is an empty OnTimeout(), this does
+   * not use it. This copies the function object, so you may need to use
+   * func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param wireFormat A WireFormat object used to encode the message. If omitted, use WireFormat getDefaultWireFormat().
+   * @param onNetworkNack When a network Nack packet for the interest is
+   * received and onNetworkNack is not null, this calls
+   * onNetworkNack(interest, networkNack) and does not call onTimeout. However,
+   * if a network Nack is received and onNetworkNack is an empty OnNetworkNack(),
+   * do nothing and wait for the interest to time out. This copies the function
+   * object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
    * @return The pending interest ID which can be used with removePendingInterest.
    * @throws runtime_error If the encoded interest size exceeds getMaxNdnPacketSize().
    */
   uint64_t
   expressInterest
-    (const Name& name, const OnData& onData, const OnTimeout& onTimeout = OnTimeout(),
+    (const Name& name, const OnData& onData, 
+     const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
-    return expressInterest(name, 0, onData, onTimeout, wireFormat);
+    return expressInterest(name, 0, onData, onTimeout, onNetworkNack, wireFormat);
+  }
+
+  /**
+   * Send the Interest through the transport, read the entire response and call
+   * onData or onTimeout as described below.
+   * @param interest A reference to the Interest.  This copies the Interest.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onTimeout (optional) If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is omitted or an empty OnTimeout(),
+   * this does not use it. This copies the function object, so you may need to
+   * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @return The pending interest ID which can be used with removePendingInterest.
+   * @throws runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
+   */
+  uint64_t
+  expressInterest
+    (const Interest& interest, const OnData& onData,
+     const OnTimeout& onTimeout = OnTimeout(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    return expressInterest
+      (interest, onData, onTimeout, OnNetworkNack(), wireFormat);
+  }
+
+  /**
+   * Encode name as an Interest. If interestTemplate is not 0, use its interest
+   * selectors.
+   * Send the Interest through the transport, read the entire response and call
+   * onData or onTimeout as described below.
+   * @param interest A reference to the Interest.  This copies the Interest.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onTimeout (optional) If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is omitted or an empty OnTimeout(),
+   * this does not use it. This copies the function object, so you may need to
+   * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @return The pending interest ID which can be used with removePendingInterest.
+   * @throws runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
+   */
+  uint64_t
+  expressInterest
+    (const Name& name, const Interest *interestTemplate, const OnData& onData,
+     const OnTimeout& onTimeout = OnTimeout(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    return expressInterest
+      (name, interestTemplate, onData, onTimeout, OnNetworkNack(), wireFormat);
+  }
+
+  /**
+   * Encode name as an Interest, using a default interest lifetime.
+   * Send the Interest through the transport, read the entire response and call
+   * onData or onTimeout as described below.
+   * @param interest A reference to the Interest.  This copies the Interest.
+   * @param onData  When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This copies the
+   * function object, so you may need to use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onTimeout (optional) If the interest times out according to the interest
+   * lifetime, this calls onTimeout(interest) where interest is the interest
+   * given to expressInterest. If onTimeout is omitted or an empty OnTimeout(),
+   * this does not use it. This copies the function object, so you may need to
+   * use func_lib::ref() as appropriate.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param wireFormat (optional) A WireFormat object used to encode the message.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @return The pending interest ID which can be used with removePendingInterest.
+   * @throws runtime_error If the encoded interest size exceeds
+   * getMaxNdnPacketSize().
+   */
+  uint64_t
+  expressInterest
+    (const Name& name, const OnData& onData,
+     const OnTimeout& onTimeout = OnTimeout(),
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    return expressInterest
+      (name, 0, onData, onTimeout, OnNetworkNack(), wireFormat);
   }
 
   /**

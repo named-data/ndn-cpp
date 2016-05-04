@@ -85,7 +85,7 @@ public:
   virtual uint64_t
   expressInterest
     (const Interest& interest, const OnData& onData,
-     const OnTimeout& onTimeout = OnTimeout(),
+     const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
@@ -96,7 +96,7 @@ public:
   virtual uint64_t
   expressInterest
     (const Name& name, const Interest *interestTemplate, const OnData& onData,
-     const OnTimeout& onTimeout = OnTimeout(),
+     const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   uint64_t

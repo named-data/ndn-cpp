@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
 #include "c/util/crypto.h"
+#include "lp/incoming-face-id.hpp"
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -51,6 +52,16 @@ Interest& Interest::operator=(const Interest& interest)
     (interest.getDefaultWireEncoding(), interest.defaultWireEncodingFormat_);
 
   return *this;
+}
+
+uint64_t
+Interest::getIncomingFaceId() const
+{
+  ptr_lib::shared_ptr<IncomingFaceId> field;
+  if (lpPacket_)
+    field = IncomingFaceId::getFirstHeader(*lpPacket_);
+
+  return field ? field->getFaceId() : (uint64_t)-1;
 }
 
 void
