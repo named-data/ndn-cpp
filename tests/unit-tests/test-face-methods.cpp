@@ -382,7 +382,7 @@ TEST_F(TestFaceInterestMethods, NetworkNack)
             "Expected 1 network Nack call";
 
   ASSERT_EQ(counter.networkNack_.getReason(), ndn_NetworkNackReason_NO_ROUTE) <<
-            "Netowork Nack has unexpected reason";
+            "Network Nack has unexpected reason";
 }
 
 class TestFaceRegisterMethods : public ::testing::Test {
