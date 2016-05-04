@@ -95,7 +95,7 @@ PendingInterestTable::extractEntriesForNackInterest
       continue;
 
     // wireEncode returns the encoding cached when the interest was sent (if
-    // it was the default wire encoding.
+    // it was the default wire encoding).
     if (pendingInterest->getInterest()->wireEncode().equals(encoding)) {
       entries.push_back(pendingInterest);
       // We let the callback from callLater call _processInterestTimeout, but
