@@ -49,13 +49,13 @@ public:
   getType() const { return type; }
 
   const BlobLite&
-  getKeyData() const { return BlobLite::upCast(keyData); }
+  getKeyData() const { return BlobLite::downCast(keyData); }
 
   NameLite&
-  getKeyName() { return NameLite::upCast(keyName); }
+  getKeyName() { return NameLite::downCast(keyName); }
 
   const NameLite&
-  getKeyName() const { return NameLite::upCast(keyName); }
+  getKeyName() const { return NameLite::downCast(keyName); }
 
   /**
    * Set this object's key name to have the values from the given keyName.
@@ -66,7 +66,7 @@ public:
   ndn_Error
   setKeyName(const NameLite& keyName)
   {
-    return NameLite::upCast(this->keyName).set(keyName);
+    return NameLite::downCast(this->keyName).set(keyName);
   }
 
   void
@@ -79,7 +79,7 @@ public:
   void
   setKeyData(const BlobLite& keyData)
   {
-    BlobLite::upCast(this->keyData) = keyData;
+    BlobLite::downCast(this->keyData) = keyData;
   }
 
   /**
@@ -92,15 +92,15 @@ public:
   set(const KeyLocatorLite& other);
 
   /**
-   * Upcast the reference to the ndn_KeyLocator struct to a KeyLocatorLite.
+   * Downcast the reference to the ndn_KeyLocator struct to a KeyLocatorLite.
    * @param keyLocator A reference to the ndn_KeyLocator struct.
    * @return The same reference as KeyLocatorLite.
    */
   static KeyLocatorLite&
-  upCast(ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
+  downCast(ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
 
   static const KeyLocatorLite&
-  upCast(const ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
+  downCast(const ndn_KeyLocator& keyLocator) { return *(KeyLocatorLite*)&keyLocator; }
 
 private:
   /**

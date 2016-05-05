@@ -51,7 +51,7 @@ Tlv0_1_1WireFormat::encodeName(const Name& name)
   size_t dummyBeginOffset, dummyEndOffset, encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeName
        (nameLite, &dummyBeginOffset, &dummyEndOffset,
-        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+        DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   return output.finish(encodingLength);
@@ -93,7 +93,7 @@ Tlv0_1_1WireFormat::encodeInterest
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeInterest
        (interestLite, signedPortionBeginOffset, signedPortionEndOffset,
-        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+        DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   return output.finish(encodingLength);
@@ -136,7 +136,7 @@ Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeData
        (dataLite, signedPortionBeginOffset, signedPortionEndOffset,
-        DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+        DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   return output.finish(encodingLength);
@@ -177,7 +177,7 @@ Tlv0_1_1WireFormat::encodeControlParameters
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeControlParameters
-       (controlParametersLite, DynamicUInt8ArrayLite::upCast(output),
+       (controlParametersLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -219,7 +219,7 @@ Tlv0_1_1WireFormat::encodeControlResponse(const ControlResponse& controlResponse
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeControlResponse
-       (controlResponseLite, DynamicUInt8ArrayLite::upCast(output),
+       (controlResponseLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -258,7 +258,7 @@ Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeSignatureInfo
-       (signatureLite, DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+       (signatureLite, DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   return output.finish(encodingLength);
@@ -276,7 +276,7 @@ Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeSignatureValue
-       (signatureLite, DynamicUInt8ArrayLite::upCast(output), &encodingLength)))
+       (signatureLite, DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   return output.finish(encodingLength);
@@ -330,7 +330,7 @@ Tlv0_1_1WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
     size_t delegationEncodingLength;
     ndn_Error error;
     if ((error = Tlv0_1_1WireFormatLite::encodeDelegationSet_Delegation
-         (delegationLite, DynamicUInt8ArrayLite::upCast(output), encodingLength,
+         (delegationLite, DynamicUInt8ArrayLite::downCast(output), encodingLength,
           &delegationEncodingLength)))
       throw runtime_error(ndn_getErrorString(error));
 
@@ -379,7 +379,7 @@ Tlv0_1_1WireFormat::encodeEncryptedContent
   ndn_Error error;
   size_t encodingLength;
   if ((error = Tlv0_1_1WireFormatLite::encodeEncryptedContent
-       (encryptedContentLite, DynamicUInt8ArrayLite::upCast(output),
+       (encryptedContentLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 

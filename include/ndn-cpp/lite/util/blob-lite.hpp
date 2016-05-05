@@ -68,15 +68,15 @@ public:
   isNull() const { return !value; }
 
   /**
-   * Upcast the reference to the ndn_Blob struct to a BlobLite.
+   * Downcast the reference to the ndn_Blob struct to a BlobLite.
    * @param blob A reference to the ndn_Blob struct.
    * @return The same reference as BlobLite.
    */
   static BlobLite&
-  upCast(ndn_Blob& blob) { return *(BlobLite*)&blob; }
+  downCast(ndn_Blob& blob) { return *(BlobLite*)&blob; }
 
   static const BlobLite&
-  upCast(const ndn_Blob& blob) { return *(BlobLite*)&blob; }
+  downCast(const ndn_Blob& blob) { return *(BlobLite*)&blob; }
 };
 
 }

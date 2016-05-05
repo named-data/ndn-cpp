@@ -55,10 +55,10 @@ public:
      * @return The delegation name.
      */
     NameLite&
-    getName() { return NameLite::upCast(name); }
+    getName() { return NameLite::downCast(name); }
 
     const NameLite&
-    getName() const { return NameLite::upCast(name); }
+    getName() const { return NameLite::downCast(name); }
 
     void
     setPreference(int preference) { this->preference = preference; }
@@ -73,19 +73,19 @@ public:
     set(const Delegation& other);
 
     /**
-     * Upcast the reference to the ndn_DelegationSet_Delegation struct to a
+     * Downcast the reference to the ndn_DelegationSet_Delegation struct to a
      * DelegationSetLite::Delegation.
      * @param delegation A reference to the ndn_DelegationSet_Delegation struct.
      * @return The same reference as DelegationSetLite::Delegation.
      */
     static Delegation&
-    upCast(ndn_DelegationSet_Delegation& delegation)
+    downCast(ndn_DelegationSet_Delegation& delegation)
     {
       return *(Delegation*)&delegation;
     }
 
     static const Delegation&
-    upCast(const ndn_DelegationSet_Delegation& delegation)
+    downCast(const ndn_DelegationSet_Delegation& delegation)
     {
       return *(Delegation*)&delegation;
     }

@@ -105,15 +105,15 @@ public:
   close();
 
   /**
-   * Upcast the reference to the ndn_TcpTransport struct to a TcpTransportLite.
+   * Downcast the reference to the ndn_TcpTransport struct to a TcpTransportLite.
    * @param transport A reference to the ndn_TcpTransport struct.
    * @return The same reference as TcpTransportLite.
    */
   static TcpTransportLite&
-  upCast(ndn_TcpTransport& transport) { return *(TcpTransportLite*)&transport; }
+  downCast(ndn_TcpTransport& transport) { return *(TcpTransportLite*)&transport; }
 
   static const TcpTransportLite&
-  upCast(const ndn_TcpTransport& transport) { return *(TcpTransportLite*)&transport; }
+  downCast(const ndn_TcpTransport& transport) { return *(TcpTransportLite*)&transport; }
 };
 
 }

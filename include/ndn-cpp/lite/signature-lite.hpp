@@ -56,7 +56,7 @@ public:
   getType() const { return type; }
 
   const BlobLite&
-  getSignature() const { return BlobLite::upCast(signature); }
+  getSignature() const { return BlobLite::downCast(signature); }
 
   /**
    * Get the bytes of the entire signature info encoding (including the type
@@ -64,7 +64,7 @@ public:
    * @return The encoding bytes. If not specified, the value isNull().
    */
   const BlobLite&
-  getSignatureInfoEncoding() const { return BlobLite::upCast(signatureInfoEncoding); }
+  getSignatureInfoEncoding() const { return BlobLite::downCast(signatureInfoEncoding); }
 
   /**
    * Get the type code of the generic signature. When wire decode calls
@@ -78,10 +78,10 @@ public:
   getGenericTypeCode() const { return genericTypeCode; }
 
   const KeyLocatorLite&
-  getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() const { return KeyLocatorLite::downCast(keyLocator); }
 
   KeyLocatorLite&
-  getKeyLocator() { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() { return KeyLocatorLite::downCast(keyLocator); }
 
   void
   setType(ndn_SignatureType type) { this->type = type; }
@@ -94,7 +94,7 @@ public:
   void
   setSignature(const BlobLite& signature)
   {
-    BlobLite::upCast(this->signature) = signature;
+    BlobLite::downCast(this->signature) = signature;
   }
 
   /**
@@ -110,7 +110,7 @@ public:
   setSignatureInfoEncoding
     (const BlobLite& signatureInfoEncoding, int genericTypeCode)
   {
-    BlobLite::upCast(this->signatureInfoEncoding) = signatureInfoEncoding;
+    BlobLite::downCast(this->signatureInfoEncoding) = signatureInfoEncoding;
     this->genericTypeCode = genericTypeCode;
   }
 
@@ -124,15 +124,15 @@ public:
   set(const SignatureLite& other);
 
   /**
-   * Upcast the reference to the ndn_Signature struct to a SignatureLite.
+   * Downcast the reference to the ndn_Signature struct to a SignatureLite.
    * @param signature A reference to the ndn_Signature struct.
    * @return The same reference as SignatureLite.
    */
   static SignatureLite&
-  upCast(ndn_Signature& signature) { return *(SignatureLite*)&signature; }
+  downCast(ndn_Signature& signature) { return *(SignatureLite*)&signature; }
 
   static const SignatureLite&
-  upCast(const ndn_Signature& signature) { return *(SignatureLite*)&signature; }
+  downCast(const ndn_Signature& signature) { return *(SignatureLite*)&signature; }
 
 private:
   // Declare friends who can downcast to the private base.

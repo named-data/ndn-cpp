@@ -38,7 +38,7 @@ DynamicUInt8Vector::DynamicUInt8Vector(size_t initialLength)
 uint8_t*
 DynamicUInt8Vector::realloc(struct ndn_DynamicUInt8Array *self, uint8_t *array, size_t length)
 {
-  // Because this method is private, assume there is not a problem with upcasting.
+  // Because this method is private, assume there is not a problem with downcasting.
   DynamicUInt8Vector *thisObject = (DynamicUInt8Vector *)self;
 
   if (array != &thisObject->vector_->front())

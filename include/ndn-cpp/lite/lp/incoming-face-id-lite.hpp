@@ -65,19 +65,19 @@ public:
   getFirstHeader(const LpPacketLite& lpPacket);
 
   /**
-   * Upcast the reference to the ndn_IncomingFaceId struct to an
+   * Downcast the reference to the ndn_IncomingFaceId struct to an
    * IncomingFaceIdLite.
    * @param incomingFaceId A reference to the ndn_IncomingFaceId struct.
    * @return The same reference as IncomingFaceIdLite.
    */
   static IncomingFaceIdLite&
-  upCast(ndn_IncomingFaceId& incomingFaceId)
+  downCast(ndn_IncomingFaceId& incomingFaceId)
   {
     return *(IncomingFaceIdLite*)&incomingFaceId;
   }
 
   static const IncomingFaceIdLite&
-  upCast(const ndn_IncomingFaceId& incomingFaceId)
+  downCast(const ndn_IncomingFaceId& incomingFaceId)
   {
     return *(IncomingFaceIdLite*)&incomingFaceId;
   }

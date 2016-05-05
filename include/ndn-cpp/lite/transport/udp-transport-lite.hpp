@@ -98,15 +98,15 @@ public:
   close();
 
   /**
-   * Upcast the reference to the ndn_UdpTransport struct to a UdpTransportLite.
+   * Downcast the reference to the ndn_UdpTransport struct to a UdpTransportLite.
    * @param transport A reference to the ndn_UdpTransport struct.
    * @return The same reference as UdpTransportLite.
    */
   static UdpTransportLite&
-  upCast(ndn_UdpTransport& transport) { return *(UdpTransportLite*)&transport; }
+  downCast(ndn_UdpTransport& transport) { return *(UdpTransportLite*)&transport; }
 
   static const UdpTransportLite&
-  upCast(const ndn_UdpTransport& transport) { return *(UdpTransportLite*)&transport; }
+  downCast(const ndn_UdpTransport& transport) { return *(UdpTransportLite*)&transport; }
 };
 
 }

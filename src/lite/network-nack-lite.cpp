@@ -35,7 +35,7 @@ NetworkNackLite::getFirstHeader(const LpPacketLite& lpPacket)
 {
   const ndn_NetworkNack* result = ndn_NetworkNack_getFirstHeader(&lpPacket);
   if (result)
-    return &upCast(*result);
+    return &downCast(*result);
   else
     return 0;
 }

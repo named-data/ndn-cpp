@@ -53,25 +53,25 @@ public:
    ndn_NameComponent* keyNameComponents, size_t maxKeyNameComponents);
 
   const SignatureLite&
-  getSignature() const { return SignatureLite::upCast(signature); }
+  getSignature() const { return SignatureLite::downCast(signature); }
 
   SignatureLite&
-  getSignature() { return SignatureLite::upCast(signature); }
+  getSignature() { return SignatureLite::downCast(signature); }
 
   const NameLite&
-  getName() const { return NameLite::upCast(name); }
+  getName() const { return NameLite::downCast(name); }
 
   NameLite&
-  getName() { return NameLite::upCast(name); }
+  getName() { return NameLite::downCast(name); }
 
   const MetaInfoLite&
-  getMetaInfo() const { return MetaInfoLite::upCast(metaInfo); }
+  getMetaInfo() const { return MetaInfoLite::downCast(metaInfo); }
 
   MetaInfoLite&
-  getMetaInfo() { return MetaInfoLite::upCast(metaInfo); }
+  getMetaInfo() { return MetaInfoLite::downCast(metaInfo); }
 
   const BlobLite&
-  getContent() const { return BlobLite::upCast(content); }
+  getContent() const { return BlobLite::downCast(content); }
 
   /**
    * Set this data packet's name to have the values from the given name.
@@ -82,7 +82,7 @@ public:
   ndn_Error
   setName(const NameLite& name)
   {
-    return NameLite::upCast(this->name).set(name);
+    return NameLite::downCast(this->name).set(name);
   }
 
   /**
@@ -94,7 +94,7 @@ public:
   DataLite&
   setContent(const BlobLite& content)
   {
-    BlobLite::upCast(this->content) = content;
+    BlobLite::downCast(this->content) = content;
     return *this;
   }
 
@@ -108,15 +108,15 @@ public:
   set(const DataLite& other);
 
   /**
-   * Upcast the reference to the ndn_Data struct to a DataLite.
+   * Downcast the reference to the ndn_Data struct to a DataLite.
    * @param data A reference to the ndn_Data struct.
    * @return The same reference as DataLite.
    */
   static DataLite&
-  upCast(ndn_Data& data) { return *(DataLite*)&data; }
+  downCast(ndn_Data& data) { return *(DataLite*)&data; }
 
   static const DataLite&
-  upCast(const ndn_Data& data) { return *(DataLite*)&data; }
+  downCast(const ndn_Data& data) { return *(DataLite*)&data; }
 
 private:
   // Declare friends who can downcast to the private base.

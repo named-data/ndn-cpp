@@ -97,15 +97,15 @@ public:
   close();
 
   /**
-   * Upcast the reference to the ndn_UnixTransport struct to a UnixTransportLite.
+   * Downcast the reference to the ndn_UnixTransport struct to a UnixTransportLite.
    * @param transport A reference to the ndn_UnixTransport struct.
    * @return The same reference as UnixTransportLite.
    */
   static UnixTransportLite&
-  upCast(ndn_UnixTransport& transport) { return *(UnixTransportLite*)&transport; }
+  downCast(ndn_UnixTransport& transport) { return *(UnixTransportLite*)&transport; }
 
   static const UnixTransportLite&
-  upCast(const ndn_UnixTransport& transport) { return *(UnixTransportLite*)&transport; }
+  downCast(const ndn_UnixTransport& transport) { return *(UnixTransportLite*)&transport; }
 };
 
 }

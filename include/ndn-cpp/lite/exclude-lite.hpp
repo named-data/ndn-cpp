@@ -68,18 +68,18 @@ public:
     getType() const { return type; }
 
     const NameLite::Component&
-    getComponent() const { return NameLite::Component::upCast(component); }
+    getComponent() const { return NameLite::Component::downCast(component); }
 
     /**
-     * Upcast the reference to the ndn_ExcludeEntry struct to an ExcludeLite::Entry.
+     * Downcast the reference to the ndn_ExcludeEntry struct to an ExcludeLite::Entry.
      * @param entry A reference to the ndn_ExcludeEntry struct.
      * @return The same reference as ExcludeLite::Entry.
      */
     static Entry&
-    upCast(ndn_ExcludeEntry& entry) { return *(Entry*)&entry; }
+    downCast(ndn_ExcludeEntry& entry) { return *(Entry*)&entry; }
 
     static const Entry&
-    upCast(const ndn_ExcludeEntry& entry) { return *(Entry*)&entry; }
+    downCast(const ndn_ExcludeEntry& entry) { return *(Entry*)&entry; }
   };
 
   /**
@@ -98,7 +98,7 @@ public:
   get(size_t i) const
   {
     // TODO: Range check.
-    return Entry::upCast(entries[i]);
+    return Entry::downCast(entries[i]);
   }
 
   /**
@@ -151,15 +151,15 @@ public:
   set(const ExcludeLite& other);
 
   /**
-   * Upcast the reference to the ndn_Exclude struct to an ExcludeLite.
+   * Downcast the reference to the ndn_Exclude struct to an ExcludeLite.
    * @param exclude A reference to the ndn_Exclude struct.
    * @return The same reference as ExcludeLite.
    */
   static ExcludeLite&
-  upCast(ndn_Exclude& exclude) { return *(ExcludeLite*)&exclude; }
+  downCast(ndn_Exclude& exclude) { return *(ExcludeLite*)&exclude; }
 
   static const ExcludeLite&
-  upCast(const ndn_Exclude& exclude) { return *(ExcludeLite*)&exclude; }
+  downCast(const ndn_Exclude& exclude) { return *(ExcludeLite*)&exclude; }
 
 private:
   /**

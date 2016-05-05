@@ -46,7 +46,7 @@ public:
   getFreshnessPeriod() const { return freshnessPeriod; }
 
   const NameLite::Component
-  getFinalBlockId() const { return NameLite::Component::upCast(finalBlockId); }
+  getFinalBlockId() const { return NameLite::Component::downCast(finalBlockId); }
 
   void
   setType(ndn_ContentType type) { this->type = type; }
@@ -65,19 +65,19 @@ public:
   void
   setFinalBlockId(const NameLite::Component& finalBlockId)
   {
-    NameLite::Component::upCast(this->finalBlockId) = finalBlockId;
+    NameLite::Component::downCast(this->finalBlockId) = finalBlockId;
   }
 
   /**
-   * Upcast the reference to the ndn_MetaInfo struct to a MetaInfoLite.
+   * Downcast the reference to the ndn_MetaInfo struct to a MetaInfoLite.
    * @param metaInfo A reference to the ndn_MetaInfo struct.
    * @return The same reference as MetaInfoLite.
    */
   static MetaInfoLite&
-  upCast(ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
+  downCast(ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
 
   static const MetaInfoLite&
-  upCast(const ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
+  downCast(const ndn_MetaInfo& metaInfo) { return *(MetaInfoLite*)&metaInfo; }
 };
 
 }

@@ -35,7 +35,7 @@ IncomingFaceIdLite::getFirstHeader(const LpPacketLite& lpPacket)
 {
   const ndn_IncomingFaceId* result = ndn_IncomingFaceId_getFirstHeader(&lpPacket);
   if (result)
-    return &upCast(*result);
+    return &downCast(*result);
   else
     return 0;
 }

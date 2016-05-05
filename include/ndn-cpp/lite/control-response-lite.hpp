@@ -60,7 +60,7 @@ public:
   getStatusCode() const { return statusCode; }
 
   const BlobLite&
-  getStatusText() const { return BlobLite::upCast(statusText); }
+  getStatusText() const { return BlobLite::downCast(statusText); }
 
   /**
    * Check if the bodyAsControlParameters is specified.
@@ -76,13 +76,13 @@ public:
   ControlParametersLite&
   getBodyAsControlParameters()
   {
-    return ControlParametersLite::upCast(bodyAsControlParameters);
+    return ControlParametersLite::downCast(bodyAsControlParameters);
   }
 
   const ControlParametersLite&
   getBodyAsControlParameters() const
   {
-    return ControlParametersLite::upCast(bodyAsControlParameters);
+    return ControlParametersLite::downCast(bodyAsControlParameters);
   }
 
   /**
@@ -110,7 +110,7 @@ public:
   setBodyAsControlParameters(const ControlParametersLite& bodyAsControlParameters)
   {
     hasBodyAsControlParameters = 1;
-    return ControlParametersLite::upCast(this->bodyAsControlParameters)
+    return ControlParametersLite::downCast(this->bodyAsControlParameters)
       .set(bodyAsControlParameters);
   }
 
@@ -136,24 +136,24 @@ public:
   ControlResponseLite&
   setStatusText(const BlobLite& statusText)
   {
-    BlobLite::upCast(this->statusText) = statusText;
+    BlobLite::downCast(this->statusText) = statusText;
     return *this;
   }
 
   /**
-   * Upcast the reference to the ndn_ControlResponse struct to a
+   * Downcast the reference to the ndn_ControlResponse struct to a
    * ControlResponseLite.
    * @param controlResponse A reference to the ndn_ControlResponse struct.
    * @return The same reference as ControlResponseLite.
    */
   static ControlResponseLite&
-  upCast(ndn_ControlResponse& controlResponse)
+  downCast(ndn_ControlResponse& controlResponse)
   {
     return *(ControlResponseLite*)&controlResponse;
   }
 
   static const ControlResponseLite&
-  upCast(const ndn_ControlResponse& controlResponse)
+  downCast(const ndn_ControlResponse& controlResponse)
   {
     return *(ControlResponseLite*)&controlResponse;
   }

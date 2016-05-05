@@ -69,16 +69,16 @@ public:
    * @return The Name. This is only meaningful if getHasName() is true.
    */
   NameLite&
-  getName() { return NameLite::upCast(name); }
+  getName() { return NameLite::downCast(name); }
 
   const NameLite&
-  getName() const { return NameLite::upCast(name); }
+  getName() const { return NameLite::downCast(name); }
 
   int
   getFaceId() const { return faceId; }
 
   const BlobLite&
-  getUri() const { return BlobLite::upCast(uri); }
+  getUri() const { return BlobLite::downCast(uri); }
 
   int
   getLocalControlFeature() const { return localControlFeature; }
@@ -90,16 +90,16 @@ public:
   getCost() const { return cost; }
 
   ForwardingFlagsLite&
-  getForwardingFlags() { return ForwardingFlagsLite::upCast(flags); }
+  getForwardingFlags() { return ForwardingFlagsLite::downCast(flags); }
 
   const ForwardingFlagsLite&
-  getForwardingFlags() const { return  ForwardingFlagsLite::upCast(flags); }
+  getForwardingFlags() const { return  ForwardingFlagsLite::downCast(flags); }
 
   NameLite&
-  getStrategy() { return NameLite::upCast(strategy); }
+  getStrategy() { return NameLite::downCast(strategy); }
 
   const NameLite&
-  getStrategy() const { return NameLite::upCast(strategy); }
+  getStrategy() const { return NameLite::downCast(strategy); }
 
   Milliseconds
   getExpirationPeriod() const { return expirationPeriod; }
@@ -124,7 +124,7 @@ public:
   setName(const NameLite& name)
   {
     hasName = 1;
-    return NameLite::upCast(this->name).set(name);
+    return NameLite::downCast(this->name).set(name);
   }
 
   /**
@@ -149,7 +149,7 @@ public:
   ControlParametersLite&
   setUri(const BlobLite& uri)
   {
-    BlobLite::upCast(this->uri) = uri;
+    BlobLite::downCast(this->uri) = uri;
     return *this;
   }
 
@@ -203,7 +203,7 @@ public:
   ControlParametersLite&
   setForwardingFlags(const ForwardingFlagsLite& flags)
   {
-    ForwardingFlagsLite::upCast(this->flags) = flags;
+    ForwardingFlagsLite::downCast(this->flags) = flags;
     return *this;
   }
 
@@ -216,7 +216,7 @@ public:
   ndn_Error
   setStrategy(const NameLite& strategy)
   {
-    return NameLite::upCast(this->strategy).set(strategy);
+    return NameLite::downCast(this->strategy).set(strategy);
   }
 
   /**
@@ -244,19 +244,19 @@ public:
   set(const ControlParametersLite& other);
 
   /**
-   * Upcast the reference to the ndn_ControlParameters struct to a
+   * Downcast the reference to the ndn_ControlParameters struct to a
    * ControlParametersLite.
    * @param controlParameters A reference to the ndn_ControlParameters struct.
    * @return The same reference as ControlParametersLite.
    */
   static ControlParametersLite&
-  upCast(ndn_ControlParameters& controlParameters)
+  downCast(ndn_ControlParameters& controlParameters)
   {
     return *(ControlParametersLite*)&controlParameters;
   }
 
   static const ControlParametersLite&
-  upCast(const ndn_ControlParameters& controlParameters)
+  downCast(const ndn_ControlParameters& controlParameters)
   {
     return *(ControlParametersLite*)&controlParameters;
   }

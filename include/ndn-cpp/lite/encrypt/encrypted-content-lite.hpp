@@ -59,24 +59,24 @@ public:
    * @return The key locator. If not specified, getType() is -1.
    */
   const KeyLocatorLite&
-  getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() const { return KeyLocatorLite::downCast(keyLocator); }
 
   KeyLocatorLite&
-  getKeyLocator() { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() { return KeyLocatorLite::downCast(keyLocator); }
 
   /**
    * Get the initial vector.
    * @return The initial vector. If not specified, isNull() is true.
    */
   const BlobLite&
-  getInitialVector() const { return BlobLite::upCast(initialVector); }
+  getInitialVector() const { return BlobLite::downCast(initialVector); }
 
   /**
    * Get the payload.
    * @return The payload. If not specified, isNull() is true.
    */
   const BlobLite&
-  getPayload() const { return BlobLite::upCast(payload); }
+  getPayload() const { return BlobLite::downCast(payload); }
 
   /**
    * Set the algorithm type.
@@ -101,7 +101,7 @@ public:
   EncryptedContentLite&
   setInitialVector(const BlobLite& initialVector)
   {
-    BlobLite::upCast(this->initialVector) = initialVector;
+    BlobLite::downCast(this->initialVector) = initialVector;
     return *this;
   }
 
@@ -115,7 +115,7 @@ public:
   EncryptedContentLite&
   setPayload(const BlobLite& payload)
   {
-    BlobLite::upCast(this->payload) = payload;
+    BlobLite::downCast(this->payload) = payload;
     return *this;
   }
 
@@ -129,19 +129,19 @@ public:
   set(const EncryptedContentLite& other);
 
   /**
-   * Upcast the reference to the ndn_EncryptedContent struct to an
+   * Downcast the reference to the ndn_EncryptedContent struct to an
    * EncryptedContentLite.
    * @param encryptedContent A reference to the ndn_EncryptedContent struct.
    * @return The same reference as EncryptedContentLite.
    */
   static EncryptedContentLite&
-  upCast(ndn_EncryptedContent& encryptedContent)
+  downCast(ndn_EncryptedContent& encryptedContent)
   {
     return *(EncryptedContentLite*)&encryptedContent;
   }
 
   static const EncryptedContentLite&
-  upCast(const ndn_EncryptedContent& encryptedContent)
+  downCast(const ndn_EncryptedContent& encryptedContent)
   {
     return *(EncryptedContentLite*)&encryptedContent;
   }

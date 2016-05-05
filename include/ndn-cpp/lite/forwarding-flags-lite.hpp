@@ -81,19 +81,19 @@ public:
   setNfdForwardingFlags(int nfdForwardingFlags);
 
   /**
-   * Upcast the reference to the ndn_ForwardingFlags struct to a
+   * Downcast the reference to the ndn_ForwardingFlags struct to a
    * ForwardingFlagsLite.
    * @param forwardingFlags A reference to the ndn_ForwardingFlags struct.
    * @return The same reference as ForwardingFlagsLite.
    */
   static ForwardingFlagsLite&
-  upCast(ndn_ForwardingFlags& forwardingFlags)
+  downCast(ndn_ForwardingFlags& forwardingFlags)
   {
     return *(ForwardingFlagsLite*)&forwardingFlags;
   }
 
   static const ForwardingFlagsLite&
-  upCast(const ndn_ForwardingFlags& forwardingFlags)
+  downCast(const ndn_ForwardingFlags& forwardingFlags)
   {
     return *(ForwardingFlagsLite*)&forwardingFlags;
   }

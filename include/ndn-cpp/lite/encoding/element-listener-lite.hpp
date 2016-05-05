@@ -42,7 +42,7 @@ public:
    * onReceivedElement(ElementListenerLite *self, uint8_t *element, size_t elementLength)
    * where self is the pointer to this object, and element is a pointer to the
    * array of length elementLength with the bytes of the element. If you
-   * created a derived calss, you can upcast self to a pointer to your derived
+   * created a derived class, you can downcast self to a pointer to your derived
    * class in order to access its members.
    */
   ElementListenerLite(OnReceivedElementLite onReceivedElement);

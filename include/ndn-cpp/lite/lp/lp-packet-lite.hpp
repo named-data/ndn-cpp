@@ -45,10 +45,10 @@ public:
    * @return This field as an IncomingFaceId.
    */
   const IncomingFaceIdLite&
-  getIncomingFaceId() const { return IncomingFaceIdLite::upCast(incomingFaceId); }
+  getIncomingFaceId() const { return IncomingFaceIdLite::downCast(incomingFaceId); }
 
   IncomingFaceIdLite&
-  getIncomingFaceId() { return IncomingFaceIdLite::upCast(incomingFaceId); }
+  getIncomingFaceId() { return IncomingFaceIdLite::downCast(incomingFaceId); }
 
   /**
    * Get this field as an NetworkNack. This assumes you checked that
@@ -56,25 +56,25 @@ public:
    * @return This field as an NetworkNack.
    */
   const NetworkNackLite&
-  getNetworkNack() const { return NetworkNackLite::upCast(networkNack); }
+  getNetworkNack() const { return NetworkNackLite::downCast(networkNack); }
 
   NetworkNackLite&
-  getNetworkNack() { return NetworkNackLite::upCast(networkNack); }
+  getNetworkNack() { return NetworkNackLite::downCast(networkNack); }
 
   /**
-   * Upcast the reference to the ndn_LpPacketHeaderField struct to an
+   * Downcast the reference to the ndn_LpPacketHeaderField struct to an
    * LpPacketHeaderFieldLite.
    * @param lpPacketHeaderField A reference to the ndn_LpPacketHeaderField struct.
    * @return The same reference as LpPacketHeaderFieldLite.
    */
   static LpPacketHeaderFieldLite&
-  upCast(ndn_LpPacketHeaderField& lpPacketHeaderField)
+  downCast(ndn_LpPacketHeaderField& lpPacketHeaderField)
   {
     return *(LpPacketHeaderFieldLite*)&lpPacketHeaderField;
   }
 
   static const LpPacketHeaderFieldLite&
-  upCast(const ndn_LpPacketHeaderField& lpPacketHeaderField)
+  downCast(const ndn_LpPacketHeaderField& lpPacketHeaderField)
   {
     return *(LpPacketHeaderFieldLite*)&lpPacketHeaderField;
   }
@@ -98,7 +98,7 @@ public:
    * @return The wire encoding, or an isNull Blob if not specified.
    */
   const BlobLite&
-  getFragmentWireEncoding() const { return BlobLite::upCast(fragmentWireEncoding); }
+  getFragmentWireEncoding() const { return BlobLite::downCast(fragmentWireEncoding); }
 
   /**
    * Get the number of header fields. This does not include the fragment.
@@ -116,13 +116,13 @@ public:
   const LpPacketHeaderFieldLite&
   getHeaderField(int index) const
   {
-    return LpPacketHeaderFieldLite::upCast(headerFields[index]);
+    return LpPacketHeaderFieldLite::downCast(headerFields[index]);
   }
 
   LpPacketHeaderFieldLite&
   getHeaderField(int index)
   {
-    return LpPacketHeaderFieldLite::upCast(headerFields[index]);
+    return LpPacketHeaderFieldLite::downCast(headerFields[index]);
   }
 
   /**
@@ -133,19 +133,19 @@ public:
   void
   setFragmentWireEncoding(const BlobLite& fragmentWireEncoding)
   {
-    BlobLite::upCast(this->fragmentWireEncoding) = fragmentWireEncoding;
+    BlobLite::downCast(this->fragmentWireEncoding) = fragmentWireEncoding;
   }
 
   /**
-   * Upcast the reference to the ndn_LpPacket struct to an LpPacketLite.
+   * Downcast the reference to the ndn_LpPacket struct to an LpPacketLite.
    * @param lpPacket A reference to the ndn_LpPacket struct.
    * @return The same reference as LpPacketLite.
    */
   static LpPacketLite&
-  upCast(ndn_LpPacket& lpPacket) { return *(LpPacketLite*)&lpPacket; }
+  downCast(ndn_LpPacket& lpPacket) { return *(LpPacketLite*)&lpPacket; }
 
   static const LpPacketLite&
-  upCast(const ndn_LpPacket& lpPacket) { return *(LpPacketLite*)&lpPacket; }
+  downCast(const ndn_LpPacket& lpPacket) { return *(LpPacketLite*)&lpPacket; }
 
 private:
   // Declare friends who can downcast to the private base.

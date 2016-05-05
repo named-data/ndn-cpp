@@ -52,7 +52,7 @@ public:
    * @return The initial vector. If not specified, isNull() is true.
    */
   const BlobLite&
-  getInitialVector() const { return BlobLite::upCast(initialVector); }
+  getInitialVector() const { return BlobLite::downCast(initialVector); }
 
   /**
    * Set the algorithm type.
@@ -75,20 +75,20 @@ public:
   EncryptParamsLite&
   setInitialVector(const BlobLite& initialVector)
   {
-    BlobLite::upCast(this->initialVector) = initialVector;
+    BlobLite::downCast(this->initialVector) = initialVector;
     return *this;
   }
 
   /**
-   * Upcast the reference to the ndn_EncryptParams struct to an EncryptParamsLite.
+   * Downcast the reference to the ndn_EncryptParams struct to an EncryptParamsLite.
    * @param keyLocator A reference to the ndn_EncryptParams struct.
    * @return The same reference as EncryptParamsLite.
    */
   static EncryptParamsLite&
-  upCast(ndn_EncryptParams& encryptParams) { return *(EncryptParamsLite*)&encryptParams; }
+  downCast(ndn_EncryptParams& encryptParams) { return *(EncryptParamsLite*)&encryptParams; }
 
   static const EncryptParamsLite&
-  upCast(const ndn_EncryptParams& encryptParams) { return *(EncryptParamsLite*)&encryptParams; }
+  downCast(const ndn_EncryptParams& encryptParams) { return *(EncryptParamsLite*)&encryptParams; }
 };
 
 }

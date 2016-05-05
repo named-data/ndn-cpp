@@ -114,19 +114,19 @@ public:
   copyFromBack(const uint8_t *value, size_t valueLength, size_t offsetFromBack);
 
   /**
-   * Upcast the reference to the ndn_DynamicUInt8ArrayLite struct to a
+   * Downcast the reference to the ndn_DynamicUInt8ArrayLite struct to a
    * DynamicUInt8ArrayLiteLite.
    * @param dynamicArray A reference to the ndn_DynamicUInt8ArrayLite struct.
    * @return The same reference as DynamicUInt8ArrayLiteLite.
    */
   static DynamicUInt8ArrayLite&
-  upCast(ndn_DynamicUInt8Array& dynamicArray)
+  downCast(ndn_DynamicUInt8Array& dynamicArray)
   {
     return *(DynamicUInt8ArrayLite*)&dynamicArray;
   }
 
   static const DynamicUInt8ArrayLite&
-  upCast(const ndn_DynamicUInt8Array& dynamicArray)
+  downCast(const ndn_DynamicUInt8Array& dynamicArray)
   {
     return *(DynamicUInt8ArrayLite*)&dynamicArray;
   }

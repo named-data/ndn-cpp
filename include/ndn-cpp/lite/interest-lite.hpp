@@ -62,10 +62,10 @@ public:
      ndn_NameComponent *keyNameComponents, size_t maxKeyNameComponents);
 
   NameLite&
-  getName() { return NameLite::upCast(name); }
+  getName() { return NameLite::downCast(name); }
 
   const NameLite&
-  getName() const { return NameLite::upCast(name); }
+  getName() const { return NameLite::downCast(name); }
 
   int
   getMinSuffixComponents() const { return minSuffixComponents; }
@@ -74,16 +74,16 @@ public:
   getMaxSuffixComponents() const { return maxSuffixComponents; }
 
   const KeyLocatorLite&
-  getKeyLocator() const { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() const { return KeyLocatorLite::downCast(keyLocator); }
 
   KeyLocatorLite&
-  getKeyLocator() { return KeyLocatorLite::upCast(keyLocator); }
+  getKeyLocator() { return KeyLocatorLite::downCast(keyLocator); }
 
   ExcludeLite&
-  getExclude() { return ExcludeLite::upCast(exclude); }
+  getExclude() { return ExcludeLite::downCast(exclude); }
 
   const ExcludeLite&
-  getExclude() const { return ExcludeLite::upCast(exclude); }
+  getExclude() const { return ExcludeLite::downCast(exclude); }
 
   int
   getChildSelector() const { return childSelector; }
@@ -99,10 +99,10 @@ public:
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds; }
 
   const BlobLite&
-  getNonce() const { return BlobLite::upCast(nonce); }
+  getNonce() const { return BlobLite::downCast(nonce); }
 
   const BlobLite&
-  getLinkWireEncoding() const { return BlobLite::upCast(linkWireEncoding); }
+  getLinkWireEncoding() const { return BlobLite::downCast(linkWireEncoding); }
 
   int
   getSelectedDelegationIndex() const { return selectedDelegationIndex; }
@@ -116,7 +116,7 @@ public:
   ndn_Error
   setName(const NameLite& name)
   {
-    return NameLite::upCast(this->name).set(name);
+    return NameLite::downCast(this->name).set(name);
   }
 
   /**
@@ -187,7 +187,7 @@ public:
   InterestLite&
   setNonce(const BlobLite& nonce)
   {
-    BlobLite::upCast(this->nonce) = nonce;
+    BlobLite::downCast(this->nonce) = nonce;
     return *this;
   }
 
@@ -200,7 +200,7 @@ public:
   InterestLite&
   setLinkWireEncoding(const BlobLite& linkWireEncoding)
   {
-    BlobLite::upCast(this->linkWireEncoding) = linkWireEncoding;
+    BlobLite::downCast(this->linkWireEncoding) = linkWireEncoding;
     return *this;
   }
 
@@ -227,15 +227,15 @@ public:
   set(const InterestLite& other);
 
   /**
-   * Upcast the reference to the ndn_Interest struct to a InterestLite.
+   * Downcast the reference to the ndn_Interest struct to a InterestLite.
    * @param interest A reference to the ndn_Interest struct.
    * @return The same reference as InterestLite.
    */
   static InterestLite&
-  upCast(ndn_Interest& interest) { return *(InterestLite*)&interest; }
+  downCast(ndn_Interest& interest) { return *(InterestLite*)&interest; }
 
   static const InterestLite&
-  upCast(const ndn_Interest& interest) { return *(InterestLite*)&interest; }
+  downCast(const ndn_Interest& interest) { return *(InterestLite*)&interest; }
 
 private:
   // Declare friends who can downcast to the private base.

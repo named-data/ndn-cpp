@@ -58,7 +58,7 @@ public:
     Component(const BlobLite& value);
 
     const BlobLite&
-    getValue() const { return BlobLite::upCast(value); }
+    getValue() const { return BlobLite::downCast(value); }
 
     /**
      * Check if this component is a segment number according to NDN naming
@@ -212,15 +212,15 @@ public:
     int compare(const Component& other) const;
 
     /**
-     * Upcast the reference to the ndn_NameComponent struct to a NameLite::Component.
+     * Downcast the reference to the ndn_NameComponent struct to a NameLite::Component.
      * @param component A reference to the ndn_NameComponent struct.
      * @return The same reference as NameLite::Component.
      */
     static Component&
-    upCast(ndn_NameComponent& component) { return *(Component*)&component; }
+    downCast(ndn_NameComponent& component) { return *(Component*)&component; }
 
     static const Component&
-    upCast(const ndn_NameComponent& component) { return *(Component*)&component; }
+    downCast(const ndn_NameComponent& component) { return *(Component*)&component; }
   };
 
   /**
@@ -244,10 +244,10 @@ public:
   {
     // TODO: Range check.
     if (i >= 0)
-      return Component::upCast(components[i]);
+      return Component::downCast(components[i]);
     else
       // Negative index.
-      return Component::upCast(components[nComponents - (-i)]);
+      return Component::downCast(components[nComponents - (-i)]);
   }
 
   /**
@@ -421,15 +421,15 @@ public:
   set(const NameLite& other);
 
   /**
-   * Upcast the reference to the ndn_Name struct to a NameLite.
+   * Downcast the reference to the ndn_Name struct to a NameLite.
    * @param name A reference to the ndn_Name struct.
    * @return The same reference as NameLite.
    */
   static NameLite&
-  upCast(ndn_Name& name) { return *(NameLite*)&name; }
+  downCast(ndn_Name& name) { return *(NameLite*)&name; }
 
   static const NameLite&
-  upCast(const ndn_Name& name) { return *(NameLite*)&name; }
+  downCast(const ndn_Name& name) { return *(NameLite*)&name; }
 
 private:
   // Declare friends who can downcast to the private base.

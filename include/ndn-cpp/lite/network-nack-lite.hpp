@@ -87,19 +87,19 @@ public:
   getFirstHeader(const LpPacketLite& lpPacket);
 
   /**
-   * Upcast the reference to the ndn_NetworkNack struct to an
+   * Downcast the reference to the ndn_NetworkNack struct to an
    * NetworkNackLite.
    * @param networkNack A reference to the ndn_NetworkNack struct.
    * @return The same reference as NetworkNackLite.
    */
   static NetworkNackLite&
-  upCast(ndn_NetworkNack& networkNack)
+  downCast(ndn_NetworkNack& networkNack)
   {
     return *(NetworkNackLite*)&networkNack;
   }
 
   static const NetworkNackLite&
-  upCast(const ndn_NetworkNack& networkNack)
+  downCast(const ndn_NetworkNack& networkNack)
   {
     return *(NetworkNackLite*)&networkNack;
   }
