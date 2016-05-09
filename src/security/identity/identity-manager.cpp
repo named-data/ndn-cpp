@@ -38,6 +38,7 @@
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
+#include "../../util/config-file.hpp"
 #include "../../c/util/time.h"
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/identity/identity-manager.hpp>
@@ -51,70 +52,103 @@ IdentityManager::IdentityManager
    const ptr_lib::shared_ptr<PrivateKeyStorage>& privateKeyStorage)
 : identityStorage_(identityStorage), privateKeyStorage_(privateKeyStorage)
 {
+  // Don't call checkTpm() when using a custom PrivateKeyStorage.
 }
+
+IdentityManager::IdentityManager
+  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
+: identityStorage_(identityStorage)
+{
+  ConfigFile config;
+  string canonicalTpmLocator;
+  privateKeyStorage_ = getDefaultPrivateKeyStorage(config, canonicalTpmLocator);
+
+  checkTpm(canonicalTpmLocator);
+}
+
+IdentityManager::IdentityManager()
+{
+  ConfigFile config;
+  identityStorage_ = getDefaultIdentityStorage(config);
+  string canonicalTpmLocator;
+  privateKeyStorage_ = getDefaultPrivateKeyStorage(config, canonicalTpmLocator);
+
+  checkTpm(canonicalTpmLocator);
+}
+
+ptr_lib::shared_ptr<IdentityStorage>
+IdentityManager::getDefaultIdentityStorage(ConfigFile& config)
+{
+  string pibLocator = config.get("pib", "");
+
+  if (pibLocator != "") {
+    // Don't support non-default locations for now.
+    if (pibLocator != "pib-sqlite3")
+      throw SecurityException
+        ("Invalid config file pib value: " + pibLocator);
+  }
 
 #ifdef NDN_CPP_HAVE_SQLITE3
-
-#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::make_shared<BasicIdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
+  return ptr_lib::make_shared<BasicIdentityStorage>();
 #else
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-: identityStorage_(ptr_lib::make_shared<BasicIdentityStorage>()),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
-}
-#endif
-
-#else
-// No SQLite, so we can't use BasicIdentityStorage.
-
-#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<OSXPrivateKeyStorage>())
-{
-}
-
-IdentityManager::IdentityManager()
-{
+  // No SQLite, so we can't use BasicIdentityStorage.
   throw SecurityException
     ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
+#endif
 }
+
+ptr_lib::shared_ptr<PrivateKeyStorage>
+IdentityManager::getDefaultPrivateKeyStorage
+  (ConfigFile& config, string& canonicalTpmLocator)
+{
+  string tpmLocator = config.get("tpm", "");
+
+  if (tpmLocator == "") {
+    // Use the system default.
+#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
+    canonicalTpmLocator = "tpm-osxkeychain:";
+    return ptr_lib::make_shared<OSXPrivateKeyStorage>();
 #else
-IdentityManager::IdentityManager
-  (const ptr_lib::shared_ptr<IdentityStorage>& identityStorage)
-: identityStorage_(identityStorage),
-  privateKeyStorage_(ptr_lib::make_shared<FilePrivateKeyStorage>())
-{
+    canonicalTpmLocator = "tpm-file:";
+    return ptr_lib::make_shared<FilePrivateKeyStorage>();
+#endif
+  }
+  else if (tpmLocator == "tpm-osxkeychain") {
+#if NDN_CPP_HAVE_OSX_SECURITY
+    canonicalTpmLocator = "tpm-osxkeychain:";
+    return ptr_lib::make_shared<OSXPrivateKeyStorage>();
+#else
+    throw SecurityException
+      ("Can't use config file tpm=tpm-osxkeychain because the system doesn't support it.");
+#endif
+  }
+  else if (tpmLocator == "tpm-file") {
+    // Don't support non-default locations for now.
+    canonicalTpmLocator = "tpm-file:";
+    return ptr_lib::make_shared<FilePrivateKeyStorage>();
+  }
+  else
+    throw SecurityException
+      ("Invalid config file tpm value: " + tpmLocator);
 }
 
-IdentityManager::IdentityManager()
+void
+IdentityManager::checkTpm(const std::string& canonicalTpmLocator)
 {
-  throw SecurityException
-    ("Can't create the default IdentityManager without an identityStorage. Try installing libsqlite3 and ./configure again.");
-}
-#endif
+  string tpmLocator;
+  try {
+    tpmLocator = identityStorage_->getTpmLocator();
+  } catch (SecurityException& ex) {
+    // The TPM locator is not set in PIB yet.
+    return;
+  }
 
-#endif
+  // Just check. If a PIB reset is required, expect ndn-cxx/NFD to do it.
+  if (!tpmLocator.empty() && tpmLocator != canonicalTpmLocator)
+    throw SecurityException
+      ("The TPM locator supplied does not match the TPM locator in the PIB: " +
+       tpmLocator + " != " + canonicalTpmLocator);
+}
 
 Name
 IdentityManager::createIdentityAndCertificate

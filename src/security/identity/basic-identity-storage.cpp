@@ -44,6 +44,14 @@ using namespace std;
 namespace ndn
 {
 
+static const string INIT_TPM_INFO_TABLE = "\
+CREATE TABLE IF NOT EXISTS                                           \n \
+  TpmInfo(                                                           \n \
+      tpm_locator BLOB NOT NULL,                                     \n \
+      PRIMARY KEY (tpm_locator)                                      \n \
+  );                                                                 \n \
+";
+
 static const string INIT_ID_TABLE = "\
 CREATE TABLE IF NOT EXISTS                                           \n \
   Identity(                                                          \n \
@@ -127,8 +135,28 @@ BasicIdentityStorage::BasicIdentityStorage(const std::string& databaseFilePath)
   if (res != SQLITE_OK)
     throw SecurityException("identity DB cannot be opened/created");
 
-  //Check if ID table exists.
+  // Check if TpmInfo table exists.
   sqlite3_stmt *statement;
+  sqlite3_prepare_v2(database_, "SELECT name FROM sqlite_master WHERE type='table' And name='TpmInfo'", -1, &statement, 0);
+  res = sqlite3_step(statement);
+
+  bool tpmInfoTableExists = false;
+  if (res == SQLITE_ROW)
+    tpmInfoTableExists = true;
+
+  sqlite3_finalize(statement);
+
+  if (!tpmInfoTableExists) {
+    char *errorMessage = 0;
+    res = sqlite3_exec(database_, INIT_TPM_INFO_TABLE.c_str(), NULL, NULL, &errorMessage);
+
+    if (res != SQLITE_OK && errorMessage != 0) {
+      _LOG_TRACE("Init \"error\" in TpmInfo: " << errorMessage);
+      sqlite3_free(errorMessage);
+    }
+  }
+
+  //Check if ID table exists.
   sqlite3_prepare_v2(database_, "SELECT name FROM sqlite_master WHERE type='table' And name='Identity'", -1, &statement, 0);
   res = sqlite3_step(statement);
 
@@ -443,6 +471,29 @@ BasicIdentityStorage::getCertificate(const Name &certificateName)
     sqlite3_finalize(statement);
     throw SecurityException
       ("BasicIdentityStorage::getCertificate: The certificate does not exist");
+  }
+}
+
+string
+BasicIdentityStorage::getTpmLocator()
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "SELECT tpm_locator FROM TpmInfo", -1, &statement, 0);
+
+  int res = sqlite3_step(statement);
+
+  if (res == SQLITE_ROW) {
+    string tpmLocator
+      (reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)),
+       sqlite3_column_bytes(statement, 0));
+    sqlite3_finalize(statement);
+    return tpmLocator;
+  }
+  else {
+    sqlite3_finalize(statement);
+    throw SecurityException
+      ("BasicIdentityStorage::getTpmLocator: TPM info does not exist");
   }
 }
 

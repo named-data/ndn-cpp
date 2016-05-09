@@ -291,6 +291,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/blob-stream.hpp \
   src/util/boost-info-parser.cpp src/util/boost-info-parser.hpp \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
+  src/util/config-file.cpp src/util/config-file.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
   src/util/logging.cpp src/util/logging.hpp \
   src/util/memory-content-cache.cpp \

@@ -151,6 +151,9 @@ MemoryIdentityStorage::getCertificate(const Name& certificateName)
   return certificate;
 }
 
+string
+MemoryIdentityStorage::getTpmLocator() { return "tpm-memory:"; }
+
 Name
 MemoryIdentityStorage::getDefaultIdentity()
 {
