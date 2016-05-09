@@ -539,7 +539,7 @@ private:
    * Check that identityStorage_->getTpmLocator() (if defined) matches the
    * canonicalTpmLocator.
    * @param canonicalTpmLocator The canonical locator from
-   * getDefaultPrivateKeyStorage(),
+   * getDefaultPrivateKeyStorage().
    * @throws SecurityException if the private key storage does not match.
    */
   void
