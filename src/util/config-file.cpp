@@ -88,7 +88,7 @@ void
 ConfigFile::parse()
 {
   if (path_.empty())
-    throw Error("ConfigFile::parse: Failed to locate configuration file for parsing");
+    throw Error("ConfigFile::parse: Failed to locate the configuration file for parsing");
 
   ifstream input(path_.c_str());
   string line;

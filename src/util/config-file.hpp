@@ -29,6 +29,10 @@
 
 namespace ndn {
 
+/**
+ * A ConfigFile locates, opens, and parses a library configuration file, and
+ * holds the values for the application to get.
+ */
 class ConfigFile {
 public:
   /**
@@ -56,7 +60,7 @@ public:
   };
 
   /**
-   * Get the value for the key, or a default valud if not found.
+   * Get the value for the key, or a default value if not found.
    * @param key The key to search for.
    * @param defaultValue The default value if the key is not found.
    * @return The value, or defaultValue if the key is not found.
