@@ -1,3 +1,9 @@
+Interim changes since NDN-CPP v0.10 (2016-05-09)
+------------------------------------------------
+
+Bug fixes
+* http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
+
 NDN-CPP v0.10 (2016-05-06)
 --------------------------
 
