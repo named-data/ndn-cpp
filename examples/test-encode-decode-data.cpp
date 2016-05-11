@@ -30,6 +30,7 @@
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/generic-signature.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -237,6 +238,17 @@ static void dumpData(const Data& data)
     if (signature) {
       cout << "DigestSha256 signature.signature: "
            << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+    }
+  }
+  {
+    const GenericSignature *signature =
+      dynamic_cast<const GenericSignature*>(data.getSignature());
+    if (signature) {
+      cout << "Generic signature.signature: "
+           << (signature->getSignature().size() > 0 ? signature->getSignature().toHex().c_str() : "<none>") << endl;
+      cout << "  Type code: " << signature->getTypeCode() << " signatureInfo: "
+           << (signature->getSignatureInfoEncoding().size() > 0 ?
+               signature->getSignatureInfoEncoding().toHex().c_str() : "<none>") << endl;
     }
   }
   if (keyLocator) {
