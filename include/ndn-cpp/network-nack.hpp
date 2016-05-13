@@ -23,9 +23,9 @@
 #ifndef NDN_NETWORK_NACK_HPP
 #define NDN_NETWORK_NACK_HPP
 
-#include <ndn-cpp/common.hpp>
-#include <ndn-cpp/lite/network-nack-lite.hpp>
-#include <ndn-cpp/lp-packet-header-field.hpp>
+#include "common.hpp"
+#include "lite/network-nack-lite.hpp"
+#include "lp-packet-header-field.hpp"
 
 namespace ndn {
 

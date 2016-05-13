@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <ndn-cpp/security/policy/certificate-cache.hpp>
+#include "certificate-cache.hpp"
 #include "policy-manager.hpp"
 
 class TestVerificationRulesFriend;
