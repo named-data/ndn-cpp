@@ -194,6 +194,8 @@ static void dumpData(const Data& data)
       cout << "LINK" << endl;
     else if (data.getMetaInfo().getType() == ndn_ContentType_NACK)
       cout << "NACK" << endl;
+    else if (data.getMetaInfo().getType() == ndn_ContentType_OTHER_CODE)
+      cout << "other code " << data.getMetaInfo().getOtherTypeCode() << endl;
   }
   cout << "metaInfo.freshnessPeriod (milliseconds): ";
   if (data.getMetaInfo().getFreshnessPeriod() >= 0)

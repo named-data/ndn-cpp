@@ -38,13 +38,21 @@ encodeMetaInfoValue(const void *context, struct ndn_TlvEncoder *encoder)
 
   if (!((int)metaInfo->type < 0 || metaInfo->type == ndn_ContentType_BLOB)) {
     // Not the default, so we need to encode the type.
-    if (metaInfo->type == ndn_ContentType_LINK || metaInfo->type == ndn_ContentType_KEY) {
+    if (metaInfo->type == ndn_ContentType_LINK ||
+        metaInfo->type == ndn_ContentType_KEY ||
+        metaInfo->type == ndn_ContentType_NACK) {
       // The ContentType enum is set up with the correct integer for each NDN-TLV ContentType.
       if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
           (encoder, ndn_Tlv_ContentType, metaInfo->type)))
         return error;
     }
+    else if (metaInfo->type == ndn_ContentType_OTHER_CODE) {
+      if ((error = ndn_TlvEncoder_writeNonNegativeIntegerTlv
+          (encoder, ndn_Tlv_ContentType, metaInfo->otherTypeCode)))
+        return error;
+    }
     else
+      // We don't expect this to happen.
       return NDN_ERROR_unrecognized_ndn_ContentType;
   }
 
@@ -133,13 +141,23 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
   if ((error = ndn_TlvDecoder_readNestedTlvsStart(decoder, ndn_Tlv_MetaInfo, &endOffset)))
     return error;
 
-  // The ContentType enum is set up with the correct integer for each NDN-TLV ContentType.
+  int type;
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
-       (decoder, ndn_Tlv_ContentType, endOffset, (int *)&metaInfo->type)))
+       (decoder, ndn_Tlv_ContentType, endOffset, &type)))
     return error;
-  if ((int)metaInfo->type < 0)
-    // Set to the actual value for the default.
+  if (type < 0 || type == ndn_ContentType_BLOB)
+    // Default to BLOB if the value is omitted.
     metaInfo->type = ndn_ContentType_BLOB;
+  else if (type == ndn_ContentType_LINK ||
+           type == ndn_ContentType_KEY ||
+           type == ndn_ContentType_NACK)
+    // The ContentType enum is set up with the correct integer for each NDN-TLV ContentType.
+    metaInfo->type = type;
+  else {
+    // Unrecognized content type.
+    metaInfo->type = ndn_ContentType_OTHER_CODE;
+    metaInfo->otherTypeCode = type;
+  }
 
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlvAsDouble
        (decoder, ndn_Tlv_FreshnessPeriod, endOffset, &metaInfo->freshnessPeriod)))

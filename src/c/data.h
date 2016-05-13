@@ -92,6 +92,7 @@ static __inline void ndn_MetaInfo_initialize(struct ndn_MetaInfo *self)
 {
   self->timestampMilliseconds = -1;
   self->type = ndn_ContentType_BLOB;
+  self->otherTypeCode = -1;
   self->freshnessPeriod = -1;
   ndn_NameComponent_initialize(&self->finalBlockId, 0, 0);
 }
