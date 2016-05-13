@@ -69,7 +69,8 @@ public:
    * Set the packet's reason code to use when the reason enum is
    * ndn_NetworkNackReason_OTHER_CODE. If the packet's reason code is a
    * recognized enum value, just call setReason().
-   * @param otherReasonCode The packet's unrecognized reason code.
+   * @param otherReasonCode The packet's unrecognized reason code, which must be
+   * non-negative.
    */
   void
   setOtherReasonCode(int otherReasonCode)
