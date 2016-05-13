@@ -172,8 +172,9 @@ FilePrivateKeyStorage::generateKeyPair
     throw SecurityException("Unsupported key type");
 
   string keyUri = keyName.toUri();
-  string publicKeyFilePath = nameTransform(keyUri, ".pub");
-  string privateKeyFilePath = nameTransform(keyUri, ".pri");
+  string keyFilePathNoExtension = maintainMapping(keyUri);
+  string publicKeyFilePath = keyFilePathNoExtension + ".pub";
+  string privateKeyFilePath = keyFilePathNoExtension + ".pri";
 
   ofstream publicKeyFile(publicKeyFilePath.c_str());
   publicKeyFile << toBase64(publicKeyDer.buf(), publicKeyDer.size(), true);
@@ -343,9 +344,26 @@ FilePrivateKeyStorage::nameTransform
 
   string digest = toBase64(hash, sizeof(hash));
   ndn_trim(digest);
+  // TODO: Handle non-unix file system paths which don't use '/'.
   std::replace(digest.begin(), digest.end(), '/', '%');
 
   return keyStorePath_ + "/" + digest + extension;
+}
+
+string
+FilePrivateKeyStorage::maintainMapping(const string& keyName)
+{
+  string keyFilePathNoExtension = nameTransform(keyName, "");
+
+  // TODO: Handle non-unix file system paths which don't use '/'.
+  string mappingFilePath = keyStorePath_ + "/" + "mapping.txt";
+
+  ofstream outFile;
+  outFile.open(mappingFilePath.c_str(), ios_base::app);
+  outFile << keyName << ' ' << keyFilePathNoExtension << endl;
+  outFile.close();
+
+  return keyFilePathNoExtension;
 }
 
 }

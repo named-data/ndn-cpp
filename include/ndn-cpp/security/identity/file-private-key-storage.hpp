@@ -124,6 +124,15 @@ private:
   std::string
   nameTransform(const std::string& keyName, const std::string& extension);
 
+  /**
+   * Use nameTransform to get the file path for keyName (without the extension)
+   * and also add to the mapping.txt file.
+   * @param keyName The key name which is transformed to a file path.
+   * @return The key file path without the extension.
+   */
+  std::string
+  maintainMapping(const std::string& keyName);
+
   std::string keyStorePath_;
 };
 
