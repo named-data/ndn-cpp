@@ -19,6 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include <ndn-cpp/meta-info.hpp>
 #include "c/data.h"
 
@@ -33,6 +34,7 @@ MetaInfo::get(MetaInfoLite& metaInfoLite) const
   //   MetaInfoLite doesn't expose it.
   ((struct ndn_MetaInfo *)&metaInfoLite)->timestampMilliseconds = timestampMilliseconds_;
   metaInfoLite.setType(type_);
+  metaInfoLite.setOtherTypeCode(otherTypeCode_);
   metaInfoLite.setFreshnessPeriod(freshnessPeriod_);
   metaInfoLite.setFinalBlockId(NameLite::Component(finalBlockId_.getValue()));
 }
@@ -44,8 +46,20 @@ MetaInfo::set(const MetaInfoLite& metaInfoLite)
   //   MetaInfoLite doesn't expose it.
   timestampMilliseconds_ = ((struct ndn_MetaInfo *)&metaInfoLite)->timestampMilliseconds;
   setType(metaInfoLite.getType());
+  // Set otherTypeCode_ directly to avoid the non-negative check.
+  otherTypeCode_ = metaInfoLite.getOtherTypeCode();
   setFreshnessPeriod(metaInfoLite.getFreshnessPeriod());
   setFinalBlockId(Name::Component(Blob(metaInfoLite.getFinalBlockId().getValue())));
+}
+
+void
+MetaInfo::setOtherTypeCode(int otherTypeCode)
+{
+  if (otherTypeCode < 0)
+    throw runtime_error("MetaInfo other type code must be non-negative");
+
+  otherTypeCode_ = otherTypeCode;
+  ++changeCount_;
 }
 
 }
