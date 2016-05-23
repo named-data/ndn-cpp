@@ -17,6 +17,9 @@ SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libndn-cpp.pc
+
 check_PROGRAMS = bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
