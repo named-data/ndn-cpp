@@ -103,6 +103,30 @@ private:
   uint32_t size_;
 };
 
+class AesKeyParams : public KeyParams {
+public:
+  explicit
+  AesKeyParams(uint32_t size = AesKeyParams::getDefaultSize())
+  : KeyParams(AesKeyParams::getType()), size_(size)
+  {
+  }
+
+  uint32_t
+  getKeySize() const
+  {
+    return size_;
+  }
+
+private:
+  static uint32_t
+  getDefaultSize() { return 64; }
+
+  static KeyType
+  getType() { return KEY_TYPE_AES; }
+
+  uint32_t size_;
+};
+
 }
 
 #endif
