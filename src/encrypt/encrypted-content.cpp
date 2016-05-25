@@ -21,7 +21,7 @@
  */
 
 #include "../c/encrypt/encrypted-content.h"
-#include "ndn-cpp/lite/encrypt/encrypted-content-lite.hpp"
+#include <ndn-cpp/lite/encrypt/encrypted-content-lite.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
 
 namespace ndn {
@@ -43,6 +43,5 @@ EncryptedContent::set(const EncryptedContentLite& encryptedContentLite)
   setInitialVector(Blob(encryptedContentLite.getInitialVector()));
   setPayload(Blob(encryptedContentLite.getPayload()));
 }
-
 
 }
