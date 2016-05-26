@@ -28,7 +28,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
-  bin/unit-tests/test-registration-callbacks bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-registration-callbacks bin/unit-tests/test-rsa-algorithm \
+  bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
@@ -422,6 +423,10 @@ bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_registration_callbacks_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_rsa_algorithm_SOURCES = tests/unit-tests/test-rsa-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_rsa_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

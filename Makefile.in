@@ -107,6 +107,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
 	bin/unit-tests/test-registration-callbacks$(EXEEXT) \
+	bin/unit-tests/test-rsa-algorithm$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
 noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
 	bin/test-echo-consumer$(EXEEXT) \
@@ -249,6 +250,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encrypt/encrypted-content.lo \
 	src/encrypt/algo/aes-algorithm.lo \
 	src/encrypt/algo/encrypt-params.lo \
+	src/encrypt/algo/rsa-algorithm.lo \
 	src/impl/delayed-call-table.lo \
 	src/impl/interest-filter-table.lo \
 	src/impl/pending-interest-table.lo \
@@ -453,6 +455,11 @@ bin_unit_tests_test_registration_callbacks_OBJECTS =  \
 	$(am_bin_unit_tests_test_registration_callbacks_OBJECTS)
 bin_unit_tests_test_registration_callbacks_DEPENDENCIES =  \
 	libndn-cpp.la
+am_bin_unit_tests_test_rsa_algorithm_OBJECTS = tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.$(OBJEXT)
+bin_unit_tests_test_rsa_algorithm_OBJECTS =  \
+	$(am_bin_unit_tests_test_rsa_algorithm_OBJECTS)
+bin_unit_tests_test_rsa_algorithm_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_verification_rules_OBJECTS = tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_verification_rules-gtest-all.$(OBJEXT)
 bin_unit_tests_test_verification_rules_OBJECTS =  \
@@ -546,6 +553,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
+	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
@@ -577,6 +585,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
+	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
@@ -1097,6 +1106,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
+  include/ndn-cpp/encrypt/algo/rsa-algorithm.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/control-response-lite.hpp \
@@ -1241,6 +1251,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/encrypted-content.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
   src/encrypt/algo/encrypt-params.cpp \
+  src/encrypt/algo/rsa-algorithm.cpp \
   src/impl/delayed-call-table.cpp src/impl/delayed-call-table.hpp \
   src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
@@ -1393,6 +1404,9 @@ bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_registration_callbacks_LDADD = libndn-cpp.la
+bin_unit_tests_test_rsa_algorithm_SOURCES = tests/unit-tests/test-rsa-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_rsa_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_verification_rules_LDADD = libndn-cpp.la
@@ -1672,6 +1686,8 @@ src/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
 src/encrypt/algo/aes-algorithm.lo: src/encrypt/algo/$(am__dirstamp) \
 	src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/algo/encrypt-params.lo: src/encrypt/algo/$(am__dirstamp) \
+	src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/algo/rsa-algorithm.lo: src/encrypt/algo/$(am__dirstamp) \
 	src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/impl/$(am__dirstamp):
 	@$(MKDIR_P) src/impl
@@ -2239,6 +2255,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_registration_callbacks-g
 bin/unit-tests/test-registration-callbacks$(EXEEXT): $(bin_unit_tests_test_registration_callbacks_OBJECTS) $(bin_unit_tests_test_registration_callbacks_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_registration_callbacks_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-registration-callbacks$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_registration_callbacks_OBJECTS) $(bin_unit_tests_test_registration_callbacks_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-rsa-algorithm$(EXEEXT): $(bin_unit_tests_test_rsa_algorithm_OBJECTS) $(bin_unit_tests_test_rsa_algorithm_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_rsa_algorithm_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-rsa-algorithm$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_rsa_algorithm_OBJECTS) $(bin_unit_tests_test_rsa_algorithm_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2339,6 +2365,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
@@ -2430,6 +2457,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/encrypted-content.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/aes-algorithm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/encrypt-params.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/rsa-algorithm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/delayed-call-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/interest-filter-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/pending-interest-table.Plo@am__quote@
@@ -2509,6 +2537,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po@am__quote@
 
 .c.o:
@@ -2950,6 +2979,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_registration_callbacks-g
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_registration_callbacks-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_registration_callbacks_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_registration_callbacks-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.o: tests/unit-tests/test-rsa-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Tpo -c -o tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.o `test -f 'tests/unit-tests/test-rsa-algorithm.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-rsa-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-rsa-algorithm.cpp' object='tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.o `test -f 'tests/unit-tests/test-rsa-algorithm.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-rsa-algorithm.cpp
+
+tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.obj: tests/unit-tests/test-rsa-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Tpo -c -o tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.obj `if test -f 'tests/unit-tests/test-rsa-algorithm.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-rsa-algorithm.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-rsa-algorithm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-rsa-algorithm.cpp' object='tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.obj `if test -f 'tests/unit-tests/test-rsa-algorithm.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-rsa-algorithm.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-rsa-algorithm.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_rsa_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_rsa_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o: tests/unit-tests/test-verification-rules.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_verification_rules_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Tpo -c -o tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o `test -f 'tests/unit-tests/test-verification-rules.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-verification-rules.cpp
@@ -3404,6 +3461,13 @@ bin/unit-tests/test-policy-manager.log: bin/unit-tests/test-policy-manager$(EXEE
 bin/unit-tests/test-registration-callbacks.log: bin/unit-tests/test-registration-callbacks$(EXEEXT)
 	@p='bin/unit-tests/test-registration-callbacks$(EXEEXT)'; \
 	b='bin/unit-tests/test-registration-callbacks'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-rsa-algorithm.log: bin/unit-tests/test-rsa-algorithm$(EXEEXT)
+	@p='bin/unit-tests/test-rsa-algorithm$(EXEEXT)'; \
+	b='bin/unit-tests/test-rsa-algorithm'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
