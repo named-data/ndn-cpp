@@ -136,7 +136,6 @@ public:
   virtual bool
   doesKeyExist(const Name& keyName, KeyClass keyClass) = 0;
 
-protected:
   /**
    * Encode the private key to a PKCS #8 private key. We do this explicitly here
    * to avoid linking to extra OpenSSL libraries.
@@ -163,6 +162,7 @@ protected:
     (const OID& oid, const ptr_lib::shared_ptr<DerNode>& parameters,
      const ptr_lib::shared_ptr<DerNode>& bitString);
 
+protected:
   /**
    * Create an EC key using the curve in the algorithmParameters, decode the
    * privateKeyDer and set the private key value. This is necessary because
