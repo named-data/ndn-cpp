@@ -93,7 +93,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS =  \
+check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT) \
 	bin/unit-tests/test-control-response$(EXEEXT) \
 	bin/unit-tests/test-data-methods$(EXEEXT) \
@@ -247,6 +247,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/encrypt/encrypted-content.lo \
+	src/encrypt/algo/aes-algorithm.lo \
+	src/encrypt/algo/encrypt-params.lo \
 	src/impl/delayed-call-table.lo \
 	src/impl/interest-filter-table.lo \
 	src/impl/pending-interest-table.lo \
@@ -379,6 +381,11 @@ am_bin_test_sign_verify_data_hmac_OBJECTS =  \
 bin_test_sign_verify_data_hmac_OBJECTS =  \
 	$(am_bin_test_sign_verify_data_hmac_OBJECTS)
 bin_test_sign_verify_data_hmac_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_aes_algorithm_OBJECTS = tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.$(OBJEXT)
+bin_unit_tests_test_aes_algorithm_OBJECTS =  \
+	$(am_bin_unit_tests_test_aes_algorithm_OBJECTS)
+bin_unit_tests_test_aes_algorithm_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT)
 bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = $(am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS)
@@ -525,6 +532,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
+	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_control_response_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -555,6 +563,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
+	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_control_response_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -1083,7 +1092,11 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/decrypt-key.hpp \
+  include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
+  include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
+  include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/control-response-lite.hpp \
@@ -1226,6 +1239,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/encrypt/algo/aes-algorithm.cpp \
+  src/encrypt/algo/encrypt-params.cpp \
   src/impl/delayed-call-table.cpp src/impl/delayed-call-table.hpp \
   src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
@@ -1336,6 +1351,9 @@ bin_test_register_route_SOURCES = examples/test-register-route.cpp \
 bin_test_register_route_LDADD = libndn-cpp.la
 
 # Unit tests
+bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_control_parameters_encode_decode_LDADD = libndn-cpp.la
@@ -1645,6 +1663,16 @@ src/encrypt/$(DEPDIR)/$(am__dirstamp):
 	@: > src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/encrypted-content.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/algo/$(am__dirstamp):
+	@$(MKDIR_P) src/encrypt/algo
+	@: > src/encrypt/algo/$(am__dirstamp)
+src/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/encrypt/algo/$(DEPDIR)
+	@: > src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/algo/aes-algorithm.lo: src/encrypt/algo/$(am__dirstamp) \
+	src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/algo/encrypt-params.lo: src/encrypt/algo/$(am__dirstamp) \
+	src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/impl/$(am__dirstamp):
 	@$(MKDIR_P) src/impl
 	@: > src/impl/$(am__dirstamp)
@@ -2062,7 +2090,7 @@ tests/unit-tests/$(am__dirstamp):
 tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
 	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT):  \
+tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
@@ -2071,12 +2099,22 @@ contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
 contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
 	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT):  \
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 bin/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) bin/unit-tests
 	@: > bin/unit-tests/$(am__dirstamp)
+
+bin/unit-tests/test-aes-algorithm$(EXEEXT): $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_aes_algorithm_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-aes-algorithm$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 
 bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT): $(bin_unit_tests_test_control_parameters_encode_decode_OBJECTS) $(bin_unit_tests_test_control_parameters_encode_decode_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_control_parameters_encode_decode_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)
@@ -2247,6 +2285,8 @@ mostlyclean-compile:
 	-rm -f src/encoding/der/*.lo
 	-rm -f src/encrypt/*.$(OBJEXT)
 	-rm -f src/encrypt/*.lo
+	-rm -f src/encrypt/algo/*.$(OBJEXT)
+	-rm -f src/encrypt/algo/*.lo
 	-rm -f src/impl/*.$(OBJEXT)
 	-rm -f src/impl/*.lo
 	-rm -f src/lite/*.$(OBJEXT)
@@ -2285,6 +2325,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/apache/$(DEPDIR)/apr_base64.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_response-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
@@ -2387,6 +2428,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/encrypted-content.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/aes-algorithm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/encrypt-params.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/delayed-call-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/interest-filter-table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/pending-interest-table.Plo@am__quote@
@@ -2452,6 +2495,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_response-test-control-response.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
@@ -2514,6 +2558,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o: tests/unit-tests/test-aes-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Tpo -c -o tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o `test -f 'tests/unit-tests/test-aes-algorithm.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-aes-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-aes-algorithm.cpp' object='tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o `test -f 'tests/unit-tests/test-aes-algorithm.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-aes-algorithm.cpp
+
+tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.obj: tests/unit-tests/test-aes-algorithm.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Tpo -c -o tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.obj `if test -f 'tests/unit-tests/test-aes-algorithm.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-aes-algorithm.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-aes-algorithm.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-aes-algorithm.cpp' object='tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.obj `if test -f 'tests/unit-tests/test-aes-algorithm.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-aes-algorithm.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-aes-algorithm.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o: tests/unit-tests/test-control-parameters-encode-decode.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o `test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-control-parameters-encode-decode.cpp
@@ -2949,6 +3021,7 @@ clean-libtool:
 	-rm -rf src/encoding/.libs src/encoding/_libs
 	-rm -rf src/encoding/der/.libs src/encoding/der/_libs
 	-rm -rf src/encrypt/.libs src/encrypt/_libs
+	-rm -rf src/encrypt/algo/.libs src/encrypt/algo/_libs
 	-rm -rf src/impl/.libs src/impl/_libs
 	-rm -rf src/lite/.libs src/lite/_libs
 	-rm -rf src/lite/encoding/.libs src/lite/encoding/_libs
@@ -3237,6 +3310,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+bin/unit-tests/test-aes-algorithm.log: bin/unit-tests/test-aes-algorithm$(EXEEXT)
+	@p='bin/unit-tests/test-aes-algorithm$(EXEEXT)'; \
+	b='bin/unit-tests/test-aes-algorithm'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-control-parameters-encode-decode.log: bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)
 	@p='bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT)'; \
 	b='bin/unit-tests/test-control-parameters-encode-decode'; \
@@ -3609,6 +3689,8 @@ distclean-generic:
 	-rm -f src/encoding/der/$(am__dirstamp)
 	-rm -f src/encrypt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/encrypt/$(am__dirstamp)
+	-rm -f src/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/encrypt/algo/$(am__dirstamp)
 	-rm -f src/impl/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/impl/$(am__dirstamp)
 	-rm -f src/lite/$(DEPDIR)/$(am__dirstamp)
@@ -3654,7 +3736,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -3702,7 +3784,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
