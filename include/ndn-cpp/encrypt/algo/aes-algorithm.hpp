@@ -20,6 +20,9 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+// (This is ported from ndn::gep::algo::Aes, and named AesAlgorithm because
+// "Aes" is very short and not all the Common Client Libraries have namespaces.)
+
 #ifndef NDN_AES_ALGORITHM_HPP
 #define NDN_AES_ALGORITHM_HPP
 
