@@ -48,6 +48,10 @@ Blob
 AesAlgorithm::decrypt
   (const Blob& keyBits, const Blob& encryptedData, const EncryptParams& params)
 {
+  // For now, only support 128-bit.
+  if (keyBits.size() != BLOCK_SIZE)
+    throw runtime_error("AesAlgorithm: Incorrect key size");
+
   EVP_CIPHER_CTX ctx;
 
   if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb)
@@ -83,6 +87,10 @@ Blob
 AesAlgorithm::encrypt
   (const Blob& keyBits, const Blob& plainData, const EncryptParams& params)
 {
+  // For now, only support 128-bit.
+  if (keyBits.size() != BLOCK_SIZE)
+    throw runtime_error("AesAlgorithm: Incorrect key size");
+
   EVP_CIPHER_CTX ctx;
 
   if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb)
