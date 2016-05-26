@@ -23,6 +23,7 @@
 #ifndef NDN_KEY_PARAMS_HPP
 #define NDN_KEY_PARAMS_HPP
 
+#include <stdint.h>
 #include "security-common.hpp"
 
 namespace ndn {
