@@ -440,7 +440,7 @@ DerNode::DerGeneralizedTime::toIsoString(const MillisecondsSince1970& time)
 {
   char isoString[25];
   ndn_Error error;
-  if ((error = ndn_toIsoString(time, isoString)))
+  if ((error = ndn_toIsoString(time, 1, isoString)))
     throw runtime_error(ndn_getErrorString(error));
 
   return isoString;
