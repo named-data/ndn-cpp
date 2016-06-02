@@ -55,7 +55,8 @@ ndn_getNowMilliseconds()
 }
 
 ndn_Error
-ndn_toIsoString(ndn_MillisecondsSince1970 milliseconds, char *isoString)
+ndn_toIsoString
+  (ndn_MillisecondsSince1970 milliseconds, int includeFraction, char *isoString)
 {
 #if NDN_CPP_HAVE_GMTIME_SUPPORT
   double secondsSince1970;
@@ -70,14 +71,20 @@ ndn_toIsoString(ndn_MillisecondsSince1970 milliseconds, char *isoString)
     // 2e14 is about the year 8300.  We don't want to go over a 4-digit year.
     return NDN_ERROR_Calendar_time_value_out_of_range;
 
-  secondsSince1970 = milliseconds / 1000.0;
-  sprintf(fractionBuffer, "%.06lf", fmod(secondsSince1970, 1.0));
-  fraction = strchr(fractionBuffer, '.');
-  if (!fraction)
-    // Don't expect this to happen.
-    fraction = ".000000";
+  if (includeFraction) {
+    secondsSince1970 = milliseconds / 1000.0;
+    sprintf(fractionBuffer, "%.06lf", fmod(secondsSince1970, 1.0));
+    fraction = strchr(fractionBuffer, '.');
+    if (!fraction)
+      // Don't expect this to happen.
+      fraction = ".000000";
 
-  seconds = (time_t)floor(secondsSince1970);
+    seconds = (time_t)floor(secondsSince1970);
+  }
+  else {
+    fraction = "";
+    seconds = (time_t)round(milliseconds / 1000.0);
+  }
   gmt = gmtime(&seconds);
   sprintf(isoString, "%04d%02d%02dT%02d%02d%02d%s", 1900 + gmt->tm_year, gmt->tm_mon + 1, gmt->tm_mday,
     gmt->tm_hour, gmt->tm_min, gmt->tm_sec, fraction);

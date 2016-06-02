@@ -29,13 +29,18 @@ extern "C" {
 #endif
 
 /**
- * Convert the time from milliseconds to an ISO time string, for example "20131018T184138.423355".
- * @param milliseconds The time in milliseconds since 1/1/1970, including fractions of a millisecond.
+ * Convert the time from milliseconds to an ISO time string, for example 
+ * "20131018T184138.623355", or "20131018T184139" if includeFraction is 0.
+ * @param milliseconds The time in milliseconds since 1/1/1970, including
+ * optional fractions of a millisecond.
+ * @param includeFraction If nonzero, include the six-digit fractions of a second.
+ * If zero, round to the second and don't include the fraction.
  * @param isoString A buffer of at least 23 bytes to receive the null-terminated ISO time string.
  * @return 0 for success, else an error code including if we don't have necessary standard library support.
  */
 ndn_Error
-ndn_toIsoString(ndn_MillisecondsSince1970 milliseconds, char *isoString);
+ndn_toIsoString
+  (ndn_MillisecondsSince1970 milliseconds, int includeFraction, char *isoString);
 
 /**
  * Parse the ISO time string and return the time in milliseconds.
