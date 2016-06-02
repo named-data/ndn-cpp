@@ -34,4 +34,7 @@ SecurityException::~SecurityException() throw()
 {
 }
 
+const char*
+SecurityException::what() const throw() { return errorMessage_.c_str(); }
+
 }

@@ -34,9 +34,11 @@ public:
 
   virtual ~SecurityException() throw();
 
-  std::string Msg() { return errorMessage_; }
+  std::string
+  Msg() { return errorMessage_; }
 
-  virtual const char* what() const throw() { return errorMessage_.c_str(); }
+  virtual const char*
+  what() const throw();
 
 private:
   const std::string errorMessage_;
