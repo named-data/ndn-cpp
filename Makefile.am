@@ -24,7 +24,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
-  bin/unit-tests/test-encrypted-content bin/unit-tests/test-face-methods \
+  bin/unit-tests/test-encrypted-content bin/unit-tests/test-encryptor \
+  bin/unit-tests/test-face-methods \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
@@ -100,6 +101,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
+  include/ndn-cpp/encrypt/algo/encryptor.hpp \
   include/ndn-cpp/encrypt/algo/rsa-algorithm.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
@@ -243,6 +245,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/encrypted-content.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
   src/encrypt/algo/encrypt-params.cpp \
+  src/encrypt/algo/encryptor.cpp \
   src/encrypt/algo/rsa-algorithm.cpp \
   src/impl/delayed-call-table.cpp src/impl/delayed-call-table.hpp \
   src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
@@ -391,6 +394,10 @@ bin_unit_tests_test_der_encode_decode_LDADD = libndn-cpp.la
 bin_unit_tests_test_encrypted_content_SOURCES = tests/unit-tests/test-encrypted-content.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_encrypted_content_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_encrypted_content_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_encryptor_SOURCES = tests/unit-tests/test-encryptor.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_encryptor_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_encryptor_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
