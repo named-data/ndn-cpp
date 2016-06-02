@@ -35,4 +35,7 @@ DerException::~DerException() throw()
 {
 }
 
+const char*
+DerException::what() const throw() { return errorMessage_.c_str(); }
+
 }
