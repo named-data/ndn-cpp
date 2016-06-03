@@ -114,6 +114,24 @@ enum {
   ndn_Tlv_Encrypt_InitialVector =       133
 };
 
+// For RepetitiveInterval.
+enum {
+  ndn_Tlv_Encrypt_StartDate =          134,
+  ndn_Tlv_Encrypt_EndDate =            135,
+  ndn_Tlv_Encrypt_IntervalStartHour =  136,
+  ndn_Tlv_Encrypt_IntervalEndHour =    137,
+  ndn_Tlv_Encrypt_NRepeats =           138,
+  ndn_Tlv_Encrypt_RepeatUnit =         139,
+  ndn_Tlv_Encrypt_RepetitiveInterval = 140
+};
+
+// For Schedule.
+enum {
+  ndn_Tlv_Encrypt_WhiteIntervalList = 141,
+  ndn_Tlv_Encrypt_BlackIntervalList = 142,
+  ndn_Tlv_Encrypt_Schedule =          143
+};
+
 #ifdef __cplusplus
 }
 #endif
