@@ -35,7 +35,7 @@ public:
   virtual ~SecurityException() throw();
 
   std::string
-  Msg() { return errorMessage_; }
+  Msg() const { return errorMessage_; }
 
   virtual const char*
   what() const throw();
