@@ -144,7 +144,6 @@ MemoryPrivateKeyStorage::generateKeyPair
         privateKeyDer.resize(length);
         derPointer = &privateKeyDer[0];
         i2d_ECPrivateKey(ecKey, &derPointer);
-        cout << "debug privateKeyDer " << Blob(privateKeyDer).toHex() << endl;
         success = true;
       }
     }
