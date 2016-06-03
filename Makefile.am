@@ -27,9 +27,12 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-encrypted-content bin/unit-tests/test-encryptor \
   bin/unit-tests/test-face-methods \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
+  bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
-  bin/unit-tests/test-registration-callbacks bin/unit-tests/test-rsa-algorithm \
+  bin/unit-tests/test-registration-callbacks \
+  bin/unit-tests/test-repetitive-interval \
+  bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
@@ -99,6 +102,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
+  include/ndn-cpp/encrypt/interval.hpp \
+  include/ndn-cpp/encrypt/repetitive-interval.hpp \
+  include/ndn-cpp/encrypt/schedule.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
   include/ndn-cpp/encrypt/algo/encryptor.hpp \
@@ -243,6 +249,9 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/encrypt/interval.cpp \
+  src/encrypt/repetitive-interval.cpp \
+  src/encrypt/schedule.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
   src/encrypt/algo/encrypt-params.cpp \
   src/encrypt/algo/encryptor.cpp \
@@ -411,6 +420,10 @@ bin_unit_tests_test_interest_methods_SOURCES = tests/unit-tests/test-interest-me
 bin_unit_tests_test_interest_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
 
+bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_interval_LDADD = libndn-cpp.la
+
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_link_LDADD = libndn-cpp.la
@@ -431,9 +444,17 @@ bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-regis
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_registration_callbacks_LDADD = libndn-cpp.la
 
+bin_unit_tests_test_repetitive_interval_SOURCES = tests/unit-tests/test-repetitive-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_repetitive_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_repetitive_interval_LDADD = libndn-cpp.la
+
 bin_unit_tests_test_rsa_algorithm_SOURCES = tests/unit-tests/test-rsa-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_rsa_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
