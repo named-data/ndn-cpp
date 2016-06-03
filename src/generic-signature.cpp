@@ -22,8 +22,9 @@
 #include <stdexcept>
 #include <ndn-cpp/generic-signature.hpp>
 
-namespace ndn {
+using namespace std;
 
+namespace ndn {
 
 ptr_lib::shared_ptr<Signature>
 GenericSignature::clone() const
@@ -59,10 +60,8 @@ void
 GenericSignature::set(const SignatureLite& signatureLite)
 {
   // The caller should already have checked the type, but check again.
-#if 0 // debug
   if (signatureLite.getType() != ndn_SignatureType_Generic)
     throw runtime_error("signatureLite is not the expected type Generic");
-#endif
 
   setSignature(Blob(signatureLite.getSignature()));
   setSignatureInfoEncoding
