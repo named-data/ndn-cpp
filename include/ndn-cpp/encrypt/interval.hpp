@@ -36,7 +36,7 @@ namespace ndn {
 class Interval {
 public:
   /**
-   * Interval.Error extends Exception for errors using Interval methods.
+   * Interval.Error extends std::exception for errors using Interval methods.
    */
   class Error : public std::exception {
   public:
