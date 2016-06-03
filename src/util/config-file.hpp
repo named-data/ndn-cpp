@@ -50,7 +50,7 @@ public:
     virtual ~Error() throw();
 
     std::string
-    Msg() { return errorMessage_; }
+    Msg() const { return errorMessage_; }
 
     virtual const char*
     what() const throw() { return errorMessage_.c_str(); }
