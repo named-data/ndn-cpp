@@ -25,7 +25,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
   bin/unit-tests/test-encrypted-content bin/unit-tests/test-encryptor \
-  bin/unit-tests/test-face-methods \
+  bin/unit-tests/test-face-methods bin/unit-tests/test-group-manager-db \
   bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
@@ -76,7 +76,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/data.hpp \
   include/ndn-cpp/delegation-set.hpp \
   include/ndn-cpp/digest-sha256-signature.hpp \
-  include/ndn-cpp/encrypted-content.hpp \
   include/ndn-cpp/exclude.hpp \
   include/ndn-cpp/face.hpp \
   include/ndn-cpp/forwarding-flags.hpp \
@@ -103,8 +102,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/encrypt/interval.hpp \
+  include/ndn-cpp/encrypt/group-manager-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
+  include/ndn-cpp/encrypt/sqlite3-group-manager-db.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
   include/ndn-cpp/encrypt/algo/encryptor.hpp \
@@ -249,9 +250,11 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/encrypt/group-manager-db.cpp \
   src/encrypt/interval.cpp \
   src/encrypt/repetitive-interval.cpp \
   src/encrypt/schedule.cpp \
+  src/encrypt/sqlite3-group-manager-db.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
   src/encrypt/algo/encrypt-params.cpp \
   src/encrypt/algo/encryptor.cpp \
@@ -411,6 +414,10 @@ bin_unit_tests_test_encryptor_LDADD = libndn-cpp.la
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_face_methods_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_group_manager_db_SOURCES = tests/unit-tests/test-group-manager-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_group_manager_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_group_manager_db_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_identity_methods_SOURCES = tests/unit-tests/test-identity-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_identity_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
