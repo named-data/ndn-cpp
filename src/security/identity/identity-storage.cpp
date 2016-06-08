@@ -37,6 +37,8 @@ IdentityStorage::IdentityStorage()
   }
 }
 
+IdentityStorage::~IdentityStorage() {}
+
 Name
 IdentityStorage::getNewKeyName (const Name& identityName, bool useKsk)
 {

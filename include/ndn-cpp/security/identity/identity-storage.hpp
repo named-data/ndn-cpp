@@ -44,7 +44,7 @@ public:
    * The virtual Destructor.
    */
   virtual
-  ~IdentityStorage() {}
+  ~IdentityStorage();
 
   /**
    * Check if the specified identity already exists.

@@ -43,7 +43,7 @@ public:
    * The virtual destructor.
    */
   virtual
-  ~PrivateKeyStorage() {}
+  ~PrivateKeyStorage();
 
   /**
    * Generate a pair of asymmetric keys.

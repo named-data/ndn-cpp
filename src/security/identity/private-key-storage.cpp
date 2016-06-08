@@ -33,6 +33,8 @@ namespace ndn {
 
 typedef DerNode::DerSequence DerSequence;
 
+PrivateKeyStorage::~PrivateKeyStorage() {}
+
 Blob
 PrivateKeyStorage::encodePkcs8PrivateKey
   (const vector<uint8_t>& privateKeyDer, const OID& oid,
