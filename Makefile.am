@@ -26,7 +26,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
   bin/unit-tests/test-encrypted-content bin/unit-tests/test-encryptor \
   bin/unit-tests/test-face-methods bin/unit-tests/test-group-manager-db \
-  bin/unit-tests/test-identity-methods bin/unit-tests/test-interest-methods \
+  bin/unit-tests/test-group-manager bin/unit-tests/test-identity-methods \
+  bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
@@ -102,6 +103,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
   include/ndn-cpp/encrypt/interval.hpp \
+  include/ndn-cpp/encrypt/group-manager.hpp \
   include/ndn-cpp/encrypt/group-manager-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
@@ -250,6 +252,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
   src/encrypt/encrypted-content.cpp \
+  src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
   src/encrypt/interval.cpp \
   src/encrypt/repetitive-interval.cpp \
@@ -414,6 +417,10 @@ bin_unit_tests_test_encryptor_LDADD = libndn-cpp.la
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_face_methods_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_group_manager_SOURCES = tests/unit-tests/test-group-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_group_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_group_manager_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_group_manager_db_SOURCES = tests/unit-tests/test-group-manager-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_group_manager_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
