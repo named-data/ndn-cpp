@@ -38,4 +38,6 @@ GroupManagerDb::Error::~Error() throw()
 const char*
 GroupManagerDb::Error::what() const throw() { return errorMessage_.c_str(); }
 
+GroupManagerDb::~GroupManagerDb() {}
+
 }

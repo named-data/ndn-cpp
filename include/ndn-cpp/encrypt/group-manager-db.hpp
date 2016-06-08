@@ -58,6 +58,12 @@ public:
     const std::string errorMessage_;
   };
 
+  /**
+   * The virtual Destructor.
+   */
+  virtual
+  ~GroupManagerDb();
+
   ////////////////////////////////////////////////////// Schedule management.
 
   /**
