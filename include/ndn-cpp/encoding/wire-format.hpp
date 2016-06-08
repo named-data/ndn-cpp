@@ -271,7 +271,7 @@ public:
    * @param signatureValue The signature value input buffer to decode.
    * @return A new object which is a subclass of Signature.
    */
-  virtual ptr_lib::shared_ptr<Signature>
+  ptr_lib::shared_ptr<Signature>
   decodeSignatureInfoAndValue
     (const Blob& signatureInfo, const Blob& signatureValue)
   {
