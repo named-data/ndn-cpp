@@ -132,31 +132,6 @@ static uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
   0x3f, 0xb9, 0xfe, 0xbc, 0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-/**
- * TestVerificationRulesFriend is a friend of ConfigPolicyManager so we can call
- * its private members through these wrapper functions.  We can't make
- * TestVerificationRules a friend because gtest mangles the class name.
- */
-class TestVerificationRulesFriend {
-public:
-  static const BoostInfoTree*
-  findMatchingRule
-    (const ConfigPolicyManager& policyManager, const Name& objName,
-     const std::string& matchType)
-  {
-    return policyManager.findMatchingRule(objName, matchType);
-  }
-
-  static bool
-  checkSignatureMatch
-    (ConfigPolicyManager& policyManager, const Name& signatureName,
-     const Name& objectName, const BoostInfoTree& rule)
-  {
-    return policyManager.checkSignatureMatch
-      (signatureName, objectName, rule);
-  }
-};
-
 static bool
 fileExists(const string& filePath)
 {
@@ -246,36 +221,27 @@ TEST_F(TestVerificationRules, NameRelation)
     (policyConfigDirectory + "/relation_ruleset_equal.conf");
 
   Name dataName("/TestRule1");
-  ASSERT_TRUE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerPrefix, dataName, "data"))
+  ASSERT_TRUE(policyManagerPrefix.findMatchingRule(dataName, "data"))
     << "Prefix relation should match prefix name";
-  ASSERT_TRUE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerEqual, dataName, "data"))
+  ASSERT_TRUE(policyManagerEqual.findMatchingRule(dataName, "data"))
     << "Equal relation should match prefix name";
-  ASSERT_FALSE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerStrict, dataName, "data"))
+  ASSERT_FALSE(policyManagerStrict.findMatchingRule(dataName, "data"))
     << "Strict-prefix relation should not match prefix name";
 
   dataName = Name("/TestRule1/hi");
-  ASSERT_TRUE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerPrefix, dataName, "data"))
+  ASSERT_TRUE(policyManagerPrefix.findMatchingRule(dataName, "data"))
     << "Prefix relation should match longer name";
-  ASSERT_FALSE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerEqual, dataName, "data"))
+  ASSERT_FALSE(policyManagerEqual.findMatchingRule(dataName, "data"))
     << "Equal relation should not match longer name";
-  ASSERT_TRUE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerStrict, dataName, "data"))
+  ASSERT_TRUE(policyManagerStrict.findMatchingRule(dataName, "data"))
     << "Strict-prefix relation should match longer name";
 
   dataName = Name("/Bad/TestRule1/");
-  ASSERT_FALSE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerPrefix, dataName, "data"))
+  ASSERT_FALSE(policyManagerPrefix.findMatchingRule(dataName, "data"))
     << "Prefix relation should not match inner components";
-  ASSERT_FALSE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerEqual, dataName, "data"))
+  ASSERT_FALSE(policyManagerEqual.findMatchingRule(dataName, "data"))
     << "Equal relation should not match inner components";
-  ASSERT_FALSE
-    (TestVerificationRulesFriend::findMatchingRule(policyManagerStrict, dataName, "data"))
+  ASSERT_FALSE(policyManagerStrict.findMatchingRule(dataName, "data"))
     << "Strict-prefix relation should  not match inner components";
 }
 
@@ -289,16 +255,16 @@ TEST_F(TestVerificationRules, SimpleRegex)
   Name dataName4("/SecurityTestSecRule/Other/TestData");
   Name dataName5("/Basic/Data");
 
-  const BoostInfoTree* matchedRule1 = 
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName1, "data");
+  const BoostInfoTree* matchedRule1 =
+    policyManager.findMatchingRule(dataName1, "data");
   const BoostInfoTree* matchedRule2 =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName2, "data");
+    policyManager.findMatchingRule(dataName2, "data");
   const BoostInfoTree* matchedRule3 =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName3, "data");
+    policyManager.findMatchingRule(dataName3, "data");
   const BoostInfoTree* matchedRule4 =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName4, "data");
+    policyManager.findMatchingRule(dataName4, "data");
   const BoostInfoTree* matchedRule5 =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName5, "data");
+    policyManager.findMatchingRule(dataName5, "data");
 
   ASSERT_TRUE(matchedRule1);
   ASSERT_FALSE(matchedRule2);
@@ -324,9 +290,8 @@ TEST_F(TestVerificationRules, Hierarchical)
   Data data2(dataName2);
 
   const BoostInfoTree* matchedRule =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName1, "data");
-  ASSERT_EQ(matchedRule, 
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName2, "data"));
+    policyManager.findMatchingRule(dataName1, "data");
+  ASSERT_EQ(matchedRule, policyManager.findMatchingRule(dataName2, "data"));
 
   keyChain.sign(data1, defaultCertName);
   keyChain.sign(data2, defaultCertName);
@@ -336,12 +301,12 @@ TEST_F(TestVerificationRules, Hierarchical)
   Name signatureName2 = 
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
-  ASSERT_FALSE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName1, dataName1, *matchedRule)) <<
-    "Hierarchical matcher matched short data name to long key name";
+  ASSERT_FALSE(policyManager.checkSignatureMatch
+    (signatureName1, dataName1, *matchedRule))
+    << "Hierarchical matcher matched short data name to long key name";
 
-  ASSERT_TRUE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName2, dataName2, *matchedRule));
+  ASSERT_TRUE(policyManager.checkSignatureMatch
+    (signatureName2, dataName2, *matchedRule));
 
   keyChain.sign(data1, shortCertName);
   keyChain.sign(data2, shortCertName);
@@ -351,10 +316,10 @@ TEST_F(TestVerificationRules, Hierarchical)
   signatureName2 =
     dynamic_cast<const Sha256WithRsaSignature*>(data1.getSignature())->getKeyLocator().getKeyName();
 
-  ASSERT_TRUE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName1, dataName1, *matchedRule));
-  ASSERT_TRUE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName2, dataName2, *matchedRule));
+  ASSERT_TRUE(policyManager.checkSignatureMatch
+    (signatureName1, dataName1, *matchedRule));
+  ASSERT_TRUE(policyManager.checkSignatureMatch
+    (signatureName2, dataName2, *matchedRule));
 }
 
 TEST_F(TestVerificationRules, HyperRelation)
@@ -367,7 +332,7 @@ TEST_F(TestVerificationRules, HyperRelation)
   Data data2(dataName);
 
   const BoostInfoTree* matchedRule =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName, "data");
+    policyManager.findMatchingRule(dataName, "data");
   keyChain.sign(data1, defaultCertName);
   keyChain.sign(data2, shortCertName);
 
@@ -376,17 +341,16 @@ TEST_F(TestVerificationRules, HyperRelation)
   Name signatureName2 =
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
-  ASSERT_TRUE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName1, dataName, *matchedRule));
-  ASSERT_FALSE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName2, dataName, *matchedRule));
+  ASSERT_TRUE(policyManager.checkSignatureMatch
+    (signatureName1, dataName, *matchedRule));
+  ASSERT_FALSE(policyManager.checkSignatureMatch
+    (signatureName2, dataName, *matchedRule));
 
   dataName = Name("/SecurityTestSecRule/Basic/Other/Data1");
   data1 = Data(dataName);
   data2 = Data(dataName);
 
-  matchedRule =
-    TestVerificationRulesFriend::findMatchingRule(policyManager, dataName, "data");
+  matchedRule = policyManager.findMatchingRule(dataName, "data");
   keyChain.sign(data1, defaultCertName);
   keyChain.sign(data2, shortCertName);
 
@@ -395,10 +359,10 @@ TEST_F(TestVerificationRules, HyperRelation)
   signatureName2 =
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
-  ASSERT_FALSE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName1, dataName, *matchedRule));
-  ASSERT_TRUE(TestVerificationRulesFriend::checkSignatureMatch
-    (policyManager, signatureName2, dataName, *matchedRule));
+  ASSERT_FALSE(policyManager.checkSignatureMatch
+    (signatureName1, dataName, *matchedRule));
+  ASSERT_TRUE(policyManager.checkSignatureMatch
+    (signatureName2, dataName, *matchedRule));
 }
 
 int

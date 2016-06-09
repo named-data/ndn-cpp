@@ -30,7 +30,11 @@
 #include "certificate-cache.hpp"
 #include "policy-manager.hpp"
 
-class TestVerificationRulesFriend;
+// Give friend access to the tests.
+class TestVerificationRules_NameRelation_Test;
+class TestVerificationRules_SimpleRegex_Test;
+class TestVerificationRules_Hierarchical_Test;
+class TestVerificationRules_HyperRelation_Test;
 
 namespace ndn {
 
@@ -222,8 +226,11 @@ public:
   inferSigningIdentity(const Name& dataName);
 
 private:
-  // Allow the unit tests to call private members.
-  friend class ::TestVerificationRulesFriend;
+  // Give friend access to the tests.
+  friend TestVerificationRules_NameRelation_Test;
+  friend TestVerificationRules_SimpleRegex_Test;
+  friend TestVerificationRules_Hierarchical_Test;
+  friend TestVerificationRules_HyperRelation_Test;
 
   /**
    * TrustAnchorRefreshManager manages the trust-anchor certificates, including
