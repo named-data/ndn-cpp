@@ -31,7 +31,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
   bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
-  bin/unit-tests/test-producer-db \
+  bin/unit-tests/test-producer bin/unit-tests/test-producer-db \
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
@@ -106,6 +106,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/interval.hpp \
   include/ndn-cpp/encrypt/group-manager.hpp \
   include/ndn-cpp/encrypt/group-manager-db.hpp \
+  include/ndn-cpp/encrypt/producer.hpp \
   include/ndn-cpp/encrypt/producer-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
@@ -258,6 +259,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
   src/encrypt/interval.cpp \
+  src/encrypt/producer.cpp \
   src/encrypt/producer-db.cpp \
   src/encrypt/repetitive-interval.cpp \
   src/encrypt/schedule.cpp \
@@ -458,6 +460,10 @@ bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_producer_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_producer_db_SOURCES = tests/unit-tests/test-producer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

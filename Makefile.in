@@ -110,6 +110,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-name-conventions$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
+	bin/unit-tests/test-producer$(EXEEXT) \
 	bin/unit-tests/test-producer-db$(EXEEXT) \
 	bin/unit-tests/test-registration-callbacks$(EXEEXT) \
 	bin/unit-tests/test-repetitive-interval$(EXEEXT) \
@@ -256,8 +257,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/encrypt/encrypted-content.lo src/encrypt/group-manager.lo \
 	src/encrypt/group-manager-db.lo src/encrypt/interval.lo \
-	src/encrypt/producer-db.lo src/encrypt/repetitive-interval.lo \
-	src/encrypt/schedule.lo \
+	src/encrypt/producer.lo src/encrypt/producer-db.lo \
+	src/encrypt/repetitive-interval.lo src/encrypt/schedule.lo \
 	src/encrypt/sqlite3-group-manager-db.lo \
 	src/encrypt/sqlite3-producer-db.lo \
 	src/encrypt/algo/aes-algorithm.lo \
@@ -482,6 +483,11 @@ am_bin_unit_tests_test_policy_manager_OBJECTS = tests/unit-tests/bin_unit_tests_
 bin_unit_tests_test_policy_manager_OBJECTS =  \
 	$(am_bin_unit_tests_test_policy_manager_OBJECTS)
 bin_unit_tests_test_policy_manager_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_producer_OBJECTS = tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.$(OBJEXT)
+bin_unit_tests_test_producer_OBJECTS =  \
+	$(am_bin_unit_tests_test_producer_OBJECTS)
+bin_unit_tests_test_producer_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_producer_db_OBJECTS = tests/unit-tests/bin_unit_tests_test_producer_db-test-producer-db.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.$(OBJEXT)
 bin_unit_tests_test_producer_db_OBJECTS =  \
@@ -604,6 +610,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
@@ -643,6 +650,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
@@ -1168,6 +1176,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/interval.hpp \
   include/ndn-cpp/encrypt/group-manager.hpp \
   include/ndn-cpp/encrypt/group-manager-db.hpp \
+  include/ndn-cpp/encrypt/producer.hpp \
   include/ndn-cpp/encrypt/producer-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
@@ -1322,6 +1331,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
   src/encrypt/interval.cpp \
+  src/encrypt/producer.cpp \
   src/encrypt/producer-db.cpp \
   src/encrypt/repetitive-interval.cpp \
   src/encrypt/schedule.cpp \
@@ -1492,6 +1502,9 @@ bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_producer_LDADD = libndn-cpp.la
 bin_unit_tests_test_producer_db_SOURCES = tests/unit-tests/test-producer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_producer_db_LDADD = libndn-cpp.la
@@ -1782,6 +1795,8 @@ src/encrypt/group-manager.lo: src/encrypt/$(am__dirstamp) \
 src/encrypt/group-manager-db.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/interval.lo: src/encrypt/$(am__dirstamp) \
+	src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/producer.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/producer-db.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
@@ -2403,6 +2418,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 bin/unit-tests/test-policy-manager$(EXEEXT): $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_policy_manager_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-policy-manager$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-producer$(EXEEXT): $(bin_unit_tests_test_producer_OBJECTS) $(bin_unit_tests_test_producer_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_producer_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-producer$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_producer_OBJECTS) $(bin_unit_tests_test_producer_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_producer_db-test-producer-db.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2556,6 +2581,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po@am__quote@
@@ -2654,6 +2680,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/group-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/interval.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/producer-db.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/producer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/repetitive-interval.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/schedule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/sqlite3-group-manager-db.Plo@am__quote@
@@ -2744,6 +2771,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po@am__quote@
@@ -3274,6 +3302,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_producer-test-producer.o: tests/unit-tests/test-producer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_producer-test-producer.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.o `test -f 'tests/unit-tests/test-producer.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-producer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-producer.cpp' object='tests/unit-tests/bin_unit_tests_test_producer-test-producer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.o `test -f 'tests/unit-tests/test-producer.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-producer.cpp
+
+tests/unit-tests/bin_unit_tests_test_producer-test-producer.obj: tests/unit-tests/test-producer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_producer-test-producer.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.obj `if test -f 'tests/unit-tests/test-producer.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-producer.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-producer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-producer.cpp' object='tests/unit-tests/bin_unit_tests_test_producer-test-producer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.obj `if test -f 'tests/unit-tests/test-producer.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-producer.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-producer.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_producer_db-test-producer-db.o: tests/unit-tests/test-producer-db.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_producer_db-test-producer-db.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Tpo -c -o tests/unit-tests/bin_unit_tests_test_producer_db-test-producer-db.o `test -f 'tests/unit-tests/test-producer-db.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-producer-db.cpp
@@ -3889,6 +3945,13 @@ bin/unit-tests/test-name-methods.log: bin/unit-tests/test-name-methods$(EXEEXT)
 bin/unit-tests/test-policy-manager.log: bin/unit-tests/test-policy-manager$(EXEEXT)
 	@p='bin/unit-tests/test-policy-manager$(EXEEXT)'; \
 	b='bin/unit-tests/test-policy-manager'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-producer.log: bin/unit-tests/test-producer$(EXEEXT)
+	@p='bin/unit-tests/test-producer$(EXEEXT)'; \
+	b='bin/unit-tests/test-producer'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
