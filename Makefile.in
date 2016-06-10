@@ -94,6 +94,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
+	bin/unit-tests/test-consumer-db$(EXEEXT) \
 	bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT) \
 	bin/unit-tests/test-control-response$(EXEEXT) \
 	bin/unit-tests/test-data-methods$(EXEEXT) \
@@ -255,10 +256,11 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-0_1_1-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
-	src/encrypt/encrypted-content.lo src/encrypt/group-manager.lo \
-	src/encrypt/group-manager-db.lo src/encrypt/interval.lo \
-	src/encrypt/producer.lo src/encrypt/producer-db.lo \
-	src/encrypt/repetitive-interval.lo src/encrypt/schedule.lo \
+	src/encrypt/consumer-db.lo src/encrypt/encrypted-content.lo \
+	src/encrypt/group-manager.lo src/encrypt/group-manager-db.lo \
+	src/encrypt/interval.lo src/encrypt/producer.lo \
+	src/encrypt/producer-db.lo src/encrypt/repetitive-interval.lo \
+	src/encrypt/schedule.lo src/encrypt/sqlite3-consumer-db.lo \
 	src/encrypt/sqlite3-group-manager-db.lo \
 	src/encrypt/sqlite3-producer-db.lo \
 	src/encrypt/algo/aes-algorithm.lo \
@@ -402,6 +404,11 @@ am_bin_unit_tests_test_aes_algorithm_OBJECTS = tests/unit-tests/bin_unit_tests_t
 bin_unit_tests_test_aes_algorithm_OBJECTS =  \
 	$(am_bin_unit_tests_test_aes_algorithm_OBJECTS)
 bin_unit_tests_test_aes_algorithm_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_consumer_db_OBJECTS = tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.$(OBJEXT)
+bin_unit_tests_test_consumer_db_OBJECTS =  \
+	$(am_bin_unit_tests_test_consumer_db_OBJECTS)
+bin_unit_tests_test_consumer_db_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.$(OBJEXT)
 bin_unit_tests_test_control_parameters_encode_decode_OBJECTS = $(am_bin_unit_tests_test_control_parameters_encode_decode_OBJECTS)
@@ -594,6 +601,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
+	$(bin_unit_tests_test_consumer_db_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_control_response_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -634,6 +642,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
+	$(bin_unit_tests_test_consumer_db_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
 	$(bin_unit_tests_test_control_response_SOURCES) \
 	$(bin_unit_tests_test_data_methods_SOURCES) \
@@ -1170,6 +1179,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/consumer-db.hpp \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
@@ -1180,6 +1190,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/producer-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
+  include/ndn-cpp/encrypt/sqlite3-consumer-db.hpp \
   include/ndn-cpp/encrypt/sqlite3-group-manager-db.hpp \
   include/ndn-cpp/encrypt/sqlite3-producer-db.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
@@ -1327,6 +1338,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/consumer-db.cpp \
   src/encrypt/encrypted-content.cpp \
   src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
@@ -1335,6 +1347,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/producer-db.cpp \
   src/encrypt/repetitive-interval.cpp \
   src/encrypt/schedule.cpp \
+  src/encrypt/sqlite3-consumer-db.cpp \
   src/encrypt/sqlite3-group-manager-db.cpp \
   src/encrypt/sqlite3-producer-db.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
@@ -1454,6 +1467,9 @@ bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
+bin_unit_tests_test_consumer_db_SOURCES = tests/unit-tests/test-consumer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_consumer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_consumer_db_LDADD = libndn-cpp.la
 bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_control_parameters_encode_decode_LDADD = libndn-cpp.la
@@ -1788,6 +1804,8 @@ src/encrypt/$(am__dirstamp):
 src/encrypt/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/encrypt/$(DEPDIR)
 	@: > src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/consumer-db.lo: src/encrypt/$(am__dirstamp) \
+	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/encrypted-content.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/group-manager.lo: src/encrypt/$(am__dirstamp) \
@@ -1803,6 +1821,8 @@ src/encrypt/producer-db.lo: src/encrypt/$(am__dirstamp) \
 src/encrypt/repetitive-interval.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/schedule.lo: src/encrypt/$(am__dirstamp) \
+	src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/sqlite3-consumer-db.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/sqlite3-group-manager-db.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
@@ -2258,6 +2278,16 @@ bin/unit-tests/$(am__dirstamp):
 bin/unit-tests/test-aes-algorithm$(EXEEXT): $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_aes_algorithm_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-aes-algorithm$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-consumer-db$(EXEEXT): $(bin_unit_tests_test_consumer_db_OBJECTS) $(bin_unit_tests_test_consumer_db_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_consumer_db_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-consumer-db$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_consumer_db_OBJECTS) $(bin_unit_tests_test_consumer_db_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2565,6 +2595,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/apache/$(DEPDIR)/apr_base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_response-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_data_methods-gtest-all.Po@am__quote@
@@ -2675,6 +2706,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/consumer-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/encrypted-content.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/group-manager-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/group-manager.Plo@am__quote@
@@ -2683,6 +2715,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/producer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/repetitive-interval.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/schedule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/sqlite3-consumer-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/sqlite3-group-manager-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/sqlite3-producer-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/algo/$(DEPDIR)/aes-algorithm.Plo@am__quote@
@@ -2755,6 +2788,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_response-test-control-response.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_data_methods-test-data-methods.Po@am__quote@
@@ -2854,6 +2888,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.o: tests/unit-tests/test-consumer-db.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Tpo -c -o tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.o `test -f 'tests/unit-tests/test-consumer-db.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-consumer-db.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-consumer-db.cpp' object='tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.o `test -f 'tests/unit-tests/test-consumer-db.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-consumer-db.cpp
+
+tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.obj: tests/unit-tests/test-consumer-db.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Tpo -c -o tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.obj `if test -f 'tests/unit-tests/test-consumer-db.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-consumer-db.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-consumer-db.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-consumer-db.cpp' object='tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_consumer_db-test-consumer-db.obj `if test -f 'tests/unit-tests/test-consumer-db.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-consumer-db.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-consumer-db.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer_db-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o: tests/unit-tests/test-control-parameters-encode-decode.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Tpo -c -o tests/unit-tests/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.o `test -f 'tests/unit-tests/test-control-parameters-encode-decode.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-control-parameters-encode-decode.cpp
@@ -3833,6 +3895,13 @@ recheck: all $(check_PROGRAMS)
 bin/unit-tests/test-aes-algorithm.log: bin/unit-tests/test-aes-algorithm$(EXEEXT)
 	@p='bin/unit-tests/test-aes-algorithm$(EXEEXT)'; \
 	b='bin/unit-tests/test-aes-algorithm'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-consumer-db.log: bin/unit-tests/test-consumer-db$(EXEEXT)
+	@p='bin/unit-tests/test-consumer-db$(EXEEXT)'; \
+	b='bin/unit-tests/test-consumer-db'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -21,6 +21,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
+  bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
@@ -100,6 +101,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/consumer-db.hpp \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
@@ -110,6 +112,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/producer-db.hpp \
   include/ndn-cpp/encrypt/repetitive-interval.hpp \
   include/ndn-cpp/encrypt/schedule.hpp \
+  include/ndn-cpp/encrypt/sqlite3-consumer-db.hpp \
   include/ndn-cpp/encrypt/sqlite3-group-manager-db.hpp \
   include/ndn-cpp/encrypt/sqlite3-producer-db.hpp \
   include/ndn-cpp/encrypt/algo/aes-algorithm.hpp \
@@ -255,6 +258,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/consumer-db.cpp \
   src/encrypt/encrypted-content.cpp \
   src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
@@ -263,6 +267,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/producer-db.cpp \
   src/encrypt/repetitive-interval.cpp \
   src/encrypt/schedule.cpp \
+  src/encrypt/sqlite3-consumer-db.cpp \
   src/encrypt/sqlite3-group-manager-db.cpp \
   src/encrypt/sqlite3-producer-db.cpp \
   src/encrypt/algo/aes-algorithm.cpp \
@@ -396,6 +401,10 @@ bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_consumer_db_SOURCES = tests/unit-tests/test-consumer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_consumer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_consumer_db_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_control_parameters_encode_decode_SOURCES = tests/unit-tests/test-control-parameters-encode-decode.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_control_parameters_encode_decode_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
