@@ -143,6 +143,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
   include/ndn-cpp/lite/util/blob-lite.hpp \
+  include/ndn-cpp/lite/util/crypto-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
@@ -302,6 +303,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
+  src/lite/util/crypto-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \

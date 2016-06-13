@@ -20,6 +20,19 @@
  */
 
 #include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
+
+namespace ndn {
+
+void
+CryptoLite::computeHmacWithSha256
+  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
+   uint8_t *digest)
+{
+  ndn_computeHmacWithSha256(key, keyLength, data, dataLength, digest);
+}
+
+}
 
 #ifdef ARDUINO
 // Put the ARDUINO implementations in this C++ file, not in crypto.c.
