@@ -54,6 +54,14 @@ public:
   }
 
   /**
+   * Fill the buffer with random bytes.
+   * @param buffer Write the random bytes to this buffer.
+   * @param bufferLength The number of bytes to write to buffer.
+   */
+  static void
+  generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+
+  /**
    * Compute the HMAC with sha-256 of data, as defined in
    * http://tools.ietf.org/html/rfc2104#section-2 .
    * @param key A pointer to buffer with the key.

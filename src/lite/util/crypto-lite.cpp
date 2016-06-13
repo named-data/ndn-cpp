@@ -31,6 +31,12 @@ CryptoLite::digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest
 }
 
 void
+CryptoLite::generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+{
+  ndn_generateRandomBytes(buffer, bufferLength);
+}
+
+void
 CryptoLite::computeHmacWithSha256
   (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
    uint8_t *digest)
