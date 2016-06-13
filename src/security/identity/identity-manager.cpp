@@ -40,7 +40,7 @@
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
 #include "../../util/config-file.hpp"
 #include "../../c/util/time.h"
-#include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/identity/identity-manager.hpp>
 
 using namespace std;
@@ -502,8 +502,8 @@ IdentityManager::signWithSha256(Data &data, WireFormat& wireFormat)
 
   // Digest and set the signature.
   uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256
-    (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
+  CryptoLite::digestSha256
+    (encoding.getSignedPortionBlobLite(), signedPortionDigest);
   data.getSignature()->setSignature
     (Blob(signedPortionDigest, sizeof(signedPortionDigest)));
 
@@ -526,8 +526,8 @@ IdentityManager::signInterestWithSha256
 
   // Digest and set the signature.
   uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256
-    (encoding.signedBuf(), encoding.signedSize(), signedPortionDigest);
+  CryptoLite::digestSha256
+    (encoding.getSignedPortionBlobLite(), signedPortionDigest);
   signature.setSignature(Blob(signedPortionDigest, sizeof(signedPortionDigest)));
 
   // Remove the empty signature and append the real one.

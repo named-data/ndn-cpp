@@ -27,6 +27,7 @@
 #include <openssl/ssl.h>
 #include <openssl/ec.h>
 #endif
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
 using namespace std;
@@ -187,7 +188,7 @@ MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name
       ("MemoryPrivateKeyStorage::sign: Unsupported digest algorithm");
 
   uint8_t digest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256(data, dataLength, digest);
+  CryptoLite::digestSha256(data, dataLength, digest);
   // TODO: use RSA_size to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
   unsigned int signatureBitsLength;

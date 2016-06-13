@@ -28,6 +28,7 @@
 #include <openssl/ssl.h>
 #include <openssl/ec.h>
 #endif
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/certificate/public-key.hpp>
 
 using namespace std;
@@ -95,7 +96,7 @@ PublicKey::getDigest(DigestAlgorithm digestAlgorithm) const
 {
   if (digestAlgorithm == DIGEST_ALGORITHM_SHA256) {
     uint8_t digest[ndn_SHA256_DIGEST_SIZE];
-    ndn_digestSha256(keyDer_.buf(), keyDer_.size(), digest);
+    CryptoLite::digestSha256(keyDer_, digest);
 
     return Blob(digest, sizeof(digest));
   }
