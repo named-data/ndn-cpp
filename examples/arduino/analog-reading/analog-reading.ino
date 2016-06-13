@@ -38,10 +38,6 @@
 #include <ndn-cpp/lite/interest-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
-// TODO: Make an API for these.
-extern "C" {
-void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
-}
 
 using namespace ndn;
 
@@ -203,7 +199,7 @@ void setup() {
   // Update the command nonce name component.
   const size_t commandNonceOffset = 74;
   const size_t commandNonceLength = 8;
-  ndn_generateRandomBytes(REGISTER_INTEREST_ENCODING + commandNonceOffset, commandNonceLength);
+  CryptoLite::generateRandomBytes(REGISTER_INTEREST_ENCODING + commandNonceOffset, commandNonceLength);
   
   // Send the registration request. We don't decode the response data packet because it's too big.
   transport.send(REGISTER_INTEREST_ENCODING, sizeof(REGISTER_INTEREST_ENCODING));
