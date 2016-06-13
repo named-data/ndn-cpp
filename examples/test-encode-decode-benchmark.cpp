@@ -33,6 +33,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 // Hack: Hook directly into non-API functions.
 #include "../src/c/util/crypto.h"
 
@@ -54,7 +55,7 @@ verifyEcdsaSignature
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  ndn_digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
+  CryptoLite::digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
 
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
@@ -82,7 +83,7 @@ verifyRsaSignature
 {
   // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
   uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  ndn_digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
+  CryptoLite::digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
 
   // Verify the signedPortionDigest.
   // Use a temporary pointer since d2i updates it.
@@ -490,7 +491,9 @@ benchmarkEncodeDataSecondsC
 
       // Imitate MemoryPrivateKeyStorage::sign.
       uint8_t digest[SHA256_DIGEST_LENGTH];
-      ndn_digestSha256(encoding + signedPortionBeginOffset, signedPortionEndOffset - signedPortionBeginOffset, digest);
+      CryptoLite::digestSha256
+        (encoding + signedPortionBeginOffset,
+         signedPortionEndOffset - signedPortionBeginOffset, digest);
       unsigned int signatureBitsLength;
       if (keyType == KEY_TYPE_ECDSA) {
         if (!ECDSA_sign
