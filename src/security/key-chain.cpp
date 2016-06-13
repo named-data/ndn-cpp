@@ -22,6 +22,7 @@
 
 #include "../util/logging.hpp"
 #include "../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
@@ -180,9 +181,8 @@ KeyChain::signWithHmacWithSha256
 
   ptr_lib::shared_ptr<vector<uint8_t>> signatureBits
     (new vector<uint8_t>(ndn_SHA256_DIGEST_SIZE));
-  ndn_computeHmacWithSha256
-    (key.buf(), key.size(), encoding.signedBuf(), encoding.signedSize(),
-     &signatureBits->front());
+  CryptoLite::computeHmacWithSha256
+    (key, encoding.getSignedPortionBlobLite(), &signatureBits->front());
   data.getSignature()->setSignature(Blob(signatureBits, false));
 
   // Encode again to include the signature.
@@ -197,9 +197,8 @@ KeyChain::verifyDataWithHmacWithSha256
   SignedBlob encoding = data.wireEncode(wireFormat);
 
   vector<uint8_t> newSignatureBits(ndn_SHA256_DIGEST_SIZE);
-  ndn_computeHmacWithSha256
-    (key.buf(), key.size(), encoding.signedBuf(), encoding.signedSize(),
-     &newSignatureBits.front());
+  CryptoLite::computeHmacWithSha256
+    (key, encoding.getSignedPortionBlobLite(), &newSignatureBits.front());
 
   // Use the vector equals operator.
   return newSignatureBits == *data.getSignature()->getSignature();
