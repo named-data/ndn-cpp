@@ -39,14 +39,14 @@ public:
     InvalidEncryptedFormat =      33,
     NoDecryptKey =                34,
     EncryptionFailure =           35,
-    SecurityException =          100,
-    IOException =                102
+    General =                    100
   };
 
   /**
    * A method calls onError(errorCode, message) for an error.
    */
-  typedef func_lib::function<void(ErrorCode, const std::string&)> OnError;
+  typedef func_lib::function<void
+    (ErrorCode errorCode, const std::string& message)> OnError;
 };
 
 }

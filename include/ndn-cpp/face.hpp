@@ -37,19 +37,22 @@ class Face;
 /**
  * An OnData function object is used to pass a callback to expressInterest.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&,
-                                const ptr_lib::shared_ptr<Data>&)> OnData;
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Interest>& interest,
+   const ptr_lib::shared_ptr<Data>& data)> OnData;
 
 /**
  * An OnTimeout function object is used to pass a callback to expressInterest.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&)> OnTimeout;
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Interest>& interest)> OnTimeout;
 
 /**
  * An OnNetworkNack function object is used to pass a callback to expressInterest.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Interest>&,
-                                const ptr_lib::shared_ptr<NetworkNack>&)> OnNetworkNack;
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Interest>& interest,
+   const ptr_lib::shared_ptr<NetworkNack>& networkNack)> OnNetworkNack;
 
 /**
  * @deprecated Use OnInterestCallback.
@@ -62,20 +65,23 @@ typedef func_lib::function<void
  * setInterestFilter and optionally to registerPrefix.
  */
 typedef func_lib::function<void
-  (const ptr_lib::shared_ptr<const Name>&,
-   const ptr_lib::shared_ptr<const Interest>&, Face&, uint64_t,
-   const ptr_lib::shared_ptr<const InterestFilter>&)> OnInterestCallback;
+  (const ptr_lib::shared_ptr<const Name>& prefix,
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face, 
+   uint64_t interestFilterId,
+   const ptr_lib::shared_ptr<const InterestFilter>& filter)> OnInterestCallback;
 
 /**
  * An OnRegisterFailed function object is used to report when registerPrefix fails.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&)> OnRegisterFailed;
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Name>& prefix)> OnRegisterFailed;
 
 /**
  * An OnRegisterSuccess function object is used to report when registerPrefix succeeds.
  */
-typedef func_lib::function<void(const ptr_lib::shared_ptr<const Name>&, uint64_t)>
-  OnRegisterSuccess;
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<const Name>& prefix, 
+   uint64_t registeredPrefixId)> OnRegisterSuccess;
 
 class Node;
 class KeyChain;

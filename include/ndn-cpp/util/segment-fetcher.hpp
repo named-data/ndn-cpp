@@ -92,9 +92,9 @@ public:
     SEGMENT_VERIFICATION_FAILED = 3
   };
 
-  typedef func_lib::function<bool(const ptr_lib::shared_ptr<Data>&)> VerifySegment;
+  typedef func_lib::function<bool(const ptr_lib::shared_ptr<Data>& data)> VerifySegment;
 
-  typedef func_lib::function<void(const Blob&)> OnComplete;
+  typedef func_lib::function<void(const Blob& content)> OnComplete;
 
   typedef func_lib::function<void
     (ErrorCode errorCode, const std::string& message)> OnError;

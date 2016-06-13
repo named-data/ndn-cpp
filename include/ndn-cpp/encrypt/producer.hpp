@@ -40,7 +40,7 @@ namespace ndn {
 class Producer {
 public:
   typedef func_lib::function<
-    void(const std::vector<ptr_lib::shared_ptr<Data> >&)> OnEncryptedKeys;
+    void(const std::vector<ptr_lib::shared_ptr<Data> >& keys)> OnEncryptedKeys;
 
   /**
    * Create a Producer to use the given ProducerDb, Face and other values.
