@@ -28,6 +28,7 @@
 #if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/ssl.h>
 #endif
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
 using namespace std;
@@ -40,7 +41,8 @@ PolicyManager::verifySignature
    const Blob& publicKeyDer)
 {
   if (dynamic_cast<const DigestSha256Signature *>(signature))
-    return verifyDigestSha256Signature(signature->getSignature(), signedBlob);
+    return CryptoLite::verifyDigestSha256Signature
+      (signature->getSignature(), signedBlob.getSignedPortionBlobLite());
 #if NDN_CPP_HAVE_LIBCRYPTO
   else if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
@@ -111,18 +113,5 @@ PolicyManager::verifySha256WithRsaSignature
   return (success == 1);
 }
 #endif
-
-bool
-PolicyManager::verifyDigestSha256Signature
-  (const Blob& signature, const SignedBlob& signedBlob)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256
-    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
-
-  return signature.size() == sizeof(signedPortionDigest) && ndn_memcmp
-    (signature.buf(), signedPortionDigest, sizeof(signedPortionDigest)) == 0;
-}
 
 }

@@ -180,17 +180,6 @@ protected:
   verifySha256WithRsaSignature
     (const Blob& signature, const SignedBlob& signedBlob,
      const Blob& publicKeyDer);
-
-  /**
-   * Verify the DigestSha256 signature on the SignedBlob by verifying that the
-   * digest of SignedBlob equals the signature.
-   * @param signature The signature bits.
-   * @param signedBlob the SignedBlob with the signed portion to verify.
-   * @return true if the signature verifies, false if not.
-   */
-  static bool
-  verifyDigestSha256Signature
-    (const Blob& signature, const SignedBlob& signedBlob);
 };
 
 }
