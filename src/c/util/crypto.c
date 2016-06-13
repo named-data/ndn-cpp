@@ -35,6 +35,7 @@ void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 
 #include <openssl/ssl.h>
 #include <openssl/rand.h>
+#include "ndn_memory.h"
 
 static int CURVE_OID_224[] = { OBJ_secp224r1 };
 static int CURVE_OID_256[] = { OBJ_X9_62_prime256v1 };
@@ -58,6 +59,12 @@ ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
 }
 
 void
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+{
+  RAND_bytes(buffer, (int)bufferLength);
+}
+
+void
 ndn_computeHmacWithSha256
   (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
    uint8_t *digest)
@@ -70,10 +77,16 @@ ndn_computeHmacWithSha256
   HMAC_Final(&hmac, digest, &dummyDigestLength);
 }
 
-void
-ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+int
+ndn_verifyDigestSha256Signature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLen)
 {
-  RAND_bytes(buffer, (int)bufferLength);
+  uint8_t dataDigest[ndn_SHA256_DIGEST_SIZE];
+  ndn_digestSha256(data, dataLen, dataDigest);
+
+  return signatureLength == ndn_SHA256_DIGEST_SIZE && ndn_memcmp
+    (signature, dataDigest, ndn_SHA256_DIGEST_SIZE) == 0;
 }
 
 size_t

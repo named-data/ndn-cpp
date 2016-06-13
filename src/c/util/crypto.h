@@ -47,6 +47,14 @@ struct ndn_EcKeyInfo {
 void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
 
 /**
+ * Fill the buffer with random bytes.
+ * @param buffer Write the random bytes to this buffer.
+ * @param bufferLength The number of bytes to write to buffer.
+ */
+void
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+
+/**
  * Compute the HMAC with sha-256 of data, as defined in
  * http://tools.ietf.org/html/rfc2104#section-2 .
  * @param key A pointer to buffer with the key.
@@ -62,12 +70,17 @@ ndn_computeHmacWithSha256
    uint8_t *digest);
 
 /**
- * Fill the buffer with random bytes.
- * @param buffer Write the random bytes to this buffer.
- * @param bufferLength The number of bytes to write to buffer.
+ * Verify that the DigestSha256 of the data equals the signature.
+ * @param signature A pointer to the signature bytes.
+ * @param signatureLength The length of signature.
+ * @param data A pointer to the input byte array to verify.
+ * @param dataLength The length of data.
+ * @return non-zero if the signature verifies, 0 if not.
  */
-void
-ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+int
+ndn_verifyDigestSha256Signature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLen);
 
 /**
  * Get the number of ndn_EcKeyInfo struct entries in the array.

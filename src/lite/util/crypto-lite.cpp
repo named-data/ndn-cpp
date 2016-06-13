@@ -44,6 +44,15 @@ CryptoLite::computeHmacWithSha256
   ndn_computeHmacWithSha256(key, keyLength, data, dataLength, digest);
 }
 
+bool
+CryptoLite::verifyDigestSha256Signature
+  (const uint8_t* signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLen)
+{
+  return ndn_verifyDigestSha256Signature
+    (signature, signatureLength, data, dataLen) != 0;
+}
+
 }
 
 #ifdef ARDUINO

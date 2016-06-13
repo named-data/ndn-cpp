@@ -39,7 +39,7 @@ public:
    * receive the digest.
    */
   static void
-  digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
+  digestSha256(const uint8_t* data, size_t dataLength, uint8_t *digest);
 
   /**
    * Compute the sha-256 digest of data.
@@ -59,7 +59,7 @@ public:
    * @param bufferLength The number of bytes to write to buffer.
    */
   static void
-  generateRandomBytes(uint8_t *buffer, size_t bufferLength);
+  generateRandomBytes(uint8_t* buffer, size_t bufferLength);
 
   /**
    * Compute the HMAC with sha-256 of data, as defined in
@@ -73,7 +73,7 @@ public:
    */
   static void
   computeHmacWithSha256
-    (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
+    (const uint8_t* key, size_t keyLength, const uint8_t* data, size_t dataLength,
      uint8_t *digest);
 
   /**
@@ -89,6 +89,32 @@ public:
     (const BlobLite& key, const BlobLite& data, uint8_t *digest)
   {
     computeHmacWithSha256(key.buf(), key.size(), data.buf(), data.size(), digest);
+  }
+
+  /**
+   * Verify that the DigestSha256 of the data equals the signature.
+   * @param signature A pointer to the signature bytes.
+   * @param signatureLength The length of signature.
+   * @param data A pointer to the input byte array to verify.
+   * @param dataLength The length of data.
+   * @return True if the signature verifies, false if not.
+   */
+  static bool
+  verifyDigestSha256Signature
+    (const uint8_t* signature, size_t signatureLength, const uint8_t *data,
+     size_t dataLen);
+
+  /**
+   * Verify that the DigestSha256 of the data equals the signature.
+   * @param signature The signature bytes.
+   * @param data The byte array to verify.
+   * @return True if the signature verifies, false if not.
+   */
+  static bool
+  verifyDigestSha256Signature(const BlobLite& signature, const BlobLite& data)
+  {
+    return verifyDigestSha256Signature
+      (signature.buf(), signature.size(), data.buf(), data.size());
   }
 };
 
