@@ -40,10 +40,6 @@
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 // TODO: Make an API for these.
 extern "C" {
-void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
-void ndn_computeHmacWithSha256
-  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength, 
-   uint8_t *digest);
 void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
 }
 
@@ -182,7 +178,7 @@ void setup() {
   // Set hmacKey to a default test value.
   memset(hmacKey, 0, sizeof(hmacKey));
   // Set hmacKeyDigest to sha256(hmacKey).
-  ndn_digestSha256(hmacKey, sizeof(hmacKey), hmacKeyDigest);
+  CryptoLite::digestSha256(hmacKey, sizeof(hmacKey), hmacKeyDigest);
 
   // Connect the transport to the NFD host. If NFD is remote, it must be configured
   // to accept localhop connections.
