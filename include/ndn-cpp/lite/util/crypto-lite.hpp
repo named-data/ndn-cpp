@@ -32,6 +32,28 @@ namespace ndn {
 class CryptoLite {
 public:
   /**
+   * Compute the sha-256 digest of data.
+   * @param data Pointer to the input byte array.
+   * @param dataLength The length of data.
+   * @param digest A pointer to a buffer of size ndn_SHA256_DIGEST_SIZE to
+   * receive the digest.
+   */
+  static void
+  digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
+
+  /**
+   * Compute the sha-256 digest of data.
+   * @param data The input byte array.
+   * @param digest A pointer to a buffer of size ndn_SHA256_DIGEST_SIZE to
+   * receive the digest.
+   */
+  static void
+  digestSha256(const BlobLite& data, uint8_t *digest)
+  {
+    digestSha256(data.buf(), data.size(), digest);
+  }
+
+  /**
    * Compute the HMAC with sha-256 of data, as defined in
    * http://tools.ietf.org/html/rfc2104#section-2 .
    * @param key A pointer to buffer with the key.

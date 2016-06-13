@@ -25,6 +25,12 @@
 namespace ndn {
 
 void
+CryptoLite::digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
+{
+  ndn_digestSha256(data, dataLength, digest);
+}
+
+void
 CryptoLite::computeHmacWithSha256
   (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
    uint8_t *digest)
