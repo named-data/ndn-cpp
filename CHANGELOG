@@ -1,7 +1,9 @@
-Interim changes since NDN-CPP v0.10 (2016-05-13)
+Interim changes since NDN-CPP v0.10 (2016-06-13)
 ------------------------------------------------
 
 Changes
+* Added the encrypt package for the Group-Based Encryption Protocol, ported from
+  https://github.com/named-data/ndn-group-encrypt
 * http://redmine.named-data.net/issues/3337 In MetaInfo, added get/setOtherTypeCode
   to allow unrecognized content type codes in the packet.
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
