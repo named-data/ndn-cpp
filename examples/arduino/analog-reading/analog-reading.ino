@@ -36,6 +36,7 @@
 #include <ndn-cpp/lite/transport/arduino-yun-tcp-transport-lite.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/interest-lite.hpp>
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 // TODO: Make an API for these.
 extern "C" {
@@ -135,7 +136,7 @@ replyToInterest(const uint8_t *element, size_t elementLength)
 
   // Get the signature for the signed portion.
   uint8_t signatureValue[ndn_SHA256_DIGEST_SIZE];
-  ndn_computeHmacWithSha256
+  CryptoLite::computeHmacWithSha256
     (hmacKey, sizeof(hmacKey), encoding + signedPortionBeginOffset,
      signedPortionEndOffset - signedPortionBeginOffset, signatureValue);
   data.getSignature().setSignature(BlobLite(signatureValue, ndn_SHA256_DIGEST_SIZE));
