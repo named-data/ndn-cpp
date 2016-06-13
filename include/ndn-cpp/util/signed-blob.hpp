@@ -161,6 +161,21 @@ public:
   size_t
   getSignedPortionEndOffset() const { return signedPortionEndOffset_; }
 
+  /**
+   * Get a BlobLite for the signed portion of the array.
+   * @return A new BlobLite or a null BlobLite() if this isNull.
+   */
+  BlobLite
+  getSignedPortionBlobLite() const
+  {
+    if (*this)
+      return BlobLite
+        (&(*this)->front() + signedPortionBeginOffset_,
+         signedPortionEndOffset_ - signedPortionBeginOffset_);
+    else
+      return BlobLite();
+  }
+
 private:
   size_t signedPortionBeginOffset_;
   size_t signedPortionEndOffset_;
