@@ -34,8 +34,6 @@
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-// Hack: Hook directly into non-API functions.
-#include "../src/c/util/crypto.h"
 
 using namespace std;
 using namespace ndn;
@@ -46,61 +44,6 @@ getNowSeconds()
   struct timeval t;
   gettimeofday(&t, 0);
   return t.tv_sec + t.tv_usec / 1000000.0;
-}
-
-static bool
-verifyEcdsaSignature
-  (const uint8_t* signedPortion, size_t signedPortionLength, const uint8_t* signatureBits, size_t signatureBitsLength,
-   const uint8_t* publicKeyDer, size_t publicKeyDerLength)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  CryptoLite::digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer;
-  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDerLength);
-  if (!ecPublicKey) {
-    // Don't expect this to happen.
-    cout << "Error decoding public key in d2i_EC_PUBKEY" << endl;
-    return 0;
-  }
-  int success = ECDSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), 
-     (uint8_t*)signatureBits, signatureBitsLength, ecPublicKey);
-  // Free the public key before checking for success.
-  EC_KEY_free(ecPublicKey);
-
-  // RSA_verify returns 1 for a valid signature.
-  return (success == 1);
-}
-
-static bool
-verifyRsaSignature
-  (const uint8_t* signedPortion, size_t signedPortionLength, const uint8_t* signatureBits, size_t signatureBitsLength,
-   const uint8_t* publicKeyDer, size_t publicKeyDerLength)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the wire encoding.
-  uint8_t signedPortionDigest[SHA256_DIGEST_LENGTH];
-  CryptoLite::digestSha256(signedPortion, signedPortionLength, signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer;
-  RSA *rsaPublicKey = d2i_RSA_PUBKEY(NULL, &derPointer, publicKeyDerLength);
-  if (!rsaPublicKey) {
-    // Don't expect this to happen.
-    cout << "Error decoding public key in d2i_RSAPublicKey" << endl;
-    return 0;
-  }
-  int success = RSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest), (uint8_t*)signatureBits, signatureBitsLength, rsaPublicKey);
-  // Free the public key before checking for success.
-  RSA_free(rsaPublicKey);
-
-  // RSA_verify returns 1 for a valid signature.
-  return (success == 1);
 }
 
 static uint8_t DEFAULT_RSA_PUBLIC_KEY_DER[] = {
@@ -572,22 +515,28 @@ benchmarkDecodeDataSecondsC
     }
 
     if (useCrypto) {
+      bool verified;
+      ndn_Error error;
       if (keyType == KEY_TYPE_ECDSA) {
-        if (!verifyEcdsaSignature
-            (encoding + signedPortionBeginOffset,
-             signedPortionEndOffset - signedPortionBeginOffset,
-             data.getSignature().getSignature().buf(),
-             data.getSignature().getSignature().size(),
-             DEFAULT_EC_PUBLIC_KEY_DER, sizeof(DEFAULT_EC_PUBLIC_KEY_DER)))
+        error = CryptoLite::verifySha256WithEcdsaSignature
+          (data.getSignature().getSignature().buf(),
+           data.getSignature().getSignature().size(),
+           encoding + signedPortionBeginOffset,
+           signedPortionEndOffset - signedPortionBeginOffset,
+           DEFAULT_EC_PUBLIC_KEY_DER, sizeof(DEFAULT_EC_PUBLIC_KEY_DER),
+           verified);
+        if (error || !verified)
           cout << "Signature verification: FAILED" << endl;
       }
       else {
-        if (!verifyRsaSignature
-            (encoding + signedPortionBeginOffset,
-             signedPortionEndOffset - signedPortionBeginOffset,
-             data.getSignature().getSignature().buf(),
-             data.getSignature().getSignature().size(),
-             DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)))
+        error = CryptoLite::verifySha256WithRsaSignature
+          (data.getSignature().getSignature().buf(),
+           data.getSignature().getSignature().size(),
+           encoding + signedPortionBeginOffset,
+           signedPortionEndOffset - signedPortionBeginOffset,
+           DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
+           verified);
+        if (error || !verified)
           cout << "Signature verification: FAILED" << endl;
       }
     }
