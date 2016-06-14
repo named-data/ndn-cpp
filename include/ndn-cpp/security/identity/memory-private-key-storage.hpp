@@ -23,10 +23,9 @@
 #define NDN_MEMORY_PRIVATE_KEY_STORAGE_HPP
 
 #include <map>
+#include "../../lite/util/ec-private-key-lite.hpp"
+#include "../../lite/util/rsa-private-key-lite.hpp"
 #include "private-key-storage.hpp"
-
-struct rsa_st;
-struct ec_key_st;
 
 namespace ndn {
 
@@ -202,18 +201,16 @@ private:
   public:
     PrivateKey(KeyType keyType, const uint8_t* keyDer, size_t keyDerLength);
 
-    ~PrivateKey();
-
     KeyType getKeyType() const { return keyType_; }
 
-    struct rsa_st* getRsaPrivateKey() const { return rsaPrivateKey_; }
+    const RsaPrivateKeyLite& getRsaPrivateKey() const { return rsaPrivateKey_; }
 
-    struct ec_key_st* getEcPrivateKey() const { return ecPrivateKey_; }
+    const EcPrivateKeyLite& getEcPrivateKey() const { return ecPrivateKey_; }
 
   private:
     KeyType keyType_;
-    struct rsa_st* rsaPrivateKey_;
-    struct ec_key_st* ecPrivateKey_;
+    RsaPrivateKeyLite rsaPrivateKey_;
+    EcPrivateKeyLite ecPrivateKey_;
   };
 
   std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;   /**< The map key is the keyName.toUri() */
