@@ -118,6 +118,8 @@ ndn_getErrorString(int error)
     return      "Interest has a selected delegation but no link object";
   case NDN_ERROR_The_Generic_signature_encoding_is_not_a_valid_NDN_TLV_SignatureInfo:
     return      "The Generic signature encoding is not a valid NDN-TLV SignatureInfo";
+  case NDN_ERROR_Error_decoding_key:
+    return      "Error decoding key";
   default:
     return "unrecognized ndn_Error code";
   }
