@@ -30,8 +30,7 @@
 #include "../security-common.hpp"
 #include "../key-params.hpp"
 #include "../../name.hpp"
-
-struct ec_key_st;
+#include "../../lite/util/ec-private-key-lite.hpp"
 
 namespace ndn {
 
@@ -164,19 +163,19 @@ public:
 
 protected:
   /**
-   * Create an EC key using the curve in the algorithmParameters, decode the
+   * Set the EC key using the curve in the algorithmParameters, decode the
    * privateKeyDer and set the private key value. This is necessary because
    * d2i_ECPrivateKey does not seem to work with the "parameterless" private
    * key encoding produced by NFD.
    * @param algorithmParameters The parameters from the PKCS #8 AlgorithmIdentifier.
    * @param privateKeyDer The bytes of the inner PKCS #8 private key.
-   * @return A new ec_key_st. You must call EC_KEY_free.
+   * @param privateKey The EcPrivateKeyLite to set.
    * @throws SecurityException if can't decode the private key.
    */
-  static ec_key_st*
+  void
   decodeEcPrivateKey
     (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
-     const Blob& privateKeyDer);
+     const Blob& privateKeyDer, EcPrivateKeyLite& privateKey);
 };
 
 }

@@ -70,10 +70,10 @@ PrivateKeyStorage::encodeSubjectPublicKeyInfo
 }
 
 #if NDN_CPP_HAVE_LIBCRYPTO
-ec_key_st*
+void
 PrivateKeyStorage::decodeEcPrivateKey
   (const ptr_lib::shared_ptr<DerNode>& algorithmParameters,
-   const Blob& privateKeyDer)
+   const Blob& privateKeyDer, EcPrivateKeyLite& privateKey)
 {
   // Find the curveId in EC_KEY_INFO.
   int curveId = -1;
@@ -99,23 +99,10 @@ PrivateKeyStorage::decodeEcPrivateKey
       ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't get the private key octet string");
   Blob octetStringValue = octetString->toVal();
 
-  BIGNUM* keyBignum = BN_bin2bn(octetStringValue.buf(), octetStringValue.size(), NULL);
-  if (!keyBignum) {
-    // We don't expect this to happen.
+  ndn_Error error;
+  if ((error = privateKey.setByCurve(curveId, octetStringValue)))
     throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create a BIGNUM for the private key value");
-  }
-  EC_KEY* privateKey = EC_KEY_new_by_curve_name(curveId);
-  if (!privateKey) {
-    // We don't expect this to happen.
-    BN_free(keyBignum);
-    throw SecurityException
-      ("FilePrivateKeyStorage::decodeEcPrivateKey: Can't create an EC key for the curve ID");
-  }
-  EC_KEY_set_private_key(privateKey, keyBignum);
-  BN_free(keyBignum);
-
-  return privateKey;
+      (string("PrivateKeyStorage::decodeEcPrivateKey ") + ndn_getErrorString(error));
 }
 #endif
 
