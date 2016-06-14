@@ -22,6 +22,7 @@
 #define NDN_CRYPTO_H
 
 #include <ndn-cpp/c/common.h>
+#include <ndn-cpp/c/errors.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,7 +81,45 @@ ndn_computeHmacWithSha256
 int
 ndn_verifyDigestSha256Signature
   (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
-   size_t dataLen);
+   size_t dataLength);
+
+/**
+ * Verify the ECDSA signature of the data using the given public key.
+ * @param signature A pointer to the signature bytes.
+ * @param signatureLength The length of signature.
+ * @param data A pointer to the input byte array to verify.
+ * @param dataLength The length of data.
+ * @param publicKeyDer A pointer to the DER-encoded public key used to verify
+ * the signature.
+ * @param publicKeyDerLength The length of publicKeyDer.
+ * @param verified Set verified to nonzero if the signature verifies, 0 if not.
+ * @return 0 for success, else NDN_ERROR_Error_decoding_key if publicKeyDer
+ * can't be decoded as an ECDSA public key.
+ */
+ndn_Error
+ndn_verifySha256WithEcdsaSignature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+   int *verified);
+
+/**
+ * Verify the RSA signature of the data using the given public key.
+ * @param signature A pointer to the signature bytes.
+ * @param signatureLength The length of signature.
+ * @param data A pointer to the input byte array to verify.
+ * @param dataLength The length of data.
+ * @param publicKeyDer A pointer to the DER-encoded public key used to verify
+ * the signature.
+ * @param publicKeyDerLength The length of publicKeyDer.
+ * @param verified Set verified to nonzero if the signature verifies, 0 if not.
+ * @return 0 for success, else NDN_ERROR_Error_decoding_key if publicKeyDer
+ * can't be decoded as an RSA public key.
+ */
+ndn_Error
+ndn_verifySha256WithRsaSignature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+   int *verified);
 
 /**
  * Get the number of ndn_EcKeyInfo struct entries in the array.
