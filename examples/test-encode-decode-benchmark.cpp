@@ -22,7 +22,6 @@
 #include <iostream>
 #include <time.h>
 #include <sys/time.h>
-#include <openssl/ssl.h>
 #include <stdexcept>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
@@ -34,6 +33,8 @@
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/util/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/util/rsa-private-key-lite.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -369,26 +370,21 @@ benchmarkEncodeDataSecondsC
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
 
   // Set up the private key now in case useCrypto is true.
-  // Use a temporary pointer since d2i updates it.
-  EC_KEY *ecPrivateKey = 0;
-  RSA *rsaPrivateKey = 0;
+  EcPrivateKeyLite ecPrivateKey;
+  RsaPrivateKeyLite rsaPrivateKey;
   if (keyType == KEY_TYPE_ECDSA) {
-    const uint8_t *privateKeyDerPointer = DEFAULT_EC_PRIVATE_KEY_DER;
-    ecPrivateKey = d2i_ECPrivateKey
-      (NULL, &privateKeyDerPointer,  sizeof(DEFAULT_EC_PRIVATE_KEY_DER));
-    if (!ecPrivateKey) {
+    if ((error = ecPrivateKey.decode
+         (DEFAULT_EC_PRIVATE_KEY_DER, sizeof(DEFAULT_EC_PRIVATE_KEY_DER)))) {
       // Don't expect this to happen.
-      cout << "Error decoding EC private key DER" << endl;
+      cout << "Error decoding EC private key DER" << ndn_getErrorString(error) << endl;
       return 0;
     }
   }
   else {
-    const uint8_t *privateKeyDerPointer = DEFAULT_RSA_PRIVATE_KEY_DER;
-    rsaPrivateKey = d2i_RSAPrivateKey
-      (NULL, &privateKeyDerPointer,  sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
-    if (!rsaPrivateKey) {
+    if ((error = rsaPrivateKey.decode
+         (DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)))) {
       // Don't expect this to happen.
-      cout << "Error decoding RSA private key DER" << endl;
+      cout << "Error decoding RSA private key DER" << ndn_getErrorString(error) << endl;
       return 0;
     }
   }
@@ -432,27 +428,24 @@ benchmarkEncodeDataSecondsC
         return 0;
       }
 
-      // Imitate MemoryPrivateKeyStorage::sign.
-      uint8_t digest[SHA256_DIGEST_LENGTH];
-      CryptoLite::digestSha256
-        (encoding + signedPortionBeginOffset,
-         signedPortionEndOffset - signedPortionBeginOffset, digest);
-      unsigned int signatureBitsLength;
+      size_t signatureBitsLength;
       if (keyType == KEY_TYPE_ECDSA) {
-        if (!ECDSA_sign
-            (NID_sha256, digest, sizeof(digest), signatureBitsArray,
-             &signatureBitsLength, ecPrivateKey)) {
+        if ((error = ecPrivateKey.signWithSha256
+             (encoding + signedPortionBeginOffset,
+              signedPortionEndOffset - signedPortionBeginOffset,
+              signatureBitsArray, signatureBitsLength))) {
           // Don't expect this to happen.
-          cout << "Error in RSA_sign" << endl;
+          cout << "Error in sign" << ndn_getErrorString(error) << endl;
           return 0;
         }
       }
       else {
-        if (!RSA_sign
-            (NID_sha256, digest, sizeof(digest), signatureBitsArray,
-             &signatureBitsLength, rsaPrivateKey)) {
+        if ((error = rsaPrivateKey.signWithSha256
+             (encoding + signedPortionBeginOffset,
+              signedPortionEndOffset - signedPortionBeginOffset,
+              signatureBitsArray, signatureBitsLength))) {
           // Don't expect this to happen.
-          cout << "Error in RSA_sign" << endl;
+          cout << "Error in sign" << endl;
           return 0;
         }
       }
@@ -475,11 +468,6 @@ benchmarkEncodeDataSecondsC
     }
   }
   double finish = getNowSeconds();
-
-  if (ecPrivateKey)
-    EC_KEY_free(ecPrivateKey);
-  if (rsaPrivateKey)
-    RSA_free(rsaPrivateKey);
 
   return finish - start;
 }
