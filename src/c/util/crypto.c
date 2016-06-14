@@ -100,9 +100,7 @@ ndn_verifySha256WithEcdsaSignature
   ndn_digestSha256(data, dataLength, digest);
 
   // Verify the digest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer;
-  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDerLength);
+  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &publicKeyDer, publicKeyDerLength);
   if (!ecPublicKey)
     return NDN_ERROR_Error_decoding_key;
   int success = ECDSA_verify
@@ -127,9 +125,7 @@ ndn_verifySha256WithRsaSignature
   ndn_digestSha256(data, dataLength, digest);
 
   // Verify the digest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer;
-  RSA *rsaPublicKey = d2i_RSA_PUBKEY(NULL, &derPointer, publicKeyDerLength);
+  RSA *rsaPublicKey = d2i_RSA_PUBKEY(NULL, &publicKeyDer, publicKeyDerLength);
   if (!rsaPublicKey)
     return NDN_ERROR_Error_decoding_key;
   int success = RSA_verify
