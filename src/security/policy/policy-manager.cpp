@@ -40,6 +40,9 @@ PolicyManager::verifySignature
   (const Signature* signature, const SignedBlob& signedBlob,
    const Blob& publicKeyDer)
 {
+  ndn_Error error;
+  bool verified;
+
   if (dynamic_cast<const DigestSha256Signature *>(signature))
     return CryptoLite::verifyDigestSha256Signature
       (signature->getSignature(), signedBlob.getSignedPortionBlobLite());
@@ -47,71 +50,32 @@ PolicyManager::verifySignature
   else if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
-    return verifySha256WithRsaSignature
-      (signature->getSignature(), signedBlob, publicKeyDer);
+    if ((error = CryptoLite::verifySha256WithRsaSignature
+         (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
+          publicKeyDer, verified)) != 0) {
+      if (error == NDN_ERROR_Error_decoding_key)
+        throw UnrecognizedKeyFormatException("Error decoding public key");
+      else
+        throw SecurityException(ndn_getErrorString(error));
+    }
+    return verified;
   }
   else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
-    return verifySha256WithEcdsaSignature
-      (signature->getSignature(), signedBlob, publicKeyDer);
+    if ((error = CryptoLite::verifySha256WithEcdsaSignature
+         (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
+          publicKeyDer, verified)) != 0) {
+      if (error == NDN_ERROR_Error_decoding_key)
+        throw UnrecognizedKeyFormatException("Error decoding public key");
+      else
+        throw SecurityException(ndn_getErrorString(error));
+    }
+    return verified;
   }
   else
 #endif
     throw SecurityException("PolicyManager::verify: Signature type is unknown");
 }
-
-#if NDN_CPP_HAVE_LIBCRYPTO
-bool
-PolicyManager::verifySha256WithEcdsaSignature
-  (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256
-    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer.buf();
-  EC_KEY *ecPublicKey = d2i_EC_PUBKEY(NULL, &derPointer, publicKeyDer.size());
-  if (!ecPublicKey)
-    throw UnrecognizedKeyFormatException
-      ("Error decoding public key in d2i_EC_PUBKEY");
-  int success = ECDSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest),
-     (uint8_t *)signature.buf(),signature.size(), ecPublicKey);
-  // Free the public key before checking for success.
-  EC_KEY_free(ecPublicKey);
-
-  // ECDSA_verify returns 1 for a valid signature.
-  return (success == 1);
-}
-
-bool
-PolicyManager::verifySha256WithRsaSignature
-  (const Blob& signature, const SignedBlob& signedBlob, const Blob& publicKeyDer)
-{
-  // Set signedPortionDigest to the digest of the signed portion of the signedBlob.
-  uint8_t signedPortionDigest[ndn_SHA256_DIGEST_SIZE];
-  ndn_digestSha256
-    (signedBlob.signedBuf(), signedBlob.signedSize(), signedPortionDigest);
-
-  // Verify the signedPortionDigest.
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = publicKeyDer.buf();
-  RSA *rsaPublicKey = d2i_RSA_PUBKEY(NULL, &derPointer, publicKeyDer.size());
-  if (!rsaPublicKey)
-    throw UnrecognizedKeyFormatException("Error decoding public key in d2i_RSAPublicKey");
-  int success = RSA_verify
-    (NID_sha256, signedPortionDigest, sizeof(signedPortionDigest),
-     (uint8_t *)signature.buf(), signature.size(), rsaPublicKey);
-  // Free the public key before checking for success.
-  RSA_free(rsaPublicKey);
-
-  // RSA_verify returns 1 for a valid signature.
-  return (success == 1);
-}
-#endif
 
 }

@@ -152,34 +152,6 @@ protected:
   verifySignature
     (const Signature* signature, const SignedBlob& signedBlob,
      const Blob& publicKeyDer);
-
-  /**
-   * Verify the ECDSA signature on the SignedBlob using the given public key.
-   * @param signature The signature bits.
-   * @param signedBlob the SignedBlob with the signed portion to verify.
-   * @param publicKeyDer The DER-encoded public key used to verify the signature.
-   * @return true if the signature verifies, false if not.
-   * @throws UnrecognizedKeyFormatException if publicKeyDer can't be decoded as
-   * an ECDSA public key.
-   */
-  static bool
-  verifySha256WithEcdsaSignature
-    (const Blob& signature, const SignedBlob& signedBlob,
-     const Blob& publicKeyDer);
-
-  /**
-   * Verify the RSA signature on the SignedBlob using the given public key.
-   * @param signature The signature bits.
-   * @param signedBlob the SignedBlob with the signed portion to verify.
-   * @param publicKeyDer The DER-encoded public key used to verify the signature.
-   * @return true if the signature verifies, false if not.
-   * @throws UnrecognizedKeyFormatException if publicKeyDer can't be decoded as
-   * an RSA public key.
-   */
-  static bool
-  verifySha256WithRsaSignature
-    (const Blob& signature, const SignedBlob& signedBlob,
-     const Blob& publicKeyDer);
 };
 
 }
