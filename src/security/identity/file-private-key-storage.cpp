@@ -33,6 +33,8 @@
 #include <openssl/ssl.h>
 #endif
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/util/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/util/rsa-private-key-lite.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
 using namespace std;
@@ -253,47 +255,39 @@ FilePrivateKeyStorage::sign
   // Get the value of the 3rd child which is the octet string.
   Blob privateKeyDer = pkcs8Children[2]->toVal();
 
-  // Get the digest to sign.
-  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
-  CryptoLite::digestSha256(data, dataLength, digest);
   // TODO: use RSA_size, etc. to get the proper size of the signature buffer.
   uint8_t signatureBits[1000];
-  unsigned int signatureBitsLength;
+  size_t signatureBitsLength;
+  ndn_Error error;
 
   // Decode the private key and sign.
 #if NDN_CPP_HAVE_LIBCRYPTO
   if (oidString == RSA_ENCRYPTION_OID) {
-    // Use a temporary pointer since d2i updates it.
-    const uint8_t* derPointer = privateKeyDer.buf();
-    rsa_st* privateKey = d2i_RSAPrivateKey(NULL, &derPointer, privateKeyDer.size());
-    if (!privateKey)
+    RsaPrivateKeyLite privateKey;
+    if ((error = privateKey.decode(privateKeyDer)))
       throw SecurityException
-        ("FilePrivateKeyStorage::sign: Error decoding the RSA private key DER");
+        (string("FilePrivateKeyStorage::sign RSA: ") + ndn_getErrorString(error));
 
-    int success = RSA_sign
-      (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength,
-       privateKey);
-    // Free the private key before checking for success.
-    RSA_free(privateKey);
-    if (!success)
-      throw SecurityException("FilePrivateKeyStorage::sign: Error in RSA_sign");
+    if ((error =  privateKey.signWithSha256
+         (data, dataLength, signatureBits, signatureBitsLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage::sign RSA: ") + ndn_getErrorString(error));
   }
   else if (oidString == EC_ENCRYPTION_OID) {
-    ec_key_st* privateKey = decodeEcPrivateKey(algorithmParameters, privateKeyDer);
-    int success = ECDSA_sign
-      (NID_sha256, digest, sizeof(digest), signatureBits, &signatureBitsLength,
-       privateKey);
-    // Free the private key before checking for success.
-    EC_KEY_free(privateKey);
-    if (!success)
-      throw SecurityException("FilePrivateKeyStorage::sign: Error in ECDSA_sign");
+    EcPrivateKeyLite privateKey;
+    decodeEcPrivateKey(algorithmParameters, privateKeyDer, privateKey);
+
+    if ((error =  privateKey.signWithSha256
+         (data, dataLength, signatureBits, signatureBitsLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage::sign ECDSA: ") + ndn_getErrorString(error));
   }
   else
 #endif
     throw SecurityException
       ("FilePrivateKeyStorage::sign: Unrecognized private key OID");
 
-  return Blob(signatureBits, (size_t)signatureBitsLength);
+  return Blob(signatureBits, signatureBitsLength);
 }
 
 Blob
