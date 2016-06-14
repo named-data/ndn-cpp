@@ -68,7 +68,9 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
-  include/ndn-cpp/c/util/dynamic-uint8-array-types.h
+  include/ndn-cpp/c/util/dynamic-uint8-array-types.h \
+  include/ndn-cpp/c/util/ec-private-key-types.h \
+  include/ndn-cpp/c/util/rsa-private-key-types.h
 
 # Public C++ headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_cpp_headers in include/Makefile.am.
@@ -145,6 +147,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/lite/util/crypto-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
+  include/ndn-cpp/lite/util/ec-private-key-lite.hpp \
+  include/ndn-cpp/lite/util/rsa-private-key-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -220,8 +224,10 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/util/blob.h \
   src/c/util/crypto.c src/c/util/crypto.h \
   src/c/util/dynamic-uint8-array.c src/c/util/dynamic-uint8-array.h \
+  src/c/util/ec-private-key.c src/c/util/ec-private-key.h \
   src/c/util/ndn_memory.c src/c/util/ndn_memory.h \
   src/c/util/ndn_realloc.c src/c/util/ndn_realloc.h \
+  src/c/util/rsa-private-key.c src/c/util/rsa-private-key.h \
   src/c/util/time.c src/c/util/time.h
 
 # C++ code and also the C code.
@@ -305,6 +311,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/util/blob-lite.cpp \
   src/lite/util/crypto-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/lite/util/ec-private-key-lite.cpp \
+  src/lite/util/rsa-private-key-lite.cpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \

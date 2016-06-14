@@ -210,8 +210,9 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/lp/incoming-face-id_c.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
-	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
-	src/c/util/ndn_realloc.lo src/c/util/time.lo
+	src/c/util/dynamic-uint8-array.lo src/c/util/ec-private-key.lo \
+	src/c/util/ndn_memory.lo src/c/util/ndn_realloc.lo \
+	src/c/util/rsa-private-key.lo src/c/util/time.lo
 libndn_c_la_OBJECTS = $(am_libndn_c_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -239,8 +240,9 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/lp/incoming-face-id_c.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
-	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
-	src/c/util/ndn_realloc.lo src/c/util/time.lo
+	src/c/util/dynamic-uint8-array.lo src/c/util/ec-private-key.lo \
+	src/c/util/ndn_memory.lo src/c/util/ndn_realloc.lo \
+	src/c/util/rsa-private-key.lo src/c/util/time.lo
 am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/common.lo src/control-parameters.lo \
 	src/control-response.lo src/data.lo src/delegation-set.lo \
@@ -291,6 +293,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/transport/unix-transport-lite.lo \
 	src/lite/util/blob-lite.lo src/lite/util/crypto-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
+	src/lite/util/ec-private-key-lite.lo \
+	src/lite/util/rsa-private-key-lite.lo \
 	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
 	src/security/certificate/certificate-extension.lo \
@@ -1154,7 +1158,9 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
-  include/ndn-cpp/c/util/dynamic-uint8-array-types.h
+  include/ndn-cpp/c/util/dynamic-uint8-array-types.h \
+  include/ndn-cpp/c/util/ec-private-key-types.h \
+  include/ndn-cpp/c/util/rsa-private-key-types.h
 
 
 # Public C++ headers.
@@ -1232,6 +1238,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/lite/util/crypto-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
+  include/ndn-cpp/lite/util/ec-private-key-lite.hpp \
+  include/ndn-cpp/lite/util/rsa-private-key-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
@@ -1308,8 +1316,10 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/util/blob.h \
   src/c/util/crypto.c src/c/util/crypto.h \
   src/c/util/dynamic-uint8-array.c src/c/util/dynamic-uint8-array.h \
+  src/c/util/ec-private-key.c src/c/util/ec-private-key.h \
   src/c/util/ndn_memory.c src/c/util/ndn_memory.h \
   src/c/util/ndn_realloc.c src/c/util/ndn_realloc.h \
+  src/c/util/rsa-private-key.c src/c/util/rsa-private-key.h \
   src/c/util/time.c src/c/util/time.h
 
 
@@ -1394,6 +1404,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/util/blob-lite.cpp \
   src/lite/util/crypto-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/lite/util/ec-private-key-lite.cpp \
+  src/lite/util/rsa-private-key-lite.cpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
@@ -1735,9 +1747,13 @@ src/c/util/crypto.lo: src/c/util/$(am__dirstamp) \
 	src/c/util/$(DEPDIR)/$(am__dirstamp)
 src/c/util/dynamic-uint8-array.lo: src/c/util/$(am__dirstamp) \
 	src/c/util/$(DEPDIR)/$(am__dirstamp)
+src/c/util/ec-private-key.lo: src/c/util/$(am__dirstamp) \
+	src/c/util/$(DEPDIR)/$(am__dirstamp)
 src/c/util/ndn_memory.lo: src/c/util/$(am__dirstamp) \
 	src/c/util/$(DEPDIR)/$(am__dirstamp)
 src/c/util/ndn_realloc.lo: src/c/util/$(am__dirstamp) \
+	src/c/util/$(DEPDIR)/$(am__dirstamp)
+src/c/util/rsa-private-key.lo: src/c/util/$(am__dirstamp) \
 	src/c/util/$(DEPDIR)/$(am__dirstamp)
 src/c/util/time.lo: src/c/util/$(am__dirstamp) \
 	src/c/util/$(DEPDIR)/$(am__dirstamp)
@@ -1971,6 +1987,10 @@ src/lite/util/crypto-lite.lo: src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/lite/util/dynamic-uint8-array-lite.lo:  \
 	src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/ec-private-key-lite.lo: src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/rsa-private-key-lite.lo: src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/lp/$(am__dirstamp):
 	@$(MKDIR_P) src/lp
@@ -2724,8 +2744,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/tcp-transport_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/crypto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/dynamic-uint8-array.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ec-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ndn_memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/ndn_realloc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/rsa-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/element-listener.Plo@am__quote@
@@ -2782,6 +2804,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/crypto-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/ec-private-key-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/rsa-private-key-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
