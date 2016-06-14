@@ -42,6 +42,13 @@ EcPrivateKeyLite::decode
 }
 
 ndn_Error
+EcPrivateKeyLite::setByCurve
+  (int curveId, const uint8_t* value, size_t valueLength)
+{
+  return ndn_EcPrivateKey_setByCurve(this, curveId, value, valueLength);
+}
+
+ndn_Error
 EcPrivateKeyLite::signWithSha256
   (const uint8_t* data, size_t dataLength, const uint8_t* signature,
    size_t& signatureLength) const

@@ -64,6 +64,32 @@ public:
   }
 
   /**
+   * Set the the private key from the given curveId, using the value to create a
+   * BIGNUM, allocating memory as needed.
+   * @param curveId The OpenSSL curve ID such as NID_secp384r1.
+   * @param value A pointer to the value array for the BIGNUM.
+   * @param valueLength The length of value.
+   * @return 0 for success, else NDN_ERROR_Error_decoding_key if can't create
+   * the private key from the curveId or value.
+   */
+  ndn_Error
+  setByCurve(int curveId, const uint8_t* value, size_t valueLength);
+
+  /**
+   * Set the the private key from the given curveId, using the value to create a
+   * BIGNUM, allocating memory as needed.
+   * @param curveId The OpenSSL curve ID such as NID_secp384r1.
+   * @param value The value array for the BIGNUM.
+   * @return 0 for success, else NDN_ERROR_Error_decoding_key if can't create
+   * the private key from the curveId or value.
+   */
+  ndn_Error
+  setByCurve(int curveId, const BlobLite& value)
+  {
+    return setByCurve(curveId, value.buf(), value.size());
+  }
+
+  /**
    * Use this private key to sign the data using EcdsaWithSha256.
    * @param data A pointer to the input byte array to sign.
    * @param dataLength The length of data.

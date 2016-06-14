@@ -61,6 +61,22 @@ ndn_EcPrivateKey_decode
    size_t privateKeyDerLength);
 
 /**
+ * Set the the private key from the given curveId, using the value to create a
+ * BIGNUM, allocating memory as needed. You must call ndn_EcPrivateKey_finalize
+ * to free it.
+ * @param self A pointer to the ndn_EcPrivateKey struct.
+ * @param curveId The OpenSSL curve ID such as NID_secp384r1.
+ * @param value A pointer to the value array for the BIGNUM.
+ * @param valueLength The length of value.
+ * @return 0 for success, else NDN_ERROR_Error_decoding_key if can't create
+ * the private key from the curveId or value.
+ */
+ndn_Error
+ndn_EcPrivateKey_setByCurve
+  (struct ndn_EcPrivateKey *self, int curveId, const uint8_t *value,
+   size_t valueLength);
+
+/**
  * Use the private key to sign the data using EcdsaWithSha256.
  * @param self A pointer to the ndn_EcPrivateKey struct.
  * @param data A pointer to the input byte array to sign.
