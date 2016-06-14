@@ -342,13 +342,13 @@ public:
    * Create a DerBitString with the given padding and inputBuf.
    * @param inputBuf An input buffer containing the bit octets to encode.
    * @param inputBufLength The number of bytes in inputBuf.
-   * @param paddingLen The number of bits of padding at the end of the bit
+   * @param paddingLength The number of bits of padding at the end of the bit
    * string.  Should be less than 8.
    */
-  DerBitString(const uint8_t* inputBuf, size_t inputBufLength, int paddingLen)
+  DerBitString(const uint8_t* inputBuf, size_t inputBufLength, int paddingLength)
   : DerNode(DerNodeType_BitString)
   {
-    uint8_t pad = paddingLen & 0xff;
+    uint8_t pad = paddingLength & 0xff;
     payloadAppend(&pad, 1);
     payloadAppend(inputBuf, inputBufLength);
     encodeHeader(payloadPosition_);

@@ -56,8 +56,8 @@ public:
     /**
      * Create an Exclude::Entry of type ndn_Exclude_COMPONENT.
      */
-    Entry(const uint8_t *component, size_t componentLen)
-    : type_(ndn_Exclude_COMPONENT), component_(component, componentLen)
+    Entry(const uint8_t *component, size_t componentLength)
+    : type_(ndn_Exclude_COMPONENT), component_(component, componentLength)
     {
     }
 

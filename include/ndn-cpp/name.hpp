@@ -64,10 +64,10 @@ public:
     /**
      * Create a new Name::Component, copying the given value.
      * @param value Pointer to the value byte array.
-     * @param valueLen Length of value.
+     * @param valueLength Length of value.
      */
-    Component(const uint8_t *value, size_t valueLen)
-    : value_(value, valueLen)
+    Component(const uint8_t *value, size_t valueLength)
+    : value_(value, valueLength)
     {
     }
 
