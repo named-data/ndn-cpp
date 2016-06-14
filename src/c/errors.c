@@ -120,6 +120,8 @@ ndn_getErrorString(int error)
     return      "The Generic signature encoding is not a valid NDN-TLV SignatureInfo";
   case NDN_ERROR_Error_decoding_key:
     return      "Error decoding key";
+  case NDN_ERROR_Error_in_sign_operation:
+    return      "Error in sign operation";
   default:
     return "unrecognized ndn_Error code";
   }
