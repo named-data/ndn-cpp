@@ -131,6 +131,20 @@ public:
     return *(DynamicUInt8ArrayLite*)&dynamicArray;
   }
 
+protected:
+  /**
+   * Set the array and length. This is typically called by a derived class's
+   * constructor after setting up storage.
+   * @param array The allocated array buffer.
+   * @param length The length of the allocated array buffer.
+   */
+  void
+  setArrayAndLength(uint8_t *array, size_t length)
+  {
+    this->array = array;
+    this->length = length;
+  }
+
 private:
   // Declare friends who can downcast to the private base.
   friend class TcpTransportLite;
