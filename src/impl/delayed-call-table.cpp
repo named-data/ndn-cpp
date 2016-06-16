@@ -57,5 +57,4 @@ DelayedCallTable::Entry::Entry
 {
 }
 
-
 }
