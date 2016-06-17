@@ -33,8 +33,8 @@
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/lite/util/ec-private-key-lite.hpp>
-#include <ndn-cpp/lite/util/rsa-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 
 using namespace std;
 using namespace ndn;

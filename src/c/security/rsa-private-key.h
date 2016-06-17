@@ -23,7 +23,7 @@
 
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
-#include <ndn-cpp/c/util/rsa-private-key-types.h>
+#include <ndn-cpp/c/security/rsa-private-key-types.h>
 
 #ifdef __cplusplus
 extern "C" {

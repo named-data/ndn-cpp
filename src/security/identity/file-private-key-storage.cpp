@@ -33,8 +33,8 @@
 #include <openssl/ssl.h>
 #endif
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/lite/util/ec-private-key-lite.hpp>
-#include <ndn-cpp/lite/util/rsa-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
 using namespace std;

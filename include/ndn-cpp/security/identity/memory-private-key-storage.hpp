@@ -23,8 +23,8 @@
 #define NDN_MEMORY_PRIVATE_KEY_STORAGE_HPP
 
 #include <map>
-#include "../../lite/util/ec-private-key-lite.hpp"
-#include "../../lite/util/rsa-private-key-lite.hpp"
+#include "../../lite/security/ec-private-key-lite.hpp"
+#include "../../lite/security/rsa-private-key-lite.hpp"
 #include "private-key-storage.hpp"
 
 namespace ndn {

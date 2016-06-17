@@ -19,8 +19,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../c/util/ec-private-key.h"
-#include <ndn-cpp/lite/util/ec-private-key-lite.hpp>
+#include "../../c/security/ec-private-key.h"
+#include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
 
 namespace ndn {
 

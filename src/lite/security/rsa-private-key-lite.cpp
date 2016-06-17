@@ -19,8 +19,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../c/util/rsa-private-key.h"
-#include <ndn-cpp/lite/util/rsa-private-key-lite.hpp>
+#include "../../c/security/rsa-private-key.h"
+#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 
 namespace ndn {
 

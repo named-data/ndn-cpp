@@ -22,8 +22,8 @@
 #ifndef NDN_RSA_PRIVATE_KEY_LITE_HPP
 #define NDN_RSA_PRIVATE_KEY_LITE_HPP
 
-#include "blob-lite.hpp"
-#include "../../c/util/rsa-private-key-types.h"
+#include "../util/blob-lite.hpp"
+#include "../../c/security/rsa-private-key-types.h"
 
 namespace ndn {
 

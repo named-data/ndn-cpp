@@ -30,7 +30,7 @@
 #include "../security-common.hpp"
 #include "../key-params.hpp"
 #include "../../name.hpp"
-#include "../../lite/util/ec-private-key-lite.hpp"
+#include "../../lite/security/ec-private-key-lite.hpp"
 
 namespace ndn {
 

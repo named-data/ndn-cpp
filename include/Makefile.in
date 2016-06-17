@@ -350,6 +350,7 @@ ndn_cpp_c_headers = \
   $(wildcard ndn-cpp/c/encrypt/*.*) \
   $(wildcard ndn-cpp/c/encrypt/algo/*.*) \
   $(wildcard ndn-cpp/c/lp/*.*) \
+  $(wildcard ndn-cpp/c/security/*.*) \
   $(wildcard ndn-cpp/c/transport/*.*) \
   $(wildcard ndn-cpp/c/util/*.*)
 
@@ -366,6 +367,7 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/lite/encrypt/*.*) \
   $(wildcard ndn-cpp/lite/encrypt/algo/*.*) \
   $(wildcard ndn-cpp/lite/lp/*.*) \
+  $(wildcard ndn-cpp/lite/security/*.*) \
   $(wildcard ndn-cpp/lite/transport/*.*) \
   $(wildcard ndn-cpp/lite/util/*.*) \
   $(wildcard ndn-cpp/security/*.*) \
