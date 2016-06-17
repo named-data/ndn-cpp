@@ -132,6 +132,11 @@ public:
 
   static const EcPrivateKeyLite&
   downCast(const ndn_EcPrivateKey& blob) { return *(EcPrivateKeyLite*)&blob; }
+
+private:
+  // Don't allow copying since we don't reference count the allocated value.
+  EcPrivateKeyLite(const EcPrivateKeyLite& other);
+  EcPrivateKeyLite& operator=(const EcPrivateKeyLite& other);
 };
 
 }
