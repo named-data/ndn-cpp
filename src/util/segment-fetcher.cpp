@@ -46,7 +46,21 @@ SegmentFetcher::fetch
   // Make a shared_ptr because we make callbacks with bind using
   //   shared_from_this() so the object remains allocated.
   ptr_lib::shared_ptr<SegmentFetcher> segmentFetcher
-    (new SegmentFetcher(face, verifySegment, onComplete, onError));
+    (new SegmentFetcher(face, 0, verifySegment, onComplete, onError));
+  segmentFetcher->fetchFirstSegment(baseInterest);
+}
+
+void
+SegmentFetcher::fetch
+  (Face& face, const Interest &baseInterest, KeyChain* validatorKeyChain,
+   const OnComplete& onComplete, const OnError& onError)
+{
+  // Make a shared_ptr because we make callbacks with bind using
+  //   shared_from_this() so the object remains allocated.
+  ptr_lib::shared_ptr<SegmentFetcher> segmentFetcher
+    (new SegmentFetcher
+     (face, validatorKeyChain, SegmentFetcher::DontVerifySegment, onComplete,
+      onError));
   segmentFetcher->fetchFirstSegment(baseInterest);
 }
 
@@ -85,17 +99,26 @@ SegmentFetcher::onSegmentReceived
   (const ptr_lib::shared_ptr<const Interest>& originalInterest,
    const ptr_lib::shared_ptr<Data>& data)
 {
-  if (!verifySegment_(data)) {
-    try {
-      onError_(SEGMENT_VERIFICATION_FAILED, "Segment verification failed");
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
+  if (validatorKeyChain_)
+    validatorKeyChain_->verifyData
+      (data,
+       bind(&SegmentFetcher::onVerified, shared_from_this(), _1, originalInterest),
+       bind(&SegmentFetcher::onVerifyFailed, shared_from_this(), _1));
+  else {
+    if (!verifySegment_(data)) {
+      onVerifyFailed(data);
+      return;
     }
-    return;
-  }
 
+    onVerified(data, originalInterest);
+  }
+}
+
+void
+SegmentFetcher::onVerified
+  (const ptr_lib::shared_ptr<Data>& data,
+   const ptr_lib::shared_ptr<const Interest>& originalInterest)
+{
   if (!endsWithSegmentNumber(data->getName())) {
     // We don't expect a name without a segment number.  Treat it as a bad packet.
     try {
@@ -188,6 +211,18 @@ SegmentFetcher::onSegmentReceived
       fetchNextSegment
         (*originalInterest, data->getName(), expectedSegmentNumber + 1);
     }
+  }
+}
+
+void
+SegmentFetcher::onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+{
+  try {
+    onError_(SEGMENT_VERIFICATION_FAILED, "Segment verification failed");
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError.");
   }
 }
 

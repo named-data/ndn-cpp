@@ -24,6 +24,7 @@
 #define NDN_SEGMENT_FETCHER_HPP
 
 #include "../face.hpp"
+#include "../security/key-chain.hpp"
 
 namespace ndn {
 
@@ -68,10 +69,10 @@ namespace ndn {
  * - `SEGMENT_VERIFICATION_FAILED`: if any retrieved segment fails
  *   the user-provided VerifySegment callback
  *
- * In order to validate individual segments, a VerifySegment callback needs to
- * be specified. If the callback returns false, the fetching process is aborted
- * with SEGMENT_VERIFICATION_FAILED. If data validation is not required, the
- * provided DontVerifySegment object can be used.
+ * In order to validate individual segments, a KeyChain needs to be supplied.
+ * If verifyData fails, the fetching process is aborted with
+ * SEGMENT_VERIFICATION_FAILED. If data validation is not required, pass a null
+ * KeyChain.
  *
  * Example:
  *     void onComplete(const Blob& encodedMessage);
@@ -81,8 +82,7 @@ namespace ndn {
  *     Interest interest(Name("/data/prefix"));
  *     interest.setInterestLifetimeMilliseconds(1000);
  *
- *     SegmentFetcher.fetch
- *       (face, interest, SegmentFetcher::DontVerifySegment, onComplete, onError);
+ *     SegmentFetcher.fetch(face, interest, 0, onComplete, onError);
  */
 class SegmentFetcher : public ptr_lib::enable_shared_from_this<SegmentFetcher> {
 public:
@@ -139,24 +139,49 @@ public:
     (Face& face, const Interest &baseInterest, const VerifySegment& verifySegment,
      const OnComplete& onComplete, const OnError& onError);
 
-private:
   /**
-   * Create a new SegmentFetcher to use the Face.
+   * Initiate segment fetching. For more details, see the documentation for
+   * the class.
    * @param face This calls face.expressInterest to fetch more segments.
-   * @param verifySegment When a Data packet is received this calls
-   * verifySegment(data). If it returns false then abort fetching and call
-   * onError.onError with SEGMENT_VERIFICATION_FAILED.
+   * @param baseInterest An Interest for the initial segment of the requested
+   * data, where baseInterest.getName() has the name prefix.
+   * This interest may include a custom InterestLifetime and selectors that will
+   * propagate to all subsequent Interests. The only exception is that the
+   * initial Interest will be forced to include selectors "ChildSelector=1" and
+   * "MustBeFresh=true" which will be turned off in subsequent Interests.
+   * @param validatorKeyChain When a Data packet is received this calls
+   * validatorKeyChain->verifyData(data). If validation fails then abort
+   * fetching and call onError with SEGMENT_VERIFICATION_FAILED. This does not
+   * make a copy of the KeyChain; the object must remain valid while fetching.
+   * If validatorKeyChain is null, this does not validate the data packet.
    * @param onComplete When all segments are received, call
    * onComplete(content) where content is the concatenation of the content of
    * all the segments.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
    * @param onError Call onError(errorCode, message) for timeout or an error
    * processing segments.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   */
+  static void
+  fetch
+    (Face& face, const Interest &baseInterest, KeyChain* validatorKeyChain,
+     const OnComplete& onComplete, const OnError& onError);
+
+private:
+  /**
+   * Create a new SegmentFetcher to use the Face. See the static fetch method
+   * for details. If validatorKeyChain is not null, use it and ignore
+   * verifySegment. After creating the SegmentFetcher, call fetchFirstSegment.
    */
   SegmentFetcher
-    (Face& face, const VerifySegment& verifySegment, const OnComplete& onComplete,
-     const OnError& onError)
-  : face_(face), verifySegment_(verifySegment), onComplete_(onComplete),
-    onError_(onError)
+    (Face& face, KeyChain* validatorKeyChain, const VerifySegment& verifySegment,
+     const OnComplete& onComplete, const OnError& onError)
+  : face_(face), validatorKeyChain_(validatorKeyChain), verifySegment_(verifySegment),
+    onComplete_(onComplete), onError_(onError)
   {
   }
 
@@ -171,6 +196,14 @@ private:
   onSegmentReceived
     (const ptr_lib::shared_ptr<const Interest>& originalInterest,
      const ptr_lib::shared_ptr<Data>& data);
+
+  void
+  onVerified
+    (const ptr_lib::shared_ptr<Data>& data,
+     const ptr_lib::shared_ptr<const Interest>& originalInterest);
+
+  void
+  onVerifyFailed(const ptr_lib::shared_ptr<Data>& data);
 
   void
   onTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
@@ -188,6 +221,7 @@ private:
 
   std::vector<Blob> contentParts_;
   Face& face_;
+  KeyChain* validatorKeyChain_;
   VerifySegment verifySegment_;
   OnComplete onComplete_;
   OnError onError_;
