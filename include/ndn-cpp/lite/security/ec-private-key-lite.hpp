@@ -95,7 +95,7 @@ public:
    * @param dataLength The length of data.
    * @param signature A pointer to the signature output buffer. The caller must
    * provide a buffer large enough to receive the signature bytes.
-   * @param signatureLength Set signatureLength to the number of bytes place in
+   * @param signatureLength Set signatureLength to the number of bytes placed in
    * the signature buffer.
    * @return 0 for success, else NDN_ERROR_Error_in_sign_operation if can't
    * complete the sign operation.
@@ -110,7 +110,7 @@ public:
    * @param data The input byte array to sign.
    * @param signature A pointer to the signature output buffer. The caller must
    * provide a buffer large enough to receive the signature bytes.
-   * @param signatureLength Set signatureLength to the number of bytes place in
+   * @param signatureLength Set signatureLength to the number of bytes placed in
    * the signature buffer.
    * @return 0 for success, else NDN_ERROR_Error_in_sign_operation if can't
    * complete the sign operation.
