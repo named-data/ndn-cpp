@@ -75,7 +75,10 @@ typedef enum {
   NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object,
   NDN_ERROR_The_Generic_signature_encoding_is_not_a_valid_NDN_TLV_SignatureInfo,
   NDN_ERROR_Error_decoding_key,
-  NDN_ERROR_Error_in_sign_operation
+  NDN_ERROR_Error_in_sign_operation,
+  NDN_ERROR_Unsupported_algorithm_type,
+  NDN_ERROR_Error_in_encrypt_operation,
+  NDN_ERROR_Error_in_decrypt_operation
 } ndn_Error;
 
 /**

@@ -122,6 +122,12 @@ ndn_getErrorString(int error)
     return      "Error decoding key";
   case NDN_ERROR_Error_in_sign_operation:
     return      "Error in sign operation";
+  case NDN_ERROR_Unsupported_algorithm_type:
+    return      "Unsupported algorithm type";
+  case NDN_ERROR_Error_in_encrypt_operation:
+    return      "Error in encrypt operation";
+  case NDN_ERROR_Error_in_decrypt_operation:
+    return      "Error in decrypt operation";
   default:
     return "unrecognized ndn_Error code";
   }
