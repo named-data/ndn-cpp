@@ -25,6 +25,7 @@
 #include "../../encoding/der/der-exception.hpp"
 #include <ndn-cpp/security/identity/private-key-storage.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/ssl.h>
 #endif
@@ -163,34 +164,25 @@ Blob
 RsaAlgorithm::encrypt
   (const Blob& keyBits, const Blob& plainData, const EncryptParams& params)
 {
-  int padding;
-
-  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_RsaPkcs)
-    padding = RSA_PKCS1_PADDING;
-  else if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_RsaOaep)
-    padding = RSA_PKCS1_OAEP_PADDING;
-  else
-    throw runtime_error("RsaAlgorithm: Unsupported padding scheme");
-
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = keyBits.buf();
-  RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyBits.size());
-  if (!publicKey)
+  RsaPublicKeyLite publicKey;
+  if (publicKey.decode(keyBits) != NDN_ERROR_success)
     throw UnrecognizedKeyFormatException
-      ("RsaAlgorithm: Error decoding public key in d2i_RSAPublicKey");
+      ("RsaAlgorithm: Error decoding public key");
   
   // TODO: use RSA_size, etc. to get the proper size of the output buffer.
   ptr_lib::shared_ptr<vector<uint8_t> > encryptedData(new vector<uint8_t>(1000));
-  int outputLength = RSA_public_encrypt
-    ((int)plainData.size(), (unsigned char *)plainData.buf(),
-     (unsigned char*)&encryptedData->front(), publicKey, padding);
-  // Free the public key before checking for success.
-  RSA_free(publicKey);
+  size_t encryptedDataLength;
+  ndn_Error error;
+  if ((error = publicKey.encrypt
+       (plainData, params.getAlgorithmType(), &encryptedData->front(),
+        encryptedDataLength))) {
+    if (error == NDN_ERROR_Unsupported_algorithm_type)
+      throw runtime_error("RsaAlgorithm: Unsupported padding scheme");
+    else
+      throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
+  }
 
-  if (outputLength < 0)
-    throw SecurityException("RsaAlgorithm: Error in RSA_public_encrypt");
-
-  encryptedData->resize(outputLength);
+  encryptedData->resize(encryptedDataLength);
   return Blob(encryptedData, false);
 }
 #endif
