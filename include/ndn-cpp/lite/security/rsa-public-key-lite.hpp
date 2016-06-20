@@ -82,8 +82,8 @@ public:
    * @param plainData A pointer to the input byte array to encrypt.
    * @param plainDataLength The length of plainData.
    * @param algorithmType This encrypts according to algorithmType.
-   * @param encryptedData A pointer to the signature output buffer. The caller
-   * must provide a buffer large enough to receive the encrypted bytes.
+   * @param encryptedData A pointer to the encrypted output buffer. The caller
+   * must provide a buffer large enough to receive the bytes.
    * @param encryptedDataLength Set encryptedDataLength to the number of bytes
    * placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
@@ -100,8 +100,8 @@ public:
    * Use this public key to encrypt plainData according to the algorithmType.
    * @param plainData The input byte array to encrypt.
    * @param algorithmType This encrypts according to algorithmType.
-   * @param encryptedData A pointer to the signature output buffer. The caller
-   * must provide a buffer large enough to receive the encrypted bytes.
+   * @param encryptedData A pointer to the encrypted output buffer. The caller
+   * must provide a buffer large enough to receive the bytes.
    * @param encryptedDataLength Set encryptedDataLength to the number of bytes
    * placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
