@@ -23,6 +23,7 @@
 #define NDN_RSA_PUBLIC_KEY_LITE_HPP
 
 #include "../util/blob-lite.hpp"
+#include "../../c/encrypt/algo/encrypt-params-types.h"
 #include "../../c/security/rsa-public-key-types.h"
 
 namespace ndn {
@@ -73,8 +74,49 @@ public:
    */
   bool
   verifyWithSha256
-    (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+    (const uint8_t* signature, size_t signatureLength, const uint8_t* data,
      size_t dataLength) const;
+
+  /**
+   * Use this public key to encrypt plainData according to the algorithmType.
+   * @param plainData A pointer to the input byte array to encrypt.
+   * @param plainDataLength The length of plainData.
+   * @param algorithmType This encrypts according to algorithmType.
+   * @param encryptedData A pointer to the signature output buffer. The caller
+   * must provide a buffer large enough to receive the encrypted bytes.
+   * @param encryptedDataLength Set encryptedDataLength to the number of bytes
+   * placed in the encryptedData buffer.
+   * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+   * unsupported algorithmType padding scheme, or
+   * NDN_ERROR_Error_in_encrypt_operation if can't complete the encrypt operation.
+   */
+  ndn_Error
+  encrypt
+    (const uint8_t* plainData, size_t plainDataLength,
+     ndn_EncryptAlgorithmType algorithmType, const uint8_t* encryptedData,
+     size_t& encryptedDataLength) const;
+
+  /**
+   * Use this public key to encrypt plainData according to the algorithmType.
+   * @param plainData The input byte array to encrypt.
+   * @param algorithmType This encrypts according to algorithmType.
+   * @param encryptedData A pointer to the signature output buffer. The caller
+   * must provide a buffer large enough to receive the encrypted bytes.
+   * @param encryptedDataLength Set encryptedDataLength to the number of bytes
+   * placed in the encryptedData buffer.
+   * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+   * unsupported algorithmType padding scheme, or
+   * NDN_ERROR_Error_in_encrypt_operation if can't complete the encrypt operation.
+   */
+  ndn_Error
+  encrypt
+    (const BlobLite& plainData, ndn_EncryptAlgorithmType algorithmType,
+     const uint8_t* encryptedData, size_t& encryptedDataLength) const
+  {
+    return encrypt
+      (plainData.buf(), plainData.size(), algorithmType, encryptedData,
+       encryptedDataLength);
+  }
 
   /**
    * Downcast the reference to the ndn_RsaPublicKey struct to a RsaPublicKeyLite.

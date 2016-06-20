@@ -43,11 +43,22 @@ RsaPublicKeyLite::decode
 
 bool
 RsaPublicKeyLite::verifyWithSha256
-  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+  (const uint8_t* signature, size_t signatureLength, const uint8_t* data,
    size_t dataLength) const
 {
   return ndn_RsaPublicKey_verifyWithSha256
     (this, signature, signatureLength, data, dataLength) != 0;
+}
+
+ndn_Error
+RsaPublicKeyLite::encrypt
+  (const uint8_t* plainData, size_t plainDataLength,
+   ndn_EncryptAlgorithmType algorithmType, const uint8_t* encryptedData,
+   size_t& encryptedDataLength) const
+{
+  return ndn_RsaPublicKey_encrypt
+    (this, plainData, plainDataLength, algorithmType, encryptedData,
+     &encryptedDataLength);
 }
 
 }

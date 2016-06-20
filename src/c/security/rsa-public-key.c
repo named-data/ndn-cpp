@@ -62,4 +62,30 @@ ndn_RsaPublicKey_verifyWithSha256
      self->publicKey) == 1;
 }
 
+ndn_Error
+ndn_RsaPublicKey_encrypt
+  (const struct ndn_RsaPublicKey *self, const uint8_t *plainData,
+   size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,
+   const uint8_t *encryptedData, size_t *encryptedDataLength)
+{
+  int padding;
+
+  if (algorithmType == ndn_EncryptAlgorithmType_RsaPkcs)
+    padding = RSA_PKCS1_PADDING;
+  else if (algorithmType == ndn_EncryptAlgorithmType_RsaOaep)
+    padding = RSA_PKCS1_OAEP_PADDING;
+  else
+    return NDN_ERROR_Unsupported_algorithm_type;
+
+  int outputLength = RSA_public_encrypt
+    ((int)plainDataLength, (unsigned char *)plainData,
+     (unsigned char*)encryptedData, self->publicKey, padding);
+
+  if (outputLength < 0)
+    return NDN_ERROR_Error_in_encrypt_operation;
+
+  *encryptedDataLength = outputLength;
+  return NDN_ERROR_success;
+}
+
 #endif // NDN_CPP_HAVE_LIBCRYPTO

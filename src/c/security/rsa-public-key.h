@@ -23,6 +23,7 @@
 
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encrypt/algo/encrypt-params-types.h>
 #include <ndn-cpp/c/security/rsa-public-key-types.h>
 
 #ifdef __cplusplus
@@ -73,6 +74,26 @@ int
 ndn_RsaPublicKey_verifyWithSha256
   (const struct ndn_RsaPublicKey *self, const uint8_t *signature,
    size_t signatureLength, const uint8_t *data, size_t dataLength);
+
+/**
+ * Use the public key to encrypt plainData according to the algorithmType.
+ * @param self A pointer to the ndn_RsaPublicKey struct.
+ * @param plainData A pointer to the input byte array to encrypt.
+ * @param plainDataLength The length of plainData.
+ * @param algorithmType This encrypts according to algorithmType.
+ * @param encryptedData A pointer to the signature output buffer. The caller
+ * must provide a buffer large enough to receive the encrypted bytes.
+ * @param encryptedDataLength Set encryptedDataLength to the number of bytes
+ * placed in the encryptedData buffer.
+ * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+ * unsupported algorithmType padding scheme, or
+ * NDN_ERROR_Error_in_encrypt_operation if can't complete the encrypt operation.
+ */
+ndn_Error
+ndn_RsaPublicKey_encrypt
+  (const struct ndn_RsaPublicKey *self, const uint8_t *plainData, 
+   size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,
+   const uint8_t *encryptedData, size_t *encryptedDataLength);
 
 #ifdef __cplusplus
 }
