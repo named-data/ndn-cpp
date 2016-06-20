@@ -209,7 +209,9 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
+	src/c/security/ec-public-key.lo \
 	src/c/security/rsa-private-key.lo \
+	src/c/security/rsa-public-key.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
@@ -240,7 +242,9 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
+	src/c/security/ec-public-key.lo \
 	src/c/security/rsa-private-key.lo \
+	src/c/security/rsa-public-key.lo \
 	src/c/transport/socket-transport.lo \
 	src/c/transport/tcp-transport_c.lo src/c/util/crypto.lo \
 	src/c/util/dynamic-uint8-array.lo src/c/util/ndn_memory.lo \
@@ -291,7 +295,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/lp/incoming-face-id-lite.lo \
 	src/lite/lp/lp-packet-lite.lo \
 	src/lite/security/ec-private-key-lite.lo \
+	src/lite/security/ec-public-key-lite.lo \
 	src/lite/security/rsa-private-key-lite.lo \
+	src/lite/security/rsa-public-key-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
@@ -1159,7 +1165,9 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/lp/incoming-face-id-types.h \
   include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/security/ec-private-key-types.h \
+  include/ndn-cpp/c/security/ec-public-key-types.h \
   include/ndn-cpp/c/security/rsa-private-key-types.h \
+  include/ndn-cpp/c/security/rsa-public-key-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -1235,7 +1243,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
   include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
   include/ndn-cpp/lite/security/ec-private-key-lite.hpp \
+  include/ndn-cpp/lite/security/ec-public-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-private-key-lite.hpp \
+  include/ndn-cpp/lite/security/rsa-public-key-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -1312,7 +1322,9 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
   src/c/lp/lp-packet.h \
   src/c/security/ec-private-key.c src/c/util/ec-private-key.h \
+  src/c/security/ec-public-key.c src/c/util/ec-public-key.h \
   src/c/security/rsa-private-key.c src/c/util/rsa-private-key.h \
+  src/c/security/rsa-public-key.c src/c/util/rsa-public-key.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -1401,7 +1413,9 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/lp/incoming-face-id-lite.cpp \
   src/lite/lp/lp-packet-lite.cpp \
   src/lite/security/ec-private-key-lite.cpp \
+  src/lite/security/ec-public-key-lite.cpp \
   src/lite/security/rsa-private-key-lite.cpp \
+  src/lite/security/rsa-public-key-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -1737,7 +1751,11 @@ src/c/security/$(DEPDIR)/$(am__dirstamp):
 	@: > src/c/security/$(DEPDIR)/$(am__dirstamp)
 src/c/security/ec-private-key.lo: src/c/security/$(am__dirstamp) \
 	src/c/security/$(DEPDIR)/$(am__dirstamp)
+src/c/security/ec-public-key.lo: src/c/security/$(am__dirstamp) \
+	src/c/security/$(DEPDIR)/$(am__dirstamp)
 src/c/security/rsa-private-key.lo: src/c/security/$(am__dirstamp) \
+	src/c/security/$(DEPDIR)/$(am__dirstamp)
+src/c/security/rsa-public-key.lo: src/c/security/$(am__dirstamp) \
 	src/c/security/$(DEPDIR)/$(am__dirstamp)
 src/c/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/c/transport
@@ -1977,7 +1995,13 @@ src/lite/security/$(DEPDIR)/$(am__dirstamp):
 src/lite/security/ec-private-key-lite.lo:  \
 	src/lite/security/$(am__dirstamp) \
 	src/lite/security/$(DEPDIR)/$(am__dirstamp)
+src/lite/security/ec-public-key-lite.lo:  \
+	src/lite/security/$(am__dirstamp) \
+	src/lite/security/$(DEPDIR)/$(am__dirstamp)
 src/lite/security/rsa-private-key-lite.lo:  \
+	src/lite/security/$(am__dirstamp) \
+	src/lite/security/$(DEPDIR)/$(am__dirstamp)
+src/lite/security/rsa-public-key-lite.lo:  \
 	src/lite/security/$(am__dirstamp) \
 	src/lite/security/$(DEPDIR)/$(am__dirstamp)
 src/lite/transport/$(am__dirstamp):
@@ -2761,7 +2785,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/ec-private-key.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/ec-public-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/rsa-private-key.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/rsa-public-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/socket-transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/transport/$(DEPDIR)/tcp-transport_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/util/$(DEPDIR)/crypto.Plo@am__quote@
@@ -2819,7 +2845,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/lp-packet-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/ec-private-key-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/ec-public-key-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/rsa-private-key-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/rsa-public-key-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
