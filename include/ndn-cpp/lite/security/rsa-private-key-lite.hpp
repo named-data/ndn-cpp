@@ -23,6 +23,7 @@
 #define NDN_RSA_PRIVATE_KEY_LITE_HPP
 
 #include "../util/blob-lite.hpp"
+#include "../../c/encrypt/algo/encrypt-params-types.h"
 #include "../../c/security/rsa-private-key-types.h"
 
 namespace ndn {
@@ -94,6 +95,47 @@ public:
     (const BlobLite& data, const uint8_t* signature, size_t& signatureLength) const
   {
     return signWithSha256(data.buf(), data.size(), signature, signatureLength);
+  }
+
+  /**
+   * Use the private key to decrypt encryptedData according to the algorithmType.
+   * @param encryptedData A pointer to the input byte array to decrypt.
+   * @param encryptedDataLength The length of encryptedData.
+   * @param algorithmType This decrypts according to algorithmType.
+   * @param plainData A pointer to the decrypted output buffer. The caller
+   * must provide a buffer large enough to receive the bytes.
+   * @param plainDataLength Set plainDataLength to the number of bytes placed in
+   * the plainData buffer.
+   * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+   * unsupported algorithmType padding scheme, or
+   * NDN_ERROR_Error_in_decrypt_operation if can't complete the decrypt operation.
+   */
+  ndn_Error
+  decrypt
+    (const uint8_t* encryptedData, size_t encryptedDataLength,
+     ndn_EncryptAlgorithmType algorithmType, const uint8_t* plainData,
+     size_t& plainDataLength);
+
+  /**
+   * Use the private key to decrypt encryptedData according to the algorithmType.
+   * @param encryptedData The input byte array to decrypt.
+   * @param algorithmType This decrypts according to algorithmType.
+   * @param plainData A pointer to the decrypted output buffer. The caller
+   * must provide a buffer large enough to receive the bytes.
+   * @param plainDataLength Set plainDataLength to the number of bytes placed in
+   * the plainData buffer.
+   * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+   * unsupported algorithmType padding scheme, or
+   * NDN_ERROR_Error_in_decrypt_operation if can't complete the decrypt operation.
+   */
+  ndn_Error
+  decrypt
+    (const BlobLite& encryptedData, ndn_EncryptAlgorithmType algorithmType,
+     const uint8_t* plainData, size_t& plainDataLength)
+  {
+    return decrypt
+      (encryptedData.buf(), encryptedData.size(), algorithmType, plainData,
+       plainDataLength);
   }
 
   /**

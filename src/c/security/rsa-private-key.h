@@ -23,6 +23,7 @@
 
 #include <ndn-cpp/c/common.h>
 #include <ndn-cpp/c/errors.h>
+#include <ndn-cpp/c/encrypt/algo/encrypt-params-types.h>
 #include <ndn-cpp/c/security/rsa-private-key-types.h>
 
 #ifdef __cplusplus
@@ -76,6 +77,26 @@ ndn_Error
 ndn_RsaPrivateKey_signWithSha256
   (const struct ndn_RsaPrivateKey *self, const uint8_t *data, size_t dataLength,
    const uint8_t *signature, size_t *signatureLength);
+
+/**
+ * Use the private key to decrypt encryptedData according to the algorithmType.
+ * @param self A pointer to the ndn_RsaPrivateKey struct.
+ * @param encryptedData A pointer to the input byte array to decrypt.
+ * @param encryptedDataLength The length of encryptedData.
+ * @param algorithmType This decrypts according to algorithmType.
+ * @param plainData A pointer to the decrypted output buffer. The caller
+ * must provide a buffer large enough to receive the bytes.
+ * @param plainDataLength Set plainDataLength to the number of bytes placed in
+ * the plainData buffer.
+ * @return 0 for success, else NDN_ERROR_Unsupported_algorithm_type for
+ * unsupported algorithmType padding scheme, or
+ * NDN_ERROR_Error_in_decrypt_operation if can't complete the decrypt operation.
+ */
+ndn_Error
+ndn_RsaPrivateKey_decrypt
+  (const struct ndn_RsaPrivateKey *self, const uint8_t *encryptedData,
+   size_t encryptedDataLength, ndn_EncryptAlgorithmType algorithmType,
+   const uint8_t *plainData, size_t *plainDataLength);
 
 #ifdef __cplusplus
 }

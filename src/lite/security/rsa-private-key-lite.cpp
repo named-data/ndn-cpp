@@ -50,4 +50,15 @@ RsaPrivateKeyLite::signWithSha256
     (this, data, dataLength, signature, &signatureLength);
 }
 
+ndn_Error
+RsaPrivateKeyLite::decrypt
+  (const uint8_t* encryptedData, size_t encryptedDataLength,
+   ndn_EncryptAlgorithmType algorithmType, const uint8_t* plainData,
+   size_t& plainDataLength)
+{
+  return ndn_RsaPrivateKey_decrypt
+    (this, encryptedData, encryptedDataLength, algorithmType, plainData,
+     &plainDataLength);
+}
+
 }
