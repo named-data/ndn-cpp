@@ -24,11 +24,9 @@
 #include "../../c/util/crypto.h"
 #include "../../encoding/der/der-node.hpp"
 #include "../../encoding/der/der-exception.hpp"
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/ssl.h>
-#include <openssl/ec.h>
-#endif
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #include <ndn-cpp/security/certificate/public-key.hpp>
 
 using namespace std;
@@ -62,23 +60,20 @@ PublicKey::PublicKey(const Blob& keyDer)
 
   // Verify that the we can decode.
   // Use a temporary pointer since d2i updates it.
-  const uint8_t *derPointer = keyDer.buf();
 #if NDN_CPP_HAVE_LIBCRYPTO
   if (oidString == RSA_ENCRYPTION_OID) {
     keyType_ = KEY_TYPE_RSA;
 
-    RSA *publicKey = d2i_RSA_PUBKEY(NULL, &derPointer, keyDer.size());
-    if (!publicKey)
+    RsaPublicKeyLite publicKey;
+    if (publicKey.decode(keyDer) != NDN_ERROR_success)
       throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");
-    RSA_free(publicKey);
   }
   else if (oidString == EC_ENCRYPTION_OID) {
     keyType_ = KEY_TYPE_ECDSA;
 
-    EC_KEY *publicKey = d2i_EC_PUBKEY(NULL, &derPointer, keyDer.size());
-    if (!publicKey)
+    EcPublicKeyLite publicKey;
+    if (publicKey.decode(keyDer) != NDN_ERROR_success)
       throw UnrecognizedKeyFormatException("Error decoding EC public key DER");
-    EC_KEY_free(publicKey);
   }
   else
 #endif
