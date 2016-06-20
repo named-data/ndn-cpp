@@ -69,6 +69,7 @@ ndn_RsaPublicKey_encrypt
    const uint8_t *encryptedData, size_t *encryptedDataLength)
 {
   int padding;
+  int outputLength;
 
   if (algorithmType == ndn_EncryptAlgorithmType_RsaPkcs)
     padding = RSA_PKCS1_PADDING;
@@ -77,7 +78,7 @@ ndn_RsaPublicKey_encrypt
   else
     return NDN_ERROR_Unsupported_algorithm_type;
 
-  int outputLength = RSA_public_encrypt
+  outputLength = RSA_public_encrypt
     ((int)plainDataLength, (unsigned char *)plainData,
      (unsigned char*)encryptedData, self->publicKey, padding);
 
