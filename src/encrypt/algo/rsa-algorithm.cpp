@@ -25,6 +25,7 @@
 #include "../../encoding/der/der-exception.hpp"
 #include <ndn-cpp/security/identity/private-key-storage.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/ssl.h>
@@ -115,15 +116,6 @@ Blob
 RsaAlgorithm::decrypt
   (const Blob& keyBits, const Blob& encryptedData, const EncryptParams& params)
 {
-  int padding;
-
-  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_RsaPkcs)
-    padding = RSA_PKCS1_PADDING;
-  else if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_RsaOaep)
-    padding = RSA_PKCS1_OAEP_PADDING;
-  else
-    throw runtime_error("RsaAlgorithm: Unsupported padding scheme");
-
   // Decode the PKCS #8 private key.
   ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits.buf(), 0);
   const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
@@ -138,25 +130,25 @@ RsaAlgorithm::decrypt
     throw DerDecodingException
       ("RsaAlgorithm: The PKCS #8 private key is not RSA_ENCRYPTION");
 
-  // Use a temporary pointer since d2i updates it.
-  const uint8_t* derPointer = rsaPrivateKeyDer.buf();
-  rsa_st* privateKey = d2i_RSAPrivateKey(NULL, &derPointer, rsaPrivateKeyDer.size());
-  if (!privateKey)
+  RsaPrivateKeyLite privateKey;
+  if (privateKey.decode(rsaPrivateKeyDer) != NDN_ERROR_success)
     throw UnrecognizedKeyFormatException
-      ("RsaAlgorithm: Error decoding public key in d2i_RSAPublicKey");
+      ("RsaAlgorithm: Error decoding the private key");
 
   // TODO: use RSA_size, etc. to get the proper size of the output buffer.
   ptr_lib::shared_ptr<vector<uint8_t> > plainData(new vector<uint8_t>(1000));
-  int outputLength = RSA_private_decrypt
-    ((int)encryptedData.size(), (unsigned char *)encryptedData.buf(),
-     (unsigned char*)&plainData->front(), privateKey, padding);
-  // Free the private key before checking for success.
-  RSA_free(privateKey);
-
-  if (outputLength < 0)
-    throw SecurityException("RsaAlgorithm: Error in RSA_private_decrypt");
+  size_t plainDataLength;
+  ndn_Error error;
+  if ((error = privateKey.decrypt
+       (encryptedData, params.getAlgorithmType(), &plainData->front(),
+        plainDataLength))) {
+    if (error == NDN_ERROR_Unsupported_algorithm_type)
+      throw runtime_error("RsaAlgorithm: Unsupported padding scheme");
+    else
+      throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
+  }
   
-  plainData->resize(outputLength);
+  plainData->resize(plainDataLength);
   return Blob(plainData, false);
 }
 
