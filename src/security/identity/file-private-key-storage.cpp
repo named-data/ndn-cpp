@@ -29,9 +29,6 @@
 #include "../../encoding/base64.hpp"
 #include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/ssl.h>
-#endif
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>

@@ -25,9 +25,6 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/ssl.h>
-#endif
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
