@@ -21,7 +21,7 @@
  */
 
 #include <stdexcept>
-#include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/evp.h>
 #endif
@@ -37,7 +37,7 @@ AesAlgorithm::generateKey(const AesKeyParams& params)
   // Convert the key bit size to bytes.
   ptr_lib::shared_ptr<vector<uint8_t> > key
     (new vector<uint8_t>(params.getKeySize() / 8));
-  ndn_generateRandomBytes(&key->front(), key->size());
+  CryptoLite::generateRandomBytes(&key->front(), key->size());
 
   DecryptKey decryptKey(Blob(key, false));
   return decryptKey;
