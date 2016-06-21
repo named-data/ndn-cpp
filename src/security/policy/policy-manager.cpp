@@ -26,6 +26,8 @@
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
 using namespace std;
@@ -47,7 +49,7 @@ PolicyManager::verifySignature
   else if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
-    if ((error = CryptoLite::verifySha256WithRsaSignature
+    if ((error = RsaPublicKeyLite::verifySha256WithRsaSignature
          (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
           publicKeyDer, verified)) != 0) {
       if (error == NDN_ERROR_Error_decoding_key)
@@ -60,7 +62,7 @@ PolicyManager::verifySignature
   else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
-    if ((error = CryptoLite::verifySha256WithEcdsaSignature
+    if ((error = EcPublicKeyLite::verifySha256WithEcdsaSignature
          (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
           publicKeyDer, verified)) != 0) {
       if (error == NDN_ERROR_Error_decoding_key)
