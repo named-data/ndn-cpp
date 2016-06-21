@@ -32,11 +32,11 @@
 #include <math.h>
 #include <sstream>
 #include <stdexcept>
-#include <openssl/rand.h>
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/transport/tcp-transport.hpp>
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
 // This include is produced by:
 // protoc --cpp_out=. chatbuf.proto
@@ -494,7 +494,7 @@ Chat::getRandomString()
   string seed("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789");
   string result;
   uint8_t random[10];
-  RAND_bytes(random, sizeof(random));
+  CryptoLite::generateRandomBytes(random, sizeof(random));
   for (int i = 0; i < 10; ++i) {
     // Using % means the distribution isn't uniform, but that's OK.
     size_t pos = (size_t)random[i] % seed.size();
