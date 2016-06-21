@@ -54,7 +54,7 @@ ndn_RsaPublicKey_encode
   (const struct ndn_RsaPublicKey *self, uint8_t *encoding,
    size_t *encodingLength)
 {
-  int result = i2d_RSA_PUBKEY(self->publicKey, &encoding);
+  int result = i2d_RSA_PUBKEY(self->publicKey, encoding ? &encoding : 0);
   if (result < 0)
     return NDN_ERROR_Error_encoding_key;
 

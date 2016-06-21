@@ -83,7 +83,7 @@ ndn_RsaPrivateKey_encodePrivateKey
   (const struct ndn_RsaPrivateKey *self, uint8_t *encoding,
    size_t *encodingLength)
 {
-  int result = i2d_RSAPrivateKey(self->privateKey, &encoding);
+  int result = i2d_RSAPrivateKey(self->privateKey, encoding ? &encoding : 0);
   if (result < 0)
     return NDN_ERROR_Error_encoding_key;
 
@@ -96,7 +96,7 @@ ndn_RsaPrivateKey_encodePublicKey
   (const struct ndn_RsaPrivateKey *self, uint8_t *encoding,
    size_t *encodingLength)
 {
-  int result = i2d_RSA_PUBKEY(self->privateKey, &encoding);
+  int result = i2d_RSA_PUBKEY(self->privateKey, encoding ? &encoding : 0);
   if (result < 0)
     return NDN_ERROR_Error_encoding_key;
 
