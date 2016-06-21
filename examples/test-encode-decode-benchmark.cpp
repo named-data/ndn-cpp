@@ -32,9 +32,10 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
-#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -506,7 +507,7 @@ benchmarkDecodeDataSecondsC
       bool verified;
       ndn_Error error;
       if (keyType == KEY_TYPE_ECDSA) {
-        error = CryptoLite::verifySha256WithEcdsaSignature
+        error = EcPublicKeyLite::verifySha256WithEcdsaSignature
           (data.getSignature().getSignature().buf(),
            data.getSignature().getSignature().size(),
            encoding + signedPortionBeginOffset,
@@ -517,7 +518,7 @@ benchmarkDecodeDataSecondsC
           cout << "Signature verification: FAILED" << endl;
       }
       else {
-        error = CryptoLite::verifySha256WithRsaSignature
+        error = RsaPublicKeyLite::verifySha256WithRsaSignature
           (data.getSignature().getSignature().buf(),
            data.getSignature().getSignature().size(),
            encoding + signedPortionBeginOffset,
