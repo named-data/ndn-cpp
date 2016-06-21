@@ -49,6 +49,19 @@ ndn_RsaPublicKey_decode
   return NDN_ERROR_success;
 }
 
+ndn_Error
+ndn_RsaPublicKey_encode
+  (const struct ndn_RsaPublicKey *self, uint8_t *encoding,
+   size_t *encodingLength)
+{
+  int result = i2d_RSA_PUBKEY(self->publicKey, &encoding);
+  if (result < 0)
+    return NDN_ERROR_Error_encoding_key;
+
+  *encodingLength = result;
+  return NDN_ERROR_success;
+}
+
 int
 ndn_RsaPublicKey_verifyWithSha256
   (const struct ndn_RsaPublicKey *self, const uint8_t *signature,
@@ -66,7 +79,7 @@ ndn_Error
 ndn_RsaPublicKey_encrypt
   (const struct ndn_RsaPublicKey *self, const uint8_t *plainData,
    size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,
-   const uint8_t *encryptedData, size_t *encryptedDataLength)
+   uint8_t *encryptedData, size_t *encryptedDataLength)
 {
   int padding;
   int outputLength;

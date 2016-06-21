@@ -65,6 +65,20 @@ public:
   }
 
   /**
+   * Encode the DER-encoded SubjectPublicKeyInfo.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encode(uint8_t* encoding, size_t& encodingLength);
+
+  /**
    * Use this public key to verify the data using RsaWithSha256.
    * @param signature A pointer to the signature bytes.
    * @param signatureLength The length of signature.
@@ -93,7 +107,7 @@ public:
   ndn_Error
   encrypt
     (const uint8_t* plainData, size_t plainDataLength,
-     ndn_EncryptAlgorithmType algorithmType, const uint8_t* encryptedData,
+     ndn_EncryptAlgorithmType algorithmType, uint8_t* encryptedData,
      size_t& encryptedDataLength) const;
 
   /**
@@ -111,7 +125,7 @@ public:
   ndn_Error
   encrypt
     (const BlobLite& plainData, ndn_EncryptAlgorithmType algorithmType,
-     const uint8_t* encryptedData, size_t& encryptedDataLength) const
+     uint8_t* encryptedData, size_t& encryptedDataLength) const
   {
     return encrypt
       (plainData.buf(), plainData.size(), algorithmType, encryptedData,

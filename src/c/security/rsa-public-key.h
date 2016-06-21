@@ -62,6 +62,23 @@ ndn_RsaPublicKey_decode
    size_t publicKeyDerLength);
 
 /**
+ * Encode the DER-encoded SubjectPublicKeyInfo.
+ * @param self A pointer to the ndn_RsaPublicKey struct.
+ * @param encoding A pointer to the encoding output buffer. If this is null then
+ * only set encodingLength (which can be used to allocate a buffer of the
+ * correct size). Otherwise, the caller must provide a buffer large enough to
+ * receive the encoding bytes.
+ * @param encodingLength Set encodingLength to the number of bytes in the
+ * encoding.
+ * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+ * key.
+ */
+ndn_Error
+ndn_RsaPublicKey_encode
+  (const struct ndn_RsaPublicKey *self, uint8_t *encoding,
+   size_t *encodingLength);
+
+/**
  * Use the public key to verify the data using RsaWithSha256.
  * @param self A pointer to the ndn_RsaPublicKey struct.
  * @param signature A pointer to the signature bytes.
@@ -93,7 +110,7 @@ ndn_Error
 ndn_RsaPublicKey_encrypt
   (const struct ndn_RsaPublicKey *self, const uint8_t *plainData, 
    size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,
-   const uint8_t *encryptedData, size_t *encryptedDataLength);
+   uint8_t *encryptedData, size_t *encryptedDataLength);
 
 #ifdef __cplusplus
 }
