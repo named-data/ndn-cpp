@@ -76,6 +76,26 @@ ndn_RsaPublicKey_verifyWithSha256
 }
 
 ndn_Error
+ndn_verifySha256WithRsaSignature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+   int *verified)
+{
+  ndn_Error error;
+
+  struct ndn_RsaPublicKey publicKey;
+  ndn_RsaPublicKey_initialize(&publicKey);
+
+  if ((error = ndn_RsaPublicKey_decode(&publicKey, publicKeyDer, publicKeyDerLength)))
+    return error;
+
+  *verified = ndn_RsaPublicKey_verifyWithSha256
+    (&publicKey, signature, signatureLength, data, dataLength);
+  ndn_RsaPublicKey_finalize(&publicKey);
+  return NDN_ERROR_success;
+}
+
+ndn_Error
 ndn_RsaPublicKey_encrypt
   (const struct ndn_RsaPublicKey *self, const uint8_t *plainData,
    size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,

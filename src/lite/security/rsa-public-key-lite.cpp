@@ -57,6 +57,20 @@ RsaPublicKeyLite::verifyWithSha256
 }
 
 ndn_Error
+RsaPublicKeyLite::verifySha256WithRsaSignature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+   bool &verified)
+{
+  int intResult;
+  ndn_Error status = ndn_verifySha256WithRsaSignature
+    (signature, signatureLength, data, dataLength, publicKeyDer,
+     publicKeyDerLength, &intResult);
+  verified = (intResult != 0);
+  return status;
+}
+
+ndn_Error
 RsaPublicKeyLite::encrypt
   (const uint8_t* plainData, size_t plainDataLength,
    ndn_EncryptAlgorithmType algorithmType, uint8_t* encryptedData,
