@@ -116,58 +116,60 @@ FilePrivateKeyStorage::generateKeyPair
   else if (params.getKeyType() == KEY_TYPE_ECDSA) {
     const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
 
-    OID parametersOid;
-    int curveId = -1;
+    EcPrivateKeyLite privateKey;
+    ndn_Error error;
+    if ((error = privateKey.generate(ecdsaParams.getKeySize())))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
 
     // Find the entry in EC_KEY_INFO.
+    OID parametersOid;
     for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
       const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
       if (info->keySize == ecdsaParams.getKeySize()) {
-        curveId = info->curveId;
         parametersOid.setIntegerList
           (info->oidIntegerList, info->oidIntegerListLength);
 
         break;
       }
     }
-    if (curveId == -1)
+    if (parametersOid.getIntegerList().size() == 0)
+      // We don't expect this to happen since generate succeeded.
       throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
 
-    bool success = false;
-    EC_KEY* ecKey = EC_KEY_new_by_curve_name(curveId);
-    if (ecKey != NULL) {
-      if (EC_KEY_generate_key(ecKey) == 1) {
-        // Encode the public key.
-        int length = i2d_EC_PUBKEY(ecKey, NULL);
-        vector<uint8_t> opensslPublicKeyDer(length);
-        uint8_t* derPointer = &opensslPublicKeyDer[0];
-        i2d_EC_PUBKEY(ecKey, &derPointer);
-        // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
-        // Find the bit string which is the second child.
-        ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-          (&opensslPublicKeyDer[0], 0);
-        const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
-          parsedNode->getChildren();
-        publicKeyDer = encodeSubjectPublicKeyInfo
-          (OID(EC_ENCRYPTION_OID),
-           ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
+    // Get the encoding length and encode the public key.
+    size_t encodingLength;
+    if ((error = privateKey.encodePublicKey(true, 0, encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    vector<uint8_t> opensslPublicKeyDer(encodingLength);
+    if ((error = privateKey.encodePublicKey
+         (true, &opensslPublicKeyDer[0], encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
+    // Find the bit string which is the second child.
+    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+      (&opensslPublicKeyDer[0], 0);
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
+      parsedNode->getChildren();
+    publicKeyDer = encodeSubjectPublicKeyInfo
+      (OID(EC_ENCRYPTION_OID),
+       ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
 
-        // Encode the private key.
-        EC_KEY_set_enc_flags(ecKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
-        length = i2d_ECPrivateKey(ecKey, NULL);
-        vector<uint8_t> pkcs1PrivateKeyDer(length);
-        derPointer = &pkcs1PrivateKeyDer[0];
-        i2d_ECPrivateKey(ecKey, &derPointer);
-        privateKeyDer = encodePkcs8PrivateKey
-          (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
-           ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
-        success = true;
-      }
-    }
-
-    EC_KEY_free(ecKey);
-    if (!success)
-      throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
+    // Get the encoding length and encode the private key. Omit the EC parameters
+    // since ndn-cxx doesn't use them.
+    if ((error = privateKey.encodePrivateKey(false, 0, encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
+    if ((error = privateKey.encodePrivateKey
+         (false, &pkcs1PrivateKeyDer[0], encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    privateKeyDer = encodePkcs8PrivateKey
+      (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
+       ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
   }
   else
 #endif
