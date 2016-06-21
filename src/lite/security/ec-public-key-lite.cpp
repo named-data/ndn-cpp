@@ -41,6 +41,14 @@ EcPublicKeyLite::decode
   return ndn_EcPublicKey_decode(this, publicKeyDer, publicKeyDerLength);
 }
 
+ndn_Error
+EcPublicKeyLite::encode
+  (bool includeParameters, uint8_t* encoding, size_t& encodingLength) const
+{
+  return ndn_EcPublicKey_encode
+    (this, includeParameters ? 1 : 0, encoding, &encodingLength);
+}
+
 bool
 EcPublicKeyLite::verifyWithSha256
   (const uint8_t *signature, size_t signatureLength, const uint8_t *data,

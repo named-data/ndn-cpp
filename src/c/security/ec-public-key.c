@@ -49,6 +49,25 @@ ndn_EcPublicKey_decode
   return NDN_ERROR_success;
 }
 
+ndn_Error
+ndn_EcPublicKey_encode
+  (const struct ndn_EcPublicKey *self, int includeParameters, uint8_t *encoding,
+   size_t *encodingLength)
+{
+  if (includeParameters)
+    EC_KEY_set_enc_flags(self->publicKey, 0);
+  else
+    EC_KEY_set_enc_flags
+      (self->publicKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
+
+  int result = i2d_EC_PUBKEY(self->publicKey, encoding ? &encoding : 0);
+  if (result < 0)
+    return NDN_ERROR_Error_encoding_key;
+
+  *encodingLength = result;
+  return NDN_ERROR_success;
+}
+
 int
 ndn_EcPublicKey_verifyWithSha256
   (const struct ndn_EcPublicKey *self, const uint8_t *signature,

@@ -64,6 +64,22 @@ public:
   }
 
   /**
+   * Encode the DER-encoded EC SubjectPublicKeyInfo.
+   * @param includeParameters If true, then include the EC parameters in the
+   * encoding.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encode(bool includeParameters, uint8_t* encoding, size_t& encodingLength) const;
+
+  /**
    * Use this public key to verify the data using EcdsaWithSha256.
    * @param signature A pointer to the signature bytes.
    * @param signatureLength The length of signature.
