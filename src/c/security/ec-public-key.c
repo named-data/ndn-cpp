@@ -81,4 +81,24 @@ ndn_EcPublicKey_verifyWithSha256
      self->publicKey) == 1;
 }
 
+ndn_Error
+ndn_verifySha256WithEcdsaSignature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+   int *verified)
+{
+  ndn_Error error;
+
+  struct ndn_EcPublicKey publicKey;
+  ndn_EcPublicKey_initialize(&publicKey);
+
+  if ((error = ndn_EcPublicKey_decode(&publicKey, publicKeyDer, publicKeyDerLength)))
+    return error;
+
+  *verified = ndn_EcPublicKey_verifyWithSha256
+    (&publicKey, signature, signatureLength, data, dataLength);
+  ndn_EcPublicKey_finalize(&publicKey);
+  return NDN_ERROR_success;
+}
+
 #endif // NDN_CPP_HAVE_LIBCRYPTO

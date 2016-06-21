@@ -23,6 +23,7 @@
 #define NDN_EC_PUBLIC_KEY_LITE_HPP
 
 #include "../util/blob-lite.hpp"
+#include "../../c/errors.h"
 #include "../../c/security/ec-public-key-types.h"
 
 namespace ndn {
@@ -94,6 +95,57 @@ public:
   verifyWithSha256
     (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
      size_t dataLength) const;
+
+  /**
+   * Use this public key to verify the data using EcdsaWithSha256.
+   * @param signature The signature bytes.
+   * @param data The input byte array to verify.
+   * @return True if the signature verifies, false if not.
+   */
+  bool
+  verifyWithSha256(const BlobLite& signature, const BlobLite& data) const
+  {
+    return verifyWithSha256
+      (signature.buf(), signature.size(), data.buf(), data.size());
+  }
+
+  /**
+   * Verify the ECDSA signature of the data using the given public key.
+   * @param signature A pointer to the signature bytes.
+   * @param signatureLength The length of signature.
+   * @param data A pointer to the input byte array to verify.
+   * @param dataLength The length of data.
+   * @param publicKeyDer A pointer to the DER-encoded public key used to verify
+   * the signature.
+   * @param publicKeyDerLength The length of publicKeyDer.
+   * @param verified Set verified to true if the signature verifies, false if not.
+   * @return 0 for success, else NDN_ERROR_Error_decoding_key if publicKeyDer
+   * can't be decoded as an ECDSA public key.
+   */
+  static ndn_Error
+  verifySha256WithEcdsaSignature
+    (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+     size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
+     bool &verified);
+
+  /**
+   * Verify the ECDSA signature of the data using the given public key.
+   * @param signature The signature bytes.
+   * @param data The input byte array to verify.
+   * @param publicKeyDer The DER-encoded public key used to verify the signature.
+   * @param verified Set verified to true if the signature verifies, false if not.
+   * @return 0 for success, else NDN_ERROR_Error_decoding_key if publicKeyDer
+   * can't be decoded as an ECDSA public key.
+   */
+  static ndn_Error
+  verifySha256WithEcdsaSignature
+    (const BlobLite& signature, const BlobLite& data,
+     const BlobLite& publicKeyDer, bool &verified)
+  {
+    return verifySha256WithEcdsaSignature
+      (signature.buf(), signature.size(), data.buf(), data.size(),
+       publicKeyDer.buf(), publicKeyDer.size(), verified);
+  }
 
   /**
    * Downcast the reference to the ndn_EcPublicKey struct to a EcPublicKeyLite.
