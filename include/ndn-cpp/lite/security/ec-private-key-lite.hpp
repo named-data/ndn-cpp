@@ -102,7 +102,7 @@ public:
    */
   ndn_Error
   signWithSha256
-    (const uint8_t* data, size_t dataLength, const uint8_t* signature,
+    (const uint8_t* data, size_t dataLength, uint8_t* signature,
      size_t& signatureLength) const;
 
   /**
@@ -117,7 +117,7 @@ public:
    */
   ndn_Error
   signWithSha256
-    (const BlobLite& data, const uint8_t* signature, size_t& signatureLength) const
+    (const BlobLite& data, uint8_t* signature, size_t& signatureLength) const
   {
     return signWithSha256(data.buf(), data.size(), signature, signatureLength);
   }

@@ -77,7 +77,7 @@ ndn_EcPrivateKey_setByCurve
 ndn_Error
 ndn_EcPrivateKey_signWithSha256
   (const struct ndn_EcPrivateKey *self, const uint8_t *data, size_t dataLength,
-   const uint8_t *signature, size_t *signatureLength)
+   uint8_t *signature, size_t *signatureLength)
 {
   uint8_t digest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, digest);

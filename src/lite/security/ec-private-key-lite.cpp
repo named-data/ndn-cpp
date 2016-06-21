@@ -50,7 +50,7 @@ EcPrivateKeyLite::setByCurve
 
 ndn_Error
 EcPrivateKeyLite::signWithSha256
-  (const uint8_t* data, size_t dataLength, const uint8_t* signature,
+  (const uint8_t* data, size_t dataLength, uint8_t* signature,
    size_t& signatureLength) const
 {
   return ndn_EcPrivateKey_signWithSha256
