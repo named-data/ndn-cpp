@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-06-13)
+Interim changes since NDN-CPP v0.10 (2016-06-21)
 ------------------------------------------------
 
 Changes
@@ -6,6 +6,8 @@ Changes
   https://github.com/named-data/ndn-group-encrypt
 * http://redmine.named-data.net/issues/3337 In MetaInfo, added get/setOtherTypeCode
   to allow unrecognized content type codes in the packet.
+* NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
+  to encode/decode and generate RSA and EC public/private keys.
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
 
 Bug fixes
