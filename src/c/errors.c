@@ -128,6 +128,8 @@ ndn_getErrorString(int error)
     return      "Error in encrypt operation";
   case NDN_ERROR_Error_in_decrypt_operation:
     return      "Error in decrypt operation";
+  case NDN_ERROR_Error_in_generate_operation:
+    return      "Error in generate operation";
   default:
     return "unrecognized ndn_Error code";
   }
