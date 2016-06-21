@@ -28,6 +28,10 @@
 
 namespace ndn {
 
+/**
+ * An RsaPrivateKeyLite holds a decoded or generated RSA private key for use in
+ * crypto operations.
+ */
 class RsaPrivateKeyLite : private ndn_RsaPrivateKey {
 public:
   /**

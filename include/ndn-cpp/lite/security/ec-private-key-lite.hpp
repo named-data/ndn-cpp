@@ -27,6 +27,10 @@
 
 namespace ndn {
 
+/**
+ * An EcPrivateKeyLite holds a decoded or generated EC private key for use in
+ * crypto operations.
+ */
 class EcPrivateKeyLite : private ndn_EcPrivateKey {
 public:
    struct ec_key_st* debugGetPrivateKey() { return this->privateKey; }

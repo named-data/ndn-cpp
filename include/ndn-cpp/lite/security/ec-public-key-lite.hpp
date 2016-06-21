@@ -27,6 +27,9 @@
 
 namespace ndn {
 
+/**
+ * An EcPublicKeyLite holds a decoded EC public key for use in crypto operations.
+ */
 class EcPublicKeyLite : private ndn_EcPublicKey {
 public:
   /**
