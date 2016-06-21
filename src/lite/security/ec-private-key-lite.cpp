@@ -49,6 +49,28 @@ EcPrivateKeyLite::setByCurve
 }
 
 ndn_Error
+EcPrivateKeyLite::generate(uint32_t keySize)
+{
+  return ndn_EcPrivateKey_generate(this, keySize);
+}
+
+ndn_Error
+EcPrivateKeyLite::encodePrivateKey
+  (bool includeParameters, uint8_t* encoding, size_t& encodingLength) const
+{
+  return ndn_EcPrivateKey_encodePrivateKey
+    (this, includeParameters ? 1 : 0, encoding, &encodingLength);
+}
+
+ndn_Error
+EcPrivateKeyLite::encodePublicKey
+  (bool includeParameters, uint8_t* encoding, size_t& encodingLength) const
+{
+  return ndn_EcPrivateKey_encodePublicKey
+    (this, includeParameters ? 1 : 0. , encoding, &encodingLength);
+}
+
+ndn_Error
 EcPrivateKeyLite::signWithSha256
   (const uint8_t* data, size_t dataLength, uint8_t* signature,
    size_t& signatureLength) const

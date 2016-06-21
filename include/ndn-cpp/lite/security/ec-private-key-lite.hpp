@@ -29,6 +29,8 @@ namespace ndn {
 
 class EcPrivateKeyLite : private ndn_EcPrivateKey {
 public:
+   struct ec_key_st* debugGetPrivateKey() { return this->privateKey; }
+
   /**
    * Create an EcPrivateKeyLite with a null value.
    */
@@ -88,6 +90,51 @@ public:
   {
     return setByCurve(curveId, value.buf(), value.size());
   }
+
+  /**
+   * Generate a key pair and set this EcPrivateKeyLite, allocating memory as
+   * needed.
+   * @param keySize The size in bits of the key to generate.
+   * @return 0 for success, else NDN_ERROR_Error_in_generate_operation if can't
+   * complete the generate operation, including if a curve can't be found for the
+   * keySize.
+   */
+  ndn_Error
+  generate(uint32_t keySize);
+
+  /**
+   * Encode the DER-encoded private key.
+   * @param includeParameters If true, then include the EC parameters in the
+   * encoding.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encodePrivateKey
+    (bool includeParameters, uint8_t* encoding, size_t& encodingLength) const;
+
+  /**
+   * Encode the DER-encoded EC SubjectPublicKeyInfo.
+   * @param includeParameters If true, then include the EC parameters in the
+   * encoding.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encodePublicKey
+    (bool includeParameters, uint8_t* encoding, size_t& encodingLength) const;
 
   /**
    * Use this private key to sign the data using EcdsaWithSha256.
