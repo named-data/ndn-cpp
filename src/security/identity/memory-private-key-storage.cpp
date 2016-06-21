@@ -72,33 +72,30 @@ MemoryPrivateKeyStorage::generateKeyPair
 #if NDN_CPP_HAVE_LIBCRYPTO
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
-    BIGNUM* exponent = 0;
-    RSA* rsa = 0;
-    bool success = false;
+    RsaPrivateKeyLite privateKey;
+    ndn_Error error;
+    if ((error = privateKey.generate(rsaParams.getKeySize())))
+      throw SecurityException
+        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
 
-    exponent = BN_new();
-    if (BN_set_word(exponent, RSA_F4) == 1) {
-      rsa = RSA_new();
-      if (RSA_generate_key_ex(rsa, rsaParams.getKeySize(), exponent, NULL) == 1) {
-        // Encode the public key.
-        int length = i2d_RSA_PUBKEY(rsa, NULL);
-        publicKeyDer.resize(length);
-        uint8_t* derPointer = &publicKeyDer[0];
-        i2d_RSA_PUBKEY(rsa, &derPointer);
+    // Get the encoding length and encode the public key.
+    size_t encodingLength;
+    if ((error = privateKey.encodePublicKey(0, encodingLength)))
+      throw SecurityException
+        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
+    publicKeyDer.resize(encodingLength);
+    if ((error = privateKey.encodePublicKey(&publicKeyDer[0], encodingLength)))
+      throw SecurityException
+        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
 
-        // Encode the private key.
-        length = i2d_RSAPrivateKey(rsa, NULL);
-        privateKeyDer.resize(length);
-        derPointer = &privateKeyDer[0];
-        i2d_RSAPrivateKey(rsa, &derPointer);
-        success = true;
-      }
-    }
-
-    BN_free(exponent);
-    RSA_free(rsa);
-    if (!success)
-      throw SecurityException("FilePrivateKeyStorage: Error generating RSA key pair");
+    // Get the encoding length and encode the private key.
+    if ((error = privateKey.encodePrivateKey(0, encodingLength)))
+      throw SecurityException
+        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
+    privateKeyDer.resize(encodingLength);
+    if ((error = privateKey.encodePrivateKey(&privateKeyDer[0], encodingLength)))
+      throw SecurityException
+        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
   }
   else if (params.getKeyType() == KEY_TYPE_ECDSA) {
     const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
@@ -150,7 +147,7 @@ MemoryPrivateKeyStorage::generateKeyPair
 
     EC_KEY_free(ecKey);
     if (!success)
-      throw SecurityException("FilePrivateKeyStorage: Error generating EC key pair");
+      throw SecurityException("MemoryPrivateKeyStorage: Error generating EC key pair");
   }
   else
 #endif

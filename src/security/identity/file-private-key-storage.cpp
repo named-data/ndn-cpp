@@ -82,37 +82,36 @@ FilePrivateKeyStorage::generateKeyPair
 #if NDN_CPP_HAVE_LIBCRYPTO
   if (params.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
+    RsaPrivateKeyLite privateKey;
+    ndn_Error error;
+    if ((error = privateKey.generate(rsaParams.getKeySize())))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
 
-    BIGNUM* exponent = 0;
-    RSA* rsa = 0;
-    bool success = false;
+    // Get the encoding length and encode the public key.
+    size_t encodingLength;
+    if ((error = privateKey.encodePublicKey(0, encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    publicKeyDer = Blob
+      (ptr_lib::make_shared<vector<uint8_t> >(encodingLength), false);
+    if ((error = privateKey.encodePublicKey
+         (const_cast<uint8_t*>(publicKeyDer.buf()), encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
 
-    exponent = BN_new();
-    if (BN_set_word(exponent, RSA_F4) == 1) {
-      rsa = RSA_new();
-      if (RSA_generate_key_ex(rsa, rsaParams.getKeySize(), exponent, NULL) == 1) {
-        // Encode the public key.
-        int length = i2d_RSA_PUBKEY(rsa, NULL);
-        publicKeyDer = Blob(ptr_lib::make_shared<vector<uint8_t> >(length), false);
-        uint8_t* derPointer = const_cast<uint8_t*>(publicKeyDer.buf());
-        i2d_RSA_PUBKEY(rsa, &derPointer);
-
-        // Encode the private key.
-        length = i2d_RSAPrivateKey(rsa, NULL);
-        vector<uint8_t> pkcs1PrivateKeyDer(length);
-        derPointer = &pkcs1PrivateKeyDer[0];
-        i2d_RSAPrivateKey(rsa, &derPointer);
-        privateKeyDer = encodePkcs8PrivateKey
-          (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
-           ptr_lib::make_shared<DerNode::DerNull>());
-        success = true;
-      }
-    }
-
-    BN_free(exponent);
-    RSA_free(rsa);
-    if (!success)
-      throw SecurityException("FilePrivateKeyStorage: Error generating RSA key pair");
+    // Get the encoding length and encode the private key.
+    if ((error = privateKey.encodePrivateKey(0, encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
+    if ((error = privateKey.encodePrivateKey
+         (&pkcs1PrivateKeyDer[0], encodingLength)))
+      throw SecurityException
+        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    privateKeyDer = encodePkcs8PrivateKey
+      (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
+       ptr_lib::make_shared<DerNode::DerNull>());
   }
   else if (params.getKeyType() == KEY_TYPE_ECDSA) {
     const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
