@@ -41,8 +41,8 @@ public:
   ~RsaPrivateKeyLite();
 
   /**
-   * Decode the privateKeyDer and set this RsaPrivateKeyLite, allocating
-   * memory as needed.
+   * Decode the DER-encoded PKCS #1 privateKeyDer and set this RsaPrivateKeyLite,
+   * allocating memory as needed.
    * @param privateKeyDer A pointer to the DER-encoded private key.
    * @param privateKeyDerLength The length of privateKeyDer.
    * @return 0 for success, else NDN_ERROR_Error_decoding_key if privateKeyDer
@@ -52,8 +52,8 @@ public:
   decode(const uint8_t* privateKeyDer, size_t privateKeyDerLength);
 
   /**
-   * Decode the privateKeyDer and set this RsaPrivateKeyLite, allocating
-   * memory as needed.
+   * Decode the DER-encoded PKCS #1 privateKeyDer and set this RsaPrivateKeyLite,
+   * allocating memory as needed.
    * @param privateKeyDer The DER-encoded private key.
    * @return 0 for success, else NDN_ERROR_Error_decoding_key if privateKeyDer
    * can't be decoded as an RSA private key.
@@ -63,6 +63,44 @@ public:
   {
     return decode(privateKeyDer.buf(), privateKeyDer.size());
   }
+
+  /**
+   * Generate a key pair and set this RsaPrivateKeyLite, allocating memory as
+   * needed.
+   * @param keySize The size in bits of the key to generate.
+   * @return 0 for success, else NDN_ERROR_Error_in_generate_operation if can't
+   * complete the generate operation.
+   */
+  ndn_Error
+  generate(uint32_t keySize);
+
+  /**
+   * Encode the DER-encoded PKCS #1 private key.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encodePrivateKey(uint8_t* encoding, size_t& encodingLength);
+
+  /**
+   * Encode the DER-encoded SubjectPublicKeyInfo.
+   * @param encoding A pointer to the encoding output buffer. If this is null
+   * then only set encodingLength (which can be used to allocate a buffer of the
+   * correct size). Otherwise, the caller must provide a buffer large enough to
+   * receive the encoding bytes.
+   * @param encodingLength Set encodingLength to the number of bytes in the
+   * encoding.
+   * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+   * key.
+   */
+  ndn_Error
+  encodePublicKey(uint8_t* encoding, size_t& encodingLength);
 
   /**
    * Use this private key to sign the data using RsaWithSha256.
@@ -77,7 +115,7 @@ public:
    */
   ndn_Error
   signWithSha256
-    (const uint8_t* data, size_t dataLength, const uint8_t* signature,
+    (const uint8_t* data, size_t dataLength, uint8_t* signature,
      size_t& signatureLength) const;
 
   /**
@@ -92,7 +130,7 @@ public:
    */
   ndn_Error
   signWithSha256
-    (const BlobLite& data, const uint8_t* signature, size_t& signatureLength) const
+    (const BlobLite& data, uint8_t* signature, size_t& signatureLength) const
   {
     return signWithSha256(data.buf(), data.size(), signature, signatureLength);
   }
@@ -113,7 +151,7 @@ public:
   ndn_Error
   decrypt
     (const uint8_t* encryptedData, size_t encryptedDataLength,
-     ndn_EncryptAlgorithmType algorithmType, const uint8_t* plainData,
+     ndn_EncryptAlgorithmType algorithmType, uint8_t* plainData,
      size_t& plainDataLength);
 
   /**
@@ -131,7 +169,7 @@ public:
   ndn_Error
   decrypt
     (const BlobLite& encryptedData, ndn_EncryptAlgorithmType algorithmType,
-     const uint8_t* plainData, size_t& plainDataLength)
+     uint8_t* plainData, size_t& plainDataLength)
   {
     return decrypt
       (encryptedData.buf(), encryptedData.size(), algorithmType, plainData,

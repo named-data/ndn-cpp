@@ -48,8 +48,9 @@ void
 ndn_RsaPrivateKey_finalize(struct ndn_RsaPrivateKey *self);
 
 /**
- * Decode the privateKeyDer and set the ndn_RsaPrivateKey struct, allocating
- * memory as needed. You must call ndn_RsaPrivateKey_finalize to free it.
+ * Decode the DER-encoded PKCS #1 privateKeyDer and set the ndn_RsaPrivateKey
+ * struct, allocating memory as needed. You must call
+ * ndn_RsaPrivateKey_finalize to free it.
  * @param self A pointer to the ndn_RsaPrivateKey struct.
  * @param privateKeyDer A pointer to the DER-encoded private key.
  * @param privateKeyDerLength The length of privateKeyDer.
@@ -60,6 +61,51 @@ ndn_Error
 ndn_RsaPrivateKey_decode
   (struct ndn_RsaPrivateKey *self, const uint8_t *privateKeyDer,
    size_t privateKeyDerLength);
+
+/**
+ * Generate a key pair and set the ndn_RsaPrivateKey struct, allocating
+ * memory as needed. You must call ndn_RsaPrivateKey_finalize to free it.
+ * @param self A pointer to the ndn_RsaPrivateKey struct.
+ * @param keySize The size in bits of the key to generate.
+ * @return 0 for success, else NDN_ERROR_Error_in_generate_operation if can't
+ * complete the generate operation.
+ */
+ndn_Error
+ndn_RsaPrivateKey_generate(struct ndn_RsaPrivateKey *self, uint32_t keySize);
+
+/**
+ * Encode the DER-encoded PKCS #1 private key.
+ * @param self A pointer to the ndn_RsaPrivateKey struct.
+ * @param encoding A pointer to the encoding output buffer. If this is null then
+ * only set encodingLength (which can be used to allocate a buffer of the 
+ * correct size). Otherwise, the caller must provide a buffer large enough to
+ * receive the encoding bytes.
+ * @param encodingLength Set encodingLength to the number of bytes in the
+ * encoding.
+ * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+ * key.
+ */
+ndn_Error
+ndn_RsaPrivateKey_encodePrivateKey
+  (const struct ndn_RsaPrivateKey *self, uint8_t *encoding,
+   size_t *encodingLength);
+
+/**
+ * Encode the DER-encoded SubjectPublicKeyInfo.
+ * @param self A pointer to the ndn_RsaPrivateKey struct.
+ * @param encoding A pointer to the encoding output buffer. If this is null then
+ * only set encodingLength (which can be used to allocate a buffer of the
+ * correct size). Otherwise, the caller must provide a buffer large enough to
+ * receive the encoding bytes.
+ * @param encodingLength Set encodingLength to the number of bytes in the
+ * encoding.
+ * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+ * key.
+ */
+ndn_Error
+ndn_RsaPrivateKey_encodePublicKey
+  (const struct ndn_RsaPrivateKey *self, uint8_t *encoding,
+   size_t *encodingLength);
 
 /**
  * Use the private key to sign the data using RsaWithSha256.
@@ -76,7 +122,7 @@ ndn_RsaPrivateKey_decode
 ndn_Error
 ndn_RsaPrivateKey_signWithSha256
   (const struct ndn_RsaPrivateKey *self, const uint8_t *data, size_t dataLength,
-   const uint8_t *signature, size_t *signatureLength);
+   uint8_t *signature, size_t *signatureLength);
 
 /**
  * Use the private key to decrypt encryptedData according to the algorithmType.
@@ -96,7 +142,7 @@ ndn_Error
 ndn_RsaPrivateKey_decrypt
   (const struct ndn_RsaPrivateKey *self, const uint8_t *encryptedData,
    size_t encryptedDataLength, ndn_EncryptAlgorithmType algorithmType,
-   const uint8_t *plainData, size_t *plainDataLength);
+   uint8_t *plainData, size_t *plainDataLength);
 
 #ifdef __cplusplus
 }
