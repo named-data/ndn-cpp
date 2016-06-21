@@ -86,7 +86,7 @@ public:
    * key.
    */
   ndn_Error
-  encodePrivateKey(uint8_t* encoding, size_t& encodingLength);
+  encodePrivateKey(uint8_t* encoding, size_t& encodingLength) const;
 
   /**
    * Encode the DER-encoded SubjectPublicKeyInfo.
@@ -100,7 +100,7 @@ public:
    * key.
    */
   ndn_Error
-  encodePublicKey(uint8_t* encoding, size_t& encodingLength);
+  encodePublicKey(uint8_t* encoding, size_t& encodingLength) const;
 
   /**
    * Use this private key to sign the data using RsaWithSha256.

@@ -76,7 +76,7 @@ public:
    * key.
    */
   ndn_Error
-  encode(uint8_t* encoding, size_t& encodingLength);
+  encode(uint8_t* encoding, size_t& encodingLength) const;
 
   /**
    * Use this public key to verify the data using RsaWithSha256.

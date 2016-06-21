@@ -48,13 +48,13 @@ RsaPrivateKeyLite::generate(uint32_t keySize)
 }
 
 ndn_Error
-RsaPrivateKeyLite::encodePrivateKey(uint8_t* encoding, size_t& encodingLength)
+RsaPrivateKeyLite::encodePrivateKey(uint8_t* encoding, size_t& encodingLength) const
 {
   return ndn_RsaPrivateKey_encodePrivateKey(this, encoding, &encodingLength);
 }
 
 ndn_Error
-RsaPrivateKeyLite::encodePublicKey(uint8_t* encoding, size_t& encodingLength)
+RsaPrivateKeyLite::encodePublicKey(uint8_t* encoding, size_t& encodingLength) const
 {
   return ndn_RsaPrivateKey_encodePublicKey(this, encoding, &encodingLength);
 }

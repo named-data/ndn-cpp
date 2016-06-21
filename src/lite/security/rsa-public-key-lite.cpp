@@ -42,7 +42,7 @@ RsaPublicKeyLite::decode
 }
 
 ndn_Error
-RsaPublicKeyLite::encode(uint8_t* encoding, size_t& encodingLength)
+RsaPublicKeyLite::encode(uint8_t* encoding, size_t& encodingLength) const
 {
   return ndn_RsaPublicKey_encode(this, encoding, &encodingLength);
 }
