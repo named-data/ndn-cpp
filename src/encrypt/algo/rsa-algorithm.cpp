@@ -27,9 +27,6 @@
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/ssl.h>
-#endif
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 
 using namespace std;
@@ -42,34 +39,22 @@ static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 DecryptKey
 RsaAlgorithm::generateKey(const RsaKeyParams& params)
 {
-  BIGNUM* exponent = 0;
-  RSA* rsa = 0;
-  bool success = false;
-  Blob privateKeyDer;
+  RsaPrivateKeyLite privateKey;
+  ndn_Error error;
+  if ((error = privateKey.generate(params.getKeySize())))
+    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
 
-  exponent = BN_new();
-  if (BN_set_word(exponent, RSA_F4) == 1) {
-    rsa = RSA_new();
-    if (RSA_generate_key_ex(rsa, params.getKeySize(), exponent, NULL) == 1) {
-      // Encode the private key.
-      int length = i2d_RSAPrivateKey(rsa, NULL);
-      vector<uint8_t> pkcs1PrivateKeyDer(length);
-      uint8_t* derPointer = &pkcs1PrivateKeyDer[0];
-      i2d_RSAPrivateKey(rsa, &derPointer);
-      privateKeyDer = PrivateKeyStorage::encodePkcs8PrivateKey
-        (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
-         ptr_lib::make_shared<DerNode::DerNull>());
-      success = true;
-    }
-  }
+  // Get the encoding length and encode.
+  size_t encodingLength;
+  if ((error = privateKey.encodePrivateKey(0, encodingLength)))
+    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
+  vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
+  if ((error = privateKey.encodePrivateKey(&pkcs1PrivateKeyDer[0], encodingLength)))
+    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
 
-  BN_free(exponent);
-  RSA_free(rsa);
-  if (!success)
-    // We don't expect this to happen.
-    throw SecurityException("RsaAlgorithm: Error generating RSA key pair");
-
-  return DecryptKey(privateKeyDer);
+  return DecryptKey(PrivateKeyStorage::encodePkcs8PrivateKey
+    (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
+     ptr_lib::make_shared<DerNode::DerNull>()));
 }
 
 EncryptKey
