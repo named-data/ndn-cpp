@@ -229,7 +229,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
   src/c/transport/unix-transport.h \
-  src/c/util/blob.h \
+  src/c/util/blob_c.c src/c/util/blob.h \
   src/c/util/crypto.c src/c/util/crypto.h \
   src/c/util/dynamic-uint8-array.c src/c/util/dynamic-uint8-array.h \
   src/c/util/ndn_memory.c src/c/util/ndn_memory.h \

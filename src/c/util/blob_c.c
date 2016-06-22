@@ -1,6 +1,5 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2015-2016 Regents of the University of California.
+ * Copyright (C) 2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,26 +18,20 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../c/util/blob.h"
-#include <ndn-cpp/lite/util/blob-lite.hpp>
+#include "ndn_memory.h"
+#include "blob.h"
 
-namespace ndn {
-
-BlobLite::BlobLite()
+int
+ndn_Blob_equals(const struct ndn_Blob *self, const struct ndn_Blob *other)
 {
-  ndn_Blob_initialize(this, 0, 0);
-}
+  if (ndn_Blob_isNull(self))
+    return ndn_Blob_isNull(other);
+  else if (ndn_Blob_isNull(other))
+    return 0;
+  else {
+    if (self->length != other->length)
+      return 0;
 
-BlobLite::BlobLite(const uint8_t* buf, size_t size)
-{
-  ndn_Blob_initialize(this, buf, size);
-}
-
-bool
-BlobLite::equals(const BlobLite& other) const
-{
-  return ndn_Blob_equals(this, &other) != 0;
-}
-
-
+    return ndn_memcmp(self->value, other->value, self->length) == 0;
+  }
 }

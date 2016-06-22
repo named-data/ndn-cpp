@@ -50,6 +50,25 @@ ndn_Blob_setFromBlob(struct ndn_Blob *self, const struct ndn_Blob *other)
   *self = *other;
 }
 
+/**
+ * Check if the buffer pointer is null.
+ * @param self A pointer to this ndn_Blob struct.
+ * @return Nonzero if the buffer pointer is null, otherwise 0.
+ */
+static __inline int
+ndn_Blob_isNull(const struct ndn_Blob *self) { return !self->value; }
+
+/**
+ * Check if the value of this ndn_Blob equals the other ndn_Blob, using
+ * ndn_memcmp.
+ * @param self A pointer to this ndn_Blob struct.
+ * @param other A pointer to the other ndn_Blob to check.
+ * @return Nonzero if this isNull and other isNull or if the bytes of this blob
+ * equals the bytes of the other.
+ */
+int
+ndn_Blob_equals(const struct ndn_Blob *self, const struct ndn_Blob *other);
+
 #ifdef __cplusplus
 }
 #endif

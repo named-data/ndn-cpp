@@ -68,6 +68,16 @@ public:
   isNull() const { return !value; }
 
   /**
+   * Check if the value of this BlobLite equals the other BlobLite, using ndn_
+   * memcmp.
+   * @param other The other BlobLite to check.
+   * @return True if this isNull and other isNull or if the bytes of this
+   * blob equals the bytes of the other.
+   */
+  bool
+  equals(const BlobLite& other) const;
+
+  /**
    * Downcast the reference to the ndn_Blob struct to a BlobLite.
    * @param blob A reference to the ndn_Blob struct.
    * @return The same reference as BlobLite.
