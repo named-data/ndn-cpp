@@ -22,9 +22,7 @@
 
 #include <stdexcept>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/evp.h>
-#endif
+#include <ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp>
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
 
 using namespace std;
@@ -43,43 +41,31 @@ AesAlgorithm::generateKey(const AesKeyParams& params)
   return decryptKey;
 }
 
-#if NDN_CPP_HAVE_LIBCRYPTO
 Blob
 AesAlgorithm::decrypt
   (const Blob& keyBits, const Blob& encryptedData, const EncryptParams& params)
 {
+  ndn_Error error;
+
   // For now, only support 128-bit.
-  if (keyBits.size() != BLOCK_SIZE)
-    throw runtime_error("AesAlgorithm: Incorrect key size");
-
-  EVP_CIPHER_CTX ctx;
-
-  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb)
-    EVP_DecryptInit
-      (&ctx, EVP_aes_128_ecb(), (const unsigned char*)keyBits.buf(), 0);
+  ptr_lib::shared_ptr<vector<uint8_t> > plainData
+    (new vector<uint8_t>(encryptedData.size()));
+  size_t plainDataLength;
+  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb) {
+    if ((error = AesAlgorithmLite::decrypt128Ecb
+         (keyBits, encryptedData, &plainData->front(), plainDataLength)))
+      throw runtime_error(string("AesAlgorithm: ") + ndn_getErrorString(error));
+  }
   else if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesCbc) {
-    if (params.getInitialVector().size() != BLOCK_SIZE)
-      throw runtime_error("incorrect initial vector size");
-
-    EVP_DecryptInit
-      (&ctx, EVP_aes_128_cbc(), (const unsigned char*)keyBits.buf(),
-       (const unsigned char*)params.getInitialVector().buf());
+    if ((error = AesAlgorithmLite::decrypt128Cbc
+         (keyBits, params.getInitialVector(), encryptedData,
+          &plainData->front(), plainDataLength)))
+      throw runtime_error(string("AesAlgorithm: ") + ndn_getErrorString(error));
   }
   else
     throw runtime_error("unsupported encryption mode");
 
-  ptr_lib::shared_ptr<vector<uint8_t> > plainData
-    (new vector<uint8_t>(encryptedData.size()));
-  int outLength1;
-  EVP_DecryptUpdate
-    (&ctx, (unsigned char*)&plainData->front(), &outLength1,
-     (const unsigned char*)encryptedData.buf(), encryptedData.size());
-  int outLength2;
-  EVP_DecryptFinal
-    (&ctx, (unsigned char*)&plainData->front() + outLength1, &outLength2);
-  EVP_CIPHER_CTX_cleanup(&ctx);
-
-  plainData->resize(outLength1 + outLength2);
+  plainData->resize(plainDataLength);
   return Blob(plainData, false);
 }
 
@@ -87,44 +73,31 @@ Blob
 AesAlgorithm::encrypt
   (const Blob& keyBits, const Blob& plainData, const EncryptParams& params)
 {
+  ndn_Error error;
+
   // For now, only support 128-bit.
-  if (keyBits.size() != BLOCK_SIZE)
-    throw runtime_error("AesAlgorithm: Incorrect key size");
-
-  EVP_CIPHER_CTX ctx;
-
-  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb)
-    // TODO: Select aes_128, aes_256, etc. based on the keyBits size.
-    EVP_EncryptInit
-      (&ctx, EVP_aes_128_ecb(), (const unsigned char*)keyBits.buf(), 0);
+  // Add room for the padding.
+  ptr_lib::shared_ptr<vector<uint8_t> > encryptedData
+    (new vector<uint8_t>(plainData.size() + BLOCK_SIZE));
+  size_t encryptedDataLength;
+  if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesEcb) {
+    if ((error = AesAlgorithmLite::encrypt128Ecb
+         (keyBits, plainData, &encryptedData->front(), encryptedDataLength)))
+      throw runtime_error(string("AesAlgorithm: ") + ndn_getErrorString(error));
+  }
   else if (params.getAlgorithmType() == ndn_EncryptAlgorithmType_AesCbc) {
-    if (params.getInitialVector().size() != BLOCK_SIZE)
-      throw runtime_error("incorrect initial vector size");
-
-    EVP_EncryptInit
-      (&ctx, EVP_aes_128_cbc(), (const unsigned char*)keyBits.buf(),
-       (const unsigned char*)params.getInitialVector().buf());
+    if ((error = AesAlgorithmLite::encrypt128Cbc
+         (keyBits, params.getInitialVector(), plainData,
+          &encryptedData->front(), encryptedDataLength)))
+      throw runtime_error(string("AesAlgorithm: ") + ndn_getErrorString(error));
   }
   else
     throw runtime_error("unsupported encryption mode");
 
-  // Add room for the padding.
-  ptr_lib::shared_ptr<vector<uint8_t> > encryptedData
-    (new vector<uint8_t>(plainData.size() + BLOCK_SIZE));
-  int outLength1;
-  EVP_EncryptUpdate
-    (&ctx, (unsigned char*)&encryptedData->front(), &outLength1,
-     (const unsigned char*)plainData.buf(), plainData.size());
-  int outLength2;
-  EVP_EncryptFinal
-    (&ctx, (unsigned char*)&encryptedData->front() + outLength1, &outLength2);
-  EVP_CIPHER_CTX_cleanup(&ctx);
-
-  encryptedData->resize(outLength1 + outLength2);
+  encryptedData->resize(encryptedDataLength);
   return Blob(encryptedData, false);
 }
-#endif
 
-size_t AesAlgorithm::BLOCK_SIZE = 16;
+size_t AesAlgorithm::BLOCK_SIZE = ndn_AES_128_BLOCK_SIZE;
 
 }
