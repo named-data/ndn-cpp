@@ -140,6 +140,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
   include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
@@ -218,6 +219,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
+  src/c/encrypt/algo/aes-algorithm_c.c src/c/encrypt/algo/aes-algorithm.h \
   src/c/encrypt/algo/encrypt-params.h \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
   src/c/lp/lp-packet.h \
@@ -308,6 +310,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
+  src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/lp/incoming-face-id-lite.cpp \
   src/lite/lp/lp-packet-lite.cpp \
