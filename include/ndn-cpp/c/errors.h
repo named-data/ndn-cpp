@@ -80,7 +80,9 @@ typedef enum {
   NDN_ERROR_Unsupported_algorithm_type,
   NDN_ERROR_Error_in_encrypt_operation,
   NDN_ERROR_Error_in_decrypt_operation,
-  NDN_ERROR_Error_in_generate_operation
+  NDN_ERROR_Error_in_generate_operation,
+  NDN_ERROR_Incorrect_key_size,
+  NDN_ERROR_Incorrect_initial_vector_size
 } ndn_Error;
 
 /**

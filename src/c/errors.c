@@ -132,6 +132,10 @@ ndn_getErrorString(int error)
     return      "Error in decrypt operation";
   case NDN_ERROR_Error_in_generate_operation:
     return      "Error in generate operation";
+  case NDN_ERROR_Incorrect_key_size:
+    return      "Incorrect key size";
+  case NDN_ERROR_Incorrect_initial_vector_size:
+    return      "Incorrect initial vector size";
   default:
     return "unrecognized ndn_Error code";
   }
