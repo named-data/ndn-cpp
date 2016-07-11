@@ -2,6 +2,8 @@
  * Copyright (C) 2014-2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN unit-tests by Adeola Bannis.
+ * From ndn-cxx unit tests:
+ * https://github.com/named-data/ndn-cxx/blob/master/tests/unit-tests/name.t.cpp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,11 +24,22 @@
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <ndn-cpp/name.hpp>
+#include <ndn-cpp/encoding/tlv-wire-format.hpp>
 
 using namespace std;
 using namespace ndn;
 
 static const uint8_t COMP2[] = { 0x00, 0x01, 0x02, 0x03 };
+
+static const uint8_t TEST_NAME[] = {
+  0x7,  0x14, // Name
+    0x8,  0x5, // NameComponent
+        0x6c,  0x6f,  0x63,  0x61,  0x6c,
+    0x8,  0x3, // NameComponent
+        0x6e,  0x64,  0x6e,
+    0x8,  0x6, // NameComponent
+        0x70,  0x72,  0x65,  0x66,  0x69,  0x78
+};
 
 class TestNameComponentMethods : public ::testing::Test {
 };
@@ -220,6 +233,18 @@ TEST_F(TestNameMethods, GetSuccessor)
   ASSERT_EQ(Name("ndn:/%00%01/%00%00%00"), Name("ndn:/%00%01/%FF%FF").getSuccessor());
   ASSERT_EQ(Name("/%00"), Name().getSuccessor());
   ASSERT_EQ(Name("/%00%01/%00"), Name("/%00%01/...").getSuccessor());
+}
+
+TEST_F(TestNameMethods, EncodeDecode)
+{
+  Name name("/local/ndn/prefix");
+
+  Blob encoding = name.wireEncode(*TlvWireFormat::get());
+  ASSERT_TRUE(encoding.equals(Blob(TEST_NAME, sizeof(TEST_NAME))));
+
+  Name decodedName;
+  decodedName.wireDecode(Blob(TEST_NAME, sizeof(TEST_NAME)), *TlvWireFormat::get());
+  ASSERT_EQ(decodedName, name);
 }
 
 int
