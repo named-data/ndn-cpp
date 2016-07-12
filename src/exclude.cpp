@@ -130,7 +130,7 @@ Exclude::toUri() const
     if (entries_[i].getType() == ndn_Exclude_ANY)
       result << "*";
     else
-      Name::toEscapedString(*entries_[i].getComponent().getValue(), result);
+      entries_[i].getComponent().toEscapedString(result);
   }
 
   return result.str();
