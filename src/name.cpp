@@ -312,7 +312,7 @@ Name::toUri(bool includeScheme) const
     result << "ndn:";
   for (size_t i = 0; i < components_.size(); ++i) {
     result << "/";
-    toEscapedString(*components_[i].getValue(), result);
+    components_[i].toEscapedString(result);
   }
 
   return result.str();
