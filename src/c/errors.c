@@ -136,6 +136,8 @@ ndn_getErrorString(int error)
     return      "Incorrect key size";
   case NDN_ERROR_Incorrect_initial_vector_size:
     return      "Incorrect initial vector size";
+  case NDN_ERROR_Incorrect_digest_size:
+    return      "Incorrect digest size";
   default:
     return "unrecognized ndn_Error code";
   }
