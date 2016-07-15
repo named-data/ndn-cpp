@@ -27,6 +27,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/interest-filter.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/interest.hpp>
 
@@ -365,27 +366,26 @@ TEST_F(TestInterestMethods, MatchesData)
   interest2.setMaxSuffixComponents(3);
   ASSERT_EQ(true, interest2.matchesData(data2));
 
-  /* TODO: Implement KeyLocator equality.
-  Data data3 = data;
-  SignatureSha256WithRsa signature3(KeyLocator("ndn:/G")); // violates PublisherPublicKeyLocator
+  // Check violating PublisherPublicKeyLocator.
+  Data data3(data);
+  Sha256WithRsaSignature signature3;
+  signature3.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature3.getKeyLocator().setKeyName(Name("/G"));
   data3.setSignature(signature3);
-  data3.wireEncode();
-  BOOST_CHECK_EQUAL(interest.matchesData(data3), false);
+  ASSERT_EQ(false, interest.matchesData(data3));
 
-  Interest interest3 = interest;
-  interest3.setPublisherPublicKeyLocator(KeyLocator("ndn:/G"));
-  BOOST_CHECK_EQUAL(interest3.matchesData(data3), true);
+  Interest interest3(interest);
+  interest3.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  interest3.getKeyLocator().setKeyName(Name("/G"));
+  ASSERT_EQ(true, interest3.matchesData(data3));
 
-  Data data4 = data;
-  DigestSha256 signature4; // violates PublisherPublicKeyLocator
-  data4.setSignature(signature4);
-  data4.wireEncode();
-  BOOST_CHECK_EQUAL(interest.matchesData(data4), false);
+  Data data4(data);
+  data4.setSignature(DigestSha256Signature());
+  ASSERT_EQ(false, interest.matchesData(data4));
 
-  Interest interest4 = interest;
-  interest4.setPublisherPublicKeyLocator(KeyLocator());
-  BOOST_CHECK_EQUAL(interest4.matchesData(data4), true);
-*/
+  Interest interest4(interest);
+  interest4.setKeyLocator(KeyLocator());
+  ASSERT_EQ(true, interest4.matchesData(data4));
 
   // Check violating Exclude.
   Data data5(data);
