@@ -157,6 +157,18 @@ public:
   getIncomingFaceId() const;
 
   /**
+   * Get the Data packet's full name, which includes the final
+   * ImplicitSha256Digest component based on the wire encoding for a particular
+   * wire format.
+   * @param wireFormat A WireFormat object used to encode the Data packet. If
+   * omitted, use WireFormat getDefaultWireFormat().
+   * @return The full name. You must not change the Name objects - if you need
+   * to change it then make a copy.
+   */
+  ptr_lib::shared_ptr<Name>
+  getFullName(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
+
+  /**
    * Return a reference to the defaultWireEncoding, which was encoded with
    * getDefaultWireEncodingFormat().  The SignedBlob may have a null pointer.
    */
@@ -294,6 +306,7 @@ private:
   Blob content_;
   SignedBlob defaultWireEncoding_;
   WireFormat *defaultWireEncodingFormat_;
+  ptr_lib::shared_ptr<Name> defaultfullName_;
   uint64_t getDefaultWireEncodingChangeCount_;
   ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;

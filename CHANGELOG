@@ -9,6 +9,8 @@ Changes
 * Added support for the Name component type ImplicitSha256Digest, and methods:
   Name::Component::fromImplicitSha256Digest, isGeneric and isImplicitSha256Digest.
   Name::appendImplicitSha256Digest.
+* https://redmine.named-data.net/issues/3447 In Data, added getFullName, and
+  in Interest added matchesData to use it.
 * NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
   to encode/decode and generate RSA and EC public/private keys.
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.

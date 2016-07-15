@@ -24,6 +24,7 @@
 #include <ndn-cpp/common.hpp>
 #include "c/util/crypto.h"
 #include "lp/incoming-face-id.hpp"
+#include <ndn-cpp/data.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -217,6 +218,67 @@ Interest::matchesName(const Name& name) const
   if (getExclude().size() > 0 && name.size() > getName().size() &&
       getExclude().matches(name.get(getName().size())))
     return false;
+
+  return true;
+}
+
+bool
+Interest::matchesData(const Data& data, WireFormat& wireFormat) const
+{
+  // Imitate ndn-cxx Interest::matchesData.
+  size_t interestNameLength = getName().size();
+  const Name& dataName = data.getName();
+  size_t fullNameLength = dataName.size() + 1;
+
+  // Check MinSuffixComponents.
+  bool hasMinSuffixComponents = (getMinSuffixComponents() >= 0);
+  int minSuffixComponents =
+    (hasMinSuffixComponents ? getMinSuffixComponents() : 0);
+  if (!(interestNameLength + minSuffixComponents <= fullNameLength))
+    return false;
+
+  // Check MaxSuffixComponents.
+  bool hasMaxSuffixComponents = (getMaxSuffixComponents() >= 0);
+  if (hasMaxSuffixComponents &&
+      !(interestNameLength + getMaxSuffixComponents() >= fullNameLength))
+    return false;
+
+  // Check the prefix.
+  if (interestNameLength == fullNameLength) {
+    if (getName().get(-1).isImplicitSha256Digest()) {
+      if (!getName().equals(*data.getFullName(wireFormat)))
+        return false;
+    }
+    else
+      // The Interest Name is the same length as the Data full Name, but the
+      //   last component isn't a digest so there's no possibility of matching.
+      return false;
+  }
+  else {
+    // The Interest Name should be a strict prefix of the Data full Name,
+    if (!getName().isPrefixOf(dataName))
+      return false;
+  }
+
+  // Check the Exclude.
+  // The Exclude won't be violated if the Interest Name is the same as the
+  //   Data full Name.
+  if (getExclude().size() > 0 && fullNameLength > interestNameLength) {
+    if (interestNameLength == fullNameLength - 1) {
+      // The component to exclude is the digest.
+      if (getExclude().matches
+          (data.getFullName(wireFormat)->get(interestNameLength)))
+        return false;
+    }
+    else {
+      // The component to exclude is not the digest.
+      if (getExclude().matches(dataName.get(interestNameLength)))
+        return false;
+    }
+  }
+
+  // TODO: Check the PublisherPublicKeyLocator. ndn-cxx compares the wire
+  // encoding of the Interest and Data KeyLocator.
 
   return true;
 }

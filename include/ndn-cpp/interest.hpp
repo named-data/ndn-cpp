@@ -34,6 +34,7 @@
 namespace ndn {
 
 class LpPacket;
+class Data;
 
 /**
  * An Interest holds a Name and other fields for an interest.
@@ -495,6 +496,22 @@ public:
    */
   bool
   matchesName(const Name& name) const;
+
+  /**
+   * Check if the given Data packet can satisfy this Interest. This method
+   * considers the Name, MinSuffixComponents, MaxSuffixComponents,
+   * PublisherPublicKeyLocator, and Exclude. It does not consider the
+   * ChildSelector or MustBeFresh. This uses the given wireFormat to get the
+   * Data packet encoding for the full Name.
+   * @param data The Data packet to check.
+   * @param wireFormat A WireFormat object used to encode the Data packet to
+   * get its full Name. If omitted, use WireFormat getDefaultWireFormat().
+   * @return True if the given Data packet can satisfy this Interest.
+   */
+  bool
+  matchesData
+    (const Data& data, 
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**
    * Return a reference to the defaultWireEncoding, which was encoded with
