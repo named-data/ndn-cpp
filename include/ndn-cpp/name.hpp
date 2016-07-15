@@ -45,62 +45,69 @@ public:
   class Component {
   public:
     /**
-     * Create a new Name::Component with a zero-length value.
+     * Create a new GENERIC Name::Component with a zero-length value.
      */
     Component()
-    : value_((const uint8_t*)0, 0)
+    : type_(ndn_NameComponentType_GENERIC), value_((const uint8_t*)0, 0)
     {
     }
 
     /**
-     * Create a new Name::Component, copying the given value.
+     * Create a new GENERIC Name::Component, copying the given value.
+     * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
      * @param value The value byte array.
      */
     Component(const std::vector<uint8_t>& value)
-    : value_(value)
+    : type_(ndn_NameComponentType_GENERIC), value_(value)
     {
     }
 
     /**
-     * Create a new Name::Component, copying the given value.
+     * Create a new GENERIC Name::Component, copying the given value.
+     * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
      * @param value Pointer to the value byte array.
      * @param valueLength Length of value.
      */
     Component(const uint8_t *value, size_t valueLength)
-    : value_(value, valueLength)
+    : type_(ndn_NameComponentType_GENERIC), value_(value, valueLength)
     {
     }
 
     /**
-     * Create a new Name::Component, copying the bytes from the value string.
+     * Create a new GENERIC Name::Component, copying the bytes from the value
+     * string.
      * NOTE: This does not escape %XX values.  If you need to escape, use
      * Name::fromEscapedString.  Also, if the string has "/", this does not split
      * into separate components.  If you need that then use Name(value).
      * @param value A null-terminated string with the bytes to copy.
      */
     Component(const char* value)
-    : value_((const uint8_t*)value, ::strlen(value))
+    : type_(ndn_NameComponentType_GENERIC), value_((const uint8_t*)value, ::strlen(value))
     {
     }
 
     /**
-     * Create a new Name::Component, copying the bytes from the value string.
+     * Create a new GENERIC Name::Component, copying the bytes from the value
+     * string.
      * NOTE: This does not escape %XX values.  If you need to escape, use
      * Name::fromEscapedString.  Also, if the string has "/", this does not split
      * into separate components.  If you need that then use Name(value).
      * @param value A string with the bytes to copy.
      */
     Component(const std::string& value)
-    : value_((const uint8_t*)&value[0], value.size())
+    : type_(ndn_NameComponentType_GENERIC),
+      value_((const uint8_t*)&value[0], value.size())
     {
     }
 
     /**
-     * Create a new Name::Component, taking another pointer to the Blob value.
+     * Create a new GENERIC Name::Component, taking another pointer to the Blob
+     * value.
+     * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
      * @param value A blob with a pointer to an immutable array.  The pointer is copied.
      */
     Component(const Blob &value)
-    : value_(value)
+    : type_(ndn_NameComponentType_GENERIC), value_(value)
     {
     }
 
@@ -119,24 +126,20 @@ public:
     /**
      * Write this component value to result, escaping characters according to the NDN URI Scheme.
      * This also adds "..." to a value with zero or more ".".
+     * This adds a type code prefix as needed, such as "sha256digest=".
      * @param result the string stream to write to.
      */
     void
-    toEscapedString(std::ostringstream& result) const
-    {
-      Name::toEscapedString(*value_, result);
-    }
+    toEscapedString(std::ostringstream& result) const;
 
     /**
      * Convert this component value by escaping characters according to the NDN URI Scheme.
      * This also adds "..." to a value with zero or more ".".
+     * This adds a type code prefix as needed, such as "sha256digest=".
      * @return The escaped string.
      */
     std::string
-    toEscapedString() const
-    {
-      return Name::toEscapedString(*value_);
-    }
+    toEscapedString() const;
 
     /**
      * Check if this component is a segment number according to NDN naming
@@ -145,7 +148,11 @@ public:
      * @return True if this is a segment number.
      */
     bool
-    isSegment() const { return value_.size() >= 1 && value_.buf()[0] == 0x00; }
+    isSegment() const 
+    {
+      return value_.size() >= 1 && value_.buf()[0] == 0x00 &&
+             type_ == ndn_NameComponentType_GENERIC;
+    }
 
     /**
      * Check if this component is a segment byte offset according to NDN naming
@@ -154,7 +161,11 @@ public:
      * @return True if this is a segment byte offset.
      */
     bool
-    isSegmentOffset() const { return value_.size() >= 1 && value_.buf()[0] == 0xFB; }
+    isSegmentOffset() const 
+    {
+      return value_.size() >= 1 && value_.buf()[0] == 0xFB &&
+             type_ == ndn_NameComponentType_GENERIC;
+    }
 
     /**
      * Check if this component is a version number according to NDN naming
@@ -163,7 +174,11 @@ public:
      * @return True if this is a version number.
      */
     bool
-    isVersion() const { return value_.size() >= 1 && value_.buf()[0] == 0xFD; }
+    isVersion() const 
+    {
+      return value_.size() >= 1 && value_.buf()[0] == 0xFD &&
+             type_ == ndn_NameComponentType_GENERIC;
+    }
 
     /**
      * Check if this component is a timestamp according to NDN naming
@@ -172,7 +187,11 @@ public:
      * @return True if this is a timestamp.
      */
     bool
-    isTimestamp() const { return value_.size() >= 1 && value_.buf()[0] == 0xFC; }
+    isTimestamp() const 
+    {
+      return value_.size() >= 1 && value_.buf()[0] == 0xFC &&
+             type_ == ndn_NameComponentType_GENERIC;
+    }
 
     /**
      * Check if this component is a sequence number according to NDN naming
@@ -181,7 +200,31 @@ public:
      * @return True if this is a sequence number.
      */
     bool
-    isSequenceNumber() const { return value_.size() >= 1 && value_.buf()[0] == 0xFE; }
+    isSequenceNumber() const 
+    {
+      return value_.size() >= 1 && value_.buf()[0] == 0xFE &&
+             type_ == ndn_NameComponentType_GENERIC;
+    }
+
+    /**
+     * Check if this component is a generic component.
+     * @return True if this is an generic component.
+     */
+    bool
+    isGeneric() const
+    {
+      return type_ == ndn_NameComponentType_GENERIC;
+    }
+
+    /**
+     * Check if this component is an ImplicitSha256Digest component.
+     * @return True if this is an ImplicitSha256Digest component.
+     */
+    bool
+    isImplicitSha256Digest() const
+    {
+      return type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST;
+    }
 
     /**
      * Interpret this name component as a network-ordered number and return an integer.
@@ -310,8 +353,8 @@ public:
     }
 
     /**
-     * Create a component whose value is the nonNegativeInteger encoding of the
-     * number.
+     * Create a GENERIC component whose value is the nonNegativeInteger encoding
+     * of the number.
      * @param number The number to be encoded.
      * @return The component value.
      */
@@ -319,7 +362,7 @@ public:
     fromNumber(uint64_t number);
 
     /**
-     * Create a component whose value is the marker appended with the
+     * Create a GENERIC component whose value is the marker appended with the
      * nonNegativeInteger encoding of the number.
      * @param number The number to be encoded.
      * @param marker The marker to use as the first byte of the component.
@@ -329,8 +372,10 @@ public:
     fromNumberWithMarker(uint64_t number, uint8_t marker);
 
     /**
-     * Create a component whose value is the prefix appended with the network-ordered encoding of the number.
-     * Note: if the number is zero, no bytes are used for the number - the result will have only the prefix.
+     * Create a GENERIC component whose value is the prefix appended with the
+     * network-ordered encoding of the number.
+     * Note: if the number is zero, no bytes are used for the number - the
+     * result will have only the prefix.
      * @param number The number to be encoded.
      * @param prefix The prefix to use as the first bytes of the component.
      * @param prefixLength The length of prefix.
@@ -408,6 +453,48 @@ public:
     }
 
     /**
+     * Create a component of type ImplicitSha256DigestComponent, so that
+     * isImplicitSha256Digest() is true.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromImplicitSha256Digest(const Blob& digest);
+
+    /**
+     * Create a component of type ImplicitSha256DigestComponent, so that
+     * isImplicitSha256Digest() is true.
+     * @param digest A pointer to the SHA-256 digest value.
+     * @param digestLength Length of digest, which must be
+     * ndn_SHA256_DIGEST_SIZE.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If digestLength is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromImplicitSha256Digest(const uint8_t *digest, size_t digestLength)
+    {
+      return fromImplicitSha256Digest(Blob(digest, digestLength));
+    }
+
+    /**
+     * Create a component of type ImplicitSha256DigestComponent, so that
+     * isImplicitSha256Digest() is true.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromImplicitSha256Digest(const std::vector<uint8_t>& digest)
+    {
+      return fromImplicitSha256Digest(Blob(digest));
+    }
+
+    /**
      * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     static const uint8_t*
@@ -434,7 +521,7 @@ public:
     bool
     equals(const Component& other) const
     {
-      return *value_ == *other.value_;
+      return *value_ == *other.value_ && type_ == other.type_;
     }
 
     /**
@@ -507,6 +594,10 @@ public:
     static const uint8_t FINAL_SEGMENT_PREFIX[];
     static size_t FINAL_SEGMENT_PREFIX_LENGTH;
 
+    // Note: We keep the type_ internal because it is only used to distinguish
+    // from ImplicitSha256Digest. If we support general typed components then
+    // we can provide public access.
+    ndn_NameComponentType type_;
     Blob value_;
   };
 
@@ -579,7 +670,8 @@ public:
   set(const std::string& uri) { set(uri.c_str()); }
 
   /**
-   * Append a new component, copying from value of length valueLength.
+   * Append a new GENERIC component, copying from value of length valueLength.
+   * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
    * @return This name so that you can chain calls to append.
    */
   Name&
@@ -589,7 +681,8 @@ public:
   }
 
   /**
-   * Append a new component, copying from value.
+   * Append a new GENERIC component, copying from value.
+   * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
    * @return This name so that you can chain calls to append.
    */
   Name&
@@ -598,6 +691,11 @@ public:
     return append(Component(value));
   }
 
+  /**
+   * Append a new GENERIC component, using the existing Blob value.
+   * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * @return This name so that you can chain calls to append.
+   */
   Name&
   append(const Blob &value)
   {
@@ -613,7 +711,7 @@ public:
   }
 
   /**
-   * Append a new component, copying the bytes from the value string.
+   * Append a new GENERIC component, copying the bytes from the value string.
    * NOTE: This does not escape %XX values.  If you need to escape, use
    * Name::fromEscapedString.  Also, if the string has "/", this does not split
    * into separate components.  If you need that then use Name(value).
@@ -627,7 +725,7 @@ public:
   }
 
   /**
-   * Append a new component, copying the bytes from the value string.
+   * Append a new GENERIC component, copying the bytes from the value string.
    * NOTE: This does not escape %XX values.  If you need to escape, use
    * Name::fromEscapedString.  Also, if the string has "/", this does not split
    * into separate components.  If you need that then use Name(value).
@@ -861,6 +959,50 @@ public:
   }
 
   /**
+   * Append a component of type ImplicitSha256DigestComponent, so that
+   * isImplicitSha256Digest() is true.
+   * @param digest The SHA-256 digest value.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendImplicitSha256Digest(const Blob& digest)
+  {
+    return append(Component::fromImplicitSha256Digest(digest));
+  }
+
+  /**
+   * Append a component of type ImplicitSha256DigestComponent, so that
+   * isImplicitSha256Digest() is true.
+   * @param digest A pointer to the SHA-256 digest value.
+   * @param digestLength Length of digest, which must be
+   * ndn_SHA256_DIGEST_SIZE.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If digestLength is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendImplicitSha256Digest(const uint8_t *digest, size_t digestLength)
+  {
+    return append(Component::fromImplicitSha256Digest(digest, digestLength));
+  }
+
+  /**
+   * Append a component of type ImplicitSha256DigestComponent, so that
+   * isImplicitSha256Digest() is true.
+   * @param digest The SHA-256 digest value.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendImplicitSha256Digest(const std::vector<uint8_t>& digest)
+  {
+    return append(Component::fromImplicitSha256Digest(digest));
+  }
+
+  /**
    * Check if this name has the same component count and components as the given name.
    * @param name The Name to check.
    * @return true if the names are equal, otherwise false.
@@ -914,6 +1056,7 @@ public:
    * Make a Blob value by decoding the escapedString between beginOffset and endOffset according to the NDN URI Scheme.
    * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
+   * This does not check for a type code prefix such as "sha256digest=".
    * @param escapedString The escaped string.  It does not need to be null-terminated because we only scan to endOffset.
    * @param beginOffset The offset in escapedString of the beginning of the portion to decode.
    * @param endOffset The offset in escapedString of the end of the portion to decode.
@@ -926,6 +1069,7 @@ public:
    * Make a Blob value by decoding the escapedString according to the NDN URI Scheme.
    * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
+   * This does not check for a type code prefix such as "sha256digest=".
    * @param escapedString The null-terminated escaped string.
    * @return The Blob value. If the escapedString is not a valid escaped component, then the Blob is a null pointer.
    */
@@ -936,6 +1080,7 @@ public:
    * Make a Blob value by decoding the escapedString according to the NDN URI Scheme.
    * If the escaped string is "", "." or ".." then return a Blob with a null pointer,
    * which means the component should be skipped in a URI name.
+   * This does not check for a type code prefix such as "sha256digest=".
    * @param escapedString The escaped string.
    * @return The Blob value. If the escapedString is not a valid escaped component, then the Blob is a null pointer.
    */

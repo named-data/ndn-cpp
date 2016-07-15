@@ -51,6 +51,47 @@ fromHexChar(uint8_t c)
 }
 
 /**
+ * Make a Blob value by decoding the hexString between beginOffset and
+ * endOffset.
+ * @param hexString The hex string.
+ * @param beginOffset The offset in hexString of the beginning of the
+ * portion to decode.
+ * @param endOffset The offset in hexString of the end of the portion to
+ * decode.
+ * @return The Blob value. If the hexString is not a valid hex string, then
+ * the Blob has a null pointer.
+ */
+static Blob
+fromHex(const string& hexString, size_t beginOffset, size_t endOffset)
+{
+  ostringstream result;
+
+  for (size_t i = beginOffset; i < endOffset; ++i) {
+    if (hexString[i] == ' ')
+      // Skip whitespace.
+      continue;
+    if (i + 1 >= endOffset)
+      // Only one hex digit. Ignore.
+      break;
+
+    int hi = fromHexChar(hexString[i]);
+    int lo = fromHexChar(hexString[i + 1]);
+
+    if (hi < 0 || lo < 0)
+      // Invalid hex characters.
+      return Blob();
+
+    result << (uint8_t)(16 * hi + lo);
+
+    // Skip past the second digit.
+    i += 1;
+  }
+
+  string resultString = result.str();
+  return Blob((uint8_t*)&resultString[0], resultString.size());
+}
+
+/**
  * Return a copy of str, converting each escaped "%XX" to the char value.
  * @param str
  */
@@ -152,13 +193,32 @@ Name::Component::fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, si
 
   // Make it big endian.
   reverse(value->begin() + prefixLength, value->end());
-  return Blob(value, false);
+  return Name::Component(Blob(value, false));
 }
 
 void
 Name::Component::get(NameLite::Component& componentLite) const
 {
   componentLite = NameLite::Component(value_);
+}
+
+void
+Name::Component::toEscapedString(std::ostringstream& result) const
+{
+  if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST) {
+    result << "sha256digest=";
+    value_.toHex(result);
+  }
+  else
+    Name::toEscapedString(*value_, result);
+}
+
+std::string
+Name::Component::toEscapedString() const
+{
+  ostringstream result;
+  toEscapedString(result);
+  return result.str();
 }
 
 uint64_t
@@ -173,6 +233,11 @@ int
 Name::Component::compare(const Name::Component& other) const
 {
   // Imitate ndn_NameComponent_compare.
+  if (type_ < other.type_)
+    return -1;
+  if (type_ > other.type_)
+    return 1;
+
   if (value_.size() < other.value_.size())
     return -1;
   if (value_.size() > other.value_.size())
@@ -180,6 +245,18 @@ Name::Component::compare(const Name::Component& other) const
 
   // The components are equal length.  Just do a byte compare.
   return ndn_memcmp(value_.buf(), other.value_.buf(), value_.size());
+}
+
+Name::Component
+Name::Component::fromImplicitSha256Digest(const Blob& digest)
+{
+  if (digest.size() != ndn_SHA256_DIGEST_SIZE)
+    throw runtime_error
+      ("Name::Component::fromImplicitSha256Digest: The digest length must be 32 bytes");
+
+  Component result(digest);
+  result.type_ = ndn_NameComponentType_IMPLICIT_SHA256_DIGEST;
+  return result;
 }
 
 Name::Component
@@ -254,12 +331,23 @@ Name::set(const char *uri_cstr)
   size_t iComponentStart = 0;
 
   // Unescape the components.
+  string sha256digestPrefix("sha256digest=");
   while (iComponentStart < uri.size()) {
     size_t iComponentEnd = uri.find("/", iComponentStart);
     if (iComponentEnd == string::npos)
       iComponentEnd = uri.size();
 
-    Component component(fromEscapedString(&uri[0], iComponentStart, iComponentEnd));
+    Component component;
+    if (iComponentStart + sha256digestPrefix.size() <= uri.size() &&
+        uri.compare
+          (iComponentStart, sha256digestPrefix.size(), sha256digestPrefix) == 0)
+      component = Component::fromImplicitSha256Digest
+            (fromHex(uri, iComponentStart + sha256digestPrefix.size(),
+                     iComponentEnd));
+    else
+      component = Component
+        (fromEscapedString(&uri[0], iComponentStart, iComponentEnd));
+
     // Ignore illegal components.  This also gets rid of a trailing '/'.
     if (component.getValue())
       append(component);
