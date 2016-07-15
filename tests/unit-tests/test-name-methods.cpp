@@ -247,6 +247,70 @@ TEST_F(TestNameMethods, EncodeDecode)
   ASSERT_EQ(decodedName, name);
 }
 
+TEST_F(TestNameMethods, ImplicitSha256Digest)
+{
+  Name name;
+
+  uint8_t digest[] = {
+    0x28, 0xba, 0xd4, 0xb5, 0x27, 0x5b, 0xd3, 0x92,
+    0xdb, 0xb6, 0x70, 0xc7, 0x5c, 0xf0, 0xb6, 0x6f,
+    0x13, 0xf7, 0x94, 0x2b, 0x21, 0xe8, 0x0f, 0x55,
+    0xc0, 0xe8, 0x6b, 0x37, 0x47, 0x53, 0xa5, 0x48,
+    0x00, 0x00
+  };
+
+  name.appendImplicitSha256Digest(digest, 32);
+  name.appendImplicitSha256Digest(Blob(digest, 32));
+  ASSERT_EQ(name.get(0), name.get(1));
+
+  ASSERT_THROW
+    (name.appendImplicitSha256Digest(Blob(digest, 34)),
+    runtime_error) << "Expected error in appendImplicitSha256Digest";
+  ASSERT_THROW
+    (name.appendImplicitSha256Digest(Blob(digest, 30)),
+    runtime_error) << "Expected error in appendImplicitSha256Digest";
+
+  // Add name.get(2) as a generic component.
+  name.append(digest, 32);
+  ASSERT_TRUE(name.get(0).compare(name.get(2)) < 0);
+  ASSERT_TRUE(name.get(0).getValue().equals(name.get(2).getValue()));
+
+  // Add name.get(3) as a generic component whose first byte is greater.
+  name.append(digest + 1, 32);
+  ASSERT_TRUE(name.get(0).compare(name.get(3)) < 0);
+
+  ASSERT_EQ
+    ("sha256digest="
+     "28bad4b5275bd392dbb670c75cf0b66f13f7942b21e80f55c0e86b374753a548",
+     name.get(0).toEscapedString());
+
+  ASSERT_EQ(true, name.get(0).isImplicitSha256Digest());
+  ASSERT_EQ(false, name.get(2).isImplicitSha256Digest());
+
+  ASSERT_THROW
+    (Name("/hello/sha256digest=hmm"),
+    runtime_error) << "Expected error in new Name from URI";
+
+  // Check canonical URI encoding (lower case).
+  Name name2
+    ("/hello/sha256digest="
+     "28bad4b5275bd392dbb670c75cf0b66f13f7942b21e80f55c0e86b374753a548");
+  ASSERT_EQ(name.get(0), name2.get(1));
+
+  // Check that it will accept a hex value in upper case too.
+  name2 = Name
+    ("/hello/sha256digest="
+     "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
+  ASSERT_EQ(name.get(0), name2.get(1));
+
+  // This is not valid sha256digest component. It should be treated as generic.
+  name2 = Name
+    ("/hello/SHA256DIGEST="
+     "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
+  ASSERT_FALSE(name.get(0).equals(name2.get(1)));
+  ASSERT_TRUE(name2.get(1).isGeneric());
+}
+
 int
 main(int argc, char **argv)
 {

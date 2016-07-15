@@ -14,6 +14,7 @@ Changes
 * NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
   to encode/decode and generate RSA and EC public/private keys.
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
+* Unit tests: In test-name-methods, added ImplicitSha256Digest.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
