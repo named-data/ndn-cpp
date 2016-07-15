@@ -2,6 +2,8 @@
  * Copyright (C) 2014-2016 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PyNDN unit-tests by Adeola Bannis.
+ * From ndn-cxx unit tests:
+ * https://github.com/named-data/ndn-cxx/blob/master/tests/unit-tests/interest.t.cpp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +27,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/interest-filter.hpp>
+#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -324,6 +327,95 @@ TEST_F(TestInterestMethods, VerifyDigestSha256)
      bind(&VerifyCounter::onVerifyFailed, &counter, _1));
   ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
+}
+
+
+TEST_F(TestInterestMethods, MatchesData)
+{
+  Interest interest(Name("/A"));
+  interest.setMinSuffixComponents(2);
+  interest.setMaxSuffixComponents(2);
+  interest.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  interest.getKeyLocator().setKeyName(Name("/B"));
+  interest.getExclude().appendComponent(Name::Component("J"));
+  interest.getExclude().appendAny();
+
+  Data data(Name("/A/D"));
+  Sha256WithRsaSignature signature;
+  signature.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature.getKeyLocator().setKeyName(Name("/B"));
+  data.setSignature(signature);
+  ASSERT_EQ(true, interest.matchesData(data));
+
+  // Check violating MinSuffixComponents.
+  Data data1(data);
+  data1.setName(Name("/A"));
+  ASSERT_EQ(false, interest.matchesData(data1));
+
+  Interest interest1(interest);
+  interest1.setMinSuffixComponents(1);
+  ASSERT_EQ(true, interest1.matchesData(data1));
+
+  // Check violating MaxSuffixComponents.
+  Data data2(data);
+  data2.setName(Name("/A/E/F"));
+  ASSERT_EQ(false, interest.matchesData(data2));
+
+  Interest interest2(interest);
+  interest2.setMaxSuffixComponents(3);
+  ASSERT_EQ(true, interest2.matchesData(data2));
+
+  /* TODO: Implement KeyLocator equality.
+  Data data3 = data;
+  SignatureSha256WithRsa signature3(KeyLocator("ndn:/G")); // violates PublisherPublicKeyLocator
+  data3.setSignature(signature3);
+  data3.wireEncode();
+  BOOST_CHECK_EQUAL(interest.matchesData(data3), false);
+
+  Interest interest3 = interest;
+  interest3.setPublisherPublicKeyLocator(KeyLocator("ndn:/G"));
+  BOOST_CHECK_EQUAL(interest3.matchesData(data3), true);
+
+  Data data4 = data;
+  DigestSha256 signature4; // violates PublisherPublicKeyLocator
+  data4.setSignature(signature4);
+  data4.wireEncode();
+  BOOST_CHECK_EQUAL(interest.matchesData(data4), false);
+
+  Interest interest4 = interest;
+  interest4.setPublisherPublicKeyLocator(KeyLocator());
+  BOOST_CHECK_EQUAL(interest4.matchesData(data4), true);
+*/
+
+  // Check violating Exclude.
+  Data data5(data);
+  data5.setName(Name("/A/J"));
+  ASSERT_EQ(false, interest.matchesData(data5));
+
+  Interest interest5(interest);
+  interest5.getExclude().clear();
+  interest5.getExclude().appendComponent(Name::Component("K"));
+  interest5.getExclude().appendAny();
+  ASSERT_EQ(true, interest5.matchesData(data5));
+
+  // Check violating Name.
+  Data data6(data);
+  data6.setName(Name("/H/I"));
+  ASSERT_EQ(false, interest.matchesData(data6));
+
+  Data data7(data);
+  data7.setName(Name("/A/B"));
+
+  Interest interest7
+    (Name("/A/B/sha256digest="
+          "54008e240a7eea2714a161dfddf0dd6ced223b3856e9da96792151e180f3b128"));
+  ASSERT_EQ(true, interest7.matchesData(data7));
+
+  // Check violating the implicit digest.
+  Interest interest7b
+    (Name("/A/B/%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"
+          "%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"));
+  ASSERT_EQ(false, interest7b.matchesData(data7));
 }
 
 TEST_F(TestInterestMethods, InterestFilterMatching)
