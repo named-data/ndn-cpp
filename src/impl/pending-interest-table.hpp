@@ -132,16 +132,16 @@ public:
       const OnNetworkNack& onNetworkNack);
 
   /**
-   * Find all entries from the pending interest table where the name conforms to
+   * Find all entries from the pending interest table where data conforms to
    * the entry's interest selectors, remove the entries from the table, set each
    * entry's isRemoved flag, and add to the entries list.
-   * @param name The name to find the interest for (from the incoming data packet).
+   * @param data The incoming Data packet to find the interest for.
    * @param entries Add matching PendingInterestTable::Entry from the pending
    * interest table.  The caller should pass in a reference to an empty vector.
    */
   void
   extractEntriesForExpressedInterest
-    (const Name& name, std::vector<ptr_lib::shared_ptr<Entry> > &entries);
+    (const Data& data, std::vector<ptr_lib::shared_ptr<Entry> > &entries);
 
   /**
    * Find all entries from the pending interest table where the OnNetworkNack

@@ -391,8 +391,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   }
   else if (data) {
     vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
-    pendingInterestTable_.extractEntriesForExpressedInterest
-      (data->getName(), pitEntries);
+    pendingInterestTable_.extractEntriesForExpressedInterest(*data, pitEntries);
     for (size_t i = 0; i < pitEntries.size(); ++i) {
       try {
         pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
