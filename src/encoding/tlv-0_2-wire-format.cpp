@@ -30,16 +30,16 @@
 #include <ndn-cpp/generic-signature.hpp>
 #include <ndn-cpp/delegation-set.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
-#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 #include "tlv-encoder.hpp"
-#include <ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-0_2-wire-format.hpp>
 
 using namespace std;
 
 namespace ndn {
 
 Blob
-Tlv0_1_1WireFormat::encodeName(const Name& name)
+Tlv0_2WireFormat::encodeName(const Name& name)
 {
   struct ndn_NameComponent nameComponents[100];
   NameLite nameLite
@@ -49,7 +49,7 @@ Tlv0_1_1WireFormat::encodeName(const Name& name)
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset, encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeName
+  if ((error = Tlv0_2WireFormatLite::encodeName
        (nameLite, &dummyBeginOffset, &dummyEndOffset,
         DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -58,7 +58,7 @@ Tlv0_1_1WireFormat::encodeName(const Name& name)
 }
 
 void
-Tlv0_1_1WireFormat::decodeName
+Tlv0_2WireFormat::decodeName
   (Name& name, const uint8_t *input, size_t inputLength)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -67,7 +67,7 @@ Tlv0_1_1WireFormat::decodeName
 
   ndn_Error error;
   size_t dummyBeginOffset, dummyEndOffset;
-  if ((error = Tlv0_1_1WireFormatLite::decodeName
+  if ((error = Tlv0_2WireFormatLite::decodeName
        (nameLite, input, inputLength, &dummyBeginOffset, &dummyEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -75,7 +75,7 @@ Tlv0_1_1WireFormat::decodeName
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeInterest
+Tlv0_2WireFormat::encodeInterest
   (const Interest& interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset)
 {
@@ -91,7 +91,7 @@ Tlv0_1_1WireFormat::encodeInterest
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeInterest
+  if ((error = Tlv0_2WireFormatLite::encodeInterest
        (interestLite, signedPortionBeginOffset, signedPortionEndOffset,
         DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -100,7 +100,7 @@ Tlv0_1_1WireFormat::encodeInterest
 }
 
 void
-Tlv0_1_1WireFormat::decodeInterest
+Tlv0_2WireFormat::decodeInterest
   (Interest& interest, const uint8_t *input, size_t inputLength,
    size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
@@ -113,7 +113,7 @@ Tlv0_1_1WireFormat::decodeInterest
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeInterest
+  if ((error = Tlv0_2WireFormatLite::decodeInterest
        (interestLite, input, inputLength, signedPortionBeginOffset,
         signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
@@ -122,7 +122,7 @@ Tlv0_1_1WireFormat::decodeInterest
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
+Tlv0_2WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
@@ -134,7 +134,7 @@ Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
   DynamicUInt8Vector output(1500);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeData
+  if ((error = Tlv0_2WireFormatLite::encodeData
        (dataLite, signedPortionBeginOffset, signedPortionEndOffset,
         DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -143,7 +143,7 @@ Tlv0_1_1WireFormat::encodeData(const Data& data, size_t *signedPortionBeginOffse
 }
 
 void
-Tlv0_1_1WireFormat::decodeData
+Tlv0_2WireFormat::decodeData
   (Data& data, const uint8_t *input, size_t inputLength, size_t *signedPortionBeginOffset, size_t *signedPortionEndOffset)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -153,7 +153,7 @@ Tlv0_1_1WireFormat::decodeData
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeData
+  if ((error = Tlv0_2WireFormatLite::decodeData
        (dataLite, input, inputLength, signedPortionBeginOffset,
         signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
@@ -162,7 +162,7 @@ Tlv0_1_1WireFormat::decodeData
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeControlParameters
+Tlv0_2WireFormat::encodeControlParameters
   (const ControlParameters& controlParameters)
 {
   struct ndn_NameComponent nameComponents[100];
@@ -176,7 +176,7 @@ Tlv0_1_1WireFormat::encodeControlParameters
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeControlParameters
+  if ((error = Tlv0_2WireFormatLite::encodeControlParameters
        (controlParametersLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -185,7 +185,7 @@ Tlv0_1_1WireFormat::encodeControlParameters
 }
 
 void
-Tlv0_1_1WireFormat::decodeControlParameters
+Tlv0_2WireFormat::decodeControlParameters
   (ControlParameters& controlParameters, const uint8_t *input,
    size_t inputLength)
 {
@@ -197,7 +197,7 @@ Tlv0_1_1WireFormat::decodeControlParameters
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeControlParameters
+  if ((error = Tlv0_2WireFormatLite::decodeControlParameters
        (controlParametersLite, input, inputLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -205,7 +205,7 @@ Tlv0_1_1WireFormat::decodeControlParameters
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeControlResponse(const ControlResponse& controlResponse)
+Tlv0_2WireFormat::encodeControlResponse(const ControlResponse& controlResponse)
 {
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent strategyNameComponents[100];
@@ -218,7 +218,7 @@ Tlv0_1_1WireFormat::encodeControlResponse(const ControlResponse& controlResponse
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeControlResponse
+  if ((error = Tlv0_2WireFormatLite::encodeControlResponse
        (controlResponseLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -227,7 +227,7 @@ Tlv0_1_1WireFormat::encodeControlResponse(const ControlResponse& controlResponse
 }
 
 void
-Tlv0_1_1WireFormat::decodeControlResponse
+Tlv0_2WireFormat::decodeControlResponse
   (ControlResponse& controlResponse, const uint8_t *input,
    size_t inputLength)
 {
@@ -239,7 +239,7 @@ Tlv0_1_1WireFormat::decodeControlResponse
      sizeof(strategyNameComponents) / sizeof(strategyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeControlResponse
+  if ((error = Tlv0_2WireFormatLite::decodeControlResponse
        (controlResponseLite, input, inputLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -247,7 +247,7 @@ Tlv0_1_1WireFormat::decodeControlResponse
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
+Tlv0_2WireFormat::encodeSignatureInfo(const Signature& signature)
 {
   struct ndn_NameComponent keyNameComponents[100];
   SignatureLite signatureLite
@@ -257,7 +257,7 @@ Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeSignatureInfo
+  if ((error = Tlv0_2WireFormatLite::encodeSignatureInfo
        (signatureLite, DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -265,7 +265,7 @@ Tlv0_1_1WireFormat::encodeSignatureInfo(const Signature& signature)
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
+Tlv0_2WireFormat::encodeSignatureValue(const Signature& signature)
 {
   struct ndn_NameComponent keyNameComponents[100];
   SignatureLite signatureLite
@@ -275,7 +275,7 @@ Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
   DynamicUInt8Vector output(300);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeSignatureValue
+  if ((error = Tlv0_2WireFormatLite::encodeSignatureValue
        (signatureLite, DynamicUInt8ArrayLite::downCast(output), &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
 
@@ -283,7 +283,7 @@ Tlv0_1_1WireFormat::encodeSignatureValue(const Signature& signature)
 }
 
 ptr_lib::shared_ptr<Signature>
-Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
+Tlv0_2WireFormat::decodeSignatureInfoAndValue
   (const uint8_t *signatureInfo, size_t signatureInfoLength,
    const uint8_t *signatureValue, size_t signatureValueLength)
 {
@@ -292,7 +292,7 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
     (keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeSignatureInfoAndValue
+  if ((error = Tlv0_2WireFormatLite::decodeSignatureInfoAndValue
        (signatureLite, signatureInfo, signatureInfoLength, signatureValue,
         signatureValueLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -315,7 +315,7 @@ Tlv0_1_1WireFormat::decodeSignatureInfoAndValue
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
+Tlv0_2WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
 {
   DynamicUInt8Vector output(256);
   size_t encodingLength = 0;
@@ -329,7 +329,7 @@ Tlv0_1_1WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
 
     size_t delegationEncodingLength;
     ndn_Error error;
-    if ((error = Tlv0_1_1WireFormatLite::encodeDelegationSet_Delegation
+    if ((error = Tlv0_2WireFormatLite::encodeDelegationSet_Delegation
          (delegationLite, DynamicUInt8ArrayLite::downCast(output), encodingLength,
           &delegationEncodingLength)))
       throw runtime_error(ndn_getErrorString(error));
@@ -341,7 +341,7 @@ Tlv0_1_1WireFormat::encodeDelegationSet(const DelegationSet& delegationSet)
 }
 
 void
-Tlv0_1_1WireFormat::decodeDelegationSet
+Tlv0_2WireFormat::decodeDelegationSet
   (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength)
 {
   delegationSet.clear();
@@ -355,7 +355,7 @@ Tlv0_1_1WireFormat::decodeDelegationSet
 
     size_t encodingLength;
     ndn_Error error;
-    if ((error = Tlv0_1_1WireFormatLite::decodeDelegationSet_Delegation
+    if ((error = Tlv0_2WireFormatLite::decodeDelegationSet_Delegation
          (delegationLite, input + offset, inputLength - offset, &encodingLength)))
       throw runtime_error(ndn_getErrorString(error));
 
@@ -366,7 +366,7 @@ Tlv0_1_1WireFormat::decodeDelegationSet
 }
 
 Blob
-Tlv0_1_1WireFormat::encodeEncryptedContent
+Tlv0_2WireFormat::encodeEncryptedContent
   (const EncryptedContent& encryptedContent)
 {
   struct ndn_NameComponent keyNameComponents[100];
@@ -378,7 +378,7 @@ Tlv0_1_1WireFormat::encodeEncryptedContent
   DynamicUInt8Vector output(256);
   ndn_Error error;
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeEncryptedContent
+  if ((error = Tlv0_2WireFormatLite::encodeEncryptedContent
        (encryptedContentLite, DynamicUInt8ArrayLite::downCast(output),
         &encodingLength)))
     throw runtime_error(ndn_getErrorString(error));
@@ -387,7 +387,7 @@ Tlv0_1_1WireFormat::encodeEncryptedContent
 }
 
 void
-Tlv0_1_1WireFormat::decodeEncryptedContent
+Tlv0_2WireFormat::decodeEncryptedContent
   (EncryptedContent& encryptedContent, const uint8_t *input,
    size_t inputLength)
 {
@@ -397,13 +397,13 @@ Tlv0_1_1WireFormat::decodeEncryptedContent
      sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeEncryptedContent
+  if ((error = Tlv0_2WireFormatLite::decodeEncryptedContent
        (encryptedContentLite, input, inputLength)))
     throw runtime_error(ndn_getErrorString(error));
 
   encryptedContent.set(encryptedContentLite);
 }
 
-Tlv0_1_1WireFormat* Tlv0_1_1WireFormat::instance_ = 0;
+Tlv0_2WireFormat* Tlv0_2WireFormat::instance_ = 0;
 
 }

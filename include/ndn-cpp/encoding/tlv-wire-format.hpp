@@ -22,7 +22,7 @@
 #ifndef NDN_TLV_WIRE_FORMAT_HPP
 #define NDN_TLV_WIRE_FORMAT_HPP
 
-#include "tlv-0_1_1-wire-format.hpp"
+#include "tlv-0_2-wire-format.hpp"
 
 namespace ndn {
 
@@ -30,7 +30,7 @@ namespace ndn {
  * A TlvWireFormat extends WireFormat to override its virtual methods to implement encoding and decoding
  * using the preferred implementation of NDN-TLV.
  */
-class TlvWireFormat : public Tlv0_1_1WireFormat {
+class TlvWireFormat : public Tlv0_2WireFormat {
 public:
   /**
    * Get a singleton instance of a TlvWireFormat.  Assuming that the default wire format was set with

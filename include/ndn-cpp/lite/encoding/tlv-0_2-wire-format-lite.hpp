@@ -19,8 +19,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_TLV_0_1_1_WIRE_FORMAT_LITE_HPP
-#define NDN_TLV_0_1_1_WIRE_FORMAT_LITE_HPP
+#ifndef NDN_TLV_0_2_WIRE_FORMAT_LITE_HPP
+#define NDN_TLV_0_2_WIRE_FORMAT_LITE_HPP
 
 #include "../interest-lite.hpp"
 #include "../data-lite.hpp"
@@ -35,10 +35,10 @@
 namespace ndn {
 
 /**
- * A Tlv0_1_1WireFormatLite implements implement encoding and decoding using
- * NDN-TLV version 0.1.1.
+ * A Tlv0_2WireFormatLite implements implement encoding and decoding using
+ * NDN-TLV version 0.2.
  */
-class Tlv0_1_1WireFormatLite {
+class Tlv0_2WireFormatLite {
 public:
   /**
    * Encode name as NDN-TLV.

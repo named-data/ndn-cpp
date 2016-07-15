@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/control-response.hpp>
-#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 #include <ndn-cpp/lite/lp/lp-packet-lite.hpp>
 #include <ndn-cpp/network-nack.hpp>
 #include "c/util/time.h"
@@ -309,7 +309,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
       (headerFields, sizeof(headerFields) / sizeof(headerFields[0]));
 
     ndn_Error error;
-    if ((error = Tlv0_1_1WireFormatLite::decodeLpPacket
+    if ((error = Tlv0_2WireFormatLite::decodeLpPacket
          (lpPacketLite, element, elementLength)))
       throw runtime_error(ndn_getErrorString(error));
     element = lpPacketLite.getFragmentWireEncoding().buf();

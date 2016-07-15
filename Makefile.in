@@ -193,7 +193,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
 	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
-	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
+	src/c/encoding/tlv-0_2-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-control-response.lo \
 	src/c/encoding/tlv/tlv-data.lo \
@@ -228,7 +228,7 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
 	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
-	src/c/encoding/tlv-0_1_1-wire-format_c.lo \
+	src/c/encoding/tlv-0_2-wire-format_c.lo \
 	src/c/encoding/tlv/tlv-control-parameters.lo \
 	src/c/encoding/tlv/tlv-control-response.lo \
 	src/c/encoding/tlv/tlv-data.lo \
@@ -266,7 +266,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/base64.lo src/encoding/element-listener.lo \
 	src/encoding/oid.lo src/encoding/protobuf-tlv.lo \
 	src/encoding/tlv-0_1-wire-format.lo \
-	src/encoding/tlv-0_1_1-wire-format.lo \
+	src/encoding/tlv-0_2-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
 	src/encrypt/consumer.lo src/encrypt/consumer-db.lo \
@@ -293,7 +293,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/name-lite.lo src/lite/network-nack-lite.lo \
 	src/lite/signature-lite.lo \
 	src/lite/encoding/element-listener-lite.lo \
-	src/lite/encoding/tlv-0_1_1-wire-format-lite.lo \
+	src/lite/encoding/tlv-0_2-wire-format-lite.lo \
 	src/lite/encrypt/encrypted-content-lite.lo \
 	src/lite/encrypt/algo/aes-algorithm-lite.lo \
 	src/lite/encrypt/algo/encrypt-params-lite.lo \
@@ -1206,7 +1206,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/oid.hpp \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
   include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
-  include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
+  include/ndn-cpp/encoding/tlv-0_2-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/encrypt/consumer.hpp \
@@ -1242,7 +1242,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/network-nack-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
-  include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
@@ -1308,7 +1308,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/network-nack_c.c src/c/network-nack.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
-  src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
+  src/c/encoding/tlv-0_2-wire-format_c.c src/c/encoding/tlv-0_2-wire-format.h \
   src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-control-response.c src/c/encoding/tlv/tlv-control-response.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
@@ -1373,7 +1373,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/oid.cpp \
   src/encoding/protobuf-tlv.cpp \
   src/encoding/tlv-0_1-wire-format.cpp \
-  src/encoding/tlv-0_1_1-wire-format.cpp \
+  src/encoding/tlv-0_2-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
   src/encoding/tlv-wire-format.cpp \
@@ -1414,7 +1414,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/network-nack-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
-  src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
@@ -1699,7 +1699,7 @@ src/c/encoding/$(DEPDIR)/$(am__dirstamp):
 	@: > src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/element-reader.lo: src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
-src/c/encoding/tlv-0_1_1-wire-format_c.lo:  \
+src/c/encoding/tlv-0_2-wire-format_c.lo:  \
 	src/c/encoding/$(am__dirstamp) \
 	src/c/encoding/$(DEPDIR)/$(am__dirstamp)
 src/c/encoding/tlv/$(am__dirstamp):
@@ -1859,7 +1859,7 @@ src/encoding/protobuf-tlv.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/tlv-0_1-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
-src/encoding/tlv-0_1_1-wire-format.lo: src/encoding/$(am__dirstamp) \
+src/encoding/tlv-0_2-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
 src/encoding/tlv-wire-format.lo: src/encoding/$(am__dirstamp) \
 	src/encoding/$(DEPDIR)/$(am__dirstamp)
@@ -1974,7 +1974,7 @@ src/lite/encoding/$(DEPDIR)/$(am__dirstamp):
 src/lite/encoding/element-listener-lite.lo:  \
 	src/lite/encoding/$(am__dirstamp) \
 	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
-src/lite/encoding/tlv-0_1_1-wire-format-lite.lo:  \
+src/lite/encoding/tlv-0_2-wire-format-lite.lo:  \
 	src/lite/encoding/$(am__dirstamp) \
 	src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
 src/lite/encrypt/$(am__dirstamp):
@@ -2793,7 +2793,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/name_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/$(DEPDIR)/network-nack_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/element-reader.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/tlv-0_1_1-wire-format_c.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/$(DEPDIR)/tlv-0_2-wire-format_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-control-parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-control-response.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-data.Plo@am__quote@
@@ -2826,7 +2826,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/oid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/protobuf-tlv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-0_1-wire-format.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-0_1_1-wire-format.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-0_2-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/tlv-wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@
@@ -2865,7 +2865,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/network-nack-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/signature-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/element-listener-lite.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_1_1-wire-format-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_2-wire-format-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo@am__quote@
