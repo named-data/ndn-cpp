@@ -16,6 +16,7 @@ Changes
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
 * Unit tests: In test-name-methods, added ImplicitSha256Digest.
 * Unit tests: In test-interest-methods, added MatchesData.
+* Unit tests: In test-data-methods, added FullName.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
