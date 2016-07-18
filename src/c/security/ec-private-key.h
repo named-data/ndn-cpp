@@ -77,13 +77,63 @@ ndn_EcPrivateKey_setByCurve
    size_t valueLength);
 
 /**
+ * Generate a key pair and set the ndn_EcPrivateKey struct, allocating
+ * memory as needed. You must call ndn_EcPrivateKey_finalize to free it.
+ * @param self A pointer to the ndn_EcPrivateKey struct.
+ * @param keySize The size in bits of the key to generate.
+ * @return 0 for success, else NDN_ERROR_Error_in_generate_operation if can't
+ * complete the generate operation, including if a curve can't be found for the
+ * keySize.
+ */
+ndn_Error
+ndn_EcPrivateKey_generate(struct ndn_EcPrivateKey *self, uint32_t keySize);
+
+/**
+ * Encode the DER-encoded private key.
+ * @param self A pointer to the ndn_EcPrivateKey struct.
+ * @param includeParameters If nonzero, then include the EC parameters in the
+ * encoding.
+ * @param encoding A pointer to the encoding output buffer. If this is null then
+ * only set encodingLength (which can be used to allocate a buffer of the
+ * correct size). Otherwise, the caller must provide a buffer large enough to
+ * receive the encoding bytes.
+ * @param encodingLength Set encodingLength to the number of bytes in the
+ * encoding.
+ * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+ * key.
+ */
+ndn_Error
+ndn_EcPrivateKey_encodePrivateKey
+  (const struct ndn_EcPrivateKey *self, int includeParameters, uint8_t *encoding,
+   size_t *encodingLength);
+
+/**
+ * Encode the DER-encoded EC SubjectPublicKeyInfo.
+ * @param self A pointer to the ndn_EcPrivateKey struct.
+ * @param includeParameters If nonzero, then include the EC parameters in the
+ * encoding.
+ * @param encoding A pointer to the encoding output buffer. If this is null then
+ * only set encodingLength (which can be used to allocate a buffer of the
+ * correct size). Otherwise, the caller must provide a buffer large enough to
+ * receive the encoding bytes.
+ * @param encodingLength Set encodingLength to the number of bytes in the
+ * encoding.
+ * @return 0 for success, else NDN_ERROR_Error_encoding_key if can't encode the
+ * key.
+ */
+ndn_Error
+ndn_EcPrivateKey_encodePublicKey
+  (const struct ndn_EcPrivateKey *self, int includeParameters, uint8_t *encoding,
+   size_t *encodingLength);
+
+/**
  * Use the private key to sign the data using EcdsaWithSha256.
  * @param self A pointer to the ndn_EcPrivateKey struct.
  * @param data A pointer to the input byte array to sign.
  * @param dataLength The length of data.
  * @param signature A pointer to the signature output buffer. The caller must
  * provide a buffer large enough to receive the signature bytes.
- * @param signatureLength Set signatureLength to the number of bytes place in
+ * @param signatureLength Set signatureLength to the number of bytes placed in
  * the signature buffer.
  * @return 0 for success, else NDN_ERROR_Error_in_sign_operation if can't
  * complete the sign operation.
@@ -91,7 +141,7 @@ ndn_EcPrivateKey_setByCurve
 ndn_Error
 ndn_EcPrivateKey_signWithSha256
   (const struct ndn_EcPrivateKey *self, const uint8_t *data, size_t dataLength,
-   const uint8_t *signature, size_t *signatureLength);
+   uint8_t *signature, size_t *signatureLength);
 
 #ifdef __cplusplus
 }

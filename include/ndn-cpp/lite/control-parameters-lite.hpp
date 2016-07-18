@@ -263,7 +263,7 @@ public:
 
 private:
   // Declare friends who can downcast to the private base.
-  friend class Tlv0_1_1WireFormatLite;
+  friend class Tlv0_2WireFormatLite;
 };
 
 }

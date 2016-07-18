@@ -26,13 +26,12 @@ using namespace std;
 
 namespace ndn {
 
-string
-toHex(const uint8_t* array, size_t arrayLength)
+void
+toHex(const uint8_t* array, size_t arrayLength, std::ostringstream& result)
 {
   if (arrayLength == 0)
-    return "";
+    return;
 
-  ostringstream result;
   result.flags(ios::hex);
   for (size_t i = 0; i < arrayLength; ++i) {
     uint8_t x = array[i];
@@ -40,7 +39,13 @@ toHex(const uint8_t* array, size_t arrayLength)
       result << '0';
     result << (unsigned int)x;
   }
+}
 
+string
+toHex(const uint8_t* array, size_t arrayLength)
+{
+  ostringstream result;
+  toHex(array, arrayLength, result);
   return result.str();
 }
 

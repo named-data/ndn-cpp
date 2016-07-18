@@ -19,8 +19,10 @@
 #ifdef ARDUINO
 
 #include <string.h>
+#if 0 // Apparantly, these avr includes are not needed.
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#endif
 #include "sha256.h"
 
 #if 1

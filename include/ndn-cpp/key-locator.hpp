@@ -103,6 +103,30 @@ public:
   }
 
   /**
+   * Check if this is the same key locator as other.
+   * @param other The other KeyLocator to compare with.
+   * @return true if the key locators are equal, otherwise false.
+   */
+  bool
+  equals(const KeyLocator& other) const;
+
+  /**
+   * Check if this is the same key locator as other.
+   * @param other The other KeyLocator to compare with.
+   * @return true if the key locators are equal, otherwise false.
+   */
+  bool
+  operator == (const KeyLocator& other) const { return equals(other); }
+
+  /**
+   * Check if this is not the same key locator as other.
+   * @param other The other KeyLocator to compare with.
+   * @return true if the key locators are not equal, otherwise false.
+   */
+  bool
+  operator != (const KeyLocator& other) const { return !equals(other); }
+
+  /**
    * If the signature is a type that has a KeyLocator (so that
    * getFromSignature will succeed), return true.
    * Note: This is a static method of KeyLocator instead of a method of

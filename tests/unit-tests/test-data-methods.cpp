@@ -20,6 +20,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "ndn-cpp/lite/util/crypto-lite.hpp"
 #include <sstream>
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/security/identity/memory-identity-storage.hpp>
@@ -28,6 +29,7 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/generic-signature.hpp>
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -544,6 +546,34 @@ TEST_F(TestDataMethods, GenericSignature)
   ASSERT_THROW
     (freshData->wireEncode(),
     runtime_error) << "Expected encoding error for experimentalSignatureInfoBadTlv";
+}
+
+TEST_F(TestDataMethods, FullName)
+{
+  Data data;
+  data.wireDecode(codedData, sizeof(codedData));
+
+  // Check the full name format.
+  ASSERT_EQ(data.getName().size() + 1, data.getFullName()->size());
+  ASSERT_EQ(data.getName(), data.getFullName()->getPrefix(-1));
+  ASSERT_EQ(32, data.getFullName()->get(-1).getValue().size());
+
+  // Check the independent digest calculation.
+  uint8_t newDigest[ndn_SHA256_DIGEST_SIZE];
+  CryptoLite::digestSha256(codedData, sizeof(codedData), newDigest);
+  ASSERT_TRUE(Blob(newDigest, sizeof(newDigest)).equals
+                   (data.getFullName()->get(-1).getValue()));
+
+  // Check the expected URI.
+  ASSERT_EQ
+    ("/ndn/abc/sha256digest="
+       "96556d685dcb1af04be4ae57f0e7223457d4055ea9b3d07c0d337bef4a8b3ee9",
+     data.getFullName()->toUri());
+
+  // Changing the Data packet should change the full name.
+  Name saveFullName(*data.getFullName());
+  data.setContent(Blob());
+  ASSERT_FALSE(data.getFullName()->get(-1).equals(saveFullName.get(-1)));
 }
 
 int

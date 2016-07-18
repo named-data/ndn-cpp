@@ -22,9 +22,6 @@
 #include "../../encoding/der/der-node.hpp"
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
-#if NDN_CPP_HAVE_LIBCRYPTO
-#include <openssl/ssl.h>
-#endif
 #include <ndn-cpp/security/identity/private-key-storage.hpp>
 
 using namespace std;

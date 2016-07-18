@@ -42,12 +42,41 @@ RsaPrivateKeyLite::decode
 }
 
 ndn_Error
+RsaPrivateKeyLite::generate(uint32_t keySize)
+{
+  return ndn_RsaPrivateKey_generate(this, keySize);
+}
+
+ndn_Error
+RsaPrivateKeyLite::encodePrivateKey(uint8_t* encoding, size_t& encodingLength) const
+{
+  return ndn_RsaPrivateKey_encodePrivateKey(this, encoding, &encodingLength);
+}
+
+ndn_Error
+RsaPrivateKeyLite::encodePublicKey(uint8_t* encoding, size_t& encodingLength) const
+{
+  return ndn_RsaPrivateKey_encodePublicKey(this, encoding, &encodingLength);
+}
+
+ndn_Error
 RsaPrivateKeyLite::signWithSha256
-  (const uint8_t* data, size_t dataLength, const uint8_t* signature,
+  (const uint8_t* data, size_t dataLength, uint8_t* signature,
    size_t& signatureLength) const
 {
   return ndn_RsaPrivateKey_signWithSha256
     (this, data, dataLength, signature, &signatureLength);
+}
+
+ndn_Error
+RsaPrivateKeyLite::decrypt
+  (const uint8_t* encryptedData, size_t encryptedDataLength,
+   ndn_EncryptAlgorithmType algorithmType, uint8_t* plainData,
+   size_t& plainDataLength)
+{
+  return ndn_RsaPrivateKey_decrypt
+    (this, encryptedData, encryptedDataLength, algorithmType, plainData,
+     &plainDataLength);
 }
 
 }

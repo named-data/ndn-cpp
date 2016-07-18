@@ -75,9 +75,86 @@ ndn_EcPrivateKey_setByCurve
 }
 
 ndn_Error
+ndn_EcPrivateKey_generate(struct ndn_EcPrivateKey *self, uint32_t keySize)
+{
+  int curveId = -1;
+  int success = 0;
+
+  if (self->privateKey) {
+    // Free a previous value.
+    EC_KEY_free(self->privateKey);
+    self->privateKey = 0;
+  }
+
+  // Find the entry in EC_KEY_INFO.
+  for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
+    const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
+    if (info->keySize == keySize) {
+      curveId = info->curveId;
+      break;
+    }
+  }
+  if (curveId == -1)
+    // Can't find a curve for the keySize.
+    return NDN_ERROR_Error_in_generate_operation;
+
+  self->privateKey = EC_KEY_new_by_curve_name(curveId);
+  if (self->privateKey != NULL) {
+    if (EC_KEY_generate_key(self->privateKey) == 1)
+      success = 1;
+  }
+
+  if (success)
+    return NDN_ERROR_success;
+  else {
+    EC_KEY_free(self->privateKey);
+    self->privateKey = 0;
+    return NDN_ERROR_Error_in_generate_operation;
+  }
+}
+
+ndn_Error
+ndn_EcPrivateKey_encodePrivateKey
+  (const struct ndn_EcPrivateKey *self, int includeParameters, uint8_t *encoding,
+   size_t *encodingLength)
+{
+  if (includeParameters)
+    EC_KEY_set_enc_flags(self->privateKey, 0);
+  else
+    EC_KEY_set_enc_flags
+      (self->privateKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
+
+  int result = i2d_ECPrivateKey(self->privateKey, encoding ? &encoding : 0);
+  if (result < 0)
+    return NDN_ERROR_Error_encoding_key;
+
+  *encodingLength = result;
+  return NDN_ERROR_success;
+}
+
+ndn_Error
+ndn_EcPrivateKey_encodePublicKey
+  (const struct ndn_EcPrivateKey *self, int includeParameters, uint8_t *encoding,
+   size_t *encodingLength)
+{
+  if (includeParameters)
+    EC_KEY_set_enc_flags(self->privateKey, 0);
+  else
+    EC_KEY_set_enc_flags
+      (self->privateKey, EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY);
+
+  int result = i2d_EC_PUBKEY(self->privateKey, encoding ? &encoding : 0);
+  if (result < 0)
+    return NDN_ERROR_Error_encoding_key;
+
+  *encodingLength = result;
+  return NDN_ERROR_success;
+}
+
+ndn_Error
 ndn_EcPrivateKey_signWithSha256
   (const struct ndn_EcPrivateKey *self, const uint8_t *data, size_t dataLength,
-   const uint8_t *signature, size_t *signatureLength)
+   uint8_t *signature, size_t *signatureLength)
 {
   uint8_t digest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, digest);

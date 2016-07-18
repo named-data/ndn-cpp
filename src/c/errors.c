@@ -118,10 +118,26 @@ ndn_getErrorString(int error)
     return      "Interest has a selected delegation but no link object";
   case NDN_ERROR_The_Generic_signature_encoding_is_not_a_valid_NDN_TLV_SignatureInfo:
     return      "The Generic signature encoding is not a valid NDN-TLV SignatureInfo";
+  case NDN_ERROR_Error_encoding_key:
+    return      "Error encoding key";
   case NDN_ERROR_Error_decoding_key:
     return      "Error decoding key";
   case NDN_ERROR_Error_in_sign_operation:
     return      "Error in sign operation";
+  case NDN_ERROR_Unsupported_algorithm_type:
+    return      "Unsupported algorithm type";
+  case NDN_ERROR_Error_in_encrypt_operation:
+    return      "Error in encrypt operation";
+  case NDN_ERROR_Error_in_decrypt_operation:
+    return      "Error in decrypt operation";
+  case NDN_ERROR_Error_in_generate_operation:
+    return      "Error in generate operation";
+  case NDN_ERROR_Incorrect_key_size:
+    return      "Incorrect key size";
+  case NDN_ERROR_Incorrect_initial_vector_size:
+    return      "Incorrect initial vector size";
+  case NDN_ERROR_Incorrect_digest_size:
+    return      "Incorrect digest size";
   default:
     return "unrecognized ndn_Error code";
   }

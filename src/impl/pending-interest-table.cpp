@@ -67,12 +67,12 @@ PendingInterestTable::add
 
 void
 PendingInterestTable::extractEntriesForExpressedInterest
-  (const Name& name, vector<ptr_lib::shared_ptr<Entry> > &entries)
+  (const Data& data, vector<ptr_lib::shared_ptr<Entry> > &entries)
 {
   // Go backwards through the list so we can erase entries.
   for (int i = (int)table_.size() - 1; i >= 0; --i) {
     ptr_lib::shared_ptr<Entry>& pendingInterest = table_[i];
-    if (pendingInterest->getInterest()->matchesName(name)) {
+    if (pendingInterest->getInterest()->matchesData(data)) {
       entries.push_back(pendingInterest);
       // We let the callback from callLater call _processInterestTimeout, but
       // for efficiency, mark this as removed so that it returns right away.

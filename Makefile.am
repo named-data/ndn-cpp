@@ -67,7 +67,9 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/lp/incoming-face-id-types.h \
   include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/security/ec-private-key-types.h \
+  include/ndn-cpp/c/security/ec-public-key-types.h \
   include/ndn-cpp/c/security/rsa-private-key-types.h \
+  include/ndn-cpp/c/security/rsa-public-key-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -101,6 +103,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/protobuf-tlv.hpp \
   include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
+  include/ndn-cpp/encoding/tlv-0_2-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/encrypt/consumer.hpp \
@@ -137,12 +140,16 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
   include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
   include/ndn-cpp/lite/security/ec-private-key-lite.hpp \
+  include/ndn-cpp/lite/security/ec-public-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-private-key-lite.hpp \
+  include/ndn-cpp/lite/security/rsa-public-key-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -198,7 +205,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/network-nack_c.c src/c/network-nack.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
-  src/c/encoding/tlv-0_1_1-wire-format_c.c src/c/encoding/tlv-0_1_1-wire-format.h \
+  src/c/encoding/tlv-0_2-wire-format_c.c src/c/encoding/tlv-0_2-wire-format.h \
   src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-control-response.c src/c/encoding/tlv/tlv-control-response.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
@@ -214,16 +221,19 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv-structure-decoder.c src/c/encoding/tlv/tlv-structure-decoder.h \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
+  src/c/encrypt/algo/aes-algorithm_c.c src/c/encrypt/algo/aes-algorithm.h \
   src/c/encrypt/algo/encrypt-params.h \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
   src/c/lp/lp-packet.h \
   src/c/security/ec-private-key.c src/c/util/ec-private-key.h \
+  src/c/security/ec-public-key.c src/c/util/ec-public-key.h \
   src/c/security/rsa-private-key.c src/c/util/rsa-private-key.h \
+  src/c/security/rsa-public-key.c src/c/util/rsa-public-key.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
   src/c/transport/unix-transport.h \
-  src/c/util/blob.h \
+  src/c/util/blob_c.c src/c/util/blob.h \
   src/c/util/crypto.c src/c/util/crypto.h \
   src/c/util/dynamic-uint8-array.c src/c/util/dynamic-uint8-array.h \
   src/c/util/ndn_memory.c src/c/util/ndn_memory.h \
@@ -260,6 +270,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/protobuf-tlv.cpp \
   src/encoding/tlv-0_1-wire-format.cpp \
   src/encoding/tlv-0_1_1-wire-format.cpp \
+  src/encoding/tlv-0_2-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
   src/encoding/tlv-wire-format.cpp \
@@ -300,13 +311,16 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/network-nack-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
-  src/lite/encoding/tlv-0_1_1-wire-format-lite.cpp \
+  src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
+  src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/lp/incoming-face-id-lite.cpp \
   src/lite/lp/lp-packet-lite.cpp \
   src/lite/security/ec-private-key-lite.cpp \
+  src/lite/security/ec-public-key-lite.cpp \
   src/lite/security/rsa-private-key-lite.cpp \
+  src/lite/security/rsa-public-key-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \

@@ -84,7 +84,7 @@ public:
    * Set the initial vector.
    * @param initialVector The initial vector. If not specified, set to the
    * default Blob() where isNull() is true.
-   * @return This EncryptParamsLite so that you can chain calls to update values.
+   * @return This EncryptParams so that you can chain calls to update values.
    */
   EncryptParams&
   setInitialVector(const Blob& initialVector)

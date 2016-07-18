@@ -31,10 +31,11 @@
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
-#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
-#include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 #include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -421,7 +422,7 @@ benchmarkEncodeDataSecondsC
 
       // Encode once to get the signed portion.
       size_t dummyEncodingLength;
-      if ((error = Tlv0_1_1WireFormatLite::encodeData
+      if ((error = Tlv0_2WireFormatLite::encodeData
            (data, &signedPortionBeginOffset, &signedPortionEndOffset,
             output, &dummyEncodingLength))) {
         cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
@@ -460,7 +461,7 @@ benchmarkEncodeDataSecondsC
                                    : ndn_SignatureType_Sha256WithEcdsaSignature);
     }
 
-    if ((error = Tlv0_1_1WireFormatLite::encodeData
+    if ((error = Tlv0_2WireFormatLite::encodeData
          (data, &signedPortionBeginOffset, &signedPortionEndOffset,
           output, encodingLength))) {
       cout << "Error in ndn_encodeTlvData: " << ndn_getErrorString(error) << endl;
@@ -495,7 +496,7 @@ benchmarkDecodeDataSecondsC
 
     size_t signedPortionBeginOffset, signedPortionEndOffset;
     ndn_Error error;
-    if ((error = Tlv0_1_1WireFormatLite::decodeData
+    if ((error = Tlv0_2WireFormatLite::decodeData
          (data, encoding, encodingLength, &signedPortionBeginOffset,
           &signedPortionEndOffset))) {
       cout << "Error in ndn_decodeTlvData: " << ndn_getErrorString(error) << endl;
@@ -506,7 +507,7 @@ benchmarkDecodeDataSecondsC
       bool verified;
       ndn_Error error;
       if (keyType == KEY_TYPE_ECDSA) {
-        error = CryptoLite::verifySha256WithEcdsaSignature
+        error = EcPublicKeyLite::verifySha256WithEcdsaSignature
           (data.getSignature().getSignature().buf(),
            data.getSignature().getSignature().size(),
            encoding + signedPortionBeginOffset,
@@ -517,7 +518,7 @@ benchmarkDecodeDataSecondsC
           cout << "Signature verification: FAILED" << endl;
       }
       else {
-        error = CryptoLite::verifySha256WithRsaSignature
+        error = RsaPublicKeyLite::verifySha256WithRsaSignature
           (data.getSignature().getSignature().buf(),
            data.getSignature().getSignature().size(),
            encoding + signedPortionBeginOffset,

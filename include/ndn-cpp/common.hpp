@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 // common.h includes ndn-cpp-config.h.
 #include "c/common.h"
 
@@ -114,6 +115,26 @@ typedef double Milliseconds;
  * The calendar time represented as the number of milliseconds since 1/1/1970.
  */
 typedef double MillisecondsSince1970;
+
+/**
+ * Write the hex representation of the bytes in array to the result.
+ * @param array The array of bytes.
+ * @param arrayLength The number of bytes in array.
+ * @param result The output stream to write to.
+ */
+void
+toHex(const uint8_t* array, size_t arrayLength, std::ostringstream& result);
+
+/**
+ * Write the hex representation of the bytes in array to the result.
+ * @param array The array of bytes.
+ * @param result The output stream to write to.
+ */
+static __inline void
+toHex(const std::vector<uint8_t>& array, std::ostringstream& result)
+{
+  return toHex(&array[0], array.size(), result);
+}
 
 /**
  * Return the hex representation of the bytes in array.

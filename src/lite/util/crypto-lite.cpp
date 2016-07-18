@@ -53,38 +53,39 @@ CryptoLite::verifyDigestSha256Signature
     (signature, signatureLength, data, dataLength) != 0;
 }
 
-ndn_Error
-CryptoLite::verifySha256WithEcdsaSignature
-  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
-   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
-   bool &verified)
-{
-  int intResult;
-  ndn_Error status = ndn_verifySha256WithEcdsaSignature
-    (signature, signatureLength, data, dataLength, publicKeyDer,
-     publicKeyDerLength, &intResult);
-  verified = (intResult != 0);
-  return status;
-}
-
-ndn_Error
-CryptoLite::verifySha256WithRsaSignature
-  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
-   size_t dataLength, const uint8_t *publicKeyDer, size_t publicKeyDerLength,
-   bool &verified)
-{
-  int intResult;
-  ndn_Error status = ndn_verifySha256WithRsaSignature
-    (signature, signatureLength, data, dataLength, publicKeyDer,
-     publicKeyDerLength, &intResult);
-  verified = (intResult != 0);
-  return status;
-}
-
 }
 
 #ifdef ARDUINO
 // Put the ARDUINO implementations in this C++ file, not in crypto.c.
+
+#if defined(NDN_CPP_WITH_ARDUINOLIBS) && NDN_CPP_WITH_ARDUINOLIBS
+
+#include "../../../contrib/arduinolibs/libraries/Crypto/Crypto.h"
+#include "../../../contrib/arduinolibs/libraries/Crypto/SHA256.h"
+
+static SHA256 Sha256;
+
+void
+ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
+{
+  // The Arduino is single-threaded, so use the global Sha256 object.
+  Sha256.reset();
+  Sha256.update(data, dataLength);
+  Sha256.finalize(digest, ndn_SHA256_DIGEST_SIZE);
+}
+
+void
+ndn_computeHmacWithSha256
+  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
+   uint8_t *digest)
+{
+  // The Arduino is single-threaded, so use the global Sha256 object.
+  Sha256.resetHMAC(key, keyLength);
+  Sha256.update(data, dataLength);
+  Sha256.finalizeHMAC(key, keyLength, digest, ndn_SHA256_DIGEST_SIZE);
+}
+
+#else // NDN_CPP_WITH_ARDUINOLIBS
 
 #include "../../../contrib/cryptosuite/sha256.h"
 
@@ -110,4 +111,6 @@ ndn_computeHmacWithSha256
   memcpy(digest, Sha256.resultHmac(), ndn_SHA256_DIGEST_SIZE);
 }
 
-#endif
+#endif // NDN_CPP_WITH_ARDUINOLIBS
+
+#endif // ARDUINO

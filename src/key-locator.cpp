@@ -83,5 +83,23 @@ KeyLocator::getFromSignature(const Signature* signature)
     ("KeyLocator::getFromSignature: Signature type does not have a KeyLocator");
 }
 
+bool
+KeyLocator::equals(const KeyLocator& other) const
+{
+  if (type_ != other.type_)
+    return false;
+
+  if (type_ == ndn_KeyLocatorType_KEYNAME) {
+    if (!getKeyName().equals(other.getKeyName()))
+      return false;
+  }
+  else if (type_ == ndn_KeyLocatorType_KEY_LOCATOR_DIGEST) {
+    if (!getKeyData().equals(other.getKeyData()))
+      return false;
+  }
+
+  return true;
+}
+
 }
 

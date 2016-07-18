@@ -42,12 +42,16 @@ ndn_encodeTlvName
     *signedPortionEndOffset = *signedPortionBeginOffset;
   else {
     for (i = 0; i < name->nComponents; ++i) {
+      struct ndn_NameComponent *component = &name->components[i];
+      unsigned int type;
+
       if (i == name->nComponents - 1)
         // We will begin the final component.
         *signedPortionEndOffset = encoder->offset;
 
-      if ((error = ndn_TlvEncoder_writeBlobTlv
-           (encoder, ndn_Tlv_NameComponent, &name->components[i].value)))
+      type = ndn_NameComponent_isImplicitSha256Digest(component) ?
+        ndn_Tlv_ImplicitSha256DigestComponent : ndn_Tlv_NameComponent;
+      if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, type, &component->value)))
         return error;
     }
   }
@@ -72,14 +76,30 @@ ndn_decodeTlvName
 
   name->nComponents = 0;
   while (decoder->offset < endOffset) {
-    struct ndn_Blob component;
+    struct ndn_Blob componentBlob;
+    uint64_t type;
+    size_t saveOffset;
 
     *signedPortionEndOffset = decoder->offset;
 
-    if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
+    saveOffset = decoder->offset;
+    if ((error = ndn_TlvDecoder_readVarNumber(decoder, &type)))
       return error;
-    if ((error = ndn_Name_appendBlob(name, &component)))
+    // Restore the position.
+    ndn_TlvDecoder_seek(decoder, saveOffset);
+
+    if ((error = ndn_TlvDecoder_readBlobTlv
+         (decoder, ndn_Tlv_NameComponent, &componentBlob)))
       return error;
+    if (type == ndn_Tlv_ImplicitSha256DigestComponent) {
+      if ((error = ndn_Name_appendImplicitSha256Digest
+           (name, componentBlob.value, componentBlob.length)))
+        return error;
+    }
+    else {
+      if ((error = ndn_Name_appendBlob(name, &componentBlob)))
+        return error;
+    }
   }
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))

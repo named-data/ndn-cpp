@@ -172,6 +172,18 @@ public:
   isNull() const { return !(*this); }
 
   /**
+   * Write the hex representation of the bytes in array to the result. If the
+   * pointer is null, write nothing.
+   * @param result The output stream to write to.
+   */
+  void
+  toHex(std::ostringstream& result) const 
+  {
+    if (*this)
+      ndn::toHex(**this, result);
+  }
+
+  /**
    * Return the hex representation of the bytes in array.
    * @return The hex bytes as a string, or an empty string if the pointer is
    * null.
