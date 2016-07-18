@@ -389,6 +389,9 @@ public:
 
     static const Component&
     downCast(const ndn_NameComponent& component) { return *(Component*)&component; }
+
+  private:
+    friend NameLite;
   };
 
   /**
@@ -473,18 +476,15 @@ public:
   append(const BlobLite& value) { return append(value.buf(), value.size()); }
 
   /**
-   * Append a GENERIC component to this name with the bytes in the given
-   * component's value.
+   * Append a component to this name with the bytes in the given
+   * component's value and the component's type.
    * @param component A Component with the bytes of the component value. This
    * does not copy the bytes.
    * @return 0 for success, or an error code if there is no more room in the
    * components array.
    */
   ndn_Error
-  append(const NameLite::Component& component)
-  {
-    return append(component.getValue().buf(), component.getValue().size());
-  }
+  append(const NameLite::Component& component);
 
   /**
    * Append a GENERIC component to this name with the bytes in raw string value.
