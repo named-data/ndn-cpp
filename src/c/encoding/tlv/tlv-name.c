@@ -88,8 +88,7 @@ ndn_decodeTlvName
     // Restore the position.
     ndn_TlvDecoder_seek(decoder, saveOffset);
 
-    if ((error = ndn_TlvDecoder_readBlobTlv
-         (decoder, ndn_Tlv_NameComponent, &componentBlob)))
+    if ((error = ndn_TlvDecoder_readBlobTlv(decoder, type, &componentBlob)))
       return error;
     if (type == ndn_Tlv_ImplicitSha256DigestComponent) {
       if ((error = ndn_Name_appendImplicitSha256Digest
