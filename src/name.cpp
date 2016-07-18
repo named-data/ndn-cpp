@@ -199,7 +199,10 @@ Name::Component::fromNumberWithPrefix(uint64_t number, const uint8_t* prefix, si
 void
 Name::Component::get(NameLite::Component& componentLite) const
 {
-  componentLite = NameLite::Component(value_);
+  if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
+    componentLite.setImplicitSha256Digest(value_);
+  else
+    componentLite = NameLite::Component(value_);
 }
 
 void
@@ -362,8 +365,9 @@ Name::get(NameLite& nameLite) const
   nameLite.clear();
   for (size_t i = 0; i < components_.size(); ++i) {
     ndn_Error error;
-    if ((error = nameLite.append
-         (components_[i].getValue().buf(), components_[i].getValue().size())))
+    NameLite::Component component;
+    components_[i].get(component);
+    if ((error = nameLite.append(component)))
       throw runtime_error(ndn_getErrorString(error));
   }
 }
@@ -373,7 +377,7 @@ Name::set(const NameLite& nameLite)
 {
   clear();
   for (size_t i = 0; i < nameLite.size(); ++i)
-    append(nameLite.get(i).getValue().buf(), nameLite.get(i).getValue().size());
+    append(Component(nameLite.get(i)));
 }
 
 Name&
