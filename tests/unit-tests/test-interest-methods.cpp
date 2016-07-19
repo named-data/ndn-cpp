@@ -416,6 +416,11 @@ TEST_F(TestInterestMethods, MatchesData)
     (Name("/A/B/%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"
           "%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"));
   ASSERT_EQ(false, interest7b.matchesData(data7));
+
+  // Check excluding the implicit digest.
+  Interest interest8(Name("/A/B"));
+  interest8.getExclude().appendComponent(interest7.getName().get(2));
+  ASSERT_EQ(false, interest8.matchesData(data7));
 }
 
 TEST_F(TestInterestMethods, InterestFilterMatching)
