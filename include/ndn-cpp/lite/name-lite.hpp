@@ -28,6 +28,8 @@
 
 namespace ndn {
 
+class ExcludeLite;
+
 /**
  * A NameLite holds an array of NameLite::Component.
  */
@@ -392,6 +394,7 @@ public:
 
   private:
     friend NameLite;
+    friend ExcludeLite;
   };
 
   /**
