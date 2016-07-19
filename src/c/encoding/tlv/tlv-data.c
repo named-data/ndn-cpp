@@ -64,10 +64,9 @@ encodeMetaInfoValue(const void *context, struct ndn_TlvEncoder *encoder)
     // The FinalBlockId has an inner NameComponent.
     if ((error = ndn_TlvEncoder_writeTypeAndLength
          (encoder, ndn_Tlv_FinalBlockId, ndn_TlvEncoder_sizeOfBlobTlv
-            (ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value))))
+            (metaInfo->finalBlockId.type, &metaInfo->finalBlockId.value))))
       return error;
-    if ((error = ndn_TlvEncoder_writeBlobTlv
-         (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
+    if ((error = ndn_encodeTlvNameComponent(&metaInfo->finalBlockId, encoder)))
       return error;
   }
 
@@ -171,8 +170,7 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_TlvDecoder_readNestedTlvsStart
          (decoder, ndn_Tlv_FinalBlockId, &finalBlockIdEndOffset)))
       return error;
-    if ((error = ndn_TlvDecoder_readBlobTlv
-         (decoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
+    if ((error = ndn_decodeTlvNameComponent(&metaInfo->finalBlockId, decoder)))
       return error;
     if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, finalBlockIdEndOffset)))
       return error;

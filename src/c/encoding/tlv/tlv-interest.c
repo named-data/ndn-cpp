@@ -42,7 +42,7 @@ encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
     struct ndn_ExcludeEntry *entry = &exclude->entries[i];
 
     if (entry->type == ndn_Exclude_COMPONENT) {
-      if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_NameComponent, &entry->component.value)))
+      if ((error = ndn_encodeTlvNameComponent(&entry->component, encoder)))
         return error;
     }
     else if (entry->type == ndn_Exclude_ANY) {
@@ -190,34 +190,30 @@ decodeExclude(struct ndn_Exclude *exclude, struct ndn_TlvDecoder *decoder)
     return error;
 
   exclude->nEntries = 0;
-  while (1) {
+  while (decoder->offset < endOffset) {
     int gotExpectedTag;
-    int isAny;
 
-    if ((error = ndn_TlvDecoder_peekType(decoder, ndn_Tlv_NameComponent, endOffset, &gotExpectedTag)))
+    if ((error = ndn_TlvDecoder_peekType
+         (decoder, ndn_Tlv_Any, endOffset, &gotExpectedTag)))
       return error;
     if (gotExpectedTag) {
-      // Component.
-      struct ndn_Blob component;
-      if ((error = ndn_TlvDecoder_readBlobTlv(decoder, ndn_Tlv_NameComponent, &component)))
+      // Read past the Any TLV.
+      int dummyValue;
+      if ((error = ndn_TlvDecoder_readBooleanTlv
+           (decoder, ndn_Tlv_Any, endOffset, &dummyValue)))
         return error;
-
-      if ((error = ndn_Exclude_appendComponent
-           (exclude, component.value, component.length)))
-        return error;
-      continue;
-    }
-
-    if ((error = ndn_TlvDecoder_readBooleanTlv(decoder, ndn_Tlv_Any, endOffset, &isAny)))
-      return error;
-    if (isAny) {
       if ((error = ndn_Exclude_appendAny(exclude)))
         return error;
-      continue;
     }
-
-    // Else no more entries.
-    break;
+    else {
+      // First append an empty component, then decode into it.
+      if ((error = ndn_Exclude_appendComponent(exclude, 0, 0)))
+        return error;
+      if ((error = ndn_decodeTlvNameComponent
+           (&exclude->entries[exclude->nEntries - 1].component, decoder)))
+        return error;
+      exclude->entries[exclude->nEntries - 1].type = ndn_Exclude_COMPONENT;
+    }
   }
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
