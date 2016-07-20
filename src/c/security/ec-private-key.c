@@ -79,6 +79,7 @@ ndn_EcPrivateKey_generate(struct ndn_EcPrivateKey *self, uint32_t keySize)
 {
   int curveId = -1;
   int success = 0;
+  size_t i;
 
   if (self->privateKey) {
     // Free a previous value.
@@ -87,7 +88,7 @@ ndn_EcPrivateKey_generate(struct ndn_EcPrivateKey *self, uint32_t keySize)
   }
 
   // Find the entry in EC_KEY_INFO.
-  for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
+  for (i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
     const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
     if (info->keySize == keySize) {
       curveId = info->curveId;
