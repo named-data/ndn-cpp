@@ -210,6 +210,21 @@ ProtobufTlv::decode(Message& message, const uint8_t *input, size_t inputLength)
   decodeMessageValue(message, decoder, inputLength);
 }
 
+
+Name
+ProtobufTlv::toName(const google::protobuf::Message& nameMessage)
+{
+  Name name;
+  const Descriptor& descriptor = *nameMessage.GetDescriptor();
+  const Reflection& reflection = *nameMessage.GetReflection();
+  const FieldDescriptor* field = descriptor.field(0);
+
+  for (size_t i = 0; i < reflection.FieldSize(nameMessage, field); ++i)
+    name.append(Name::Component(reflection.GetRepeatedString(nameMessage, field, i)));
+
+  return name;
+}
+
 }
 
 #endif // NDN_CPP_HAVE_PROTOBUF
