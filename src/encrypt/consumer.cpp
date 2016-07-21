@@ -30,6 +30,8 @@
 using namespace std;
 using namespace ndn::func_lib;
 
+INIT_LOGGER("ndn.Consumer");
+
 namespace ndn {
 
 Consumer::Impl::Impl
