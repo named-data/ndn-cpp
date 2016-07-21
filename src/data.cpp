@@ -108,10 +108,12 @@ Data::getFullName(WireFormat& wireFormat) const
     return defaultfullName_;
 
   ptr_lib::shared_ptr<Name> fullName(new Name(getName()));
+  // Start with a vector shared_ptr so that we don't have to copy the buffer.
+  ptr_lib::shared_ptr<vector<uint8_t> > digest
+    (new vector<uint8_t>(ndn_SHA256_DIGEST_SIZE));
   // wireEncode will use the cached encoding if possible.
-  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
-  CryptoLite::digestSha256(wireEncode(wireFormat), digest);
-  fullName->appendImplicitSha256Digest(digest, sizeof(digest));
+  CryptoLite::digestSha256(wireEncode(wireFormat), &digest->front());
+  fullName->appendImplicitSha256Digest(Blob(digest, false));
 
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // wireEncode has already set defaultWireEncodingFormat_.
