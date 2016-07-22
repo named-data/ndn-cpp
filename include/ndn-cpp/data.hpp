@@ -306,7 +306,7 @@ private:
   Blob content_;
   SignedBlob defaultWireEncoding_;
   WireFormat *defaultWireEncodingFormat_;
-  ptr_lib::shared_ptr<Name> defaultfullName_;
+  ptr_lib::shared_ptr<Name> defaultFullName_;
   uint64_t getDefaultWireEncodingChangeCount_;
   ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;

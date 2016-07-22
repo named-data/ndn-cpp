@@ -38,7 +38,7 @@ namespace ndn {
 Data::Data()
 : signature_(new Sha256WithRsaSignature()),
   changeCount_(0),
-  defaultfullName_(new Name()),
+  defaultFullName_(new Name()),
   getDefaultWireEncodingChangeCount_(0)
 {
 }
@@ -47,7 +47,7 @@ Data::Data(const Name& name)
 : name_(name),
   signature_(new Sha256WithRsaSignature()),
   changeCount_(0),
-  defaultfullName_(new Name()),
+  defaultFullName_(new Name()),
   getDefaultWireEncodingChangeCount_(0)
 {
 }
@@ -56,7 +56,7 @@ Data::Data(const Data& data)
 : name_(data.name_),
   metaInfo_(data.metaInfo_),
   content_(data.content_),
-  defaultfullName_(new Name(*data.defaultfullName_)),
+  defaultFullName_(new Name(*data.defaultFullName_)),
   changeCount_(0)
 {
   if (data.signature_.get()) {
@@ -101,11 +101,11 @@ ptr_lib::shared_ptr<Name>
 Data::getFullName(WireFormat& wireFormat) const
 {
   // The default full name depends on the default wire encoding.
-  if (!getDefaultWireEncoding().isNull() && defaultfullName_->size() > 0 &&
+  if (!getDefaultWireEncoding().isNull() && defaultFullName_->size() > 0 &&
       getDefaultWireEncodingFormat() == &wireFormat)
     // We already have a full name. A non-null default wire encoding means
     // that the Data packet fields have not changed.
-    return defaultfullName_;
+    return defaultFullName_;
 
   ptr_lib::shared_ptr<Name> fullName(new Name(getName()));
   // Start with a vector shared_ptr so that we don't have to copy the buffer.
@@ -117,7 +117,7 @@ Data::getFullName(WireFormat& wireFormat) const
 
   if (&wireFormat == WireFormat::getDefaultWireFormat())
     // wireEncode has already set defaultWireEncodingFormat_.
-    const_cast<Data*>(this)->defaultfullName_ = fullName;
+    const_cast<Data*>(this)->defaultFullName_ = fullName;
 
   return fullName;
 }
