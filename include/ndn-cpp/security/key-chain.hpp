@@ -509,8 +509,9 @@ public:
   /**
    * Wire encode the Data object, compute an HmacWithSha256 and update the
    * signature value.
-   * @param data The Data object to be signed. This updates its signature and
-   * wireEncoding.
+   * @param data The Data object to be signed. It should already have an
+   * HmacWithSha256Signature with a KeyLocator for the key name. This updates
+   * its signature and wireEncoding.
    * @param key The key for the HmacWithSha256.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
