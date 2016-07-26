@@ -71,5 +71,8 @@ tests/unit-tests/policy_config/test-public-info.db
 /contrib/gtest-1.7.0/test
 /contrib/gtest-1.7.0/xcode
 
+# Skip downloaded contrib files.
+/contrib/rsaref
+
 # Mac OSX
 .DS_Store
