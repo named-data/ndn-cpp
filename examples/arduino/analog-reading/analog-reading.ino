@@ -37,7 +37,7 @@
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/interest-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp>
+#include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 
 using namespace ndn;
 
@@ -59,8 +59,7 @@ uint64_t previousReadingNumber = 0;
 /** 
  * Decode the element as an interest and check the prefix. 
  */
-static ndn_Error
-replyToInterest(const uint8_t *element, size_t elementLength)
+static ndn_Error replyToInterest(const uint8_t *element, size_t elementLength)
 {
   // Decode the element as an InterestLite.
   ndn_NameComponent interestNameComponents[3];
@@ -70,7 +69,7 @@ replyToInterest(const uint8_t *element, size_t elementLength)
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]), 0, 0);
   size_t signedPortionBeginOffset, signedPortionEndOffset;
   ndn_Error error;
-  if ((error = Tlv0_1_1WireFormatLite::decodeInterest
+  if ((error = Tlv0_2WireFormatLite::decodeInterest
        (interest, element, elementLength, &signedPortionBeginOffset, 
         &signedPortionEndOffset)))
     return error;
@@ -121,7 +120,7 @@ replyToInterest(const uint8_t *element, size_t elementLength)
   uint8_t encoding[120];
   DynamicUInt8ArrayLite output(encoding, sizeof(encoding), 0);
   size_t encodingLength;
-  if ((error = Tlv0_1_1WireFormatLite::encodeData
+  if ((error = Tlv0_2WireFormatLite::encodeData
        (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
 	output, &encodingLength)))
     return error;
@@ -134,7 +133,7 @@ replyToInterest(const uint8_t *element, size_t elementLength)
   data.getSignature().setSignature(BlobLite(signatureValue, ndn_SHA256_DIGEST_SIZE));
   
   // Encode again to include the signature.
-  if ((error = Tlv0_1_1WireFormatLite::encodeData
+  if ((error = Tlv0_2WireFormatLite::encodeData
        (data, &signedPortionBeginOffset, &signedPortionEndOffset, 
 	output, &encodingLength)))
     return error;
@@ -148,8 +147,8 @@ replyToInterest(const uint8_t *element, size_t elementLength)
   return NDN_ERROR_success;
 }
 
-static void
-onReceivedElement(ndn::ElementListenerLite* self, const uint8_t *element, size_t elementLength)
+static void onReceivedElement
+  (ndn::ElementListenerLite* self, const uint8_t *element, size_t elementLength)
 {
   const int interestTlvType = 5;
   if (element[0] != interestTlvType)
