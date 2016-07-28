@@ -60,10 +60,11 @@ ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
   SHA256_Final(digest, &sha256);
 }
 
-void
+ndn_Error
 ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
   RAND_bytes(buffer, (int)bufferLength);
+  return NDN_ERROR_success;
 }
 
 void

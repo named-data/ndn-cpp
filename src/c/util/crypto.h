@@ -51,8 +51,10 @@ void ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest);
  * Fill the buffer with random bytes.
  * @param buffer Write the random bytes to this buffer.
  * @param bufferLength The number of bytes to write to buffer.
+ * @return 0 for success, else NDN_ERROR_Error_in_generate_operation for an
+ * error including if the random number generator is not seeded.
  */
-void
+ndn_Error
 ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength);
 
 /**

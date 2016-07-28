@@ -23,6 +23,7 @@
 #define NDN_CRYPTOLITE_HPP
 
 #include "blob-lite.hpp"
+#include "../../c/errors.h"
 
 namespace ndn {
 
@@ -57,8 +58,10 @@ public:
    * Fill the buffer with random bytes.
    * @param buffer Write the random bytes to this buffer.
    * @param bufferLength The number of bytes to write to buffer.
+   * @return 0 for success, else NDN_ERROR_Error_in_generate_operation for an
+   * error including if the random number generator is not seeded.
    */
-  static void
+  static ndn_Error
   generateRandomBytes(uint8_t* buffer, size_t bufferLength);
 
   /**

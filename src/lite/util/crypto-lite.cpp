@@ -30,10 +30,10 @@ CryptoLite::digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest
   ndn_digestSha256(data, dataLength, digest);
 }
 
-void
+ndn_Error
 CryptoLite::generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
-  ndn_generateRandomBytes(buffer, bufferLength);
+  return ndn_generateRandomBytes(buffer, bufferLength);
 }
 
 void
