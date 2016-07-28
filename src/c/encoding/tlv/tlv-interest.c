@@ -134,13 +134,17 @@ encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
   nonceBlob.length = sizeof(nonceBuffer);
   if (interest->nonce.length == 0) {
     // Generate a random nonce.
-    ndn_generateRandomBytes(nonceBuffer, sizeof(nonceBuffer));
+    if ((error = ndn_generateRandomBytes(nonceBuffer, sizeof(nonceBuffer))))
+      return error;
     nonceBlob.value = nonceBuffer;
   }
   else if (interest->nonce.length < 4) {
     // TLV encoding requires 4 bytes, so pad out to 4 using random bytes.
     ndn_memcpy(nonceBuffer, interest->nonce.value, interest->nonce.length);
-    ndn_generateRandomBytes(nonceBuffer + interest->nonce.length, sizeof(nonceBuffer) - interest->nonce.length);
+    if ((error = ndn_generateRandomBytes
+         (nonceBuffer + interest->nonce.length,
+          sizeof(nonceBuffer) - interest->nonce.length)))
+      return error;
     nonceBlob.value = nonceBuffer;
   }
   else

@@ -21,8 +21,8 @@
 
 #include <math.h>
 #include <ndn-cpp/security/key-chain.hpp>
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "../c/util/time.h"
-#include "../c/util/crypto.h"
 #include "../encoding/tlv-encoder.hpp"
 #include "command-interest-generator.hpp"
 
@@ -52,7 +52,9 @@ CommandInterestGenerator::generate
   // The random value is a TLV nonNegativeInteger too, but we know it is 8 bytes,
   //   so we don't need to call the nonNegativeInteger encoder.
   uint8_t randomBuffer[8];
-  ndn_generateRandomBytes(randomBuffer, sizeof(randomBuffer));
+  ndn_Error error;
+  if ((error = CryptoLite::generateRandomBytes(randomBuffer, sizeof(randomBuffer))))
+    throw runtime_error(ndn_getErrorString(error));
   interest.getName().append(randomBuffer, sizeof(randomBuffer));
 
   keyChain.sign(interest, certificateName, wireFormat);

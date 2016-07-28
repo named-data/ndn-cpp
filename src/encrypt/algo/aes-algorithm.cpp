@@ -35,7 +35,9 @@ AesAlgorithm::generateKey(const AesKeyParams& params)
   // Convert the key bit size to bytes.
   ptr_lib::shared_ptr<vector<uint8_t> > key
     (new vector<uint8_t>(params.getKeySize() / 8));
-  CryptoLite::generateRandomBytes(&key->front(), key->size());
+  ndn_Error error;
+  if ((error = CryptoLite::generateRandomBytes(&key->front(), key->size())))
+    throw runtime_error(ndn_getErrorString(error));
 
   DecryptKey decryptKey(Blob(key, false));
   return decryptKey;

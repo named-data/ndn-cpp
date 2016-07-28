@@ -21,7 +21,7 @@
  */
 
 #include "../util/logging.hpp"
-#include "../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
@@ -282,7 +282,10 @@ KeyChain::setDefaultCertificate()
     } catch (SecurityException&) {
       // Create a default identity name.
       uint8_t randomComponent[4];
-      ndn_generateRandomBytes(randomComponent, sizeof(randomComponent));
+      ndn_Error error;
+      if ((error = CryptoLite::generateRandomBytes
+           (randomComponent, sizeof(randomComponent))))
+        throw runtime_error(ndn_getErrorString(error));
       defaultIdentity = Name();
       defaultIdentity.append("tmp-identity")
         .append(Blob(randomComponent, sizeof(randomComponent)));
