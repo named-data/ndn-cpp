@@ -196,6 +196,12 @@ ThreadsafeFace::send(const uint8_t *encoding, size_t encodingLength)
     (boost::bind(&Node::send, node_, encoding, encodingLength));
 }
 
+void
+ThreadsafeFace::shutdown()
+{
+  ioService_.dispatch(boost::bind(&Node::shutdown, node_));
+}
+
 /**
  * After the delay, async_wait calls this to call the original caller's callback.
  * @param errorCode The error code from async_wait.

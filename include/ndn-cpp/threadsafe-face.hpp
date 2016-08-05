@@ -212,6 +212,13 @@ public:
   send(const uint8_t *encoding, size_t encodingLength);
 
   /**
+   * Override to use the ioService given to the constructor to dispatch shutdown
+   * to be called in a thread-safe manner. See Face.shutdown for calling details.
+   */
+  virtual void
+  shutdown();
+
+  /**
    * Override to call callback() after the given delay, using a
    * basic_deadline_timer with the ioService given to the constructor. Even
    * though this is public, it is not part of the public API of Face.

@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-07-20)
+Interim changes since NDN-CPP v0.10 (2016-08-05)
 ------------------------------------------------
 
 Changes
@@ -15,6 +15,7 @@ Changes
   to encode/decode and generate RSA and EC public/private keys.
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
 * In ProtobufTlv, added utility method toName.
+* In ThreadsafeFace, make shutdown dispatch to the ioService thread.
 * Examples: In test-encode-decode-fib-entry, etc, use ProtobufTlv.toName.
 * Unit tests: In test-name-methods, added ImplicitSha256Digest.
 * Unit tests: In test-interest-methods, added MatchesData.
