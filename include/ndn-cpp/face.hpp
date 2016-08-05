@@ -661,7 +661,7 @@ public:
   /**
    * Shut down and disconnect this Face.
    */
-  void
+  virtual void
   shutdown();
 
   /**
