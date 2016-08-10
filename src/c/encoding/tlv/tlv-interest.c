@@ -25,7 +25,7 @@
 #include "tlv-interest.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Exclude value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Exclude value.
  * @param context This is the ndn_Exclude struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
@@ -57,7 +57,7 @@ encodeExcludeValue(const void *context, struct ndn_TlvEncoder *encoder)
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Selectors value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Selectors value.
  * @param context This is the ndn_Interest struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
@@ -107,7 +107,7 @@ struct InterestValueContext {
 };
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Interest value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Interest value.
  * @param context This is the InterestValueContext struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.

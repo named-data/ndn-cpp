@@ -162,7 +162,7 @@ private:
 
   private:
     /**
-     * This private function is called by ndn_TlvEncoder_writeTlv to write the
+     * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the
      * TLVs in the body of a next TLV.
      * @param context A pointer to this WriteValueWrapper which was passed to
      * writeTlv.

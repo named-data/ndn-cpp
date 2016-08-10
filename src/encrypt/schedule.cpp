@@ -172,7 +172,7 @@ Schedule::sortedSetAdd
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the RepetitiveInterval value.
  * @param context This is the RepetitiveInterval pointer which was passed to
  * writeTlv.
@@ -224,7 +224,7 @@ Schedule::encodeRepetitiveIntervalValue
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the RepetitiveInterval list value, such as
  * WhiteIntervalList.
  * @param context This is the vector<ptr_lib::shared_ptr<RepetitiveInterval> >
@@ -251,7 +251,7 @@ Schedule::encodeRepetitiveIntervalListValue
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the Schedule value.
  * @param context This is the Schedule pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.

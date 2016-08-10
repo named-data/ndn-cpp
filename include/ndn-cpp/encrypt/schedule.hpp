@@ -160,7 +160,7 @@ private:
      const ptr_lib::shared_ptr<RepetitiveInterval>& element);
 
   /**
-   * This is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of
+   * This is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of
    * the RepetitiveInterval value.
    * @param context This is the RepetitiveInterval pointer which was passed to
    * writeTlv.
@@ -171,7 +171,7 @@ private:
   encodeRepetitiveIntervalValue(const void *context, ndn_TlvEncoder *encoder);
 
   /**
-   * This is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of
+   * This is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of
    * the RepetitiveInterval list value, such as WhiteIntervalList.
    * @param context This is the vector<ptr_lib::shared_ptr<RepetitiveInterval> >
    * pointer which was passed to writeTlv.
@@ -182,7 +182,7 @@ private:
   encodeRepetitiveIntervalListValue(const void *context, ndn_TlvEncoder *encoder);
 
   /**
-   * This is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of
+   * This is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of
    * the Schedule value.
    * @param context This is the Schedule pointer which was passed to writeTlv.
    * @param encoder the ndn_TlvEncoder which is calling this.

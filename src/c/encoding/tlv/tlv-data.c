@@ -24,7 +24,7 @@
 #include "tlv-data.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the MetaInfo value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the MetaInfo value.
  * @param context This is the ndn_MetaInfo struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
@@ -83,7 +83,7 @@ struct DataValueContext {
 };
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Data value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Data value.
  * @param context This is the DataValueContext struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
