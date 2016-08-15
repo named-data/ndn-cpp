@@ -80,9 +80,10 @@ encodeSelectorsValue(const void *context, struct ndn_TlvEncoder *encoder)
         &interest->keyLocator, 1)))
     return error;
 
-  if (interest->exclude.nEntries > 0)
+  if (interest->exclude.nEntries > 0) {
     if ((error = ndn_TlvEncoder_writeNestedTlv(encoder, ndn_Tlv_Exclude, encodeExcludeValue, &interest->exclude, 0)))
       return error;
+  }
 
   if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlv
       (encoder, ndn_Tlv_ChildSelector, interest->childSelector)))
