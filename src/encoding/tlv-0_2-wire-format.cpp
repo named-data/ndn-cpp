@@ -27,6 +27,7 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/hmac-with-sha256-signature.hpp>
 #include <ndn-cpp/generic-signature.hpp>
 #include <ndn-cpp/delegation-set.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
@@ -302,6 +303,8 @@ Tlv0_2WireFormat::decodeSignatureInfoAndValue
     result.reset(new Sha256WithRsaSignature());
   else if (signatureLite.getType() == ndn_SignatureType_Sha256WithEcdsaSignature)
     result.reset(new Sha256WithEcdsaSignature());
+  else if (signatureLite.getType() == ndn_SignatureType_HmacWithSha256Signature)
+    result.reset(new HmacWithSha256Signature());
   else if (signatureLite.getType() == ndn_SignatureType_DigestSha256Signature)
     result.reset(new DigestSha256Signature());
   else if (signatureLite.getType() == ndn_SignatureType_Generic)
