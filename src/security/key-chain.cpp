@@ -189,6 +189,34 @@ KeyChain::signWithHmacWithSha256
   data.wireEncode(wireFormat);
 }
 
+void
+KeyChain::signWithHmacWithSha256
+  (Interest& interest, const Blob& key, const Name& keyName,
+   WireFormat& wireFormat)
+{
+  HmacWithSha256Signature signature;
+  signature.getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
+  signature.getKeyLocator().setKeyName(keyName);
+
+  // Append the encoded SignatureInfo.
+  interest.getName().append(wireFormat.encodeSignatureInfo(signature));
+  // Append an empty signature so that the "signedPortion" is correct.
+  interest.getName().append(Name::Component());
+
+  // Encode once to get the signed portion and sign.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+
+  ptr_lib::shared_ptr<vector<uint8_t>> signatureBits
+    (new vector<uint8_t>(ndn_SHA256_DIGEST_SIZE));
+  CryptoLite::computeHmacWithSha256
+    (key, encoding.getSignedPortionBlobLite(), &signatureBits->front());
+  signature.setSignature(Blob(signatureBits, false));
+
+  // Remove the empty signature and append the real one.
+  interest.setName(interest.getName().getPrefix(-1).append
+    (wireFormat.encodeSignatureValue(signature)));
+}
+
 bool
 KeyChain::verifyDataWithHmacWithSha256
   (const Data& data, const Blob& key, WireFormat& wireFormat)
@@ -202,6 +230,27 @@ KeyChain::verifyDataWithHmacWithSha256
 
   // Use the vector equals operator.
   return newSignatureBits == *data.getSignature()->getSignature();
+}
+
+bool
+KeyChain::verifyInterestWithHmacWithSha256
+  (const Interest& interest, const Blob& key, WireFormat& wireFormat)
+{
+  // Decode the last two name components of the signed interest.
+  ptr_lib::shared_ptr<Signature> signature =
+    wireFormat.decodeSignatureInfoAndValue
+      (interest.getName().get(-2).getValue(),
+       interest.getName().get(-1).getValue());
+
+  // wireEncode returns the cached encoding if available.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+
+  vector<uint8_t> newSignatureBits(ndn_SHA256_DIGEST_SIZE);
+  CryptoLite::computeHmacWithSha256
+    (key, encoding.getSignedPortionBlobLite(), &newSignatureBits.front());
+
+  // Use the vector equals operator.
+  return newSignatureBits == *signature->getSignature();
 }
 #endif
 
