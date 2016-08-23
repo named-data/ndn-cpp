@@ -58,6 +58,18 @@ ExcludeLite::appendComponent(const uint8_t* component, size_t componentLength)
   return ndn_Exclude_appendComponent(this, component, componentLength);
 }
 
+ndn_Error
+ExcludeLite::appendComponent(const NameLite::Component& component)
+{
+  ndn_Error error;
+  if ((error = ndn_Exclude_appendComponent(this, 0, 0)))
+    return error;
+
+  ndn_NameComponent_setFromNameComponent
+    (&entries[nEntries - 1].component, &component);
+  return NDN_ERROR_success;
+}
+
 void
 ExcludeLite::clear() { ndn_Exclude_clear(this); }
 

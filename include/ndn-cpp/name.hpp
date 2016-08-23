@@ -112,6 +112,18 @@ public:
     }
 
     /**
+     * Create a new Name::Component, copying bytes from the
+     * NameLite::Component value and using its type.
+     * @param componentLite A NameLite::Component with the values to copy.
+     */
+    Component(const NameLite::Component &componentLite)
+    : type_(componentLite.isImplicitSha256Digest() ?
+        ndn_NameComponentType_IMPLICIT_SHA256_DIGEST : ndn_NameComponentType_GENERIC),
+      value_(componentLite.getValue())
+    {
+    }
+
+    /**
      * Set componentLite to point to this component, without copying any memory.
      * WARNING: The resulting pointer in componentLite is invalid after a
      * further use of this object which could reallocate memory.

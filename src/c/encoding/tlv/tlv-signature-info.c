@@ -22,7 +22,7 @@
 #include "tlv-signature-info.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of a signature value which has a KeyLocator, e.g.
  * SignatureSha256WithRsa.
  * @param context This is the ndn_Signature struct pointer which was passed to
@@ -50,7 +50,7 @@ encodeSignatureWithKeyLocatorValue
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the DigestSha256 value.
  * @param context This is the ndn_Signature struct pointer which was passed to writeTlv.
  * (It is ignored.)

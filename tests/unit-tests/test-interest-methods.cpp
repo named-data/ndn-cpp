@@ -226,6 +226,22 @@ TEST_F(TestInterestDump, Redecode)
   ASSERT_EQ(initialDump, redecodedDump) << "Re-decoded interest does not match original";
 }
 
+TEST_F(TestInterestDump, RedecodeImplicitDigestExclude)
+{
+  // Check that we encode and decode correctly with an implicit digest exclude.
+  Interest interest(Name("/A"));
+  interest.getExclude().appendComponent(Name("/sha256digest="
+    "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f").get(0));
+  vector<string> dump = dumpInterest(interest);
+
+  Blob encoding = interest.wireEncode();
+  Interest reDecodedInterest;
+  reDecodedInterest.wireDecode(encoding);
+  vector<string> redecodedDump = dumpInterest(reDecodedInterest);
+  ASSERT_TRUE(interestDumpsEqual(dump, redecodedDump)) <<
+    "Re-decoded interest does not match original";
+}
+
 TEST_F(TestInterestDump, CreateFresh)
 {
   Interest freshInterest = createFreshInterest();
@@ -416,6 +432,11 @@ TEST_F(TestInterestMethods, MatchesData)
     (Name("/A/B/%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"
           "%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00"));
   ASSERT_EQ(false, interest7b.matchesData(data7));
+
+  // Check excluding the implicit digest.
+  Interest interest8(Name("/A/B"));
+  interest8.getExclude().appendComponent(interest7.getName().get(2));
+  ASSERT_EQ(false, interest8.matchesData(data7));
 }
 
 TEST_F(TestInterestMethods, InterestFilterMatching)

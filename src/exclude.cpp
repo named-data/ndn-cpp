@@ -34,8 +34,9 @@ Exclude::get(ExcludeLite& excludeLite) const
   for (size_t i = 0; i < entries_.size(); ++i) {
     ndn_Error error;
     if (entries_[i].getType() == ndn_Exclude_COMPONENT) {
-      if ((error = excludeLite.appendComponent
-           (NameLite::Component(entries_[i].getComponent().getValue()))))
+      NameLite::Component component;
+      entries_[i].getComponent().get(component);
+      if ((error = excludeLite.appendComponent(component)))
         throw runtime_error(ndn_getErrorString(error));
     }
     else {
@@ -53,7 +54,7 @@ Exclude::set(const ExcludeLite& excludeLite)
     const ExcludeLite::Entry& entry = excludeLite.get(i);
 
     if (entry.getType() == ndn_Exclude_COMPONENT)
-      appendComponent(Name::Component(entry.getComponent().getValue()));
+      appendComponent(Name::Component(entry.getComponent()));
     else if (entry.getType() == ndn_Exclude_ANY)
       appendAny();
     else

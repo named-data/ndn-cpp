@@ -53,8 +53,7 @@ int main(int argc, char** argv)
 
     cout << "Re-decoded FibEntry:" << endl;
     // This should print the same values that we put in message above.
-    for (int i = 0; i < decodedMessage.fib_entry().name().component_size(); ++i)
-      cout << "/" << decodedMessage.fib_entry().name().component(i);
+    cout << ProtobufTlv::toName(decodedMessage.fib_entry().name()).toUri();
     cout << " nexthops = {";
     for (int i = 0; i < decodedMessage.fib_entry().next_hop_records_size(); ++i)
       cout << "faceid=" << decodedMessage.fib_entry().next_hop_records(i).face_id()

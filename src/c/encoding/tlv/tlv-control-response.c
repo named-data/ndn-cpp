@@ -22,7 +22,7 @@
 #include "tlv-control-response.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the ControlResponse value.
  * @param context This is the ndn_ControlResponse struct pointer which
  * was passed to writeTlv.

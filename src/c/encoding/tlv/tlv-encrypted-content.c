@@ -22,7 +22,7 @@
 #include "tlv-encrypted-content.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs
  * in the body of the EncryptedContent value.
  * @param context This is the ndn_EncryptedContent struct pointer which was
  * passed to writeTlv.

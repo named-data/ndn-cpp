@@ -29,6 +29,8 @@
 using namespace std;
 using namespace ndn::func_lib;
 
+INIT_LOGGER("ndn.Producer");
+
 namespace ndn {
 
 void

@@ -20,7 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/encrypt/algo/encrypt-params.hpp>
 
 using namespace std;
@@ -35,7 +35,10 @@ EncryptParams::EncryptParams
   if (initialVectorLength > 0) {
     ptr_lib::shared_ptr<vector<uint8_t> > initialVector
       (new vector<uint8_t>(initialVectorLength));
-    ndn_generateRandomBytes(&initialVector->front(), initialVector->size());
+    ndn_Error error;
+    if ((error = CryptoLite::generateRandomBytes
+         (&initialVector->front(), initialVector->size())))
+      throw runtime_error(ndn_getErrorString(error));
     initialVector_ = Blob(initialVector, false);
   }
 }

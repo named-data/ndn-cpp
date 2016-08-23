@@ -26,7 +26,7 @@
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
-#include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "../../c/util/ndn_memory.h"
 #include <ndn-cpp/encrypt/algo/encryptor.hpp>
 
@@ -132,7 +132,10 @@ Encryptor::encryptData
 
     // 128-bit nonce.
     ptr_lib::shared_ptr<vector<uint8_t> > nonceKeyBuffer(new vector<uint8_t>(16));
-    ndn_generateRandomBytes(&nonceKeyBuffer->front(), nonceKeyBuffer->size());
+    ndn_Error error;
+    if ((error = CryptoLite::generateRandomBytes
+         (&nonceKeyBuffer->front(), nonceKeyBuffer->size())))
+      throw runtime_error(ndn_getErrorString(error));
     Blob nonceKey(nonceKeyBuffer, false);
 
     Name nonceKeyName(keyName);

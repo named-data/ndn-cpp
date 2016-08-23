@@ -30,10 +30,10 @@ CryptoLite::digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest
   ndn_digestSha256(data, dataLength, digest);
 }
 
-void
+ndn_Error
 CryptoLite::generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
-  ndn_generateRandomBytes(buffer, bufferLength);
+  return ndn_generateRandomBytes(buffer, bufferLength);
 }
 
 void
@@ -58,35 +58,6 @@ CryptoLite::verifyDigestSha256Signature
 #ifdef ARDUINO
 // Put the ARDUINO implementations in this C++ file, not in crypto.c.
 
-#if defined(NDN_CPP_WITH_ARDUINOLIBS) && NDN_CPP_WITH_ARDUINOLIBS
-
-#include "../../../contrib/arduinolibs/libraries/Crypto/Crypto.h"
-#include "../../../contrib/arduinolibs/libraries/Crypto/SHA256.h"
-
-static SHA256 Sha256;
-
-void
-ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
-{
-  // The Arduino is single-threaded, so use the global Sha256 object.
-  Sha256.reset();
-  Sha256.update(data, dataLength);
-  Sha256.finalize(digest, ndn_SHA256_DIGEST_SIZE);
-}
-
-void
-ndn_computeHmacWithSha256
-  (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
-   uint8_t *digest)
-{
-  // The Arduino is single-threaded, so use the global Sha256 object.
-  Sha256.resetHMAC(key, keyLength);
-  Sha256.update(data, dataLength);
-  Sha256.finalizeHMAC(key, keyLength, digest, ndn_SHA256_DIGEST_SIZE);
-}
-
-#else // NDN_CPP_WITH_ARDUINOLIBS
-
 #include "../../../contrib/cryptosuite/sha256.h"
 
 void
@@ -110,7 +81,5 @@ ndn_computeHmacWithSha256
     Sha256.write(data[i]);
   memcpy(digest, Sha256.resultHmac(), ndn_SHA256_DIGEST_SIZE);
 }
-
-#endif // NDN_CPP_WITH_ARDUINOLIBS
 
 #endif // ARDUINO

@@ -24,7 +24,7 @@
 #include "tlv-data.h"
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the MetaInfo value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the MetaInfo value.
  * @param context This is the ndn_MetaInfo struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
@@ -64,10 +64,9 @@ encodeMetaInfoValue(const void *context, struct ndn_TlvEncoder *encoder)
     // The FinalBlockId has an inner NameComponent.
     if ((error = ndn_TlvEncoder_writeTypeAndLength
          (encoder, ndn_Tlv_FinalBlockId, ndn_TlvEncoder_sizeOfBlobTlv
-            (ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value))))
+            (metaInfo->finalBlockId.type, &metaInfo->finalBlockId.value))))
       return error;
-    if ((error = ndn_TlvEncoder_writeBlobTlv
-         (encoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
+    if ((error = ndn_encodeTlvNameComponent(&metaInfo->finalBlockId, encoder)))
       return error;
   }
 
@@ -84,7 +83,7 @@ struct DataValueContext {
 };
 
 /**
- * This private function is called by ndn_TlvEncoder_writeTlv to write the TLVs in the body of the Data value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Data value.
  * @param context This is the DataValueContext struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
@@ -171,8 +170,7 @@ decodeMetaInfo(struct ndn_MetaInfo *metaInfo, struct ndn_TlvDecoder *decoder)
     if ((error = ndn_TlvDecoder_readNestedTlvsStart
          (decoder, ndn_Tlv_FinalBlockId, &finalBlockIdEndOffset)))
       return error;
-    if ((error = ndn_TlvDecoder_readBlobTlv
-         (decoder, ndn_Tlv_NameComponent, &metaInfo->finalBlockId.value)))
+    if ((error = ndn_decodeTlvNameComponent(&metaInfo->finalBlockId, decoder)))
       return error;
     if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, finalBlockIdEndOffset)))
       return error;

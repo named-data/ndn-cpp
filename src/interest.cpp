@@ -22,7 +22,7 @@
 #include <math.h>
 #include <stdexcept>
 #include <ndn-cpp/common.hpp>
-#include "c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "lp/incoming-face-id.hpp"
 #include <ndn-cpp/data.hpp>
 #include <ndn-cpp/interest.hpp>
@@ -336,7 +336,10 @@ Interest::refreshNonce()
   ptr_lib::shared_ptr<vector<uint8_t> > newNonce
     (new vector<uint8_t>(currentNonce.size()));
   while (true) {
-    ndn_generateRandomBytes(&newNonce->front(), newNonce->size());
+    ndn_Error error;
+    if ((error = CryptoLite::generateRandomBytes
+         (&newNonce->front(), newNonce->size())))
+      throw runtime_error(ndn_getErrorString(error));
     // Use the vector equals operator.
     if (*newNonce != *currentNonce)
       break;

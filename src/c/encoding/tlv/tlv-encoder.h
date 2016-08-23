@@ -199,6 +199,7 @@ ndn_TlvEncoder_writeNonNegativeInteger(struct ndn_TlvEncoder *self, uint64_t val
 
 /**
  * Return the number of bytes to encode the type, length and blob value.
+ * @param type the type of the TLV.
  * @param value A Blob with the array of bytes for the value.
  * @return The number of bytes to encode the TLV.
  */
@@ -278,7 +279,7 @@ ndn_TlvEncoder_writeBlobTlv
 
 /**
  * If value or valueLen is 0 then do nothing, otherwise call
- * ndn_TlvEncoder_writeOptionalBlobTlv.
+ * ndn_TlvEncoder_writeBlobTlv.
  * @param self A pointer to the ndn_TlvEncoder struct.
  * @param type the type of the TLV.
  * @param value A Blob with the array of bytes for the value.

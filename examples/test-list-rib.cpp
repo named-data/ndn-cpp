@@ -94,8 +94,7 @@ printRibEntries(const Blob& encodedMessage, bool* enabled)
 
     // Show the name.
     cout << "  ";
-    for (int i = 0; i < ribEntry.name().component_size(); ++i)
-      cout << "/" << ribEntry.name().component(i);
+    cout << ProtobufTlv::toName(ribEntry.name()).toUri();
 
     // Show the routes.
     for (int iRoute = 0; iRoute < ribEntry.routes_size(); ++iRoute) {

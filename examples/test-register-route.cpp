@@ -286,11 +286,8 @@ processRegisterResponse
   // Success. Print the ControlParameters response.
   const ndn_message::ControlParametersTypes_ControlParameters& controlParameters =
     controlResponse.control_parameters(0);
-  string name = "";
-  for (size_t i = 0; i < controlParameters.name().component_size(); ++i)
-    name += "/" + controlParameters.name().component(i);
-
-  cout << "Successful in name registration: ControlParameters(Name: " << name <<
+  cout << "Successful in name registration: ControlParameters(Name: " <<
+     ProtobufTlv::toName(controlParameters.name()).toUri() <<
      ", FaceId: " << controlParameters.face_id() <<
      ", Origin: " << controlParameters.origin() <<
      ", Cost: " << controlParameters.cost() <<

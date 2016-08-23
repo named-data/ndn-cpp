@@ -23,6 +23,7 @@
 #define NDN_PROTOBUF_TLV_HPP
 
 #include <ndn-cpp/util/blob.hpp>
+#include <ndn-cpp/name.hpp>
 
 namespace google { namespace protobuf { class Message; } }
 
@@ -89,6 +90,20 @@ public:
   {
     decode(message, input.buf(), input.size());
   }
+
+  /**
+   * Return a Name made from the component array in a Protobuf message object,
+   * assuming that it was defined with "repeated bytes". For example:
+   * message Name {
+   *   repeated bytes component = 8;
+   * }
+   * (See the test-encode-decode-fib-entry example.)
+   * @param nameMessage The Protobuf message object containing the "repeated
+   * bytes" component array.
+   * @return A new name.
+   */
+  static Name
+  toName(const google::protobuf::Message& nameMessage);
 };
 
 }

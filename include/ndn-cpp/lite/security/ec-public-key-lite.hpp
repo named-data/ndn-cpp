@@ -158,7 +158,7 @@ public:
   static const EcPublicKeyLite&
   downCast(const ndn_EcPublicKey& blob) { return *(EcPublicKeyLite*)&blob; }
 
-public:
+private:
   // Don't allow copying since we don't reference count the allocated value.
   EcPublicKeyLite(const EcPublicKeyLite& other);
   EcPublicKeyLite& operator=(const EcPublicKeyLite& other);

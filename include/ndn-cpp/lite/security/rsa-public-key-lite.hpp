@@ -199,7 +199,7 @@ public:
   static const RsaPublicKeyLite&
   downCast(const ndn_RsaPublicKey& blob) { return *(RsaPublicKeyLite*)&blob; }
 
-public:
+private:
   // Don't allow copying since we don't reference count the allocated value.
   RsaPublicKeyLite(const RsaPublicKeyLite& other);
   RsaPublicKeyLite& operator=(const RsaPublicKeyLite& other);
