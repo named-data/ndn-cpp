@@ -23,6 +23,7 @@
 #define NDN_EC_PRIVATE_KEY_LITE_HPP
 
 #include "../util/blob-lite.hpp"
+#include "../../c/errors.h"
 #include "../../c/security/ec-private-key-types.h"
 
 namespace ndn {
