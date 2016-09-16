@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-08-05)
+Interim changes since NDN-CPP v0.10 (2016-09-16)
 ------------------------------------------------
 
 Changes
@@ -23,6 +23,7 @@ Changes
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
+* In AsyncSocketTransport, check for a closed socket before calling readHandler again. (Thanks, Peter!)
 
 NDN-CPP v0.10 (2016-05-06)
 --------------------------
