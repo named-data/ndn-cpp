@@ -81,7 +81,7 @@ NdnRegexMatcher::sanitizeSets(const string& pattern)
   if (newPattern.find("[^") != string::npos) {
     // Use regex_replace since std::string does have "replace all".
     newPattern = regex_replace(newPattern, regex("\\[\\^"), "(?:(?!");
-    newPattern = regex_replace(newPattern, regex("\\]"), ")(?:/.*)*)");
+    newPattern = regex_replace(newPattern, regex("\\]"), ")(?:/[^/]*)*)");
   }
   else {
     newPattern = regex_replace(newPattern, regex("\\["), "(");

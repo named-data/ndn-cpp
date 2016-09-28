@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-09-16)
+Interim changes since NDN-CPP v0.10 (2016-09-28)
 ------------------------------------------------
 
 Changes
@@ -24,6 +24,7 @@ Changes
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
+* https://redmine.named-data.net/issues/3792 NdnRegexMatcher can exceed regex complexity.
 * In AsyncSocketTransport, check for a closed socket before calling readHandler again. (Thanks, Peter!)
 
 NDN-CPP v0.10 (2016-05-06)
