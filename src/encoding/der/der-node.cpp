@@ -236,8 +236,9 @@ DerNode::DerStructure::decode(const uint8_t* inputBuf, size_t startIdx)
   size_t accSize = 0;
   while (accSize < size_) {
     ptr_lib::shared_ptr<DerNode> node = DerNode::parse(inputBuf, idx);
-    idx += node->getSize();
-    accSize += node->getSize();
+    size_t size = node->getSize();
+    idx += size;
+    accSize += size;
     addChild(node, false);
   }
 }
