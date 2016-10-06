@@ -523,6 +523,23 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
+   * Append a SignatureInfo to the Interest name, compute an HmacWithSha256
+   * signature for the name components and append a final name component with
+   * the signature bits.
+   * @param interest The Interest object to be signed. This appends name
+   * components of SignatureInfo and the signature bits.
+   * @param key The key for the HmacWithSha256.
+   * @param keyName The name of the key for the KeyLocator in the SignatureInfo.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @note This method is an experimental feature. The API may change.
+   */
+  static void
+  signWithHmacWithSha256
+    (Interest& interest, const Blob& key, const Name& keyName,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Compute a new HmacWithSha256 for the data packet and verify it against
    * the signature value.
    * @param data The Data object to verify.
@@ -535,6 +552,21 @@ public:
   static bool
   verifyDataWithHmacWithSha256
     (const Data& data, const Blob& key,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Compute a new HmacWithSha256 for all but the final name component and
+   * verify it against the signature value in the final name component.
+   * @param interest The Interest object to signed name to verify.
+   * @param key The key for the HmacWithSha256.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @return True if the signature verifies, otherwise false.
+   * @note This method is an experimental feature. The API may change.
+   */
+  static bool
+  verifyInterestWithHmacWithSha256
+    (const Interest& interest, const Blob& key,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   static const RsaKeyParams DEFAULT_KEY_PARAMS;

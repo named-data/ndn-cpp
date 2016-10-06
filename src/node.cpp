@@ -365,7 +365,7 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
         }
       }
 
-      // We have process the network Nack packet.
+      // We have processed the network Nack packet.
       return;
     }
   }

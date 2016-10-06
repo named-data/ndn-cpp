@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-08-05)
+Interim changes since NDN-CPP v0.10 (2016-09-28)
 ------------------------------------------------
 
 Changes
@@ -16,6 +16,7 @@ Changes
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
 * In ProtobufTlv, added utility method toName.
 * In ThreadsafeFace, make shutdown dispatch to the ioService thread.
+* INSTALL: Added macOS 10.12.
 * Examples: In test-encode-decode-fib-entry, etc, use ProtobufTlv.toName.
 * Unit tests: In test-name-methods, added ImplicitSha256Digest.
 * Unit tests: In test-interest-methods, added MatchesData.
@@ -23,6 +24,8 @@ Changes
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.
+* https://redmine.named-data.net/issues/3792 NdnRegexMatcher can exceed regex complexity.
+* In AsyncSocketTransport, check for a closed socket before calling readHandler again. (Thanks, Peter!)
 
 NDN-CPP v0.10 (2016-05-06)
 --------------------------

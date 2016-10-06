@@ -104,6 +104,23 @@ TEST_F(TestAesAlgorithm, EncryptionDecryption)
   ASSERT_TRUE(receivedBlob.equals(plainBlob));
 }
 
+TEST_F(TestAesAlgorithm, KeyGeneration)
+{
+  AesKeyParams keyParams(128);
+  DecryptKey decryptKey = AesAlgorithm::generateKey(keyParams);
+  EncryptKey encryptKey = AesAlgorithm::deriveEncryptKey(decryptKey.getKeyBits());
+
+  Blob plainBlob(PLAINTEXT, sizeof(PLAINTEXT));
+
+  // Encrypt/decrypt data in AES_CBC with auto-generated IV.
+  EncryptParams encryptParams(ndn_EncryptAlgorithmType_AesCbc, 16);
+  Blob cipherBlob = AesAlgorithm::encrypt
+    (encryptKey.getKeyBits(), plainBlob, encryptParams);
+  Blob receivedBlob = AesAlgorithm::decrypt
+    (decryptKey.getKeyBits(), cipherBlob, encryptParams);
+  ASSERT_TRUE(receivedBlob.equals(plainBlob));
+}
+
 int
 main(int argc, char **argv)
 {

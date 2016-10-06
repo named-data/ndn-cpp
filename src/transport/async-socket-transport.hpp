@@ -169,9 +169,10 @@ private:
       throw std::runtime_error(ndn_getErrorString(error));
 
     // Request another async receive to loop back to here.
-    socket_->async_receive
-      (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
-       boost::bind(&AsyncSocketTransport::readHandler, this, _1, _2));
+    if (socket_->is_open())
+      socket_->async_receive
+        (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
+         boost::bind(&AsyncSocketTransport::readHandler, this, _1, _2));
   }
 
   boost::asio::io_service& ioService_;

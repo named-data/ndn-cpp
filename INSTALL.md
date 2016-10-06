@@ -39,7 +39,7 @@ In a new terminal, enter:
 
     sudo port install boost
 
-## OS X 10.11
+## OS X 10.11, macOS 10.12
 Install Xcode.
 install MacPorts from http://www.macports.org/install.php .
 In a new terminal, enter:

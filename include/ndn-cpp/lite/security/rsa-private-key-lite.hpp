@@ -23,6 +23,7 @@
 #define NDN_RSA_PRIVATE_KEY_LITE_HPP
 
 #include "../util/blob-lite.hpp"
+#include "../../c/errors.h"
 #include "../../c/encrypt/algo/encrypt-params-types.h"
 #include "../../c/security/rsa-private-key-types.h"
 
