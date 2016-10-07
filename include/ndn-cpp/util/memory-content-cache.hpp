@@ -133,7 +133,7 @@ public:
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
-   * OnInterest(), this does not use it. This copies the function object, so you
+   * OnInterestCallback(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
@@ -176,7 +176,7 @@ public:
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
-   * OnInterest(), this does not use it. This copies the function object, so you
+   * OnInterestCallback(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
    * @param flags (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
@@ -190,11 +190,9 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
-    // TODO: After we remove the registerPrefix with the deprecated OnInterest,
-    // we can remove the explicit cast to OnInterestCallback (needed for boost).
     uint64_t registeredPrefixId = face_->registerPrefix
-      (prefix, (const OnInterestCallback&)func_lib::ref(*this), onRegisterFailed,
-       onRegisterSuccess, flags, wireFormat);
+      (prefix, func_lib::ref(*this), onRegisterFailed, onRegisterSuccess, flags,
+       wireFormat);
     // Remember the registeredPrefixId so unregisterAll can remove it.
     registeredPrefixIdList_.push_back(registeredPrefixId);
   }
@@ -215,7 +213,7 @@ public:
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
-   * OnInterest(), this does not use it. This copies the function object, so you
+   * OnInterestCallback(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
@@ -247,7 +245,7 @@ public:
    * interest in this object to be satisfied by a later call to add(data). If
    * you want to automatically store all pending interests, you can simply use
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
-   * OnInterest(), this does not use it. This copies the function object, so you
+   * OnInterestCallback(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any

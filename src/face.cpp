@@ -158,33 +158,6 @@ Face::registerPrefix
   return registeredPrefixId;
 }
 
-uint64_t
-Face::registerPrefix
-  (const Name& prefix, const OnInterest& onInterest,
-   const OnRegisterFailed& onRegisterFailed,
-   const ForwardingFlags& flags, WireFormat& wireFormat)
-{
-  // Wrap the deprecated OnInterest in an OnInterestCallback.
-  // TODO: After we remove the registerPrefix with the deprecated OnInterest,
-  // we can remove the explicit cast to OnInterestCallback (needed for boost).
-  return registerPrefix
-    (prefix,
-     (const OnInterestCallback&)bind(&Face::onInterestWrapper, _1, _2, _3, _4, _5, onInterest),
-     onRegisterFailed, OnRegisterSuccess(), flags, wireFormat);
-}
-
-void
-Face::onInterestWrapper
-  (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
-   uint64_t interestFilterId,
-   const ptr_lib::shared_ptr<const InterestFilter>& filter,
-   const OnInterest callerOnInterest)
-{
-  callerOnInterest
-    (prefix, interest, *face.node_->getTransport(), interestFilterId);
-}
-
 void
 Face::removeRegisteredPrefix(uint64_t registeredPrefixId)
 {
