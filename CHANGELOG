@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-09-28)
+Interim changes since NDN-CPP v0.10 (2016-10-07)
 ------------------------------------------------
 
 Changes
@@ -13,6 +13,8 @@ Changes
   in Interest added matchesData to use it.
 * NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
   to encode/decode and generate RSA and EC public/private keys.
+* In Face, removed the deprecated registerPrefix where onInterest is type OnInterest. Use the
+  registerPrefix where onInterest is OnInterestCallback so you can call face.putData().
 * In FilePrivateKeyStorage::generateKeyPair, update mapping.txt for the generated key.
 * In ProtobufTlv, added utility method toName.
 * In ThreadsafeFace, make shutdown dispatch to the ioService thread.

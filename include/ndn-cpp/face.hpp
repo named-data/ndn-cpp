@@ -55,12 +55,6 @@ typedef func_lib::function<void
    const ptr_lib::shared_ptr<NetworkNack>& networkNack)> OnNetworkNack;
 
 /**
- * @deprecated Use OnInterestCallback.
- */
-typedef func_lib::function<void
-  (const ptr_lib::shared_ptr<const Name>&, const ptr_lib::shared_ptr<const Interest>&, Transport&, uint64_t)> OnInterest;
-
-/**
  * An OnInterestCallback function object is used to pass a callback to
  * setInterestFilter and optionally to registerPrefix.
  */
@@ -527,18 +521,6 @@ public:
   }
 
   /**
-   * @deprecated Use registerPrefix where onInterest is an OnInterestCallback
-   * (which is passed this Face for calling putData) instead of the deprecated
-   * OnInterest (which is passed a Transport object).
-   */
-  uint64_t
-  DEPRECATED_IN_NDN_CPP registerPrefix
-    (const Name& prefix, const OnInterest& onInterest,
-     const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags = ForwardingFlags(),
-     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
-
-  /**
    * Remove the registered prefix entry with the registeredPrefixId from the
    * registered prefix table. This does not affect another registered prefix
    * with a different registeredPrefixId, even if it has the same prefix name.
@@ -724,19 +706,6 @@ protected:
   Name commandCertificateName_;
 
 private:
-  /**
-   * Call callerOnInterest with the values and node_->getTransport().
-   * This is a wrapper to support the deprecated registerPrefix which takes an
-   * OnInterest callback instead of OnInterestCallback.
-   */
-  static void
-  onInterestWrapper
-    (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
-     uint64_t interestFilterId,
-     const ptr_lib::shared_ptr<const InterestFilter>& filter,
-     const OnInterest callerOnInterest);
-
   static ptr_lib::shared_ptr<Transport>
   getDefaultTransport();
 
