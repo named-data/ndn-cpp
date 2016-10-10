@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-10-07)
+Interim changes since NDN-CPP v0.10 (2016-10-10)
 ------------------------------------------------
 
 Changes
@@ -11,6 +11,7 @@ Changes
   Name::appendImplicitSha256Digest.
 * https://redmine.named-data.net/issues/3447 In Data, added getFullName, and
   in Interest added matchesData to use it.
+* In SegmentFetcher::fetch, allow a validatorKeyChain for asynchronous Data validation.
 * NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
   to encode/decode and generate RSA and EC public/private keys.
 * In Face, removed the deprecated registerPrefix where onInterest is type OnInterest. Use the
