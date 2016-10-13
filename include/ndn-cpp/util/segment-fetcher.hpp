@@ -67,7 +67,7 @@ namespace ndn {
  * - `DATA_HAS_NO_SEGMENT`: if any of the retrieved Data packets don't have a segment
  *   as the last component of the name (not counting the implicit digest)
  * - `SEGMENT_VERIFICATION_FAILED`: if any retrieved segment fails
- *   the user-provided VerifySegment callback
+ *   the user-provided VerifySegment callback or KeyChain verifyData.
  *
  * In order to validate individual segments, a KeyChain needs to be supplied.
  * If verifyData fails, the fetching process is aborted with
