@@ -58,8 +58,7 @@ int main(int argc, char** argv)
 
     bool enabled = true;
     SegmentFetcher::fetch
-      (face, interest, SegmentFetcher::DontVerifySegment,
-       bind(&printRibEntries, _1, &enabled),
+      (face, interest, 0, bind(&printRibEntries, _1, &enabled),
        bind(&onError, _1, _2, &enabled));
 
     // Loop calling processEvents until a callback sets enabled = false.
