@@ -103,10 +103,10 @@ SegmentFetcher::onSegmentReceived
     validatorKeyChain_->verifyData
       (data,
        bind(&SegmentFetcher::onVerified, shared_from_this(), _1, originalInterest),
-       bind(&SegmentFetcher::onVerifyFailed, shared_from_this(), _1));
+       bind(&SegmentFetcher::onValidationFailed, shared_from_this(), _1, _2));
   else {
     if (!verifySegment_(data)) {
-      onVerifyFailed(data);
+      onValidationFailed(data, "verifySegment returned false");
       return;
     }
 
@@ -215,10 +215,14 @@ SegmentFetcher::onVerified
 }
 
 void
-SegmentFetcher::onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+SegmentFetcher::onValidationFailed
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason)
 {
   try {
-    onError_(SEGMENT_VERIFICATION_FAILED, "Segment verification failed");
+    onError_
+      (SEGMENT_VERIFICATION_FAILED,
+       "Segment verification failed for " + data->getName().toUri() +
+       " . Reason: " + reason);
   } catch (const std::exception& ex) {
     _LOG_ERROR("SegmentFetcher::onSegmentReceived: Error in onError: " << ex.what());
   } catch (...) {

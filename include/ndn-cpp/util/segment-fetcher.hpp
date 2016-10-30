@@ -203,7 +203,8 @@ private:
      const ptr_lib::shared_ptr<const Interest>& originalInterest);
 
   void
-  onVerifyFailed(const ptr_lib::shared_ptr<Data>& data);
+  onValidationFailed
+    (const ptr_lib::shared_ptr<Data>& data, const std::string& reason);
 
   void
   onTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
