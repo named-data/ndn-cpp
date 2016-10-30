@@ -168,8 +168,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls
-   * onVerifyFailed(data).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -179,7 +179,8 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount,
-     const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+     const OnVerified& onVerified, 
+     const OnDataValidationFailed& onValidationFailed);
 
   /**
    * Check whether the received signed interest complies with the verification
@@ -299,11 +300,14 @@ private:
    * components.
    * @param rule The rule from the configuration file that matches the data or
    * interest.
+   * @param failureReason If verification fails, set failureReason to the
+   * failure reason.
    * @return True if matches.
    */
   bool
   checkSignatureMatch
-    (const Name& signatureName, const Name& objectName, const BoostInfoTree& rule);
+    (const Name& signatureName, const Name& objectName, 
+     const BoostInfoTree& rule, std::string& failureReason);
 
   /**
    * This looks up certificates specified as base64-encoded data or file names.
@@ -385,10 +389,14 @@ private:
    * @param signatureInfo An object of a subclass of Signature, e.g.
    * Sha256WithRsaSignature.
    * @param signedBlob the SignedBlob with the signed portion to verify.
+   * @param failureReason If verification fails, set failureReason to the
+   * failure reason.
    * @return True if the signature verifies, False if not.
    */
   bool
-  verify(const Signature* signatureInfo, const SignedBlob& signedBlob) const;
+  verify
+    (const Signature* signatureInfo, const SignedBlob& signedBlob,
+     std::string& failureReason) const;
 
   /**
    * This is a helper for checkVerificationPolicy to verify the rule and return
@@ -399,15 +407,17 @@ private:
    * @param matchType Either "data" or "interest".
    * @param objectName The name of the data or interest packet.
    * @param signature The Signature object for the data or interest packet.
-   * @return A null object if validation failed, otherwise the interest for the
-   * ValidationRequest to fetch the next certificate. However, if the interest
-   * has an empty name, the validation succeeded and no need to fetch a
-   * certificate.
+   * @param failureReason If can't determine the interest, set failureReason
+   * to the failure reason.
+   * @return A null object if if can't determine the interest, otherwise the
+   * interest for the ValidationRequest to fetch the next certificate. However,
+   * if the interest has an empty name, the validation succeeded and no need to
+   * fetch a certificate.
    */
   ptr_lib::shared_ptr<Interest>
   getCertificateInterest
     (int stepCount, const std::string& matchType, const Name& objectName,
-     const Signature* signature);
+     const Signature* signature, std::string& failureReason);
 
   /**
    * This is called by KeyChain::verifyData because checkVerificationPolicy
@@ -419,13 +429,14 @@ private:
    * @param originalData The original data from checkVerificationPolicy.
    * @param stepCount The value from checkVerificationPolicy.
    * @param onVerified The value from checkVerificationPolicy.
-   * @param onVerifyFailed The value from checkVerificationPolicy.
+   * @param onValidationFailed The value from checkVerificationPolicy.
    */
   void
   onCertificateDownloadComplete
     (const ptr_lib::shared_ptr<Data> &data,
      const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
-     const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+     const OnVerified& onVerified, 
+     const OnDataValidationFailed& onValidationFailed);
 
   /**
    * This is called by KeyChain::verifyData because checkVerificationPolicy
