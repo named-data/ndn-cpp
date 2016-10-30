@@ -75,12 +75,14 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed Override to ignore this.
+   * @param onValidationFailed Override to ignore this.
    * @return null for no further step.
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
-    (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+    (const ptr_lib::shared_ptr<Data>& data, int stepCount,
+     const OnVerified& onVerified,
+     const OnDataValidationFailed& onValidationFailed);
 
   /**
    * Override to call onVerified(interest) and to indicate no further

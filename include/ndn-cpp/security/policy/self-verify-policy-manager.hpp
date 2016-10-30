@@ -99,7 +99,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails or can't find the public key, this calls onVerifyFailed(data).
+   * @param onVerifyFailed If the signature check fails or can't find the public 
+   * key, this calls onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -107,7 +108,9 @@ public:
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
-    (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed);
+    (const ptr_lib::shared_ptr<Data>& data, int stepCount, 
+     const OnVerified& onVerified,
+     const OnDataValidationFailed& onValidationFailed);
 
   /**
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
@@ -160,20 +163,26 @@ private:
    * @param signatureInfo An object of a subclass of Signature, e.g.
    * Sha256WithRsaSignature.
    * @param signedBlob the SignedBlob with the signed portion to verify.
+   * @param failureReason If verification fails, set failureReason to the
+   * failure reason.
    * @return True if the signature is verified, false if failed.
    */
   bool
-  verify(const Signature* signatureInfo, const SignedBlob& signedBlob);
+  verify
+    (const Signature* signatureInfo, const SignedBlob& signedBlob,
+     std::string& failureReason);
 
   /**
    * Look in the IdentityStorage for the public key with the name in the
    * KeyLocator (if available). If the public key can't be found, return and
    * empty Blob.
    * @param keyLocator The KeyLocator.
+   * @param failureReason If can't find the public key, set failureReason[0] to
+   * the failure reason.
    * @return The public key DER or an empty Blob if not found.
    */
   Blob
-  getPublicKeyDer(const KeyLocator& keyLocator);
+  getPublicKeyDer(const KeyLocator& keyLocator, std::string& failureReason);
 
   IdentityStorage* identityStorage_;
 };

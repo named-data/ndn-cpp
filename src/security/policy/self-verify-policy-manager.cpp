@@ -62,10 +62,13 @@ SelfVerifyPolicyManager::requireVerify(const Interest& interest)
 
 ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
-  (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
+  (const ptr_lib::shared_ptr<Data>& data, int stepCount, 
+   const OnVerified& onVerified,
+   const OnDataValidationFailed& onValidationFailed)
 {
+  string failureReason = "unknown";
   // wireEncode returns the cached encoding if available.
-  if (verify(data->getSignature(), data->wireEncode())) {
+  if (verify(data->getSignature(), data->wireEncode(), failureReason)) {
     try {
       onVerified(data);
     } catch (const std::exception& ex) {
@@ -76,11 +79,11 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   }
   else {
     try {
-      onVerifyFailed(data);
+      onValidationFailed(data, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onDataValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onDataValidationFailed.");
     }
   }
 
@@ -94,6 +97,7 @@ SelfVerifyPolicyManager::checkVerificationPolicy
    const OnVerifiedInterest& onVerified,
    const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
 {
+  string failureReason = "unknown";
   // Decode the last two name components of the signed interest
   ptr_lib::shared_ptr<Signature> signature =
     wireFormat.decodeSignatureInfoAndValue
@@ -101,7 +105,7 @@ SelfVerifyPolicyManager::checkVerificationPolicy
        interest->getName().get(-1).getValue());
 
   // wireEncode returns the cached encoding if available.
-  if (verify(signature.get(), interest->wireEncode())) {
+  if (verify(signature.get(), interest->wireEncode(), failureReason)) {
     try {
       onVerified(interest);
     } catch (const std::exception& ex) {
@@ -114,7 +118,7 @@ SelfVerifyPolicyManager::checkVerificationPolicy
     try {
       onVerifyFailed(interest);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
       _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
     }
@@ -138,20 +142,28 @@ SelfVerifyPolicyManager::inferSigningIdentity(const Name& dataName)
 
 bool
 SelfVerifyPolicyManager::verify
-  (const Signature* signatureInfo, const SignedBlob& signedBlob)
+  (const Signature* signatureInfo, const SignedBlob& signedBlob,
+   string& failureReason)
 {
   Blob publicKeyDer;
   if (KeyLocator::canGetFromSignature(signatureInfo)) {
-    publicKeyDer = getPublicKeyDer(KeyLocator::getFromSignature(signatureInfo));
+    publicKeyDer = getPublicKeyDer
+      (KeyLocator::getFromSignature(signatureInfo), failureReason);
     if (!publicKeyDer)
       return false;
   }
 
-  return verifySignature(signatureInfo, signedBlob, publicKeyDer);
+  if (verifySignature(signatureInfo, signedBlob, publicKeyDer))
+    return true;
+  else {
+    failureReason = "The signature did not verify with the given public key";
+    return false;
+  }
 }
 
 Blob
-SelfVerifyPolicyManager::getPublicKeyDer(const KeyLocator& keyLocator)
+SelfVerifyPolicyManager::getPublicKeyDer
+  (const KeyLocator& keyLocator, string& failureReason)
 {
   if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME && identityStorage_) {
     try {
@@ -160,13 +172,16 @@ SelfVerifyPolicyManager::getPublicKeyDer(const KeyLocator& keyLocator)
         (IdentityCertificate::certificateNameToPublicKeyName
          (keyLocator.getKeyName()));
     } catch (SecurityException&) {
-      // The storage doesn't have the key.
+      failureReason = "The identityStorage doesn't have the key named " +
+        keyLocator.getKeyName().toUri();
       return Blob();
     }
   }
-  else
+  else {
     // Can't find a key to verify.
+    failureReason = "The signature KeyLocator doesn't have a key name";
     return Blob();
+  }
 }
 
 }
