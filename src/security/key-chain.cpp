@@ -98,18 +98,20 @@ KeyChain::signByIdentity(const uint8_t* buffer, size_t bufferLength, const Name&
 
 void
 KeyChain::verifyData
-  (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed, int stepCount)
+  (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified,
+   const OnDataValidationFailed& onValidationFailed, int stepCount)
 {
   _LOG_TRACE("Enter Verify");
 
   if (policyManager_->requireVerify(*data)) {
     ptr_lib::shared_ptr<ValidationRequest> nextStep = policyManager_->checkVerificationPolicy
-      (data, stepCount, onVerified, onVerifyFailed);
+      (data, stepCount, onVerified, onValidationFailed);
     if (nextStep)
       face_->expressInterest
         (*nextStep->interest_,
          bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
-         bind(&KeyChain::onCertificateInterestTimeout, this, _1, nextStep->retry_, onVerifyFailed, data, nextStep));
+         bind(&KeyChain::onCertificateInterestTimeout, this, _1, 
+              nextStep->retry_, onValidationFailed, data, nextStep));
   }
   else if (policyManager_->skipVerifyAndTrust(*data)) {
     try {
@@ -122,11 +124,13 @@ KeyChain::verifyData
   }
   else {
     try {
-      onVerifyFailed(data);
+      onValidationFailed
+        (data,
+         "The packet has no verify rule but skipVerifyAndTrust is false");
     } catch (const std::exception& ex) {
-      _LOG_ERROR("KeyChain::verifyData: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("KeyChain::verifyData: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("KeyChain::verifyData: Error in onVerifyFailed.");
+      _LOG_ERROR("KeyChain::verifyData: Error in onValidationFailed.");
     }
   }
 }
@@ -258,12 +262,16 @@ void
 KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep)
 {
   // Try to verify the certificate (data) according to the parameters in nextStep.
-  verifyData(data, nextStep->onVerified_, nextStep->onVerifyFailed_, nextStep->stepCount_);
+  verifyData
+    (data, nextStep->onVerified_, nextStep->onValidationFailed_,
+     nextStep->stepCount_);
 }
 
 void
 KeyChain::onCertificateInterestTimeout
-  (const ptr_lib::shared_ptr<const Interest> &interest, int retry, const OnVerifyFailed& onVerifyFailed, const ptr_lib::shared_ptr<Data> &data,
+  (const ptr_lib::shared_ptr<const Interest> &interest, int retry,
+   const OnDataValidationFailed& onValidationFailed,
+   const ptr_lib::shared_ptr<Data> &data,
    ptr_lib::shared_ptr<ValidationRequest> nextStep)
 {
   if (retry > 0)
@@ -271,14 +279,18 @@ KeyChain::onCertificateInterestTimeout
     face_->expressInterest
       (*interest,
        bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
-       bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, onVerifyFailed, data, nextStep));
+       bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, 
+            onValidationFailed, data, nextStep));
   else {
     try {
-      onVerifyFailed(data);
+      onValidationFailed
+        (data,
+         "The retry count is zero after timeout for fetching " +
+         interest->getName().toUri());
     } catch (const std::exception& ex) {
-      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onVerifyFailed.");
+      _LOG_ERROR("KeyChain::onCertificateInterestTimeout: Error in onValidationFailed.");
     }
   }
 }

@@ -469,14 +469,16 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(data).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
    */
   void
   verifyData
-    (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed, int stepCount = 0);
+    (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified, 
+     const OnDataValidationFailed& onValidationFailed, int stepCount = 0);
 
   /**
    * Check the signature on the signed interest and call either onVerify or
@@ -578,8 +580,10 @@ private:
 
   void
   onCertificateInterestTimeout
-    (const ptr_lib::shared_ptr<const Interest> &interest, int retry, const OnVerifyFailed& onVerifyFailed,
-     const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep);
+    (const ptr_lib::shared_ptr<const Interest> &interest, int retry, 
+     const OnDataValidationFailed& onValidationFailed,
+     const ptr_lib::shared_ptr<Data> &data,
+     ptr_lib::shared_ptr<ValidationRequest> nextStep);
 
   /**
    * This is the same as onCertificateInterestTimeout, but we call
