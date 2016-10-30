@@ -79,7 +79,7 @@ Consumer::Impl::consume
         parent_->keyChain_->verifyData
           (contentData,
            bind(&Callbacks::onContentVerified, shared_from_this(), _1),
-           bind(&Impl::onVerifyFailed, _1, onError_));
+           bind(&Impl::onValidationFailed, _1, _2, onError_));
       } catch (const std::exception& ex) {
         try {
           onError_(EncryptError::ErrorCode::General,
@@ -327,7 +327,7 @@ Consumer::Impl::decryptContent
           parent_->keyChain_->verifyData
             (cKeyData,
              bind(&Callbacks::onCKeyVerified, shared_from_this(), _1),
-             bind(&Impl::onVerifyFailed, _1, onError_));
+             bind(&Impl::onValidationFailed, _1, _2, onError_));
         } catch (const std::exception& ex) {
           try {
             onError_(EncryptError::ErrorCode::General,
@@ -472,7 +472,7 @@ Consumer::Impl::decryptCKey
           parent_->keyChain_->verifyData
             (dKeyData,
              bind(&Callbacks::onDKeyVerified, shared_from_this(), _1),
-             bind(&Impl::onVerifyFailed, _1, onError_));
+             bind(&Impl::onValidationFailed, _1, _2, onError_));
         } catch (const std::exception& ex) {
           try {
             onError_(EncryptError::ErrorCode::General,
@@ -631,11 +631,14 @@ Consumer::Impl::decryptDKey
 }
 
 void
-Consumer::Impl::onVerifyFailed
-  (const ptr_lib::shared_ptr<Data>& data, const EncryptError::OnError& onError)
+Consumer::Impl::onValidationFailed
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason,
+   const EncryptError::OnError& onError)
 {
   try {
-    onError(EncryptError::ErrorCode::Validation, "verifyData failed");
+    onError
+      (EncryptError::ErrorCode::Validation,
+       "verifyData failed. Reason: " + reason);
   } catch (const std::exception& ex) {
     _LOG_ERROR("Error in onError: " << ex.what());
   } catch (...) {

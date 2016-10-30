@@ -229,8 +229,8 @@ private:
      * within a try block to log exceptions that it throws.
      */
     static void
-    onVerifyFailed
-      (const ptr_lib::shared_ptr<Data>& data,
+    onValidationFailed
+      (const ptr_lib::shared_ptr<Data>& data, const std::string& reason,
        const EncryptError::OnError& onError);
 
     /**
