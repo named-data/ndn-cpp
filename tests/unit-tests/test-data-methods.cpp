@@ -357,7 +357,7 @@ public:
   void
   verifyData
     (const ptr_lib::shared_ptr<Data>& data, const OnVerified& verifiedCallback,
-     const OnVerifyFailed& failedCallback)
+     const OnDataValidationFailed& failedCallback)
   {
     keyChain_.verifyData(data, verifiedCallback, failedCallback);
   }

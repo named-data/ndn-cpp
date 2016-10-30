@@ -207,7 +207,8 @@ public:
     ++successCount_;
   }
 
-  void onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+  void onValidationFailed
+    (const ptr_lib::shared_ptr<Data>& data, const string& reason)
   {
     ++failureCount_;
   }
@@ -234,8 +235,9 @@ static VerificationResult doVerify
 
   ptr_lib::shared_ptr<ValidationRequest> result =
     policyManager.checkVerificationPolicy
-      (toVerify, 0, bind(&VerificationResult::onVerified, &verificationResult, _1),
-       bind(&VerificationResult::onVerifyFailed, &verificationResult, _1));
+      (toVerify, 0,
+       bind(&VerificationResult::onVerified, &verificationResult, _1),
+       bind(&VerificationResult::onValidationFailed, &verificationResult, _1, _2));
 
   verificationResult.hasFurtherSteps_ = (bool)result;
   return verificationResult;
