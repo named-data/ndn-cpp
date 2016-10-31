@@ -389,7 +389,8 @@ public:
   }
 
   void
-  onValidationFailed(const ptr_lib::shared_ptr<Data>& data)
+  onValidationFailed
+    (const ptr_lib::shared_ptr<Data>& data, const string& reason)
   {
     ++onValidationFailedCallCount_;
   }
