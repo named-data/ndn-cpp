@@ -107,8 +107,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls
-   * onVerifyFailed(interest).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(interest, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -119,7 +119,8 @@ public:
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat) = 0;
+     const OnInterestValidationFailed& onValidationFailed,
+     WireFormat& wireFormat) = 0;
 
   /**
    * Check if the signing certificate name and data name satisfy the signing policy.

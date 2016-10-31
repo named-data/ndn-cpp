@@ -77,7 +77,8 @@ ptr_lib::shared_ptr<ValidationRequest>
 NoVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnInterestValidationFailed& onValidationFailed,
+   WireFormat& wireFormat)
 {
   try {
     onVerified(interest);

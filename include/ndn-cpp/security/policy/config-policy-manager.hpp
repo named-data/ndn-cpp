@@ -192,8 +192,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls
-   * onVerifyFailed(interest).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(interest, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -204,7 +204,8 @@ public:
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat);
+     const OnInterestValidationFailed& onValidationFailed,
+     WireFormat& wireFormat);
 
   /**
    * Override to always indicate that the signing certificate name and data name
@@ -354,20 +355,28 @@ private:
    * @param interest The interest whose signature is needed.
    * @param wireFormat The wire format used to decode signature information
    * from the interest name.
+   * @param failureReason If can't decode, set failureReason to the failure
+   * reason.
    * @return A shared_ptr for the Signature object. This is null if can't decode.
    */
   static ptr_lib::shared_ptr<Signature>
-  extractSignature(const Interest& interest, WireFormat& wireFormat);
+  extractSignature
+    (const Interest& interest, WireFormat& wireFormat,
+     std::string& failureReason);
 
   /**
    * Determine whether the timestamp from the interest is newer than the last
    * use of this key, or within the grace interval on first use.
    * @param keyName The name of the public key used to sign the interest.
    * @param timestamp The timestamp extracted from the interest name.
+   * @param failureReason If timestamp is not fresh, set failureReason to the
+   * failure reason.
    * @return True if timestamp is fresh as described above.
    */
   bool
-  interestTimestampIsFresh(const Name& keyName, MillisecondsSince1970 timestamp) const;
+  interestTimestampIsFresh
+    (const Name& keyName, MillisecondsSince1970 timestamp,
+     std::string& failureReason) const;
 
   /**
    * Trim the table size down if necessary, and insert/update the latest
@@ -448,14 +457,15 @@ private:
    * @param originalInterest The original interest from checkVerificationPolicy.
    * @param stepCount The value from checkVerificationPolicy.
    * @param onVerified The value from checkVerificationPolicy.
-   * @param onVerifyFailed The value from checkVerificationPolicy.
+   * @param onValidationFailed The value from checkVerificationPolicy.
    */
   void
   onCertificateDownloadCompleteForInterest
     (const ptr_lib::shared_ptr<Data> &data,
      const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat);
+     const OnInterestValidationFailed& onValidationFailed,
+     WireFormat& wireFormat);
 
   ptr_lib::shared_ptr<CertificateCache> certificateCache_;
   int maxDepth_;

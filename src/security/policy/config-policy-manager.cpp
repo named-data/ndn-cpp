@@ -50,21 +50,21 @@ namespace ndn {
 using namespace regex_lib;
 
 /**
- * Ignore data and call onVerifyFailed(interest). This is so that an
- * OnVerifyInterestFailed can be passed as an OnVerifyFailed.
+ * Ignore data and call onValidationFailed(interest, reason). This is so that an
+ * OnInterestValidationFailed can be passed as an OnDataValidationFailed.
  */
 static void
-onVerifyInterestFailedWrapper
-  (const ptr_lib::shared_ptr<Data>& data,
-   const OnVerifyInterestFailed& onVerifyFailed,
+onInterestValidationFailedWrapper
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason,
+   const OnInterestValidationFailed& onValidationFailed,
    const ptr_lib::shared_ptr<Interest>& interest)
 {
   try {
-    onVerifyFailed(interest);
+    onValidationFailed(interest, reason);
   } catch (const std::exception& ex) {
-    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed: " << ex.what());
+    _LOG_ERROR("ConfigPolicyManager::onInterestValidationFailedWrapper: Error in onValidationFailed: " << ex.what());
   } catch (...) {
-    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed.");
+    _LOG_ERROR("ConfigPolicyManager::onInterestValidationFailedWrapper: Error in onValidationFailed.");
   }
 }
 
@@ -200,19 +200,20 @@ ptr_lib::shared_ptr<ValidationRequest>
 ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnInterestValidationFailed& onValidationFailed,
+   WireFormat& wireFormat)
 {
   string failureReason = "unknown";
   ptr_lib::shared_ptr<Signature> signature = extractSignature
-    (*interest, wireFormat);
+    (*interest, wireFormat, failureReason);
   if (!signature) {
     // Can't get the signature from the interest name.
     try {
-      onVerifyFailed(interest);
+      onValidationFailed(interest, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -224,11 +225,11 @@ ConfigPolicyManager::checkVerificationPolicy
      signature.get(), failureReason);
   if (!certificateInterest) {
     try {
-      onVerifyFailed(interest);
+      onValidationFailed(interest, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -237,8 +238,8 @@ ConfigPolicyManager::checkVerificationPolicy
     return ptr_lib::make_shared<ValidationRequest>
       (certificateInterest,
        bind(&ConfigPolicyManager::onCertificateDownloadCompleteForInterest, this, _1,
-            interest, stepCount, onVerified, onVerifyFailed, wireFormat),
-       bind(&onVerifyInterestFailedWrapper, _1, onVerifyFailed, interest),
+            interest, stepCount, onVerified, onValidationFailed, wireFormat),
+       bind(&onInterestValidationFailedWrapper, _1, _2, onValidationFailed, interest),
        2, stepCount + 1);
   else {
     // For interests, we must check that the timestamp is fresh enough.
@@ -248,13 +249,13 @@ ConfigPolicyManager::checkVerificationPolicy
     Name keyName = IdentityCertificate::certificateNameToPublicKeyName(signatureName);
     MillisecondsSince1970 timestamp = interest->getName().get(-4).toNumber();
 
-    if (!interestTimestampIsFresh(keyName, timestamp)) {
+    if (!interestTimestampIsFresh(keyName, timestamp, failureReason)) {
       try {
-        onVerifyFailed(interest);
+        onValidationFailed(interest, failureReason);
       } catch (const std::exception& ex) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
       } catch (...) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
       }
       return ptr_lib::shared_ptr<ValidationRequest>();
     }
@@ -273,11 +274,11 @@ ConfigPolicyManager::checkVerificationPolicy
     }
     else {
       try {
-        onVerifyFailed(interest);
+        onValidationFailed(interest, failureReason);
       } catch (const std::exception& ex) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
       } catch (...) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
       }
     }
 
@@ -363,7 +364,7 @@ ConfigPolicyManager::onCertificateDownloadCompleteForInterest
   (const ptr_lib::shared_ptr<Data> &data,
    const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnInterestValidationFailed& onValidationFailed, WireFormat& wireFormat)
 {
   IdentityCertificate certificate(*data);
   certificateCache_->insertCertificate(certificate);
@@ -371,7 +372,7 @@ ConfigPolicyManager::onCertificateDownloadCompleteForInterest
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
   checkVerificationPolicy
-    (originalInterest, stepCount + 1, onVerified, onVerifyFailed, wireFormat);
+    (originalInterest, stepCount + 1, onVerified, onValidationFailed, wireFormat);
 }
 
 bool
@@ -679,23 +680,29 @@ ConfigPolicyManager::matchesRelation
 
 ptr_lib::shared_ptr<Signature>
 ConfigPolicyManager::extractSignature
-  (const Interest& interest, WireFormat& wireFormat)
+  (const Interest& interest, WireFormat& wireFormat, string& failureReason)
 {
-  if (interest.getName().size() < 2)
+  if (interest.getName().size() < 2) {
+    failureReason = "The signed interest has less than 2 components: " +
+      interest.getName().toUri();
     return ptr_lib::shared_ptr<Signature>();
+  }
 
   try {
     return wireFormat.decodeSignatureInfoAndValue
       (interest.getName().get(-2).getValue(),
        interest.getName().get(-1).getValue());
   } catch (std::exception& e) {
+    failureReason = string("Error decoding the signed interest signature: ") +
+      e.what();
     return ptr_lib::shared_ptr<Signature>();
   }
 }
 
 bool
 ConfigPolicyManager::interestTimestampIsFresh
-  (const Name& keyName, MillisecondsSince1970 timestamp) const
+  (const Name& keyName, MillisecondsSince1970 timestamp,
+   string& failureReason) const
 {
   map<string, MillisecondsSince1970>::const_iterator lastTimestamp =
     keyTimestamps_.find(keyName.toUri());
@@ -703,10 +710,27 @@ ConfigPolicyManager::interestTimestampIsFresh
     MillisecondsSince1970 now = ndn_getNowMilliseconds();
     MillisecondsSince1970 notBefore = now - keyGraceInterval_;
     MillisecondsSince1970 notAfter = now + keyGraceInterval_;
-    return timestamp > notBefore && timestamp < notAfter;
+
+    if (!(timestamp > notBefore && timestamp < notAfter)) {
+      ostringstream message;
+      message <<
+        "The command interest timestamp is not within the first use grace period of " <<
+        keyGraceInterval_ << " milliseconds.";
+      failureReason = message.str();
+      return false;
+    }
+    else
+      return true;
   }
-  else
-    return timestamp > lastTimestamp->second;
+  else {
+    if (timestamp <= lastTimestamp->second) {
+      failureReason =
+        "The command interest timestamp is not newer than the previous timestamp";
+      return false;
+    }
+    else
+      return true;
+  }
 }
 
 void

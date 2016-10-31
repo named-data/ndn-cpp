@@ -91,7 +91,7 @@ public:
   /**
    * Look in the IdentityStorage for the public key with the name in the
    * KeyLocator (if available) and use it to verify the data packet. If the
-   * public key can't be found, call onVerifyFailed.
+   * public key can't be found, call onValidationFailed.
    * @param data The Data object with the signature to check.
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
@@ -99,8 +99,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails or can't find the public 
-   * key, this calls onValidationFailed(data, reason).
+   * @param onValidationFailed If the signature check fails or can't find the
+   * public key, this calls onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -116,7 +116,8 @@ public:
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
    * components of the signed interest. Look in the IdentityStorage for the
    * public key with the name in the KeyLocator (if available) and use it to
-   * verify the interest. If the public key can't be found, call onVerifyFailed.
+   * verify the interest. If the public key can't be found, call 
+   * onValidationFailed.
    * @param interest The interest with the signature to check.
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.
    * (stepCount is ignored.)
@@ -124,7 +125,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails or can't find the public key, this calls onVerifyFailed(interest).
+   * @param onValidationFailed If the signature check fails or can't find the
+   * public key, this calls onValidationFailed(interest, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -134,7 +136,8 @@ public:
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat);
+     const OnInterestValidationFailed& onValidationFailed,
+     WireFormat& wireFormat);
 
   /**
    * Override to always indicate that the signing certificate name and data name satisfy the signing policy.

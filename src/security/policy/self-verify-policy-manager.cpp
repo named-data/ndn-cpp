@@ -95,14 +95,42 @@ ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnInterestValidationFailed& onValidationFailed,
+   WireFormat& wireFormat)
 {
+  if (interest->getName().size() < 2) {
+    try {
+      onValidationFailed
+        (interest,
+         "The signed interest has less than 2 components: " +
+         interest->getName().toUri());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
+    }
+    return ptr_lib::shared_ptr<ValidationRequest>();
+  }
+
   string failureReason = "unknown";
   // Decode the last two name components of the signed interest
-  ptr_lib::shared_ptr<Signature> signature =
-    wireFormat.decodeSignatureInfoAndValue
-      (interest->getName().get(-2).getValue(),
-       interest->getName().get(-1).getValue());
+  ptr_lib::shared_ptr<Signature> signature;
+  try {
+    signature =
+      wireFormat.decodeSignatureInfoAndValue
+        (interest->getName().get(-2).getValue(),
+         interest->getName().get(-1).getValue());
+  } catch (const std::exception& ex) {
+    try {
+      onValidationFailed
+        (interest, 
+         string("Error decoding the signed interest signature: ") + ex.what());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
+    }
+  }
 
   // wireEncode returns the cached encoding if available.
   if (verify(signature.get(), interest->wireEncode(), failureReason)) {
@@ -116,11 +144,11 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   }
   else {
     try {
-      onVerifyFailed(interest);
+      onValidationFailed(interest, failureReason);
     } catch (const std::exception& ex) {
       _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
   }
 
