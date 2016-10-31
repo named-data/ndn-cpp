@@ -261,9 +261,10 @@ onVerified(const ptr_lib::shared_ptr<Data>& data)
 }
 
 static void
-onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+onValidationFailed
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason)
 {
-  cout << "Signature verification: FAILED" << endl;
+  cout << "Signature verification: FAILED. Reason: " << reason << endl;
 }
 
 /**
@@ -298,7 +299,7 @@ benchmarkDecodeDataSecondsCpp
     data->wireDecode(encoding);
 
     if (useCrypto)
-      keyChain.verifyData(data, onVerified, onVerifyFailed);
+      keyChain.verifyData(data, onVerified, onValidationFailed);
   }
   double finish = getNowSeconds();
 

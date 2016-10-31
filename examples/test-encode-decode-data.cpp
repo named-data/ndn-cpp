@@ -273,9 +273,11 @@ static void onVerified(const char *prefix, const ptr_lib::shared_ptr<Data>& data
   cout << prefix << " signature verification: VERIFIED" << endl;
 }
 
-static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Data>& data)
+static void onValidationFailed
+  (const char *prefix, const ptr_lib::shared_ptr<Data>& data,
+   const string& reason)
 {
-  cout << prefix << " signature verification: FAILED" << endl;
+  cout << prefix << " signature verification: FAILED. Reason: " << reason << endl;
 }
 
 int main(int argc, char** argv)
@@ -313,7 +315,7 @@ int main(int argc, char** argv)
 
     keyChain.verifyData
       (reDecodedData, bind(&onVerified, "Re-decoded Data", _1),
-       bind(&onVerifyFailed, "Re-decoded Data", _1));
+       bind(&onValidationFailed, "Re-decoded Data", _1, _2));
 
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
@@ -324,7 +326,10 @@ int main(int argc, char** argv)
     cout << endl << "Freshly-signed Data:" << endl;
     dumpData(*freshData);
 
-    keyChain.verifyData(freshData, bind(&onVerified, "Freshly-signed Data", _1), bind(&onVerifyFailed, "Freshly-signed Data", _1));
+    keyChain.verifyData
+      (freshData,
+       bind(&onVerified, "Freshly-signed Data", _1),
+       bind(&onValidationFailed, "Freshly-signed Data", _1, _2));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
