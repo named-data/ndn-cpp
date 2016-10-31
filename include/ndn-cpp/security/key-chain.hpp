@@ -462,7 +462,8 @@ public:
   }
 
   /**
-   * Check the signature on the Data object and call either onVerify or onVerifyFailed.
+   * Check the signature on the Data object and call either onVerify or
+   * onValidationFailed.
    * We use callback functions because verify may fetch information to check the signature.
    * @param data The Data object with the signature to check.
    * @param onVerified If the signature is verified, this calls onVerified(data).
@@ -482,14 +483,15 @@ public:
 
   /**
    * Check the signature on the signed interest and call either onVerify or
-   * onVerifyFailed. We use callback functions because verify may fetch
+   * onValidationFailed. We use callback functions because verify may fetch
    * information to check the signature.
    * @param interest The interest with the signature to check.
    * @param onVerified If the signature is verified, this calls onVerified(interest).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(interest).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -498,7 +500,7 @@ public:
   verifyInterest
     (const ptr_lib::shared_ptr<Interest>& interest,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, int stepCount = 0,
+     const OnInterestValidationFailed& onValidationFailed, int stepCount = 0,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
@@ -587,12 +589,12 @@ private:
 
   /**
    * This is the same as onCertificateInterestTimeout, but we call
-   * onVerifyFailed(originalInterest) if we have too many retries.
+   * onValidationFailed(originalInterest, reason) if we have too many retries.
    */
   void
   onCertificateInterestTimeoutForVerifyInterest
     (const ptr_lib::shared_ptr<const Interest> &interest, int retry,
-     const OnVerifyInterestFailed& onVerifyFailed,
+     const OnInterestValidationFailed& onValidationFailed,
      const ptr_lib::shared_ptr<Interest>& originalInterest,
      ptr_lib::shared_ptr<ValidationRequest> nextStep);
 
