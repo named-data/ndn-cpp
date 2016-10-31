@@ -88,7 +88,7 @@ public:
   VerifyCounter()
   {
     onVerifiedCallCount_ = 0;
-    onVerifyFailedCallCount_ = 0;
+    onValidationFailedCallCount_ = 0;
   }
 
   void
@@ -98,13 +98,13 @@ public:
   }
 
   void
-  onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+  onValidationFailed(const ptr_lib::shared_ptr<Data>& data)
   {
-    ++onVerifyFailedCallCount_;
+    ++onValidationFailedCallCount_;
   }
 
   int onVerifiedCallCount_;
-  int onVerifyFailedCallCount_;
+  int onValidationFailedCallCount_;
 };
 
 class TestSqlIdentityStorage : public ::testing::Test {
@@ -332,7 +332,7 @@ TEST_F(TestSqlIdentityStorage, EcdsaIdentity)
   Name certName = identityStorage->getDefaultCertificateNameForKey(keyName);
   keyChain->verifyData
     (cert, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
+     bind(&VerifyCounter::onValidationFailed, &counter, _1));
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 
   keyChain->deleteIdentity(identityName);
