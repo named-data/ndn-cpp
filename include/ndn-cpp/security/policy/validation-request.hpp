@@ -33,6 +33,14 @@ namespace ndn {
 typedef func_lib::function<void(const ptr_lib::shared_ptr<Data>& data)> OnVerified;
 
 /**
+ * An OnDataValidationFailed function object is used to pass a callback to
+ * verifyData to report a failed verification.
+ */
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<Data>& data,
+   const std::string& reason)> OnDataValidationFailed;
+
+/**
  * An OnVerifyFailed function object is used to pass a callback to verifyData to report a failed verification.
  */
 typedef func_lib::function<void(const ptr_lib::shared_ptr<Data>& data)> OnVerifyFailed;
@@ -45,6 +53,14 @@ typedef func_lib::function<void(const ptr_lib::shared_ptr<Interest>& interest)>
   OnVerifiedInterest;
 
 /**
+ * An OnInterestValidationFailed function object is used to pass a callback to
+ * verifyInterest to report a failed verification.
+ */
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<Interest>& interest,
+   const std::string& reason)> OnInterestValidationFailed;
+
+/**
  * An OnVerifyInterestFailed function object is used to pass a callback to
  * verifyInterest to report a failed verification.
  */
@@ -54,9 +70,10 @@ typedef func_lib::function<void(const ptr_lib::shared_ptr<Interest>& interest)>
 class ValidationRequest {
 public:
   ValidationRequest
-    (const ptr_lib::shared_ptr<Interest> &interest, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed,
-     int retry, int stepCount)
-  : interest_(interest), onVerified_(onVerified), onVerifyFailed_(onVerifyFailed), retry_(retry), stepCount_(stepCount)
+    (const ptr_lib::shared_ptr<Interest> &interest, const OnVerified& onVerified, 
+     const OnDataValidationFailed& onValidationFailed, int retry, int stepCount)
+  : interest_(interest), onVerified_(onVerified), 
+    onValidationFailed_(onValidationFailed), retry_(retry), stepCount_(stepCount)
   {
   }
 
@@ -65,7 +82,7 @@ public:
 
   ptr_lib::shared_ptr<Interest> interest_; // An interest packet to fetch the requested data.
   OnVerified onVerified_;                  // A callback function if the requested certificate has been validated.
-  OnVerifyFailed onVerifyFailed_;          // A callback function if the requested certificate cannot be validated.
+  OnDataValidationFailed onValidationFailed_;  // A callback function if the requested certificate cannot be validated.
   int retry_;                              // The number of retrials when there is an interest timeout.
   int stepCount_;
 };

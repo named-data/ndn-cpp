@@ -301,12 +301,13 @@ TEST_F(TestVerificationRules, Hierarchical)
   Name signatureName2 = 
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
+  string failureReason = "unknown";
   ASSERT_FALSE(policyManager.checkSignatureMatch
-    (signatureName1, dataName1, *matchedRule))
+    (signatureName1, dataName1, *matchedRule, failureReason))
     << "Hierarchical matcher matched short data name to long key name";
 
   ASSERT_TRUE(policyManager.checkSignatureMatch
-    (signatureName2, dataName2, *matchedRule));
+    (signatureName2, dataName2, *matchedRule, failureReason));
 
   keyChain.sign(data1, shortCertName);
   keyChain.sign(data2, shortCertName);
@@ -317,9 +318,9 @@ TEST_F(TestVerificationRules, Hierarchical)
     dynamic_cast<const Sha256WithRsaSignature*>(data1.getSignature())->getKeyLocator().getKeyName();
 
   ASSERT_TRUE(policyManager.checkSignatureMatch
-    (signatureName1, dataName1, *matchedRule));
+    (signatureName1, dataName1, *matchedRule, failureReason));
   ASSERT_TRUE(policyManager.checkSignatureMatch
-    (signatureName2, dataName2, *matchedRule));
+    (signatureName2, dataName2, *matchedRule, failureReason));
 }
 
 TEST_F(TestVerificationRules, HyperRelation)
@@ -341,10 +342,11 @@ TEST_F(TestVerificationRules, HyperRelation)
   Name signatureName2 =
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
+  string failureReason = "unknown";
   ASSERT_TRUE(policyManager.checkSignatureMatch
-    (signatureName1, dataName, *matchedRule));
+    (signatureName1, dataName, *matchedRule, failureReason));
   ASSERT_FALSE(policyManager.checkSignatureMatch
-    (signatureName2, dataName, *matchedRule));
+    (signatureName2, dataName, *matchedRule, failureReason));
 
   dataName = Name("/SecurityTestSecRule/Basic/Other/Data1");
   data1 = Data(dataName);
@@ -360,9 +362,9 @@ TEST_F(TestVerificationRules, HyperRelation)
     dynamic_cast<const Sha256WithRsaSignature*>(data2.getSignature())->getKeyLocator().getKeyName();
 
   ASSERT_FALSE(policyManager.checkSignatureMatch
-    (signatureName1, dataName, *matchedRule));
+    (signatureName1, dataName, *matchedRule, failureReason));
   ASSERT_TRUE(policyManager.checkSignatureMatch
-    (signatureName2, dataName, *matchedRule));
+    (signatureName2, dataName, *matchedRule, failureReason));
 }
 
 int

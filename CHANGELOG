@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.10 (2016-10-10)
+Interim changes since NDN-CPP v0.10 (2016-10-31)
 ------------------------------------------------
 
 Changes
@@ -11,6 +11,8 @@ Changes
   Name::appendImplicitSha256Digest.
 * https://redmine.named-data.net/issues/3447 In Data, added getFullName, and
   in Interest added matchesData to use it.
+* https://redmine.named-data.net/issues/3798 In KeyChain.verifyData and verifyInterest,
+  use onValidationFailed callbacks which include a reason string.
 * In SegmentFetcher::fetch, allow a validatorKeyChain for asynchronous Data validation.
 * NDN-CPP Lite in lite/security, added RsaPrivateKeyLite, EcPrivateKeyLite, etc.
   to encode/decode and generate RSA and EC public/private keys.
@@ -24,6 +26,14 @@ Changes
 * Unit tests: In test-name-methods, added ImplicitSha256Digest.
 * Unit tests: In test-interest-methods, added MatchesData.
 * Unit tests: In test-data-methods, added FullName.
+
+Deprecated
+* In KeyChain, deprecated verifyData that takes an OnVerified callback.
+  Use the verifyData which takes an OnDataValidationFailed callback with a
+  reason string.
+* In KeyChain, deprecated verifyInterest that takes an OnVerifyInterestFailed callback.
+  Use the verifyInterest which takes an OnInterestValidationFailed callback with a
+  reason string.
 
 Bug fixes
 * http://redmine.named-data.net/issues/1850 Respect tpm= setting in client.conf.

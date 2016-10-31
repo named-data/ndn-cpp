@@ -357,7 +357,7 @@ public:
   void
   verifyData
     (const ptr_lib::shared_ptr<Data>& data, const OnVerified& verifiedCallback,
-     const OnVerifyFailed& failedCallback)
+     const OnDataValidationFailed& failedCallback)
   {
     keyChain_.verifyData(data, verifiedCallback, failedCallback);
   }
@@ -379,7 +379,7 @@ public:
   VerifyCounter()
   {
     onVerifiedCallCount_ = 0;
-    onVerifyFailedCallCount_ = 0;
+    onValidationFailedCallCount_ = 0;
   }
 
   void
@@ -389,13 +389,13 @@ public:
   }
 
   void
-  onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+  onValidationFailed(const ptr_lib::shared_ptr<Data>& data)
   {
-    ++onVerifyFailedCallCount_;
+    ++onValidationFailedCallCount_;
   }
 
   int onVerifiedCallCount_;
-  int onVerifyFailedCallCount_;
+  int onValidationFailedCallCount_;
 };
 
 class TestDataMethods : public ::testing::Test {
@@ -471,8 +471,8 @@ TEST_F(TestDataMethods, Verify)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
-  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+  ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
 
@@ -484,8 +484,8 @@ TEST_F(TestDataMethods, VerifyEcdsa)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
-  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+  ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
 
@@ -497,8 +497,8 @@ TEST_F(TestDataMethods, VerifyDigestSha256)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
-  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+  ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
 

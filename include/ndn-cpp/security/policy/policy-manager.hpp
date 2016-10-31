@@ -84,7 +84,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls onVerifyFailed(data).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(data, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -92,7 +93,9 @@ public:
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
-    (const ptr_lib::shared_ptr<Data>& data, int stepCount, const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed) = 0;
+    (const ptr_lib::shared_ptr<Data>& data, int stepCount,
+     const OnVerified& onVerified,
+     const OnDataValidationFailed& onValidationFailed) = 0;
 
   /**
    * Check whether the received signed interest complies with the verification
@@ -104,8 +107,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param onVerifyFailed If the signature check fails, this calls
-   * onVerifyFailed(interest).
+   * @param onValidationFailed If the signature check fails, this calls
+   * onValidationFailed(interest, reason).
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
@@ -116,7 +119,8 @@ public:
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
      const OnVerifiedInterest& onVerified,
-     const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat) = 0;
+     const OnInterestValidationFailed& onValidationFailed,
+     WireFormat& wireFormat) = 0;
 
   /**
    * Check if the signing certificate name and data name satisfy the signing policy.

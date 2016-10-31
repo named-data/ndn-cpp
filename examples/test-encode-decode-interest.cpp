@@ -198,9 +198,11 @@ static void onVerified(const char *prefix, const ptr_lib::shared_ptr<Interest>& 
   cout << prefix << " signature verification: VERIFIED" << endl;
 }
 
-static void onVerifyFailed(const char *prefix, const ptr_lib::shared_ptr<Interest>& interest)
+static void onInterestValidationFailed
+  (const char *prefix, const ptr_lib::shared_ptr<Interest>& interest,
+   const string& reason)
 {
-  cout << prefix << " signature verification: FAILED" << endl;
+  cout << prefix << " signature verification: FAILED. Reason: " << reason << endl;
 }
 
 int main(int argc, char** argv)
@@ -266,7 +268,7 @@ int main(int argc, char** argv)
 
     keyChain.verifyInterest
       (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
-       bind(&onVerifyFailed, "Freshly-signed Interest", _1));
+       bind(&onInterestValidationFailed, "Freshly-signed Interest", _1, _2));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }

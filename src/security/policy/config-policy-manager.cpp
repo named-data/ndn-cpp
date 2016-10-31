@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <fstream>
+#include <sstream>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/certificate/identity-certificate.hpp>
 #include "../../util/boost-info-parser.hpp"
@@ -49,21 +50,21 @@ namespace ndn {
 using namespace regex_lib;
 
 /**
- * Ignore data and call onVerifyFailed(interest). This is so that an
- * OnVerifyInterestFailed can be passed as an OnVerifyFailed.
+ * Ignore data and call onValidationFailed(interest, reason). This is so that an
+ * OnInterestValidationFailed can be passed as an OnDataValidationFailed.
  */
 static void
-onVerifyInterestFailedWrapper
-  (const ptr_lib::shared_ptr<Data>& data,
-   const OnVerifyInterestFailed& onVerifyFailed,
+onInterestValidationFailedWrapper
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason,
+   const OnInterestValidationFailed& onValidationFailed,
    const ptr_lib::shared_ptr<Interest>& interest)
 {
   try {
-    onVerifyFailed(interest);
+    onValidationFailed(interest, reason);
   } catch (const std::exception& ex) {
-    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed: " << ex.what());
+    _LOG_ERROR("ConfigPolicyManager::onInterestValidationFailedWrapper: Error in onValidationFailed: " << ex.what());
   } catch (...) {
-    _LOG_ERROR("ConfigPolicyManager::onVerifyInterestFailedWrapper: Error in onVerifyFailed.");
+    _LOG_ERROR("ConfigPolicyManager::onInterestValidationFailedWrapper: Error in onValidationFailed.");
   }
 }
 
@@ -146,17 +147,19 @@ ConfigPolicyManager::requireVerify(const Interest& interest)
 ptr_lib::shared_ptr<ValidationRequest>
 ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount,
-   const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
+   const OnVerified& onVerified, 
+   const OnDataValidationFailed& onValidationFailed)
 {
+  string failureReason = "unknown";
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
-    (stepCount, "data", data->getName(), data->getSignature());
+    (stepCount, "data", data->getName(), data->getSignature(), failureReason);
   if (!certificateInterest) {
     try {
-      onVerifyFailed(data);
+      onValidationFailed(data, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -165,12 +168,12 @@ ConfigPolicyManager::checkVerificationPolicy
     return ptr_lib::make_shared<ValidationRequest>
       (certificateInterest,
        bind(&ConfigPolicyManager::onCertificateDownloadComplete, this, _1,
-            data, stepCount, onVerified, onVerifyFailed),
-       onVerifyFailed, 2, stepCount + 1);
+            data, stepCount, onVerified, onValidationFailed),
+       onValidationFailed, 2, stepCount + 1);
   else {
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
-    if (verify(data->getSignature(), data->wireEncode())) {
+    if (verify(data->getSignature(), data->wireEncode(), failureReason)) {
       try {
         onVerified(data);
       } catch (const std::exception& ex) {
@@ -181,11 +184,11 @@ ConfigPolicyManager::checkVerificationPolicy
     }
     else {
       try {
-        onVerifyFailed(data);
+        onValidationFailed(data, failureReason);
       } catch (const std::exception& ex) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
       } catch (...) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
       }
     }
 
@@ -197,18 +200,20 @@ ptr_lib::shared_ptr<ValidationRequest>
 ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Interest>& interest, int stepCount,
    const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnInterestValidationFailed& onValidationFailed,
+   WireFormat& wireFormat)
 {
+  string failureReason = "unknown";
   ptr_lib::shared_ptr<Signature> signature = extractSignature
-    (*interest, wireFormat);
+    (*interest, wireFormat, failureReason);
   if (!signature) {
     // Can't get the signature from the interest name.
     try {
-      onVerifyFailed(interest);
+      onValidationFailed(interest, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -216,14 +221,15 @@ ConfigPolicyManager::checkVerificationPolicy
   // For command interests, we need to ignore the last 4 components when
   //   matching the name.
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
-    (stepCount, "interest", interest->getName().getPrefix(-4), signature.get());
+    (stepCount, "interest", interest->getName().getPrefix(-4), 
+     signature.get(), failureReason);
   if (!certificateInterest) {
     try {
-      onVerifyFailed(interest);
+      onValidationFailed(interest, failureReason);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+      _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
     }
     return ptr_lib::shared_ptr<ValidationRequest>();
   }
@@ -232,8 +238,8 @@ ConfigPolicyManager::checkVerificationPolicy
     return ptr_lib::make_shared<ValidationRequest>
       (certificateInterest,
        bind(&ConfigPolicyManager::onCertificateDownloadCompleteForInterest, this, _1,
-            interest, stepCount, onVerified, onVerifyFailed, wireFormat),
-       bind(&onVerifyInterestFailedWrapper, _1, onVerifyFailed, interest),
+            interest, stepCount, onVerified, onValidationFailed, wireFormat),
+       bind(&onInterestValidationFailedWrapper, _1, _2, onValidationFailed, interest),
        2, stepCount + 1);
   else {
     // For interests, we must check that the timestamp is fresh enough.
@@ -243,20 +249,20 @@ ConfigPolicyManager::checkVerificationPolicy
     Name keyName = IdentityCertificate::certificateNameToPublicKeyName(signatureName);
     MillisecondsSince1970 timestamp = interest->getName().get(-4).toNumber();
 
-    if (!interestTimestampIsFresh(keyName, timestamp)) {
+    if (!interestTimestampIsFresh(keyName, timestamp, failureReason)) {
       try {
-        onVerifyFailed(interest);
+        onValidationFailed(interest, failureReason);
       } catch (const std::exception& ex) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
       } catch (...) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
       }
       return ptr_lib::shared_ptr<ValidationRequest>();
     }
 
     // Certificate is known. Verify the signature.
     // wireEncode returns the cached encoding if available.
-    if (verify(signature.get(), interest->wireEncode())) {
+    if (verify(signature.get(), interest->wireEncode(), failureReason)) {
       try {
         onVerified(interest);
       } catch (const std::exception& ex) {
@@ -268,11 +274,11 @@ ConfigPolicyManager::checkVerificationPolicy
     }
     else {
       try {
-        onVerifyFailed(interest);
+        onValidationFailed(interest, failureReason);
       } catch (const std::exception& ex) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed: " << ex.what());
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());
       } catch (...) {
-        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onVerifyFailed.");
+        _LOG_ERROR("ConfigPolicyManager::checkVerificationPolicy: Error in onValidationFailed.");
       }
     }
 
@@ -283,38 +289,42 @@ ConfigPolicyManager::checkVerificationPolicy
 ptr_lib::shared_ptr<Interest>
 ConfigPolicyManager::getCertificateInterest
   (int stepCount, const string& matchType, const Name& objectName,
-   const Signature* signature)
+   const Signature* signature, string& failureReason)
 {
-  if (stepCount > maxDepth_)
+  if (stepCount > maxDepth_) {
+    ostringstream message;
+    message << "The verification stepCount " << stepCount <<
+      " exceeded the maxDepth " << maxDepth_;
+    failureReason = message.str();
     return ptr_lib::shared_ptr<Interest>();
+  }
 
-  if (!KeyLocator::canGetFromSignature(signature))
+  if (!KeyLocator::canGetFromSignature(signature)) {
     // We only support signature types with key locators.
+    failureReason = "The signature type does not support a KeyLocator";
     return ptr_lib::shared_ptr<Interest>();
+  }
 
-  const KeyLocator* keyLocator;
-  try {
-    keyLocator = &KeyLocator::getFromSignature(signature);
-  }
-  catch (std::exception& ex) {
-    // No signature -> fail.
-    return ptr_lib::shared_ptr<Interest>();
-  }
+  const KeyLocator* keyLocator = &KeyLocator::getFromSignature(signature);
 
   const Name& signatureName = keyLocator->getKeyName();
   // No key name in KeyLocator -> fail.
-  if (signatureName.size() == 0)
+  if (signatureName.size() == 0) {
+    failureReason = "The signature KeyLocator doesn't have a key name";
     return ptr_lib::shared_ptr<Interest>();
+  }
 
   // first see if we can find a rule to match this packet
   const BoostInfoTree* matchedRule = findMatchingRule(objectName, matchType);
 
   // No matching rule -> fail.
-  if (!matchedRule)
+  if (!matchedRule) {
+    failureReason = "No matching rule found for " + objectName.toUri();
     return ptr_lib::shared_ptr<Interest>();
+  }
 
   bool signatureMatches = checkSignatureMatch
-    (signatureName, objectName, *matchedRule);
+    (signatureName, objectName, *matchedRule, failureReason);
   if (!signatureMatches)
     return ptr_lib::shared_ptr<Interest>();
 
@@ -337,22 +347,8 @@ void
 ConfigPolicyManager::onCertificateDownloadComplete
   (const ptr_lib::shared_ptr<Data> &data,
    const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
-   const OnVerified& onVerified, const OnVerifyFailed& onVerifyFailed)
-{
-  IdentityCertificate certificate(*data);
-  certificateCache_->insertCertificate(certificate);
-
-  // Now that we stored the needed certificate, increment stepCount and try again
-  //   to verify the originalData.
-  checkVerificationPolicy(originalData, stepCount + 1, onVerified, onVerifyFailed);
-}
-
-void
-ConfigPolicyManager::onCertificateDownloadCompleteForInterest
-  (const ptr_lib::shared_ptr<Data> &data,
-   const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
-   const OnVerifiedInterest& onVerified,
-   const OnVerifyInterestFailed& onVerifyFailed, WireFormat& wireFormat)
+   const OnVerified& onVerified, 
+   const OnDataValidationFailed& onValidationFailed)
 {
   IdentityCertificate certificate(*data);
   certificateCache_->insertCertificate(certificate);
@@ -360,7 +356,23 @@ ConfigPolicyManager::onCertificateDownloadCompleteForInterest
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
   checkVerificationPolicy
-    (originalInterest, stepCount + 1, onVerified, onVerifyFailed, wireFormat);
+    (originalData, stepCount + 1, onVerified, onValidationFailed);
+}
+
+void
+ConfigPolicyManager::onCertificateDownloadCompleteForInterest
+  (const ptr_lib::shared_ptr<Data> &data,
+   const ptr_lib::shared_ptr<Interest> &originalInterest, int stepCount,
+   const OnVerifiedInterest& onVerified,
+   const OnInterestValidationFailed& onValidationFailed, WireFormat& wireFormat)
+{
+  IdentityCertificate certificate(*data);
+  certificateCache_->insertCertificate(certificate);
+
+  // Now that we stored the needed certificate, increment stepCount and try again
+  //   to verify the originalData.
+  checkVerificationPolicy
+    (originalInterest, stepCount + 1, onVerified, onValidationFailed, wireFormat);
 }
 
 bool
@@ -434,7 +446,8 @@ ConfigPolicyManager::loadTrustAnchorCertificates()
 
 bool
 ConfigPolicyManager::checkSignatureMatch
-  (const Name& signatureName, const Name& objectName, const BoostInfoTree& rule)
+  (const Name& signatureName, const Name& objectName, const BoostInfoTree& rule,
+   string& failureReason)
 {
   const BoostInfoTree& checker = *rule["checker"][0];
   const string& checkerType = checker["type"][0]->getValue();
@@ -443,17 +456,34 @@ ConfigPolicyManager::checkSignatureMatch
     const string& signerType = signerInfo["type"][0]->getValue();
 
     ptr_lib::shared_ptr<Certificate> cert;
-    if (signerType == "file")
+    if (signerType == "file") {
       cert = lookupCertificate(signerInfo["file-name"][0]->getValue(), true);
-    else if (signerType == "base64")
+      if (!cert) {
+        failureReason = "Can't find fixed-signer certificate file: " +
+          signerInfo["file-name"][0]->getValue();
+        return false;
+      }
+    }
+    else if (signerType == "base64") {
       cert = lookupCertificate(signerInfo["base64-string"][0]->getValue(), false);
-    else
+      if (!cert) {
+        failureReason = "Can't find fixed-signer certificate base64: " +
+          signerInfo["base64-string"][0]->getValue();
+        return false;
+      }
+    }
+    else {
+      failureReason = "Unrecognized fixed-signer signerType: " + signerType;
       return false;
+    }
 
-    if (!cert)
+    if (cert->getName().equals(signatureName))
+      return true;
+    else {
+      failureReason = "fixed-signer cert name \"" + cert->getName().toUri() +
+        "\" does not equal signatureName \"" + signatureName.toUri() + "\"";
       return false;
-    else
-      return cert->getName().equals(signatureName);
+    }
   }
   else if (checkerType == "hierarchical") {
     // This just means the data/interest name has the signing identity as a prefix.
@@ -463,10 +493,19 @@ ConfigPolicyManager::checkSignatureMatch
     if (identityMatch.iterator != sregex_iterator()) {
       Name identityPrefix = Name(identityMatch.iterator->str(1)).append
         (Name(identityMatch.iterator->str(2)));
-      return matchesRelation(objectName, identityPrefix, "is-prefix-of");
+      if (matchesRelation(objectName, identityPrefix, "is-prefix-of"))
+        return true;
+      else {
+        failureReason = "The hierarchical objectName \"" + objectName.toUri() +
+          "\" is not a prefix of \"" + identityPrefix.toUri() + "\"";
+        return false;
+      }
     }
-    else
+    else {
+      failureReason = "The hierarchical identityRegex \"" + identityRegex +
+        "\" does not match signatureName \"" + signatureName.toUri() + "\"";
       return false;
+    }
   }
   else if (checkerType == "customized") {
     const BoostInfoTree& keyLocatorInfo = *checker["key-locator"][0];
@@ -476,13 +515,27 @@ ConfigPolicyManager::checkSignatureMatch
     const string* relationType = keyLocatorInfo.getFirstValue("relation");
     if (relationType) {
       Name matchName(keyLocatorInfo["name"][0]->getValue());
-      return matchesRelation(signatureName, matchName, *relationType);
+      if (matchesRelation(signatureName, matchName, *relationType))
+        return true;
+      else {
+        failureReason = "The custom signatureName \"" + signatureName.toUri() +
+          "\" does not match matchName \"" + matchName.toUri() +
+          "\" using relation " + *relationType;
+        return false;
+      }
     }
 
     // Is this a simple regex?
     const string* keyRegex = keyLocatorInfo.getFirstValue("regex");
-    if (keyRegex)
-      return NdnRegexMatcher(*keyRegex, signatureName).iterator != sregex_iterator();
+    if (keyRegex) {
+      if (NdnRegexMatcher(*keyRegex, signatureName).iterator != sregex_iterator())
+        return true;
+      else {
+        failureReason = "The custom signatureName \"" + signatureName.toUri() +
+          "\" does not regex match keyRegex \"" + *keyRegex + "\"";
+        return false;
+      }
+    }
 
     // Is this a hyper-relation?
     vector<const BoostInfoTree*> hyperRelationList = keyLocatorInfo["hyper-relation"];
@@ -496,23 +549,38 @@ ConfigPolicyManager::checkSignatureMatch
       const string* relationType = hyperRelation.getFirstValue("h-relation");
       if (keyRegex && keyExpansion && nameRegex && nameExpansion && relationType) {
         NdnRegexMatcher keyMatch(*keyRegex, signatureName);
-        if (keyMatch.iterator->size() == 0)
+        if (keyMatch.iterator->size() == 0) {
+          failureReason = "The custom hyper-relation signatureName \"" +
+            signatureName.toUri() + "\" does not match the keyRegex \"" +
+            *keyRegex + "\"";
           return false;
+        }
         // format_sed will substitute with \1 instead of $1.
         string keyMatchPrefix = keyMatch.iterator->format(*keyExpansion, regex_constants::format_sed);
 
         NdnRegexMatcher nameMatch(*nameRegex, objectName);
-        if (nameMatch.iterator->size() == 0)
+        if (nameMatch.iterator->size() == 0) {
+          failureReason = "The custom hyper-relation objectName \"" +
+            objectName.toUri() + "\" does not match the nameRegex \"" +
+            *nameRegex + "\"";
           return false;
+        }
         string nameMatchStr = nameMatch.iterator->format(*nameExpansion, regex_constants::format_sed);
 
-        return matchesRelation
-          (Name(nameMatchStr), Name(keyMatchPrefix), *relationType);
+        if (matchesRelation
+            (Name(nameMatchStr), Name(keyMatchPrefix), *relationType))
+          return true;
+        else {
+          failureReason = "The custom hyper-relation nameMatch \"" +
+            nameMatchStr + "\" does not match the keyMatchPrefix \"" +
+            keyMatchPrefix + "\" using relation " + *relationType;
+          return false;
+        }
       }
     }
   }
 
-  // unknown type
+  failureReason = "Unrecognized checkerType: " + checkerType;
   return false;
 }
 
@@ -612,23 +680,29 @@ ConfigPolicyManager::matchesRelation
 
 ptr_lib::shared_ptr<Signature>
 ConfigPolicyManager::extractSignature
-  (const Interest& interest, WireFormat& wireFormat)
+  (const Interest& interest, WireFormat& wireFormat, string& failureReason)
 {
-  if (interest.getName().size() < 2)
+  if (interest.getName().size() < 2) {
+    failureReason = "The signed interest has less than 2 components: " +
+      interest.getName().toUri();
     return ptr_lib::shared_ptr<Signature>();
+  }
 
   try {
     return wireFormat.decodeSignatureInfoAndValue
       (interest.getName().get(-2).getValue(),
        interest.getName().get(-1).getValue());
   } catch (std::exception& e) {
+    failureReason = string("Error decoding the signed interest signature: ") +
+      e.what();
     return ptr_lib::shared_ptr<Signature>();
   }
 }
 
 bool
 ConfigPolicyManager::interestTimestampIsFresh
-  (const Name& keyName, MillisecondsSince1970 timestamp) const
+  (const Name& keyName, MillisecondsSince1970 timestamp,
+   string& failureReason) const
 {
   map<string, MillisecondsSince1970>::const_iterator lastTimestamp =
     keyTimestamps_.find(keyName.toUri());
@@ -636,10 +710,27 @@ ConfigPolicyManager::interestTimestampIsFresh
     MillisecondsSince1970 now = ndn_getNowMilliseconds();
     MillisecondsSince1970 notBefore = now - keyGraceInterval_;
     MillisecondsSince1970 notAfter = now + keyGraceInterval_;
-    return timestamp > notBefore && timestamp < notAfter;
+
+    if (!(timestamp > notBefore && timestamp < notAfter)) {
+      ostringstream message;
+      message <<
+        "The command interest timestamp is not within the first use grace period of " <<
+        keyGraceInterval_ << " milliseconds.";
+      failureReason = message.str();
+      return false;
+    }
+    else
+      return true;
   }
-  else
-    return timestamp > lastTimestamp->second;
+  else {
+    if (timestamp <= lastTimestamp->second) {
+      failureReason =
+        "The command interest timestamp is not newer than the previous timestamp";
+      return false;
+    }
+    else
+      return true;
+  }
 }
 
 void
@@ -680,7 +771,8 @@ ConfigPolicyManager::updateTimestampForKey
 
 bool
 ConfigPolicyManager::verify
-  (const Signature* signatureInfo, const SignedBlob& signedBlob) const
+  (const Signature* signatureInfo, const SignedBlob& signedBlob,
+   string& failureReason) const
 {
   // We have already checked once that there is a key locator.
   const KeyLocator& keyLocator = KeyLocator::getFromSignature(signatureInfo);
@@ -692,19 +784,31 @@ ConfigPolicyManager::verify
       refreshManager_->getCertificate(signatureName);
     if (!certificate)
       certificate = certificateCache_->getCertificate(signatureName);
-    if (!certificate)
-        return false;
+    if (!certificate) {
+      failureReason = "Cannot find a certificate with name " +
+        signatureName.toUri();
+      return false;
+    }
 
     Blob publicKeyDer = certificate->getPublicKeyInfo().getKeyDer();
-    if (publicKeyDer.isNull())
-      // Can't find the public key with the name.
+    if (publicKeyDer.isNull()) {
+      // We don't expect this to happen.
+      failureReason = "There is no public key in the certificate with name " +
+        certificate->getName().toUri();
       return false;
+    }
 
-    return verifySignature(signatureInfo, signedBlob, publicKeyDer);
+    if (verifySignature(signatureInfo, signedBlob, publicKeyDer))
+      return true;
+    else {
+      failureReason = "The signature did not verify with the given public key";
+      return false;
+    }
   }
-  else
-    // Can't find a key to verify.
+  else {
+    failureReason = "The KeyLocator does not have a key name";
     return false;
+  }
 }
 
 ptr_lib::shared_ptr<IdentityCertificate>

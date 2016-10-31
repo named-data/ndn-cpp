@@ -207,7 +207,8 @@ public:
     ++successCount_;
   }
 
-  void onVerifyFailed(const ptr_lib::shared_ptr<Data>& data)
+  void onValidationFailed
+    (const ptr_lib::shared_ptr<Data>& data, const string& reason)
   {
     ++failureCount_;
   }
@@ -217,7 +218,8 @@ public:
     ++successCount_;
   }
 
-  void onVerifyInterestFailed(const ptr_lib::shared_ptr<Interest>& interest)
+  void onInterestValidationFailed
+    (const ptr_lib::shared_ptr<Interest>& interest, const string& reason)
   {
     ++failureCount_;
   }
@@ -234,8 +236,9 @@ static VerificationResult doVerify
 
   ptr_lib::shared_ptr<ValidationRequest> result =
     policyManager.checkVerificationPolicy
-      (toVerify, 0, bind(&VerificationResult::onVerified, &verificationResult, _1),
-       bind(&VerificationResult::onVerifyFailed, &verificationResult, _1));
+      (toVerify, 0,
+       bind(&VerificationResult::onVerified, &verificationResult, _1),
+       bind(&VerificationResult::onValidationFailed, &verificationResult, _1, _2));
 
   verificationResult.hasFurtherSteps_ = (bool)result;
   return verificationResult;
@@ -250,7 +253,8 @@ static VerificationResult doVerify
     policyManager.checkVerificationPolicy
       (toVerify, 0, 
        bind(&VerificationResult::onVerifiedInterest, &verificationResult, _1),
-       bind(&VerificationResult::onVerifyInterestFailed, &verificationResult, _1),
+       bind(&VerificationResult::onInterestValidationFailed,
+            &verificationResult, _1, _2),
        *WireFormat::getDefaultWireFormat());
 
   verificationResult.hasFurtherSteps_ = (bool)result;

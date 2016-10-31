@@ -177,7 +177,7 @@ public:
   VerifyCounter()
   {
     onVerifiedCallCount_ = 0;
-    onVerifyFailedCallCount_ = 0;
+    onValidationFailedCallCount_ = 0;
   }
 
   void
@@ -187,13 +187,14 @@ public:
   }
 
   void
-  onVerifyFailed(const ptr_lib::shared_ptr<Interest>& interest)
+  onInterestValidationFailed
+    (const ptr_lib::shared_ptr<Interest>& interest, const string& reason)
   {
-    ++onVerifyFailedCallCount_;
+    ++onValidationFailedCallCount_;
   }
 
   int onVerifiedCallCount_;
-  int onVerifyFailedCallCount_;
+  int onValidationFailedCallCount_;
 };
 
 class TestInterestDump : public ::testing::Test {
@@ -341,8 +342,8 @@ TEST_F(TestInterestMethods, VerifyDigestSha256)
   VerifyCounter counter;
   keyChain.verifyInterest
     (interest, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onVerifyFailed, &counter, _1));
-  ASSERT_EQ(counter.onVerifyFailedCallCount_, 0) << "Signature verification failed";
+     bind(&VerifyCounter::onInterestValidationFailed, &counter, _1, _2));
+  ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
 
