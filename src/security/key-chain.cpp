@@ -135,6 +135,24 @@ KeyChain::verifyData
   }
 }
 
+static void
+onDataValidationFailedWrapper
+  (const ptr_lib::shared_ptr<Data>& data, const string& reason,
+   const OnVerifyFailed& onVerifyFailed)
+{
+  onVerifyFailed(data);
+}
+
+void
+KeyChain::verifyData
+  (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified,
+   const OnVerifyFailed& onVerifyFailed, int stepCount)
+{
+  verifyData
+    (data, onVerified,
+     bind(&onDataValidationFailedWrapper, _1, _2, onVerifyFailed), stepCount);
+}
+
 void
 KeyChain::verifyInterest
   (const ptr_lib::shared_ptr<Interest>& interest,
@@ -175,6 +193,27 @@ KeyChain::verifyInterest
       _LOG_ERROR("KeyChain::verifyInterest: Error in onValidationFailed.");
     }
   }
+}
+
+static void
+onInterestValidationFailedWrapper
+  (const ptr_lib::shared_ptr<Interest>& interest, const string& reason,
+   const OnVerifyInterestFailed& onVerifyFailed)
+{
+  onVerifyFailed(interest);
+}
+
+void
+KeyChain::verifyInterest
+  (const ptr_lib::shared_ptr<Interest>& interest,
+   const OnVerifiedInterest& onVerified,
+   const OnVerifyInterestFailed& onVerifyFailed, int stepCount,
+   WireFormat& wireFormat)
+{
+  verifyInterest
+    (interest, onVerified,
+     bind(&onInterestValidationFailedWrapper, _1, _2, onVerifyFailed),
+     stepCount, wireFormat);
 }
 
 #if NDN_CPP_HAVE_LIBCRYPTO

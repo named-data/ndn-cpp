@@ -482,6 +482,27 @@ public:
      const OnDataValidationFailed& onValidationFailed, int stepCount = 0);
 
   /**
+   * Check the signature on the Data object and call either onVerify or
+   * onVerifyFailed.
+   * We use callback functions because verify may fetch information to check the signature.
+   * @deprecated Use verifyData with OnDataValidationFailed.
+   * @param data The Data object with the signature to check.
+   * @param onVerified If the signature is verified, this calls onVerified(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onVerifyFailed If the signature check fails, this calls
+   * onVerifyFailed(data).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   */
+  void
+  DEPRECATED_IN_NDN_CPP verifyData
+    (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified,
+     const OnVerifyFailed& onVerifyFailed, int stepCount = 0);
+
+  /**
    * Check the signature on the signed interest and call either onVerify or
    * onValidationFailed. We use callback functions because verify may fetch
    * information to check the signature.
@@ -501,6 +522,29 @@ public:
     (const ptr_lib::shared_ptr<Interest>& interest,
      const OnVerifiedInterest& onVerified,
      const OnInterestValidationFailed& onValidationFailed, int stepCount = 0,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Check the signature on the signed interest and call either onVerify or
+   * onVerifyFailed. We use callback functions because verify may fetch
+   * information to check the signature.
+   * @deprecated Use verifyInterest with OnInterestValidationFailed.
+   * @param interest The interest with the signature to check.
+   * @param onVerified If the signature is verified, this calls onVerified(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onVerifyFailed If the signature check fails, this calls
+   * onVerifyFailed(interest).
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   */
+  void
+  DEPRECATED_IN_NDN_CPP verifyInterest
+    (const ptr_lib::shared_ptr<Interest>& interest,
+     const OnVerifiedInterest& onVerified,
+     const OnVerifyInterestFailed& onVerifyFailed, int stepCount = 0,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
