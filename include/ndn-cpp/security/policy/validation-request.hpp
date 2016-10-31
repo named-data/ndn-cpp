@@ -53,6 +53,14 @@ typedef func_lib::function<void(const ptr_lib::shared_ptr<Interest>& interest)>
   OnVerifiedInterest;
 
 /**
+ * An OnInterestValidationFailed function object is used to pass a callback to
+ * verifyInterest to report a failed verification.
+ */
+typedef func_lib::function<void
+  (const ptr_lib::shared_ptr<Interest>& interest,
+   const std::string& reason)> OnInterestValidationFailed;
+
+/**
  * An OnVerifyInterestFailed function object is used to pass a callback to
  * verifyInterest to report a failed verification.
  */
