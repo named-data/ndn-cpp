@@ -194,14 +194,21 @@ SelfVerifyPolicyManager::getPublicKeyDer
   (const KeyLocator& keyLocator, string& failureReason)
 {
   if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME && identityStorage_) {
+    Name keyName;
     try {
       // Assume the key name is a certificate name.
-      return identityStorage_->getKey
-        (IdentityCertificate::certificateNameToPublicKeyName
-         (keyLocator.getKeyName()));
+      keyName = IdentityCertificate::certificateNameToPublicKeyName
+         (keyLocator.getKeyName());
+    } catch (const std::exception&) {
+      failureReason = "Cannot get a public key name from the certificate named: " +
+        keyLocator.getKeyName().toUri();
+      return Blob();
+    }
+    try {
+      return identityStorage_->getKey(keyName);
     } catch (SecurityException&) {
       failureReason = "The identityStorage doesn't have the key named " +
-        keyLocator.getKeyName().toUri();
+        keyName.toUri();
       return Blob();
     }
   }
