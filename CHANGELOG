@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.10 (2016-10-31)
-------------------------------------------------
+NDN-CPP v0.11 (2016-11-02)
+--------------------------
 
 Changes
 * Added the encrypt package for the Group-Based Encryption Protocol, ported from
