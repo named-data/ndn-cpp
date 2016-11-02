@@ -472,7 +472,7 @@ TEST_F(TestDataMethods, Verify)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+     bind(&VerifyCounter::onValidationFailed, &counter, _1, _2));
   ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
@@ -485,7 +485,7 @@ TEST_F(TestDataMethods, VerifyEcdsa)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+     bind(&VerifyCounter::onValidationFailed, &counter, _1, _2));
   ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
@@ -498,7 +498,7 @@ TEST_F(TestDataMethods, VerifyDigestSha256)
 
   credentials.verifyData
     (freshData, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onValidationFailed, &counter, _1));
+     bind(&VerifyCounter::onValidationFailed, &counter, _1, _2));
   ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }
