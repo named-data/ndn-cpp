@@ -1,3 +1,9 @@
+Interim changes since NDN-CPP v0.11 (2016-11-08)
+------------------------------------------------
+
+Bug Fixes
+* https://redmine.named-data.net/issues/3838 Support for protoc 3.0.
+
 NDN-CPP v0.11 (2016-11-02)
 --------------------------
 
