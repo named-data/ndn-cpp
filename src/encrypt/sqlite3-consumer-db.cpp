@@ -42,11 +42,7 @@ static const string INITIALIZATION =
   "    key_buf             BLOB NOT NULL              \n"
   "  );                                               \n"
   "CREATE UNIQUE INDEX IF NOT EXISTS                  \n"
-  "   KeyNameIndex ON decryptionkeys(key_name);       \n"
-  "CREATE TABLE IF NOT EXISTS                         \n"
-  "  consumer(                                        \n"
-  "    prefix              BLOB PRIMARY KEY           \n"
-  "  );                                               \n";
+  "   KeyNameIndex ON decryptionkeys(key_name);       \n";
 
 /**
  * A utility function to call the normal sqlite3_bind_blob where the value and
