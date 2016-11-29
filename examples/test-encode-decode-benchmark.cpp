@@ -299,7 +299,10 @@ benchmarkDecodeDataSecondsCpp
     data->wireDecode(encoding);
 
     if (useCrypto)
-      keyChain.verifyData(data, onVerified, onValidationFailed);
+      keyChain.verifyData
+        (data, onVerified,
+         // Cast to disambiguate from the deprecated OnVerifyFailed.
+         (const OnDataValidationFailed)onValidationFailed);
   }
   double finish = getNowSeconds();
 
