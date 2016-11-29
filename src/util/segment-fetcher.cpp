@@ -103,7 +103,9 @@ SegmentFetcher::onSegmentReceived
     validatorKeyChain_->verifyData
       (data,
        bind(&SegmentFetcher::onVerified, shared_from_this(), _1, originalInterest),
-       bind(&SegmentFetcher::onValidationFailed, shared_from_this(), _1, _2));
+       // Cast to disambiguate from the deprecated OnVerifyFailed.
+       (const OnDataValidationFailed)bind
+         (&SegmentFetcher::onValidationFailed, shared_from_this(), _1, _2));
   else {
     if (!verifySegment_(data)) {
       onValidationFailed(data, "verifySegment returned false");

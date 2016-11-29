@@ -342,7 +342,9 @@ TEST_F(TestInterestMethods, VerifyDigestSha256)
   VerifyCounter counter;
   keyChain.verifyInterest
     (interest, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onInterestValidationFailed, &counter, _1, _2));
+     // Cast to disambiguate from the deprecated OnVerifyInterestFailed.
+     (const OnInterestValidationFailed)bind
+       (&VerifyCounter::onInterestValidationFailed, &counter, _1, _2));
   ASSERT_EQ(counter.onValidationFailedCallCount_, 0) << "Signature verification failed";
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 }

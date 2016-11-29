@@ -315,7 +315,9 @@ int main(int argc, char** argv)
 
     keyChain.verifyData
       (reDecodedData, bind(&onVerified, "Re-decoded Data", _1),
-       bind(&onValidationFailed, "Re-decoded Data", _1, _2));
+       // Cast to disambiguate from the deprecated OnVerifyFailed.
+       (const OnDataValidationFailed)bind
+         (&onValidationFailed, "Re-decoded Data", _1, _2));
 
     ptr_lib::shared_ptr<Data> freshData(new Data(Name("/ndn/abc")));
     const uint8_t freshContent[] = "SUCCESS!";
@@ -329,7 +331,9 @@ int main(int argc, char** argv)
     keyChain.verifyData
       (freshData,
        bind(&onVerified, "Freshly-signed Data", _1),
-       bind(&onValidationFailed, "Freshly-signed Data", _1, _2));
+       // Cast to disambiguate from the deprecated OnVerifyFailed.
+       (const OnDataValidationFailed)bind
+         (&onValidationFailed, "Freshly-signed Data", _1, _2));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
