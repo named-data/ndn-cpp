@@ -268,7 +268,9 @@ int main(int argc, char** argv)
 
     keyChain.verifyInterest
       (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
-       bind(&onInterestValidationFailed, "Freshly-signed Interest", _1, _2));
+       // Cast to disambiguate from the deprecated OnVerifyInterestFailed.
+       (const OnInterestValidationFailed)bind
+         (&onInterestValidationFailed, "Freshly-signed Interest", _1, _2));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
