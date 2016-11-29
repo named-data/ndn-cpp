@@ -329,7 +329,6 @@ TEST_F(TestSqlIdentityStorage, EcdsaIdentity)
 
   // Check the self-signature.
   VerifyCounter counter;
-  Name certName = identityStorage->getDefaultCertificateNameForKey(keyName);
   keyChain->verifyData
     (cert, bind(&VerifyCounter::onVerified, &counter, _1),
      bind(&VerifyCounter::onValidationFailed, &counter, _1, _2));
