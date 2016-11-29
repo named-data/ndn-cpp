@@ -157,6 +157,8 @@ private:
   private:
     class KeyInfo {
     public:
+      KeyInfo() : beginTimeSlot(0), endTimeSlot(0) {}
+
       MillisecondsSince1970 beginTimeSlot;
       MillisecondsSince1970 endTimeSlot;
       Blob keyBits;
