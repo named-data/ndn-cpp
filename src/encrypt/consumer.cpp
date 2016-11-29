@@ -79,7 +79,9 @@ Consumer::Impl::consume
         parent_->keyChain_->verifyData
           (contentData,
            bind(&Callbacks::onContentVerified, shared_from_this(), _1),
-           bind(&Impl::onValidationFailed, _1, _2, onError_));
+           // Cast to disambiguate from the deprecated OnVerifyFailed.
+           (const OnDataValidationFailed)bind
+             (&Impl::onValidationFailed, _1, _2, onError_));
       } catch (const std::exception& ex) {
         try {
           onError_(EncryptError::ErrorCode::General,
@@ -327,7 +329,9 @@ Consumer::Impl::decryptContent
           parent_->keyChain_->verifyData
             (cKeyData,
              bind(&Callbacks::onCKeyVerified, shared_from_this(), _1),
-             bind(&Impl::onValidationFailed, _1, _2, onError_));
+             // Cast to disambiguate from the deprecated OnVerifyFailed.
+             (const OnDataValidationFailed)bind
+               (&Impl::onValidationFailed, _1, _2, onError_));
         } catch (const std::exception& ex) {
           try {
             onError_(EncryptError::ErrorCode::General,
@@ -472,7 +476,9 @@ Consumer::Impl::decryptCKey
           parent_->keyChain_->verifyData
             (dKeyData,
              bind(&Callbacks::onDKeyVerified, shared_from_this(), _1),
-             bind(&Impl::onValidationFailed, _1, _2, onError_));
+             // Cast to disambiguate from the deprecated OnVerifyFailed.
+             (const OnDataValidationFailed)bind
+               (&Impl::onValidationFailed, _1, _2, onError_));
         } catch (const std::exception& ex) {
           try {
             onError_(EncryptError::ErrorCode::General,

@@ -150,7 +150,9 @@ KeyChain::verifyData
 {
   verifyData
     (data, onVerified,
-     bind(&onDataValidationFailedWrapper, _1, _2, onVerifyFailed), stepCount);
+     // Cast to disambiguate from the deprecated OnVerifyFailed.
+     (const OnDataValidationFailed)bind
+       (&onDataValidationFailedWrapper, _1, _2, onVerifyFailed), stepCount);
 }
 
 void
@@ -212,7 +214,9 @@ KeyChain::verifyInterest
 {
   verifyInterest
     (interest, onVerified,
-     bind(&onInterestValidationFailedWrapper, _1, _2, onVerifyFailed),
+     // Cast to disambiguate from the deprecated OnVerifyInterestFailed.
+     (const OnInterestValidationFailed)bind
+       (&onInterestValidationFailedWrapper, _1, _2, onVerifyFailed),
      stepCount, wireFormat);
 }
 

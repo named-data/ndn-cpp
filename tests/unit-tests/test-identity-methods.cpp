@@ -331,7 +331,9 @@ TEST_F(TestSqlIdentityStorage, EcdsaIdentity)
   VerifyCounter counter;
   keyChain->verifyData
     (cert, bind(&VerifyCounter::onVerified, &counter, _1),
-     bind(&VerifyCounter::onValidationFailed, &counter, _1, _2));
+     // Cast to disambiguate from the deprecated OnVerifyFailed.
+     (const OnDataValidationFailed)bind
+       (&VerifyCounter::onValidationFailed, &counter, _1, _2));
   ASSERT_EQ(counter.onVerifiedCallCount_, 1) << "Verification callback was not used.";
 
   keyChain->deleteIdentity(identityName);
