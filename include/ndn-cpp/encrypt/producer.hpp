@@ -243,7 +243,8 @@ private:
       (const ptr_lib::shared_ptr<const Interest>& interest,
        const ptr_lib::shared_ptr<NetworkNack>& networkNack,
        MillisecondsSince1970 timeSlot,
-       const OnEncryptedKeys& onEncryptedKeys);
+       const OnEncryptedKeys& onEncryptedKeys,
+       const EncryptError::OnError& onError);
 
     /**
      * Decrease the count of outstanding E-KEY interests for the C-KEY for

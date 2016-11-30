@@ -180,7 +180,7 @@ Producer::Impl::sendKeyInterest
      bind(&Producer::Impl::handleTimeout, shared_from_this(), _1, timeSlot,
           onEncryptedKeys, onError),
      bind(&Producer::Impl::handleNetworkNack, shared_from_this(), _1, _2,
-          timeSlot, onEncryptedKeys));
+          timeSlot, onEncryptedKeys, onError));
 }
 
 void
@@ -208,8 +208,10 @@ Producer::Impl::handleNetworkNack
   (const ptr_lib::shared_ptr<const Interest>& interest,
    const ptr_lib::shared_ptr<NetworkNack>& networkNack,
    MillisecondsSince1970 timeSlot,
-   const OnEncryptedKeys& onEncryptedKeys)
+   const OnEncryptedKeys& onEncryptedKeys,
+   const EncryptError::OnError& onError)
 {
+  // We have run out of options....
   MillisecondsSince1970 timeCount = ::round(timeSlot);
   updateKeyRequest(keyRequests_[timeCount], timeCount, onEncryptedKeys);
 }
@@ -224,9 +226,9 @@ Producer::Impl::updateKeyRequest
     try {
       onEncryptedKeys(keyRequest->encryptedKeys);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("Producer::Impl::handleNetworkNack: Error in onEncryptedKeys: " << ex.what());
+      _LOG_ERROR("Producer::Impl::updateKeyRequest: Error in onEncryptedKeys: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("Producer::Impl::handleNetworkNack: Error in onEncryptedKeys.");
+      _LOG_ERROR("Producer::Impl::updateKeyRequest: Error in onEncryptedKeys.");
     }
     keyRequests_.erase(timeCount);
   }
