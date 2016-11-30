@@ -65,11 +65,18 @@ public:
    * @param database The ProducerDb database for storing keys.
    * @param repeatAttempts (optional) The maximum retry for retrieving keys. If
    * omitted, use 3.
+   * @param keyRetrievalLink (optional) The Link object to use in Interests for
+   * key retrieval. This makes a copy of the Link object. If the Link object's
+   * getDelegations().size() is zero, don't use it If omitted, don't use a Link
+   * object.
    */
   Producer
     (const Name& prefix, const Name& dataType, Face* face, KeyChain* keyChain,
-     const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts = 3)
-  : impl_(new Impl(prefix, dataType, face, keyChain, database, repeatAttempts))
+     const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts = 3,
+     const Link& keyRetrievalLink = getNoLink())
+  : impl_(new Impl
+      (prefix, dataType, face, keyChain, database, repeatAttempts,
+       keyRetrievalLink))
   {
   }
 
@@ -142,7 +149,8 @@ private:
      */
     Impl
       (const Name& prefix, const Name& dataType, Face* face, KeyChain* keyChain,
-       const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts);
+       const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts,
+       const Link& keyRetrievalLink);
 
     Name
     createContentKey
@@ -366,11 +374,28 @@ private:
     ptr_lib::shared_ptr<ProducerDb> database_;
     int maxRepeatAttempts_;
 
+    Link keyRetrievalLink_;
+
     static const int START_TIME_STAMP_INDEX = -2;
     static const int END_TIME_STAMP_INDEX = -1;
   };
 
+  /**
+   * Get the static NoLink object, creating it if needed. We do this explicitly
+   * because some C++ environments don't handle static constructors well.
+   * @return The static NoLink object.
+   */
+  static Link&
+  getNoLink()
+  {
+    if (!noLink_)
+      noLink_ = new Link();
+
+    return *noLink_;
+  }
+
   ptr_lib::shared_ptr<Impl> impl_;
+  static Link* noLink_;
 };
 
 }
