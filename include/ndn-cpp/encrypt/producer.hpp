@@ -67,13 +67,13 @@ public:
    * omitted, use 3.
    * @param keyRetrievalLink (optional) The Link object to use in Interests for
    * key retrieval. This makes a copy of the Link object. If the Link object's
-   * getDelegations().size() is zero, don't use it If omitted, don't use a Link
+   * getDelegations().size() is zero, don't use it. If omitted, don't use a Link
    * object.
    */
   Producer
     (const Name& prefix, const Name& dataType, Face* face, KeyChain* keyChain,
      const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts = 3,
-     const Link& keyRetrievalLink = getNoLink())
+     const Link& keyRetrievalLink = getNO_LINK())
   : impl_(new Impl
       (prefix, dataType, face, keyChain, database, repeatAttempts,
        keyRetrievalLink))
@@ -387,7 +387,7 @@ private:
    * @return The static NoLink object.
    */
   static Link&
-  getNoLink()
+  getNO_LINK()
   {
     if (!noLink_)
       noLink_ = new Link();
