@@ -199,8 +199,10 @@ Producer::Impl::handleTimeout
     sendKeyInterest(*interest, timeSlot, onEncryptedKeys, onError);
   }
   else
-    // No more retrials.
-    updateKeyRequest(keyRequest, timeCount, onEncryptedKeys);
+    // Treat an eventual timeout as a network Nack.
+    handleNetworkNack
+      (interest, ptr_lib::make_shared<NetworkNack>(), timeSlot, onEncryptedKeys,
+       onError);
 }
 
 void
