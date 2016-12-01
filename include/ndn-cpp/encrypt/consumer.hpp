@@ -225,6 +225,20 @@ private:
     }
 
     /**
+     * Express the interest, call verifyData for the fetched Data packet and
+     * call onVerified if verify succeeds. If verify fails, call
+     * onError(EncryptError::ErrorCode::Validation, "verifyData failed").
+     * @param interest The Interest to express.
+     * @param onVerified When the fetched Data packet validation succeeds, this
+     * calls onVerified(data).
+     * @param onError This calls onError(errorCode, message) for an error.
+     */
+    void
+    sendInterest
+      (const ptr_lib::shared_ptr<Interest>& interest,
+       const OnVerified& onVerified, const EncryptError::OnError& onError);
+
+    /**
      * Call onError(EncryptError::ErrorCode::Validation, "verifyData failed")
      * within a try block to log exceptions that it throws.
      */

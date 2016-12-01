@@ -57,47 +57,17 @@ Consumer::Impl::consume
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (Consumer::Impl* parent, const ptr_lib::shared_ptr<Interest>& interest,
-       const OnConsumeComplete& onConsumeComplete,
+      (Consumer::Impl* parent, const OnConsumeComplete& onConsumeComplete,
        const EncryptError::OnError& onError)
-    : parent_(parent), interest_(interest),
-      onConsumeComplete_(onConsumeComplete), onError_(onError)
+    : parent_(parent), onConsumeComplete_(onConsumeComplete), onError_(onError)
     {}
-
-    void
-    onData
-      (const ptr_lib::shared_ptr<const Interest>& contentInterest,
-       const ptr_lib::shared_ptr<Data>& contentData)
-    {
-      // Save this for calling onConsumeComplete.
-      contentData_ = contentData;
-
-      // The Interest has no selectors, so assume the library correctly
-      // matched with the Data name before calling onData.
-
-      try {
-        parent_->keyChain_->verifyData
-          (contentData,
-           bind(&Callbacks::onContentVerified, shared_from_this(), _1),
-           // Cast to disambiguate from the deprecated OnVerifyFailed.
-           (const OnDataValidationFailed)bind
-             (&Impl::onValidationFailed, _1, _2, onError_));
-      } catch (const std::exception& ex) {
-        try {
-          onError_(EncryptError::ErrorCode::General,
-                  string("verifyData error: ") + ex.what());
-        } catch (const std::exception& ex) {
-          _LOG_ERROR("Error in onError: " << ex.what());
-        } catch (...) {
-          _LOG_ERROR("Error in onError.");
-        }
-        return;
-      }
-    }
 
     void
     onContentVerified(const ptr_lib::shared_ptr<Data>& validData)
     {
+      // Save this for calling onConsumeComplete.
+      contentData_ = validData;
+
       parent_->decryptContent
         (*validData,
          bind(&Callbacks::onContentPlainText, shared_from_this(), _1),
@@ -116,52 +86,16 @@ Consumer::Impl::consume
       }
     }
 
-    void
-    onTimeout(const ptr_lib::shared_ptr<const Interest>& dKeyInterest)
-    {
-      // We should re-try at least once.
-      try {
-        parent_->face_->expressInterest
-          (*interest_, bind(&Callbacks::onData, shared_from_this(), _1, _2),
-           bind(&Impl::onFinalTimeout, _1, onError_));
-      } catch (const std::exception& ex) {
-        try {
-          onError_(EncryptError::ErrorCode::General,
-                   string("expressInterest error: ") + ex.what());
-        } catch (const std::exception& ex) {
-          _LOG_ERROR("Error in onError: " << ex.what());
-        } catch (...) {
-          _LOG_ERROR("Error in onError.");
-        }
-        return;
-      }
-    }
-
     Consumer::Impl* parent_;
-    ptr_lib::shared_ptr<Interest> interest_;
     OnConsumeComplete onConsumeComplete_;
     EncryptError::OnError onError_;
     ptr_lib::shared_ptr<Data> contentData_;
   };
 
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-    (this, interest, onConsumeComplete, onError));
-  // Express the Interest.
-  try {
-    face_->expressInterest
-      (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
-       bind(&Callbacks::onTimeout, callbacks, _1));
-  } catch (const std::exception& ex) {
-    try {
-      onError(EncryptError::ErrorCode::General,
-              string("expressInterest error: ") + ex.what());
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("Error in onError: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("Error in onError.");
-    }
-    return;
-  }
+    (this, onConsumeComplete, onError));
+  sendInterest
+    (interest, bind(&Callbacks::onContentVerified, callbacks, _1), onError);
 }
 
 void
@@ -309,41 +243,11 @@ Consumer::Impl::decryptContent
       Callbacks
         (Consumer::Impl* parent,
          const ptr_lib::shared_ptr<EncryptedContent>& dataEncryptedContent,
-         const Name& cKeyName, const ptr_lib::shared_ptr<Interest>& interest,
-         const OnPlainText& onPlainText,
+         const Name& cKeyName, const OnPlainText& onPlainText,
          const EncryptError::OnError& onError)
       : parent_(parent), dataEncryptedContent_(dataEncryptedContent),
-        cKeyName_(cKeyName), interest_(interest), onPlainText_(onPlainText),
-        onError_(onError)
+        cKeyName_(cKeyName), onPlainText_(onPlainText), onError_(onError)
       {}
-
-      void
-      onData
-        (const ptr_lib::shared_ptr<const Interest>& dKeyInterest,
-         const ptr_lib::shared_ptr<Data>& cKeyData)
-      {
-        // The Interest has no selectors, so assume the library correctly
-        // matched with the Data name before calling onData.
-
-        try {
-          parent_->keyChain_->verifyData
-            (cKeyData,
-             bind(&Callbacks::onCKeyVerified, shared_from_this(), _1),
-             // Cast to disambiguate from the deprecated OnVerifyFailed.
-             (const OnDataValidationFailed)bind
-               (&Impl::onValidationFailed, _1, _2, onError_));
-        } catch (const std::exception& ex) {
-          try {
-            onError_(EncryptError::ErrorCode::General,
-                    string("verifyData error: ") + ex.what());
-          } catch (const std::exception& ex) {
-            _LOG_ERROR("Error in onError: " << ex.what());
-          } catch (...) {
-            _LOG_ERROR("Error in onError.");
-          }
-          return;
-        }
-      }
 
       void
       onCKeyVerified(const ptr_lib::shared_ptr<Data>& validCKeyData)
@@ -362,53 +266,17 @@ Consumer::Impl::decryptContent
           (*dataEncryptedContent_, cKeyBits, onPlainText_, onError_);
       }
 
-      void
-      onTimeout(const ptr_lib::shared_ptr<const Interest>& dKeyInterest)
-      {
-        // We should re-try at least once.
-        try {
-          parent_->face_->expressInterest
-            (*interest_, bind(&Callbacks::onData, shared_from_this(), _1, _2),
-             bind(&Impl::onFinalTimeout, _1, onError_));
-        } catch (const std::exception& ex) {
-          try {
-            onError_(EncryptError::ErrorCode::General,
-                     string("expressInterest error: ") + ex.what());
-          } catch (const std::exception& ex) {
-            _LOG_ERROR("Error in onError: " << ex.what());
-          } catch (...) {
-            _LOG_ERROR("Error in onError.");
-          }
-          return;
-        }
-      }
-
       Consumer::Impl* parent_;
       ptr_lib::shared_ptr<EncryptedContent> dataEncryptedContent_;
       Name cKeyName_;
-      ptr_lib::shared_ptr<Interest> interest_;
       OnPlainText onPlainText_;
       EncryptError::OnError onError_;
     };
 
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-      (this, dataEncryptedContent, cKeyName, interest, onPlainText, onError));
-    // Express the Interest.
-    try {
-      face_->expressInterest
-        (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
-         bind(&Callbacks::onTimeout, callbacks, _1));
-    } catch (const std::exception& ex) {
-      try {
-        onError(EncryptError::ErrorCode::General,
-                string("expressInterest error: ") + ex.what());
-      } catch (const std::exception& ex) {
-        _LOG_ERROR("Error in onError: " << ex.what());
-      } catch (...) {
-        _LOG_ERROR("Error in onError.");
-      }
-      return;
-    }
+      (this, dataEncryptedContent, cKeyName, onPlainText, onError));
+    sendInterest
+      (interest, bind(&Callbacks::onCKeyVerified, callbacks, _1), onError);
   }
 }
 
@@ -456,41 +324,11 @@ Consumer::Impl::decryptCKey
       Callbacks
         (Consumer::Impl* parent, 
          const ptr_lib::shared_ptr<EncryptedContent>& cKeyEncryptedContent,
-         const Name& dKeyName, const ptr_lib::shared_ptr<Interest>& interest,
-         const OnPlainText& onPlainText,
+         const Name& dKeyName, const OnPlainText& onPlainText,
          const EncryptError::OnError& onError)
       : parent_(parent), cKeyEncryptedContent_(cKeyEncryptedContent),
-        dKeyName_(dKeyName), interest_(interest), onPlainText_(onPlainText),
-        onError_(onError)
+        dKeyName_(dKeyName), onPlainText_(onPlainText), onError_(onError)
       {}
-
-      void
-      onData
-        (const ptr_lib::shared_ptr<const Interest>& dKeyInterest,
-         const ptr_lib::shared_ptr<Data>& dKeyData)
-      {
-        // The Interest has no selectors, so assume the library correctly
-        // matched with the Data name before calling onData.
-
-        try {
-          parent_->keyChain_->verifyData
-            (dKeyData,
-             bind(&Callbacks::onDKeyVerified, shared_from_this(), _1),
-             // Cast to disambiguate from the deprecated OnVerifyFailed.
-             (const OnDataValidationFailed)bind
-               (&Impl::onValidationFailed, _1, _2, onError_));
-        } catch (const std::exception& ex) {
-          try {
-            onError_(EncryptError::ErrorCode::General,
-                    string("verifyData error: ") + ex.what());
-          } catch (const std::exception& ex) {
-            _LOG_ERROR("Error in onError: " << ex.what());
-          } catch (...) {
-            _LOG_ERROR("Error in onError.");
-          }
-          return;
-        }
-      }
 
       void
       onDKeyVerified(const ptr_lib::shared_ptr<Data>& validDKeyData)
@@ -509,53 +347,17 @@ Consumer::Impl::decryptCKey
           (*cKeyEncryptedContent_, dKeyBits, onPlainText_, onError_);
       }
 
-      void
-      onTimeout(const ptr_lib::shared_ptr<const Interest>& dKeyInterest)
-      {
-        // We should re-try at least once.
-        try {
-          parent_->face_->expressInterest
-            (*interest_, bind(&Callbacks::onData, shared_from_this(), _1, _2),
-             bind(&Impl::onFinalTimeout, _1, onError_));
-        } catch (const std::exception& ex) {
-          try {
-            onError_(EncryptError::ErrorCode::General,
-                     string("expressInterest error: ") + ex.what());
-          } catch (const std::exception& ex) {
-            _LOG_ERROR("Error in onError: " << ex.what());
-          } catch (...) {
-            _LOG_ERROR("Error in onError.");
-          }
-          return;
-        }
-      }
-
       Consumer::Impl* parent_;
       ptr_lib::shared_ptr<EncryptedContent> cKeyEncryptedContent_;
       Name dKeyName_;
-      ptr_lib::shared_ptr<Interest> interest_;
       OnPlainText onPlainText_;
       EncryptError::OnError onError_;
     };
 
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-      (this, cKeyEncryptedContent, dKeyName, interest, onPlainText, onError));
-    // Express the Interest.
-    try {
-      face_->expressInterest
-        (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
-         bind(&Callbacks::onTimeout, callbacks, _1));
-    } catch (const std::exception& ex) {
-      try {
-        onError(EncryptError::ErrorCode::General,
-                string("expressInterest error: ") + ex.what());
-      } catch (const std::exception& ex) {
-        _LOG_ERROR("Error in onError: " << ex.what());
-      } catch (...) {
-        _LOG_ERROR("Error in onError.");
-      }
-      return;
-    }
+      (this, cKeyEncryptedContent, dKeyName, onPlainText, onError));
+    sendInterest
+      (interest, bind(&Callbacks::onDKeyVerified, callbacks, _1), onError);
   }
 }
 
@@ -634,6 +436,97 @@ Consumer::Impl::decryptDKey
     (encryptedNonce, consumerKeyBlob,
      bind(&Consumer::Impl::decrypt, encryptedPayloadBlob, _1, onPlainText, onError),
      onError);
+}
+
+void
+Consumer::Impl::sendInterest
+  (const ptr_lib::shared_ptr<Interest>& interest, const OnVerified& onVerified,
+   const EncryptError::OnError& onError)
+{
+  // Prepare the callbacks. We make a shared_ptr object since it needs to
+  // exist after we call expressInterest and return.
+  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  public:
+    Callbacks
+      (Consumer::Impl* parent, const ptr_lib::shared_ptr<Interest>& interest,
+       const OnVerified& onVerified,
+       const EncryptError::OnError& onError)
+    : parent_(parent), interest_(interest), onVerified_(onVerified),
+      onError_(onError)
+    {}
+
+    void
+    onData
+      (const ptr_lib::shared_ptr<const Interest>& contentInterest,
+       const ptr_lib::shared_ptr<Data>& contentData)
+    {
+      // The Interest has no selectors, so assume the library correctly
+      // matched with the Data name before calling onData.
+
+      try {
+        parent_->keyChain_->verifyData
+          (contentData, onVerified_,
+           // Cast to disambiguate from the deprecated OnVerifyFailed.
+           (const OnDataValidationFailed)bind
+             (&Impl::onValidationFailed, _1, _2, onError_));
+      } catch (const std::exception& ex) {
+        try {
+          onError_(EncryptError::ErrorCode::General,
+                  string("verifyData error: ") + ex.what());
+        } catch (const std::exception& ex) {
+          _LOG_ERROR("Error in onError: " << ex.what());
+        } catch (...) {
+          _LOG_ERROR("Error in onError.");
+        }
+        return;
+      }
+    }
+
+    void
+    onTimeout(const ptr_lib::shared_ptr<const Interest>& dKeyInterest)
+    {
+      // We should re-try at least once.
+      try {
+        parent_->face_->expressInterest
+          (*interest_, bind(&Callbacks::onData, shared_from_this(), _1, _2),
+           bind(&Impl::onFinalTimeout, _1, onError_));
+      } catch (const std::exception& ex) {
+        try {
+          onError_(EncryptError::ErrorCode::General,
+                   string("expressInterest error: ") + ex.what());
+        } catch (const std::exception& ex) {
+          _LOG_ERROR("Error in onError: " << ex.what());
+        } catch (...) {
+          _LOG_ERROR("Error in onError.");
+        }
+        return;
+      }
+    }
+
+    Consumer::Impl* parent_;
+    ptr_lib::shared_ptr<Interest> interest_;
+    const OnVerified onVerified_;
+    EncryptError::OnError onError_;
+  };
+
+  ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
+    (this, interest, onVerified, onError));
+  // Express the Interest.
+  try {
+    face_->expressInterest
+      (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
+       bind(&Callbacks::onTimeout, callbacks, _1));
+  } catch (const std::exception& ex) {
+    try {
+      onError(EncryptError::ErrorCode::General,
+              string("expressInterest error: ") + ex.what());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Error in onError: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Error in onError.");
+    }
+    return;
+  }
 }
 
 void
