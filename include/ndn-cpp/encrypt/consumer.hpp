@@ -228,14 +228,18 @@ private:
      * Express the interest, call verifyData for the fetched Data packet and
      * call onVerified if verify succeeds. If verify fails, call
      * onError(EncryptError::ErrorCode::Validation, "verifyData failed").
+     * If the interest times out, re-express nRetrials times. If the interest
+     * times out nRetrials times, or for a network Nack, call
+     * onError(EncryptError::ErrorCode::DataRetrievalFailure, interest.getName().toUri()).
      * @param interest The Interest to express.
+     * @param nRetrials The number of retrials left after a timeout.
      * @param onVerified When the fetched Data packet validation succeeds, this
      * calls onVerified(data).
      * @param onError This calls onError(errorCode, message) for an error.
      */
     void
     sendInterest
-      (const ptr_lib::shared_ptr<Interest>& interest,
+      (const ptr_lib::shared_ptr<const Interest>& interest, int nRetrials,
        const OnVerified& onVerified, const EncryptError::OnError& onError);
 
     /**
@@ -245,15 +249,6 @@ private:
     static void
     onValidationFailed
       (const ptr_lib::shared_ptr<Data>& data, const std::string& reason,
-       const EncryptError::OnError& onError);
-
-    /**
-     * Call onError(EncryptError::ErrorCode::Timeout, interest->getName().toUri())
-     * within a try block to log exceptions that it throws.
-     */
-    static void
-    onFinalTimeout
-      (const ptr_lib::shared_ptr<const Interest>& interest,
        const EncryptError::OnError& onError);
 
     ptr_lib::shared_ptr<ConsumerDb> database_;

@@ -50,7 +50,7 @@ Consumer::Impl::consume
   (const Name& contentName, const OnConsumeComplete& onConsumeComplete,
    const EncryptError::OnError& onError)
 {
-  ptr_lib::shared_ptr<Interest> interest(new Interest(contentName));
+  ptr_lib::shared_ptr<const Interest> interest(new Interest(contentName));
 
   // Prepare the callbacks. We make a shared_ptr object since it needs to
   // exist after we call expressInterest and return.
@@ -95,7 +95,7 @@ Consumer::Impl::consume
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
     (this, onConsumeComplete, onError));
   sendInterest
-    (interest, bind(&Callbacks::onContentVerified, callbacks, _1), onError);
+    (interest, 1, bind(&Callbacks::onContentVerified, callbacks, _1), onError);
 }
 
 void
@@ -234,7 +234,7 @@ Consumer::Impl::decryptContent
     // Retrieve the C-KEY Data from the network.
     Name interestName(cKeyName);
     interestName.append(Encryptor::getNAME_COMPONENT_FOR()).append(groupName_);
-    ptr_lib::shared_ptr<Interest> interest(new Interest(interestName));
+    ptr_lib::shared_ptr<const Interest> interest(new Interest(interestName));
 
     // Prepare the callbacks. We make a shared_ptr object since it needs to
     // exist after we call expressInterest and return.
@@ -276,7 +276,7 @@ Consumer::Impl::decryptContent
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
       (this, dataEncryptedContent, cKeyName, onPlainText, onError));
     sendInterest
-      (interest, bind(&Callbacks::onCKeyVerified, callbacks, _1), onError);
+      (interest, 1, bind(&Callbacks::onCKeyVerified, callbacks, _1), onError);
   }
 }
 
@@ -315,7 +315,7 @@ Consumer::Impl::decryptCKey
     // Get the D-Key Data.
     Name interestName(dKeyName);
     interestName.append(Encryptor::getNAME_COMPONENT_FOR()).append(consumerName_);
-    ptr_lib::shared_ptr<Interest> interest(new Interest(interestName));
+    ptr_lib::shared_ptr<const Interest> interest(new Interest(interestName));
 
     // Prepare the callbacks. We make a shared_ptr object since it needs to
     // exist after we call expressInterest and return.
@@ -357,7 +357,7 @@ Consumer::Impl::decryptCKey
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
       (this, cKeyEncryptedContent, dKeyName, onPlainText, onError));
     sendInterest
-      (interest, bind(&Callbacks::onDKeyVerified, callbacks, _1), onError);
+      (interest, 1, bind(&Callbacks::onDKeyVerified, callbacks, _1), onError);
   }
 }
 
@@ -440,18 +440,17 @@ Consumer::Impl::decryptDKey
 
 void
 Consumer::Impl::sendInterest
-  (const ptr_lib::shared_ptr<Interest>& interest, const OnVerified& onVerified,
-   const EncryptError::OnError& onError)
+  (const ptr_lib::shared_ptr<const Interest>& interest, int nRetrials,
+   const OnVerified& onVerified, const EncryptError::OnError& onError)
 {
   // Prepare the callbacks. We make a shared_ptr object since it needs to
   // exist after we call expressInterest and return.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (Consumer::Impl* parent, const ptr_lib::shared_ptr<Interest>& interest,
-       const OnVerified& onVerified,
+      (Consumer::Impl* parent, int nRetrials, const OnVerified& onVerified,
        const EncryptError::OnError& onError)
-    : parent_(parent), interest_(interest), onVerified_(onVerified),
+    : parent_(parent), nRetrials_(nRetrials), onVerified_(onVerified),
       onError_(onError)
     {}
 
@@ -478,44 +477,49 @@ Consumer::Impl::sendInterest
         } catch (...) {
           _LOG_ERROR("Error in onError.");
         }
-        return;
       }
     }
 
     void
-    onTimeout(const ptr_lib::shared_ptr<const Interest>& dKeyInterest)
+    onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
     {
-      // We should re-try at least once.
+      if (nRetrials_ > 0) {
+        --nRetrials_;
+        parent_->sendInterest(interest, nRetrials_, onVerified_, onError_);
+      }
+      else
+        onNetworkNack(interest, ptr_lib::make_shared<NetworkNack>());
+    }
+
+    void
+    onNetworkNack
+      (const ptr_lib::shared_ptr<const Interest>& interest,
+       const ptr_lib::shared_ptr<NetworkNack>& networkNack)
+    {
+      // We have run out of options. Report a retrieval failure.
       try {
-        parent_->face_->expressInterest
-          (*interest_, bind(&Callbacks::onData, shared_from_this(), _1, _2),
-           bind(&Impl::onFinalTimeout, _1, onError_));
+        onError_(EncryptError::ErrorCode::DataRetrievalFailure,
+                 interest->getName().toUri());
       } catch (const std::exception& ex) {
-        try {
-          onError_(EncryptError::ErrorCode::General,
-                   string("expressInterest error: ") + ex.what());
-        } catch (const std::exception& ex) {
-          _LOG_ERROR("Error in onError: " << ex.what());
-        } catch (...) {
-          _LOG_ERROR("Error in onError.");
-        }
-        return;
+        _LOG_ERROR("Error in onError: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("Error in onError.");
       }
     }
 
     Consumer::Impl* parent_;
-    ptr_lib::shared_ptr<Interest> interest_;
+    int nRetrials_;
     const OnVerified onVerified_;
     EncryptError::OnError onError_;
   };
 
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-    (this, interest, onVerified, onError));
-  // Express the Interest.
+    (this, nRetrials, onVerified, onError));
   try {
     face_->expressInterest
       (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
-       bind(&Callbacks::onTimeout, callbacks, _1));
+       bind(&Callbacks::onTimeout, callbacks, _1),
+       bind(&Callbacks::onNetworkNack, callbacks, _1, _2));
   } catch (const std::exception& ex) {
     try {
       onError(EncryptError::ErrorCode::General,
@@ -538,20 +542,6 @@ Consumer::Impl::onValidationFailed
     onError
       (EncryptError::ErrorCode::Validation,
        "verifyData failed. Reason: " + reason);
-  } catch (const std::exception& ex) {
-    _LOG_ERROR("Error in onError: " << ex.what());
-  } catch (...) {
-    _LOG_ERROR("Error in onError.");
-  }
-}
-
-void
-Consumer::Impl::onFinalTimeout
-  (const ptr_lib::shared_ptr<const Interest>& interest,
-   const EncryptError::OnError& onError)
-{
-  try {
-    onError(EncryptError::ErrorCode::Timeout, interest->getName().toUri());
   } catch (const std::exception& ex) {
     _LOG_ERROR("Error in onError: " << ex.what());
   } catch (...) {
