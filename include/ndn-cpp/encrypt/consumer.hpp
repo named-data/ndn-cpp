@@ -56,11 +56,21 @@ public:
    * @param consumerName The identity of the consumer. This makes a copy of the
    * Name.
    * @param database The ConsumerDb database for storing decryption keys.
+   * @param cKeyLink (optional) The Link object to use in Interests for C-KEY
+   * retrieval. This makes a copy of the Link object. If the Link object's
+   * getDelegations().size() is zero, don't use it. If omitted, don't use a Link
+   * object.
+   * @param dKeyLink (optional) The Link object to use in Interests for D-KEY
+   * retrieval. This makes a copy of the Link object. If the Link object's
+   * getDelegations().size() is zero, don't use it. If omitted, don't use a Link
+   * object.
    */
   Consumer
     (Face* face, KeyChain* keyChain, const Name& groupName,
-     const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database)
-  : impl_(new Impl(face, keyChain, groupName, consumerName, database))
+     const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database,
+     const Link& cKeyLink = getNO_LINK(), const Link& dKeyLink = getNO_LINK())
+  : impl_(new Impl
+      (face, keyChain, groupName, consumerName, database, cKeyLink, dKeyLink))
   {
   }
 
@@ -82,13 +92,17 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
+   * @param link (optional) The Link object to use in Interests for data
+   * retrieval. This makes a copy of the Link object. If the Link object's
+   * getDelegations().size() is zero, don't use it. If omitted, don't use a Link
+   * object.
    */
   void
   consume
     (const Name& contentName, const OnConsumeComplete& onConsumeComplete,
-     const EncryptError::OnError& onError)
+     const EncryptError::OnError& onError, const Link& link = getNO_LINK())
   {
-    impl_->consume(contentName, onConsumeComplete, onError);
+    impl_->consume(contentName, onConsumeComplete, onError, link);
   }
   
   /**
@@ -129,12 +143,13 @@ private:
      */
     Impl
       (Face* face, KeyChain* keyChain, const Name& groupName,
-       const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database);
+       const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database,
+       const Link& cKeyLink, const Link& dKeyLink);
 
     void
     consume
       (const Name& contentName, const OnConsumeComplete& onConsumeComplete,
-       const EncryptError::OnError& onError);
+       const EncryptError::OnError& onError, const Link& link);
 
     void
     setGroup(const Name& groupName) { groupName_ = groupName; }
@@ -233,6 +248,9 @@ private:
      * onError(EncryptError::ErrorCode::DataRetrievalFailure, interest.getName().toUri()).
      * @param interest The Interest to express.
      * @param nRetrials The number of retrials left after a timeout.
+     * @param link The Link object to use in the Interest. This does not make a
+     * copy of the Link object. If the Link object's getDelegations().size() is
+     * zero, don't use it.
      * @param onVerified When the fetched Data packet validation succeeds, this
      * calls onVerified(data).
      * @param onError This calls onError(errorCode, message) for an error.
@@ -240,7 +258,8 @@ private:
     void
     sendInterest
       (const ptr_lib::shared_ptr<const Interest>& interest, int nRetrials,
-       const OnVerified& onVerified, const EncryptError::OnError& onError);
+       const ptr_lib::shared_ptr<Link>& link, const OnVerified& onVerified,
+       const EncryptError::OnError& onError);
 
     /**
      * Call onError(EncryptError::ErrorCode::Validation, "verifyData failed")
@@ -256,13 +275,31 @@ private:
     Face* face_;
     Name groupName_;
     Name consumerName_;
+
+    const ptr_lib::shared_ptr<Link> cKeyLink_;
     // The map key is the C-KEY name. The value is the encoded key Blob.
     std::map<Name, Blob> cKeyMap_;
+    const ptr_lib::shared_ptr<Link> dKeyLink_;
     // The map key is the D-KEY name. The value is the encoded key Blob.
     std::map<Name, Blob> dKeyMap_;
   };
 
+  /**
+   * Get the static NoLink object, creating it if needed. We do this explicitly
+   * because some C++ environments don't handle static constructors well.
+   * @return The static NoLink object.
+   */
+  static Link&
+  getNO_LINK()
+  {
+    if (!noLink_)
+      noLink_ = new Link();
+
+    return *noLink_;
+  }
+
   ptr_lib::shared_ptr<Impl> impl_;
+  static Link* noLink_;
 };
 
 }

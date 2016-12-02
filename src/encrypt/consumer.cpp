@@ -36,19 +36,22 @@ namespace ndn {
 
 Consumer::Impl::Impl
   (Face* face, KeyChain* keyChain, const Name& groupName,
-   const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database)
+   const Name& consumerName, const ptr_lib::shared_ptr<ConsumerDb>& database,
+   const Link& cKeyLink, const Link& dKeyLink)
 : face_(face),
   keyChain_(keyChain),
   groupName_(groupName),
   consumerName_(consumerName),
-  database_(database)
+  database_(database),
+  cKeyLink_(new Link(cKeyLink)),
+  dKeyLink_(new Link(dKeyLink))
 {
 }
 
 void
 Consumer::Impl::consume
   (const Name& contentName, const OnConsumeComplete& onConsumeComplete,
-   const EncryptError::OnError& onError)
+   const EncryptError::OnError& onError, const Link& link)
 {
   ptr_lib::shared_ptr<const Interest> interest(new Interest(contentName));
 
@@ -94,8 +97,10 @@ Consumer::Impl::consume
 
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
     (this, onConsumeComplete, onError));
+  // Copy the Link object since the passed link may become invalid.
   sendInterest
-    (interest, 1, bind(&Callbacks::onContentVerified, callbacks, _1), onError);
+    (interest, 1, ptr_lib::make_shared<Link>(link),
+     bind(&Callbacks::onContentVerified, callbacks, _1), onError);
 }
 
 void
@@ -276,7 +281,8 @@ Consumer::Impl::decryptContent
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
       (this, dataEncryptedContent, cKeyName, onPlainText, onError));
     sendInterest
-      (interest, 1, bind(&Callbacks::onCKeyVerified, callbacks, _1), onError);
+      (interest, 1, cKeyLink_, bind(&Callbacks::onCKeyVerified, callbacks, _1),
+       onError);
   }
 }
 
@@ -357,7 +363,8 @@ Consumer::Impl::decryptCKey
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
       (this, cKeyEncryptedContent, dKeyName, onPlainText, onError));
     sendInterest
-      (interest, 1, bind(&Callbacks::onDKeyVerified, callbacks, _1), onError);
+      (interest, 1, dKeyLink_, bind(&Callbacks::onDKeyVerified, callbacks, _1),
+       onError);
   }
 }
 
@@ -441,17 +448,19 @@ Consumer::Impl::decryptDKey
 void
 Consumer::Impl::sendInterest
   (const ptr_lib::shared_ptr<const Interest>& interest, int nRetrials,
-   const OnVerified& onVerified, const EncryptError::OnError& onError)
+   const ptr_lib::shared_ptr<Link>& link, const OnVerified& onVerified,
+   const EncryptError::OnError& onError)
 {
   // Prepare the callbacks. We make a shared_ptr object since it needs to
   // exist after we call expressInterest and return.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (Consumer::Impl* parent, int nRetrials, const OnVerified& onVerified,
+      (Consumer::Impl* parent, int nRetrials,
+       const ptr_lib::shared_ptr<Link>& link, const OnVerified& onVerified,
        const EncryptError::OnError& onError)
-    : parent_(parent), nRetrials_(nRetrials), onVerified_(onVerified),
-      onError_(onError)
+    : parent_(parent), nRetrials_(nRetrials), link_(link),
+      onVerified_(onVerified), onError_(onError)
     {}
 
     void
@@ -485,7 +494,7 @@ Consumer::Impl::sendInterest
     {
       if (nRetrials_ > 0) {
         --nRetrials_;
-        parent_->sendInterest(interest, nRetrials_, onVerified_, onError_);
+        parent_->sendInterest(interest, nRetrials_, link_, onVerified_, onError_);
       }
       else
         onNetworkNack(interest, ptr_lib::make_shared<NetworkNack>());
@@ -509,15 +518,30 @@ Consumer::Impl::sendInterest
 
     Consumer::Impl* parent_;
     int nRetrials_;
+    const ptr_lib::shared_ptr<Link> link_;
     const OnVerified onVerified_;
     EncryptError::OnError onError_;
   };
 
+  ptr_lib::shared_ptr<Interest> interestWithLink;
+  const Interest* request;
+  if (link->getDelegations().size() == 0)
+    // We can use the supplied interest without copying.
+    request = interest.get();
+  else {
+    // Copy the supplied interest and add the Link.
+    interestWithLink.reset(new Interest(*interest));
+    // This will use a cached encoding if available.
+    interestWithLink->setLinkWireEncoding(link->wireEncode());
+
+    request = interestWithLink.get();
+  }
+
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-    (this, nRetrials, onVerified, onError));
+    (this, nRetrials, link, onVerified, onError));
   try {
     face_->expressInterest
-      (*interest, bind(&Callbacks::onData, callbacks, _1, _2),
+      (*request, bind(&Callbacks::onData, callbacks, _1, _2),
        bind(&Callbacks::onTimeout, callbacks, _1),
        bind(&Callbacks::onNetworkNack, callbacks, _1, _2));
   } catch (const std::exception& ex) {
@@ -548,5 +572,7 @@ Consumer::Impl::onValidationFailed
     _LOG_ERROR("Error in onError.");
   }
 }
+
+Link* Consumer::noLink_ = 0;
 
 }
