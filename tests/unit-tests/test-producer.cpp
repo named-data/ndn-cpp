@@ -466,6 +466,66 @@ TEST_F(TestProducer, ContentKeyTimeout)
      bind(&TestProducer::keyTimeoutOnEncryptedKeys, this, _1, &timeoutCount));
 }
 
+TEST_F(TestProducer, ProducerWithLink)
+{
+  Name prefix("/prefix");
+  Name suffix("/suffix");
+  Name expectedInterest = prefix;
+  expectedInterest.append(Encryptor::getNAME_COMPONENT_READ());
+  expectedInterest.append(suffix);
+  expectedInterest.append(Encryptor::getNAME_COMPONENT_E_KEY());
+
+  MillisecondsSince1970 testTime = fromIsoString("20150101T100001");
+
+  int timeoutCount = 0;
+
+  // Prepare a TestFace to instantly answer calls to expressInterest.
+  class TestFace : public Face {
+  public:
+    TestFace(const Name& expectedInterest, int* timeoutCount)
+    : Face("localhost"),
+      expectedInterest_(expectedInterest),
+      timeoutCount_(timeoutCount)
+    {}
+
+    virtual uint64_t
+    expressInterest
+      (const Interest& interest, const OnData& onData,
+       const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
+       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+    {
+      if (expectedInterest_ != interest.getName())
+        throw runtime_error("TestFace::expressInterest: Not the expectedInterest_");
+      if (interest.getLink()->getDelegations().size() != 3)
+        throw runtime_error
+          ("TestFace::expressInterest: The Interest link does not the expected number of delegates");
+      ++(*timeoutCount_);
+      onTimeout(ptr_lib::make_shared<Interest>(interest));
+
+      return 0;
+    }
+
+  private:
+    Name expectedInterest_;
+    int* timeoutCount_;
+  };
+
+  TestFace face(expectedInterest, &timeoutCount);
+
+  // Verify that if no response is received, the producer appropriately times
+  // out. The result vector should not contain elements that have timed out.
+  Link link;
+  link.addDelegation(10,  Name("/test1"));
+  link.addDelegation(20,  Name("/test2"));
+  link.addDelegation(100, Name("/test3"));
+  keyChain->sign(link);
+  ptr_lib::shared_ptr<ProducerDb> testDb(new Sqlite3ProducerDb(databaseFilePath));
+  Producer producer(prefix, suffix, &face, keyChain.get(), testDb, 3, link);
+  producer.createContentKey
+    (testTime,
+     bind(&TestProducer::keyTimeoutOnEncryptedKeys, this, _1, &timeoutCount));
+}
+
 int
 main(int argc, char **argv)
 {
