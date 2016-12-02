@@ -490,17 +490,6 @@ Consumer::Impl::sendInterest
     }
 
     void
-    onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
-    {
-      if (nRetrials_ > 0) {
-        --nRetrials_;
-        parent_->sendInterest(interest, nRetrials_, link_, onVerified_, onError_);
-      }
-      else
-        onNetworkNack(interest, ptr_lib::make_shared<NetworkNack>());
-    }
-
-    void
     onNetworkNack
       (const ptr_lib::shared_ptr<const Interest>& interest,
        const ptr_lib::shared_ptr<NetworkNack>& networkNack)
@@ -514,6 +503,16 @@ Consumer::Impl::sendInterest
       } catch (...) {
         _LOG_ERROR("Error in onError.");
       }
+    }
+
+    void
+    onTimeout(const ptr_lib::shared_ptr<const Interest>& interest)
+    {
+      if (nRetrials_ > 0)
+        parent_->sendInterest
+          (interest, nRetrials_ - 1, link_, onVerified_, onError_);
+      else
+        onNetworkNack(interest, ptr_lib::make_shared<NetworkNack>());
     }
 
     Consumer::Impl* parent_;
