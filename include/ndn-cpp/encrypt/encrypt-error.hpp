@@ -39,6 +39,7 @@ public:
     InvalidEncryptedFormat =      33,
     NoDecryptKey =                34,
     EncryptionFailure =           35,
+    DataRetrievalFailure =        36,
     General =                    100
   };
 

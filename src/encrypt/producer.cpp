@@ -41,11 +41,13 @@ Producer::defaultOnError(EncryptError::ErrorCode errorCode, const string& messag
 
 Producer::Impl::Impl
   (const Name& prefix, const Name& dataType, Face* face, KeyChain* keyChain,
-   const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts)
+   const ptr_lib::shared_ptr<ProducerDb>& database, int repeatAttempts,
+   const Link& keyRetrievalLink)
   : face_(face),
     keyChain_(keyChain),
     database_(database),
-    maxRepeatAttempts_(repeatAttempts)
+    maxRepeatAttempts_(repeatAttempts),
+    keyRetrievalLink_(keyRetrievalLink)
 {
   Name fixedPrefix(prefix);
   Name fixedDataType(dataType);
@@ -157,14 +159,28 @@ Producer::Impl::sendKeyInterest
    const OnEncryptedKeys& onEncryptedKeys,
    const EncryptError::OnError& onError)
 {
+  ptr_lib::shared_ptr<Interest> interestWithLink;
+  const Interest* request;
+  if (keyRetrievalLink_.getDelegations().size() == 0)
+    // We can use the supplied interest without copying.
+    request = &interest;
+  else {
+    // Copy the supplied interest and add the Link.
+    interestWithLink.reset(new Interest(interest));
+    // This will use a cached encoding if available.
+    interestWithLink->setLinkWireEncoding(keyRetrievalLink_.wireEncode());
+
+    request = interestWithLink.get();
+  }
+
   face_->expressInterest
-    (interest,
+    (*request,
      bind(&Producer::Impl::handleCoveringKey, shared_from_this(), _1, _2,
           timeSlot, onEncryptedKeys, onError),
      bind(&Producer::Impl::handleTimeout, shared_from_this(), _1, timeSlot,
           onEncryptedKeys, onError),
      bind(&Producer::Impl::handleNetworkNack, shared_from_this(), _1, _2,
-          timeSlot, onEncryptedKeys));
+          timeSlot, onEncryptedKeys, onError));
 }
 
 void
@@ -183,8 +199,10 @@ Producer::Impl::handleTimeout
     sendKeyInterest(*interest, timeSlot, onEncryptedKeys, onError);
   }
   else
-    // No more retrials.
-    updateKeyRequest(keyRequest, timeCount, onEncryptedKeys);
+    // Treat an eventual timeout as a network Nack.
+    handleNetworkNack
+      (interest, ptr_lib::make_shared<NetworkNack>(), timeSlot, onEncryptedKeys,
+       onError);
 }
 
 void
@@ -192,8 +210,10 @@ Producer::Impl::handleNetworkNack
   (const ptr_lib::shared_ptr<const Interest>& interest,
    const ptr_lib::shared_ptr<NetworkNack>& networkNack,
    MillisecondsSince1970 timeSlot,
-   const OnEncryptedKeys& onEncryptedKeys)
+   const OnEncryptedKeys& onEncryptedKeys,
+   const EncryptError::OnError& onError)
 {
+  // We have run out of options....
   MillisecondsSince1970 timeCount = ::round(timeSlot);
   updateKeyRequest(keyRequests_[timeCount], timeCount, onEncryptedKeys);
 }
@@ -208,9 +228,9 @@ Producer::Impl::updateKeyRequest
     try {
       onEncryptedKeys(keyRequest->encryptedKeys);
     } catch (const std::exception& ex) {
-      _LOG_ERROR("Producer::Impl::handleNetworkNack: Error in onEncryptedKeys: " << ex.what());
+      _LOG_ERROR("Producer::Impl::updateKeyRequest: Error in onEncryptedKeys: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("Producer::Impl::handleNetworkNack: Error in onEncryptedKeys.");
+      _LOG_ERROR("Producer::Impl::updateKeyRequest: Error in onEncryptedKeys.");
     }
     keyRequests_.erase(timeCount);
   }
@@ -470,5 +490,7 @@ Producer::Impl::excludeRange
 
   setExcludeEntries(exclude, entries);
 }
+
+Link* Producer::noLink_ = 0;
 
 }

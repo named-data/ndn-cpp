@@ -422,6 +422,108 @@ TEST_F(TestConsumer, Consume)
   ASSERT_EQ(1, finalCount);
 }
 
+TEST_F(TestConsumer, CosumerWithLink)
+{
+  ptr_lib::shared_ptr<Data> contentData = createEncryptedContent();
+  ptr_lib::shared_ptr<Data> cKeyData = createEncryptedCKey();
+  ptr_lib::shared_ptr<Data> dKeyData = createEncryptedDKey();
+
+  int contentCount = 0;
+  int cKeyCount = 0;
+  int dKeyCount = 0;
+
+  // Prepare a TestFace to instantly answer calls to expressInterest.
+  class TestFace : public Face {
+  public:
+    TestFace(ptr_lib::shared_ptr<Data> contentData,
+             ptr_lib::shared_ptr<Data> cKeyData,
+             ptr_lib::shared_ptr<Data> dKeyData,
+             int* contentCount, int* cKeyCount, int* dKeyCount)
+    : Face("localhost"),
+      contentData_(contentData),
+      cKeyData_(cKeyData),
+      dKeyData_(dKeyData),
+      contentCount_(contentCount),
+      cKeyCount_(cKeyCount),
+      dKeyCount_(dKeyCount)
+    {}
+
+    virtual uint64_t
+    expressInterest
+      (const Interest& interest, const OnData& onData,
+       const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
+       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+    {
+      if (interest.getLink()->getDelegations().size() != 3)
+        throw runtime_error
+          ("TestFace::expressInterest: The Interest link does not the expected number of delegates");
+
+      if (interest.matchesName(contentData_->getName())) {
+        *contentCount_ = 1;
+        onData(ptr_lib::make_shared<Interest>(interest), contentData_);
+      }
+      else if (interest.matchesName(cKeyData_->getName())) {
+        *cKeyCount_ = 1;
+        onData(ptr_lib::make_shared<Interest>(interest), cKeyData_);
+      }
+      else if (interest.matchesName(dKeyData_->getName())) {
+        *dKeyCount_ = 1;
+        onData(ptr_lib::make_shared<Interest>(interest), dKeyData_);
+      }
+      else
+        onTimeout(ptr_lib::make_shared<Interest>(interest));
+
+      return 0;
+    }
+
+  private:
+    ptr_lib::shared_ptr<Data> contentData_;
+    ptr_lib::shared_ptr<Data> cKeyData_;
+    ptr_lib::shared_ptr<Data> dKeyData_;
+
+    int* contentCount_;
+    int* cKeyCount_;
+    int* dKeyCount_;
+  };
+
+  TestFace face
+    (contentData, cKeyData, dKeyData, &contentCount, &cKeyCount, &dKeyCount);
+
+  // Create the consumer.
+  Link ckeyLink;
+  ckeyLink.addDelegation(10,  Name("/ckey1"));
+  ckeyLink.addDelegation(20,  Name("/ckey2"));
+  ckeyLink.addDelegation(100, Name("/ckey13"));
+  Link dkeyLink;
+  dkeyLink.addDelegation(10,  Name("/dkey1"));
+  dkeyLink.addDelegation(20,  Name("/dkey2"));
+  dkeyLink.addDelegation(100, Name("/dkey13"));
+  Link dataLink;
+  dataLink.addDelegation(10,  Name("/data1"));
+  dataLink.addDelegation(20,  Name("/data2"));
+  dataLink.addDelegation(100, Name("/data13"));
+  keyChain->sign(ckeyLink);
+  keyChain->sign(dkeyLink);
+  keyChain->sign(dataLink);
+
+  Consumer consumer
+    (&face, keyChain.get(), groupName, uName,
+     ptr_lib::make_shared<Sqlite3ConsumerDb>(databaseFilePath),
+     ckeyLink, dkeyLink);
+  consumer.addDecryptionKey(uKeyName, fixtureUDKeyBlob);
+
+  int finalCount = 0;
+  consumer.consume
+    (contentName,
+     bind(&TestConsumer::onConsumeComplete, this, _1, _2, &finalCount),
+     bind(&TestConsumer::onError, this, _1, _2), dataLink);
+
+  ASSERT_EQ(1, contentCount);
+  ASSERT_EQ(1, cKeyCount);
+  ASSERT_EQ(1, dKeyCount);
+  ASSERT_EQ(1, finalCount);
+}
+
 int
 main(int argc, char **argv)
 {
