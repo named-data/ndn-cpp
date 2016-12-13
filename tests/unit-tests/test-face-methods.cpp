@@ -257,134 +257,6 @@ static const uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
   0x3f, 0xb9, 0xfe, 0xbc, 0x8d, 0xda, 0xcb, 0xea, 0x8f
 };
 
-class TestFaceInterestMethods : public ::testing::Test {
-public:
-  TestFaceInterestMethods()
-  : face("localhost")
-  {
-  }
-
-  virtual void
-  TearDown()
-  {
-    face.shutdown();
-  }
-
-  Face face;
-};
-
-TEST_F(TestFaceInterestMethods, AnyInterest)
-{
-  string uri = "/";
-  CallbackCounter counter = runExpressNameTest(face, uri);
-  ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Timeout on expressed interest";
-
-  // check that the callback was correct
-  ASSERT_EQ(counter.onDataCallCount_, 1) << "Expected 1 onData callback, got " << counter.onDataCallCount_;
-
-  // just check that the interest was returned correctly?
-  const Interest& callbackInterest = counter.interest_;
-  ASSERT_TRUE(callbackInterest.getName().equals(Name(uri))) << "Interest returned on callback had different name";
-}
-
-/*
-TODO: Replace this with a test that connects to a Face on localhost
-def test_specific_interest(self):
-  uri = "/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4"
-  (dataCallback, timeoutCallback) = self.run_express_name_test(uri)
-  self.assertTrue(timeoutCallback.call_count == 0, 'Unexpected timeout on expressed interest')
-
-  // check that the callback was correct
-  self.assertEqual(dataCallback.call_count, 1, 'Expected 1 onData callback, got '+str(dataCallback.call_count))
-
-  onDataArgs = dataCallback.call_args[0] # the args are returned as ([ordered arguments], [keyword arguments])
-
-  // just check that the interest was returned correctly?
-  callbackInterest = onDataArgs[0]
-  self.assertTrue(callbackInterest.getName().equals(Name(uri)), 'Interest returned on callback had different name')
-*/
-
-TEST_F(TestFaceInterestMethods, Timeout)
-{
-  string uri = "/test/timeout";
-  CallbackCounter counter = runExpressNameTest(face, uri);
-
-  // we're expecting a timeout callback, and only 1
-  ASSERT_EQ(counter.onDataCallCount_, 0) << "Data callback called for invalid interest";
-
-  ASSERT_TRUE(counter.onTimeoutCallCount_ == 1) << "Expected 1 timeout call, got " << counter.onTimeoutCallCount_;
-
-  // just check that the interest was returned correctly?
-  const Interest& callbackInterest = counter.interest_;
-  ASSERT_TRUE(callbackInterest.getName().equals(Name(uri))) << "Interest returned on callback had different name";
-}
-
-TEST_F(TestFaceInterestMethods, RemovePending)
-{
-  Name name("/ndn/edu/ucla/remap/");
-  CallbackCounter counter;
-  uint64_t interestID = face.expressInterest
-    (name, bind(&CallbackCounter::onData, &counter, _1, _2),
-     bind(&CallbackCounter::onTimeout, &counter, _1));
-
-  face.removePendingInterest(interestID);
-
-  Milliseconds timeout = 10000;
-  MillisecondsSince1970 startTime = getNowMilliseconds();
-  while (getNowMilliseconds() - startTime < timeout &&
-         counter.onDataCallCount_ == 0 && counter.onTimeoutCallCount_ == 0) {
-    face.processEvents();
-    // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
-    usleep(10000);
-  }
-
-  ASSERT_EQ(counter.onDataCallCount_, 0) << "Should not have called data callback after interest was removed";
-  ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
-}
-
-TEST_F(TestFaceInterestMethods, MaxNdnPacketSize)
-{
-  // Construct an interest whose encoding is one byte larger than getMaxNdnPacketSize.
-  const size_t targetSize = Face::getMaxNdnPacketSize() + 1;
-  // Start with an interest which is almost the right size.
-  uint8_t componentValue[targetSize];
-  Interest interest;
-  interest.getName().append(componentValue, targetSize);
-  size_t initialSize = interest.wireEncode().size();
-  // Now replace the component with the desired size which trims off the extra encoding.
-  interest.setName
-    (Name().append(componentValue, targetSize - (initialSize - targetSize)));
-  size_t interestSize = interest.wireEncode().size();
-  ASSERT_EQ(targetSize, interestSize) << "Wrong interest size for MaxNdnPacketSize";
-  
-  CallbackCounter counter;
-  ASSERT_THROW
-    (face.expressInterest
-     (interest, bind(&CallbackCounter::onData, &counter, _1, _2),
-      bind(&CallbackCounter::onTimeout, &counter, _1)),
-     runtime_error) <<
-    "expressInterest didn't throw an exception when the interest size exceeds getMaxNdnPacketSize()";
-}
-
-TEST_F(TestFaceInterestMethods, NetworkNack)
-{
-  ostringstream uri;
-  uri << "/noroute" << getNowMilliseconds();
-    // Use a short timeout since we expect an immediate Nack.
-  CallbackCounter counter = runExpressNameTest(face, uri.str(), 1000, true);
-
-  // We're expecting a network Nack callback, and only 1.
-  ASSERT_EQ(0, counter.onDataCallCount_) <<
-            "Data callback called for unroutable interest";
-  ASSERT_EQ(0, counter.onTimeoutCallCount_) <<
-            "Timeout callback called for unroutable interest";
-  ASSERT_EQ(1, counter.onNetworkNackCallCount_) <<
-            "Expected 1 network Nack call";
-
-  ASSERT_EQ(counter.networkNack_.getReason(), ndn_NetworkNackReason_NO_ROUTE) <<
-            "Network Nack has unexpected reason";
-}
-
 class TestFaceRegisterMethods : public ::testing::Test {
 public:
   TestFaceRegisterMethods()
@@ -488,6 +360,134 @@ TEST_F(TestFaceRegisterMethods, RegisterPrefixResponse)
   Blob expectedBlob((const uint8_t *)&content[0], content.size());
   ASSERT_TRUE(expectedBlob.equals(data.getContent())) <<
               "Data received on face does not match expected format";
+}
+
+class TestFaceInterestMethods : public ::testing::Test {
+public:
+  TestFaceInterestMethods()
+  : face("localhost")
+  {
+  }
+
+  virtual void
+  TearDown()
+  {
+    face.shutdown();
+  }
+
+  Face face;
+};
+
+TEST_F(TestFaceInterestMethods, AnyInterest)
+{
+  string uri = "/";
+  CallbackCounter counter = runExpressNameTest(face, uri);
+  ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Timeout on expressed interest";
+
+  // check that the callback was correct
+  ASSERT_EQ(counter.onDataCallCount_, 1) << "Expected 1 onData callback, got " << counter.onDataCallCount_;
+
+  // just check that the interest was returned correctly?
+  const Interest& callbackInterest = counter.interest_;
+  ASSERT_TRUE(callbackInterest.getName().equals(Name(uri))) << "Interest returned on callback had different name";
+}
+
+/*
+TODO: Replace this with a test that connects to a Face on localhost
+def test_specific_interest(self):
+  uri = "/ndn/edu/ucla/remap/ndn-js-test/howdy.txt/%FD%052%A1%DF%5E%A4"
+  (dataCallback, timeoutCallback) = self.run_express_name_test(uri)
+  self.assertTrue(timeoutCallback.call_count == 0, 'Unexpected timeout on expressed interest')
+
+  // check that the callback was correct
+  self.assertEqual(dataCallback.call_count, 1, 'Expected 1 onData callback, got '+str(dataCallback.call_count))
+
+  onDataArgs = dataCallback.call_args[0] # the args are returned as ([ordered arguments], [keyword arguments])
+
+  // just check that the interest was returned correctly?
+  callbackInterest = onDataArgs[0]
+  self.assertTrue(callbackInterest.getName().equals(Name(uri)), 'Interest returned on callback had different name')
+*/
+
+TEST_F(TestFaceInterestMethods, Timeout)
+{
+  string uri = "/test123/timeout";
+  CallbackCounter counter = runExpressNameTest(face, uri);
+
+  // we're expecting a timeout callback, and only 1
+  ASSERT_EQ(counter.onDataCallCount_, 0) << "Data callback called for invalid interest";
+
+  ASSERT_TRUE(counter.onTimeoutCallCount_ == 1) << "Expected 1 timeout call, got " << counter.onTimeoutCallCount_;
+
+  // just check that the interest was returned correctly?
+  const Interest& callbackInterest = counter.interest_;
+  ASSERT_TRUE(callbackInterest.getName().equals(Name(uri))) << "Interest returned on callback had different name";
+}
+
+TEST_F(TestFaceInterestMethods, RemovePending)
+{
+  Name name("/ndn/edu/ucla/remap/");
+  CallbackCounter counter;
+  uint64_t interestID = face.expressInterest
+    (name, bind(&CallbackCounter::onData, &counter, _1, _2),
+     bind(&CallbackCounter::onTimeout, &counter, _1));
+
+  face.removePendingInterest(interestID);
+
+  Milliseconds timeout = 10000;
+  MillisecondsSince1970 startTime = getNowMilliseconds();
+  while (getNowMilliseconds() - startTime < timeout &&
+         counter.onDataCallCount_ == 0 && counter.onTimeoutCallCount_ == 0) {
+    face.processEvents();
+    // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+    usleep(10000);
+  }
+
+  ASSERT_EQ(counter.onDataCallCount_, 0) << "Should not have called data callback after interest was removed";
+  ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Should not have called timeout callback after interest was removed";
+}
+
+TEST_F(TestFaceInterestMethods, MaxNdnPacketSize)
+{
+  // Construct an interest whose encoding is one byte larger than getMaxNdnPacketSize.
+  const size_t targetSize = Face::getMaxNdnPacketSize() + 1;
+  // Start with an interest which is almost the right size.
+  uint8_t componentValue[targetSize];
+  Interest interest;
+  interest.getName().append(componentValue, targetSize);
+  size_t initialSize = interest.wireEncode().size();
+  // Now replace the component with the desired size which trims off the extra encoding.
+  interest.setName
+    (Name().append(componentValue, targetSize - (initialSize - targetSize)));
+  size_t interestSize = interest.wireEncode().size();
+  ASSERT_EQ(targetSize, interestSize) << "Wrong interest size for MaxNdnPacketSize";
+  
+  CallbackCounter counter;
+  ASSERT_THROW
+    (face.expressInterest
+     (interest, bind(&CallbackCounter::onData, &counter, _1, _2),
+      bind(&CallbackCounter::onTimeout, &counter, _1)),
+     runtime_error) <<
+    "expressInterest didn't throw an exception when the interest size exceeds getMaxNdnPacketSize()";
+}
+
+TEST_F(TestFaceInterestMethods, NetworkNack)
+{
+  ostringstream uri;
+  uri << "/noroute" << getNowMilliseconds();
+    // Use a short timeout since we expect an immediate Nack.
+  CallbackCounter counter = runExpressNameTest(face, uri.str(), 1000, true);
+
+  // We're expecting a network Nack callback, and only 1.
+  ASSERT_EQ(0, counter.onDataCallCount_) <<
+            "Data callback called for unroutable interest";
+  ASSERT_EQ(0, counter.onTimeoutCallCount_) <<
+            "Timeout callback called for unroutable interest";
+  ASSERT_EQ(1, counter.onNetworkNackCallCount_) <<
+            "Expected 1 network Nack call";
+
+  ASSERT_EQ(counter.networkNack_.getReason(), ndn_NetworkNackReason_NO_ROUTE) <<
+            "Network Nack has unexpected reason";
 }
 
 int
