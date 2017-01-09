@@ -23,6 +23,7 @@
 #define NDN_SIGNATURE_LITE_HPP
 
 #include "key-locator-lite.hpp"
+#include "security/validity-period-lite.hpp"
 #include "../c/data-types.h"
 
 namespace ndn {
@@ -82,6 +83,12 @@ public:
 
   KeyLocatorLite&
   getKeyLocator() { return KeyLocatorLite::downCast(keyLocator); }
+
+  const ValidityPeriodLite&
+  getValidityPeriod() const { return ValidityPeriodLite::downCast(validityPeriod); }
+
+  ValidityPeriodLite&
+  getValidityPeriod() { return ValidityPeriodLite::downCast(validityPeriod); }
 
   void
   setType(ndn_SignatureType type) { this->type = type; }
