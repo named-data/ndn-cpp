@@ -133,6 +133,12 @@ enum {
   ndn_Tlv_Encrypt_Schedule =          143
 };
 
+enum {
+  ndn_Tlv_ValidityPeriod_ValidityPeriod = 253,
+  ndn_Tlv_ValidityPeriod_NotBefore =      254,
+  ndn_Tlv_ValidityPeriod_NotAfter =       255
+};
+
 #ifdef __cplusplus
 }
 #endif
