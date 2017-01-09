@@ -20,7 +20,7 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 
-check_PROGRAMS = bin/unit-tests/test-aes-algorithm \
+check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
   bin/unit-tests/test-consumer bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-control-response \
@@ -70,6 +70,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/security/ec-public-key-types.h \
   include/ndn-cpp/c/security/rsa-private-key-types.h \
   include/ndn-cpp/c/security/rsa-public-key-types.h \
+  include/ndn-cpp/c/security/validity-period-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -150,6 +151,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/security/ec-public-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-private-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-public-key-lite.hpp \
+  include/ndn-cpp/lite/security/validity-period-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -159,6 +161,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
+  include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
   include/ndn-cpp/security/certificate/certificate.hpp \
@@ -229,6 +232,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/security/ec-public-key.c src/c/util/ec-public-key.h \
   src/c/security/rsa-private-key.c src/c/util/rsa-private-key.h \
   src/c/security/rsa-public-key.c src/c/util/rsa-public-key.h \
+  src/c/security/validity-period.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -321,6 +325,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/security/ec-public-key-lite.cpp \
   src/lite/security/rsa-private-key-lite.cpp \
   src/lite/security/rsa-public-key-lite.cpp \
+  src/lite/security/validity-period-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -427,6 +432,10 @@ bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_certificate_SOURCES = tests/unit-tests/test-certificate.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_certificate_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_certificate_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_consumer_SOURCES = tests/unit-tests/test-consumer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_consumer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

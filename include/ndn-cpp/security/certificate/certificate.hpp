@@ -25,6 +25,7 @@
 
 #include "../../data.hpp"
 #include "../../common.hpp"
+#include "../../sha256-with-rsa-signature.hpp"
 
 #include "certificate-subject-description.hpp"
 #include "certificate-extension.hpp"
@@ -139,6 +140,14 @@ public:
    */
   bool
   isTooLate() const;
+
+  bool
+  isInValidityPeriod(MillisecondsSince1970 time) const
+  {
+    // Debug: Generalize this from Sha256WithRsaSignature.
+    return dynamic_cast<const Sha256WithRsaSignature *>
+      (getSignature())->getValidityPeriod().isValid(time);
+  }
 
   void
   printCertificate(std::ostream& os) const;

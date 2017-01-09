@@ -94,6 +94,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
+	bin/unit-tests/test-certificate$(EXEEXT) \
 	bin/unit-tests/test-consumer$(EXEEXT) \
 	bin/unit-tests/test-consumer-db$(EXEEXT) \
 	bin/unit-tests/test-control-parameters-encode-decode$(EXEEXT) \
@@ -304,6 +305,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/security/ec-public-key-lite.lo \
 	src/lite/security/rsa-private-key-lite.lo \
 	src/lite/security/rsa-public-key-lite.lo \
+	src/lite/security/validity-period-lite.lo \
 	src/lite/transport/tcp-transport-lite.lo \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
@@ -424,6 +426,11 @@ am_bin_unit_tests_test_aes_algorithm_OBJECTS = tests/unit-tests/bin_unit_tests_t
 bin_unit_tests_test_aes_algorithm_OBJECTS =  \
 	$(am_bin_unit_tests_test_aes_algorithm_OBJECTS)
 bin_unit_tests_test_aes_algorithm_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_certificate_OBJECTS = tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.$(OBJEXT)
+bin_unit_tests_test_certificate_OBJECTS =  \
+	$(am_bin_unit_tests_test_certificate_OBJECTS)
+bin_unit_tests_test_certificate_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_consumer_OBJECTS = tests/unit-tests/bin_unit_tests_test_consumer-test-consumer.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_consumer-gtest-all.$(OBJEXT)
 bin_unit_tests_test_consumer_OBJECTS =  \
@@ -626,6 +633,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
+	$(bin_unit_tests_test_certificate_SOURCES) \
 	$(bin_unit_tests_test_consumer_SOURCES) \
 	$(bin_unit_tests_test_consumer_db_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
@@ -668,6 +676,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
+	$(bin_unit_tests_test_certificate_SOURCES) \
 	$(bin_unit_tests_test_consumer_SOURCES) \
 	$(bin_unit_tests_test_consumer_db_SOURCES) \
 	$(bin_unit_tests_test_control_parameters_encode_decode_SOURCES) \
@@ -1174,6 +1183,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/security/ec-public-key-types.h \
   include/ndn-cpp/c/security/rsa-private-key-types.h \
   include/ndn-cpp/c/security/rsa-public-key-types.h \
+  include/ndn-cpp/c/security/validity-period-types.h \
   include/ndn-cpp/c/transport/transport-types.h \
   include/ndn-cpp/c/util/blob-types.h \
   include/ndn-cpp/c/util/dynamic-uint8-array-types.h
@@ -1255,6 +1265,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/security/ec-public-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-private-key-lite.hpp \
   include/ndn-cpp/lite/security/rsa-public-key-lite.hpp \
+  include/ndn-cpp/lite/security/validity-period-lite.hpp \
   include/ndn-cpp/lite/transport/tcp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/udp-transport-lite.hpp \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
@@ -1264,6 +1275,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/security-exception.hpp \
+  include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
   include/ndn-cpp/security/certificate/certificate.hpp \
@@ -1335,6 +1347,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/security/ec-public-key.c src/c/util/ec-public-key.h \
   src/c/security/rsa-private-key.c src/c/util/rsa-private-key.h \
   src/c/security/rsa-public-key.c src/c/util/rsa-public-key.h \
+  src/c/security/validity-period.h \
   src/c/transport/socket-transport.c src/c/transport/socket-transport.h \
   src/c/transport/tcp-transport_c.c src/c/transport/tcp-transport.h \
   src/c/transport/udp-transport.h \
@@ -1428,6 +1441,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/security/ec-public-key-lite.cpp \
   src/lite/security/rsa-private-key-lite.cpp \
   src/lite/security/rsa-public-key-lite.cpp \
+  src/lite/security/validity-period-lite.cpp \
   src/lite/transport/tcp-transport-lite.cpp \
   src/lite/transport/udp-transport-lite.cpp \
   src/lite/transport/unix-transport-lite.cpp \
@@ -1520,6 +1534,9 @@ bin_test_register_route_LDADD = libndn-cpp.la
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
+bin_unit_tests_test_certificate_SOURCES = tests/unit-tests/test-certificate.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_certificate_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_certificate_LDADD = libndn-cpp.la
 bin_unit_tests_test_consumer_SOURCES = tests/unit-tests/test-consumer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_consumer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_consumer_LDADD = libndn-cpp.la
@@ -2032,6 +2049,9 @@ src/lite/security/rsa-private-key-lite.lo:  \
 src/lite/security/rsa-public-key-lite.lo:  \
 	src/lite/security/$(am__dirstamp) \
 	src/lite/security/$(DEPDIR)/$(am__dirstamp)
+src/lite/security/validity-period-lite.lo:  \
+	src/lite/security/$(am__dirstamp) \
+	src/lite/security/$(DEPDIR)/$(am__dirstamp)
 src/lite/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/transport
 	@: > src/lite/transport/$(am__dirstamp)
@@ -2386,6 +2406,16 @@ bin/unit-tests/$(am__dirstamp):
 bin/unit-tests/test-aes-algorithm$(EXEEXT): $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_aes_algorithm_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-aes-algorithm$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-certificate$(EXEEXT): $(bin_unit_tests_test_certificate_OBJECTS) $(bin_unit_tests_test_certificate_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_certificate_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-certificate$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_certificate_OBJECTS) $(bin_unit_tests_test_certificate_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_consumer-test-consumer.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2719,6 +2749,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/apache/$(DEPDIR)/apr_base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer_db-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-gtest-all.Po@am__quote@
@@ -2882,6 +2913,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/ec-public-key-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/rsa-private-key-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/rsa-public-key-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/validity-period-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/tcp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/udp-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
@@ -2927,6 +2959,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer_db-test-consumer-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_control_parameters_encode_decode-test-control-parameters-encode-decode.Po@am__quote@
@@ -3028,6 +3061,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.o: tests/unit-tests/test-certificate.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Tpo -c -o tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.o `test -f 'tests/unit-tests/test-certificate.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-certificate.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-certificate.cpp' object='tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.o `test -f 'tests/unit-tests/test-certificate.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-certificate.cpp
+
+tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.obj: tests/unit-tests/test-certificate.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Tpo -c -o tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.obj `if test -f 'tests/unit-tests/test-certificate.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-certificate.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-certificate.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-certificate.cpp' object='tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_certificate-test-certificate.obj `if test -f 'tests/unit-tests/test-certificate.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-certificate.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-certificate.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_certificate_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_certificate-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_consumer-test-consumer.o: tests/unit-tests/test-consumer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_consumer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_consumer-test-consumer.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Tpo -c -o tests/unit-tests/bin_unit_tests_test_consumer-test-consumer.o `test -f 'tests/unit-tests/test-consumer.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-consumer.cpp
@@ -4066,6 +4127,13 @@ recheck: all $(check_PROGRAMS)
 bin/unit-tests/test-aes-algorithm.log: bin/unit-tests/test-aes-algorithm$(EXEEXT)
 	@p='bin/unit-tests/test-aes-algorithm$(EXEEXT)'; \
 	b='bin/unit-tests/test-aes-algorithm'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-certificate.log: bin/unit-tests/test-certificate$(EXEEXT)
+	@p='bin/unit-tests/test-certificate$(EXEEXT)'; \
+	b='bin/unit-tests/test-certificate'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

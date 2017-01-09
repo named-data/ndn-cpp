@@ -51,6 +51,7 @@ Sha256WithEcdsaSignature::get(SignatureLite& signatureLite) const
   signatureLite.setType(ndn_SignatureType_Sha256WithEcdsaSignature);
   signatureLite.setSignature(signature_);
   keyLocator_.get().get(signatureLite.getKeyLocator());
+  validityPeriod_.get().get(signatureLite.getValidityPeriod());
 }
 
 void
@@ -62,6 +63,7 @@ Sha256WithEcdsaSignature::set(const SignatureLite& signatureLite)
 
   setSignature(Blob(signatureLite.getSignature()));
   keyLocator_.get().set(signatureLite.getKeyLocator());
+  validityPeriod_.get().set(signatureLite.getValidityPeriod());
 }
 
 uint64_t
@@ -69,6 +71,7 @@ Sha256WithEcdsaSignature::getChangeCount() const
 {
   // Make sure each of the checkChanged is called.
   bool changed = keyLocator_.checkChanged();
+  changed = validityPeriod_.checkChanged() || changed;
   if (changed)
     // A child object has changed, so update the change count.
     // This method can be called on a const object, but we want to be able to
