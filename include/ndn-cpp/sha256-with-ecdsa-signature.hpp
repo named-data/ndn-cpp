@@ -24,6 +24,7 @@
 
 #include "signature.hpp"
 #include "key-locator.hpp"
+#include "security/validity-period.hpp"
 #include "util/change-counter.hpp"
 
 namespace ndn {
@@ -78,6 +79,20 @@ public:
   getKeyLocator() { return keyLocator_.get(); }
 
   /**
+   * Get the validity period.
+   * @return The validity period.
+   */
+  const ValidityPeriod&
+  getValidityPeriod() const { return validityPeriod_.get(); }
+
+  /**
+   * Get the validity period.
+   * @return The validity period.
+   */
+  ValidityPeriod&
+  getValidityPeriod() { return validityPeriod_.get(); }
+
+  /**
    * Set the signature bytes to the given value.
    * @param signature A Blob with the signature bytes.
    */
@@ -99,6 +114,7 @@ public:
   {
     signature_.reset();
     keyLocator_.get().clear();
+    validityPeriod_.get().clear();
     ++changeCount_;
   }
 
@@ -113,6 +129,7 @@ public:
 private:
   Blob signature_;
   ChangeCounter<KeyLocator> keyLocator_;
+  ChangeCounter<ValidityPeriod> validityPeriod_;
   uint64_t changeCount_;
 };
 

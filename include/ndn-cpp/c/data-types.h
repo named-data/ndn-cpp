@@ -22,6 +22,7 @@
 #define NDN_DATA_TYPES_H
 
 #include "key-types.h"
+#include "security/validity-period-types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,6 +70,8 @@ struct ndn_Signature {
   int genericTypeCode;                   /**< used with Generic. -1 for not known. */
   struct ndn_KeyLocator keyLocator; /**< used with Sha256WithRsaSignature,
                                      * Sha256WithEcdsaSignature, HmacWithSha256Signature */
+  struct ndn_ValidityPeriod validityPeriod; /**< used with Sha256WithRsaSignature,
+                                     * Sha256WithEcdsaSignature */
 };
 
 /**

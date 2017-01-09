@@ -25,6 +25,7 @@
 #include <ndn-cpp/c/data-types.h>
 #include "name.h"
 #include "key-locator.h"
+#include "security/validity-period.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +43,7 @@ static __inline void ndn_Signature_initialize(struct ndn_Signature *self, struct
   ndn_Blob_initialize(&self->signatureInfoEncoding, 0, 0);
   self->genericTypeCode = -1;
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
+  ndn_ValidityPeriod_initialize(&self->validityPeriod);
 }
 
 /**
@@ -80,6 +82,7 @@ ndn_Signature_setFromSignature
   if ((error = ndn_KeyLocator_setFromKeyLocator
        (&self->keyLocator, &other->keyLocator)))
     return error;
+  self->validityPeriod = other->validityPeriod;
 
   return NDN_ERROR_success;
 }
