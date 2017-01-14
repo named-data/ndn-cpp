@@ -48,10 +48,11 @@ void protobuf_AssignDesc_sync_2dstate_2eproto() {
       "sync-state.proto");
   GOOGLE_CHECK(file != NULL);
   SyncState_descriptor_ = file->message_type(0);
-  static const int SyncState_offsets_[3] = {
+  static const int SyncState_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, seqno_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, application_info_),
   };
   SyncState_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -134,13 +135,14 @@ void protobuf_AddDesc_sync_2dstate_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020sync-state.proto\022\004Sync\"\301\001\n\tSyncState\022\014"
+    "\n\020sync-state.proto\022\004Sync\"\333\001\n\tSyncState\022\014"
     "\n\004name\030\001 \002(\t\022(\n\004type\030\002 \002(\0162\032.Sync.SyncSt"
     "ate.ActionType\022$\n\005seqno\030\003 \001(\0132\025.Sync.Syn"
-    "cState.SeqNo\032%\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007se"
-    "ssion\030\002 \002(\004\"/\n\nActionType\022\n\n\006UPDATE\020\000\022\n\n"
-    "\006DELETE\020\001\022\t\n\005OTHER\020\002\"+\n\014SyncStateMsg\022\033\n\002"
-    "ss\030\001 \003(\0132\017.Sync.SyncState", 265);
+    "cState.SeqNo\022\030\n\020application_info\030\004 \001(\014\032%"
+    "\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007session\030\002 \002(\004\"/\n"
+    "\nActionType\022\n\n\006UPDATE\020\000\022\n\n\006DELETE\020\001\022\t\n\005O"
+    "THER\020\002\"+\n\014SyncStateMsg\022\033\n\002ss\030\001 \003(\0132\017.Syn"
+    "c.SyncState", 291);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "sync-state.proto", &protobuf_RegisterTypes);
   SyncState::default_instance_ = new SyncState();
@@ -269,7 +271,7 @@ bool SyncState_SeqNo::MergePartialFromCodedStream(
         if (input->ExpectTag(16)) goto parse_session;
         break;
       }
-      
+
       // required uint64 session = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -285,7 +287,7 @@ bool SyncState_SeqNo::MergePartialFromCodedStream(
         if (input->ExpectAtEnd()) return true;
         break;
       }
-      
+
       default: {
       handle_uninterpreted:
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -308,12 +310,12 @@ void SyncState_SeqNo::SerializeWithCachedSizes(
   if (has_seq()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->seq(), output);
   }
-  
+
   // required uint64 session = 2;
   if (has_session()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->session(), output);
   }
-  
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -326,12 +328,12 @@ void SyncState_SeqNo::SerializeWithCachedSizes(
   if (has_seq()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->seq(), target);
   }
-  
+
   // required uint64 session = 2;
   if (has_session()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->session(), target);
   }
-  
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -341,7 +343,7 @@ void SyncState_SeqNo::SerializeWithCachedSizes(
 
 int SyncState_SeqNo::ByteSize() const {
   int total_size = 0;
-  
+
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     // required uint64 seq = 1;
     if (has_seq()) {
@@ -349,14 +351,14 @@ int SyncState_SeqNo::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->seq());
     }
-    
+
     // required uint64 session = 2;
     if (has_session()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->session());
     }
-    
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -408,7 +410,7 @@ void SyncState_SeqNo::CopyFrom(const SyncState_SeqNo& from) {
 
 bool SyncState_SeqNo::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
-  
+
   return true;
 }
 
@@ -437,6 +439,7 @@ void SyncState_SeqNo::Swap(SyncState_SeqNo* other) {
 const int SyncState::kNameFieldNumber;
 const int SyncState::kTypeFieldNumber;
 const int SyncState::kSeqnoFieldNumber;
+const int SyncState::kApplicationInfoFieldNumber;
 #endif  // !_MSC_VER
 
 SyncState::SyncState()
@@ -459,6 +462,7 @@ void SyncState::SharedCtor() {
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   type_ = 0;
   seqno_ = NULL;
+  application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -469,6 +473,9 @@ SyncState::~SyncState() {
 void SyncState::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
+  }
+  if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+    delete application_info_;
   }
   if (this != default_instance_) {
     delete seqno_;
@@ -506,6 +513,11 @@ void SyncState::Clear() {
     if (has_seqno()) {
       if (seqno_ != NULL) seqno_->::Sync::SyncState_SeqNo::Clear();
     }
+    if (has_application_info()) {
+      if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+        application_info_->clear();
+      }
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -532,7 +544,7 @@ bool SyncState::MergePartialFromCodedStream(
         if (input->ExpectTag(16)) goto parse_type;
         break;
       }
-      
+
       // required .Sync.SyncState.ActionType type = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -553,7 +565,7 @@ bool SyncState::MergePartialFromCodedStream(
         if (input->ExpectTag(26)) goto parse_seqno;
         break;
       }
-      
+
       // optional .Sync.SyncState.SeqNo seqno = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -564,10 +576,24 @@ bool SyncState::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(34)) goto parse_application_info;
+        break;
+      }
+
+      // optional bytes application_info = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_application_info:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_application_info()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
-      
+
       default: {
       handle_uninterpreted:
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -594,19 +620,25 @@ void SyncState::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteString(
       1, this->name(), output);
   }
-  
+
   // required .Sync.SyncState.ActionType type = 2;
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       2, this->type(), output);
   }
-  
+
   // optional .Sync.SyncState.SeqNo seqno = 3;
   if (has_seqno()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, this->seqno(), output);
   }
-  
+
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+      4, this->application_info(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -624,20 +656,27 @@ void SyncState::SerializeWithCachedSizes(
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->name(), target);
   }
-  
+
   // required .Sync.SyncState.ActionType type = 2;
   if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       2, this->type(), target);
   }
-  
+
   // optional .Sync.SyncState.SeqNo seqno = 3;
   if (has_seqno()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         3, this->seqno(), target);
   }
-  
+
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->application_info(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -647,7 +686,7 @@ void SyncState::SerializeWithCachedSizes(
 
 int SyncState::ByteSize() const {
   int total_size = 0;
-  
+
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     // required string name = 1;
     if (has_name()) {
@@ -655,20 +694,27 @@ int SyncState::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->name());
     }
-    
+
     // required .Sync.SyncState.ActionType type = 2;
     if (has_type()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
     }
-    
+
     // optional .Sync.SyncState.SeqNo seqno = 3;
     if (has_seqno()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->seqno());
     }
-    
+
+    // optional bytes application_info = 4;
+    if (has_application_info()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->application_info());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -705,6 +751,9 @@ void SyncState::MergeFrom(const SyncState& from) {
     if (from.has_seqno()) {
       mutable_seqno()->::Sync::SyncState_SeqNo::MergeFrom(from.seqno());
     }
+    if (from.has_application_info()) {
+      set_application_info(from.application_info());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -723,7 +772,7 @@ void SyncState::CopyFrom(const SyncState& from) {
 
 bool SyncState::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
-  
+
   if (has_seqno()) {
     if (!this->seqno().IsInitialized()) return false;
   }
@@ -735,6 +784,7 @@ void SyncState::Swap(SyncState* other) {
     std::swap(name_, other->name_);
     std::swap(type_, other->type_);
     std::swap(seqno_, other->seqno_);
+    std::swap(application_info_, other->application_info_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -830,7 +880,7 @@ bool SyncStateMsg::MergePartialFromCodedStream(
         if (input->ExpectAtEnd()) return true;
         break;
       }
-      
+
       default: {
       handle_uninterpreted:
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -854,7 +904,7 @@ void SyncStateMsg::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->ss(i), output);
   }
-  
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -869,7 +919,7 @@ void SyncStateMsg::SerializeWithCachedSizes(
       WriteMessageNoVirtualToArray(
         1, this->ss(i), target);
   }
-  
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -879,7 +929,7 @@ void SyncStateMsg::SerializeWithCachedSizes(
 
 int SyncStateMsg::ByteSize() const {
   int total_size = 0;
-  
+
   // repeated .Sync.SyncState ss = 1;
   total_size += 1 * this->ss_size();
   for (int i = 0; i < this->ss_size(); i++) {
@@ -887,7 +937,7 @@ int SyncStateMsg::ByteSize() const {
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
         this->ss(i));
   }
-  
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -930,7 +980,7 @@ void SyncStateMsg::CopyFrom(const SyncStateMsg& from) {
 }
 
 bool SyncStateMsg::IsInitialized() const {
-  
+
   for (int i = 0; i < ss_size(); i++) {
     if (!this->ss(i).IsInitialized()) return false;
   }
@@ -1000,10 +1050,11 @@ void protobuf_AssignDesc_sync_2dstate_2eproto() {
       "sync-state.proto");
   GOOGLE_CHECK(file != NULL);
   SyncState_descriptor_ = file->message_type(0);
-  static const int SyncState_offsets_[3] = {
+  static const int SyncState_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, seqno_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, application_info_),
   };
   SyncState_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -1086,13 +1137,14 @@ void protobuf_AddDesc_sync_2dstate_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020sync-state.proto\022\004Sync\"\301\001\n\tSyncState\022\014"
+    "\n\020sync-state.proto\022\004Sync\"\333\001\n\tSyncState\022\014"
     "\n\004name\030\001 \002(\t\022(\n\004type\030\002 \002(\0162\032.Sync.SyncSt"
     "ate.ActionType\022$\n\005seqno\030\003 \001(\0132\025.Sync.Syn"
-    "cState.SeqNo\032%\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007se"
-    "ssion\030\002 \002(\004\"/\n\nActionType\022\n\n\006UPDATE\020\000\022\n\n"
-    "\006DELETE\020\001\022\t\n\005OTHER\020\002\"+\n\014SyncStateMsg\022\033\n\002"
-    "ss\030\001 \003(\0132\017.Sync.SyncState", 265);
+    "cState.SeqNo\022\030\n\020application_info\030\004 \001(\014\032%"
+    "\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007session\030\002 \002(\004\"/\n"
+    "\nActionType\022\n\n\006UPDATE\020\000\022\n\n\006DELETE\020\001\022\t\n\005O"
+    "THER\020\002\"+\n\014SyncStateMsg\022\033\n\002ss\030\001 \003(\0132\017.Syn"
+    "c.SyncState", 291);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "sync-state.proto", &protobuf_RegisterTypes);
   SyncState::default_instance_ = new SyncState();
@@ -1389,6 +1441,7 @@ void SyncState_SeqNo::Swap(SyncState_SeqNo* other) {
 const int SyncState::kNameFieldNumber;
 const int SyncState::kTypeFieldNumber;
 const int SyncState::kSeqnoFieldNumber;
+const int SyncState::kApplicationInfoFieldNumber;
 #endif  // !_MSC_VER
 
 SyncState::SyncState()
@@ -1411,6 +1464,7 @@ void SyncState::SharedCtor() {
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   type_ = 0;
   seqno_ = NULL;
+  application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1421,6 +1475,9 @@ SyncState::~SyncState() {
 void SyncState::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
+  }
+  if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+    delete application_info_;
   }
   if (this != default_instance_) {
     delete seqno_;
@@ -1458,6 +1515,11 @@ void SyncState::Clear() {
     type_ = 0;
     if (has_seqno()) {
       if (seqno_ != NULL) seqno_->::Sync::SyncState_SeqNo::Clear();
+    }
+    if (has_application_info()) {
+      if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+        application_info_->clear();
+      }
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1517,6 +1579,20 @@ bool SyncState::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(34)) goto parse_application_info;
+        break;
+      }
+
+      // optional bytes application_info = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_application_info:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_application_info()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1560,6 +1636,12 @@ void SyncState::SerializeWithCachedSizes(
       3, this->seqno(), output);
   }
 
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+      4, this->application_info(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1591,6 +1673,13 @@ void SyncState::SerializeWithCachedSizes(
         3, this->seqno(), target);
   }
 
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->application_info(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -1620,6 +1709,13 @@ int SyncState::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->seqno());
+    }
+
+    // optional bytes application_info = 4;
+    if (has_application_info()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->application_info());
     }
 
   }
@@ -1658,6 +1754,9 @@ void SyncState::MergeFrom(const SyncState& from) {
     if (from.has_seqno()) {
       mutable_seqno()->::Sync::SyncState_SeqNo::MergeFrom(from.seqno());
     }
+    if (from.has_application_info()) {
+      set_application_info(from.application_info());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1688,6 +1787,7 @@ void SyncState::Swap(SyncState* other) {
     std::swap(name_, other->name_);
     std::swap(type_, other->type_);
     std::swap(seqno_, other->seqno_);
+    std::swap(application_info_, other->application_info_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -1954,10 +2054,11 @@ void protobuf_AssignDesc_sync_2dstate_2eproto() {
       "sync-state.proto");
   GOOGLE_CHECK(file != NULL);
   SyncState_descriptor_ = file->message_type(0);
-  static const int SyncState_offsets_[3] = {
+  static const int SyncState_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, seqno_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, application_info_),
   };
   SyncState_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -2040,13 +2141,14 @@ void protobuf_AddDesc_sync_2dstate_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020sync-state.proto\022\004Sync\"\301\001\n\tSyncState\022\014"
+    "\n\020sync-state.proto\022\004Sync\"\333\001\n\tSyncState\022\014"
     "\n\004name\030\001 \002(\t\022(\n\004type\030\002 \002(\0162\032.Sync.SyncSt"
     "ate.ActionType\022$\n\005seqno\030\003 \001(\0132\025.Sync.Syn"
-    "cState.SeqNo\032%\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007se"
-    "ssion\030\002 \002(\004\"/\n\nActionType\022\n\n\006UPDATE\020\000\022\n\n"
-    "\006DELETE\020\001\022\t\n\005OTHER\020\002\"+\n\014SyncStateMsg\022\033\n\002"
-    "ss\030\001 \003(\0132\017.Sync.SyncState", 265);
+    "cState.SeqNo\022\030\n\020application_info\030\004 \001(\014\032%"
+    "\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007session\030\002 \002(\004\"/\n"
+    "\nActionType\022\n\n\006UPDATE\020\000\022\n\n\006DELETE\020\001\022\t\n\005O"
+    "THER\020\002\"+\n\014SyncStateMsg\022\033\n\002ss\030\001 \003(\0132\017.Syn"
+    "c.SyncState", 291);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "sync-state.proto", &protobuf_RegisterTypes);
   SyncState::default_instance_ = new SyncState();
@@ -2369,6 +2471,7 @@ void SyncState_SeqNo::Swap(SyncState_SeqNo* other) {
 const int SyncState::kNameFieldNumber;
 const int SyncState::kTypeFieldNumber;
 const int SyncState::kSeqnoFieldNumber;
+const int SyncState::kApplicationInfoFieldNumber;
 #endif  // !_MSC_VER
 
 SyncState::SyncState()
@@ -2394,6 +2497,7 @@ void SyncState::SharedCtor() {
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   type_ = 0;
   seqno_ = NULL;
+  application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2405,6 +2509,9 @@ SyncState::~SyncState() {
 void SyncState::SharedDtor() {
   if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete name_;
+  }
+  if (application_info_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete application_info_;
   }
   if (this != default_instance_) {
     delete seqno_;
@@ -2433,7 +2540,7 @@ SyncState* SyncState::New() const {
 }
 
 void SyncState::Clear() {
-  if (_has_bits_[0 / 32] & 7) {
+  if (_has_bits_[0 / 32] & 15) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         name_->clear();
@@ -2442,6 +2549,11 @@ void SyncState::Clear() {
     type_ = 0;
     if (has_seqno()) {
       if (seqno_ != NULL) seqno_->::Sync::SyncState_SeqNo::Clear();
+    }
+    if (has_application_info()) {
+      if (application_info_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        application_info_->clear();
+      }
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2503,6 +2615,19 @@ bool SyncState::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(34)) goto parse_application_info;
+        break;
+      }
+
+      // optional bytes application_info = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_application_info:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_application_info()));
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2554,6 +2679,12 @@ void SyncState::SerializeWithCachedSizes(
       3, this->seqno(), output);
   }
 
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      4, this->application_info(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2588,6 +2719,13 @@ void SyncState::SerializeWithCachedSizes(
         3, this->seqno(), target);
   }
 
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->application_info(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2618,6 +2756,13 @@ int SyncState::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->seqno());
+    }
+
+    // optional bytes application_info = 4;
+    if (has_application_info()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->application_info());
     }
 
   }
@@ -2656,6 +2801,9 @@ void SyncState::MergeFrom(const SyncState& from) {
     if (from.has_seqno()) {
       mutable_seqno()->::Sync::SyncState_SeqNo::MergeFrom(from.seqno());
     }
+    if (from.has_application_info()) {
+      set_application_info(from.application_info());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2686,6 +2834,7 @@ void SyncState::Swap(SyncState* other) {
     std::swap(name_, other->name_);
     std::swap(type_, other->type_);
     std::swap(seqno_, other->seqno_);
+    std::swap(application_info_, other->application_info_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2968,10 +3117,11 @@ void protobuf_AssignDesc_sync_2dstate_2eproto() {
       "sync-state.proto");
   GOOGLE_CHECK(file != NULL);
   SyncState_descriptor_ = file->message_type(0);
-  static const int SyncState_offsets_[3] = {
+  static const int SyncState_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, seqno_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SyncState, application_info_),
   };
   SyncState_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -3056,13 +3206,14 @@ void protobuf_AddDesc_sync_2dstate_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020sync-state.proto\022\004Sync\"\301\001\n\tSyncState\022\014"
+    "\n\020sync-state.proto\022\004Sync\"\333\001\n\tSyncState\022\014"
     "\n\004name\030\001 \002(\t\022(\n\004type\030\002 \002(\0162\032.Sync.SyncSt"
     "ate.ActionType\022$\n\005seqno\030\003 \001(\0132\025.Sync.Syn"
-    "cState.SeqNo\032%\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007se"
-    "ssion\030\002 \002(\004\"/\n\nActionType\022\n\n\006UPDATE\020\000\022\n\n"
-    "\006DELETE\020\001\022\t\n\005OTHER\020\002\"+\n\014SyncStateMsg\022\033\n\002"
-    "ss\030\001 \003(\0132\017.Sync.SyncState", 265);
+    "cState.SeqNo\022\030\n\020application_info\030\004 \001(\014\032%"
+    "\n\005SeqNo\022\013\n\003seq\030\001 \002(\004\022\017\n\007session\030\002 \002(\004\"/\n"
+    "\nActionType\022\n\n\006UPDATE\020\000\022\n\n\006DELETE\020\001\022\t\n\005O"
+    "THER\020\002\"+\n\014SyncStateMsg\022\033\n\002ss\030\001 \003(\0132\017.Syn"
+    "c.SyncState", 291);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "sync-state.proto", &protobuf_RegisterTypes);
   SyncState::default_instance_ = new SyncState();
@@ -3432,6 +3583,7 @@ void SyncState_SeqNo::InternalSwap(SyncState_SeqNo* other) {
 const int SyncState::kNameFieldNumber;
 const int SyncState::kTypeFieldNumber;
 const int SyncState::kSeqnoFieldNumber;
+const int SyncState::kApplicationInfoFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 SyncState::SyncState()
@@ -3458,6 +3610,7 @@ void SyncState::SharedCtor() {
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   type_ = 0;
   seqno_ = NULL;
+  application_info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3468,6 +3621,7 @@ SyncState::~SyncState() {
 
 void SyncState::SharedDtor() {
   name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  application_info_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
     delete seqno_;
   }
@@ -3500,13 +3654,16 @@ SyncState* SyncState::New(::google::protobuf::Arena* arena) const {
 
 void SyncState::Clear() {
 // @@protoc_insertion_point(message_clear_start:Sync.SyncState)
-  if (_has_bits_[0 / 32] & 7u) {
+  if (_has_bits_[0 / 32] & 15u) {
     if (has_name()) {
       name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
     type_ = 0;
     if (has_seqno()) {
       if (seqno_ != NULL) seqno_->::Sync::SyncState_SeqNo::Clear();
+    }
+    if (has_application_info()) {
+      application_info_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -3570,6 +3727,19 @@ bool SyncState::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(34)) goto parse_application_info;
+        break;
+      }
+
+      // optional bytes application_info = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_application_info:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_application_info()));
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -3621,6 +3791,12 @@ void SyncState::SerializeWithCachedSizes(
       3, *this->seqno_, output);
   }
 
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      4, this->application_info(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3653,6 +3829,13 @@ void SyncState::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
         3, *this->seqno_, false, target);
+  }
+
+  // optional bytes application_info = 4;
+  if (has_application_info()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->application_info(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -3699,13 +3882,22 @@ int SyncState::ByteSize() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
-  // optional .Sync.SyncState.SeqNo seqno = 3;
-  if (has_seqno()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        *this->seqno_);
-  }
+  if (_has_bits_[2 / 32] & 12u) {
+    // optional .Sync.SyncState.SeqNo seqno = 3;
+    if (has_seqno()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->seqno_);
+    }
 
+    // optional bytes application_info = 4;
+    if (has_application_info()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->application_info());
+    }
+
+  }
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -3750,6 +3942,10 @@ void SyncState::MergeFrom(const SyncState& from) {
     if (from.has_seqno()) {
       mutable_seqno()->::Sync::SyncState_SeqNo::MergeFrom(from.seqno());
     }
+    if (from.has_application_info()) {
+      set_has_application_info();
+      application_info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.application_info_);
+    }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -3787,6 +3983,7 @@ void SyncState::InternalSwap(SyncState* other) {
   name_.Swap(&other->name_);
   std::swap(type_, other->type_);
   std::swap(seqno_, other->seqno_);
+  application_info_.Swap(&other->application_info_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -3976,6 +4173,60 @@ void SyncState::set_allocated_seqno(::Sync::SyncState_SeqNo* seqno) {
     clear_has_seqno();
   }
   // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.seqno)
+}
+
+// optional bytes application_info = 4;
+bool SyncState::has_application_info() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void SyncState::set_has_application_info() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void SyncState::clear_has_application_info() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+void SyncState::clear_application_info() {
+  application_info_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_application_info();
+}
+ const ::std::string& SyncState::application_info() const {
+  // @@protoc_insertion_point(field_get:Sync.SyncState.application_info)
+  return application_info_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void SyncState::set_application_info(const ::std::string& value) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:Sync.SyncState.application_info)
+}
+ void SyncState::set_application_info(const char* value) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Sync.SyncState.application_info)
+}
+ void SyncState::set_application_info(const void* value, size_t size) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Sync.SyncState.application_info)
+}
+ ::std::string* SyncState::mutable_application_info() {
+  set_has_application_info();
+  // @@protoc_insertion_point(field_mutable:Sync.SyncState.application_info)
+  return application_info_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* SyncState::release_application_info() {
+  // @@protoc_insertion_point(field_release:Sync.SyncState.application_info)
+  clear_has_application_info();
+  return application_info_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void SyncState::set_allocated_application_info(::std::string* application_info) {
+  if (application_info != NULL) {
+    set_has_application_info();
+  } else {
+    clear_has_application_info();
+  }
+  application_info_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), application_info);
+  // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.application_info)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

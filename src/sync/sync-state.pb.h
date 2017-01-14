@@ -65,29 +65,29 @@ class SyncState_SeqNo : public ::google::protobuf::Message {
  public:
   SyncState_SeqNo();
   virtual ~SyncState_SeqNo();
-  
+
   SyncState_SeqNo(const SyncState_SeqNo& from);
-  
+
   inline SyncState_SeqNo& operator=(const SyncState_SeqNo& from) {
     CopyFrom(from);
     return *this;
   }
-  
+
   inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
     return _unknown_fields_;
   }
-  
+
   inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
     return &_unknown_fields_;
   }
-  
+
   static const ::google::protobuf::Descriptor* descriptor();
   static const SyncState_SeqNo& default_instance();
-  
+
   void Swap(SyncState_SeqNo* other);
-  
+
   // implements Message ----------------------------------------------
-  
+
   SyncState_SeqNo* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
@@ -95,7 +95,7 @@ class SyncState_SeqNo : public ::google::protobuf::Message {
   void MergeFrom(const SyncState_SeqNo& from);
   void Clear();
   bool IsInitialized() const;
-  
+
   int ByteSize() const;
   bool MergePartialFromCodedStream(
       ::google::protobuf::io::CodedInputStream* input);
@@ -108,46 +108,46 @@ class SyncState_SeqNo : public ::google::protobuf::Message {
   void SharedDtor();
   void SetCachedSize(int size) const;
   public:
-  
+
   ::google::protobuf::Metadata GetMetadata() const;
-  
+
   // nested types ----------------------------------------------------
-  
+
   // accessors -------------------------------------------------------
-  
+
   // required uint64 seq = 1;
   inline bool has_seq() const;
   inline void clear_seq();
   static const int kSeqFieldNumber = 1;
   inline ::google::protobuf::uint64 seq() const;
   inline void set_seq(::google::protobuf::uint64 value);
-  
+
   // required uint64 session = 2;
   inline bool has_session() const;
   inline void clear_session();
   static const int kSessionFieldNumber = 2;
   inline ::google::protobuf::uint64 session() const;
   inline void set_session(::google::protobuf::uint64 value);
-  
+
   // @@protoc_insertion_point(class_scope:Sync.SyncState.SeqNo)
  private:
   inline void set_has_seq();
   inline void clear_has_seq();
   inline void set_has_session();
   inline void clear_has_session();
-  
+
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
+
   ::google::protobuf::uint64 seq_;
   ::google::protobuf::uint64 session_;
-  
+
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
-  
+
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
   friend void protobuf_ShutdownFile_sync_2dstate_2eproto();
-  
+
   void InitAsDefaultInstance();
   static SyncState_SeqNo* default_instance_;
 };
@@ -157,29 +157,29 @@ class SyncState : public ::google::protobuf::Message {
  public:
   SyncState();
   virtual ~SyncState();
-  
+
   SyncState(const SyncState& from);
-  
+
   inline SyncState& operator=(const SyncState& from) {
     CopyFrom(from);
     return *this;
   }
-  
+
   inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
     return _unknown_fields_;
   }
-  
+
   inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
     return &_unknown_fields_;
   }
-  
+
   static const ::google::protobuf::Descriptor* descriptor();
   static const SyncState& default_instance();
-  
+
   void Swap(SyncState* other);
-  
+
   // implements Message ----------------------------------------------
-  
+
   SyncState* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
@@ -187,7 +187,7 @@ class SyncState : public ::google::protobuf::Message {
   void MergeFrom(const SyncState& from);
   void Clear();
   bool IsInitialized() const;
-  
+
   int ByteSize() const;
   bool MergePartialFromCodedStream(
       ::google::protobuf::io::CodedInputStream* input);
@@ -200,13 +200,13 @@ class SyncState : public ::google::protobuf::Message {
   void SharedDtor();
   void SetCachedSize(int size) const;
   public:
-  
+
   ::google::protobuf::Metadata GetMetadata() const;
-  
+
   // nested types ----------------------------------------------------
-  
+
   typedef SyncState_SeqNo SeqNo;
-  
+
   typedef SyncState_ActionType ActionType;
   static const ActionType UPDATE = SyncState_ActionType_UPDATE;
   static const ActionType DELETE = SyncState_ActionType_DELETE;
@@ -231,9 +231,9 @@ class SyncState : public ::google::protobuf::Message {
       ActionType* value) {
     return SyncState_ActionType_Parse(name, value);
   }
-  
+
   // accessors -------------------------------------------------------
-  
+
   // required string name = 1;
   inline bool has_name() const;
   inline void clear_name();
@@ -244,14 +244,14 @@ class SyncState : public ::google::protobuf::Message {
   inline void set_name(const char* value, size_t size);
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
-  
+
   // required .Sync.SyncState.ActionType type = 2;
   inline bool has_type() const;
   inline void clear_type();
   static const int kTypeFieldNumber = 2;
   inline ::Sync::SyncState_ActionType type() const;
   inline void set_type(::Sync::SyncState_ActionType value);
-  
+
   // optional .Sync.SyncState.SeqNo seqno = 3;
   inline bool has_seqno() const;
   inline void clear_seqno();
@@ -259,7 +259,18 @@ class SyncState : public ::google::protobuf::Message {
   inline const ::Sync::SyncState_SeqNo& seqno() const;
   inline ::Sync::SyncState_SeqNo* mutable_seqno();
   inline ::Sync::SyncState_SeqNo* release_seqno();
-  
+
+  // optional bytes application_info = 4;
+  inline bool has_application_info() const;
+  inline void clear_application_info();
+  static const int kApplicationInfoFieldNumber = 4;
+  inline const ::std::string& application_info() const;
+  inline void set_application_info(const ::std::string& value);
+  inline void set_application_info(const char* value);
+  inline void set_application_info(const void* value, size_t size);
+  inline ::std::string* mutable_application_info();
+  inline ::std::string* release_application_info();
+
   // @@protoc_insertion_point(class_scope:Sync.SyncState)
  private:
   inline void set_has_name();
@@ -268,20 +279,23 @@ class SyncState : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_seqno();
   inline void clear_has_seqno();
-  
+  inline void set_has_application_info();
+  inline void clear_has_application_info();
+
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
+
   ::std::string* name_;
   ::Sync::SyncState_SeqNo* seqno_;
+  ::std::string* application_info_;
   int type_;
-  
+
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
-  
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
   friend void protobuf_ShutdownFile_sync_2dstate_2eproto();
-  
+
   void InitAsDefaultInstance();
   static SyncState* default_instance_;
 };
@@ -291,29 +305,29 @@ class SyncStateMsg : public ::google::protobuf::Message {
  public:
   SyncStateMsg();
   virtual ~SyncStateMsg();
-  
+
   SyncStateMsg(const SyncStateMsg& from);
-  
+
   inline SyncStateMsg& operator=(const SyncStateMsg& from) {
     CopyFrom(from);
     return *this;
   }
-  
+
   inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
     return _unknown_fields_;
   }
-  
+
   inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
     return &_unknown_fields_;
   }
-  
+
   static const ::google::protobuf::Descriptor* descriptor();
   static const SyncStateMsg& default_instance();
-  
+
   void Swap(SyncStateMsg* other);
-  
+
   // implements Message ----------------------------------------------
-  
+
   SyncStateMsg* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
@@ -321,7 +335,7 @@ class SyncStateMsg : public ::google::protobuf::Message {
   void MergeFrom(const SyncStateMsg& from);
   void Clear();
   bool IsInitialized() const;
-  
+
   int ByteSize() const;
   bool MergePartialFromCodedStream(
       ::google::protobuf::io::CodedInputStream* input);
@@ -334,13 +348,13 @@ class SyncStateMsg : public ::google::protobuf::Message {
   void SharedDtor();
   void SetCachedSize(int size) const;
   public:
-  
+
   ::google::protobuf::Metadata GetMetadata() const;
-  
+
   // nested types ----------------------------------------------------
-  
+
   // accessors -------------------------------------------------------
-  
+
   // repeated .Sync.SyncState ss = 1;
   inline int ss_size() const;
   inline void clear_ss();
@@ -352,21 +366,21 @@ class SyncStateMsg : public ::google::protobuf::Message {
       ss() const;
   inline ::google::protobuf::RepeatedPtrField< ::Sync::SyncState >*
       mutable_ss();
-  
+
   // @@protoc_insertion_point(class_scope:Sync.SyncStateMsg)
  private:
-  
+
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
+
   ::google::protobuf::RepeatedPtrField< ::Sync::SyncState > ss_;
-  
+
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
-  
+
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
   friend void protobuf_ShutdownFile_sync_2dstate_2eproto();
-  
+
   void InitAsDefaultInstance();
   static SyncStateMsg* default_instance_;
 };
@@ -533,6 +547,64 @@ inline ::Sync::SyncState_SeqNo* SyncState::release_seqno() {
   ::Sync::SyncState_SeqNo* temp = seqno_;
   seqno_ = NULL;
   return temp;
+}
+
+// optional bytes application_info = 4;
+inline bool SyncState::has_application_info() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void SyncState::set_has_application_info() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void SyncState::clear_has_application_info() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void SyncState::clear_application_info() {
+  if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+    application_info_->clear();
+  }
+  clear_has_application_info();
+}
+inline const ::std::string& SyncState::application_info() const {
+  return *application_info_;
+}
+inline void SyncState::set_application_info(const ::std::string& value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+}
+inline void SyncState::set_application_info(const char* value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+}
+inline void SyncState::set_application_info(const void* value, size_t size) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* SyncState::mutable_application_info() {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  return application_info_;
+}
+inline ::std::string* SyncState::release_application_info() {
+  clear_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = application_info_;
+    application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
 }
 
 // -------------------------------------------------------------------
@@ -839,6 +911,18 @@ class SyncState : public ::google::protobuf::Message {
   inline ::Sync::SyncState_SeqNo* release_seqno();
   inline void set_allocated_seqno(::Sync::SyncState_SeqNo* seqno);
 
+  // optional bytes application_info = 4;
+  inline bool has_application_info() const;
+  inline void clear_application_info();
+  static const int kApplicationInfoFieldNumber = 4;
+  inline const ::std::string& application_info() const;
+  inline void set_application_info(const ::std::string& value);
+  inline void set_application_info(const char* value);
+  inline void set_application_info(const void* value, size_t size);
+  inline ::std::string* mutable_application_info();
+  inline ::std::string* release_application_info();
+  inline void set_allocated_application_info(::std::string* application_info);
+
   // @@protoc_insertion_point(class_scope:Sync.SyncState)
  private:
   inline void set_has_name();
@@ -847,15 +931,18 @@ class SyncState : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_seqno();
   inline void clear_has_seqno();
+  inline void set_has_application_info();
+  inline void clear_has_application_info();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* name_;
   ::Sync::SyncState_SeqNo* seqno_;
+  ::std::string* application_info_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
@@ -1132,6 +1219,76 @@ inline void SyncState::set_allocated_seqno(::Sync::SyncState_SeqNo* seqno) {
     set_has_seqno();
   } else {
     clear_has_seqno();
+  }
+}
+
+// optional bytes application_info = 4;
+inline bool SyncState::has_application_info() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void SyncState::set_has_application_info() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void SyncState::clear_has_application_info() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void SyncState::clear_application_info() {
+  if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+    application_info_->clear();
+  }
+  clear_has_application_info();
+}
+inline const ::std::string& SyncState::application_info() const {
+  return *application_info_;
+}
+inline void SyncState::set_application_info(const ::std::string& value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+}
+inline void SyncState::set_application_info(const char* value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+}
+inline void SyncState::set_application_info(const void* value, size_t size) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* SyncState::mutable_application_info() {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    application_info_ = new ::std::string;
+  }
+  return application_info_;
+}
+inline ::std::string* SyncState::release_application_info() {
+  clear_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = application_info_;
+    application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void SyncState::set_allocated_application_info(::std::string* application_info) {
+  if (application_info_ != &::google::protobuf::internal::kEmptyString) {
+    delete application_info_;
+  }
+  if (application_info) {
+    set_has_application_info();
+    application_info_ = application_info;
+  } else {
+    clear_has_application_info();
+    application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 
@@ -1435,6 +1592,18 @@ class SyncState : public ::google::protobuf::Message {
   inline ::Sync::SyncState_SeqNo* release_seqno();
   inline void set_allocated_seqno(::Sync::SyncState_SeqNo* seqno);
 
+  // optional bytes application_info = 4;
+  inline bool has_application_info() const;
+  inline void clear_application_info();
+  static const int kApplicationInfoFieldNumber = 4;
+  inline const ::std::string& application_info() const;
+  inline void set_application_info(const ::std::string& value);
+  inline void set_application_info(const char* value);
+  inline void set_application_info(const void* value, size_t size);
+  inline ::std::string* mutable_application_info();
+  inline ::std::string* release_application_info();
+  inline void set_allocated_application_info(::std::string* application_info);
+
   // @@protoc_insertion_point(class_scope:Sync.SyncState)
  private:
   inline void set_has_name();
@@ -1443,6 +1612,8 @@ class SyncState : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_seqno();
   inline void clear_has_seqno();
+  inline void set_has_application_info();
+  inline void clear_has_application_info();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -1450,6 +1621,7 @@ class SyncState : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* name_;
   ::Sync::SyncState_SeqNo* seqno_;
+  ::std::string* application_info_;
   int type_;
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
@@ -1739,6 +1911,82 @@ inline void SyncState::set_allocated_seqno(::Sync::SyncState_SeqNo* seqno) {
     clear_has_seqno();
   }
   // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.seqno)
+}
+
+// optional bytes application_info = 4;
+inline bool SyncState::has_application_info() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void SyncState::set_has_application_info() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void SyncState::clear_has_application_info() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void SyncState::clear_application_info() {
+  if (application_info_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    application_info_->clear();
+  }
+  clear_has_application_info();
+}
+inline const ::std::string& SyncState::application_info() const {
+  // @@protoc_insertion_point(field_get:Sync.SyncState.application_info)
+  return *application_info_;
+}
+inline void SyncState::set_application_info(const ::std::string& value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+  // @@protoc_insertion_point(field_set:Sync.SyncState.application_info)
+}
+inline void SyncState::set_application_info(const char* value) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(value);
+  // @@protoc_insertion_point(field_set_char:Sync.SyncState.application_info)
+}
+inline void SyncState::set_application_info(const void* value, size_t size) {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    application_info_ = new ::std::string;
+  }
+  application_info_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Sync.SyncState.application_info)
+}
+inline ::std::string* SyncState::mutable_application_info() {
+  set_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    application_info_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:Sync.SyncState.application_info)
+  return application_info_;
+}
+inline ::std::string* SyncState::release_application_info() {
+  clear_has_application_info();
+  if (application_info_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = application_info_;
+    application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void SyncState::set_allocated_application_info(::std::string* application_info) {
+  if (application_info_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete application_info_;
+  }
+  if (application_info) {
+    set_has_application_info();
+    application_info_ = application_info;
+  } else {
+    clear_has_application_info();
+    application_info_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.application_info)
 }
 
 // -------------------------------------------------------------------
@@ -2085,6 +2333,18 @@ class SyncState : public ::google::protobuf::Message /* @@protoc_insertion_point
   ::Sync::SyncState_SeqNo* release_seqno();
   void set_allocated_seqno(::Sync::SyncState_SeqNo* seqno);
 
+  // optional bytes application_info = 4;
+  bool has_application_info() const;
+  void clear_application_info();
+  static const int kApplicationInfoFieldNumber = 4;
+  const ::std::string& application_info() const;
+  void set_application_info(const ::std::string& value);
+  void set_application_info(const char* value);
+  void set_application_info(const void* value, size_t size);
+  ::std::string* mutable_application_info();
+  ::std::string* release_application_info();
+  void set_allocated_application_info(::std::string* application_info);
+
   // @@protoc_insertion_point(class_scope:Sync.SyncState)
  private:
   inline void set_has_name();
@@ -2093,6 +2353,8 @@ class SyncState : public ::google::protobuf::Message /* @@protoc_insertion_point
   inline void clear_has_type();
   inline void set_has_seqno();
   inline void clear_has_seqno();
+  inline void set_has_application_info();
+  inline void clear_has_application_info();
 
   // helper for ByteSize()
   int RequiredFieldsByteSizeFallback() const;
@@ -2102,6 +2364,7 @@ class SyncState : public ::google::protobuf::Message /* @@protoc_insertion_point
   mutable int _cached_size_;
   ::google::protobuf::internal::ArenaStringPtr name_;
   ::Sync::SyncState_SeqNo* seqno_;
+  ::google::protobuf::internal::ArenaStringPtr application_info_;
   int type_;
   friend void  protobuf_AddDesc_sync_2dstate_2eproto();
   friend void protobuf_AssignDesc_sync_2dstate_2eproto();
@@ -2387,6 +2650,60 @@ inline void SyncState::set_allocated_seqno(::Sync::SyncState_SeqNo* seqno) {
     clear_has_seqno();
   }
   // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.seqno)
+}
+
+// optional bytes application_info = 4;
+inline bool SyncState::has_application_info() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void SyncState::set_has_application_info() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void SyncState::clear_has_application_info() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void SyncState::clear_application_info() {
+  application_info_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_application_info();
+}
+inline const ::std::string& SyncState::application_info() const {
+  // @@protoc_insertion_point(field_get:Sync.SyncState.application_info)
+  return application_info_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SyncState::set_application_info(const ::std::string& value) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:Sync.SyncState.application_info)
+}
+inline void SyncState::set_application_info(const char* value) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Sync.SyncState.application_info)
+}
+inline void SyncState::set_application_info(const void* value, size_t size) {
+  set_has_application_info();
+  application_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Sync.SyncState.application_info)
+}
+inline ::std::string* SyncState::mutable_application_info() {
+  set_has_application_info();
+  // @@protoc_insertion_point(field_mutable:Sync.SyncState.application_info)
+  return application_info_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* SyncState::release_application_info() {
+  // @@protoc_insertion_point(field_release:Sync.SyncState.application_info)
+  clear_has_application_info();
+  return application_info_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SyncState::set_allocated_application_info(::std::string* application_info) {
+  if (application_info != NULL) {
+    set_has_application_info();
+  } else {
+    clear_has_application_info();
+  }
+  application_info_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), application_info);
+  // @@protoc_insertion_point(field_set_allocated:Sync.SyncState.application_info)
 }
 
 // -------------------------------------------------------------------
