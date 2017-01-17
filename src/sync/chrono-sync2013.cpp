@@ -122,7 +122,7 @@ ChronoSync2013::Impl::getProducerSequenceNo(const std::string& dataPrefix, int s
 }
 
 void
-ChronoSync2013::Impl::publishNextSequenceNo()
+ChronoSync2013::Impl::publishNextSequenceNo(const Blob& applicationInfo)
 {
   ++sequenceNo_;
 
@@ -132,8 +132,11 @@ ChronoSync2013::Impl::publishNextSequenceNo()
   content->set_type(Sync::SyncState_ActionType_UPDATE);
   content->mutable_seqno()->set_seq(sequenceNo_);
   content->mutable_seqno()->set_session(sessionNo_);
+  if (!applicationInfo.isNull() && applicationInfo.size() > 0)
+    content->set_application_info(applicationInfo.buf(), applicationInfo.size());
 
-  broadcastSyncState(digestTree_->getRoot(), syncMessage);
+
+  broadcastSyncState(digestTree_->getRoot(), syncMessage, applicationInfo);
 
   if (!update(syncMessage.ss()))
     // Since we incremented the sequence number, we expect there to be a
@@ -214,6 +217,7 @@ ChronoSync2013::Impl::onData
   _LOG_DEBUG("name: " + data->getName().toUri());
   Sync::SyncStateMsg tempContent;
   tempContent.ParseFromArray(data->getContent().buf(), data->getContent().size());
+
   const google::protobuf::RepeatedPtrField<Sync::SyncState >&content = tempContent.ss();
   bool isRecovery;
   if (digestTree_->getRoot() == "00") {
@@ -234,10 +238,18 @@ ChronoSync2013::Impl::onData
   vector<SyncState> syncStates;
   for (size_t i = 0; i < content.size(); ++i) {
     // Only report UPDATE sync states.
-    if (content.Get(i).type() == Sync::SyncState_ActionType_UPDATE)
+    if (content.Get(i).type() == Sync::SyncState_ActionType_UPDATE) {
+      Blob applicationInfo;
+      if (content.Get(i).has_application_info() &&
+          content.Get(i).application_info().size() > 0)
+        applicationInfo = Blob
+          ((const uint8_t*)&content.Get(i).application_info().front(),
+           content.Get(i).application_info().size());
+
       syncStates.push_back(SyncState
         (content.Get(i).name(), content.Get(i).seqno().session(),
-         content.Get(i).seqno().seq()));
+         content.Get(i).seqno().seq(), applicationInfo));
+    }
   }
   try {
     onReceivedSyncState_(syncStates, isRecovery);
@@ -462,7 +474,8 @@ ChronoSync2013::Impl::initialOndata
     content2->mutable_seqno()->set_session(sessionNo_);
   }
 
-  broadcastSyncState(digest, tempContent2);
+  // The recover message does not include application info.
+  broadcastSyncState(digest, tempContent2, Blob());
 
   if (digestTree_->find(applicationDataPrefixUri_, sessionNo_) == -1) {
     // the user hasn't put himself in the digest tree.
@@ -531,7 +544,8 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
 
 void
 ChronoSync2013::Impl::broadcastSyncState
-  (const string& digest, const Sync::SyncStateMsg& syncMessage)
+  (const string& digest, const Sync::SyncStateMsg& syncMessage,
+   const Blob& applicationInfo)
 {
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
   syncMessage.SerializeToArray(&array->front(), array->size());

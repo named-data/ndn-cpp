@@ -125,8 +125,11 @@ public:
    */
   class SyncState {
   public:
-    SyncState(const std::string& dataPrefixUri, int sessionNo, int sequenceNo)
-    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo), sequenceNo_(sequenceNo)
+    SyncState
+      (const std::string& dataPrefixUri, int sessionNo, int sequenceNo,
+       const Blob& applicationInfo)
+    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo), 
+      sequenceNo_(sequenceNo), applicationInfo_(applicationInfo)
     {
     }
 
@@ -152,10 +155,20 @@ public:
     int
     getSequenceNo() const { return sequenceNo_; }
 
+    /**
+     * Get the application info which was included when the sender published
+     * the next sequence number.
+     * @return The applicationInfo Blob. If the sender did not provide any,
+     * return an isNull Blob.
+     */
+    const Blob&
+    getApplicationInfo() const { return applicationInfo_; }
+
   private:
     std::string dataPrefixUri_;
     int sessionNo_;
     int sequenceNo_;
+    Blob applicationInfo_;
   };
 
   /**
@@ -185,11 +198,15 @@ public:
    * modifies the internal ChronoSync data structures, your application should
    * make sure that it calls processEvents in the same thread as
    * publishNextSequenceNo() (which also modifies the data structures).
+   * @param applicationInfo (optional) This appends applicationInfo to the
+   * content of the sync messages. This same info is provided to the receiving
+   * application in the SyncState state object provided to the
+   * onReceivedSyncState callback.
    */
   void
-  publishNextSequenceNo()
+  publishNextSequenceNo(const Blob& applicationInfo = Blob())
   {
-    return impl_->publishNextSequenceNo();
+    return impl_->publishNextSequenceNo(applicationInfo);
   }
 
   /**
@@ -278,7 +295,7 @@ private:
      * See ChronoSync2013::publishNextSequenceNo.
      */
     void
-    publishNextSequenceNo();
+    publishNextSequenceNo(const Blob& applicationInfo);
 
     /**
      * See ChronoSync2013::getSequenceNo.
@@ -303,10 +320,13 @@ private:
      * @param digest The root digest as a hex string for the data packet name.
      * @param syncMessage The SyncStateMsg which updates the digest tree state
      * with the given digest.
+     * @param applicationInfo The application-specific Blob to append after the
+     * encoded syncMessage in the Data packet content.
      */
     void
     broadcastSyncState
-      (const std::string& digest, const Sync::SyncStateMsg& syncMessage);
+      (const std::string& digest, const Sync::SyncStateMsg& syncMessage,
+       const Blob& applicationInfo);
 
     /**
      * Update the digest tree with the messages in content. If the digest tree
