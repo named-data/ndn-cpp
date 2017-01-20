@@ -1,0 +1,18 @@
+// Compile this file using:
+// protoc --cpp_out=. content-meta-info.proto
+
+package ndn_message;
+
+// Protobuf has no "outer" message type, so we need to put the TLV ContentMetaInfo
+// message inside an outer "typeless" ContentMetaInfoMessage.
+message ContentMetaInfoMessage {
+  message ContentMetaInfo {
+    required string content_type = 129;
+    required uint64 timestamp = 130;
+    required uint64 content_size = 131;
+    optional bytes other = 132;
+  }
+
+  // A ContentMetaInfoMessage has one ContentMetaInfo.
+  required ContentMetaInfo content_meta_info = 128;
+}
