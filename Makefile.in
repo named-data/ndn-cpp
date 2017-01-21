@@ -121,6 +121,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-schedule$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
 noinst_PROGRAMS = bin/test-chrono-chat$(EXEEXT) \
+	bin/test-content-fetcher$(EXEEXT) \
 	bin/test-echo-consumer$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
@@ -357,6 +358,14 @@ am_bin_test_chrono_chat_OBJECTS = examples/test-chrono-chat.$(OBJEXT) \
 	examples/chatbuf.pb.$(OBJEXT)
 bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
 bin_test_chrono_chat_DEPENDENCIES = libndn-cpp.la
+am_bin_test_content_fetcher_OBJECTS =  \
+	examples/test-content-fetcher.$(OBJEXT) \
+	tools/usersync/content-fetcher.$(OBJEXT) \
+	tools/usersync/content-meta-info.$(OBJEXT) \
+	tools/usersync/content-meta-info.pb.$(OBJEXT)
+bin_test_content_fetcher_OBJECTS =  \
+	$(am_bin_test_content_fetcher_OBJECTS)
+bin_test_content_fetcher_DEPENDENCIES = libndn-cpp.la
 am_bin_test_echo_consumer_OBJECTS =  \
 	examples/test-echo-consumer.$(OBJEXT)
 bin_test_echo_consumer_OBJECTS = $(am_bin_test_echo_consumer_OBJECTS)
@@ -620,6 +629,7 @@ am__v_CXXLD_1 =
 SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_analog_reading_consumer_SOURCES) \
 	$(bin_basic_insertion_SOURCES) $(bin_test_chrono_chat_SOURCES) \
+	$(bin_test_content_fetcher_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
@@ -663,6 +673,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_la_SOURCES) \
 	$(bin_analog_reading_consumer_SOURCES) \
 	$(bin_basic_insertion_SOURCES) $(bin_test_chrono_chat_SOURCES) \
+	$(bin_test_content_fetcher_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
@@ -1490,6 +1501,11 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
+bin_test_content_fetcher_SOURCES = examples/test-content-fetcher.cpp \
+  tools/usersync/content-fetcher.cpp tools/usersync/content-meta-info.cpp \
+  tools/usersync/content-meta-info.pb.cc
+
+bin_test_content_fetcher_LDADD = libndn-cpp.la
 bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
 bin_test_encode_decode_benchmark_SOURCES = examples/test-encode-decode-benchmark.cpp
@@ -2291,6 +2307,27 @@ examples/chatbuf.pb.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-chrono-chat$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_LDADD) $(LIBS)
+examples/test-content-fetcher.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/$(am__dirstamp):
+	@$(MKDIR_P) tools/usersync
+	@: > tools/usersync/$(am__dirstamp)
+tools/usersync/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tools/usersync/$(DEPDIR)
+	@: > tools/usersync/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/content-fetcher.$(OBJEXT):  \
+	tools/usersync/$(am__dirstamp) \
+	tools/usersync/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/content-meta-info.$(OBJEXT):  \
+	tools/usersync/$(am__dirstamp) \
+	tools/usersync/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/content-meta-info.pb.$(OBJEXT):  \
+	tools/usersync/$(am__dirstamp) \
+	tools/usersync/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-content-fetcher$(EXEEXT): $(bin_test_content_fetcher_OBJECTS) $(bin_test_content_fetcher_DEPENDENCIES) $(EXTRA_bin_test_content_fetcher_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-content-fetcher$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_content_fetcher_OBJECTS) $(bin_test_content_fetcher_LDADD) $(LIBS)
 examples/test-echo-consumer.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -2743,6 +2780,7 @@ mostlyclean-compile:
 	-rm -f src/util/*.$(OBJEXT)
 	-rm -f src/util/*.lo
 	-rm -f tests/unit-tests/*.$(OBJEXT)
+	-rm -f tools/usersync/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -2783,6 +2821,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/fib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-content-fetcher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-echo-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@
@@ -2985,6 +3024,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_schedule-test-schedule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-fetcher.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.pb.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -4629,6 +4671,8 @@ distclean-generic:
 	-rm -f src/util/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(am__dirstamp)
+	-rm -f tools/usersync/$(DEPDIR)/$(am__dirstamp)
+	-rm -f tools/usersync/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -4640,7 +4684,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -4688,7 +4732,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
