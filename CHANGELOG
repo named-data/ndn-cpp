@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.11 (2017-01-17)
+Interim changes since NDN-CPP v0.11 (2017-01-20)
 ------------------------------------------------
 
 Changes
@@ -6,6 +6,7 @@ Changes
   encrypt package Producer and Consumer.
 * https://redmine.named-data.net/issues/3922 In ChronoSync2013, support optional
   application info in the SyncState messages.
+* Added tools/usersync for using NDN to synchronize communication among a group of users.
 
 Bug Fixes
 * https://redmine.named-data.net/issues/3838 Support for protoc 3.0.
