@@ -70,7 +70,7 @@ ContentMetaInfo::wireDecode(const uint8_t *input, size_t inputLength)
   timestamp_ = meta.timestamp();
   contentSize_ = meta.content_size();
   if (meta.has_other())
-    other_ = Blob((const uint8_t*)&meta.other().front(), meta.other().size());
+    other_ = Blob((const uint8_t*)&meta.other()[0], meta.other().size());
 }
 
 }
