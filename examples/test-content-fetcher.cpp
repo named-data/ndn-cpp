@@ -72,7 +72,7 @@ int main(int argc, char** argv)
           metaInfo.setContentType("text/html")
             .setTimestamp(1477681379)
             .setContentSize(content.size())
-            .setOther(Blob((const uint8_t*)&text.front(), text.size()));
+            .setOther(Blob((const uint8_t*)&text[0], text.size()));
 
           ptr_lib::shared_ptr<Data> data(new Data(interest.getName()));
           data->setContent(metaInfo.wireEncode());
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
           ptr_lib::shared_ptr<Data> data(new Data(interest.getName()));
           if (data->getName().size() == prefix_.size())
             data->getName().appendSegment(0);
-          data->setContent(Blob((const uint8_t*)&content.front(), content.size()));
+          data->setContent(Blob((const uint8_t*)&content[0], content.size()));
           data->getMetaInfo().setFinalBlockId(Name().appendSegment(0).get(0));
 
           onData(ptr_lib::make_shared<Interest>(interest), data);
