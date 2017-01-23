@@ -243,7 +243,7 @@ ChronoSync2013::Impl::onData
       if (content.Get(i).has_application_info() &&
           content.Get(i).application_info().size() > 0)
         applicationInfo = Blob
-          ((const uint8_t*)&content.Get(i).application_info().front(),
+          ((const uint8_t*)&content.Get(i).application_info()[0],
            content.Get(i).application_info().size());
 
       syncStates.push_back(SyncState
