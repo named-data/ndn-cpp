@@ -92,7 +92,8 @@ private:
      const OnComplete& onComplete, const OnError& onError,
      Milliseconds interestLifetimeMilliseconds)
   : face_(face), prefix_(prefix), validatorKeyChain_(validatorKeyChain),
-    onComplete_(onComplete), onError_(onError)
+    onComplete_(onComplete), onError_(onError),
+    interestLifetimeMilliseconds_(interestLifetimeMilliseconds)
   {
   }
 
