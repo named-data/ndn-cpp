@@ -23,11 +23,12 @@
 #include <math.h>
 #include <ndn-cpp/encoding/protobuf-tlv.hpp>
 #include "content-meta-info.pb.h"
-#include "content-meta-info.hpp"
+#include <ndn-cpp-tools/usersync/content-meta-info.hpp>
 
 using namespace std;
+using namespace ndn;
 
-namespace ndn {
+namespace ndntools {
 
 void
 ContentMetaInfo::clear()

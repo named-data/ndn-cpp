@@ -27,13 +27,13 @@
 #include <ndn-cpp/util/memory-content-cache.hpp>
 #include "content-meta-info.hpp"
 
-namespace ndn {
+namespace ndntools {
 
 /**
- * ContentFetcher has the static publish and fetch methods which fetches meta
+ * GeneralizedContent has the static publish and fetch methods which fetches meta
  * info and segmented content. See the methods for more detail.
  */
-class ContentFetcher : public ptr_lib::enable_shared_from_this<ContentFetcher> {
+class GeneralizedContent : public ndn::ptr_lib::enable_shared_from_this<GeneralizedContent> {
 public:
   enum ErrorCode {
     // Repeat the error codes from SegmentFetcher.
@@ -44,11 +44,11 @@ public:
     META_INFO_DECODING_FAILED = 4
   };
 
-  typedef func_lib::function<void
-    (const ptr_lib::shared_ptr<ContentMetaInfo>& metaInfo,
-     const Blob& content)> OnComplete;
+  typedef ndn::func_lib::function<void
+    (const ndn::ptr_lib::shared_ptr<ContentMetaInfo>& metaInfo,
+     const ndn::Blob& content)> OnComplete;
 
-  typedef func_lib::function<void
+  typedef ndn::func_lib::function<void
     (ErrorCode errorCode, const std::string& message)> OnError;
 
   /**
@@ -75,10 +75,10 @@ public:
    */
   static void
   publish
-    (MemoryContentCache& contentCache, const Name& prefix,
-     Milliseconds freshnessPeriod, KeyChain* signingKeyChain,
-     const Name& signingCertificateName, const ContentMetaInfo& metaInfo,
-     const Blob& content, size_t contentSegmentSize);
+    (ndn::MemoryContentCache& contentCache, const ndn::Name& prefix,
+     ndn::Milliseconds freshnessPeriod, ndn::KeyChain* signingKeyChain,
+     const ndn::Name& signingCertificateName, const ContentMetaInfo& metaInfo,
+     const ndn::Blob& content, size_t contentSegmentSize);
 
   /**
    * Initiate meta info and segmented content fetching. This first fetches and
@@ -112,19 +112,19 @@ public:
    */
   static void
   fetch
-    (Face& face, const Name& prefix, KeyChain* validatorKeyChain,
+    (ndn::Face& face, const ndn::Name& prefix, ndn::KeyChain* validatorKeyChain,
      const OnComplete& onComplete, const OnError& onError,
-     Milliseconds interestLifetimeMilliseconds = 4000.0);
+     ndn::Milliseconds interestLifetimeMilliseconds = 4000.0);
 
 private:
   /**
-   * Create a new ContentFetcher to use the Face. See the static fetch method
+   * Create a new GeneralizedContent to use the Face. See the static fetch method
    * for details. After creating the SegmentFetcher, call fetchMetaInfo.
    */
-  ContentFetcher
-    (Face& face, const Name& prefix, KeyChain* validatorKeyChain,
+  GeneralizedContent
+    (ndn::Face& face, const ndn::Name& prefix, ndn::KeyChain* validatorKeyChain,
      const OnComplete& onComplete, const OnError& onError,
-     Milliseconds interestLifetimeMilliseconds)
+     ndn::Milliseconds interestLifetimeMilliseconds)
   : face_(face), prefix_(prefix), validatorKeyChain_(validatorKeyChain),
     onComplete_(onComplete), onError_(onError),
     interestLifetimeMilliseconds_(interestLifetimeMilliseconds)
@@ -136,26 +136,26 @@ private:
 
   void
   onMetaInfoReceived
-    (const ptr_lib::shared_ptr<const Interest>& originalInterest,
-     const ptr_lib::shared_ptr<Data>& data);
+    (const ndn::ptr_lib::shared_ptr<const ndn::Interest>& originalInterest,
+     const ndn::ptr_lib::shared_ptr<ndn::Data>& data);
 
   void
-  onMetaInfoTimeout(const ptr_lib::shared_ptr<const Interest>& interest);
+  onMetaInfoTimeout(const ndn::ptr_lib::shared_ptr<const ndn::Interest>& interest);
 
   void
-  onContentReceived(const Blob& content);
+  onContentReceived(const ndn::Blob& content);
 
   void
   onSegmentFetcherError
-    (SegmentFetcher::ErrorCode errorCode, const std::string& message);
+    (ndn::SegmentFetcher::ErrorCode errorCode, const std::string& message);
 
-  Face& face_;
-  Name prefix_;
-  KeyChain* validatorKeyChain_;
+  ndn::Face& face_;
+  ndn::Name prefix_;
+  ndn::KeyChain* validatorKeyChain_;
   OnComplete onComplete_;
   OnError onError_;
-  Milliseconds interestLifetimeMilliseconds_;
-  ptr_lib::shared_ptr<ContentMetaInfo> metaInfo_;
+  ndn::Milliseconds interestLifetimeMilliseconds_;
+  ndn::ptr_lib::shared_ptr<ContentMetaInfo> metaInfo_;
 };
 
 }

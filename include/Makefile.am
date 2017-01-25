@@ -36,8 +36,13 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/security/identity/*.*) \
   $(wildcard ndn-cpp/security/policy/*.*) \
   $(wildcard ndn-cpp/sync/*.*) \
+  $(wildcard ndn-cpp/tools/usersync/*.*) \
   $(wildcard ndn-cpp/transport/*.*) \
   $(wildcard ndn-cpp/util/*.*)
+
+# Public ndn-cpp-tools C++ headers.
+ndn_cpp_tools_cpp_headers = \
+  $(wildcard ndn-cpp-tools/usersync/*.*)
 
 ndnboost_headers = \
   $(wildcard ndnboost/*.*) \
@@ -209,4 +214,5 @@ ndnboost_headers = \
   $(wildcard ndnboost/lambda/*.*) \
   $(wildcard ndnboost/lambda/detail/*.*)
 
-nobase_include_HEADERS = $(ndn_cpp_c_headers) $(ndn_cpp_cpp_headers) $(ndnboost_headers)
+nobase_include_HEADERS = $(ndn_cpp_c_headers) $(ndn_cpp_cpp_headers) \
+  $(ndn_cpp_tools_cpp_headers) $(ndnboost_headers)

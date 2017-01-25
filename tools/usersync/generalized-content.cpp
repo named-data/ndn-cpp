@@ -20,17 +20,18 @@
  */
 
 #include "../../src/util/logging.hpp"
-#include "content-fetcher.hpp"
+#include <ndn-cpp-tools/usersync/generalized-content.hpp>
 
 using namespace std;
+using namespace ndn;
 using namespace ndn::func_lib;
 
-INIT_LOGGER("ndn.ContentFetcher");
+INIT_LOGGER("ndntools.GeneralizedContent");
 
-namespace ndn {
+namespace ndntools {
 
 void
-ContentFetcher::publish
+GeneralizedContent::publish
   (MemoryContentCache& contentCache, const Name& prefix,
    Milliseconds freshnessPeriod, KeyChain* signingKeyChain,
    const Name& signingCertificateName, const ContentMetaInfo& metaInfo,
@@ -74,22 +75,22 @@ ContentFetcher::publish
 }
 
 void
-ContentFetcher::fetch
+GeneralizedContent::fetch
   (Face& face, const Name& prefix, KeyChain* validatorKeyChain,
    const OnComplete& onComplete, const OnError& onError,
    Milliseconds interestLifetimeMilliseconds)
 {
   // Make a shared_ptr because we make callbacks with bind using
   //   shared_from_this() so the object remains allocated.
-  ptr_lib::shared_ptr<ContentFetcher> contentFetcher
-    (new ContentFetcher
+  ptr_lib::shared_ptr<GeneralizedContent> contentFetcher
+    (new GeneralizedContent
      (face, prefix, validatorKeyChain, onComplete, onError,
       interestLifetimeMilliseconds));
   contentFetcher->fetchMetaInfo();
 }
 
 void
-ContentFetcher::fetchMetaInfo()
+GeneralizedContent::fetchMetaInfo()
 {
   Interest interest(prefix_);
   interest.getName().append("_meta");
@@ -98,12 +99,12 @@ ContentFetcher::fetchMetaInfo()
 
   face_.expressInterest
     (interest,
-     bind(&ContentFetcher::onMetaInfoReceived, shared_from_this(), _1, _2),
-     bind(&ContentFetcher::onMetaInfoTimeout, shared_from_this(), _1));
+     bind(&GeneralizedContent::onMetaInfoReceived, shared_from_this(), _1, _2),
+     bind(&GeneralizedContent::onMetaInfoTimeout, shared_from_this(), _1));
 }
 
 void
-ContentFetcher::onMetaInfoReceived
+GeneralizedContent::onMetaInfoReceived
   (const ptr_lib::shared_ptr<const Interest>& originalInterest,
    const ptr_lib::shared_ptr<Data>& data)
 {
@@ -117,9 +118,9 @@ ContentFetcher::onMetaInfoReceived
         (ErrorCode::META_INFO_DECODING_FAILED,
          string("Error decoding the _meta info: ") + decodeException.what());
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ContentFetcher::onMetaInfoReceived: Error in onError: " << ex.what());
+      _LOG_ERROR("GeneralizedContent::onMetaInfoReceived: Error in onError: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ContentFetcher::onMetaInfoReceived: Error in onError.");
+      _LOG_ERROR("GeneralizedContent::onMetaInfoReceived: Error in onError.");
     }
 
     return;
@@ -130,9 +131,9 @@ ContentFetcher::onMetaInfoReceived
     try {
       onComplete_(metaInfo_, Blob());
     } catch (const std::exception& ex) {
-      _LOG_ERROR("ContentFetcher::onTimeout: Error in onComplete: " << ex.what());
+      _LOG_ERROR("GeneralizedContent::onTimeout: Error in onComplete: " << ex.what());
     } catch (...) {
-      _LOG_ERROR("ContentFetcher::onTimeout: Error in onComplete.");
+      _LOG_ERROR("GeneralizedContent::onTimeout: Error in onComplete.");
     }
   }
   else {
@@ -142,13 +143,13 @@ ContentFetcher::onMetaInfoReceived
     baseInterest.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
     SegmentFetcher::fetch
       (face_, baseInterest, validatorKeyChain_,
-       bind(&ContentFetcher::onContentReceived, shared_from_this(), _1),
-       bind(&ContentFetcher::onSegmentFetcherError, shared_from_this(), _1, _2));
+       bind(&GeneralizedContent::onContentReceived, shared_from_this(), _1),
+       bind(&GeneralizedContent::onSegmentFetcherError, shared_from_this(), _1, _2));
   }
 }
 
 void
-ContentFetcher::onMetaInfoTimeout
+GeneralizedContent::onMetaInfoTimeout
   (const ptr_lib::shared_ptr<const Interest>& interest)
 {
   try {
@@ -156,29 +157,29 @@ ContentFetcher::onMetaInfoTimeout
       (ErrorCode::INTEREST_TIMEOUT,
        string("Time out fetching _meta info ") + interest->getName().toUri());
   } catch (const std::exception& ex) {
-    _LOG_ERROR("ContentFetcher::onTimeout: Error in onError: " << ex.what());
+    _LOG_ERROR("GeneralizedContent::onTimeout: Error in onError: " << ex.what());
   } catch (...) {
-    _LOG_ERROR("ContentFetcher::onTimeout: Error in onError.");
+    _LOG_ERROR("GeneralizedContent::onTimeout: Error in onError.");
   }
 }
 
 void
-ContentFetcher::onContentReceived(const Blob& content)
+GeneralizedContent::onContentReceived(const Blob& content)
 {
   try {
     onComplete_(metaInfo_, content);
   } catch (const std::exception& ex) {
-    _LOG_ERROR("ContentFetcher::onTimeout: Error in onComplete: " << ex.what());
+    _LOG_ERROR("GeneralizedContent::onTimeout: Error in onComplete: " << ex.what());
   } catch (...) {
-    _LOG_ERROR("ContentFetcher::onTimeout: Error in onComplete.");
+    _LOG_ERROR("GeneralizedContent::onTimeout: Error in onComplete.");
   }
 }
 
 void
-ContentFetcher::onSegmentFetcherError
+GeneralizedContent::onSegmentFetcherError
   (SegmentFetcher::ErrorCode errorCode, const std::string& message)
 {
-  // Convert the SegmentFetcher error code to the ContentFetcher error code.
+  // Convert the SegmentFetcher error code to the GeneralizedContent error code.
   ErrorCode contentFetcherErrorCode = (ErrorCode)-1;
   if (errorCode == SegmentFetcher::ErrorCode::INTEREST_TIMEOUT)
     contentFetcherErrorCode = ErrorCode::INTEREST_TIMEOUT;
@@ -190,9 +191,9 @@ ContentFetcher::onSegmentFetcherError
   try {
     onError_(contentFetcherErrorCode, message);
   } catch (const std::exception& ex) {
-    _LOG_ERROR("ContentFetcher::onSegmentFetcherError: Error in onError: " << ex.what());
+    _LOG_ERROR("GeneralizedContent::onSegmentFetcherError: Error in onError: " << ex.what());
   } catch (...) {
-    _LOG_ERROR("ContentFetcher::onSegmentFetcherError: Error in onError.");
+    _LOG_ERROR("GeneralizedContent::onSegmentFetcherError: Error in onError.");
   }
 }
 

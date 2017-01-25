@@ -19,17 +19,18 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* This tests the ContentFetcher which fetches a _meta info object and segmented
+/* This tests the GeneralizedContent which fetches a _meta info object and segmented
  * content with a single segment. This requires a local running NFD.
  */
 
 #include <cstdlib>
 #include <unistd.h>
-#include "../tools/usersync/content-fetcher.hpp"
+#include <ndn-cpp-tools/usersync/generalized-content.hpp>
 
 using namespace std;
 using namespace ndn;
 using namespace ndn::func_lib;
+using namespace ndntools;
 
 static void
 onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix, bool* enabled);
@@ -47,7 +48,7 @@ printMetaInfoAndContent
 
 static void
 onError
-  (ContentFetcher::ErrorCode errorCode, const string& message, bool* enabled);
+  (GeneralizedContent::ErrorCode errorCode, const string& message, bool* enabled);
 
 int main(int argc, char** argv)
 {
@@ -123,12 +124,12 @@ publishAndFetch
 
     // Set the contentSegmentSize so that we publish two segments for testing.
     size_t contentSegmentSize = content.size() / 2;
-    ContentFetcher::publish
+    GeneralizedContent::publish
       (*contentCache, *prefix, 40000, keyChain, *certificateName, metaInfo,
        Blob((const uint8_t*)&content[0], content.size()), contentSegmentSize);
 
     // Fetch the _metaInfo and content.
-    ContentFetcher::fetch
+    GeneralizedContent::fetch
       (*consumerFace, *prefix, 0, bind(&printMetaInfoAndContent, _1, _2, enabled),
        bind(&onError, _1, _2, enabled));
   } catch (std::exception& e) {
@@ -160,14 +161,14 @@ printMetaInfoAndContent
 }
 
 /**
- * This is called to print an error from ContentFetcher.
+ * This is called to print an error from GeneralizedContent.
  * @param errorCode The error code.
  * @param message The error message.
  * @param enabled On success or error, set *enabled = false.
  */
 static void
 onError
-  (ContentFetcher::ErrorCode errorCode, const string& message, bool* enabled)
+  (GeneralizedContent::ErrorCode errorCode, const string& message, bool* enabled)
 {
   *enabled = false;
   cout << message << endl;

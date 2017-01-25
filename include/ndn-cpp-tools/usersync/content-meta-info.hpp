@@ -24,7 +24,7 @@
 
 #include <ndn-cpp/util/blob.hpp>
 
-namespace ndn {
+namespace ndntools {
 
 class ContentMetaInfo {
 public:
@@ -48,7 +48,7 @@ public:
    * @return The time stamp as milliseconds since Jan 1, 1970 UTC. If not
    * specified, return -1.
    */
-  MillisecondsSince1970
+  ndn::MillisecondsSince1970
   getTimestamp() const { return timestamp_; }
 
   /**
@@ -62,7 +62,7 @@ public:
    * Get the Blob containing the optional other info.
    * @return The other info. If not specified, return an isNull Blob.
    */
-  const Blob&
+  const ndn::Blob&
   getOther() const { return other_; }
 
   /**
@@ -83,7 +83,7 @@ public:
    * @return This ContentMetaInfo so that you can chain calls to update values.
    */
   ContentMetaInfo&
-  setTimestamp(MillisecondsSince1970 timestamp)
+  setTimestamp(ndn::MillisecondsSince1970 timestamp)
   {
     timestamp_ = timestamp;
     return *this;
@@ -107,7 +107,7 @@ public:
    * @return This ContentMetaInfo so that you can chain calls to update values.
    */
   ContentMetaInfo&
-  setOther(const Blob& other)
+  setOther(const ndn::Blob& other)
   {
     other_ = other;
     return *this;
@@ -123,7 +123,7 @@ public:
    * Encode this ContentMetaInfo.
    * @return The encoded byte array.
    */
-  Blob
+  ndn::Blob
   wireEncode() const;
 
   /**
@@ -149,16 +149,16 @@ public:
    * @param input The input byte array to be decoded as an immutable Blob.
    */
   void
-  wireDecode(const Blob& input)
+  wireDecode(const ndn::Blob& input)
   {
     wireDecode(input.buf(), input.size());
   }
 
 private:
   std::string contentType_;
-  MillisecondsSince1970 timestamp_;
+  ndn::MillisecondsSince1970 timestamp_;
   int contentSize_;
-  Blob other_;
+  ndn::Blob other_;
 };
 
 }

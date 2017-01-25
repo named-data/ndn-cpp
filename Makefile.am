@@ -15,7 +15,7 @@ AM_LDFLAGS=${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_LIB}
 # "make install" will also install the include headers.
 SUBDIRS = include
 
-lib_LTLIBRARIES = libndn-c.la libndn-cpp.la
+lib_LTLIBRARIES = libndn-c.la libndn-cpp.la libndn-cpp-tools.la
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
@@ -38,9 +38,10 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-verification-rules
 
-noinst_PROGRAMS = bin/test-chrono-chat bin/test-content-fetcher bin/test-echo-consumer \
+noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
+  bin/test-generalized-content \
   bin/test-get-async bin/test-get-async-threadsafe bin/test-list-channels \
   bin/test-list-faces bin/test-list-rib bin/test-publish-async-nfd \
   bin/test-register-route bin/test-sign-verify-data-hmac \
@@ -192,6 +193,12 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/util/memory-content-cache.hpp \
   include/ndn-cpp/util/segment-fetcher.hpp \
   include/ndn-cpp/util/signed-blob.hpp
+
+# Public ndn-cpp-tools C++ headers.
+# NOTE: If a new directory is added, then add it to ndn_cpp_tools_cpp_headers in include/Makefile.am.
+ndn_cpp_tools_cpp_headers = \
+  include/ndn-cpp-tools/usersync/content-meta-info.hpp \
+  include/ndn-cpp-tools/usersync/generalized-content.hpp
 
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
@@ -372,13 +379,14 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
   src/util/segment-fetcher.cpp
 
+# The ndn-cpp-tools library.
+libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
+  tools/usersync/content-meta-info.cpp \
+  tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
+  tools/usersync/generalized-content.cpp
+
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
-
-bin_test_content_fetcher_SOURCES = examples/test-content-fetcher.cpp \
-  tools/usersync/content-fetcher.cpp tools/usersync/content-meta-info.cpp \
-  tools/usersync/content-meta-info.pb.cc
-bin_test_content_fetcher_LDADD = libndn-cpp.la
 
 bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
@@ -394,6 +402,9 @@ bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
+
+bin_test_generalized_content_SOURCES = examples/test-generalized-content.cpp
+bin_test_generalized_content_LDADD = libndn-cpp.la libndn-cpp-tools.la
 
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
