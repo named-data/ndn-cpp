@@ -23,6 +23,10 @@
  * content with a single segment. This requires a local running NFD.
  */
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_PROTOBUF = 1.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_PROTOBUF
+
 #include <cstdlib>
 #include <unistd.h>
 #include <ndn-cpp-tools/usersync/generalized-content.hpp>
@@ -173,3 +177,17 @@ onError
   *enabled = false;
   cout << message << endl;
 }
+
+#else // NDN_CPP_HAVE_PROTOBUF
+
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char** argv)
+{
+  cout <<
+    "This program uses Protobuf but it is not installed. Install it and ./configure again." << endl;
+}
+
+#endif // NDN_CPP_HAVE_PROTOBUF
