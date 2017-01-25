@@ -20,12 +20,11 @@
  */
 
 /* This tests the ContentFetcher which fetches a _meta info object and segmented
- * content with a single segment. This uses a TestFace which responds
- * immediately with test Data packets so that it does not need an external
- * forwarder.
+ * content with a single segment. This requires a local running NFD.
  */
 
 #include <cstdlib>
+#include <unistd.h>
 #include "../tools/usersync/content-fetcher.hpp"
 
 using namespace std;
@@ -33,80 +32,48 @@ using namespace ndn;
 using namespace ndn::func_lib;
 
 static void
-printMetaInfoAndContent
-  (const ptr_lib::shared_ptr<ContentMetaInfo>& metaInfo,
-   const Blob& content);
+onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix, bool* enabled);
 
 static void
-onError(ContentFetcher::ErrorCode errorCode, const string& message);
+publishAndFetch
+  (const ptr_lib::shared_ptr<const Name>& registeredPrefix,
+   uint64_t registeredPrefixId, Name* prefix, MemoryContentCache* contentCache,
+   KeyChain* keyChain, Name* certificateName, Face* consumerFace, bool* enabled);
+
+static void
+printMetaInfoAndContent
+  (const ptr_lib::shared_ptr<ContentMetaInfo>& metaInfo,
+   const Blob& content, bool* enabled);
+
+static void
+onError
+  (ContentFetcher::ErrorCode errorCode, const string& message, bool* enabled);
 
 int main(int argc, char** argv)
 {
   try {
-  // Prepare a TestFace to instantly answer calls to expressInterest. A real
-  // application would use a normal Face object connected to the network.
-  class TestFace : public Face {
-    public:
-      TestFace(const Name& prefix)
-      : Face("localhost"), prefix_(prefix)
-      {}
+    KeyChain keyChain;
+    Name certificateName = keyChain.getDefaultCertificateName();
+    // The default Face will connect using a Unix socket, or to "localhost".
+    Face producerFace;
+    producerFace.setCommandSigningInfo(keyChain, certificateName);
+    MemoryContentCache contentCache(&producerFace);
+    bool enabled = true;
+    Face consumerFace;
 
-      virtual uint64_t
-      expressInterest
-        (const Interest& interest, const OnData& onData,
-         const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
-         WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-      {
-        if (!prefix_.isPrefixOf(interest.getName())) {
-          // Wrong prefix.
-          onTimeout(ptr_lib::make_shared<Interest>(interest));
-          return 0;
-        }
-
-        string content = "My content.";
-        if (interest.getName().size() == prefix_.size() + 1 &&
-            interest.getName().get(prefix_.size()).toEscapedString() == "_meta") {
-          // Make and return the _meta Data packet.
-          ContentMetaInfo metaInfo;
-          string text = "Hi there!";
-          metaInfo.setContentType("text/html")
-            .setTimestamp(1477681379)
-            .setContentSize(content.size())
-            .setOther(Blob((const uint8_t*)&text[0], text.size()));
-
-          ptr_lib::shared_ptr<Data> data(new Data(interest.getName()));
-          data->setContent(metaInfo.wireEncode());
-
-          onData(ptr_lib::make_shared<Interest>(interest), data);
-        }
-        // When SegmentFetcher expresses the first interest, it doesn't have the segment.
-        else if (interest.getName().size() == prefix_.size() ||
-            (interest.getName().size() == prefix_.size() + 1 &&
-             interest.getName().get(prefix_.size()).toEscapedString() == "%00")) {
-          // Make and return the only segment.
-          ptr_lib::shared_ptr<Data> data(new Data(interest.getName()));
-          if (data->getName().size() == prefix_.size())
-            data->getName().appendSegment(0);
-          data->setContent(Blob((const uint8_t*)&content[0], content.size()));
-          data->getMetaInfo().setFinalBlockId(Name().appendSegment(0).get(0));
-
-          onData(ptr_lib::make_shared<Interest>(interest), data);
-        }
-        else
-          onTimeout(ptr_lib::make_shared<Interest>(interest));
-
-        return 0;
-      }
-
-    private:
-      Name prefix_;
-    };
-
+    // On register success, this will call publishAndFetch to continue.
     Name prefix("/ndn/testuser/flume/channel/1/content/10");
-    TestFace face(prefix);
-    ContentFetcher::fetch
-      (face, prefix, 0, bind(&printMetaInfoAndContent, _1, _2),
-       bind(&onError, _1, _2));
+    contentCache.registerPrefix
+      (prefix, bind(&onRegisterFailed, _1, &enabled), 
+       bind(&publishAndFetch, _1, _2, &prefix, &contentCache, &keyChain,
+            &certificateName, &consumerFace, &enabled));
+    
+    while (enabled) {
+      producerFace.processEvents();
+      consumerFace.processEvents();
+      // We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+      usleep(10000);
+    }
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }
@@ -114,16 +81,74 @@ int main(int argc, char** argv)
 }
 
 /**
+ * This is called to print an error if the MemoryContentCache can't register
+ * with the local forwarder.
+ * @param prefix The prefix Name to register.
+ * @param enabled On success or error, set *enabled = false.
+ */
+static void
+onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix, bool* enabled)
+{
+  *enabled = false;
+  cout << "Failed to register prefix " << prefix->toUri() << endl;
+}
+
+/**
+ * This is called when MemoryContentCache registers with the local forwarder so
+ * that it is ready for us to publish and fetch.
+ * @param registeredPrefix The prefix given to registerPrefix.
+ * @param registeredPrefixId The value returned by registerPrefix.
+ * @param prefix The name prefix for the content.
+ * @param contentCache The MemoryContentCache created in main().
+ * @param keyChain The KeyChain from main, used to sign the Data packets.
+ * @param certificateName The certificate name used to sign the Data packets.
+ * @param consumerFace The Face created in main, used to fetch.
+ * @param enabled On success or error, set *enabled = false.
+ */
+static void
+publishAndFetch
+  (const ptr_lib::shared_ptr<const Name>& registeredPrefix,
+   uint64_t registeredPrefixId, Name* prefix, MemoryContentCache* contentCache,
+   KeyChain* keyChain, Name* certificateName, Face* consumerFace, bool* enabled)
+{
+  try {
+    // Set up the producer.
+    string content = "My content";
+    ContentMetaInfo metaInfo;
+    string metaInfoText = "Hi there!";
+    metaInfo.setContentType("text/html")
+      .setTimestamp(1477681379)
+      .setContentSize(content.size())
+      .setOther(Blob((const uint8_t*)&metaInfoText[0], metaInfoText.size()));
+
+    // Set the contentSegmentSize so that we publish two segments for testing.
+    size_t contentSegmentSize = content.size() / 2;
+    ContentFetcher::publish
+      (*contentCache, *prefix, 40000, keyChain, *certificateName, metaInfo,
+       Blob((const uint8_t*)&content[0], content.size()), contentSegmentSize);
+
+    // Fetch the _metaInfo and content.
+    ContentFetcher::fetch
+      (*consumerFace, *prefix, 0, bind(&printMetaInfoAndContent, _1, _2, enabled),
+       bind(&onError, _1, _2, enabled));
+  } catch (std::exception& e) {
+    cout << "exception: " << e.what() << endl;
+  }
+}
+
+/**
  * This is called when the _meta info is received and, if necessary, all the
  * segments are received. Print the meta info and content.
  * @param encodedMessage The repeated TLV-encoded ChannelStatus.
+ * @param enabled On success or error, set *enabled = false.
  */
 static void
 printMetaInfoAndContent
   (const ptr_lib::shared_ptr<ContentMetaInfo>& metaInfo,
-   const Blob& content)
+   const Blob& content, bool* enabled)
 {
-  cout << "Received _meta info." << endl;
+  *enabled = false;
+  cout << "Received _meta info:" << endl;
   cout << "ContentType: " << metaInfo->getContentType() << endl;
   cout << "Timestamp: " << metaInfo->getTimestamp() << endl;
   cout << "ContentSize: " << metaInfo->getContentSize() << endl;
@@ -138,9 +163,12 @@ printMetaInfoAndContent
  * This is called to print an error from ContentFetcher.
  * @param errorCode The error code.
  * @param message The error message.
+ * @param enabled On success or error, set *enabled = false.
  */
 static void
-onError(ContentFetcher::ErrorCode errorCode, const string& message)
+onError
+  (ContentFetcher::ErrorCode errorCode, const string& message, bool* enabled)
 {
+  *enabled = false;
   cout << message << endl;
 }
