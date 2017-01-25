@@ -46,7 +46,7 @@ GeneralizedContent::publish
     signingKeyChain->sign(data);
   contentCache.add(data);
 
-  if (metaInfo.getContentSize() > 0 && content.size() > 0) {
+  if (metaInfo.getHasSegments() && content.size() > 0) {
     // Add the segments of the content.
     // TODO: Implement the signature _manifest.
     int finalSegmentNumber = 0;
@@ -126,7 +126,7 @@ GeneralizedContent::onMetaInfoReceived
     return;
   }
 
-  if (metaInfo_->getContentSize() == 0) {
+  if (!metaInfo_->getHasSegments()) {
     // We're done. Report the _meta info.
     try {
       onComplete_(metaInfo_, Blob());

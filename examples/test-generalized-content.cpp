@@ -119,7 +119,7 @@ publishAndFetch
     string metaInfoText = "Hi there!";
     metaInfo.setContentType("text/html")
       .setTimestamp(1477681379)
-      .setContentSize(content.size())
+      .setHasSegments(true)
       .setOther(Blob((const uint8_t*)&metaInfoText[0], metaInfoText.size()));
 
     // Set the contentSegmentSize so that we publish two segments for testing.
@@ -152,7 +152,7 @@ printMetaInfoAndContent
   cout << "Received _meta info:" << endl;
   cout << "ContentType: " << metaInfo->getContentType() << endl;
   cout << "Timestamp: " << metaInfo->getTimestamp() << endl;
-  cout << "ContentSize: " << metaInfo->getContentSize() << endl;
+  cout << "HasSegments: " << (metaInfo->getHasSegments() ? "true" : "false") << endl;
   cout << "Other: " <<
     (metaInfo->getOther().isNull() ? string("<none>") : metaInfo->getOther().toRawStr()) <<
     endl;
