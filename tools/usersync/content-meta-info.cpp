@@ -35,7 +35,7 @@ ContentMetaInfo::clear()
 {
   contentType_ = "";
   timestamp_ = -1;
-  contentSize_ = -1;
+  hasSegments_ = false;
   other_ = Blob();
 }
 
@@ -44,13 +44,11 @@ ContentMetaInfo::wireEncode() const
 {
   if (timestamp_ < 0)
     throw runtime_error("ContentMetaInfo.wireEncode: The timestamp is not specified");
-  if (contentSize_ < 0)
-    throw runtime_error("ContentMetaInfo.wireEncode: The content size is not specified");
 
   ndn_message::ContentMetaInfoMessage meta;
   meta.mutable_content_meta_info()->set_content_type(contentType_);
   meta.mutable_content_meta_info()->set_timestamp((uint64_t)::round(timestamp_));
-  meta.mutable_content_meta_info()->set_content_size(contentSize_);
+  meta.mutable_content_meta_info()->set_has_segments(hasSegments_);
   if (!other_.isNull())
     meta.mutable_content_meta_info()->set_other(other_.buf(), other_.size());
 
@@ -69,7 +67,7 @@ ContentMetaInfo::wireDecode(const uint8_t *input, size_t inputLength)
 
   contentType_ = meta.content_type();
   timestamp_ = meta.timestamp();
-  contentSize_ = meta.content_size();
+  hasSegments_ = meta.has_segments();
   if (meta.has_other())
     other_ = Blob((const uint8_t*)&meta.other()[0], meta.other().size());
 }

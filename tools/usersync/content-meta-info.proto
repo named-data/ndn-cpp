@@ -9,7 +9,7 @@ message ContentMetaInfoMessage {
   message ContentMetaInfo {
     required string content_type = 129;
     required uint64 timestamp = 130;
-    required uint64 content_size = 131;
+    required bool has_segments = 131;
     optional bytes other = 132;
   }
 

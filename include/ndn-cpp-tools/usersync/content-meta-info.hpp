@@ -52,11 +52,11 @@ public:
   getTimestamp() const { return timestamp_; }
 
   /**
-   * Get the content size.
-   * @return The content size. If not specified, return -1.
+   * Get the hasSegments flag.
+   * @return The hasSegments flag.
    */
-  int
-  getContentSize() const { return contentSize_; }
+  bool
+  getHasSegments() const { return hasSegments_; }
 
   /**
    * Get the Blob containing the optional other info.
@@ -90,14 +90,14 @@ public:
   }
 
   /**
-   * Set the content size.
-   * @param contentSize The content size.
+   * Set the hasSegments flag.
+   * @param hasSegments The hasSegments flag.
    * @return This ContentMetaInfo so that you can chain calls to update values.
    */
   ContentMetaInfo&
-  setContentSize(int contentSize)
+  setHasSegments(bool hasSegments)
   {
-    contentSize_ = contentSize;
+    hasSegments_ = hasSegments;
     return *this;
   }
 
@@ -157,7 +157,7 @@ public:
 private:
   std::string contentType_;
   ndn::MillisecondsSince1970 timestamp_;
-  int contentSize_;
+  bool hasSegments_;
   ndn::Blob other_;
 };
 
