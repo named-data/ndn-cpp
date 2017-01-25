@@ -24,10 +24,15 @@
 
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/util/segment-fetcher.hpp>
+#include <ndn-cpp/util/memory-content-cache.hpp>
 #include "content-meta-info.hpp"
 
 namespace ndn {
 
+/**
+ * ContentFetcher has the static publish and fetch methods which fetches meta
+ * info and segmented content. See the methods for more detail.
+ */
 class ContentFetcher : public ptr_lib::enable_shared_from_this<ContentFetcher> {
 public:
   enum ErrorCode {
@@ -45,6 +50,35 @@ public:
 
   typedef func_lib::function<void
     (ErrorCode errorCode, const std::string& message)> OnError;
+
+  /**
+   * Use the contentCache to publish a Data packet named [prefix]/_meta whose
+   * content is the encoded metaInfo. If metaInfo.getContentSize() is not zero
+   * then use the contentCache to publish the segments of the content.
+   * @param contentCache This calls contentCache.add to add the Data packets.
+   * After this call, the MemoryContentCache must remain valid long enough to
+   * respond to Interest for the published Data packets.
+   * @param prefix The Name prefix for the published Data packets.
+   * @param freshnessPeriod The freshness period in milliseconds for the packets.
+   * @param signingKeyChain This calls signingKeyChain.sign to sign the packets.
+   * @param signingCertificateName The certificate name of the key used in
+   * signingKeyChain.sign .
+   * @param metaInfo The ContentMetaInfo for the _meta packet.
+   * @param content The content which is segmented and published. If
+   * metaInfo.getContentSize() is zero then this is ignored. Note that this does
+   * not check if content.size() equals metaInfo.getContentSize().
+   * @param contentSegmentSize The the number of bytes for each segment of the
+   * content. (This is is the size of the content in the segment Data packet,
+   * not the size of the entire segment Data packet with overhead.) The final
+   * segment may be smaller than this. If metaInfo.getContentSize() is zero then
+   * this is ignored.
+   */
+  static void
+  publish
+    (MemoryContentCache& contentCache, const Name& prefix,
+     Milliseconds freshnessPeriod, KeyChain* signingKeyChain,
+     const Name& signingCertificateName, const ContentMetaInfo& metaInfo,
+     const Blob& content, size_t contentSegmentSize);
 
   /**
    * Initiate meta info and segmented content fetching. This first fetches and

@@ -30,6 +30,50 @@ INIT_LOGGER("ndn.ContentFetcher");
 namespace ndn {
 
 void
+ContentFetcher::publish
+  (MemoryContentCache& contentCache, const Name& prefix,
+   Milliseconds freshnessPeriod, KeyChain* signingKeyChain,
+   const Name& signingCertificateName, const ContentMetaInfo& metaInfo,
+   const Blob& content, size_t contentSegmentSize)
+{
+  // Add the _meta Data packet to the contentCache.
+  Data data(prefix);
+  data.getName().append("_meta");
+  data.getMetaInfo().setFreshnessPeriod(freshnessPeriod);
+  data.setContent(metaInfo.wireEncode());
+  if (signingKeyChain)
+    signingKeyChain->sign(data);
+  contentCache.add(data);
+
+  if (metaInfo.getContentSize() > 0 && content.size() > 0) {
+    // Add the segments of the content.
+    // TODO: Implement the signature _manifest.
+    int finalSegmentNumber = 0;
+    for (size_t offset = 0; offset < content.size(); offset += contentSegmentSize)
+      ++finalSegmentNumber;
+    --finalSegmentNumber;
+    Name::Component finalBlockId(Name().appendSegment(finalSegmentNumber).get(0));
+
+    int segmentNumber = 0;
+    for (size_t offset = 0; offset < content.size(); offset += contentSegmentSize) {
+      size_t length = content.size() - offset;
+      if (length > contentSegmentSize)
+        length = contentSegmentSize;
+      Blob segmentContent(content.buf() + offset, length);
+
+      Data data(prefix);
+      data.getName().appendSegment(segmentNumber);
+      data.getMetaInfo().setFreshnessPeriod(freshnessPeriod);
+      data.getMetaInfo().setFinalBlockId(finalBlockId);
+      data.setContent(segmentContent);
+      contentCache.add(data);
+
+      ++segmentNumber;
+    }
+  }
+}
+
+void
 ContentFetcher::fetch
   (Face& face, const Name& prefix, KeyChain* validatorKeyChain,
    const OnComplete& onComplete, const OnError& onError,
@@ -94,6 +138,7 @@ ContentFetcher::onMetaInfoReceived
   else {
     // Fetch the segments.
     Interest baseInterest(prefix_);
+    baseInterest.getName().appendSegment(0);
     baseInterest.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
     SegmentFetcher::fetch
       (face_, baseInterest, validatorKeyChain_,
