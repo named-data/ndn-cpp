@@ -19,8 +19,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_CONTENT_FETCHER_HPP
-#define NDN_CONTENT_FETCHER_HPP
+#ifndef NDN_GENERALIZED_CONTENT_HPP
+#define NDN_GENERALIZED_CONTENT_HPP
 
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/util/segment-fetcher.hpp>
