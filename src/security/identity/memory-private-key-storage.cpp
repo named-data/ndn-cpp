@@ -146,7 +146,6 @@ MemoryPrivateKeyStorage::generateKeyPair
          (true, &privateKeyDer[0], encodingLength)))
       throw SecurityException
         (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    cout << "debug private key " << Blob(privateKeyDer).toHex() << endl;
   }
   else
 #endif
