@@ -101,17 +101,22 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
+   * @param previousSequenceNumber (optional) The previously published sequence
+   * number for the same applicationDataPrefix and sessionNo. This can be used
+   * by the application to restore the state from a previous use. If omitted,
+   * this uses -1 so that the next published sequence number is 0.
    */
   ChronoSync2013
     (const OnReceivedSyncState& onReceivedSyncState,
      const OnInitialized& onInitialized, const Name& applicationDataPrefix,
      const Name& applicationBroadcastPrefix, int sessionNo,
      Face& face, KeyChain& keyChain, const Name& certificateName,
-     Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed)
+     Milliseconds syncLifetime, const OnRegisterFailed& onRegisterFailed,
+     int previousSequenceNumber = -1)
   : impl_(new Impl
       (onReceivedSyncState, onInitialized, applicationDataPrefix,
        applicationBroadcastPrefix, sessionNo, face, keyChain, certificateName,
-       syncLifetime))
+       syncLifetime, previousSequenceNumber))
   {
     impl_->initialize(onRegisterFailed);
   }
@@ -271,7 +276,7 @@ private:
        const OnInitialized& onInitialized, const Name& applicationDataPrefix,
        const Name& applicationBroadcastPrefix, int sessionNo,
        Face& face, KeyChain& keyChain, const Name& certificateName,
-       Milliseconds syncLifetime);
+       Milliseconds syncLifetime, int previousSequenceNumber);
 
     /**
      * Initialize the digest log with a digest of "00" and and empty content.

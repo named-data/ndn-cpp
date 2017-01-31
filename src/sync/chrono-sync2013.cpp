@@ -42,13 +42,14 @@ ChronoSync2013::Impl::Impl
   (const OnReceivedSyncState& onReceivedSyncState,
    const OnInitialized& onInitialized, const Name& applicationDataPrefix,
    const Name& applicationBroadcastPrefix, int sessionNo, Face& face,
-   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime)
+   KeyChain& keyChain, const Name& certificateName, Milliseconds syncLifetime,
+   int previousSequenceNumber)
 : onReceivedSyncState_(onReceivedSyncState), onInitialized_(onInitialized),
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), sessionNo_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
-  syncLifetime_(syncLifetime), sequenceNo_(-1), digestTree_(new DigestTree()),
-  contentCache_(&face), enabled_(true)
+  syncLifetime_(syncLifetime), sequenceNo_(previousSequenceNumber),
+  digestTree_(new DigestTree()), contentCache_(&face), enabled_(true)
 {
 }
 
