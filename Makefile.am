@@ -38,7 +38,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-verification-rules
 
-noinst_PROGRAMS = bin/test-chrono-chat bin/test-echo-consumer \
+noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat bin/test-echo-consumer \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
   bin/test-generalized-content \
@@ -197,6 +197,7 @@ ndn_cpp_cpp_headers = \
 # Public ndn-cpp-tools C++ headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_tools_cpp_headers in include/Makefile.am.
 ndn_cpp_tools_cpp_headers = \
+  include/ndn-cpp-tools/usersync/channel-discovery.hpp \
   include/ndn-cpp-tools/usersync/content-meta-info.hpp \
   include/ndn-cpp-tools/usersync/generalized-content.hpp
 
@@ -381,9 +382,13 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
 
 # The ndn-cpp-tools library.
 libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
+  tools/usersync/channel-discovery.cpp \
   tools/usersync/content-meta-info.cpp \
   tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
   tools/usersync/generalized-content.cpp
+
+bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
+bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
