@@ -424,6 +424,7 @@ private:
     std::string applicationDataPrefixUri_;
     const Name applicationBroadcastPrefix_;
     int sessionNo_;
+    int initialPreviousSequenceNo_;
     int sequenceNo_;
     MemoryContentCache contentCache_;
     bool enabled_;

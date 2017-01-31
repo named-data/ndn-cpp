@@ -48,8 +48,9 @@ ChronoSync2013::Impl::Impl
   applicationDataPrefixUri_(applicationDataPrefix.toUri()),
   applicationBroadcastPrefix_(applicationBroadcastPrefix), sessionNo_(sessionNo),
   face_(face), keyChain_(keyChain), certificateName_(certificateName),
-  syncLifetime_(syncLifetime), sequenceNo_(previousSequenceNumber),
-  digestTree_(new DigestTree()), contentCache_(&face), enabled_(true)
+  syncLifetime_(syncLifetime), initialPreviousSequenceNo_(previousSequenceNumber),
+  sequenceNo_(previousSequenceNumber), digestTree_(new DigestTree()),
+  contentCache_(&face), enabled_(true)
 {
 }
 
@@ -511,10 +512,13 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
   _LOG_DEBUG("initial sync timeout");
   _LOG_DEBUG("no other people");
   ++sequenceNo_;
-  if (sequenceNo_ != 0)
-    // Since there were no other users, we expect sequence no 0.
-    throw runtime_error
-      ("ChronoSync: usrseq_ is not the expected value of 0 for first use.");
+  if (sequenceNo_ != initialPreviousSequenceNo_ + 1) {
+    // Since there were no other users, we expect the sequence number to follow
+    // the initial value.
+    _LOG_ERROR
+      ("ChronoSync: sequenceNo_ is not the expected value for first use.");
+    return;
+  }
 
   Sync::SyncStateMsg tempContent;
   Sync::SyncState* content = tempContent.add_ss();
