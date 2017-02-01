@@ -19,7 +19,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <algorithm>
+#include <stdexcept>
 #include <sstream>
+#include <fstream>
 #include "../../src/util/logging.hpp"
 #include "../../src/encoding/base64.hpp"
 #include <ndn-cpp-tools/usersync/channel-discovery.hpp>
@@ -33,13 +36,16 @@ INIT_LOGGER("ndntools.ChannelDiscovery");
 namespace ndntools {
 
 ChannelDiscovery::Impl::Impl
-  (const Name& applicationDataPrefix, const string& channelListFilePath, 
-   Face& face, KeyChain& keyChain, const Name& certificateName,
-   Milliseconds syncLifetime, const OnError& onError)
-  : applicationDataPrefix_(applicationDataPrefix),
+  (ChannelDiscovery& parent, const Name& applicationDataPrefix,
+   const string& channelListFilePath, Face& face, KeyChain& keyChain,
+   const Name& certificateName,
+   Milliseconds syncLifetime, const OnReceivedChannelList& onReceivedChannelList,
+   const OnError& onError)
+  : parent_(parent), applicationDataPrefix_(applicationDataPrefix),
     channelListFilePath_(channelListFilePath), face_(face),
     keyChain_(keyChain), certificateName_(certificateName),
-    syncLifetime_(syncLifetime), onError_(onError)
+    syncLifetime_(syncLifetime), onReceivedChannelList_(onReceivedChannelList),
+    onError_(onError)
 {
 }
 
@@ -47,14 +53,30 @@ void
 ChannelDiscovery::Impl::initialize(const Name& applicationBroadcastPrefix)
 {
   int previousSequenceNumber = -1;
-  userChannels_[applicationDataPrefix_.toUri()] = vector<string>();
   // Try to recover the previous sequence number and list of channels from the
   // Data packet saved in channelListFilePath_.
-  // TODO: Load and parse the packet, set previousSequenceNumber.
+  Blob encodedData = readBase64Blob(channelListFilePath_);
+  if (encodedData.isNull()) {
+    // There is no saved Data packet, so initialize.
+    channelListData_ = makeChannelListData(0);
+    writeBase64Blob(channelListData_->wireEncode(), channelListFilePath_);
+  }
+  else {
+    channelListData_.reset(new Data());
+    channelListData_->wireDecode(encodedData);
 
-  // Create the initial Data now so that we get any exceptions right away.
-  channelListData_ = makeChannelListData(0);
-  // TODO: Save the Data wire encoding;
+    string userPrefix = channelListData_->getName().getPrefix(-2).toUri();
+    if (userPrefix != applicationDataPrefix_.toUri())
+      throw runtime_error
+        ("The Data name prefix " + userPrefix + " in the channelListFilePath \"" +
+         channelListFilePath_ + "\" does not match the given applicationDataPrefix " +
+         applicationDataPrefix_.toUri());
+
+    // Restore the sequence number and channel list.
+    previousSequenceNumber = ::atoi
+      (channelListData_->getName().get(-1).toEscapedString().c_str());
+    parseChannelList(channelListData_->getContent(), myChannelList_);
+  }
 
   enabled_ = true;
   // After registering, proceed to onRegisterApplicationPrefixSuccess.
@@ -66,6 +88,63 @@ ChannelDiscovery::Impl::initialize(const Name& applicationBroadcastPrefix)
      bind(&ChannelDiscovery::Impl::onRegisterApplicationPrefixSuccess,
           shared_from_this(), _1, _2, applicationBroadcastPrefix,
           previousSequenceNumber));
+}
+
+void
+ChannelDiscovery::Impl::addChannel(const string& channel)
+{
+  // Check if the list already has the channel.
+  if (find(myChannelList_.begin(), myChannelList_.end(), channel) !=
+      myChannelList_.end())
+    // Already have the channel.
+    return;
+
+  // Add the channel, sort and publish.
+  myChannelList_.push_back(channel);
+  sort(myChannelList_.begin(), myChannelList_.end());
+  publishChannelListData();
+}
+
+void
+ChannelDiscovery::Impl::removeChannel(const string& channel)
+{
+  const vector<string>::iterator it = find
+    (myChannelList_.begin(), myChannelList_.end(), channel);
+  if (it == myChannelList_.end())
+    // Already removed.
+    return;
+
+  myChannelList_.erase(it);
+  publishChannelListData();
+}
+
+ptr_lib::shared_ptr<vector<Name>>
+ChannelDiscovery::Impl::getOtherUserPrefixes()
+{
+  ptr_lib::shared_ptr<vector<Name>> result(new vector<Name>());
+  for (map<string, vector<string>>::iterator entry = otherUserChannelList_.begin();
+       entry != otherUserChannelList_.end(); ++entry)
+    result->push_back(Name(entry->first));
+
+  return result;
+}
+
+ptr_lib::shared_ptr<vector<string>>
+ChannelDiscovery::Impl::getChannelList(const Name& userPrefix)
+{
+  if (userPrefix.equals(applicationDataPrefix_))
+    // Use the vector copy constructor.
+    return ptr_lib::make_shared<vector<string>>(myChannelList_);
+  else {
+    map<string, vector<string>>::iterator list = otherUserChannelList_.find
+      (userPrefix.toUri());
+    if (list == otherUserChannelList_.end())
+      // The userPrefix is not found.
+      return ptr_lib::make_shared<vector<string>>();
+    else
+      // Use the vector copy constructor.
+      return ptr_lib::make_shared<vector<string>>(list->second);
+  }
 }
 
 void
@@ -133,14 +212,22 @@ ChannelDiscovery::Impl::onData
     // Ignore callbacks after the application calls shutdown().
     return;
 
-  // Split the new-line separated list and URI decode each channel name.
-  vector<string> channels;
-  stringstream is(data->getContent().toRawStr());
-  string str;
-  while (getline(is, str))
-    channels.push_back(Name::fromEscapedString(str).toRawStr());
+  ptr_lib::shared_ptr<Name> userPrefix
+    (new Name(interest->getName().getPrefix(-2)));
+  if (userPrefix->equals(applicationDataPrefix_))
+    // We got data for this user. We don't expect this because we never ask for it.
+    return;
 
-  userChannels_[interest->getName().getPrefix(-2).toUri()] = channels;
+  vector<string> channelList;
+  parseChannelList(data->getContent(), channelList);
+  otherUserChannelList_[userPrefix->toUri()] = channelList;
+  try {
+    onReceivedChannelList_(parent_, userPrefix);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("ChannelDiscovery::onData: Error in onReceivedChannelList: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("ChannelDiscovery::onData: Error in onReceivedChannelList.");
+  }
 }
 
 void
@@ -169,8 +256,10 @@ ChannelDiscovery::Impl::onApplicationInterest
 
   if (!channelListData_ || 
       !channelListData_->getName().equals(interest->getName())) {
+    // Debug: This shouldn't be necessary. But when ChronoChat starts, it increments
+    // and publishes a new sequence number which the other users fetch.
     channelListData_ = makeChannelListData(sequenceNo);
-    // TODO: Save the data wire encoding.
+    writeBase64Blob(channelListData_->wireEncode(), channelListFilePath_);
   }
 
   face.putData(*channelListData_);
@@ -196,6 +285,7 @@ void
 ChannelDiscovery::Impl::onTimeout
   (const ptr_lib::shared_ptr<const Interest>& interest)
 {
+  // TODO: Re-send the interest?
   try {
     onError_
       (ErrorCode::INTEREST_TIMEOUT,
@@ -205,6 +295,16 @@ ChannelDiscovery::Impl::onTimeout
   } catch (...) {
     _LOG_ERROR("ChannelDiscovery::onTimeout: Error in onError.");
   }
+}
+
+void
+ChannelDiscovery::Impl::publishChannelListData()
+{
+  sync_->publishNextSequenceNo();
+  // Assume that we can create the Data packet before an Interest arrives for it
+  // from another user, and before the application calls add/removeChannel again.
+  channelListData_ = makeChannelListData(sync_->getSequenceNo());
+  writeBase64Blob(channelListData_->wireEncode(), channelListFilePath_);
 }
 
 ptr_lib::shared_ptr<Data>
@@ -219,12 +319,11 @@ ChannelDiscovery::Impl::makeChannelListData(int sequenceNo)
   data->getName().append(sequenceNoString.str());
 
   // Make a newline separate list of URI-escaped channel names.
-  vector<string> channelList = userChannels_[applicationDataPrefix_.toUri()];
   ostringstream content;
-  for (size_t i = 0; i < channelList.size(); ++i) {
+  for (size_t i = 0; i < myChannelList_.size(); ++i) {
     if (i > 0)
       content << "\n";
-    Blob channelBlob((const uint8_t*)&channelList[i][0], channelList[i].size());
+    Blob channelBlob((const uint8_t*)&myChannelList_[i][0], myChannelList_[i].size());
     content << Name::toEscapedString(*channelBlob);
   }
   string contentString = content.str();
@@ -233,6 +332,39 @@ ChannelDiscovery::Impl::makeChannelListData(int sequenceNo)
   keyChain_.sign(*data, certificateName_);
 
   return data;
+}
+
+void
+ChannelDiscovery::Impl::parseChannelList
+  (const Blob& blob, vector<string>& channelList)
+{
+  stringstream is(blob.toRawStr());
+  string str;
+  while (getline(is, str))
+    channelList.push_back(Name::fromEscapedString(str).toRawStr());
+}
+
+ndn::Blob
+ChannelDiscovery::Impl::readBase64Blob(const std::string& filePath)
+{
+  ifstream file(filePath.c_str());
+  if (!file.good())
+    return Blob();
+
+  stringstream base64;
+  base64 << file.rdbuf();
+  // Use a vector in a shared_ptr so we can make it a Blob without copying.
+  ptr_lib::shared_ptr<vector<uint8_t> > blob(new vector<uint8_t>());
+  fromBase64(base64.str(), *blob);
+
+  return Blob(blob, false);
+}
+
+void
+ChannelDiscovery::Impl::writeBase64Blob(const Blob& blob, const string& filePath)
+{
+  ofstream file(filePath.c_str());
+  file << toBase64(blob.buf(), blob.size(), true);
 }
 
 }
