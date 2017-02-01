@@ -42,6 +42,11 @@ using namespace ndn::func_lib;
 using namespace ndntools;
 
 static void
+onReceivedChannelList
+  (ChannelDiscovery& channelDiscovery,
+   const ptr_lib::shared_ptr<Name>& userPrefix);
+
+static void
 onError
   (ChannelDiscovery::ErrorCode errorCode, const string& message, bool* enabled);
 
@@ -154,7 +159,8 @@ int main(int argc, char** argv)
     ChannelDiscovery channelDiscovery
       (applicationDataPrefix, channelListFilePath, 
        Name("/ndn/broadcast/flume/discovery"), face, keyChain, certificateName,
-       syncLifetime, bind(&onError, _1, _2, &enabled));
+       syncLifetime, bind(&onReceivedChannelList, _1, _2),
+       bind(&onError, _1, _2, &enabled));
 
     // The main loop to process messages while checking stdin to send an announcement.
     cout << "Enter the new channel name. To remove, prepend '-' such as '-mychannel'." << endl;
@@ -168,6 +174,7 @@ int main(int argc, char** argv)
 
         bool remove = false;
         if (channelName.size() > 0 && channelName[0] == '-') {
+          remove = true;
           channelName = channelName.substr(1);
           trim(channelName);
         }
@@ -188,6 +195,27 @@ int main(int argc, char** argv)
     cout << "exception: " << e.what() << endl;
   }
   return 0;
+}
+
+/**
+ * This is called when a new channel list is received from another user.
+ * @param channelDiscovery The ChannelDiscovery object.
+ * @param userPrefix The Name of the user who updated the channel list.
+ */
+static void
+onReceivedChannelList
+  (ChannelDiscovery& channelDiscovery,
+   const ptr_lib::shared_ptr<Name>& userPrefix)
+{
+  ptr_lib::shared_ptr<vector<string>> channelList =
+    channelDiscovery.getChannelList(*userPrefix);
+  cout << "Received channel list from user " << userPrefix->toUri() << ":" << endl;
+  if (channelList->size() == 0)
+    cout << "  <empty list>" << endl;
+  else {
+    for (size_t i = 0; i < channelList->size(); ++i)
+      cout << "  " << channelList->at(i) << endl;
+  }
 }
 
 /**
