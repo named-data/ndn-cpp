@@ -105,6 +105,13 @@ public:
     ++changeCount_;
   }
 
+  void
+  setValidityPeriod(const ValidityPeriod& validityPeriod)
+  {
+    validityPeriod_.set(validityPeriod);
+    ++changeCount_;
+  }
+
   /**
    * Clear all the fields.
    */
