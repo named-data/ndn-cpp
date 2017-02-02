@@ -106,6 +106,10 @@ public:
     ++changeCount_;
   }
 
+  /**
+   * Set the validity period to a copy of the given ValidityPeriod.
+   * @param validityPeriod The ValidityPeriod which is copied.
+   */
   void
   setValidityPeriod(const ValidityPeriod& validityPeriod)
   {
