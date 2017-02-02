@@ -2,6 +2,7 @@
  * Copyright (C) 2016-2017 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From ndn-cxx Certificate unit tests:
+ * https://github.com/named-data/ndn-cxx/blob/master/tests/unit-tests/security/v2/certificate.t.cpp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -79,13 +80,13 @@ static const uint8_t SIG_VALUE[] = {
 
 static const uint8_t CERT[] = {
 0x06, 0xFD, 0x01, 0xBB, // Data
-  0x07, 0x33, // Name /ndn/site1/ksk-1416425377094/KEY/0123/%FD%00%00%01I%C9%8B
+  0x07, 0x33, // Name /ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B
     0x08, 0x03, 0x6E, 0x64, 0x6E,
     0x08, 0x05, 0x73, 0x69, 0x74, 0x65, 0x31,
+    0x08, 0x03, 0x4B, 0x45, 0x59,
     0x08, 0x11,
       0x6B, 0x73, 0x6B, 0x2D, 0x31, 0x34, 0x31, 0x36, 0x34, 0x32, 0x35, 0x33, 0x37, 0x37, 0x30, 0x39,
       0x34,
-    0x08, 0x03, 0x4B, 0x45, 0x59,
     0x08, 0x04, 0x30, 0x31, 0x32, 0x33,
     0x08, 0x07, 0xFD, 0x00, 0x00, 0x01, 0x49, 0xC9, 0x8B,
   0x14, 0x09, // MetaInfo
@@ -104,18 +105,18 @@ static const uint8_t CERT[] = {
     0xEF, 0xED, 0x35, 0xE7, 0x7A, 0x62, 0xEA, 0x76, 0x7C, 0xBB, 0x08, 0x26, 0xC7, 0x02, 0x01, 0x11,
   0x16, 0x55, // SignatureInfo
     0x1B, 0x01, 0x01, // SignatureType
-    0x1C, 0x26, // KeyLocator: /ndn/site1/ksk-2516425377094/KEY
+    0x1C, 0x26, // KeyLocator: /ndn/site1/KEY/ksk-2516425377094
       0x07, 0x24,
         0x08, 0x03, 0x6E, 0x64, 0x6E,
         0x08, 0x05, 0x73, 0x69, 0x74, 0x65, 0x31,
+        0x08, 0x03, 0x4B, 0x45, 0x59,
         0x08, 0x11,
           0x6B, 0x73, 0x6B, 0x2D, 0x32, 0x35, 0x31, 0x36, 0x34, 0x32, 0x35, 0x33, 0x37, 0x37, 0x30, 0x39,
           0x34,
-        0x08, 0x03, 0x4B, 0x45, 0x59,
-    0xFD, 0x00, 0xFD, 0x26, // ValidityPeriod
-      0xFD, 0x00, 0xFE, 0x0F, // NotBefore = 20150814T223739
+    0xFD, 0x00, 0xFD, 0x26, // ValidityPeriod: (20150814T223739, 20150818T223738)
+      0xFD, 0x00, 0xFE, 0x0F,
         0x32, 0x30, 0x31, 0x35, 0x30, 0x38, 0x31, 0x34, 0x54, 0x32, 0x32, 0x33, 0x37, 0x33, 0x39,
-      0xFD, 0x00, 0xFF, 0x0F, // NotAfter =  20150818T223739
+      0xFD, 0x00, 0xFF, 0x0F,
         0x32, 0x30, 0x31, 0x35, 0x30, 0x38, 0x31, 0x38, 0x54, 0x32, 0x32, 0x33, 0x37, 0x33, 0x38,
   0x17, 0x80, // SignatureValue
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -127,6 +128,28 @@ static const uint8_t CERT[] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
+
+static Sha256WithRsaSignature
+generateFakeSignature()
+{
+  Sha256WithRsaSignature signatureInfo;
+
+  Name keyLocatorName("/ndn/site1/KEY/ksk-2516425377094");
+  KeyLocator keyLocator;
+  keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
+  keyLocator.setKeyName(keyLocatorName);
+  signatureInfo.setKeyLocator(keyLocator);
+
+  ValidityPeriod period;
+  period.setPeriod(fromIsoString("20141111T050000"),
+                   fromIsoString("20141111T060000"));
+  signatureInfo.setValidityPeriod(period);
+
+  Blob block2(SIG_VALUE, sizeof(SIG_VALUE));
+  signatureInfo.setSignature(block2);
+
+  return signatureInfo;
+}
 
 class TestCertificate : public ::testing::Test {
 };
@@ -144,29 +167,15 @@ TEST_F(TestCertificate, ValidityPeriodChecking)
 {
   Certificate certificate;
   certificate.setName
-    (Name("/ndn/site1/ksk-1416425377094/KEY/0123/%FD%00%00%01I%C9%8B"));
+    (Name("/ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B"));
   certificate.getMetaInfo().setFreshnessPeriod(3600 * 1000.0);
   certificate.setContent(Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY)));
+  certificate.setSignature(generateFakeSignature());
 
-  certificate.setSignature(Sha256WithRsaSignature());
-  Sha256WithRsaSignature* signatureInfo =
-    dynamic_cast<Sha256WithRsaSignature *>(certificate.getSignature());
-
-  signatureInfo->getKeyLocator().setType(ndn_KeyLocatorType_KEYNAME);
-  signatureInfo->getKeyLocator().setKeyName
-    (Name("/ndn/site1/ksk-2516425377094/KEY"));
-
-  MillisecondsSince1970 notBefore = fromIsoString("20150819T120000");
-  MillisecondsSince1970 notAfter =  fromIsoString("20150823T120000");
-  signatureInfo->getValidityPeriod().setPeriod(notBefore, notAfter);
-
-  signatureInfo->setSignature(Blob(SIG_VALUE, sizeof(SIG_VALUE)));
-
-  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20150819T115959")));
-  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20150819T120000")));
-  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20150823T120000")));
-  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20150823T120001")));
-  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20150921T130000")));
+  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20141111T050000")));
+  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20141111T060000")));
+  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20141111T045959")));
+  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20141111T060001")));
 }
 
 int
