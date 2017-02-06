@@ -56,7 +56,8 @@ public:
    * /ndn/edu/ucla/remap/peter/flume/discovery .
    * @param channelListFilePath The file path to store the Data packet from this
    * user with the list of channels created by this user. This is used for
-   * persistent storage between sessions.
+   * persistent storage between sessions. This will create the file if it
+   * doesn't exist.
    * @param applicationBroadcastPrefix The name prefix for ChonoSync broadcast
    * interests and sync updates. For example, /ndn/broadcast/flume/discovery .
    * @param face The Face for calling registerPrefix and expressInterest. The
