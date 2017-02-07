@@ -19,7 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../src/util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp-tools/usersync/generalized-content.hpp>
 
 using namespace std;

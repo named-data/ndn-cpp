@@ -21,7 +21,7 @@
 
 #include <algorithm>
 #include "../c/util/time.h"
-#include "logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/util/memory-content-cache.hpp>
 
 using namespace std;

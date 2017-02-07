@@ -20,7 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 
 #if NDN_CPP_HAVE_LOG4CXX
 

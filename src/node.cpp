@@ -27,7 +27,7 @@
 #include <ndn-cpp/network-nack.hpp>
 #include "c/util/time.h"
 #include "encoding/tlv-decoder.hpp"
-#include "util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "lp/lp-packet.hpp"
 #include "node.hpp"
 

@@ -23,7 +23,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <fstream>
-#include "../../src/util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "../../src/encoding/base64.hpp"
 #include <ndn-cpp-tools/usersync/channel-discovery.hpp>
 

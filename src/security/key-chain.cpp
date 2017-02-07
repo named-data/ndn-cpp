@@ -20,7 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/security-exception.hpp>

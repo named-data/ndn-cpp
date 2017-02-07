@@ -20,7 +20,7 @@
  */
 
 #include <algorithm>
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "registered-prefix-table.hpp"
 
 INIT_LOGGER("ndn.RegisteredPrefixTable");

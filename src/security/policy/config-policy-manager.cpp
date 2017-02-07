@@ -37,7 +37,7 @@
 #include "../../util/boost-info-parser.hpp"
 #include "../../c/util/time.h"
 #include "../../encoding/base64.hpp"
-#include "../../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
 
 using namespace std;

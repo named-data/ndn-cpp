@@ -29,7 +29,7 @@
 #include <sstream>
 #include <fstream>
 #include <math.h>
-#include "../../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/data.hpp>

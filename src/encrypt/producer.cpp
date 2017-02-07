@@ -20,7 +20,7 @@
  */
 
 #include <math.h>
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/encrypt/algo/encryptor.hpp>
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
 #include <ndn-cpp/encrypt/schedule.hpp>

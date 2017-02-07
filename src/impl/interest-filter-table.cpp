@@ -19,7 +19,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "interest-filter-table.hpp"
 
 INIT_LOGGER("ndn.InterestFilterTable");

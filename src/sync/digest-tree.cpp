@@ -21,7 +21,7 @@
  */
 
 #include <algorithm>
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #if NDN_CPP_HAVE_LIBCRYPTO
 #include <openssl/ssl.h>
 #else

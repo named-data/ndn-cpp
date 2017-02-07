@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 #include "../c/util/ndn_memory.h"
-#include "logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/util/segment-fetcher.hpp>
 
 using namespace std;

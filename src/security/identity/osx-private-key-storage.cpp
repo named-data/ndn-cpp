@@ -27,7 +27,7 @@
 #include <sstream>
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "../../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/security/identity/osx-private-key-storage.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 

@@ -25,7 +25,7 @@
 #if NDN_CPP_HAVE_PROTOBUF
 
 #include <stdexcept>
-#include "../util/logging.hpp"
+#include <ndn-cpp/util/logging.hpp>
 #include "sync-state.pb.h"
 #include "../c/util/time.h"
 #include "digest-tree.hpp"
