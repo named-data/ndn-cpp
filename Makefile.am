@@ -190,6 +190,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/transport/unix-transport.hpp \
   include/ndn-cpp/util/blob.hpp \
   include/ndn-cpp/util/change-counter.hpp \
+  include/ndn-cpp/util/exponential-re-express.hpp \
   include/ndn-cpp/util/logging.hpp \
   include/ndn-cpp/util/memory-content-cache.hpp \
   include/ndn-cpp/util/segment-fetcher.hpp \
@@ -376,6 +377,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/command-interest-generator.cpp src/util/command-interest-generator.hpp \
   src/util/config-file.cpp src/util/config-file.hpp \
   src/util/dynamic-uint8-vector.cpp src/util/dynamic-uint8-vector.hpp \
+  src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
   src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
