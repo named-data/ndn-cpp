@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.11 (2017-02-07)
+Interim changes since NDN-CPP v0.11 (2017-02-08)
 ------------------------------------------------
 
 Changes
@@ -7,6 +7,7 @@ Changes
 * https://redmine.named-data.net/issues/3922 In ChronoSync2013, support optional
   application info in the SyncState messages.
 * Added tools/usersync for using NDN to synchronize communication among a group of users.
+* In util, added ExponentialReExpress.
 * Moved logging.hpp to the public util directory (for use be dependent NDN libraries.)
 
 Bug Fixes
