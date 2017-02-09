@@ -133,6 +133,10 @@ To build in a terminal, change directory to the NDN-CPP root.  Enter:
     make
     sudo make install
 
+[Ubuntu only] Update the path to the shared libraries:
+
+    sudo /sbin/ldconfig
+
 To run the unit tests, in a terminal enter:
 
     make check
