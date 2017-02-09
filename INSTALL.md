@@ -168,7 +168,7 @@ Development Prerequisites
 These steps are only needed to do development of NDN-CPP code and update the build system.
 First follow the Prerequisites above for your platforms.
 
-## OS X 10.9, OS X 10.10.2 and OS X 10.11
+## OS X 10.9, OS X 10.10.2, OS X 10.11 and macOS 10.12
 Install MacPorts from http://www.macports.org/install.php .
 In a terminal, enter:
 
