@@ -177,6 +177,50 @@ public:
   };
 
   /**
+   * A PrefixAndSessionNo holds a user's data prefix and session number (used to
+   * return a list from getProducerPrefixes.
+   */
+  class PrefixAndSessionNo {
+  public:
+    PrefixAndSessionNo(const std::string& dataPrefixUri, int sessionNo)
+    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo)
+    {
+    }
+
+    /**
+     * Get the application data prefix for this sync state message.
+     * @return The application data prefix as a Name URI string.
+     */
+    const std::string&
+    getDataPrefix() const { return dataPrefixUri_; }
+
+    /**
+     * Get the session number associated with the application data prefix for
+     * this sync state message.
+     * @return The session number.
+     */
+    int
+    getSessionNo() const { return sessionNo_; }
+
+  private:
+    std::string dataPrefixUri_;
+    int sessionNo_;
+  };
+
+  /**
+   * Get a copy of the current list of producer data prefixes, and the
+   * associated session number. You can use these in getProducerSequenceNo().
+   * This includes the prefix for this user.
+   * @param prefixes This clears the vector and adds a copy of each producer
+   * prefix and session number.
+   */
+  void
+  getProducerPrefixes(std::vector<const PrefixAndSessionNo>& prefixes) const
+  {
+    impl_->getProducerPrefixes(prefixes);
+  }
+
+  /**
    * Get the current sequence number in the digest tree for the given
    * producer dataPrefix and sessionNo.
    * @param dataPrefix The producer data prefix as a Name URI string.
@@ -289,6 +333,12 @@ private:
      */
     void
     initialize(const OnRegisterFailed& onRegisterFailed);
+
+    /**
+     * See ChronoSync2013::getProducerPrefixes.
+     */
+    void
+    getProducerPrefixes(std::vector<const PrefixAndSessionNo>& prefixes) const;
 
     /**
      * See ChronoSync2013::getProducerSequenceNo.

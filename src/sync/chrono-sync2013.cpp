@@ -113,6 +113,19 @@ ChronoSync2013::Impl::update
     return false;
 }
 
+void
+ChronoSync2013::Impl::getProducerPrefixes
+  (vector<const PrefixAndSessionNo>& prefixes) const
+{
+  prefixes.clear();
+  prefixes.reserve(digestTree_->size());
+
+  for (size_t i = 0; i < digestTree_->size(); ++i) {
+    const DigestTree::Node& node = digestTree_->get(i);
+    prefixes.push_back(PrefixAndSessionNo(node.getDataPrefix(), node.getSessionNo()));
+  }
+}
+
 int
 ChronoSync2013::Impl::getProducerSequenceNo(const std::string& dataPrefix, int sessionNo) const
 {
