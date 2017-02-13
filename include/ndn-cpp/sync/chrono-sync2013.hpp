@@ -139,15 +139,14 @@ public:
     }
 
     /**
-     * Get the application data prefix for this sync state message.
+     * Get the application data prefix.
      * @return The application data prefix as a Name URI string.
      */
     const std::string&
     getDataPrefix() const { return dataPrefixUri_; }
 
     /**
-     * Get the session number associated with the application data prefix for
-     * this sync state message.
+     * Get the session number associated with the application data prefix.
      * @return The session number.
      */
     int
