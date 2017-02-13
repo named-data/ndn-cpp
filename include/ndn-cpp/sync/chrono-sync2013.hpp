@@ -178,7 +178,7 @@ public:
 
   /**
    * A PrefixAndSessionNo holds a user's data prefix and session number (used to
-   * return a list from getProducerPrefixes.
+   * return a list from getProducerPrefixes).
    */
   class PrefixAndSessionNo {
   public:
