@@ -422,7 +422,7 @@ TEST_F(TestConsumer, Consume)
   ASSERT_EQ(1, finalCount);
 }
 
-TEST_F(TestConsumer, CosumerWithLink)
+TEST_F(TestConsumer, ConsumerWithLink)
 {
   ptr_lib::shared_ptr<Data> contentData = createEncryptedContent();
   ptr_lib::shared_ptr<Data> cKeyData = createEncryptedCKey();
