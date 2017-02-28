@@ -151,7 +151,7 @@ ChronoSync2013::Impl::publishNextSequenceNo(const Blob& applicationInfo)
     content->set_application_info(applicationInfo.buf(), applicationInfo.size());
 
 
-  broadcastSyncState(digestTree_->getRoot(), syncMessage, applicationInfo);
+  broadcastSyncState(digestTree_->getRoot(), syncMessage);
 
   if (!update(syncMessage.ss()))
     // Since we incremented the sequence number, we expect there to be a
@@ -489,8 +489,7 @@ ChronoSync2013::Impl::initialOndata
     content2->mutable_seqno()->set_session(sessionNo_);
   }
 
-  // The recover message does not include application info.
-  broadcastSyncState(digest, tempContent2, Blob());
+  broadcastSyncState(digest, tempContent2);
 
   if (digestTree_->find(applicationDataPrefixUri_, sessionNo_) == -1) {
     // the user hasn't put himself in the digest tree.
@@ -562,8 +561,7 @@ ChronoSync2013::Impl::initialTimeOut(const ptr_lib::shared_ptr<const Interest>& 
 
 void
 ChronoSync2013::Impl::broadcastSyncState
-  (const string& digest, const Sync::SyncStateMsg& syncMessage,
-   const Blob& applicationInfo)
+  (const string& digest, const Sync::SyncStateMsg& syncMessage)
 {
   ptr_lib::shared_ptr<vector<uint8_t> > array(new vector<uint8_t>(syncMessage.ByteSize()));
   syncMessage.SerializeToArray(&array->front(), array->size());

@@ -374,13 +374,10 @@ private:
      * @param digest The root digest as a hex string for the data packet name.
      * @param syncMessage The SyncStateMsg which updates the digest tree state
      * with the given digest.
-     * @param applicationInfo The application-specific Blob to append after the
-     * encoded syncMessage in the Data packet content.
      */
     void
     broadcastSyncState
-      (const std::string& digest, const Sync::SyncStateMsg& syncMessage,
-       const Blob& applicationInfo);
+      (const std::string& digest, const Sync::SyncStateMsg& syncMessage);
 
     /**
      * Update the digest tree with the messages in content. If the digest tree
