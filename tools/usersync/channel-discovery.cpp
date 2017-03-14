@@ -45,7 +45,8 @@ ChannelDiscovery::Impl::Impl
     channelListFilePath_(channelListFilePath), face_(face),
     keyChain_(keyChain), certificateName_(certificateName),
     syncLifetime_(syncLifetime), onReceivedChannelList_(onReceivedChannelList),
-    onError_(onError)
+    onError_(onError), enabled_(false), isInitialized_(false),
+    needToPublish_(false)
 {
 }
 
@@ -169,6 +170,12 @@ ChannelDiscovery::Impl::onRegisterApplicationPrefixSuccess
 void
 ChannelDiscovery::Impl::onInitialized()
 {
+  isInitialized_ = true;
+
+  if (needToPublish_) {
+    needToPublish_ = false;
+    publishChannelListData();
+  }
 }
 
 void
@@ -300,6 +307,13 @@ ChannelDiscovery::Impl::onTimeout
 void
 ChannelDiscovery::Impl::publishChannelListData()
 {
+  if (!isInitialized_) {
+    // Assume this is being called before ChronoSync is initialized.
+    // onInitialized will check needToPublish_ and call this.
+    needToPublish_ = true;
+    return;
+  }
+
   sync_->publishNextSequenceNo();
   // Assume that we can create the Data packet before an Interest arrives for it
   // from another user, and before the application calls add/removeChannel again.

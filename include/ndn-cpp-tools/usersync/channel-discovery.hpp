@@ -320,6 +320,8 @@ private:
     std::map<std::string, std::vector<std::string>> otherUserChannelList_;
     ndn::ptr_lib::shared_ptr<ndn::Data> channelListData_;
     bool enabled_;
+    bool isInitialized_;
+    bool needToPublish_;
   };
 
   ndn::ptr_lib::shared_ptr<Impl> impl_;
