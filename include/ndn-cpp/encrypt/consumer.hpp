@@ -78,6 +78,8 @@ public:
     (const ptr_lib::shared_ptr<Data>& contentData,
      const Blob& result)> OnConsumeComplete;
 
+  typedef func_lib::function<void(const Blob& decryptedBlob)> OnPlainText;
+
   /**
    * Express an Interest to fetch the content packet with contentName, and
    * decrypt it, fetching keys as needed.
@@ -127,6 +129,23 @@ public:
     impl_->addDecryptionKey(keyName, keyBlob);
   }
 
+  /**
+   * A utility method to decrypt the data packet, retrieving the C-KEY Data
+   * from the network if necessary. An application normally does not call this
+   * but calls the higher-level consume method.
+   * @param data The data packet. This does not verify the packet.
+   * @param onPlainText When the data packet is decrypted, this calls
+   * onPlainText(decryptedBlob) with the decrypted blob.
+   * @param onError This calls onError(errorCode, message) for an error.
+   */
+  void
+  decryptContent
+    (const Data& data, const OnPlainText& onPlainText,
+     const EncryptError::OnError& onError)
+  {
+    impl_-> decryptContent(data, onPlainText, onError);
+  }
+
 private:
   // Give friend access to the tests.
   friend TestConsumer_DecryptContent_Test;
@@ -157,11 +176,14 @@ private:
     void
     addDecryptionKey(const Name& keyName, const Blob& keyBlob);
 
+    void
+    decryptContent
+      (const Data& data, const OnPlainText& onPlainText,
+       const EncryptError::OnError& onError);
+
   private:
     // Give friend access to the tests.
     friend TestConsumer_DecryptContent_Test;
-
-    typedef func_lib::function<void(const Blob& decryptedBlob)> OnPlainText;
 
     /**
      * Decode encryptedBlob as an EncryptedContent and decrypt using keyBits.
@@ -188,18 +210,6 @@ private:
     decryptEncryptedContent
       (const EncryptedContent& encryptedContent, const Blob& keyBits,
        const OnPlainText& onPlainText, const EncryptError::OnError& onError);
-
-    /**
-     * Decrypt the data packet.
-     * @param data The data packet. This does not verify the packet.
-     * @param onPlainText When the data packet is decrypted, this calls
-     * onPlainText(decryptedBlob) with the decrypted blob.
-     * @param onError This calls onError(errorCode, message) for an error.
-     */
-    void
-    decryptContent
-      (const Data& data, const OnPlainText& onPlainText,
-       const EncryptError::OnError& onError);
 
     /**
      * Decrypt cKeyData.
