@@ -19,8 +19,9 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* This tests the GeneralizedContent which fetches a _meta info object and segmented
- * content with a single segment. This requires a local running NFD.
+/* This tests the ndntools ChannelDiscovery which listens for channel
+ * announcements and lets you enter the name of a new channel which is
+ * announced to others. This requires a local running NFD.
  */
 
 // Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_PROTOBUF = 1.
