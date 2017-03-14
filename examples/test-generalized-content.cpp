@@ -70,8 +70,9 @@ int main(int argc, char** argv)
     Name prefix("/ndn/testuser/flume/channel/1/content/10");
     contentCache.registerPrefix
       (prefix, bind(&onRegisterFailed, _1, &enabled), 
-       bind(&publishAndFetch, _1, _2, &prefix, &contentCache, &keyChain,
-            &certificateName, &consumerFace, &enabled));
+       (OnRegisterSuccess)bind
+        (&publishAndFetch, _1, _2, &prefix, &contentCache, &keyChain,
+         &certificateName, &consumerFace, &enabled));
     
     while (enabled) {
       producerFace.processEvents();
