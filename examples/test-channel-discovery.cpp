@@ -170,7 +170,6 @@ int main(int argc, char** argv)
       if (isStdinReady()) {
         string channelName = stdinReadLine();
         if (channelName == "exit")
-          // We will send the leave message below.
           break;
 
         bool remove = false;
