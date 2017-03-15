@@ -214,7 +214,7 @@ public:
    * prefix and session number.
    */
   void
-  getProducerPrefixes(std::vector<const PrefixAndSessionNo>& prefixes) const
+  getProducerPrefixes(std::vector<PrefixAndSessionNo>& prefixes) const
   {
     impl_->getProducerPrefixes(prefixes);
   }
@@ -337,7 +337,7 @@ private:
      * See ChronoSync2013::getProducerPrefixes.
      */
     void
-    getProducerPrefixes(std::vector<const PrefixAndSessionNo>& prefixes) const;
+    getProducerPrefixes(std::vector<PrefixAndSessionNo>& prefixes) const;
 
     /**
      * See ChronoSync2013::getProducerSequenceNo.

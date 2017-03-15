@@ -115,7 +115,7 @@ ChronoSync2013::Impl::update
 
 void
 ChronoSync2013::Impl::getProducerPrefixes
-  (vector<const PrefixAndSessionNo>& prefixes) const
+  (vector<PrefixAndSessionNo>& prefixes) const
 {
   prefixes.clear();
   prefixes.reserve(digestTree_->size());
