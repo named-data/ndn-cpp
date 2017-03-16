@@ -128,6 +128,14 @@ public:
   getPublicKeyInfo() const { return key_; }
 
   /**
+   * Get the public key DER encoding.
+   * @return The DER encoding Blob.
+   * @throws runtime_error if the public key is not set.
+   */
+  const Blob&
+  getPublicKeyDer() const;
+
+  /**
    * Check if the certificate is valid.
    * @return True if the current time is earlier than notBefore.
    */

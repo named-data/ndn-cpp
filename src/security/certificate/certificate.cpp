@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include <float.h>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../encoding/der/der-node.hpp"
@@ -49,6 +50,15 @@ Certificate::Certificate(const Data& data)
 Certificate::~Certificate()
 {
   //TODO:
+}
+
+const Blob&
+Certificate::getPublicKeyDer() const
+{
+  if (key_.getKeyDer().isNull())
+    throw runtime_error("The public key is not set");
+
+  return key_.getKeyDer();
 }
 
 bool
@@ -186,7 +196,7 @@ Certificate::printCertificate(ostream& os) const
     os << "  " << it->getOidString() << ": " << it->getValue() << endl;
 
   os << "Public key bits:" << endl;
-  os << toBase64(key_.getKeyDer().buf(), key_.getKeyDer().size(), true);
+  os << toBase64(getPublicKeyDer().buf(), getPublicKeyDer().size(), true);
 }
 
 void
