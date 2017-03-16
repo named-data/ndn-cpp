@@ -55,7 +55,7 @@ bool
 Certificate::isTooEarly() const
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  if(now < notBefore_)
+  if(now < getNotBefore())
     return true;
   else
     return false;
@@ -65,7 +65,7 @@ bool
 Certificate::isTooLate() const
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  if(now > notAfter_)
+  if(now > getNotAfter())
     return true;
   else
     return false;
@@ -91,8 +91,8 @@ Certificate::toDer()
 {
   ptr_lib::shared_ptr<DerSequence> root(new DerSequence());
   ptr_lib::shared_ptr<DerSequence> validity(new DerSequence());
-  ptr_lib::shared_ptr<DerGeneralizedTime> notBefore(new DerGeneralizedTime(notBefore_));
-  ptr_lib::shared_ptr<DerGeneralizedTime> notAfter(new DerGeneralizedTime(notAfter_));
+  ptr_lib::shared_ptr<DerGeneralizedTime> notBefore(new DerGeneralizedTime(getNotBefore()));
+  ptr_lib::shared_ptr<DerGeneralizedTime> notAfter(new DerGeneralizedTime(getNotAfter()));
 
   validity->addChild(notBefore);
   validity->addChild(notAfter);
@@ -177,8 +177,8 @@ Certificate::printCertificate(ostream& os) const
   os << "Certificate name:" << endl;
   os << "  " << getName() << endl;
   os << "Validity:" << endl;
-  os << "  NotBefore: " << DerGeneralizedTime::toIsoString(notBefore_) << endl;
-  os << "  NotAfter: "  << DerGeneralizedTime::toIsoString(notAfter_)  << endl;
+  os << "  NotBefore: " << DerGeneralizedTime::toIsoString(getNotBefore()) << endl;
+  os << "  NotAfter: "  << DerGeneralizedTime::toIsoString(getNotAfter())  << endl;
 
   os << "Subject Description:" << endl;
   vector<CertificateSubjectDescription>::const_iterator it = subjectDescriptionList_.begin();
