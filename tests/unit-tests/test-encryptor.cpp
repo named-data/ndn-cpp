@@ -149,15 +149,15 @@ public:
 class TestEncryptor : public ::testing::Test {
 public:
   TestEncryptor() {
-    encryptorAesTestInputs.push_back(make_shared<TestDataAesEcb>());
-    encryptorAesTestInputs.push_back(make_shared<TestDataAesCbc>());
+    encryptorAesTestInputs.push_back(ptr_lib::make_shared<TestDataAesEcb>());
+    encryptorAesTestInputs.push_back(ptr_lib::make_shared<TestDataAesCbc>());
 
-    encryptorRsaTestInputs.push_back(make_shared<TestDataRsaOaep>());
-    encryptorRsaTestInputs.push_back(make_shared<TestDataRsaPkcs>());
+    encryptorRsaTestInputs.push_back(ptr_lib::make_shared<TestDataRsaOaep>());
+    encryptorRsaTestInputs.push_back(ptr_lib::make_shared<TestDataRsaPkcs>());
   }
 
-  vector<shared_ptr<SymmetricEncryptInput> > encryptorAesTestInputs;
-  vector<shared_ptr<AsymmetricEncryptInput> > encryptorRsaTestInputs;
+  vector<ptr_lib::shared_ptr<SymmetricEncryptInput> > encryptorAesTestInputs;
+  vector<ptr_lib::shared_ptr<AsymmetricEncryptInput> > encryptorRsaTestInputs;
 };
 
 TEST_F(TestEncryptor, ContentSymmetricEncrypt)
