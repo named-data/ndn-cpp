@@ -47,7 +47,11 @@ public:
    * effectively the stale content will not be removed from the cache.
    */
   MemoryContentCache
-    (Face* face, Milliseconds cleanupIntervalMilliseconds = 1000.0);
+    (Face* face, Milliseconds cleanupIntervalMilliseconds = 1000.0)
+  : impl_(new Impl(face, cleanupIntervalMilliseconds))
+  {
+    impl_->initialize();
+  }
 
   /**
    * A PendingInterest holds an interest which onInterest received but could
@@ -189,12 +193,9 @@ public:
      const ForwardingFlags& flags = ForwardingFlags(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
-    onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
-    uint64_t registeredPrefixId = face_->registerPrefix
-      (prefix, func_lib::ref(*this), onRegisterFailed, onRegisterSuccess, flags,
+    impl_->registerPrefix
+      (prefix, onRegisterFailed, onRegisterSuccess, onDataNotFound, flags,
        wireFormat);
-    // Remember the registeredPrefixId so unregisterAll can remove it.
-    registeredPrefixIdList_.push_back(registeredPrefixId);
   }
 
   /**
@@ -224,11 +225,7 @@ public:
     (const InterestFilter& filter,
      const OnInterestCallback& onDataNotFound = OnInterestCallback())
   {
-    onDataNotFoundForPrefix_[filter.getPrefix().toUri()] = onDataNotFound;
-    uint64_t interestFilterId = face_->setInterestFilter
-      (filter, func_lib::ref(*this));
-    // Remember the interestFilterId so unregisterAll can remove it.
-    interestFilterIdList_.push_back(interestFilterId);
+    impl_->setInterestFilter(filter, onDataNotFound);
   }
 
   /**
@@ -256,11 +253,7 @@ public:
     (const Name& prefix,
      const OnInterestCallback& onDataNotFound = OnInterestCallback())
   {
-    onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
-    uint64_t interestFilterId = face_->setInterestFilter
-      (prefix, func_lib::ref(*this));
-    // Remember the interestFilterId so unregisterAll can remove it.
-    interestFilterIdList_.push_back(interestFilterId);
+    impl_->setInterestFilter(prefix, onDataNotFound);
   }
 
   /**
@@ -271,7 +264,7 @@ public:
    * your application is still running.
    */
   void
-  unregisterAll();
+  unregisterAll() { impl_->unregisterAll(); }
 
   /**
    * Add the Data packet to the cache so that it is available to use to
@@ -290,7 +283,7 @@ public:
    * fields from the object.
    */
   void
-  add(const Data& data);
+  add(const Data& data) { impl_->add(data); }
 
   /**
    * Store an interest from an OnInterest callback in the internal pending
@@ -306,7 +299,10 @@ public:
    */
   void
   storePendingInterest
-    (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
+    (const ptr_lib::shared_ptr<const Interest>& interest, Face& face)
+  {
+    impl_->storePendingInterest(interest, face);
+  }
 
   /**
    * Return a callback to use for onDataNotFound in registerPrefix which simply
@@ -316,10 +312,7 @@ public:
    * @return A callback to use for onDataNotFound in registerPrefix().
    */
   const OnInterestCallback&
-  getStorePendingInterest()
-  {
-    return storePendingInterestCallback_;
-  }
+  getStorePendingInterest() { return impl_->getStorePendingInterest(); }
 
   /**
    * Remove timed-out pending interests, then for each pending interest which
@@ -335,135 +328,196 @@ public:
   void
   getPendingInterestsForName
     (const Name& name,
-     std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
-
-  /**
-   * This is the OnInterest callback which is called when the library receives
-   * an interest whose name has the prefix given to registerPrefix. First check
-   * if cleanupIntervalMilliseconds milliseconds have passed and remove stale
-   * content from the cache. Then search the cache for the Data packet, matching
-   * any interest selectors including ChildSelector, and send the Data packet
-   * to the transport. If no matching Data packet is in the cache, call
-   * the callback in onDataNotFoundForPrefix_ (if defined).
-   */
-  void
-  operator()
-    (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
-     uint64_t interestFilterId,
-     const ptr_lib::shared_ptr<const InterestFilter>& filter);
+     std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests)
+  {
+    impl_->getPendingInterestsForName(name, pendingInterests);
+  }
 
 private:
   /**
-   * Content is a private class to hold the name and encoding for each entry
-   * in the cache. This base class is for a Data packet without a
-   * FreshnessPeriod.
+   * MemoryContentCache::Impl does the work of MemoryContentCache. It is a
+   * separate class so that MemoryContentCache can create an instance in a
+   * shared_ptr to use in callbacks.
    */
-  class Content {
+  class Impl : public ptr_lib::enable_shared_from_this<Impl> {
   public:
     /**
-     * Create a new Content entry to hold data's name and wire encoding.
-     * @param data The Data packet whose name and wire encoding are copied.
+     * Create a new Impl, which should belong to a shared_ptr. Then you must
+     * call initialize().  See the MemoryContentCache constructor for parameter
+     * documentation.
      */
-    Content(const Data& data)
-    // wireEncode returns the cached encoding if available.
-    : name_(data.getName()), dataEncoding_(data.wireEncode())
-    {}
+    Impl(Face* face, Milliseconds cleanupIntervalMilliseconds);
 
-    const Name&
-    getName() const { return name_; }
+    /**
+     * Complete the work of the constructor. This is needed because we can't
+     * call shared_from_this() in the constructor.
+     */
+    void
+    initialize();
 
-    const Blob&
-    getDataEncoding() const { return dataEncoding_; }
+    void
+    registerPrefix
+      (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
+       const OnRegisterSuccess& onRegisterSuccess,
+       const OnInterestCallback& onDataNotFound,
+       const ForwardingFlags& flags, WireFormat& wireFormat);
+
+    void
+    setInterestFilter
+      (const InterestFilter& filter, const OnInterestCallback& onDataNotFound);
+
+    void
+    setInterestFilter
+      (const Name& prefix, const OnInterestCallback& onDataNotFound);
+
+    void
+    unregisterAll();
+
+    void
+    add(const Data& data);
+
+    void
+    storePendingInterest
+      (const ptr_lib::shared_ptr<const Interest>& interest, Face& face);
+
+    const OnInterestCallback&
+    getStorePendingInterest() { return storePendingInterestCallback_; }
+
+    void
+    getPendingInterestsForName
+      (const Name& name,
+       std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
+
+    /**
+     * This is the OnInterestCallback which is called when the library receives
+     * an interest whose name has the prefix given to registerPrefix. First
+     * check if cleanupIntervalMilliseconds milliseconds have passed and remove
+     * stale content from the cache. Then search the cache for the Data packet,
+     * matching any interest selectors including ChildSelector, and send the
+     * Data packet to the transport. If no matching Data packet is in the cache,
+     * call the callback in onDataNotFoundForPrefix_ (if defined).
+     */
+    void
+    onInterest
+      (const ptr_lib::shared_ptr<const Name>& prefix,
+       const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+       uint64_t interestFilterId,
+       const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
   private:
-    Name name_;
-    Blob dataEncoding_;
-  };
-
-  /**
-   * StaleTimeContent extends Content to include the staleTimeMilliseconds
-   * for when this entry should be cleaned up from the cache.
-   */
-  class StaleTimeContent : public Content {
-  public:
     /**
-     * Create a new StaleTimeContent to hold data's name and wire encoding
-     * as well as the staleTimeMilliseconds which is now plus
-     * data.getMetaInfo().getFreshnessPeriod().
-     * @param data The Data packet whose name and wire encoding are copied.
+     * Content is a private class to hold the name and encoding for each entry
+     * in the cache. This base class is for a Data packet without a
+     * FreshnessPeriod.
      */
-    StaleTimeContent(const Data& data);
-
-    /**
-     * Check if this content is stale.
-     * @param nowMilliseconds The current time in milliseconds from
-     * ndn_getNowMilliseconds.
-     * @return True if this content is stale, otherwise false.
-     */
-    bool
-    isStale(MillisecondsSince1970 nowMilliseconds) const
-    {
-      return staleTimeMilliseconds_ <= nowMilliseconds;
-    }
-
-    /**
-     * Compare shared_ptrs to Content based only on staleTimeMilliseconds_.
-     */
-    class Compare {
+    class Content {
     public:
-      bool
-      operator()
-        (const ptr_lib::shared_ptr<const StaleTimeContent>& x,
-         const ptr_lib::shared_ptr<const StaleTimeContent>& y) const
-      {
-        return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_;
-      }
+      /**
+       * Create a new Content entry to hold data's name and wire encoding.
+       * @param data The Data packet whose name and wire encoding are copied.
+       */
+      Content(const Data& data)
+      // wireEncode returns the cached encoding if available.
+      : name_(data.getName()), dataEncoding_(data.wireEncode())
+      {}
+
+      const Name&
+      getName() const { return name_; }
+
+      const Blob&
+      getDataEncoding() const { return dataEncoding_; }
+
+    private:
+      Name name_;
+      Blob dataEncoding_;
     };
 
-  private:
-    MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content
-      becomse stale in milliseconds according to ndn_getNowMilliseconds */
+    /**
+     * StaleTimeContent extends Content to include the staleTimeMilliseconds
+     * for when this entry should be cleaned up from the cache.
+     */
+    class StaleTimeContent : public Content {
+    public:
+      /**
+       * Create a new StaleTimeContent to hold data's name and wire encoding
+       * as well as the staleTimeMilliseconds which is now plus
+       * data.getMetaInfo().getFreshnessPeriod().
+       * @param data The Data packet whose name and wire encoding are copied.
+       */
+      StaleTimeContent(const Data& data);
+
+      /**
+       * Check if this content is stale.
+       * @param nowMilliseconds The current time in milliseconds from
+       * ndn_getNowMilliseconds.
+       * @return True if this content is stale, otherwise false.
+       */
+      bool
+      isStale(MillisecondsSince1970 nowMilliseconds) const
+      {
+        return staleTimeMilliseconds_ <= nowMilliseconds;
+      }
+
+      /**
+       * Compare shared_ptrs to Content based only on staleTimeMilliseconds_.
+       */
+      class Compare {
+      public:
+        bool
+        operator()
+          (const ptr_lib::shared_ptr<const StaleTimeContent>& x,
+           const ptr_lib::shared_ptr<const StaleTimeContent>& y) const
+        {
+          return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_;
+        }
+      };
+
+    private:
+      MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content
+        becomse stale in milliseconds according to ndn_getNowMilliseconds */
+    };
+
+    /**
+     * Check if now is greater than nextCleanupTime_ and, if so, remove stale
+     * content from staleTimeCache_ and reset nextCleanupTime_ based on
+     * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
+     * staleTimeCache_, the check for stale data is quick and does not require
+     * searching the entire staleTimeCache_.
+     */
+    void
+    doCleanup();
+
+    /**
+     * This is a private method to return for setting storePendingInterestCallback_.
+     * We need a separate method because the arguments are different from the main
+     * storePendingInterest.
+     */
+    void
+    storePendingInterestCallback
+      (const ptr_lib::shared_ptr<const Name>& prefix,
+       const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
+       uint64_t interestFilterId,
+       const ptr_lib::shared_ptr<const InterestFilter>& filter)
+    {
+      storePendingInterest(interest, face);
+    }
+
+    Face* face_;
+    Milliseconds cleanupIntervalMilliseconds_;
+    MillisecondsSince1970 nextCleanupTime_;
+    std::map<std::string, OnInterestCallback> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
+    std::vector<uint64_t> interestFilterIdList_;
+    std::vector<uint64_t> registeredPrefixIdList_;
+    std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
+    // Use a deque so we can efficiently remove from the front.
+    std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
+    StaleTimeContent::Compare contentCompare_;
+    Name::Component emptyComponent_;
+    std::vector<ptr_lib::shared_ptr<const PendingInterest> > pendingInterestTable_;
+    OnInterestCallback storePendingInterestCallback_;
   };
 
-  /**
-   * Check if now is greater than nextCleanupTime_ and, if so, remove stale
-   * content from staleTimeCache_ and reset nextCleanupTime_ based on
-   * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
-   * staleTimeCache_, the check for stale data is quick and does not require
-   * searching the entire staleTimeCache_.
-   */
-  void
-  doCleanup();
-
-  /**
-   * This is a private method to return for setting storePendingInterestCallback_.
-   * We need a separate method because the arguments are different from the main
-   * storePendingInterest.
-   */
-  void
-  storePendingInterestCallback
-    (const ptr_lib::shared_ptr<const Name>& prefix,
-     const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
-     uint64_t interestFilterId,
-     const ptr_lib::shared_ptr<const InterestFilter>& filter)
-  {
-    storePendingInterest(interest, face);
-  }
-
-  Face* face_;
-  Milliseconds cleanupIntervalMilliseconds_;
-  MillisecondsSince1970 nextCleanupTime_;
-  std::map<std::string, OnInterestCallback> onDataNotFoundForPrefix_; /**< The map key is the prefix.toUri() */
-  std::vector<uint64_t> interestFilterIdList_;
-  std::vector<uint64_t> registeredPrefixIdList_;
-  std::vector<ptr_lib::shared_ptr<const Content> > noStaleTimeCache_;
-  // Use a deque so we can efficiently remove from the front.
-  std::deque<ptr_lib::shared_ptr<const StaleTimeContent> > staleTimeCache_;
-  StaleTimeContent::Compare contentCompare_;
-  Name::Component emptyComponent_;
-  std::vector<ptr_lib::shared_ptr<const PendingInterest> > pendingInterestTable_;
-  OnInterestCallback storePendingInterestCallback_;
+  ndn::ptr_lib::shared_ptr<Impl> impl_;
 };
 
 }

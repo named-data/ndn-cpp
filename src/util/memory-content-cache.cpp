@@ -31,19 +31,63 @@ INIT_LOGGER("ndn.MemoryContentCache");
 
 namespace ndn {
 
-MemoryContentCache::MemoryContentCache
+MemoryContentCache::Impl::Impl
   (Face* face, Milliseconds cleanupIntervalMilliseconds)
 : face_(face), cleanupIntervalMilliseconds_(cleanupIntervalMilliseconds),
-  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds),
-  // We don't expect this callback to be stored outside of this object, so
-  // don't worry about using shared_from_this().
-  storePendingInterestCallback_(bind
-    (&MemoryContentCache::storePendingInterestCallback, this, _1, _2, _3, _4, _5))
+  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds)
 {
 }
 
 void
-MemoryContentCache::unregisterAll()
+MemoryContentCache::Impl::initialize()
+{
+  storePendingInterestCallback_ = bind
+    (&MemoryContentCache::Impl::storePendingInterestCallback, shared_from_this(),
+     _1, _2, _3, _4, _5);
+}
+
+void
+MemoryContentCache::Impl::registerPrefix
+  (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
+   const OnRegisterSuccess& onRegisterSuccess,
+   const OnInterestCallback& onDataNotFound,
+   const ForwardingFlags& flags, WireFormat& wireFormat)
+{
+  onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
+  uint64_t registeredPrefixId = face_->registerPrefix
+    (prefix, 
+     bind(&MemoryContentCache::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
+     onRegisterFailed, onRegisterSuccess, flags, wireFormat);
+  // Remember the registeredPrefixId so unregisterAll can remove it.
+  registeredPrefixIdList_.push_back(registeredPrefixId);
+}
+
+void
+MemoryContentCache::Impl::setInterestFilter
+  (const InterestFilter& filter, const OnInterestCallback& onDataNotFound)
+{
+  onDataNotFoundForPrefix_[filter.getPrefix().toUri()] = onDataNotFound;
+  uint64_t interestFilterId = face_->setInterestFilter
+    (filter,
+     bind(&MemoryContentCache::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
+  // Remember the interestFilterId so unregisterAll can remove it.
+  interestFilterIdList_.push_back(interestFilterId);
+}
+
+void
+MemoryContentCache::Impl::setInterestFilter
+  (const Name& prefix, const OnInterestCallback& onDataNotFound)
+{
+  onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
+  uint64_t interestFilterId = face_->setInterestFilter
+    (prefix,
+     bind(&MemoryContentCache::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5));
+  // Remember the interestFilterId so unregisterAll can remove it.
+  interestFilterIdList_.push_back(interestFilterId);
+}
+
+void
+MemoryContentCache::Impl::unregisterAll()
 {
   for (size_t i = 0; i < interestFilterIdList_.size(); ++i)
     face_->unsetInterestFilter(interestFilterIdList_[i]);
@@ -58,7 +102,7 @@ MemoryContentCache::unregisterAll()
 }
 
 void
-MemoryContentCache::add(const Data& data)
+MemoryContentCache::Impl::add(const Data& data)
 {
   doCleanup();
 
@@ -102,7 +146,7 @@ MemoryContentCache::add(const Data& data)
 }
 
 void
-MemoryContentCache::storePendingInterest
+MemoryContentCache::Impl::storePendingInterest
   (const ptr_lib::shared_ptr<const Interest>& interest, Face& face)
 {
   pendingInterestTable_.push_back(ptr_lib::shared_ptr<PendingInterest>
@@ -110,7 +154,7 @@ MemoryContentCache::storePendingInterest
 }
 
 void
-MemoryContentCache::getPendingInterestsForName
+MemoryContentCache::Impl::getPendingInterestsForName
   (const Name& name,
    vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests)
 {
@@ -131,7 +175,7 @@ MemoryContentCache::getPendingInterestsForName
 }
 
 void
-MemoryContentCache::operator()
+MemoryContentCache::Impl::onInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
    const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
    uint64_t interestFilterId,
@@ -211,7 +255,7 @@ MemoryContentCache::operator()
 }
 
 void
-MemoryContentCache::doCleanup()
+MemoryContentCache::Impl::doCleanup()
 {
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
   if (now >= nextCleanupTime_) {
@@ -224,7 +268,7 @@ MemoryContentCache::doCleanup()
   }
 }
 
-MemoryContentCache::StaleTimeContent::StaleTimeContent(const Data& data)
+MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent(const Data& data)
 // wireEncode returns the cached encoding if available.
 : Content(data)
 {
