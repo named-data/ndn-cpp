@@ -36,6 +36,7 @@
 namespace ndn { namespace ptr_lib = std; }
 #elif NDN_CPP_HAVE_BOOST_SHARED_PTR && NDN_CPP_WITH_BOOST_SHARED_PTR
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/enable_shared_from_this.hpp>
 namespace ndn { namespace ptr_lib = boost; }
@@ -62,6 +63,7 @@ cd ndnboost
 (unset LANG; find . -type f -exec sed -i '' 's/ mpl_/ ndnboost_mpl_/g' {} +)
  */
 #include <ndnboost/shared_ptr.hpp>
+#include <ndnboost/weak_ptr.hpp>
 #include <ndnboost/make_shared.hpp>
 #include <ndnboost/enable_shared_from_this.hpp>
 namespace ndn { namespace ptr_lib = ndnboost; }
