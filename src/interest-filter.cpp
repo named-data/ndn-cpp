@@ -20,7 +20,7 @@
  */
 
 #include <stdexcept>
-#include "util/ndn-regex-matcher.hpp"
+#include "util/regex/ndn-regex-top-matcher.hpp"
 #include <ndn-cpp/interest-filter.hpp>
 
 using namespace std;
@@ -28,7 +28,7 @@ using namespace std;
 namespace ndn {
 
 // Only compile these constructors if we set NDN_CPP_HAVE_REGEX_LIB in
-// ndn-regex-matcher.hpp.
+// ndn-regex-matcher-base.hpp.
 #if NDN_CPP_HAVE_REGEX_LIB
 
 InterestFilter::InterestFilter(const Name& prefix, const string& regexFilter)
@@ -82,8 +82,8 @@ InterestFilter::doesMatch(const Name& name) const
     if (!prefix_.match(name))
       return false;
 
-    return regex_lib::sregex_iterator() != NdnRegexMatcher
-      (regexFilterPattern_, name.getSubName(prefix_.size())).iterator;
+    return NdnRegexTopMatcher(regexFilterPattern_).match
+      (name.getSubName(prefix_.size()));
 #else
     // We should not reach this point because the constructors for regexFilter
     // don't compile.

@@ -170,7 +170,7 @@ public:
 private:
   /**
    * If regexFilter doesn't already have them, add ^ to the beginning and $ to
-   * the end since these are required by NdnRegexMatcher.match.
+   * the end since these are required by NdnRegexTopMatcher.
    * @param regexFilter The regex filter.
    * @return The regex pattern with ^ and $.
    */
