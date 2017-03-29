@@ -37,6 +37,7 @@
   static const size_t NDN_REGEXP_MARK_COUNT_CORRECTION = 0;
 #elif defined(NDN_CPP_HAVE_BOOST_REGEX)
   #include <boost/regex.hpp>
+  #include <boost/version.hpp>
   namespace ndn { namespace regex_lib = boost; }
   #define NDN_CPP_HAVE_REGEX_LIB 1
 
