@@ -21,8 +21,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../../util/ndn-regex-matcher.hpp"
-// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher.hpp.
+#include "../../util/regex/ndn-regex-top-matcher.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
 #if NDN_CPP_HAVE_REGEX_LIB
 
 #include <dirent.h>
@@ -489,10 +489,10 @@ ConfigPolicyManager::checkSignatureMatch
     // This just means the data/interest name has the signing identity as a prefix.
     // That means everything before "ksk-?" in the key name.
     string identityRegex = "^([^<KEY>]*)<KEY>(<>*)<ksk-.+><ID-CERT>";
-    NdnRegexMatcher identityMatch(identityRegex, signatureName);
-    if (identityMatch.iterator != sregex_iterator()) {
-      Name identityPrefix = Name(identityMatch.iterator->str(1)).append
-        (Name(identityMatch.iterator->str(2)));
+    NdnRegexTopMatcher identityMatch(identityRegex);
+    if (identityMatch.match(signatureName)) {
+      Name identityPrefix = identityMatch.expand("\\1")
+        .append(identityMatch.expand("\\2"));
       if (matchesRelation(objectName, identityPrefix, "is-prefix-of"))
         return true;
       else {
@@ -528,7 +528,7 @@ ConfigPolicyManager::checkSignatureMatch
     // Is this a simple regex?
     const string* keyRegex = keyLocatorInfo.getFirstValue("regex");
     if (keyRegex) {
-      if (NdnRegexMatcher(*keyRegex, signatureName).iterator != sregex_iterator())
+      if (NdnRegexTopMatcher(*keyRegex).match(signatureName))
         return true;
       else {
         failureReason = "The custom signatureName \"" + signatureName.toUri() +
@@ -548,32 +548,30 @@ ConfigPolicyManager::checkSignatureMatch
       const string* nameExpansion = hyperRelation.getFirstValue("p-expand");
       const string* relationType = hyperRelation.getFirstValue("h-relation");
       if (keyRegex && keyExpansion && nameRegex && nameExpansion && relationType) {
-        NdnRegexMatcher keyMatch(*keyRegex, signatureName);
-        if (keyMatch.iterator->size() == 0) {
+        NdnRegexTopMatcher keyMatch(*keyRegex);
+        if (!keyMatch.match(signatureName)) {
           failureReason = "The custom hyper-relation signatureName \"" +
             signatureName.toUri() + "\" does not match the keyRegex \"" +
             *keyRegex + "\"";
           return false;
         }
-        // format_sed will substitute with \1 instead of $1.
-        string keyMatchPrefix = keyMatch.iterator->format(*keyExpansion, regex_constants::format_sed);
+        Name keyMatchPrefix = keyMatch.expand(*keyExpansion);
 
-        NdnRegexMatcher nameMatch(*nameRegex, objectName);
-        if (nameMatch.iterator->size() == 0) {
+        NdnRegexTopMatcher nameMatch(*nameRegex);
+        if (!nameMatch.match(objectName)) {
           failureReason = "The custom hyper-relation objectName \"" +
             objectName.toUri() + "\" does not match the nameRegex \"" +
             *nameRegex + "\"";
           return false;
         }
-        string nameMatchStr = nameMatch.iterator->format(*nameExpansion, regex_constants::format_sed);
+        Name nameMatchExpansion = nameMatch.expand(*nameExpansion);
 
-        if (matchesRelation
-            (Name(nameMatchStr), Name(keyMatchPrefix), *relationType))
+        if (matchesRelation(nameMatchExpansion, keyMatchPrefix, *relationType))
           return true;
         else {
           failureReason = "The custom hyper-relation nameMatch \"" +
-            nameMatchStr + "\" does not match the keyMatchPrefix \"" +
-            keyMatchPrefix + "\" using relation " + *relationType;
+            nameMatchExpansion.toUri() + "\" does not match the keyMatchPrefix \"" +
+            keyMatchPrefix.toUri() + "\" using relation " + *relationType;
           return false;
         }
       }
@@ -639,8 +637,7 @@ ConfigPolicyManager::findMatchingRule
             passed = matchesRelation(objName, matchName, matchRelation);
           }
           else
-            passed = (NdnRegexMatcher(*regexPattern, objName).iterator !=
-                      sregex_iterator());
+            passed = NdnRegexTopMatcher(*regexPattern).match(objName);
 
           if (!passed)
             break;
