@@ -54,6 +54,9 @@
   #define NDN_CPP_HAVE_REGEX_LIB 0
 #endif
 
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include <string>
 #include <ndn-cpp/name.hpp>
 
@@ -141,5 +144,7 @@ operator<<(std::ostream& os, const NdnRegexMatcherBase& regex)
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB
 
 #endif

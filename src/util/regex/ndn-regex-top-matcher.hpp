@@ -25,6 +25,9 @@
 
 #include "ndn-regex-matcher-base.hpp"
 
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 namespace ndn {
 
 class NdnRegexPatternListMatcher;
@@ -70,5 +73,7 @@ private:
 };
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB
 
 #endif

@@ -20,6 +20,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include "ndn-regex-pattern-list-matcher.hpp"
 #include "ndn-regex-backref-matcher.hpp"
 
@@ -49,3 +53,5 @@ NdnRegexBackrefMatcher::compile()
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB

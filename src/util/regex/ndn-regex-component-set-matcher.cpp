@@ -20,6 +20,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include "ndn-regex-component-set-matcher.hpp"
 
 using namespace std;
@@ -159,3 +163,5 @@ NdnRegexComponentSetMatcher::extractComponent(size_t index)
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB
