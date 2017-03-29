@@ -115,6 +115,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
 	bin/unit-tests/test-producer$(EXEEXT) \
 	bin/unit-tests/test-producer-db$(EXEEXT) \
+	bin/unit-tests/test-regex$(EXEEXT) \
 	bin/unit-tests/test-registration-callbacks$(EXEEXT) \
 	bin/unit-tests/test-repetitive-interval$(EXEEXT) \
 	bin/unit-tests/test-rsa-algorithm$(EXEEXT) \
@@ -347,7 +348,16 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/command-interest-generator.lo src/util/config-file.lo \
 	src/util/dynamic-uint8-vector.lo \
 	src/util/exponential-re-express.lo src/util/logging.lo \
-	src/util/memory-content-cache.lo src/util/ndn-regex-matcher.lo \
+	src/util/memory-content-cache.lo \
+	src/util/regex/ndn-regex-backref-manager.lo \
+	src/util/regex/ndn-regex-backref-matcher.lo \
+	src/util/regex/ndn-regex-component-matcher.lo \
+	src/util/regex/ndn-regex-component-set-matcher.lo \
+	src/util/regex/ndn-regex-matcher-base.lo \
+	src/util/regex/ndn-regex-pattern-list-matcher.lo \
+	src/util/regex/ndn-regex-pseudo-matcher.lo \
+	src/util/regex/ndn-regex-repeat-matcher.lo \
+	src/util/regex/ndn-regex-top-matcher.lo \
 	src/util/segment-fetcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
@@ -553,6 +563,11 @@ am_bin_unit_tests_test_producer_db_OBJECTS = tests/unit-tests/bin_unit_tests_tes
 bin_unit_tests_test_producer_db_OBJECTS =  \
 	$(am_bin_unit_tests_test_producer_db_OBJECTS)
 bin_unit_tests_test_producer_db_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_regex_OBJECTS = tests/unit-tests/bin_unit_tests_test_regex-test-regex.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.$(OBJEXT)
+bin_unit_tests_test_regex_OBJECTS =  \
+	$(am_bin_unit_tests_test_regex_OBJECTS)
+bin_unit_tests_test_regex_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_registration_callbacks_OBJECTS = tests/unit-tests/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_registration_callbacks-gtest-all.$(OBJEXT)
 bin_unit_tests_test_registration_callbacks_OBJECTS =  \
@@ -679,6 +694,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
+	$(bin_unit_tests_test_regex_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
@@ -726,6 +742,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
+	$(bin_unit_tests_test_regex_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
@@ -1525,7 +1542,15 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
-  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
+  src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
+  src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
+  src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
+  src/util/regex/ndn-regex-component-set-matcher.cpp src/util/regex/ndn-regex-component-set-matcher.hpp \
+  src/util/regex/ndn-regex-matcher-base.cpp src/util/regex/ndn-regex-matcher-base.hpp \
+  src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
+  src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
+  src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
   src/util/segment-fetcher.cpp
 
 
@@ -1649,6 +1674,9 @@ bin_unit_tests_test_producer_LDADD = libndn-cpp.la
 bin_unit_tests_test_producer_db_SOURCES = tests/unit-tests/test-producer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_producer_db_LDADD = libndn-cpp.la
+bin_unit_tests_test_regex_SOURCES = tests/unit-tests/test-regex.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_regex_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_regex_LDADD = libndn-cpp.la
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_registration_callbacks_LDADD = libndn-cpp.la
@@ -2289,8 +2317,39 @@ src/util/logging.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/memory-content-cache.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
-src/util/ndn-regex-matcher.lo: src/util/$(am__dirstamp) \
-	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/$(am__dirstamp):
+	@$(MKDIR_P) src/util/regex
+	@: > src/util/regex/$(am__dirstamp)
+src/util/regex/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/util/regex/$(DEPDIR)
+	@: > src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-backref-manager.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-backref-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-component-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-component-set-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-matcher-base.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-pattern-list-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-pseudo-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-repeat-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
+src/util/regex/ndn-regex-top-matcher.lo:  \
+	src/util/regex/$(am__dirstamp) \
+	src/util/regex/$(DEPDIR)/$(am__dirstamp)
 src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 
@@ -2700,6 +2759,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.$(
 bin/unit-tests/test-producer-db$(EXEEXT): $(bin_unit_tests_test_producer_db_OBJECTS) $(bin_unit_tests_test_producer_db_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_producer_db_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-producer-db$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_producer_db_OBJECTS) $(bin_unit_tests_test_producer_db_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_regex-test-regex.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-regex$(EXEEXT): $(bin_unit_tests_test_regex_OBJECTS) $(bin_unit_tests_test_regex_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_regex_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-regex$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_regex_OBJECTS) $(bin_unit_tests_test_regex_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2826,6 +2895,8 @@ mostlyclean-compile:
 	-rm -f src/transport/*.lo
 	-rm -f src/util/*.$(OBJEXT)
 	-rm -f src/util/*.lo
+	-rm -f src/util/regex/*.$(OBJEXT)
+	-rm -f src/util/regex/*.lo
 	-rm -f tests/unit-tests/*.$(OBJEXT)
 	-rm -f tools/usersync/*.$(OBJEXT)
 	-rm -f tools/usersync/*.lo
@@ -2856,6 +2927,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po@am__quote@
@@ -3045,8 +3117,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/exponential-re-express.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/ndn-regex-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-component-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-component-set-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-matcher-base.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-pattern-list-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-pseudo-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-repeat-matcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-top-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po@am__quote@
@@ -3069,6 +3149,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po@am__quote@
@@ -3743,6 +3824,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.ob
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_regex-test-regex.o: tests/unit-tests/test-regex.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_regex-test-regex.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo -c -o tests/unit-tests/bin_unit_tests_test_regex-test-regex.o `test -f 'tests/unit-tests/test-regex.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-regex.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-regex.cpp' object='tests/unit-tests/bin_unit_tests_test_regex-test-regex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_regex-test-regex.o `test -f 'tests/unit-tests/test-regex.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-regex.cpp
+
+tests/unit-tests/bin_unit_tests_test_regex-test-regex.obj: tests/unit-tests/test-regex.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_regex-test-regex.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo -c -o tests/unit-tests/bin_unit_tests_test_regex-test-regex.obj `if test -f 'tests/unit-tests/test-regex.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-regex.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-regex.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-regex.cpp' object='tests/unit-tests/bin_unit_tests_test_regex-test-regex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_regex-test-regex.obj `if test -f 'tests/unit-tests/test-regex.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-regex.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-regex.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.o: tests/unit-tests/test-registration-callbacks.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_registration_callbacks_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Tpo -c -o tests/unit-tests/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.o `test -f 'tests/unit-tests/test-registration-callbacks.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-registration-callbacks.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po
@@ -3945,6 +4054,7 @@ clean-libtool:
 	-rm -rf src/sync/.libs src/sync/_libs
 	-rm -rf src/transport/.libs src/transport/_libs
 	-rm -rf src/util/.libs src/util/_libs
+	-rm -rf src/util/regex/.libs src/util/regex/_libs
 	-rm -rf tools/usersync/.libs tools/usersync/_libs
 
 distclean-libtool:
@@ -4372,6 +4482,13 @@ bin/unit-tests/test-producer-db.log: bin/unit-tests/test-producer-db$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-regex.log: bin/unit-tests/test-regex$(EXEEXT)
+	@p='bin/unit-tests/test-regex$(EXEEXT)'; \
+	b='bin/unit-tests/test-regex'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-registration-callbacks.log: bin/unit-tests/test-registration-callbacks$(EXEEXT)
 	@p='bin/unit-tests/test-registration-callbacks$(EXEEXT)'; \
 	b='bin/unit-tests/test-registration-callbacks'; \
@@ -4721,6 +4838,8 @@ distclean-generic:
 	-rm -f src/transport/$(am__dirstamp)
 	-rm -f src/util/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/util/$(am__dirstamp)
+	-rm -f src/util/regex/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/util/regex/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tests/unit-tests/$(am__dirstamp)
 	-rm -f tools/usersync/$(DEPDIR)/$(am__dirstamp)
@@ -4736,7 +4855,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -4784,7 +4903,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

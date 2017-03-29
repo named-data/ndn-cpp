@@ -33,6 +33,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
   bin/unit-tests/test-producer bin/unit-tests/test-producer-db \
+  bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
@@ -380,7 +381,15 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
-  src/util/ndn-regex-matcher.cpp src/util/ndn-regex-matcher.hpp \
+  src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
+  src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
+  src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
+  src/util/regex/ndn-regex-component-set-matcher.cpp src/util/regex/ndn-regex-component-set-matcher.hpp \
+  src/util/regex/ndn-regex-matcher-base.cpp src/util/regex/ndn-regex-matcher-base.hpp \
+  src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
+  src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
+  src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
   src/util/segment-fetcher.cpp
 
 # The ndn-cpp-tools library.
@@ -540,6 +549,10 @@ bin_unit_tests_test_producer_LDADD = libndn-cpp.la
 bin_unit_tests_test_producer_db_SOURCES = tests/unit-tests/test-producer-db.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_db_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_producer_db_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_regex_SOURCES = tests/unit-tests/test-regex.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_regex_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_regex_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
