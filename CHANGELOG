@@ -1,9 +1,13 @@
-Interim changes since NDN-CPP v0.12 (2017-03-22)
+Interim changes since NDN-CPP v0.12 (2017-03-29)
 ------------------------------------------------
 
 Changes
 * https://redmine.named-data.net/issues/4001 In MemoryContentCache, use
   shared_from_this() for callbacks to avoid deallocation errors.
+
+Bug fixes
+* https://redmine.named-data.net/issues/4023 Ported the latest NDN regex code
+  from ndn-cxx which fixes crashes with boost::regex and complex expressions.
 
 NDN-CPP v0.12 (2017-03-16)
 --------------------------
