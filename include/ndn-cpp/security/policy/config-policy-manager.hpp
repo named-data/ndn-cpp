@@ -44,8 +44,8 @@ class IdentityCertificate;
 
 /**
  * A ConfigPolicyManager manages trust according to a configuration file in the
- * Validator Configuration File Format
- * (http://redmine.named-data.net/projects/ndn-cxx/wiki/CommandValidatorConf)
+ * Validator Configuration File Format. See:
+ * http://named-data.net/doc/ndn-cxx/current/tutorials/security-validator-config.html
  *
  * Once a rule is matched, the ConfigPolicyManager looks in the
  * CertificateCache for the IdentityCertificate matching the name in the KeyLocator
