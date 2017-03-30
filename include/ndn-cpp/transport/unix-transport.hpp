@@ -33,7 +33,7 @@ namespace ndn {
 class DynamicUInt8Vector;
 
 /**
- * TcpTransport extends the Transport interface to implement communication over
+ * UnixTransport extends the Transport interface to implement communication over
  * a Unix socket.
  */
 class UnixTransport : public Transport {
