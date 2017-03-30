@@ -29,6 +29,10 @@
 
 namespace ndn {
 
+/**
+ * A TcpTransportLite object is used to send packets and to listen for incoming
+ * packets over a TCP socket. See connect() and processEvents() for more details.
+ */
 class TcpTransportLite : private ndn_TcpTransport {
 public:
   /**

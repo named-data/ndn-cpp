@@ -29,6 +29,10 @@
 
 namespace ndn {
 
+/**
+ * A UdpTransportLite object is used to send packets and to listen for incoming
+ * packets over a UDP socket. See connect() and processEvents() for more details.
+ */
 class UdpTransportLite : private ndn_UdpTransport {
 public:
   /**

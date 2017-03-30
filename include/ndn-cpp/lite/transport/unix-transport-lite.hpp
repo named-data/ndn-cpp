@@ -29,6 +29,11 @@
 
 namespace ndn {
 
+/**
+ * A UnixTransportLite object is used to send packets and to listen for incoming
+ * packets over a Unix socket. See connect() and processEvents() for more
+ * details.
+ */
 class UnixTransportLite : private ndn_UnixTransport {
 public:
   /**
