@@ -32,6 +32,10 @@ namespace ndn {
 
 class DynamicUInt8Vector;
 
+/**
+ * TcpTransport extends the Transport interface to implement communication over
+ * UDP.
+ */
 class UdpTransport : public Transport {
 public:
   /**

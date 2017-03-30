@@ -29,6 +29,10 @@ namespace ndn {
 
 class ElementListener;
 
+/**
+ * A Transport object is used by Face to send packets and to listen for incoming
+ * packets. See connect() and processEvents() for more details.
+ */
 class Transport {
 public:
   /**
