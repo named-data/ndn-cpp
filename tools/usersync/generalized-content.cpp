@@ -67,6 +67,10 @@ GeneralizedContent::publish
       data.getMetaInfo().setFreshnessPeriod(freshnessPeriod);
       data.getMetaInfo().setFinalBlockId(finalBlockId);
       data.setContent(segmentContent);
+      if (signingKeyChain)
+        // TODO: Use a signature manifest. For now, just add a SHA256 digest.
+        signingKeyChain->signWithSha256(data);
+
       contentCache.add(data);
 
       ++segmentNumber;
