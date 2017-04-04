@@ -123,6 +123,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
 noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-chrono-chat$(EXEEXT) bin/test-echo-consumer$(EXEEXT) \
+	bin/test-echo-consumer-lite$(EXEEXT) \
 	bin/test-encode-decode-benchmark$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
@@ -387,6 +388,11 @@ am_bin_test_echo_consumer_OBJECTS =  \
 	examples/test-echo-consumer.$(OBJEXT)
 bin_test_echo_consumer_OBJECTS = $(am_bin_test_echo_consumer_OBJECTS)
 bin_test_echo_consumer_DEPENDENCIES = libndn-cpp.la
+am_bin_test_echo_consumer_lite_OBJECTS =  \
+	examples/test-echo-consumer-lite.$(OBJEXT)
+bin_test_echo_consumer_lite_OBJECTS =  \
+	$(am_bin_test_echo_consumer_lite_OBJECTS)
+bin_test_echo_consumer_lite_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_benchmark_OBJECTS =  \
 	examples/test-encode-decode-benchmark.$(OBJEXT)
 bin_test_encode_decode_benchmark_OBJECTS =  \
@@ -661,6 +667,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_channel_discovery_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
+	$(bin_test_echo_consumer_lite_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
@@ -709,6 +716,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_channel_discovery_SOURCES) \
 	$(bin_test_chrono_chat_SOURCES) \
 	$(bin_test_echo_consumer_SOURCES) \
+	$(bin_test_echo_consumer_lite_SOURCES) \
 	$(bin_test_encode_decode_benchmark_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
@@ -1568,6 +1576,8 @@ bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
 bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
+bin_test_echo_consumer_lite_SOURCES = examples/test-echo-consumer-lite.cpp
+bin_test_echo_consumer_lite_LDADD = libndn-cpp.la
 bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
 bin_test_encode_decode_benchmark_SOURCES = examples/test-encode-decode-benchmark.cpp
@@ -2440,6 +2450,12 @@ examples/test-echo-consumer.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-echo-consumer$(EXEEXT): $(bin_test_echo_consumer_OBJECTS) $(bin_test_echo_consumer_DEPENDENCIES) $(EXTRA_bin_test_echo_consumer_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-echo-consumer$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_echo_consumer_OBJECTS) $(bin_test_echo_consumer_LDADD) $(LIBS)
+examples/test-echo-consumer-lite.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-echo-consumer-lite$(EXEEXT): $(bin_test_echo_consumer_lite_OBJECTS) $(bin_test_echo_consumer_lite_DEPENDENCIES) $(EXTRA_bin_test_echo_consumer_lite_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-echo-consumer-lite$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_echo_consumer_lite_OBJECTS) $(bin_test_echo_consumer_lite_LDADD) $(LIBS)
 examples/test-encode-decode-benchmark.$(OBJEXT):  \
 	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -2948,6 +2964,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rib-entry.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-channel-discovery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-chrono-chat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-echo-consumer-lite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-echo-consumer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@

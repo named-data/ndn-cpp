@@ -39,7 +39,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-verification-rules
 
-noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat bin/test-echo-consumer \
+noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
+  bin/test-echo-consumer bin/test-echo-consumer-lite \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
   bin/test-generalized-content \
@@ -406,6 +407,9 @@ bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 
 bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
 bin_test_chrono_chat_LDADD = libndn-cpp.la
+
+bin_test_echo_consumer_lite_SOURCES = examples/test-echo-consumer-lite.cpp
+bin_test_echo_consumer_lite_LDADD = libndn-cpp.la
 
 bin_test_echo_consumer_SOURCES = examples/test-echo-consumer.cpp
 bin_test_echo_consumer_LDADD = libndn-cpp.la
