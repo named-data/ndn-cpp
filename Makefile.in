@@ -319,6 +319,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/transport/udp-transport-lite.lo \
 	src/lite/transport/unix-transport-lite.lo \
 	src/lite/util/blob-lite.lo src/lite/util/crypto-lite.lo \
+	src/lite/util/dynamic-malloc-uint8-array-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
@@ -1317,6 +1318,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/transport/unix-transport-lite.hpp \
   include/ndn-cpp/lite/util/blob-lite.hpp \
   include/ndn-cpp/lite/util/crypto-lite.hpp \
+  include/ndn-cpp/lite/util/dynamic-malloc-uint8-array-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
@@ -1503,6 +1505,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/transport/unix-transport-lite.cpp \
   src/lite/util/blob-lite.cpp \
   src/lite/util/crypto-lite.cpp \
+  src/lite/util/dynamic-malloc-uint8-array-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
@@ -2174,6 +2177,9 @@ src/lite/util/$(DEPDIR)/$(am__dirstamp):
 src/lite/util/blob-lite.lo: src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/lite/util/crypto-lite.lo: src/lite/util/$(am__dirstamp) \
+	src/lite/util/$(DEPDIR)/$(am__dirstamp)
+src/lite/util/dynamic-malloc-uint8-array-lite.lo:  \
+	src/lite/util/$(am__dirstamp) \
 	src/lite/util/$(DEPDIR)/$(am__dirstamp)
 src/lite/util/dynamic-uint8-array-lite.lo:  \
 	src/lite/util/$(am__dirstamp) \
@@ -3079,6 +3085,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/transport/$(DEPDIR)/unix-transport-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/blob-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/crypto-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-malloc-uint8-array-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
