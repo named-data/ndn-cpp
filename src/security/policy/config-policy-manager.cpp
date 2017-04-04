@@ -299,6 +299,23 @@ ConfigPolicyManager::getCertificateInterest
     return ptr_lib::shared_ptr<Interest>();
   }
 
+  // first see if we can find a rule to match this packet
+  const BoostInfoTree* matchedRule = findMatchingRule(objectName, matchType);
+
+  // No matching rule -> fail.
+  if (!matchedRule) {
+    failureReason = "No matching rule found for " + objectName.toUri();
+    return ptr_lib::shared_ptr<Interest>();
+  }
+
+  // Do a quick check if this is sig-type sha256.
+  const BoostInfoTree& checker = *(*matchedRule)["checker"][0];
+  const string& checkerType = checker["type"][0]->getValue();
+  if (checkerType == "customized" &&
+      checker["sig-type"][0]->getValue() == "sha256")
+    // The signature is a simple DigestSha256 so we don't fetch certificates.
+    return ptr_lib::make_shared<Interest>();
+
   if (!KeyLocator::canGetFromSignature(signature)) {
     // We only support signature types with key locators.
     failureReason = "The signature type does not support a KeyLocator";
@@ -311,15 +328,6 @@ ConfigPolicyManager::getCertificateInterest
   // No key name in KeyLocator -> fail.
   if (signatureName.size() == 0) {
     failureReason = "The signature KeyLocator doesn't have a key name";
-    return ptr_lib::shared_ptr<Interest>();
-  }
-
-  // first see if we can find a rule to match this packet
-  const BoostInfoTree* matchedRule = findMatchingRule(objectName, matchType);
-
-  // No matching rule -> fail.
-  if (!matchedRule) {
-    failureReason = "No matching rule found for " + objectName.toUri();
     return ptr_lib::shared_ptr<Interest>();
   }
 
@@ -771,7 +779,17 @@ ConfigPolicyManager::verify
   (const Signature* signatureInfo, const SignedBlob& signedBlob,
    string& failureReason) const
 {
-  // We have already checked once that there is a key locator.
+  // We have already checked once if there should be a key locator.
+  if (!KeyLocator::canGetFromSignature(signatureInfo)) {
+    // There is no KeyLocator, so assume it is not needed (such as DigestSha256).
+    if (verifySignature(signatureInfo, signedBlob, Blob()))
+      return true;
+    else {
+      failureReason = "The non-KeyLocator signature did not verify";
+      return false;
+    }
+  }
+
   const KeyLocator& keyLocator = KeyLocator::getFromSignature(signatureInfo);
 
   if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME) {
