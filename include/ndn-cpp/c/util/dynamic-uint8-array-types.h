@@ -21,6 +21,8 @@
 #ifndef NDN_DYNAMIC_UINT8_ARRAY_TYPES_H
 #define NDN_DYNAMIC_UINT8_ARRAY_TYPES_H
 
+#include "../common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
