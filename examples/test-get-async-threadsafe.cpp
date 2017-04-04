@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 {
   try {
     boost::asio::io_service ioService;
-    ThreadsafeFace face(ioService, "aleph.ndn.ucla.edu");
+    ThreadsafeFace face(ioService, "memoria.ndn.ucla.edu");
 
     // Counter will stop the ioService after callbacks for all expressInterest.
     Counter counter(ioService, 3);
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 
     // Try to fetch using a known name.
-    Name name2("/ndn/edu/ucla/remap/demo/ndn-js-test/hello.txt/%FDU%8D%9DM");
+    Name name2("/ndn/edu/ucla/remap/demo/ndn-js-test/hello.txt/%FDX%DC5%1F");
     cout << "Express name " << name2.toUri() << endl;
     face.expressInterest(name2, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 

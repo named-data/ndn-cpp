@@ -55,7 +55,7 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    Face face("aleph.ndn.ucla.edu");
+    Face face("memoria.ndn.ucla.edu");
 
     // Counter holds data used by the callbacks.
     Counter counter;
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     face.expressInterest(name1, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 
     // Try to fetch using a known name.
-    Name name2("/ndn/edu/ucla/remap/demo/ndn-js-test/hello.txt/%FDU%8D%9DM");
+    Name name2("/ndn/edu/ucla/remap/demo/ndn-js-test/hello.txt/%FDX%DC5%1F");
     cout << "Express name " << name2.toUri() << endl;
     face.expressInterest(name2, bind(&Counter::onData, &counter, _1, _2), bind(&Counter::onTimeout, &counter, _1));
 
