@@ -30,7 +30,8 @@ namespace ndn {
  * A DynamicMallocUInt8ArrayLite extends DynamicUInt8ArrayLite to use malloc and
  * realloc to resize the array. Note that the destructor frees the memory; if
  * you continue to need the array, you must copy getArray() before this object
- * is destructed.
+ * is destructed. We also disable the copy constructor and assignment operator
+ * because we don't do reference counting of the malloced array.
  * If your lightweight platform doesn't support malloc then don't link to this
  * file, and use DynamicUInt8ArrayLite directly with a fixed-size array.
  */
@@ -57,6 +58,10 @@ private:
    */
   static uint8_t*
   realloc(struct ::ndn_DynamicUInt8Array *self, uint8_t *array, size_t length);
+
+  // Disable the copy constructor and assignment operator.
+  DynamicMallocUInt8ArrayLite(const DynamicMallocUInt8ArrayLite& other);
+  DynamicMallocUInt8ArrayLite& operator=(const DynamicMallocUInt8ArrayLite& other);
 
   uint8_t *mallocArray_;
 };
