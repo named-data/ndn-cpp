@@ -238,13 +238,7 @@ NameLite::append(const uint8_t* value, size_t valueLength)
 ndn_Error
 NameLite::append(const NameLite::Component& component)
 {
-  ndn_Error error;
-  if ((error = ndn_Name_appendComponent(this, 0, 0)))
-    return error;
-
-  ndn_NameComponent_setFromNameComponent
-    (&components[nComponents - 1], &component);
-  return NDN_ERROR_success;
+  return ndn_Name_appendNameComponent(this, &component);
 }
 
 ndn_Error

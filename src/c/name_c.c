@@ -218,6 +218,20 @@ ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t *value, 
   return NDN_ERROR_success;
 }
 
+ndn_Error ndn_Name_appendNameComponent
+  (struct ndn_Name *self, const struct ndn_NameComponent *component)
+{
+  ndn_Error error;
+  // Use ndn_Name_appendComponent which checks for max name components.
+  if ((error = ndn_Name_appendComponent(self, 0, 0)))
+    return error;
+
+  // Copy the whole component including the type.
+  ndn_NameComponent_setFromNameComponent
+    (&self->components[self->nComponents - 1], component);
+  return NDN_ERROR_success;
+}
+
 ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char *value)
 {
   return ndn_Name_appendComponent(self, (const uint8_t *)value, strlen(value));

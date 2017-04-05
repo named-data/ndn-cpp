@@ -500,6 +500,18 @@ int ndn_Name_match(const struct ndn_Name *self, const struct ndn_Name *name);
 ndn_Error ndn_Name_appendComponent(struct ndn_Name *self, const uint8_t* value, size_t valueLength);
 
 /**
+ * Append a component to this name with the bytes in the given component's value
+ * and the component's type.
+ * @param self pointer to the ndn_Name struct.
+ * @param component A Component with the bytes of the component value. This
+ * does not copy the bytes.
+ * @return 0 for success, or an error code if there is no more room in the
+ * components array.
+ */
+ndn_Error ndn_Name_appendNameComponent
+  (struct ndn_Name *self, const struct ndn_NameComponent *component);
+
+/**
  * Append aGENERIC component to this name with the bytes in the given blob.
  * @param self pointer to the ndn_Name struct.
  * @param value An ndn_Blob with the bytes of the component.  This does not copy the bytes.
