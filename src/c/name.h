@@ -512,6 +512,16 @@ ndn_Error ndn_Name_appendNameComponent
   (struct ndn_Name *self, const struct ndn_NameComponent *component);
 
 /**
+ * Append all of the components of the given name to this name, including each
+ * component's type.
+ * @param self A pointer to the ndn_Name struct.
+ * @param name A pointer to the ndn_Name struct with the components to copy.
+ * @return 0 for success, or an error code if there is no more room in the
+ * components array.
+ */
+ndn_Error ndn_Name_appendName(struct ndn_Name *self, const struct ndn_Name *name);
+
+/**
  * Append aGENERIC component to this name with the bytes in the given blob.
  * @param self pointer to the ndn_Name struct.
  * @param value An ndn_Blob with the bytes of the component.  This does not copy the bytes.

@@ -232,6 +232,19 @@ ndn_Error ndn_Name_appendNameComponent
   return NDN_ERROR_success;
 }
 
+ndn_Error ndn_Name_appendName(struct ndn_Name *self, const struct ndn_Name *name)
+{
+  ndn_Error error;
+  size_t i;
+
+  for (i = 0; i < name->nComponents; ++i) {
+    if ((error = ndn_Name_appendNameComponent(self, &name->components[i])))
+      return error;
+  }
+
+  return NDN_ERROR_success;
+}
+
 ndn_Error ndn_Name_appendString(struct ndn_Name *self, const char *value)
 {
   return ndn_Name_appendComponent(self, (const uint8_t *)value, strlen(value));

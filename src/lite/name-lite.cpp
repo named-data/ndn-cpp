@@ -242,6 +242,12 @@ NameLite::append(const NameLite::Component& component)
 }
 
 ndn_Error
+NameLite::append(const NameLite& name)
+{
+  return ndn_Name_appendName(this, &name);
+}
+
+ndn_Error
 NameLite::append(const char *value) { return ndn_Name_appendString(this, value); }
 
 ndn_Error

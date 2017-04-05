@@ -490,6 +490,16 @@ public:
   append(const NameLite::Component& component);
 
   /**
+   * Append all of the components of the given name to this name, including each
+   * component's type.
+   * @param name The NameLite with the components to copy.
+   * @return 0 for success, or an error code if there is no more room in the
+   * components array.
+   */
+  ndn_Error
+  append(const NameLite& name);
+
+  /**
    * Append a GENERIC component to this name with the bytes in raw string value.
    * @param value The null-terminated string, treated as a byte array.  This
    * does not copy the bytes.
