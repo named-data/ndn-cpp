@@ -35,6 +35,14 @@ DynamicMallocUInt8ArrayLite::DynamicMallocUInt8ArrayLite(size_t initialLength)
   setArrayAndLength(mallocArray_, initialLength);
 }
 
+DynamicMallocUInt8ArrayLite::~DynamicMallocUInt8ArrayLite()
+{
+  if (mallocArray_) {
+    ::free(mallocArray_);
+    mallocArray_ = 0;
+  }
+}
+
 uint8_t*
 DynamicMallocUInt8ArrayLite::realloc
   (struct ::ndn_DynamicUInt8Array *self, uint8_t *array, size_t length)

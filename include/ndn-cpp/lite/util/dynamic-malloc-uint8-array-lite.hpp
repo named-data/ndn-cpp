@@ -28,9 +28,11 @@ namespace ndn {
 
 /**
  * A DynamicMallocUInt8ArrayLite extends DynamicUInt8ArrayLite to use malloc and
- * realloc to resize the array. If your lightweight platform doesn't support
- * malloc then don't link to this file, and use DynamicUInt8ArrayLite directly
- * with a fixed-size array.
+ * realloc to resize the array. Note that the destructor frees the memory; if
+ * you continue to need the array, you must copy getArray() before this object
+ * is destructed.
+ * If your lightweight platform doesn't support malloc then don't link to this
+ * file, and use DynamicUInt8ArrayLite directly with a fixed-size array.
  */
 class DynamicMallocUInt8ArrayLite : public DynamicUInt8ArrayLite {
 public:
@@ -39,6 +41,11 @@ public:
    * @param initialLength The initial size of the malloced array. This may be 0.
    */
   DynamicMallocUInt8ArrayLite(size_t initialLength);
+
+  /**
+   * Free the malloced array.
+   */
+  ~DynamicMallocUInt8ArrayLite();
 
 private:
   /**
