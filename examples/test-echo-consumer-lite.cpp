@@ -74,11 +74,7 @@ private:
 
   static void
   onReceivedElementWrapper
-    (ElementListenerLite *self, const uint8_t *element, size_t elementLength)
-  {
-    // Simply call the onReceivedElement method.
-    ((ElementReceiver*)self)->onReceivedElement(element, elementLength);
-  }
+    (ElementListenerLite *self, const uint8_t *element, size_t elementLength);
 };
 
 void
@@ -88,9 +84,11 @@ ElementReceiver::onReceivedElement(const uint8_t *element, size_t elementLength)
     // Not a TLV Data packet.
     return;
 
+  // Reserve space for a large maximum number of name components. If you know
+  // your application requires less, you can use a smaller maximum.
   struct ndn_NameComponent nameComponents[100];
   struct ndn_NameComponent keyNameComponents[100];
-  DataLite dataLite
+  DataLite data
     (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
 
@@ -98,29 +96,37 @@ ElementReceiver::onReceivedElement(const uint8_t *element, size_t elementLength)
   size_t signedPortionEndOffset;
   ndn_Error error;
   if ((error = Tlv0_2WireFormatLite::decodeData
-       (dataLite, element, elementLength, &signedPortionBeginOffset,
+       (data, element, elementLength, &signedPortionBeginOffset,
         &signedPortionEndOffset))) {
     printf("Error decoding data: %s\n", ndn_getErrorString(error));
     return;
   }
 
-  if (!originalInterest_.getName().match(dataLite.getName()))
+  if (!originalInterest_.getName().match(data.getName()))
     // We got a Data packet that is not for us.
     return;
 
   ++callbackCount_;
   printf("Got data packet with name ");
-  for (size_t iComponent = 0; iComponent < dataLite.getName().size(); ++iComponent) {
+  for (size_t iComponent = 0; iComponent < data.getName().size(); ++iComponent) {
     printf("/");
-    const NameLite::Component& component = dataLite.getName().get(iComponent);
+    const NameLite::Component& component = data.getName().get(iComponent);
     for (size_t i = 0; i < component.getValue().size(); ++i)
       printf("%c", (int)component.getValue().buf()[i]);
   }
   printf("\n");
 
-  for (size_t i = 0; i < dataLite.getContent().size(); ++i)
-    printf("%c", (int)dataLite.getContent().buf()[i]);
+  for (size_t i = 0; i < data.getContent().size(); ++i)
+    printf("%c", (int)data.getContent().buf()[i]);
   printf("\n");
+}
+
+void
+ElementReceiver::onReceivedElementWrapper
+  (ElementListenerLite *self, const uint8_t *element, size_t elementLength)
+{
+  // Simply call the onReceivedElement method.
+  ((ElementReceiver*)self)->onReceivedElement(element, elementLength);
 }
 
 ndn_Error
