@@ -488,7 +488,7 @@ sendNfdRegisterPrefix
  * @param privateKey The private key for signing.
  * @param certificateName The name for the KeyLocator.
  * @param signatureBuffer A pointer to the signature output buffer. The caller
- * must provide a buffer large enough to receive the signature bytes base on the
+ * must provide a buffer large enough to receive the signature bytes based on the
  * private key. The caller must provide this buffer so that the pointer in the
  * data object is valid when this function returns.
  * @param transport This calls transport.send.
