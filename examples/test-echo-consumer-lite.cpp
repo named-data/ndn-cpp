@@ -44,12 +44,15 @@ using namespace ndn;
 /**
  * The ElementReceiver class extends ElementListenerLite and has an
  * onReceivedElement to process the incoming Data packet.
- * @param originalInterest The original Interest so that onReceivedElement can
- * check if the incoming Data packet matches. This does not make a copy; the
- * referenced object must remain valid.
  */
 class ElementReceiver : public ElementListenerLite {
 public:
+  /**
+   * Create an ElementReceiver.
+   * @param originalInterest The original Interest so that onReceivedElement can
+   * check if the incoming Data packet matches. This does not make a copy; the
+   * referenced object must remain valid.
+   */
   ElementReceiver(const InterestLite& originalInterest)
   : ElementListenerLite(&onReceivedElementWrapper),
     originalInterest_(originalInterest),
@@ -144,8 +147,8 @@ main(int argc, char** argv)
   InterestLite interest
     (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      0, 0, 0, 0);
-  interest.getName().append((const uint8_t*)"testecho", 8);
-  interest.getName().append((const uint8_t*)word, ::strlen(word));
+  interest.getName().append("testecho");
+  interest.getName().append(word);
   interest.setInterestLifetimeMilliseconds(4000.0);
 
   // Create the transport using a buffer which is large enough to receive an
