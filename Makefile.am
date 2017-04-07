@@ -43,9 +43,9 @@ noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-echo-consumer bin/test-echo-consumer-lite \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
-  bin/test-generalized-content \
-  bin/test-get-async bin/test-get-async-threadsafe bin/test-list-channels \
-  bin/test-list-faces bin/test-list-rib bin/test-publish-async-nfd \
+  bin/test-generalized-content bin/test-get-async bin/test-get-async-threadsafe \
+  bin/test-list-channels bin/test-list-faces bin/test-list-rib \
+  bin/test-publish-async-nfd bin/test-publish-async-nfd-lite \
   bin/test-register-route bin/test-sign-verify-data-hmac \
   bin/analog-reading-consumer bin/basic-insertion bin/watched-insertion
 
@@ -446,6 +446,9 @@ bin_test_list_rib_LDADD = libndn-cpp.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
+
+bin_test_publish_async_nfd_lite_SOURCES = examples/test-publish-async-nfd-lite.cpp
+bin_test_publish_async_nfd_lite_LDADD = libndn-cpp.la
 
 bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.cpp
 bin_analog_reading_consumer_LDADD = libndn-cpp.la
