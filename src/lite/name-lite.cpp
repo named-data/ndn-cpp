@@ -311,4 +311,13 @@ NameLite::appendImplicitSha256Digest(const uint8_t* digest, size_t digestLength)
 ndn_Error
 NameLite::set(const NameLite& other) { return ndn_Name_setFromName(this, &other); }
 
+const NameLite::Component*
+NameLite::pop()
+{
+  if (nComponents <= 0)
+    return 0;
+
+  return &get(--nComponents);
+}
+
 }

@@ -487,7 +487,7 @@ public:
    * components array.
    */
   ndn_Error
-  append(const NameLite::Component& component);
+  append(const Component& component);
 
   /**
    * Append all of the components of the given name to this name, including each
@@ -630,6 +630,14 @@ public:
    */
   ndn_Error
   set(const NameLite& other);
+
+  /**
+   * Remove and return the last name component.
+   * @return A pointer to the last name component that was removed. If size() is
+   * already zero then return a null pointer.
+   */
+  const Component*
+  pop();
 
   /**
    * Downcast the reference to the ndn_Name struct to a NameLite.
