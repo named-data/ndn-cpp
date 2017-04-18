@@ -22,8 +22,7 @@
 
 #include "gtest/gtest.h"
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include <ndn-cpp/security/validity-period.hpp>
-#include <ndn-cpp/security/certificate/certificate.hpp>
+#include <ndn-cpp/security/v2/certificate-v2.hpp>
 #include <ndn-cpp/encrypt/schedule.hpp>
 
 using namespace std;
@@ -157,25 +156,156 @@ class TestCertificate : public ::testing::Test {
 TEST_F(TestCertificate, Constructor)
 {
   // Debug: This should be a Certificate.
-  Data certificate;
+  CertificateV2 certificate;
   certificate.wireDecode(Blob(CERT, sizeof(CERT)));
 
-  // TODO: Finish tests.
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B"),
+            certificate.getName());
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-1416425377094"),
+            certificate.getKeyName());
+  ASSERT_EQ(Name("/ndn/site1"), certificate.getIdentity());
+  ASSERT_EQ(Name::Component("0123"), certificate.getIssuerId());
+  ASSERT_EQ(Name::Component("ksk-1416425377094"), certificate.getKeyId());
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-2516425377094"),
+            KeyLocator::getFromSignature(certificate.getSignature()).getKeyName());
+  ASSERT_EQ(fromIsoString("20150814T223739"),
+            certificate.getValidityPeriod().getNotBefore());
+  ASSERT_EQ(fromIsoString("20150818T223738"),
+            certificate.getValidityPeriod().getNotAfter());
+
+  //BOOST_CHECK_THROW(certificate.getExtension(12345), ndn::SignatureInfo::Error);
+  ASSERT_NO_THROW(certificate.getPublicKey());
+
+  Data data;
+  data.wireDecode(Blob(CERT, sizeof(CERT)));
+  CertificateV2 certificate2(data);
+  ASSERT_EQ(certificate.getName(), certificate2.getName());
+  ASSERT_TRUE(certificate.getPublicKey().equals(certificate2.getPublicKey()));
+}
+
+TEST_F(TestCertificate, Setters)
+{
+  CertificateV2 certificate;
+  certificate.setName("/ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B");
+  certificate.getMetaInfo().setFreshnessPeriod(3600 * 1000.0);
+  certificate.setContent(Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY)));
+  certificate.setSignature(generateFakeSignature());
+
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B"),
+            certificate.getName());
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-1416425377094"), certificate.getKeyName());
+  ASSERT_EQ(Name("/ndn/site1"), certificate.getIdentity());
+  ASSERT_EQ(Name::Component("0123"), certificate.getIssuerId());
+  ASSERT_EQ(Name::Component("ksk-1416425377094"), certificate.getKeyId());
+  ASSERT_EQ(Name("/ndn/site1/KEY/ksk-2516425377094"),
+            KeyLocator::getFromSignature(certificate.getSignature()).getKeyName());
+  ASSERT_EQ(fromIsoString("20141111T050000"),
+            certificate.getValidityPeriod().getNotBefore());
+  ASSERT_EQ(fromIsoString("20141111T060000"),
+            certificate.getValidityPeriod().getNotAfter());
+
+  //BOOST_CHECK_THROW(certificate.getExtension(12345), ndn::SignatureInfo::Error);
+  ASSERT_NO_THROW(certificate.getPublicKey());
 }
 
 TEST_F(TestCertificate, ValidityPeriodChecking)
 {
-  Certificate certificate;
+  CertificateV2 certificate;
   certificate.setName
     (Name("/ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B"));
   certificate.getMetaInfo().setFreshnessPeriod(3600 * 1000.0);
   certificate.setContent(Blob(PUBLIC_KEY, sizeof(PUBLIC_KEY)));
   certificate.setSignature(generateFakeSignature());
 
-  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20141111T050000")));
-  ASSERT_EQ(true,  certificate.isInValidityPeriod(fromIsoString("20141111T060000")));
-  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20141111T045959")));
-  ASSERT_EQ(false, certificate.isInValidityPeriod(fromIsoString("20141111T060001")));
+  ASSERT_EQ(true,  certificate.isValid(fromIsoString("20141111T050000")));
+  ASSERT_EQ(true,  certificate.isValid(fromIsoString("20141111T060000")));
+  ASSERT_EQ(false, certificate.isValid(fromIsoString("20141111T045959")));
+  ASSERT_EQ(false, certificate.isValid(fromIsoString("20141111T060001")));
+}
+
+
+TEST_F(TestCertificate, PrintCertificateInfo)
+{
+  string expectedCertificateInfo =
+"Certificate name:\n\
+  /ndn/site1/KEY/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B\n\
+Validity:\n\
+  NotBefore: 20150814T223739\n\
+  NotAfter: 20150818T223738\n\
+Public key bits:\n\
+MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCeBj5HhbI0N6qFR6wDJIO1nKgF\n\
+OiQe64kBu+mbssMirGjj8GwCzmimxNCnBpCcqhsIHYtDmjNnRG0hoxuImpdeWcQV\n\
+C9ksvVEHYYKtwbjXv5vPfSTCY/OXF+v+YiW6W02Kwnq9Q4qPuPLxxWow01CMyJrf\n\
+7+0153pi6nZ8uwgmxwIBEQ==\n\
+Signature Information:\n\
+  Signature Type: SignatureSha256WithRsa\n\
+  Key Locator: Name=/ndn/site1/KEY/ksk-2516425377094\n";
+
+  CertificateV2 certificate;
+  certificate.wireDecode(Blob(CERT, sizeof(CERT)));
+
+  ostringstream actual;
+  certificate.printCertificate(actual);
+  ASSERT_EQ(expectedCertificateInfo, actual.str());
+}
+
+/**
+ * InvalidCertificateFixture prepares a well-formed certificate. A test case
+ * then modifies one of the fields, and verifies the CertificateV2 class
+ * correctly identifies the certificate as malformed.
+ */
+class InvalidCertificateFixture : public ::testing::Test {
+public:
+  InvalidCertificateFixture()
+  {
+    CertificateV2 certificateBase;
+    certificateBase.wireDecode(Blob(CERT, sizeof(CERT)));
+    // Check no throw.
+    CertificateV2 temp1(certificateBase);
+
+    certificateBase_.reset(new Data(certificateBase));
+    certificateBase_->setSignature(generateFakeSignature());
+
+    // Check no throw.
+    CertificateV2 temp2(*certificateBase_);
+  }
+
+  ptr_lib::shared_ptr<Data> certificateBase_;
+};
+
+TEST_F(InvalidCertificateFixture, InvalidName)
+{
+  Data data(*certificateBase_);
+  data.setName(Name("/ndn/site1/ksk-1416425377094/0123/%FD%00%00%01I%C9%8B"));
+  data.setSignature(generateFakeSignature());
+
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+}
+
+TEST_F(InvalidCertificateFixture, InvalidType)
+{
+  Data data(*certificateBase_);
+  data.getMetaInfo().setType(ndn_ContentType_BLOB);
+  data.setSignature(generateFakeSignature());
+
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+}
+
+TEST_F(InvalidCertificateFixture, EmptyContent)
+{
+  Data data(*certificateBase_);
+  data.setContent(Blob());
+  data.setSignature(generateFakeSignature());
+
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
+
+  CertificateV2 certificate(*certificateBase_);
+  certificate.setContent(Blob());
+  certificate.setSignature(generateFakeSignature());
+  ASSERT_THROW(certificate.getPublicKey(), CertificateV2::Error);
 }
 
 int
