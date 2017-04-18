@@ -350,6 +350,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
+  src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \

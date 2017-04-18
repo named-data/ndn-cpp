@@ -325,6 +325,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
 	src/security/key-chain.lo src/security/security-exception.lo \
+	src/security/validity-period.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
 	src/security/certificate/certificate.lo \
@@ -1527,6 +1528,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/security-exception.cpp \
+  src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \
@@ -2223,6 +2225,8 @@ src/security/$(DEPDIR)/$(am__dirstamp):
 src/security/key-chain.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/security-exception.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/validity-period.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/certificate/$(am__dirstamp):
 	@$(MKDIR_P) src/security/certificate
@@ -3125,6 +3129,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/validity-period.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-subject-description.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate.Plo@am__quote@
