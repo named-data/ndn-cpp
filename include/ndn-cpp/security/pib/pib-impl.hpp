@@ -177,7 +177,7 @@ public:
   /**
    * Get all the key names of the identity with the name identityName. The
    * returned key names can be used to create a KeyContainer. With a key name
-   * and a back end implementation, one can create a Key front end instance.
+   * and a backend implementation, one can create a Key front end instance.
    * @param identityName The name of the identity.
    * @return The set of key names. The Name objects are fresh copies. If the
    * identity does not exist, return an empty set.
