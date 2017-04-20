@@ -556,7 +556,8 @@ bin_unit_tests_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cp
 bin_unit_tests_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
 
-bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_pib_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_pib_impl_LDADD = libndn-cpp.la
 
