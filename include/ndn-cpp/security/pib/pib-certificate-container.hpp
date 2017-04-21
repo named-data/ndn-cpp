@@ -89,14 +89,14 @@ public:
   isConsistent() const;
 
 private:
-  friend class PibKey;
+  friend class PibKeyImpl;
   // Give friend access to the tests.
   friend TestPibCertificateContainer_Basic_Test;
   friend TestPibCertificateContainer_Errors_Test;
 
   /**
    * Create a CertificateContainer for a key with keyName. This constructor
-   * should only be called by PibKey.
+   * should only be called by PibKeyImpl.
    * @param keyName The name of the key, which is copied.
    * @param pibImpl The PIB backend implementation.
    */
