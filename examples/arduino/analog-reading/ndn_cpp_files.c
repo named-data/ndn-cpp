@@ -16,4 +16,5 @@
 #include NDN_CPP_ROOT(pp/src/c/encoding/tlv/tlv-interest.c)
 #include NDN_CPP_ROOT(pp/src/c/util/dynamic-uint8-array.c)
 #include NDN_CPP_ROOT(pp/src/c/util/crypto.c)
+#include NDN_CPP_ROOT(pp/src/c/util/time.c)
 
