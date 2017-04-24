@@ -61,7 +61,7 @@ EncryptKey
 RsaAlgorithm::deriveEncryptKey(const Blob& keyBits)
 {
   // Decode the PKCS #8 private key.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits.buf(), 0);
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits);
   const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
     parsedNode->getChildren();
   const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
@@ -75,7 +75,7 @@ RsaAlgorithm::deriveEncryptKey(const Blob& keyBits)
       ("RsaAlgorithm: The PKCS #8 private key is not RSA_ENCRYPTION");
 
   // Decode the PKCS #1 RSAPrivateKey.
-  parsedNode = DerNode::parse(rsaPrivateKeyDer.buf(), 0);
+  parsedNode = DerNode::parse(rsaPrivateKeyDer);
   const std::vector<ptr_lib::shared_ptr<DerNode> >& rsaPrivateKeyChildren =
     parsedNode->getChildren();
   ptr_lib::shared_ptr<DerNode> modulus = rsaPrivateKeyChildren[1];
@@ -102,7 +102,7 @@ RsaAlgorithm::decrypt
   (const Blob& keyBits, const Blob& encryptedData, const EncryptParams& params)
 {
   // Decode the PKCS #8 private key.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits.buf(), 0);
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits);
   const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
     parsedNode->getChildren();
   const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =

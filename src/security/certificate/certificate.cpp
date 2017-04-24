@@ -129,7 +129,7 @@ Certificate::toDer()
 void
 Certificate::decode()
 {
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(getContent().buf());
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(getContent());
 
   // We need to ensure that there are:
   //   validity (notBefore, notAfter)

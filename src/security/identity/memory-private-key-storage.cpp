@@ -130,7 +130,7 @@ MemoryPrivateKeyStorage::generateKeyPair
     // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
     // Find the bit string which is the second child.
     ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-      (&opensslPublicKeyDer[0], 0);
+      (opensslPublicKeyDer);
     const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
       parsedNode->getChildren();
     publicKeyDer = *encodeSubjectPublicKeyInfo

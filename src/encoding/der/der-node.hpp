@@ -51,11 +51,24 @@ public:
    * Parse the data from the input buffer recursively and return the root as an
    * object of a subclass of DerNode.
    * @param inputBuf The input buffer to read from. This reads from startIdx.
+   * @param inputBufLength The number of bytes in the input buffer.
    * @param startIdx (optional) The offset into the buffer. If omitted, use 0.
    * @return A shared_ptr for an object of a subclass of DerNode.
    */
   static ptr_lib::shared_ptr<DerNode>
-  parse(const uint8_t* inputBuf, size_t startIdx = 0);
+  parse(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx = 0);
+
+  static ptr_lib::shared_ptr<DerNode>
+  parse(const Blob& input, size_t startIdx = 0)
+  {
+    return parse(input.buf(), input.size(), startIdx);
+  }
+
+  static ptr_lib::shared_ptr<DerNode>
+  parse(const std::vector<uint8_t>& input, size_t startIdx = 0)
+  {
+    return parse(&input[0], input.size(), startIdx);
+  }
 
   /**
    * Convert the encoded data to a standard representation. Overridden by some
@@ -142,7 +155,7 @@ protected:
    * @return The parsed size in the header.
    */
   size_t
-  decodeHeader(const uint8_t* inputBuf, size_t startIdx);
+  decodeHeader(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx);
 
   /**
    * Decode and store the data from an input buffer.
@@ -150,7 +163,7 @@ protected:
    * @param startIdx The offset into the buffer.
    */
   virtual void
-  decode(const uint8_t* inputBuf, size_t startIdx);
+  decode(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx);
 
   /**
    * Call payload_.copy to copy value into payload_ at payloadPosition_. Update
@@ -232,7 +245,7 @@ protected:
    * @param startIdx The offset into the buffer.
    */
   virtual void
-  decode(const uint8_t* inputBuf, size_t startIdx);
+  decode(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx);
 
 private:
   void

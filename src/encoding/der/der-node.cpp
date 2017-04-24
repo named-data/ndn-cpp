@@ -50,7 +50,7 @@ DerNode::encode()
 }
 
 ptr_lib::shared_ptr<DerNode>
-DerNode::parse(const uint8_t* inputBuf, size_t startIdx)
+DerNode::parse(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx)
 {
   int nodeType = ((int)inputBuf[startIdx]) & 0xff;
   // Don't increment startIdx. We're just peeking.
@@ -77,7 +77,7 @@ DerNode::parse(const uint8_t* inputBuf, size_t startIdx)
   else
     throw DerDecodingException("Unimplemented DER type");
 
-  newNode->decode(inputBuf, startIdx);
+  newNode->decode(inputBuf, inputBufLength, startIdx);
   return newNode;
 }
 
@@ -143,7 +143,8 @@ DerNode::encodeHeader(size_t size)
 }
 
 size_t
-DerNode::decodeHeader(const uint8_t* inputBuf, size_t startIdx)
+DerNode::decodeHeader
+  (const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx)
 {
   size_t idx = startIdx;
 
@@ -177,10 +178,10 @@ DerNode::decodeHeader(const uint8_t* inputBuf, size_t startIdx)
 }
 
 void
-DerNode::decode(const uint8_t* inputBuf, size_t startIdx)
+DerNode::decode(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx)
 {
   size_t idx = startIdx;
-  size_t payloadSize = decodeHeader(inputBuf, idx);
+  size_t payloadSize = decodeHeader(inputBuf, inputBufLength, idx);
   size_t skipBytes = header_.size();
   if (payloadSize > 0) {
     idx += skipBytes;
@@ -227,15 +228,17 @@ DerNode::DerStructure::encode()
 }
 
 void
-DerNode::DerStructure::decode(const uint8_t* inputBuf, size_t startIdx)
+DerNode::DerStructure::decode
+  (const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx)
 {
   size_t idx = startIdx;
-  size_ = decodeHeader(inputBuf, idx);
+  size_ = decodeHeader(inputBuf, inputBufLength, idx);
   idx += header_.size();
 
   size_t accSize = 0;
   while (accSize < size_) {
-    ptr_lib::shared_ptr<DerNode> node = DerNode::parse(inputBuf, idx);
+    ptr_lib::shared_ptr<DerNode> node = DerNode::parse
+      (inputBuf, inputBufLength, idx);
     size_t size = node->getSize();
     idx += size;
     accSize += size;

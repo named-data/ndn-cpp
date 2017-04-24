@@ -88,7 +88,7 @@ PrivateKeyStorage::decodeEcPrivateKey
       ("FilePrivateKeyStorage::decodeEcPrivateKey: Unrecognized EC algorithm parameters");
 
   // Get the value in the octet string.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(privateKeyDer.buf(), 0);
+  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(privateKeyDer);
   DerNode::DerOctetString* octetString = dynamic_cast<DerNode::DerOctetString*>
     (parsedNode->getChildren()[1].get());
   if (!octetString)
