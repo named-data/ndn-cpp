@@ -83,7 +83,7 @@ public:
   hasIdentity(const Name& identityName) const;
 
   /**
-   * Add an identity. If the identity already exists, do nothing. If no default
+   * Add the identity. If the identity already exists, do nothing. If no default
    * identity has been set, set the added identity as the default.
    * @param identityName The name of the identity to add. This copies the name.
    */
@@ -91,7 +91,7 @@ public:
   addIdentity(const Name& identityName);
 
   /**
-   * Remove an identity and its related keys and certificates. If the default
+   * Remove the identity and its related keys and certificates. If the default
    * identity is being removed, no default identity will be selected.  If the
    * identity does not exist, do nothing.
    * @param identityName The name of the identity to remove.
@@ -140,7 +140,7 @@ public:
   hasKey(const Name& keyName) const;
 
   /**
-   * Add a key. If a key with the same name already exists, overwrite the key.
+   * Add the key. If a key with the same name already exists, overwrite the key.
    * If the identity does not exist, it will be created. If no default key for
    * the identity has been set, then set the added key as default for the
    * identity.  If no default identity has been set, identity becomes the
@@ -157,8 +157,8 @@ public:
      size_t keyLength);
 
   /**
-   * Remove a key with keyName and its related certificates. If the key does not
-   * exist, do nothing.
+   * Remove the key with keyName and its related certificates. If the key does
+   * not exist, do nothing.
    * @param keyName The name of the key.
    */
   virtual void
@@ -215,7 +215,7 @@ public:
   hasCertificate(const Name& certificateName) const;
 
   /**
-   * Add a certificate. If a certificate with the same name (without implicit
+   * Add the certificate. If a certificate with the same name (without implicit
    * digest) already exists, then overwrite the certificate. If the key or
    * identity does not exist, they will be created. If no default certificate
    * for the key has been set, then set the added certificate as default for
