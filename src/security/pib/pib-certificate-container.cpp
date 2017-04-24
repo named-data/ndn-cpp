@@ -32,7 +32,7 @@ PibCertificateContainer::PibCertificateContainer
 : keyName_(keyName), pibImpl_(pibImpl)
 {
   if (!pibImpl)
-    throw invalid_argument("The pibImpl is null");
+    throw runtime_error("The pibImpl is null");
 
   certificateNames_ = pibImpl_->getCertificatesOfKey(keyName);
 }
