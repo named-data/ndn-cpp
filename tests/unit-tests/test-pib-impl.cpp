@@ -279,19 +279,20 @@ TEST_F(TestPibImpl, CertificateManagement)
     ASSERT_TRUE(pib.getCertificate(fixture.id1Key1Cert1->getName())->wireEncode()
                 .equals(fixture.id1Key1Cert1->wireEncode()));
     ASSERT_NO_THROW(pib.getDefaultCertificateOfKey(fixture.id1Key1Name));
-    ASSERT_EQ(fixture.id1Key1Cert1->getName(),
-               pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getName());
+    // Use the full name with the digest to check equivalence.
+    ASSERT_EQ(*fixture.id1Key1Cert1->getFullName(),
+              *pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getFullName());
 
     // Add id1Key1Cert2, which should not be the default.
     pib.addCertificate(*fixture.id1Key1Cert2);
     ASSERT_EQ(true, pib.hasCertificate(fixture.id1Key1Cert2->getName()));
-    ASSERT_EQ(fixture.id1Key1Cert1->getName(),
-              pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getName());
+    ASSERT_EQ(*fixture.id1Key1Cert1->getFullName(),
+              *pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getFullName());
 
     // Explicitly set id1Key1Cert2 as the default.
     pib.setDefaultCertificateOfKey(fixture.id1Key1Name, fixture.id1Key1Cert2->getName());
-    ASSERT_EQ(fixture.id1Key1Cert2->getName(),
-              pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getName());
+    ASSERT_EQ(*fixture.id1Key1Cert2->getFullName(),
+              *pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getFullName());
 
     // Set a non-existing certificate as the default. This should throw an Error.
     ASSERT_THROW(pib.setDefaultCertificateOfKey(fixture.id1Key1Name, Name("/non-existing")),
@@ -306,10 +307,10 @@ TEST_F(TestPibImpl, CertificateManagement)
     // Add id1Key1Cert2, which should be the default.
     pib.addCertificate(*fixture.id1Key1Cert2);
     ASSERT_NO_THROW(pib.getCertificate(fixture.id1Key1Cert1->getName()));
-    ASSERT_EQ(fixture.id1Key1Cert2->getName(),
-              pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getName());
+    ASSERT_EQ(*fixture.id1Key1Cert2->getFullName(),
+              *pib.getDefaultCertificateOfKey(fixture.id1Key1Name)->getFullName());
 
-    // Fet all certificates, which should have id1Key1Cert1 and id1Key1Cert2.
+    // Get all certificates, which should have id1Key1Cert1 and id1Key1Cert2.
     std::set<Name> certNames = pib.getCertificatesOfKey(fixture.id1Key1Name);
     ASSERT_EQ(2, certNames.size());
     ASSERT_EQ(1, certNames.count(fixture.id1Key1Cert1->getName()));

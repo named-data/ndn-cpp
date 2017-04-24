@@ -78,8 +78,9 @@ TEST_F(TestPibCertificateContainer, Basic)
     (fixture.id1Key1Cert1->getName());
   ptr_lib::shared_ptr<CertificateV2> cert2 = container.get
     (fixture.id1Key1Cert2->getName());
-  ASSERT_EQ(cert1->getName(), fixture.id1Key1Cert1->getName());
-  ASSERT_EQ(cert2->getName(), fixture.id1Key1Cert2->getName());
+  // Use the full name with the digest to check equivalence.
+  ASSERT_EQ(*cert1->getFullName(), *fixture.id1Key1Cert1->getFullName());
+  ASSERT_EQ(*cert2->getFullName(), *fixture.id1Key1Cert2->getFullName());
 
   // Create another container with the same PibImpl. The cache should be empty.
   PibCertificateContainer container2(fixture.id1Key1Name, pibImpl);
