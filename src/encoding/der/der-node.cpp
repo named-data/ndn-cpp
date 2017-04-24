@@ -52,6 +52,8 @@ DerNode::encode()
 ptr_lib::shared_ptr<DerNode>
 DerNode::parse(const uint8_t* inputBuf, size_t inputBufLength, size_t startIdx)
 {
+  if (inputBufLength <= startIdx)
+    throw DerDecodingException("DerNode::parse: The input length is too small");
   int nodeType = ((int)inputBuf[startIdx]) & 0xff;
   // Don't increment startIdx. We're just peeking.
 
@@ -148,11 +150,15 @@ DerNode::decodeHeader
 {
   size_t idx = startIdx;
 
+  if (inputBufLength <= idx)
+    throw DerDecodingException("DerNode::parse: The input length is too small");
   int nodeType = inputBuf[idx] & 0xff;
   idx += 1;
 
   nodeType_ = (DerNodeType)nodeType;
 
+  if (inputBufLength <= idx)
+    throw DerDecodingException("DerNode::parse: The input length is too small");
   int sizeLen = inputBuf[idx] & 0xff;
   idx += 1;
 
@@ -166,6 +172,8 @@ DerNode::decodeHeader
     int lenCount = sizeLen & ((1<<7) - 1);
     size = 0;
     while (lenCount > 0) {
+      if (inputBufLength <= idx)
+        throw DerDecodingException("DerNode::parse: The input length is too small");
       uint8_t b = inputBuf[idx];
       idx += 1;
       header_.push_back(b);
