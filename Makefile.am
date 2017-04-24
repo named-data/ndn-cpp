@@ -33,6 +33,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
   bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-impl \
+   bin/unit-tests/test-pib-key-impl \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-producer \
   bin/unit-tests/test-producer-db bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
@@ -576,6 +577,11 @@ bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp \
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_pib_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_pib_impl_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_key_impl_SOURCES = tests/unit-tests/test-pib-key-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_key_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_impl_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
