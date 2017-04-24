@@ -21,7 +21,7 @@
  */
 
 #include <ndn-cpp/security/pib/pib-impl.hpp>
-#include <ndn-cpp/security/pib/detail/pib-key-impl.hpp>
+#include "detail/pib-key-impl.hpp"
 #include <ndn-cpp/security/pib/pib-key-container.hpp>
 
 using namespace std;
@@ -34,7 +34,7 @@ PibKeyContainer::PibKeyContainer
 : identityName_(identityName), pibImpl_(pibImpl)
 {
   if (!pibImpl)
-    throw invalid_argument("The pibImpl is null");
+    throw runtime_error("The pibImpl is null");
 
   keyNames_ = pibImpl_->getKeysOfIdentity(identityName);
 }
