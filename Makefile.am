@@ -32,6 +32,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
+  bin/unit-tests/test-pib-identity-container \
   bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
   bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-key-impl \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-producer \
@@ -182,6 +183,8 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/identity/osx-private-key-storage.hpp \
   include/ndn-cpp/security/identity/private-key-storage.hpp \
   include/ndn-cpp/security/pib/pib-certificate-container.hpp \
+  include/ndn-cpp/security/pib/pib-identity.hpp \
+  include/ndn-cpp/security/pib/pib-identity-container.hpp \
   include/ndn-cpp/security/pib/pib-impl.hpp \
   include/ndn-cpp/security/pib/pib-key.hpp \
   include/ndn-cpp/security/pib/pib-key-container.hpp \
@@ -374,6 +377,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/identity/osx-private-key-storage.cpp \
   src/security/identity/private-key-storage.cpp \
   src/security/pib/pib-certificate-container.cpp \
+  src/security/pib/pib-identity.cpp \
+  src/security/pib/pib-identity-container.cpp \
   src/security/pib/pib-key.cpp \
   src/security/pib/pib-key-container.cpp \
   src/security/pib/pib-memory.cpp \
@@ -568,6 +573,11 @@ bin_unit_tests_test_pib_certificate_container_SOURCES = tests/unit-tests/test-pi
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_pib_certificate_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_pib_certificate_container_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_identity_container_SOURCES = tests/unit-tests/test-pib-identity-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_identity_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_container_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_pib_identity_impl_SOURCES = tests/unit-tests/test-pib-identity-impl.cpp \
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
