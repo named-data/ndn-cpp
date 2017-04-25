@@ -109,7 +109,7 @@ private:
 
   Name identityName_;
   std::set<Name> keyNames_;
-  // Cache of loaded PibKey objects.
+  // Cache of loaded PibKeyImpl objects.
   std::map<Name, ptr_lib::shared_ptr<PibKeyImpl>> keys_;
 
   ptr_lib::shared_ptr<PibImpl> pibImpl_;
