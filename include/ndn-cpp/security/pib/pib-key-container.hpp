@@ -54,7 +54,7 @@ public:
    * @param key The array of encoded key bytes.
    * @param keyLength The number of bytes in the key array.
    * @param keyName The name of the key, which is copied.
-   * @return The new PibKey object.
+   * @return The PibKey object.
    * @throw std::invalid_argument if the name of the key does not match the
    * identity name.
    */
@@ -62,8 +62,8 @@ public:
   add(const uint8_t* key, size_t keyLength, const Name& keyName);
 
   /**
-   * Remove the key with name keyName from the container. If the key does not
-   * exist, do nothing.
+   * Remove the key with name keyName from the container, and its related
+   * certificates. If the key does not exist, do nothing.
    * @param keyName The name of the key.
    * @throw std::invalid_argument if keyName does not match the identity name.
    */
@@ -71,10 +71,10 @@ public:
   remove(const Name& keyName);
 
   /**
-   * Get the key with keyName from the container.
+   * Get the key with name keyName from the container.
    * @param keyName The name of the key.
    * @return The PibKey object.
-   * @throw std::invalid_argument if keyName does not match the identity name
+   * @throw std::invalid_argument if keyName does not match the identity name.
    * @throw Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
@@ -89,14 +89,14 @@ public:
   isConsistent() const;
 
 private:
-  friend class PibIdentity;
+  friend class PibIdentityImpl;
   // Give friend access to the tests.
   friend TestPibKeyContainer_Basic_Test;
   friend TestPibKeyContainer_Errors_Test;
 
   /**
    * Create a PibKeyContainer for an identity with identityName. This
-   * constructor should only be called by PibIdentity.
+   * constructor should only be called by PibIdentityImpl.
    * @param identityName The name of the identity, which is copied.
    * @param pibImpl The PIB backend implementation.
    */
