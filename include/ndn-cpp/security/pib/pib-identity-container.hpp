@@ -78,6 +78,13 @@ public:
   get(const Name& identityName) const;
 
   /**
+   * Reset the state of the container. This method removes all loaded identities
+   * and retrieves identity names from the PIB implementation.
+   */
+  void
+  reset();
+
+  /**
    * Check if the container is consistent with the backend storage.
    * @note This method is heavy-weight and should be used in a debugging mode
    * only.

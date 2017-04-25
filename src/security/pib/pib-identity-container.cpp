@@ -77,6 +77,13 @@ PibIdentityContainer::get(const Name& identityName) const
   return ptr_lib::shared_ptr<PibIdentity>(new PibIdentity(pibIdentityImpl));
 }
 
+void
+PibIdentityContainer::reset()
+{
+  identities_.clear();
+  identityNames_ = pibImpl_->getIdentities();
+}
+
 bool
 PibIdentityContainer::isConsistent() const
 {
