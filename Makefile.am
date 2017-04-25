@@ -32,8 +32,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-interval \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
-  bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-impl \
-   bin/unit-tests/test-pib-key-impl \
+  bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
+  bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-key-impl \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-producer \
   bin/unit-tests/test-producer-db bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
@@ -377,6 +377,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/pib/pib-key.cpp \
   src/security/pib/pib-key-container.cpp \
   src/security/pib/pib-memory.cpp \
+  src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
   src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
   src/security/policy/config-policy-manager.cpp \
   src/security/policy/no-verify-policy-manager.cpp \
@@ -568,15 +569,20 @@ bin_unit_tests_test_pib_certificate_container_SOURCES = tests/unit-tests/test-pi
 bin_unit_tests_test_pib_certificate_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_pib_certificate_container_LDADD = libndn-cpp.la
 
-bin_unit_tests_test_pib_key_container_SOURCES = tests/unit-tests/test-pib-key-container.cpp \
+bin_unit_tests_test_pib_identity_impl_SOURCES = tests/unit-tests/test-pib-identity-impl.cpp \
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_unit_tests_test_pib_key_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_unit_tests_test_pib_key_container_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_identity_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_impl_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp \
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_pib_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_pib_impl_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_key_container_SOURCES = tests/unit-tests/test-pib-key-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_key_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_container_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_pib_key_impl_SOURCES = tests/unit-tests/test-pib-key-impl.cpp \
   tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
