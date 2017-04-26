@@ -45,8 +45,7 @@ PublicKey::PublicKey(const Blob& keyDer)
   // Get the public key OID.
   string oidString;
   try {
-    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-      (keyDer.buf(), 0);
+    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyDer);
     const std::vector<ptr_lib::shared_ptr<DerNode> >& rootChildren =
       parsedNode->getChildren();
     const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
@@ -83,7 +82,7 @@ PublicKey::PublicKey(const Blob& keyDer)
 ptr_lib::shared_ptr<DerNode>
 PublicKey::toDer()
 {
-  return DerNode::parse(keyDer_.buf());
+  return DerNode::parse(keyDer_);
 }
 
 Blob
