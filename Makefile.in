@@ -350,7 +350,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/pib/pib-identity-container.lo \
 	src/security/pib/pib-key.lo \
 	src/security/pib/pib-key-container.lo \
-	src/security/pib/pib-memory.lo \
+	src/security/pib/pib-memory.lo src/security/pib/pib.lo \
 	src/security/pib/detail/pib-identity-impl.lo \
 	src/security/pib/detail/pib-key-impl.lo \
 	src/security/policy/config-policy-manager.lo \
@@ -1622,6 +1622,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/pib/pib-key.cpp \
   src/security/pib/pib-key-container.cpp \
   src/security/pib/pib-memory.cpp \
+  src/security/pib/pib.cpp \
   src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
   src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
   src/security/policy/config-policy-manager.cpp \
@@ -2412,6 +2413,8 @@ src/security/pib/pib-key-container.lo:  \
 	src/security/pib/$(am__dirstamp) \
 	src/security/pib/$(DEPDIR)/$(am__dirstamp)
 src/security/pib/pib-memory.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib.lo: src/security/pib/$(am__dirstamp) \
 	src/security/pib/$(DEPDIR)/$(am__dirstamp)
 src/security/pib/detail/$(am__dirstamp):
 	@$(MKDIR_P) src/security/pib/detail
@@ -3393,6 +3396,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key-container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-identity-impl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-key-impl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/config-policy-manager.Plo@am__quote@
