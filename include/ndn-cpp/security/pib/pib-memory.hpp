@@ -35,15 +35,6 @@ namespace ndn {
  */
 class PibMemory : public PibImpl {
 public:
-  class Error : public PibImpl::Error
-  {
-  public:
-    Error(const std::string& what)
-    : PibImpl::Error(what)
-    {
-    }
-  };
-
   /**
    * Create a default PibMemory with no values.
    * @param location Not used (required by the PIB registration interface).
