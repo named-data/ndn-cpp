@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_BASIC_IDENTITY_STORAGE_H
-#define NDN_BASIC_IDENTITY_STORAGE_H
+#ifndef NDN_BASIC_IDENTITY_STORAGE_HPP
+#define NDN_BASIC_IDENTITY_STORAGE_HPP
 
 // Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_SQLITE3.
 #include "../../ndn-cpp-config.h"
