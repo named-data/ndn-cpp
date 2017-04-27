@@ -22,7 +22,11 @@
 
 #include "gtest/gtest.h"
 #include <algorithm>
+#include <unistd.h>
+#include <fstream>
+#include <cstdio>
 #include <ndn-cpp/security/pib/pib-memory.hpp>
+#include <ndn-cpp/security/pib/pib-sqlite3.hpp>
 #include "pib-data-fixture.hpp"
 
 using namespace std;
@@ -33,11 +37,59 @@ class PibMemoryFixture : public PibDataFixture
 public:
   PibMemoryFixture()
   {
-    pib = &myPib;
+    pib = &myPib_;
   }
 
 private:
-  PibMemory myPib;
+  PibMemory myPib_;
+};
+
+static bool
+fileExists(const string& filePath)
+{
+  ifstream stream(filePath.c_str());
+  bool result = (bool)stream;
+  stream.close();
+  return result;
+}
+
+static string
+getPolicyConfigDirectory()
+{
+  string policyConfigDirectory = "policy_config";
+  // Check if expected files are in this directory.
+  if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
+    // Maybe we are running "make check" from the ndn-cpp root.  There may be
+    //   a way to tell "make check" to run from tests/unit-tests, but for
+    //   now just set policyConfigDirectory explicitly.
+    policyConfigDirectory = "tests/unit-tests/policy_config";
+
+    if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
+      throw runtime_error("Cannot find the directory for policy-config");
+  }
+
+  return policyConfigDirectory;
+}
+
+class PibSqlite3Fixture : public PibDataFixture
+{
+public:
+  PibSqlite3Fixture()
+  {
+    string databaseDirectoryPath = getPolicyConfigDirectory();
+    string databaseFilename = "/test-pib.db";
+    databaseFilePath = databaseDirectoryPath + "/" + databaseFilename;
+    remove(databaseFilePath.c_str());
+
+    myPib_.reset(new PibSqlite3(databaseDirectoryPath, databaseFilename));
+
+    pib = myPib_.get();
+  }
+
+  string databaseFilePath;
+  
+private:
+  ptr_lib::shared_ptr<PibSqlite3> myPib_;
 };
 
 class TestPibImpl : public ::testing::Test {
@@ -45,12 +97,19 @@ public:
   TestPibImpl()
   {
     pibImpls[0] = &pibMemoryFixture;
+    pibImpls[1] = &pibSqlite3Fixture;
   }
 
   PibMemoryFixture pibMemoryFixture;
+  PibSqlite3Fixture pibSqlite3Fixture;
 
-  // TODO: Add PibSqlite3Fixture.
-  PibDataFixture* pibImpls[1];
+  PibDataFixture* pibImpls[2];
+
+  virtual void
+  TearDown()
+  {
+    remove(pibSqlite3Fixture.databaseFilePath.c_str());
+  }
 };
 
 TEST_F(TestPibImpl, CertificateDecoding)
