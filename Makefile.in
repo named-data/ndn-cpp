@@ -350,7 +350,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/pib/pib-identity-container.lo \
 	src/security/pib/pib-key.lo \
 	src/security/pib/pib-key-container.lo \
-	src/security/pib/pib-memory.lo src/security/pib/pib.lo \
+	src/security/pib/pib-memory.lo src/security/pib/pib-sqlite3.lo \
+	src/security/pib/pib.lo \
 	src/security/pib/detail/pib-identity-impl.lo \
 	src/security/pib/detail/pib-key-impl.lo \
 	src/security/policy/config-policy-manager.lo \
@@ -367,7 +368,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/command-interest-generator.lo src/util/config-file.lo \
 	src/util/dynamic-uint8-vector.lo \
 	src/util/exponential-re-express.lo src/util/logging.lo \
-	src/util/memory-content-cache.lo \
+	src/util/memory-content-cache.lo src/util/segment-fetcher.lo \
+	src/util/sqlite3-statement.lo \
 	src/util/regex/ndn-regex-backref-manager.lo \
 	src/util/regex/ndn-regex-backref-matcher.lo \
 	src/util/regex/ndn-regex-component-matcher.lo \
@@ -376,8 +378,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/regex/ndn-regex-pattern-list-matcher.lo \
 	src/util/regex/ndn-regex-pseudo-matcher.lo \
 	src/util/regex/ndn-regex-repeat-matcher.lo \
-	src/util/regex/ndn-regex-top-matcher.lo \
-	src/util/segment-fetcher.lo
+	src/util/regex/ndn-regex-top-matcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_bin_analog_reading_consumer_OBJECTS =  \
@@ -1426,6 +1427,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/pib/pib-key.hpp \
   include/ndn-cpp/security/pib/pib-key-container.hpp \
   include/ndn-cpp/security/pib/pib-memory.hpp \
+  include/ndn-cpp/security/pib/pib-sqlite3.hpp \
   include/ndn-cpp/security/pib/pib.hpp \
   include/ndn-cpp/security/policy/config-policy-manager.hpp \
   include/ndn-cpp/security/policy/no-verify-policy-manager.hpp \
@@ -1622,6 +1624,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/pib/pib-key.cpp \
   src/security/pib/pib-key-container.cpp \
   src/security/pib/pib-memory.cpp \
+  src/security/pib/pib-sqlite3.cpp \
   src/security/pib/pib.cpp \
   src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
   src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
@@ -1647,6 +1650,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
+  src/util/segment-fetcher.cpp \
+  src/util/sqlite3-statement.cpp src/util/sqlite3-statement.hpp \
   src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
   src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
   src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
@@ -1655,8 +1660,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
   src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
   src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
-  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
-  src/util/segment-fetcher.cpp
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp
 
 
 # The ndn-cpp-tools library.
@@ -2414,6 +2418,8 @@ src/security/pib/pib-key-container.lo:  \
 	src/security/pib/$(DEPDIR)/$(am__dirstamp)
 src/security/pib/pib-memory.lo: src/security/pib/$(am__dirstamp) \
 	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-sqlite3.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
 src/security/pib/pib.lo: src/security/pib/$(am__dirstamp) \
 	src/security/pib/$(DEPDIR)/$(am__dirstamp)
 src/security/pib/detail/$(am__dirstamp):
@@ -2504,6 +2510,10 @@ src/util/logging.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/memory-content-cache.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/sqlite3-statement.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/regex/$(am__dirstamp):
 	@$(MKDIR_P) src/util/regex
 	@: > src/util/regex/$(am__dirstamp)
@@ -2537,8 +2547,6 @@ src/util/regex/ndn-regex-repeat-matcher.lo:  \
 src/util/regex/ndn-regex-top-matcher.lo:  \
 	src/util/regex/$(am__dirstamp) \
 	src/util/regex/$(DEPDIR)/$(am__dirstamp)
-src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
-	src/util/$(DEPDIR)/$(am__dirstamp)
 
 libndn-cpp.la: $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_DEPENDENCIES) $(EXTRA_libndn_cpp_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_LIBADD) $(LIBS)
@@ -3396,6 +3404,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key-container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-sqlite3.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-identity-impl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-key-impl.Plo@am__quote@
@@ -3421,6 +3430,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/sqlite3-statement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-component-matcher.Plo@am__quote@

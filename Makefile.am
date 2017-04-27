@@ -189,6 +189,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/pib/pib-key.hpp \
   include/ndn-cpp/security/pib/pib-key-container.hpp \
   include/ndn-cpp/security/pib/pib-memory.hpp \
+  include/ndn-cpp/security/pib/pib-sqlite3.hpp \
   include/ndn-cpp/security/pib/pib.hpp \
   include/ndn-cpp/security/policy/config-policy-manager.hpp \
   include/ndn-cpp/security/policy/no-verify-policy-manager.hpp \
@@ -382,6 +383,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/pib/pib-key.cpp \
   src/security/pib/pib-key-container.cpp \
   src/security/pib/pib-memory.cpp \
+  src/security/pib/pib-sqlite3.cpp \
   src/security/pib/pib.cpp \
   src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
   src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
@@ -407,6 +409,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
+  src/util/segment-fetcher.cpp \
+  src/util/sqlite3-statement.cpp src/util/sqlite3-statement.hpp \
   src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
   src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
   src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
@@ -415,8 +419,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
   src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
   src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
-  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
-  src/util/segment-fetcher.cpp
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp
 
 # The ndn-cpp-tools library.
 libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
