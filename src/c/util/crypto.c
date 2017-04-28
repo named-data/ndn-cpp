@@ -22,13 +22,16 @@
 
 #ifdef ARDUINO
 
-void ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
+ndn_Error
+ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
   // Assume the application has already initialized it, e.g.:
   // randomSeed(analogRead(0));
   size_t i;
   for (i = 0; i < bufferLength; ++i)
     buffer[i] = random(0, 256);
+
+  return NDN_ERROR_success;
 }
 
 #elif NDN_CPP_HAVE_LIBCRYPTO
