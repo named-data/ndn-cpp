@@ -118,7 +118,7 @@ ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
 }
 
 static int didRandomSeed = 0;
-void
+ndn_Error
 ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 {
   // NOTE: This is not cryptographically strong.
@@ -131,6 +131,8 @@ ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
 
   for (i = 0; i < bufferLength; ++i)
     buffer[i] = (uint8_t)rand();
+
+  return NDN_ERROR_success;
 }
 
 size_t
