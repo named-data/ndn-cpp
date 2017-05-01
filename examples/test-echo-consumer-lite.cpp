@@ -140,7 +140,7 @@ main(int argc, char** argv)
 {
   char word[100];
   printf("Enter a word to echo:\n");
-  ::gets(word);
+  fgets(word, sizeof(word), stdin);
 
   // Create the Interest.
   struct ndn_NameComponent nameComponents[2];
