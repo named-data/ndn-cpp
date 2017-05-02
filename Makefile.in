@@ -358,6 +358,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/policy/no-verify-policy-manager.lo \
 	src/security/policy/policy-manager.lo \
 	src/security/policy/self-verify-policy-manager.lo \
+	src/security/tpm/tpm-private-key.lo \
 	src/security/v2/certificate-v2.lo src/sync/chrono-sync2013.lo \
 	src/sync/digest-tree.lo src/sync/sync-state.pb.lo \
 	src/transport/async-tcp-transport.lo \
@@ -1434,6 +1435,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
@@ -1632,6 +1634,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
@@ -2452,6 +2455,14 @@ src/security/policy/policy-manager.lo:  \
 src/security/policy/self-verify-policy-manager.lo:  \
 	src/security/policy/$(am__dirstamp) \
 	src/security/policy/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/$(am__dirstamp):
+	@$(MKDIR_P) src/security/tpm
+	@: > src/security/tpm/$(am__dirstamp)
+src/security/tpm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/security/tpm/$(DEPDIR)
+	@: > src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-private-key.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/$(am__dirstamp):
 	@$(MKDIR_P) src/security/v2
 	@: > src/security/v2/$(am__dirstamp)
@@ -3178,6 +3189,8 @@ mostlyclean-compile:
 	-rm -f src/security/pib/detail/*.lo
 	-rm -f src/security/policy/*.$(OBJEXT)
 	-rm -f src/security/policy/*.lo
+	-rm -f src/security/tpm/*.$(OBJEXT)
+	-rm -f src/security/tpm/*.lo
 	-rm -f src/security/v2/*.$(OBJEXT)
 	-rm -f src/security/v2/*.lo
 	-rm -f src/sync/*.$(OBJEXT)
@@ -3412,6 +3425,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/no-verify-policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/self-verify-policy-manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@
@@ -4630,6 +4644,7 @@ clean-libtool:
 	-rm -rf src/security/pib/.libs src/security/pib/_libs
 	-rm -rf src/security/pib/detail/.libs src/security/pib/detail/_libs
 	-rm -rf src/security/policy/.libs src/security/policy/_libs
+	-rm -rf src/security/tpm/.libs src/security/tpm/_libs
 	-rm -rf src/security/v2/.libs src/security/v2/_libs
 	-rm -rf src/sync/.libs src/sync/_libs
 	-rm -rf src/transport/.libs src/transport/_libs
@@ -5458,6 +5473,8 @@ distclean-generic:
 	-rm -f src/security/pib/detail/$(am__dirstamp)
 	-rm -f src/security/policy/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/policy/$(am__dirstamp)
+	-rm -f src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/security/tpm/$(am__dirstamp)
 	-rm -f src/security/v2/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/v2/$(am__dirstamp)
 	-rm -f src/sync/$(DEPDIR)/$(am__dirstamp)
@@ -5483,7 +5500,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/tpm/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -5531,7 +5548,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/tpm/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

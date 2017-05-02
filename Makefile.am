@@ -196,6 +196,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
@@ -391,6 +392,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
