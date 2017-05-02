@@ -53,7 +53,7 @@ public:
    * Add certificate into the container. If the certificate already exists,
    * this replaces it.
    * @param certificate The certificate to add. This copies the object.
-   * @throw std::invalid_argument if the name of the certificate does not
+   * @throws std::invalid_argument if the name of the certificate does not
    * match the key name.
    */
   void
@@ -63,7 +63,7 @@ public:
    * Remove the certificate with name certificateName from the container. If the
    * certificate does not exist, do nothing.
    * @param certificateName The name of the certificate.
-   * @throw std::invalid_argument if certificateName does not match the key
+   * @throws std::invalid_argument if certificateName does not match the key
    * name.
    */
   void
@@ -73,9 +73,9 @@ public:
    * Get the certificate with certificateName from the container.
    * @param certificateName The name of the certificate.
    * @return A copy of the certificate.
-   * @throw std::invalid_argument if certificateName does not match the key
+   * @throws std::invalid_argument if certificateName does not match the key
    * name
-   * @throw Pib::Error if the certificate does not exist.
+   * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
   get(const Name& certificateName) const;

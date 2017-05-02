@@ -41,7 +41,7 @@ public:
   /*
    * Get the name of the identity.
    * @return The name of the identity.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   const Name&
   getName() const;
@@ -50,15 +50,15 @@ public:
    * Get the key with name keyName.
    * @param keyName The name of the key.
    * @return The PibKey object.
-   * @throw std::invalid_argument if keyName does not match the identity name.
-   * @throw Pib::Error if the key does not exist.
+   * @throws std::invalid_argument if keyName does not match the identity name.
+   * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
   getKey(const Name& keyName) const;
 
   /**
    * Get the default key of this Identity.
-   * @throw Pib::Error if the default key has not been set.
+   * @throws Pib::Error if the default key has not been set.
    */
   const ptr_lib::shared_ptr<PibKey>&
   getDefaultKey() const;
@@ -75,7 +75,7 @@ private:
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   ptr_lib::shared_ptr<PibIdentityImpl>
   lock() const;

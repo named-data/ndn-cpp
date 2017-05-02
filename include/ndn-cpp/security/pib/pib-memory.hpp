@@ -114,7 +114,7 @@ public:
   /**
    * Get the default identity.
    * @return The name of the default identity, as a fresh copy.
-   * @throw Pib::Error for no default identity.
+   * @throws Pib::Error for no default identity.
    */
   virtual Name
   getDefaultIdentity() const;
@@ -159,7 +159,7 @@ public:
    * Get the key bits of a key with name keyName.
    * @param keyName The name of the key.
    * @return The key bits.
-   * @throw Pib::Error if the key does not exist.
+   * @throws Pib::Error if the key does not exist.
    */
   virtual Blob
   getKeyBits(const Name& keyName) const;
@@ -180,7 +180,7 @@ public:
    * identityName.
    * @param identityName The name of the identity.
    * @param keyName The name of the key. This copies the name.
-   * @throw Pib::Error if the key does not exist.
+   * @throws Pib::Error if the key does not exist.
    */
   virtual void
   setDefaultKeyOfIdentity(const Name& identityName, const Name& keyName);
@@ -189,7 +189,7 @@ public:
    * Get the name of the default key for the identity with name identityName.
    * @param identityName The name of the identity.
    * @return The name of the default key, as a fresh copy.
-   * @throw Pib::Error if there is no default key or if the identity does not
+   * @throws Pib::Error if there is no default key or if the identity does not
    * exist.
    */
   virtual Name
@@ -230,7 +230,7 @@ public:
    * Get the certificate with name certificateName.
    * @param certificateName The name of the certificate.
    * @return A copy of the certificate.
-   * @throw Pib::Error if the certificate does not exist.
+   * @throws Pib::Error if the certificate does not exist.
    */
   virtual ptr_lib::shared_ptr<CertificateV2>
   getCertificate(const Name& certificateName) const;
@@ -252,7 +252,7 @@ public:
    * keyName.
    * @param keyName The name of the key.
    * @param certificateName The name of the certificate. This copies the name.
-   * @throw Pib::Error if the certificate with name certificateName does not
+   * @throws Pib::Error if the certificate with name certificateName does not
    * exist.
    */
   virtual void
@@ -262,7 +262,7 @@ public:
    * Get the default certificate for the key with eyName.
    * @param keyName The name of the key.
    * @return A copy of the default certificate.
-   * @throw Pib::Error if the default certificate does not exist.
+   * @throws Pib::Error if the default certificate does not exist.
    */
   virtual ptr_lib::shared_ptr<CertificateV2>
   getDefaultCertificateOfKey(const Name& keyName) const;

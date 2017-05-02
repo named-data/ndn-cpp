@@ -42,7 +42,7 @@ public:
   /*
    * Get the key name.
    * @return The key name.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   const Name&
   getName() const;
@@ -50,7 +50,7 @@ public:
   /**
    * Get the name of the identity this key belongs to.
    * @return The name of the identity.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   const Name&
   getIdentityName() const;
@@ -58,7 +58,7 @@ public:
   /**
    * Get the key type.
    * @return The key type.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   KeyType
   getKeyType() const;
@@ -66,7 +66,7 @@ public:
   /**
    * Get the public key encoding.
    * @return The public key encoding.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   const Blob&
   getPublicKey() const;
@@ -75,15 +75,15 @@ public:
    * Get the certificate with name certificateName.
    * @param certificateName The name of the certificate.
    * @return A copy of the CertificateV2 object.
-   * @throw std::invalid_argument if certificateName does not match the key name.
-   * @throw Pib::Error if the certificate does not exist.
+   * @throws std::invalid_argument if certificateName does not match the key name.
+   * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
   getCertificate(const Name& certificateName) const;
 
   /**
    * Get the default certificate for this Key.
-   * @throw Pib::Error the default certificate does not exist.
+   * @throws Pib::Error the default certificate does not exist.
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   getDefaultCertificate() const;
@@ -125,7 +125,7 @@ private:
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
-   * @throw std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error the backend implementation instance is invalid.
    */
   ptr_lib::shared_ptr<PibKeyImpl>
   lock() const;

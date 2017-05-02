@@ -60,7 +60,7 @@ public:
    * pibImpl->getKeyBits().
    * @param keyName The name of the key, which is copied.
    * @param pibImpl The Pib backend implementation.
-   * @throw Pib::Error the key with keyName does not exist.
+   * @throws Pib::Error the key with keyName does not exist.
    */
   PibIdentityImpl(const Name& keyName, ptr_lib::shared_ptr<PibImpl> pibImpl);
 
@@ -95,17 +95,17 @@ public:
    * Get the key with name keyName.
    * @param keyName The name of the key.
    * @return The PibKey object.
-   * @throw std::invalid_argument if keyName does not match the identity name.
-   * @throw Pib::Error if the key does not exist.
+   * @throws std::invalid_argument if keyName does not match the identity name.
+   * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
   getKey(const Name& keyName) const;
 
   /**
    * Set the key with name keyName as the default key of the identity.
-   * @throw std::invalid_argument if the name of the key does not match the
+   * @throws std::invalid_argument if the name of the key does not match the
    * identity name.
-   * @throw Pib::Error if the key does not exist.
+   * @throws Pib::Error if the key does not exist.
    * @return The PibKey object of the default key.
    */
   const ptr_lib::shared_ptr<PibKey>&
@@ -117,16 +117,16 @@ public:
    * @param keyLength The number of bytes in the key array.
    * @param keyName The name of the key, which is copied.
    * @return The PibKey object of the default key.
-   * @throw std::invalid_argument if the name of the key does not match the
+   * @throws std::invalid_argument if the name of the key does not match the
    * identity name.
-   * @throw Pib::Error if a key with the same name already exists.
+   * @throws Pib::Error if a key with the same name already exists.
    */
   const ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const uint8_t* key, size_t keyLength, const Name& keyName);
 
   /**
    * Get the default key of this Identity.
-   * @throw Pib::Error if the default key has not been set.
+   * @throws Pib::Error if the default key has not been set.
    */
   const ptr_lib::shared_ptr<PibKey>&
   getDefaultKey() const;

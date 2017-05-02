@@ -56,7 +56,7 @@ public:
    * pibImpl->getKeyBits().
    * @param keyName The name of the key, which is copied.
    * @param pibImpl The Pib backend implementation.
-   * @throw Pib::Error the key with keyName does not exist.
+   * @throws Pib::Error the key with keyName does not exist.
    */
   PibKeyImpl(const Name& keyName, ptr_lib::shared_ptr<PibImpl> pibImpl);
 
@@ -94,7 +94,7 @@ public:
    * certificate for the key has been set, then set the added certificate as
    * default for the key.
    * @param certificate The certificate to add. This copies the object.
-   * @throw std::invalid_argument if the name of the certificate does not
+   * @throws std::invalid_argument if the name of the certificate does not
    * match the key name.
    */
   void
@@ -104,7 +104,7 @@ public:
    * Remove the certificate with name certificateName. If the certificate does
    * not exist, do nothing.
    * @param certificateName The name of the certificate.
-   * @throw std::invalid_argument if certificateName does not match the key
+   * @throws std::invalid_argument if certificateName does not match the key
    * name.
    */
   void
@@ -114,8 +114,8 @@ public:
    * Get the certificate with name certificateName.
    * @param certificateName The name of the certificate.
    * @return A copy of the CertificateV2 object.
-   * @throw std::invalid_argument if certificateName does not match the key name.
-   * @throw Pib::Error if the certificate does not exist.
+   * @throws std::invalid_argument if certificateName does not match the key name.
+   * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
   getCertificate(const Name& certificateName) const;
@@ -125,9 +125,9 @@ public:
    * certificate.
    * @param certificateName The name of the certificate.
    * @return The default certificate.
-   * @throw std::invalid_argument if certificateName does not match the key
+   * @throws std::invalid_argument if certificateName does not match the key
    * name
-   * @throw Pib::Error if the certificate does not exist.
+   * @throws Pib::Error if the certificate does not exist.
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   setDefaultCertificate(const Name& certificateName);
@@ -137,7 +137,7 @@ public:
    * If a certificate with the same name (without implicit digest) already
    * exists, then overwrite the certificate.
    * @param certificate The certificate to add. This copies the object.
-   * @throw std::invalid_argument if the name of the certificate does not
+   * @throws std::invalid_argument if the name of the certificate does not
    * match the key name.
    * @return The default certificate.
    */
@@ -150,7 +150,7 @@ public:
 
   /**
    * Get the default certificate for this Key.
-   * @throw Pib::Error the default certificate does not exist.
+   * @throws Pib::Error the default certificate does not exist.
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   getDefaultCertificate() const;

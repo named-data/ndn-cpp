@@ -44,7 +44,7 @@ public:
    * Create an Sqlite3Statement to prepare an SQLite3 statement.
    * @param database The handle to open the SQLite3 database.
    * @param statement The SQL statement to prepare.
-   * @throw std::domain_error SQL statement is bad
+   * @throws std::domain_error SQL statement is bad
    */
   Sqlite3Statement(sqlite3* database, const std::string& statement);
 

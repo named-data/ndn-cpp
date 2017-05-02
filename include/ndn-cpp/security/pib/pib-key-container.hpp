@@ -55,7 +55,7 @@ public:
    * @param keyLength The number of bytes in the key array.
    * @param keyName The name of the key, which is copied.
    * @return The PibKey object.
-   * @throw std::invalid_argument if the name of the key does not match the
+   * @throws std::invalid_argument if the name of the key does not match the
    * identity name.
    */
   ptr_lib::shared_ptr<PibKey>
@@ -65,7 +65,7 @@ public:
    * Remove the key with name keyName from the container, and its related
    * certificates. If the key does not exist, do nothing.
    * @param keyName The name of the key.
-   * @throw std::invalid_argument if keyName does not match the identity name.
+   * @throws std::invalid_argument if keyName does not match the identity name.
    */
   void
   remove(const Name& keyName);
@@ -74,8 +74,8 @@ public:
    * Get the key with name keyName from the container.
    * @param keyName The name of the key.
    * @return The PibKey object.
-   * @throw std::invalid_argument if keyName does not match the identity name.
-   * @throw Pib::Error if the key does not exist.
+   * @throws std::invalid_argument if keyName does not match the identity name.
+   * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
   get(const Name& keyName) const;

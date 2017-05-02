@@ -72,7 +72,7 @@ public:
    * Get the identity with name identityName from the container.
    * @param identityName The name of the identity.
    * @return The PibIdentity object.
-   * @throw Pib::Error if the identity does not exist.
+   * @throws Pib::Error if the identity does not exist.
    */
   ptr_lib::shared_ptr<PibIdentity>
   get(const Name& identityName) const;
