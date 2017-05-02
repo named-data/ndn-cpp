@@ -167,6 +167,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
+  include/ndn-cpp/security/key-params.hpp \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
@@ -363,6 +364,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
+  src/security/key-params.cpp \
   src/security/security-exception.cpp \
   src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
