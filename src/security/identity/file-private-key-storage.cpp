@@ -25,21 +25,15 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <fstream>
-#include "../../c/util/crypto.h"
 #include "../../encoding/base64.hpp"
-#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
-#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
+#include <ndn-cpp/security/tpm/tpm-private-key.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
 
 using namespace std;
 
 namespace ndn {
-
-static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
-static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
 FilePrivateKeyStorage::FilePrivateKeyStorage()
 {
@@ -73,119 +67,27 @@ FilePrivateKeyStorage::generateKeyPair
   if (doesKeyExist(keyName, KEY_CLASS_PRIVATE))
     throw SecurityException("Private Key already exists");
 
-  Blob publicKeyDer;
-  Blob privateKeyDer;
+  try {
+    ptr_lib::shared_ptr<TpmPrivateKey> privateKey =
+      TpmPrivateKey::generatePrivateKey(params);
 
-#if NDN_CPP_HAVE_LIBCRYPTO
-  if (params.getKeyType() == KEY_TYPE_RSA) {
-    const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
-    RsaPrivateKeyLite privateKey;
-    ndn_Error error;
-    if ((error = privateKey.generate(rsaParams.getKeySize())))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
+    string keyUri = keyName.toUri();
+    string keyFilePathNoExtension = maintainMapping(keyUri);
+    string publicKeyFilePath = keyFilePathNoExtension + ".pub";
+    string privateKeyFilePath = keyFilePathNoExtension + ".pri";
 
-    // Get the encoding length and encode the public key.
-    size_t encodingLength;
-    if ((error = privateKey.encodePublicKey(0, encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    publicKeyDer = Blob
-      (ptr_lib::make_shared<vector<uint8_t> >(encodingLength), false);
-    if ((error = privateKey.encodePublicKey
-         (const_cast<uint8_t*>(publicKeyDer.buf()), encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-
-    // Get the encoding length and encode the private key.
-    if ((error = privateKey.encodePrivateKey(0, encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
-    if ((error = privateKey.encodePrivateKey
-         (&pkcs1PrivateKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    privateKeyDer = encodePkcs8PrivateKey
-      (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
-       ptr_lib::make_shared<DerNode::DerNull>());
-  }
-  else if (params.getKeyType() == KEY_TYPE_ECDSA) {
-    const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
-
-    EcPrivateKeyLite privateKey;
-    ndn_Error error;
-    if ((error = privateKey.generate(ecdsaParams.getKeySize())))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-
-    // Find the entry in EC_KEY_INFO.
-    OID parametersOid;
-    for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
-      const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
-      if (info->keySize == ecdsaParams.getKeySize()) {
-        parametersOid.setIntegerList
-          (info->oidIntegerList, info->oidIntegerListLength);
-
-        break;
-      }
-    }
-    if (parametersOid.getIntegerList().size() == 0)
-      // We don't expect this to happen since generate succeeded.
-      throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
-
-    // Get the encoding length and encode the public key.
-    size_t encodingLength;
-    if ((error = privateKey.encodePublicKey(true, 0, encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    vector<uint8_t> opensslPublicKeyDer(encodingLength);
-    if ((error = privateKey.encodePublicKey
-         (true, &opensslPublicKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
-    // Find the bit string which is the second child.
-    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-      (opensslPublicKeyDer);
-    const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
-      parsedNode->getChildren();
-    publicKeyDer = encodeSubjectPublicKeyInfo
-      (OID(EC_ENCRYPTION_OID),
-       ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
-
-    // Get the encoding length and encode the private key. Omit the EC parameters
-    // since ndn-cxx doesn't use them.
-    if ((error = privateKey.encodePrivateKey(false, 0, encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
-    if ((error = privateKey.encodePrivateKey
-         (false, &pkcs1PrivateKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage: ") + ndn_getErrorString(error));
-    privateKeyDer = encodePkcs8PrivateKey
-      (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
-       ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
-  }
-  else
-#endif
-    throw SecurityException("Unsupported key type");
-
-  string keyUri = keyName.toUri();
-  string keyFilePathNoExtension = maintainMapping(keyUri);
-  string publicKeyFilePath = keyFilePathNoExtension + ".pub";
-  string privateKeyFilePath = keyFilePathNoExtension + ".pri";
-
-  ofstream publicKeyFile(publicKeyFilePath.c_str());
-  publicKeyFile << toBase64(publicKeyDer.buf(), publicKeyDer.size(), true);
-  ofstream privateKeyFile(privateKeyFilePath.c_str());
-  privateKeyFile << toBase64(privateKeyDer.buf(), privateKeyDer.size(), true);
+    ofstream publicKeyFile(publicKeyFilePath.c_str());
+    publicKeyFile << toBase64(*privateKey->derivePublicKey(), true);
+    ofstream privateKeyFile(privateKeyFilePath.c_str());
+    privateKeyFile << toBase64(*privateKey->toPkcs8(), true);
 
 #if !defined(_WIN32) // Windows doesn't have Unix group permissions.
-  ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
-  ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
+    ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);
+    ::chmod(privateKeyFilePath.c_str(), S_IRUSR);
 #endif
+  } catch (TpmPrivateKey::Error& ex) {
+    throw SecurityException(ex.what());
+  }
 }
 
 void
@@ -228,10 +130,6 @@ FilePrivateKeyStorage::sign
     throw SecurityException
       ("FilePrivateKeyStorage::sign: private key doesn't exist");
 
-  if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
-    throw SecurityException
-      ("FilePrivateKeyStorage::sign: Unsupported digest algorithm");
-
   // Read the private key.
   ifstream file(nameTransform(keyURI, ".pri").c_str());
   stringstream base64;
@@ -239,53 +137,13 @@ FilePrivateKeyStorage::sign
   vector<uint8_t> pkcs8Der;
   fromBase64(base64.str(), pkcs8Der);
 
-  // The private key is generated by NFD which stores as PKCS #8. Decode it
-  // to find the algorithm OID and the inner private key DER.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(pkcs8Der);
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
-    parsedNode->getChildren();
-  // Get the algorithm OID and parameters.
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
-    DerNode::getSequence(pkcs8Children, 1).getChildren();
-  string oidString
-    (dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr());
-  ptr_lib::shared_ptr<DerNode> algorithmParameters = algorithmIdChildren[1];
-  // Get the value of the 3rd child which is the octet string.
-  Blob privateKeyDer = pkcs8Children[2]->toVal();
-
-  // TODO: use RSA_size, etc. to get the proper size of the signature buffer.
-  uint8_t signatureBits[1000];
-  size_t signatureBitsLength;
-  ndn_Error error;
-
-  // Decode the private key and sign.
-#if NDN_CPP_HAVE_LIBCRYPTO
-  if (oidString == RSA_ENCRYPTION_OID) {
-    RsaPrivateKeyLite privateKey;
-    if ((error = privateKey.decode(privateKeyDer)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage::sign RSA: ") + ndn_getErrorString(error));
-
-    if ((error =  privateKey.signWithSha256
-         (data, dataLength, signatureBits, signatureBitsLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage::sign RSA: ") + ndn_getErrorString(error));
+  TpmPrivateKey privateKey;
+  try {
+    privateKey.loadPkcs8(&pkcs8Der.front(), pkcs8Der.size());
+    return privateKey.sign(data, dataLength, digestAlgorithm);
+  } catch (TpmPrivateKey::Error& ex) {
+    throw SecurityException(ex.what());
   }
-  else if (oidString == EC_ENCRYPTION_OID) {
-    EcPrivateKeyLite privateKey;
-    decodeEcPrivateKey(algorithmParameters, privateKeyDer, privateKey);
-
-    if ((error =  privateKey.signWithSha256
-         (data, dataLength, signatureBits, signatureBitsLength)))
-      throw SecurityException
-        (string("FilePrivateKeyStorage::sign ECDSA: ") + ndn_getErrorString(error));
-  }
-  else
-#endif
-    throw SecurityException
-      ("FilePrivateKeyStorage::sign: Unrecognized private key OID");
-
-  return Blob(signatureBits, signatureBitsLength);
 }
 
 Blob
