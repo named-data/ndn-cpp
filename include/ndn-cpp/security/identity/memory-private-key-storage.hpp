@@ -23,8 +23,7 @@
 #define NDN_MEMORY_PRIVATE_KEY_STORAGE_HPP
 
 #include <map>
-#include "../../lite/security/ec-private-key-lite.hpp"
-#include "../../lite/security/rsa-private-key-lite.hpp"
+#include "../tpm/tpm-private-key.hpp"
 #include "private-key-storage.hpp"
 
 namespace ndn {
@@ -194,27 +193,9 @@ public:
   doesKeyExist(const Name& keyName, KeyClass keyClass);
 
 private:
-  /**
-   * PrivateKey is a simple class to hold an RSA or EC private key.
-   */
-  class PrivateKey {
-  public:
-    PrivateKey(KeyType keyType, const uint8_t* keyDer, size_t keyDerLength);
-
-    KeyType getKeyType() const { return keyType_; }
-
-    const RsaPrivateKeyLite& getRsaPrivateKey() const { return rsaPrivateKey_; }
-
-    const EcPrivateKeyLite& getEcPrivateKey() const { return ecPrivateKey_; }
-
-  private:
-    KeyType keyType_;
-    RsaPrivateKeyLite rsaPrivateKey_;
-    EcPrivateKeyLite ecPrivateKey_;
-  };
-
-  std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;   /**< The map key is the keyName.toUri() */
-  std::map<std::string, ptr_lib::shared_ptr<PrivateKey> > privateKeyStore_; /**< The map key is the keyName.toUri() */
+  // The map key is the keyName.toUri().
+  std::map<std::string, ptr_lib::shared_ptr<PublicKey> > publicKeyStore_;
+  std::map<std::string, ptr_lib::shared_ptr<TpmPrivateKey> > privateKeyStore_;
 };
 
 }

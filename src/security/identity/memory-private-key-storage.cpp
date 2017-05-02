@@ -20,16 +20,12 @@
  */
 
 #include <stdexcept>
-#include "../../c/util/crypto.h"
-#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
 
 using namespace std;
 
 namespace ndn {
-
-static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
 MemoryPrivateKeyStorage::~MemoryPrivateKeyStorage()
 {
@@ -49,8 +45,13 @@ MemoryPrivateKeyStorage::setPrivateKeyForKeyName
   (const Name& keyName, KeyType keyType, const uint8_t* privateKeyDer,
    size_t privateKeyDerLength)
 {
-  privateKeyStore_[keyName.toUri()] = ptr_lib::make_shared<PrivateKey>
-    (keyType, privateKeyDer, privateKeyDerLength);
+  try {
+    ptr_lib::shared_ptr<TpmPrivateKey> privateKey(new TpmPrivateKey);
+    privateKey->loadPkcs1(privateKeyDer, privateKeyDerLength, keyType);
+    privateKeyStore_[keyName.toUri()] = privateKey;
+  } catch (TpmPrivateKey::Error& ex) {
+    throw SecurityException(ex.what());
+  }
 }
 
 void
@@ -62,98 +63,15 @@ MemoryPrivateKeyStorage::generateKeyPair
   if (doesKeyExist(keyName, KEY_CLASS_PRIVATE))
     throw SecurityException("Private Key already exists");
 
-  vector<uint8_t> publicKeyDer;
-  vector<uint8_t> privateKeyDer;
-
-#if NDN_CPP_HAVE_LIBCRYPTO
-  if (params.getKeyType() == KEY_TYPE_RSA) {
-    const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(params);
-    RsaPrivateKeyLite privateKey;
-    ndn_Error error;
-    if ((error = privateKey.generate(rsaParams.getKeySize())))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-
-    // Get the encoding length and encode the public key.
-    size_t encodingLength;
-    if ((error = privateKey.encodePublicKey(0, encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    publicKeyDer.resize(encodingLength);
-    if ((error = privateKey.encodePublicKey(&publicKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-
-    // Get the encoding length and encode the private key.
-    if ((error = privateKey.encodePrivateKey(0, encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    privateKeyDer.resize(encodingLength);
-    if ((error = privateKey.encodePrivateKey(&privateKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
+  try {
+    ptr_lib::shared_ptr<TpmPrivateKey> privateKey =
+      TpmPrivateKey::generatePrivateKey(params);
+    privateKeyStore_[keyName.toUri()] = privateKey;
+    publicKeyStore_[keyName.toUri()] = ptr_lib::shared_ptr<PublicKey>(new PublicKey
+      (privateKey->derivePublicKey()));
+  } catch (TpmPrivateKey::Error& ex) {
+    throw SecurityException(ex.what());
   }
-  else if (params.getKeyType() == KEY_TYPE_ECDSA) {
-    const EcdsaKeyParams& ecdsaParams = static_cast<const EcdsaKeyParams&>(params);
-
-    EcPrivateKeyLite privateKey;
-    ndn_Error error;
-    if ((error = privateKey.generate(ecdsaParams.getKeySize())))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-
-    // Find the entry in EC_KEY_INFO.
-    OID parametersOid;
-    for (size_t i = 0 ; i < ndn_getEcKeyInfoCount(); ++i) {
-      const struct ndn_EcKeyInfo *info = ndn_getEcKeyInfo(i);
-      if (info->keySize == ecdsaParams.getKeySize()) {
-        parametersOid.setIntegerList
-          (info->oidIntegerList, info->oidIntegerListLength);
-
-        break;
-      }
-    }
-    if (parametersOid.getIntegerList().size() == 0)
-      // We don't expect this to happen since generate succeeded.
-      throw SecurityException("Unsupported keySize for KEY_TYPE_ECDSA");
-
-    // Get the encoding length and encode the public key.
-    size_t encodingLength;
-    if ((error = privateKey.encodePublicKey(true, 0, encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    vector<uint8_t> opensslPublicKeyDer(encodingLength);
-    if ((error = privateKey.encodePublicKey
-         (true, &opensslPublicKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    // Convert the openssl style to ndn-cxx which has the simple AlgorithmIdentifier.
-    // Find the bit string which is the second child.
-    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-      (opensslPublicKeyDer);
-    const std::vector<ptr_lib::shared_ptr<DerNode> >& children =
-      parsedNode->getChildren();
-    publicKeyDer = *encodeSubjectPublicKeyInfo
-      (OID(EC_ENCRYPTION_OID),
-       ptr_lib::make_shared<DerNode::DerOid>(parametersOid), children[1]);
-
-    // Get the encoding length and encode the private key.
-    if ((error = privateKey.encodePrivateKey(true, 0, encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-    privateKeyDer.resize(encodingLength);
-    if ((error = privateKey.encodePrivateKey
-         (true, &privateKeyDer[0], encodingLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage: ") + ndn_getErrorString(error));
-  }
-  else
-#endif
-    throw SecurityException("Unsupported key type");
-
-  setKeyPairForKeyName
-    (keyName, params.getKeyType(), &publicKeyDer[0], publicKeyDer.size(),
-     &privateKeyDer[0], privateKeyDer.size());
 }
 
 void
@@ -177,38 +95,17 @@ MemoryPrivateKeyStorage::getPublicKey(const Name& keyName)
 Blob
 MemoryPrivateKeyStorage::sign(const uint8_t* data, size_t dataLength, const Name& keyName, DigestAlgorithm digestAlgorithm)
 {
-  if (digestAlgorithm != DIGEST_ALGORITHM_SHA256)
-    throw SecurityException
-      ("MemoryPrivateKeyStorage::sign: Unsupported digest algorithm");
-
-  // TODO: use RSA_size to get the proper size of the signature buffer.
-  uint8_t signatureBits[1000];
-  size_t signatureBitsLength;
-  ndn_Error error;
-
-  // Find the private key and sign.
-  map<string, ptr_lib::shared_ptr<PrivateKey> >::iterator privateKey = privateKeyStore_.find(keyName.toUri());
+  map<string, ptr_lib::shared_ptr<TpmPrivateKey> >::iterator privateKey =
+    privateKeyStore_.find(keyName.toUri());
   if (privateKey == privateKeyStore_.end())
-    throw SecurityException(string("MemoryPrivateKeyStorage: Cannot find private key ") + keyName.toUri());
-#if NDN_CPP_HAVE_LIBCRYPTO
-  if (privateKey->second->getKeyType() == KEY_TYPE_RSA) {
-    if ((error =  privateKey->second->getRsaPrivateKey().signWithSha256
-         (data, dataLength, signatureBits, signatureBitsLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage::sign: ") + ndn_getErrorString(error));
-  }
-  else if (privateKey->second->getKeyType() == KEY_TYPE_ECDSA) {
-    if ((error =  privateKey->second->getEcPrivateKey().signWithSha256
-         (data, dataLength, signatureBits, signatureBitsLength)))
-      throw SecurityException
-        (string("MemoryPrivateKeyStorage::sign: ") + ndn_getErrorString(error));
-  }
-  else
-    // We don't expect this to happen.
-#endif
-    throw SecurityException("Unrecognized private key type");
+    throw SecurityException
+      (string("MemoryPrivateKeyStorage: Cannot find private key ") + keyName.toUri());
 
-  return Blob(signatureBits, (size_t)signatureBitsLength);
+  try {
+    return privateKey->second->sign(data, dataLength, digestAlgorithm);
+  } catch (TpmPrivateKey::Error& ex) {
+    throw SecurityException(ex.what());
+  }
 }
 
 Blob
@@ -239,28 +136,6 @@ MemoryPrivateKeyStorage::doesKeyExist(const Name& keyName, KeyClass keyClass)
   else
     // KEY_CLASS_SYMMETRIC not implemented yet.
     return false;
-}
-
-MemoryPrivateKeyStorage::PrivateKey::PrivateKey
-  (KeyType keyType, const uint8_t* keyDer, size_t keyDerLength)
-{
-  ndn_Error error;
-  keyType_ = keyType;
-
-#if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType == KEY_TYPE_RSA) {
-    if ((error = rsaPrivateKey_.decode(keyDer, keyDerLength)))
-      throw SecurityException
-        (string("PrivateKey constructor: ") + ndn_getErrorString(error));
-  }
-  else if (keyType == KEY_TYPE_ECDSA) {
-    if ((error = ecPrivateKey_.decode(keyDer, keyDerLength)))
-      throw SecurityException
-        (string("PrivateKey constructor: ") + ndn_getErrorString(error));
-  }
-  else
-#endif
-    throw SecurityException("PrivateKey constructor: Unrecognized keyType");
 }
 
 }
