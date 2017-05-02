@@ -34,8 +34,6 @@ namespace ndn {
  */
 class EcPrivateKeyLite : public ndn_EcPrivateKey {
 public:
-   struct ec_key_st* debugGetPrivateKey() { return this->privateKey; }
-
   /**
    * Create an EcPrivateKeyLite with a null value.
    */
