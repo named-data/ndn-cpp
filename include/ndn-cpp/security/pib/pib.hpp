@@ -33,9 +33,9 @@ class PibImpl;
 /**
  * In general, a PIB (Public Information Base) stores the public portion of a
  * user's cryptography keys. The format and location of stored information is
- * indicated by the PibLocator. A PIB is designed to work with a TPM (Trusted
+ * indicated by the PIB locator. A PIB is designed to work with a TPM (Trusted
  * Platform Module) which stores private keys. There is a one-to-one association
- * between a PIB and a TPM, and therefore the TpmLocator is recorded by the PIB
+ * between a PIB and a TPM, and therefore the TPM locator is recorded by the PIB
  * to enforce this association and prevent one from operating on mismatched PIB
  * and TPM.
  *
@@ -96,7 +96,7 @@ public:
    * Get the identity with name identityName.
    * @param identityName The name of the identity.
    * @return The PibIdentity object.
-   * @throw Pib::Error if the identity does not exist.
+   * @throws Pib::Error if the identity does not exist.
    */
   ptr_lib::shared_ptr<PibIdentity>
   getIdentity(const Name& identityName) const;
@@ -104,7 +104,7 @@ public:
   /**
    * Get the default identity.
    * @return The PibIdentity object.
-   * @throw Pib::Error if there is no default identity.
+   * @throws Pib::Error if there is no default identity.
    */
   const ptr_lib::shared_ptr<PibIdentity>&
   getDefaultIdentity() const;
