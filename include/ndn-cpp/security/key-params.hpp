@@ -24,6 +24,7 @@
 #define NDN_KEY_PARAMS_HPP
 
 #include <stdint.h>
+#include "../name.hpp"
 #include "security-common.hpp"
 
 namespace ndn {
@@ -40,27 +41,59 @@ public:
   }
 
   KeyType
-  getKeyType() const
-  {
-    return keyType_;
-  }
+  getKeyType() const { return keyType_; }
+
+  KeyIdType
+  getKeyIdType() const { return keyIdType_; }
+
+  void
+  setKeyId(const Name::Component& keyId) { keyId_ = keyId; }
+
+  const Name::Component&
+  getKeyId() const { return keyId_; }
 
 protected:
-  explicit
-  KeyParams(KeyType keyType)
-  : keyType_(keyType)
-  {
-  }
+  /**
+   * Create a key generation parameter.
+   * @param keyType The type for the created key.
+   * @param keyIdType The method for how the key id should be generated, which
+   * must not be KEY_ID_TYPE_USER_SPECIFIED.
+   * @throws std::runtime_error if keyIdType is KEY_ID_TYPE_USER_SPECIFIED.
+   */
+  KeyParams(KeyType keyType, KeyIdType keyIdType);
+
+  /**
+   * Create a key generation parameter.
+   * @param keyType The type for the created key.
+   * @param keyId The user-specified key ID. This sets the keyIdType to
+   * KEY_ID_TYPE_USER_SPECIFIED. keyId must not be empty.
+   * @throws std::runtime_error if keyId is empty.
+   */
+  KeyParams(KeyType keyType, const Name::Component& keyId);
 
 private:
   KeyType keyType_;
+  KeyIdType keyIdType_;
+  Name::Component keyId_;
 };
 
 class RsaKeyParams : public KeyParams {
 public:
   explicit
-  RsaKeyParams(uint32_t size = RsaKeyParams::getDefaultSize())
-  : KeyParams(RsaKeyParams::getType()), size_(size)
+  RsaKeyParams
+    (const Name::Component& keyId,
+     uint32_t size = RsaKeyParams::getDefaultSize())
+  : KeyParams(RsaKeyParams::getType(), keyId),
+    size_(size)
+  {
+  }
+
+  explicit
+  RsaKeyParams
+    (uint32_t size = RsaKeyParams::getDefaultSize(),
+     KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
+  : KeyParams(RsaKeyParams::getType(), keyIdType),
+    size_(size)
   {
   }
 
@@ -83,8 +116,20 @@ private:
 class EcdsaKeyParams : public KeyParams {
 public:
   explicit
-  EcdsaKeyParams(uint32_t size = EcdsaKeyParams::getDefaultSize())
-  : KeyParams(EcdsaKeyParams::getType()), size_(size)
+  EcdsaKeyParams
+    (const Name::Component& keyId,
+     uint32_t size = EcdsaKeyParams::getDefaultSize())
+  : KeyParams(EcdsaKeyParams::getType(), keyId),
+    size_(size)
+  {
+  }
+
+  explicit
+  EcdsaKeyParams
+    (uint32_t size = EcdsaKeyParams::getDefaultSize(),
+     KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
+  : KeyParams(EcdsaKeyParams::getType(), keyIdType),
+    size_(size)
   {
   }
 
@@ -107,8 +152,20 @@ private:
 class AesKeyParams : public KeyParams {
 public:
   explicit
-  AesKeyParams(uint32_t size = AesKeyParams::getDefaultSize())
-  : KeyParams(AesKeyParams::getType()), size_(size)
+  AesKeyParams
+    (const Name::Component& keyId,
+     uint32_t size = AesKeyParams::getDefaultSize())
+  : KeyParams(AesKeyParams::getType(), keyId),
+    size_(size)
+  {
+  }
+
+  explicit
+  AesKeyParams
+    (uint32_t size = AesKeyParams::getDefaultSize(),
+     KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
+  : KeyParams(AesKeyParams::getType(), keyIdType),
+    size_(size)
   {
   }
 
