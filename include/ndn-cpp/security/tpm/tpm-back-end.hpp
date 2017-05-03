@@ -98,7 +98,8 @@ public:
    * @param keyName The name of the key in the TPM.
    * @param password The password for encrypting the private key.
    * @param passwordLength The length of the password.
-   * @throw TpmBackEnd::Error the key does not exist or if the key cannot be
+   * @return The private key encoded in PKCS #8 format.
+   * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
   Blob
