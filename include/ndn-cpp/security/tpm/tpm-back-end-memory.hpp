@@ -30,9 +30,16 @@ namespace ndn {
 
 class TpmKeyHandle;
 
+/**
+ * TpmBackEndMemory extends TpmBackEnd to implement a TPM back-end using
+ * in-memory storage.
+ */
 class TpmBackEndMemory : public TpmBackEnd {
 public:
   TpmBackEndMemory();
+
+  static std::string
+  getScheme() { return "tpm-memory"; }
 
 private:
   /**
