@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sstream>
 #include <fstream>
 #include "../../util/sqlite3-statement.hpp"
 #include <ndn-cpp/security/pib/pib-sqlite3.hpp>
@@ -210,9 +209,10 @@ PibSqlite3::PibSqlite3
 
     // TODO: Handle non-unix file systems which don't use "/".
     databaseDirectoryPath = homeDir + '/' + ".ndn";
-    // TODO: Handle non-unix file systems which don't have "mkdir -p".
-    ::system(("mkdir -p " + databaseDirectoryPath).c_str());
   }
+
+  // TODO: Handle non-unix file systems which don't have "mkdir -p".
+  ::system(("mkdir -p \"" + databaseDirectoryPath + "\"").c_str());
 
   // Open the PIB.
   string databaseFilePath = databaseDirectoryPath + '/' + databaseFilename;
