@@ -126,6 +126,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-repetitive-interval$(EXEEXT) \
 	bin/unit-tests/test-rsa-algorithm$(EXEEXT) \
 	bin/unit-tests/test-schedule$(EXEEXT) \
+	bin/unit-tests/test-tpm-back-ends$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
 noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-chrono-chat$(EXEEXT) bin/test-echo-consumer$(EXEEXT) \
@@ -359,6 +360,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/policy/no-verify-policy-manager.lo \
 	src/security/policy/policy-manager.lo \
 	src/security/policy/self-verify-policy-manager.lo \
+	src/security/tpm/tpm-back-end.lo \
+	src/security/tpm/tpm-back-end-memory.lo \
+	src/security/tpm/tpm-key-handle.lo \
+	src/security/tpm/tpm-key-handle-memory.lo \
 	src/security/tpm/tpm-private-key.lo \
 	src/security/v2/certificate-v2.lo src/sync/chrono-sync2013.lo \
 	src/sync/digest-tree.lo src/sync/sync-state.pb.lo \
@@ -659,6 +664,11 @@ am_bin_unit_tests_test_schedule_OBJECTS = tests/unit-tests/bin_unit_tests_test_s
 bin_unit_tests_test_schedule_OBJECTS =  \
 	$(am_bin_unit_tests_test_schedule_OBJECTS)
 bin_unit_tests_test_schedule_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_tpm_back_ends_OBJECTS = tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.$(OBJEXT)
+bin_unit_tests_test_tpm_back_ends_OBJECTS =  \
+	$(am_bin_unit_tests_test_tpm_back_ends_OBJECTS)
+bin_unit_tests_test_tpm_back_ends_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_verification_rules_OBJECTS = tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_verification_rules-gtest-all.$(OBJEXT)
 bin_unit_tests_test_verification_rules_OBJECTS =  \
@@ -777,6 +787,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_schedule_SOURCES) \
+	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
@@ -833,6 +844,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_schedule_SOURCES) \
+	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
@@ -1437,6 +1449,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
@@ -1637,6 +1653,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm-back-end.cpp \
+  src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-key-handle.cpp \
+  src/security/tpm/tpm-key-handle-memory.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
@@ -1838,6 +1858,9 @@ bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
+bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_verification_rules_LDADD = libndn-cpp.la
@@ -2466,6 +2489,16 @@ src/security/tpm/$(am__dirstamp):
 src/security/tpm/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/security/tpm/$(DEPDIR)
 	@: > src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end-memory.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle-memory.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/tpm/tpm-private-key.lo: src/security/tpm/$(am__dirstamp) \
 	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/$(am__dirstamp):
@@ -3110,6 +3143,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.$(OBJ
 bin/unit-tests/test-schedule$(EXEEXT): $(bin_unit_tests_test_schedule_OBJECTS) $(bin_unit_tests_test_schedule_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_schedule_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-schedule$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_schedule_OBJECTS) $(bin_unit_tests_test_schedule_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-tpm-back-ends$(EXEEXT): $(bin_unit_tests_test_tpm_back_ends_OBJECTS) $(bin_unit_tests_test_tpm_back_ends_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_tpm_back_ends_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-tpm-back-ends$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_tpm_back_ends_OBJECTS) $(bin_unit_tests_test_tpm_back_ends_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -3247,6 +3290,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_schedule-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
@@ -3431,6 +3475,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/no-verify-policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/self-verify-policy-manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@
@@ -3499,6 +3547,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_schedule-test-schedule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/channel-discovery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.Plo@am__quote@
@@ -4561,6 +4610,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_schedule_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o: tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o `test -f 'tests/unit-tests/test-tpm-back-ends.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-back-ends.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o `test -f 'tests/unit-tests/test-tpm-back-ends.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-back-ends.cpp
+
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj: tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj `if test -f 'tests/unit-tests/test-tpm-back-ends.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-back-ends.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-back-ends.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-back-ends.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj `if test -f 'tests/unit-tests/test-tpm-back-ends.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-back-ends.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-back-ends.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o: tests/unit-tests/test-verification-rules.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_verification_rules_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Tpo -c -o tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o `test -f 'tests/unit-tests/test-verification-rules.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-verification-rules.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po
@@ -5156,6 +5233,13 @@ bin/unit-tests/test-rsa-algorithm.log: bin/unit-tests/test-rsa-algorithm$(EXEEXT
 bin/unit-tests/test-schedule.log: bin/unit-tests/test-schedule$(EXEEXT)
 	@p='bin/unit-tests/test-schedule$(EXEEXT)'; \
 	b='bin/unit-tests/test-schedule'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-tpm-back-ends.log: bin/unit-tests/test-tpm-back-ends$(EXEEXT)
+	@p='bin/unit-tests/test-tpm-back-ends$(EXEEXT)'; \
+	b='bin/unit-tests/test-tpm-back-ends'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

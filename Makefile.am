@@ -40,6 +40,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
+  bin/unit-tests/test-tpm-back-ends \
   bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
@@ -197,6 +198,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
@@ -394,6 +399,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm-back-end.cpp \
+  src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-key-handle.cpp \
+  src/security/tpm/tpm-key-handle-memory.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
@@ -638,6 +647,10 @@ bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
