@@ -38,7 +38,8 @@ public:
   ~TpmKeyHandle();
 
   /**
-   * Compute a digital signature from buf using this key with digestAlgorithm.
+   * Compute a digital signature from the byte array using this key with
+   * digestAlgorithm.
    * @param digestAlgorithm The digest algorithm.
    * @param data The input byte array.
    * @param dataLength The length of the byte array.
