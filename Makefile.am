@@ -198,6 +198,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/tpm.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
@@ -399,6 +400,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm.cpp \
   src/security/tpm/tpm-back-end.cpp \
   src/security/tpm/tpm-back-end-memory.cpp \
   src/security/tpm/tpm-key-handle.cpp \
