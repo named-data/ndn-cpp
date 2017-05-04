@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 #include "../../encoding/base64.hpp"
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
@@ -79,7 +80,9 @@ FilePrivateKeyStorage::generateKeyPair
     ofstream publicKeyFile(publicKeyFilePath.c_str());
     publicKeyFile << toBase64(*privateKey->derivePublicKey(), true);
     ofstream privateKeyFile(privateKeyFilePath.c_str());
-    privateKeyFile << toBase64(*privateKey->toPkcs8(), true);
+    // Set includeParameters false because the legacy ndn-cxx stores the EC key
+    // without parameters.
+    privateKeyFile << toBase64(*privateKey->toPkcs8(false), true);
 
 #if !defined(_WIN32) // Windows doesn't have Unix group permissions.
     ::chmod(publicKeyFilePath.c_str(),  S_IRUSR | S_IRGRP | S_IROTH);

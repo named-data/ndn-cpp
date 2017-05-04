@@ -212,25 +212,22 @@ TpmPrivateKey::sign
 }
 
 Blob
-TpmPrivateKey::toPkcs8()
+TpmPrivateKey::toPkcs1(bool includeParameters)
 {
 #if NDN_CPP_HAVE_LIBCRYPTO
   if (keyType_ == KEY_TYPE_ECDSA) {
-    // Get the encoding length and encode the PKCS #1 private key. Omit the EC
-    // parameters since ndn-cxx doesn't use them.
+    // Get the encoding length and encode.
     size_t encodingLength;
     ndn_Error error;
-    if ((error = ecPrivateKey_->encodePrivateKey(false, 0, encodingLength)))
-      throw Error(string("toPkcs8: ") + ndn_getErrorString(error));
-    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
     if ((error = ecPrivateKey_->encodePrivateKey
-         (false, &pkcs1PrivateKeyDer[0], encodingLength)))
-      throw Error(string("toPkcs8: ") + ndn_getErrorString(error));
-
-    OID parametersOid = getEcOid(*ecPrivateKey_);
-    return encodePkcs8PrivateKey
-      (pkcs1PrivateKeyDer, OID(EC_ENCRYPTION_OID),
-       ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
+         (includeParameters, 0, encodingLength)))
+      throw Error(string("toPkcs1: ") + ndn_getErrorString(error));
+    ptr_lib::shared_ptr<vector<uint8_t> > encoding
+      (new vector<uint8_t>(encodingLength));
+    if ((error = ecPrivateKey_->encodePrivateKey
+         (includeParameters, &encoding->front(), encodingLength)))
+      throw Error(string("toPkcs1: ") + ndn_getErrorString(error));
+    return Blob(encoding, false);
   }
   else if (keyType_ == KEY_TYPE_RSA) {
     // Get the encoding length and encode the private key.
@@ -238,12 +235,31 @@ TpmPrivateKey::toPkcs8()
     ndn_Error error;
     if ((error = rsaPrivateKey_->encodePrivateKey(0, encodingLength)))
       throw Error(string("toPkcs8: ") + ndn_getErrorString(error));
-    vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
+    ptr_lib::shared_ptr<vector<uint8_t> > encoding
+      (new vector<uint8_t>(encodingLength));
     if ((error = rsaPrivateKey_->encodePrivateKey
-         (&pkcs1PrivateKeyDer[0], encodingLength)))
+         (&encoding->front(), encodingLength)))
       throw Error(string("toPkcs8: ") + ndn_getErrorString(error));
+    return Blob(encoding, false);
+  }
+  else
+#endif
+    throw Error("toPkcs1: The private key is not loaded");
+}
+
+Blob
+TpmPrivateKey::toPkcs8(bool includeParameters)
+{
+#if NDN_CPP_HAVE_LIBCRYPTO
+  if (keyType_ == KEY_TYPE_ECDSA) {
+    OID parametersOid = getEcOid(*ecPrivateKey_);
     return encodePkcs8PrivateKey
-      (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
+      (*toPkcs1(includeParameters), OID(EC_ENCRYPTION_OID),
+       ptr_lib::make_shared<DerNode::DerOid>(parametersOid));
+  }
+  else if (keyType_ == KEY_TYPE_RSA) {
+    return encodePkcs8PrivateKey
+      (*toPkcs1(), OID(RSA_ENCRYPTION_OID),
        ptr_lib::make_shared<DerNode::DerNull>());
   }
   else

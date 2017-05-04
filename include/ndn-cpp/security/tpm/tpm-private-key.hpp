@@ -123,12 +123,26 @@ public:
   sign(const uint8_t *data, size_t dataLength, DigestAlgorithm digestAlgorithm);
 
   /**
-   * Get the encoded unencrypted private key in PKCS #8.
+   * Get the encoded unencrypted private key in PKCS #1.
+   * @param includeParameters (optional) If true and this is an EC key, then
+   * include the EC parameters in the encoding. If omitted, use true. Using
+   * false is deprecated.
    * @return The private key encoding Blob.
    * @throws TpmPrivateKey::Error if no private key is loaded, or error encoding.
    */
   Blob
-  toPkcs8();
+  toPkcs1(bool includeParameters = true);
+
+  /**
+   * Get the encoded unencrypted private key in PKCS #8.
+   * @param includeParameters (optional) If true and this is an EC key, then
+   * include the EC parameters in the encoding. If omitted, use true. Using
+   * false is deprecated.
+   * @return The private key encoding Blob.
+   * @throws TpmPrivateKey::Error if no private key is loaded, or error encoding.
+   */
+  Blob
+  toPkcs8(bool includeParameters = true);
 
   /**
    * Generate a key pair according to and return a new TpmPrivateKey with the
