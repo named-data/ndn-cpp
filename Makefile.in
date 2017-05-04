@@ -363,8 +363,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/tpm/tpm.lo src/security/tpm/tpm-back-end.lo \
 	src/security/tpm/tpm-back-end-file.lo \
 	src/security/tpm/tpm-back-end-memory.lo \
+	src/security/tpm/tpm-back-end-osx.lo \
 	src/security/tpm/tpm-key-handle.lo \
 	src/security/tpm/tpm-key-handle-memory.lo \
+	src/security/tpm/tpm-key-handle-osx.lo \
 	src/security/tpm/tpm-private-key.lo \
 	src/security/v2/certificate-v2.lo src/sync/chrono-sync2013.lo \
 	src/sync/digest-tree.lo src/sync/sync-state.pb.lo \
@@ -1455,8 +1457,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-back-end.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-file.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
@@ -1661,8 +1665,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-back-end.cpp \
   src/security/tpm/tpm-back-end-file.cpp \
   src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-back-end-osx.cpp \
   src/security/tpm/tpm-key-handle.cpp \
   src/security/tpm/tpm-key-handle-memory.cpp \
+  src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
@@ -2505,9 +2511,15 @@ src/security/tpm/tpm-back-end-file.lo:  \
 src/security/tpm/tpm-back-end-memory.lo:  \
 	src/security/tpm/$(am__dirstamp) \
 	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end-osx.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/tpm/tpm-key-handle.lo: src/security/tpm/$(am__dirstamp) \
 	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/tpm/tpm-key-handle-memory.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle-osx.lo:  \
 	src/security/tpm/$(am__dirstamp) \
 	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
 src/security/tpm/tpm-private-key.lo: src/security/tpm/$(am__dirstamp) \
@@ -3488,8 +3500,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/self-verify-policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-osx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle-osx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm.Plo@am__quote@

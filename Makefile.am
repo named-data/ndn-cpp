@@ -203,8 +203,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-back-end.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-file.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
@@ -406,8 +408,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-back-end.cpp \
   src/security/tpm/tpm-back-end-file.cpp \
   src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-back-end-osx.cpp \
   src/security/tpm/tpm-key-handle.cpp \
   src/security/tpm/tpm-key-handle-memory.cpp \
+  src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
   src/sync/chrono-sync2013.cpp \
