@@ -68,11 +68,14 @@ public:
    * This replaces any existing private key in this object.
    * @param encoding The byte array with the private key encoding.
    * @param encodingLength The length of the encoding.
-   * @param keyType The KeyType, such as KEY_TYPE_RSA.
+   * @param keyType (potional) The KeyType, such as KEY_TYPE_RSA. If omitted,
+   * then partially decode the private key to determine the key type.
    * @throws TpmPrivateKey::Error for errors decoding the key.
    */
   void
-  loadPkcs1(const uint8_t* encoding, size_t encodingLength, KeyType keyType);
+  loadPkcs1
+    (const uint8_t* encoding, size_t encodingLength,
+     KeyType keyType = (KeyType)-1);
 
   /**
    * Load the unencrypted private key from a buffer with the PKCS #8 encoding.
