@@ -32,6 +32,7 @@
 #include <ndn-cpp/security/tpm/tpm-key-handle.hpp>
 #include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
 #include <ndn-cpp/security/tpm/tpm-back-end-file.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-osx.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -68,20 +69,30 @@ public:
   TestBackEnds()
   {
     backEndMemory.reset(new TpmBackEndMemory());
+    backEndList[0] = backEndMemory.get();
 
     string locationPath = getPolicyConfigDirectory() + "/ndnsec-key-file";
     ::system(("rm -rf \"" + locationPath + "\"").c_str());
     backEndFile.reset(new TpmBackEndFile(locationPath));
-
-    backEndList[0] = backEndMemory.get();
     backEndList[1] = backEndFile.get();
-    // TODO: Add OSX back ends.
+
+#if NDN_CPP_HAVE_OSX_SECURITY
+    backEndOsx.reset(new TpmBackEndOsx());
+    backEndList[2] = backEndOsx.get();
+#endif
   }
 
   ptr_lib::shared_ptr<TpmBackEndMemory> backEndMemory;
   ptr_lib::shared_ptr<TpmBackEndFile> backEndFile;
+#if NDN_CPP_HAVE_OSX_SECURITY
+  ptr_lib::shared_ptr<TpmBackEndOsx> backEndOsx;
+#endif
 
+#if NDN_CPP_HAVE_OSX_SECURITY
+  TpmBackEnd* backEndList[3];
+#else
   TpmBackEnd* backEndList[2];
+#endif
 };
 
 TEST_F(TestBackEnds, KeyManagement)
