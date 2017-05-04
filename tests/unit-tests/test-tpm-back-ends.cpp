@@ -22,27 +22,66 @@
 
 #include "gtest/gtest.h"
 #include <algorithm>
+#include <unistd.h>
+#include <fstream>
+#include <cstdio>
 #include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #include <ndn-cpp/security/pib/pib-key.hpp>
 #include <ndn-cpp/security/tpm/tpm.hpp>
 #include <ndn-cpp/security/tpm/tpm-key-handle.hpp>
 #include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-file.hpp>
 
 using namespace std;
 using namespace ndn;
+
+static bool
+fileExists(const string& filePath)
+{
+  ifstream stream(filePath.c_str());
+  bool result = (bool)stream;
+  stream.close();
+  return result;
+}
+
+static string
+getPolicyConfigDirectory()
+{
+  string policyConfigDirectory = "policy_config";
+  // Check if expected files are in this directory.
+  if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
+    // Maybe we are running "make check" from the ndn-cpp root.  There may be
+    //   a way to tell "make check" to run from tests/unit-tests, but for
+    //   now just set policyConfigDirectory explicitly.
+    policyConfigDirectory = "tests/unit-tests/policy_config";
+
+    if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
+      throw runtime_error("Cannot find the directory for policy-config");
+  }
+
+  return policyConfigDirectory;
+}
 
 class TestBackEnds : public ::testing::Test {
 public:
   TestBackEnds()
   {
-    backEndList[0] = &backEndMemory;
-    // TODO: Add other back ends.
+    backEndMemory.reset(new TpmBackEndMemory());
+
+    string locationPath = getPolicyConfigDirectory() + "/ndnsec-key-file";
+    ::system(("rm -rf \"" + locationPath + "\"").c_str());
+    backEndFile.reset(new TpmBackEndFile(locationPath));
+
+    backEndList[0] = backEndMemory.get();
+    backEndList[1] = backEndFile.get();
+    // TODO: Add OSX back ends.
   }
 
-  TpmBackEndMemory backEndMemory;
+  ptr_lib::shared_ptr<TpmBackEndMemory> backEndMemory;
+  ptr_lib::shared_ptr<TpmBackEndFile> backEndFile;
 
-  TpmBackEnd* backEndList[1];
+  TpmBackEnd* backEndList[2];
 };
 
 TEST_F(TestBackEnds, KeyManagement)
@@ -161,7 +200,7 @@ TEST_F(TestBackEnds, EcdsaSigning)
 
 TEST_F(TestBackEnds, RandomKeyId)
 {
-  TpmBackEnd& tpm = backEndMemory;
+  TpmBackEnd& tpm = *backEndMemory;
 
   Name identityName("/Test/KeyName");
 
