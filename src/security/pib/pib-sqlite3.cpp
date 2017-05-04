@@ -193,8 +193,13 @@ PibSqlite3::PibSqlite3
   (const string& databaseDirectoryPathIn, const string& databaseFilename)
 {
   string databaseDirectoryPath = databaseDirectoryPathIn;
-  if (databaseDirectoryPathIn != "")
+  if (databaseDirectoryPathIn != "") {
     databaseDirectoryPath = databaseDirectoryPathIn;
+    if (databaseDirectoryPath[databaseDirectoryPath.size() - 1] == '/' ||
+        databaseDirectoryPath[databaseDirectoryPath.size() - 1] == '\\')
+      // Strip the ending path separator.
+      databaseDirectoryPath.erase(databaseDirectoryPath.size() - 1);
+  }
   else {
     // Note: We don't use <filesystem> support because it is not "header-only"
     // and requires linking to libraries.
