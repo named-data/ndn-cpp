@@ -145,6 +145,8 @@ private:
   T m_typeRef;
 };
 
+typedef CFReleaser<SecKeyRef> KeyRefOsx;
+
 }
 
 #endif // NDN_CPP_HAVE_OSX_SECURITY
