@@ -38,6 +38,19 @@ class TpmPrivateKey;
 class TpmBackEndFile : public TpmBackEnd {
 public:
   /**
+   * A TpmBackEndFile::Error extends TpmBackEnd::Error and represents a
+   * non-semantic error in backend TPM file processing.
+   */
+  class Error : public TpmBackEnd::Error
+  {
+  public:
+    Error(const std::string& what)
+    : TpmBackEnd::Error(what)
+    {
+    }
+  };
+
+  /**
    * Create a TpmBackEndFile to use the given path to store files.
    * @param locationPath (optional) The path of the directory to store private
    * keys. If omitted use $HOME/.ndn/ndnsec-key-file .
