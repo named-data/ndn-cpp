@@ -1450,6 +1450,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/helper-osx.hpp \
   include/ndn-cpp/security/tpm/tpm.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end.hpp \
   include/ndn-cpp/security/tpm/tpm-back-end-file.hpp \
