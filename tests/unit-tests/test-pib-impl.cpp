@@ -77,7 +77,7 @@ public:
   PibSqlite3Fixture()
   {
     string databaseDirectoryPath = getPolicyConfigDirectory();
-    string databaseFilename = "/test-pib.db";
+    string databaseFilename = "test-pib.db";
     databaseFilePath = databaseDirectoryPath + "/" + databaseFilename;
     remove(databaseFilePath.c_str());
 
