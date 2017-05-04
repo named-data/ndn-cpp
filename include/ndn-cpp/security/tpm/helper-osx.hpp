@@ -125,6 +125,14 @@ public:
     m_typeRef = typeRef;
   }
 
+  void
+  retain()
+  {
+    T typeRef = m_typeRef;
+    m_typeRef = nullptr;
+    retain(typeRef);
+  }
+
   void release()
   {
     if (m_typeRef != 0) {
