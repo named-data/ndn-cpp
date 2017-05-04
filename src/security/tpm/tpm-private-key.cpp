@@ -65,7 +65,8 @@ TpmPrivateKey::loadPkcs1
         // Assume it is an EC key. Try decoding it below.
         keyType = KEY_TYPE_ECDSA;
     } catch (const DerDecodingException& ex) {
-      throw Error("loadPkcs1: Error decoding PKCS #1 key to get the keyType");
+      // Assume it is an EC key. Try decoding it below.
+      keyType = KEY_TYPE_ECDSA;
     }
   }
 
