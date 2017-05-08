@@ -64,4 +64,32 @@ TpmBackEndMemory::doCreateKey(const Name& identityName, const KeyParams& params)
 void
 TpmBackEndMemory::doDeleteKey(const Name& keyName) { keys_.erase(keyName); }
 
+Blob
+TpmBackEndMemory::doExportKey
+  (const Name& keyName, const char* password, size_t passwordLength)
+{
+  if (password)
+    throw Error("Private key password-encryption is not implemented");
+  else
+    return keys_[keyName]->toPkcs8();
+}
+
+void
+TpmBackEndMemory::doImportKey
+  (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
+   const char* password, size_t passwordLength)
+{
+  try {
+    if (password)
+      throw Error("Private key password-encryption is not implemented");
+    else {
+      ptr_lib::shared_ptr<TpmPrivateKey> key(new TpmPrivateKey());
+      key->loadPkcs8(pkcs8, pkcs8Length);
+      keys_[keyName] = key;
+    }
+  } catch (const TpmPrivateKey::Error& ex) {
+    throw Error(string("Cannot import private key: ") + ex.what());
+  }
+}
+
 }
