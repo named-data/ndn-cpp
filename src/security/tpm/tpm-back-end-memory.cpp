@@ -41,11 +41,11 @@ TpmBackEndMemory::doHasKey(const Name& keyName) const
 ptr_lib::shared_ptr<TpmKeyHandle>
 TpmBackEndMemory::doGetKeyHandle(const Name& keyName) const
 {
-  map<Name, ptr_lib::shared_ptr<TpmKeyHandle>>::const_iterator it =
+  map<Name, ptr_lib::shared_ptr<TpmPrivateKey>>::const_iterator it =
     keys_.find(keyName);
   if (it == keys_.end())
     return ptr_lib::shared_ptr<TpmKeyHandle>();
-  return it->second;
+  return ptr_lib::make_shared<TpmKeyHandleMemory>(it->second);
 }
 
 ptr_lib::shared_ptr<TpmKeyHandle>
@@ -57,7 +57,7 @@ TpmBackEndMemory::doCreateKey(const Name& identityName, const KeyParams& params)
 
   setKeyName(*keyHandle, identityName, params);
 
-  keys_[keyHandle->getKeyName()] = keyHandle;
+  keys_[keyHandle->getKeyName()] = key;
   return keyHandle;
 }
 

@@ -28,7 +28,7 @@
 
 namespace ndn {
 
-class TpmKeyHandle;
+class TpmPrivateKey;
 
 /**
  * TpmBackEndMemory extends TpmBackEnd to implement a TPM back-end using
@@ -79,7 +79,7 @@ private:
   TpmBackEndMemory(const TpmBackEndMemory& other);
   TpmBackEndMemory& operator=(const TpmBackEndMemory& other);
 
-  std::map<Name, ptr_lib::shared_ptr<TpmKeyHandle>> keys_;
+  std::map<Name, ptr_lib::shared_ptr<TpmPrivateKey>> keys_;
 };
 
 }
