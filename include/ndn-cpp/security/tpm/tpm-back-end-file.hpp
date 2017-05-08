@@ -94,6 +94,9 @@ private:
   virtual void
   doDeleteKey(const Name& keyName);
 
+  // TODO: doExportKey.
+  // TODO: doImportKey.
+
   /**
    * Load the private key with name keyName from the key file directory.
    * @param keyName The name of the key.

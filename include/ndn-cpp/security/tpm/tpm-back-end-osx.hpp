@@ -145,6 +145,9 @@ private:
   virtual void
   doDeleteKey(const Name& keyName);
 
+  // TODO: doExportKey.
+  // TODO: doImportKey.
+
   /**
    * Get the private key reference with name keyName.
    * @param keyName The name of the key.
