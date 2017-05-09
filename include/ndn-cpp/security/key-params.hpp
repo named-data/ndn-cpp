@@ -79,7 +79,6 @@ private:
 
 class RsaKeyParams : public KeyParams {
 public:
-  explicit
   RsaKeyParams
     (const Name::Component& keyId,
      uint32_t size = RsaKeyParams::getDefaultSize())
@@ -88,7 +87,6 @@ public:
   {
   }
 
-  explicit
   RsaKeyParams
     (uint32_t size = RsaKeyParams::getDefaultSize(),
      KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
@@ -115,7 +113,6 @@ private:
 
 class EcdsaKeyParams : public KeyParams {
 public:
-  explicit
   EcdsaKeyParams
     (const Name::Component& keyId,
      uint32_t size = EcdsaKeyParams::getDefaultSize())
@@ -124,7 +121,6 @@ public:
   {
   }
 
-  explicit
   EcdsaKeyParams
     (uint32_t size = EcdsaKeyParams::getDefaultSize(),
      KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
@@ -151,7 +147,6 @@ private:
 
 class AesKeyParams : public KeyParams {
 public:
-  explicit
   AesKeyParams
     (const Name::Component& keyId,
      uint32_t size = AesKeyParams::getDefaultSize())
@@ -160,7 +155,6 @@ public:
   {
   }
 
-  explicit
   AesKeyParams
     (uint32_t size = AesKeyParams::getDefaultSize(),
      KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
