@@ -37,9 +37,11 @@ class PibMemory : public PibImpl {
 public:
   /**
    * Create a default PibMemory with no values.
-   * @param location Not used (required by the PIB registration interface).
    */
-  PibMemory(const std::string& location = "");
+  PibMemory()
+  : hasDefaultIdentity_(false)
+  {
+  }
 
   ~PibMemory();
 

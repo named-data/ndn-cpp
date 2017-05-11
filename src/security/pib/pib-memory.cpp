@@ -27,11 +27,6 @@ using namespace std;
 
 namespace ndn {
 
-PibMemory::PibMemory(const string& location)
-: hasDefaultIdentity_(false)
-{
-}
-
 PibMemory::~PibMemory() {}
 
 string
