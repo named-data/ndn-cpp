@@ -40,7 +40,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
-  bin/unit-tests/test-tpm-back-ends \
+  bin/unit-tests/test-signing-info bin/unit-tests/test-tpm-back-ends \
   bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
@@ -170,6 +170,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/key-params.hpp \
   include/ndn-cpp/security/security-exception.hpp \
+  include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
@@ -376,6 +377,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/key-chain.cpp \
   src/security/key-params.cpp \
   src/security/security-exception.cpp \
+  src/security/signing-info.cpp \
   src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
@@ -656,6 +658,10 @@ bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_signing_info_SOURCES = tests/unit-tests/test-signing-info.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_signing_info_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_signing_info_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
