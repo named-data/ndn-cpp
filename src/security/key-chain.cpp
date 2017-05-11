@@ -28,6 +28,13 @@
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
+
+#include <ndn-cpp/security/pib/pib-sqlite3.hpp>
+#include <ndn-cpp/security/pib/pib-memory.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-osx.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-file.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
+#include "../util/config-file.hpp"
 #include <ndn-cpp/security/key-chain.hpp>
 
 INIT_LOGGER("ndn.KeyChain");
@@ -39,12 +46,106 @@ namespace ndn {
 
 const RsaKeyParams KeyChain::DEFAULT_KEY_PARAMS;
 
+string* KeyChain::defaultPibLocator_ = 0;
+string* KeyChain::defaultTpmLocator_ = 0;
+map<string, KeyChain::MakePibImpl>* KeyChain::pibFactories_ = 0;
+map<string, KeyChain::MakeTpmBackEnd>* KeyChain::tpmFactories_ = 0;
+
+#ifdef NDN_CPP_HAVE_SQLITE3
+static ptr_lib::shared_ptr<PibImpl>
+makePibSqlite3(const string& location)
+{
+  return ptr_lib::shared_ptr<PibImpl>(new PibSqlite3(location));
+}
+#endif
+
+static ptr_lib::shared_ptr<PibImpl>
+makePibMemory(const string& location)
+{
+  return ptr_lib::shared_ptr<PibImpl>(new PibMemory());
+}
+
+#if NDN_CPP_HAVE_OSX_SECURITY
+static ptr_lib::shared_ptr<TpmBackEnd>
+makeTpmBackEndOsx(const std::string& location)
+{
+  return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndOsx(location));
+}
+#endif
+
+static ptr_lib::shared_ptr<TpmBackEnd>
+makeTpmBackEndFile(const std::string& location)
+{
+  return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndFile(location));
+}
+
+static ptr_lib::shared_ptr<TpmBackEnd>
+makeTpmBackEndMemory(const std::string& location)
+{
+  // Ignore the location.
+  return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndMemory());
+}
+
+KeyChain::KeyChain
+  (const string& pibLocator, const string& tpmLocator, bool allowReset)
+{
+  isSecurityV1_ = false;
+
+  // PIB locator.
+  string pibScheme, pibLocation;
+  parseAndCheckPibLocator(pibLocator, pibScheme, pibLocation);
+  string canonicalPibLocator = pibScheme + ":" + pibLocation;
+
+  // Create the PIB.
+  pib_ = createPib(canonicalPibLocator);
+  string oldTpmLocator = "";
+  try {
+    oldTpmLocator = pib_->getTpmLocator();
+  }
+  catch (const Pib::Error&) {
+    // The TPM locator is not set in the PIB yet.
+  }
+
+  // TPM locator.
+  string tpmScheme, tpmLocation;
+  parseAndCheckTpmLocator(tpmLocator, tpmScheme, tpmLocation);
+  string canonicalTpmLocator = tpmScheme + ":" + tpmLocation;
+
+  ConfigFile config;
+  if (canonicalPibLocator == getDefaultPibLocator(config)) {
+    // The default PIB must use the default TPM.
+    if (oldTpmLocator != "" && oldTpmLocator != getDefaultTpmLocator(config)) {
+      pib_->reset();
+      canonicalTpmLocator = getDefaultTpmLocator(config);
+    }
+  }
+  else {
+    // Check the consistency of the non-default PIB.
+    if (oldTpmLocator != "" && oldTpmLocator != canonicalTpmLocator) {
+      if (allowReset)
+        pib_->reset();
+      else
+        throw LocatorMismatchError
+          ("The supplied TPM locator does not match the TPM locator in the PIB: " +
+           oldTpmLocator + " != " + canonicalTpmLocator);
+    }
+  }
+
+  // Note that a key mismatch may still happen if the TPM locator is initially
+  // set to a wrong one or if the PIB was shared by more than one TPM before.
+  // This is due to the old PIB not having TPM info. The new PIB should not have
+  // this problem.
+  tpm_ = createTpm(canonicalTpmLocator);
+  pib_->setTpmLocator(canonicalTpmLocator);
+}
+
 KeyChain::KeyChain
   (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
    const ptr_lib::shared_ptr<PolicyManager>& policyManager)
 : identityManager_(identityManager), policyManager_(policyManager),
   face_(0)
 {
+  isSecurityV1_ = true;
 }
 
 KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
@@ -52,6 +153,7 @@ KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
   policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
   face_(0)
 {
+  isSecurityV1_ = true;
 }
 
 KeyChain::KeyChain()
@@ -59,6 +161,7 @@ KeyChain::KeyChain()
   policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
   face_(0)
 {
+  isSecurityV1_ = true;
 }
 
 void
@@ -302,6 +405,167 @@ KeyChain::verifyInterestWithHmacWithSha256
   return newSignatureBits == *signature->getSignature();
 }
 #endif
+
+map<string, KeyChain::MakePibImpl>&
+KeyChain::getPibFactories()
+{
+  if (!pibFactories_) {
+    // Allocate because some C++ environments don't handle static constructors well.
+    pibFactories_ = new map<string, MakePibImpl>();
+
+    // Add the standard factories.
+#ifdef NDN_CPP_HAVE_SQLITE3
+    (*pibFactories_)[PibSqlite3::getScheme()] = &makePibSqlite3;
+#endif
+    (*pibFactories_)[PibMemory::getScheme()] = &makePibMemory;
+  }
+
+  return *pibFactories_;
+}
+
+map<string, KeyChain::MakeTpmBackEnd>&
+KeyChain::getTpmFactories()
+{
+  if (!tpmFactories_) {
+    // Allocate because some C++ environments don't handle static constructors well.
+    tpmFactories_ = new map<string, MakeTpmBackEnd>();
+
+    // Add the standard factories.
+#if NDN_CPP_HAVE_OSX_SECURITY
+    (*tpmFactories_)[TpmBackEndOsx::getScheme()] = &makeTpmBackEndOsx;
+#endif
+    (*tpmFactories_)[TpmBackEndFile::getScheme()] = &makeTpmBackEndFile;
+    (*tpmFactories_)[TpmBackEndMemory::getScheme()] = &makeTpmBackEndMemory;
+  }
+
+  return *tpmFactories_;
+}
+
+void
+KeyChain::parseLocatorUri(const string& uri, string& scheme, string& location)
+{
+  size_t iColon = uri.find(':');
+  if (iColon != string::npos) {
+    scheme = uri.substr(0, iColon);
+    location = uri.substr(iColon + 1);
+  }
+  else {
+    scheme = uri;
+    location = "";
+  }
+}
+
+void
+KeyChain::parseAndCheckPibLocator
+  (const string& pibLocator, string& pibScheme, string& pibLocation)
+{
+  parseLocatorUri(pibLocator, pibScheme, pibLocation);
+
+  if (pibScheme == "")
+    pibScheme = getDefaultPibScheme();
+
+  map<string, MakePibImpl>::const_iterator pibFactory =
+    getPibFactories().find(pibScheme);
+  if (pibFactory == getPibFactories().end())
+    throw Error("PIB scheme `" + pibScheme + "` is not supported");
+}
+
+void
+KeyChain::parseAndCheckTpmLocator
+  (const string& tpmLocator, string& tpmScheme, string& tpmLocation)
+{
+  parseLocatorUri(tpmLocator, tpmScheme, tpmLocation);
+
+  if (tpmScheme == "")
+    tpmScheme = getDefaultTpmScheme();
+
+  map<string, MakeTpmBackEnd>::const_iterator tpmFactory =
+    getTpmFactories().find(tpmScheme);
+  if (tpmFactory == getTpmFactories().end())
+    throw Error("TPM scheme `" + tpmScheme + "` is not supported");
+}
+
+string
+KeyChain::getDefaultPibScheme()
+{
+#ifdef NDN_CPP_HAVE_SQLITE3
+  return PibSqlite3::getScheme();
+#else
+  // No SQLite, so we can't use PibSqlite3.
+  throw SecurityException
+    ("Can't create the default PIB. Try installing libsqlite3 and ./configure again.");
+#endif
+}
+
+string
+KeyChain::getDefaultTpmScheme()
+{
+#if NDN_CPP_HAVE_OSX_SECURITY && NDN_CPP_WITH_OSX_KEYCHAIN
+  return TpmBackEndOsx::getScheme();
+#else
+  return TpmBackEndFile::getScheme();
+#endif
+}
+
+ptr_lib::shared_ptr<Pib>
+KeyChain::createPib(const string& pibLocator)
+{
+  string pibScheme, pibLocation;
+  parseAndCheckPibLocator(pibLocator, pibScheme, pibLocation);
+  map<string, MakePibImpl>::const_iterator pibFactory =
+    getPibFactories().find(pibScheme);
+  return ptr_lib::shared_ptr<Pib>(new Pib
+    (pibScheme, pibLocation, pibFactory->second(pibLocation)));
+}
+
+ptr_lib::shared_ptr<Tpm>
+KeyChain::createTpm(const std::string& tpmLocator)
+{
+  string tpmScheme, tpmLocation;
+  parseAndCheckTpmLocator(tpmLocator, tpmScheme, tpmLocation);
+  map<string, MakeTpmBackEnd>::const_iterator tpmFactory =
+    getTpmFactories().find(tpmScheme);
+  return  ptr_lib::shared_ptr<Tpm>(new Tpm
+    (tpmScheme, tpmLocation, tpmFactory->second(tpmLocation)));
+}
+
+string
+KeyChain::getDefaultPibLocator(ConfigFile& config)
+{
+  if (!defaultPibLocator_)
+    // Allocate because some C++ environments don't handle static constructors well.
+    defaultPibLocator_ = new string();
+
+  if (*defaultPibLocator_ != "")
+    return *defaultPibLocator_;
+
+  const char* clientPib = getenv("NDN_CLIENT_PIB");
+  if (clientPib && *clientPib != '\0')
+    *defaultPibLocator_ = clientPib;
+  else
+     *defaultPibLocator_ = config.get("pib", getDefaultPibScheme() + ":");
+
+  return *defaultPibLocator_;
+}
+
+string
+KeyChain::getDefaultTpmLocator(ConfigFile& config)
+{
+  if (!defaultTpmLocator_)
+    // Allocate because some C++ environments don't handle static constructors well.
+    defaultTpmLocator_ = new string();
+
+  if (*defaultTpmLocator_ != "")
+    return *defaultTpmLocator_;
+
+  const char* clientTpm = getenv("NDN_CLIENT_TPM");
+  if (clientTpm && *clientTpm != '\0')
+    *defaultTpmLocator_ = clientTpm;
+  else
+     *defaultTpmLocator_ = config.get("tpm", getDefaultTpmScheme() + ":");
+
+  return *defaultTpmLocator_;
+}
 
 void
 KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep)

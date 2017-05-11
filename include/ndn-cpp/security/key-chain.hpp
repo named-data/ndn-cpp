@@ -23,16 +23,21 @@
 #ifndef NDN_KEY_CHAIN_HPP
 #define NDN_KEY_CHAIN_HPP
 
+#include <map>
+#include <stdexcept>
 #include "../data.hpp"
 #include "../interest.hpp"
 #include "../face.hpp"
 #include "identity/identity-manager.hpp"
 #include "policy/validation-request.hpp"
+#include "pib/pib.hpp"
+#include "tpm/tpm.hpp"
 #include "key-params.hpp"
 
 namespace ndn {
 
 class PolicyManager;
+class ConfigFile;
 
 /**
  * KeyChain is the main class of the security library.
@@ -45,7 +50,58 @@ class PolicyManager;
 class KeyChain {
 public:
   /**
-   * Create a new KeyChain with the given IdentityManager and PolicyManager.
+   * A KeyChain::Error extends runtime_error and represents an error in KeyChain
+   * processing.
+   */
+  class Error : public std::runtime_error
+  {
+  public:
+    Error(const std::string& what)
+    : std::runtime_error(what)
+    {
+    }
+  };
+
+  /**
+   * A KeyChain::LocatorMismatchError extends KeyChain::Error to indicate that
+   * the supplied TPM locator does not match the locator stored in the PIB.
+   */
+  class LocatorMismatchError : public Error
+  {
+  public:
+    LocatorMismatchError(const std::string& what)
+    : Error(what)
+    {
+    }
+  };
+
+  typedef func_lib::function<ptr_lib::shared_ptr<PibImpl>
+    (const std::string& location)> MakePibImpl;
+
+  typedef func_lib::function<ptr_lib::shared_ptr<TpmBackEnd>
+    (const std::string& location)> MakeTpmBackEnd;
+
+  /**
+   * Create a KeyChain to use the PIB and TPM defined by the given locators.
+   * This creates a security v2 KeyChain that uses CertificateV2, Pib, Tpm and
+   * Validator (instead of v1 Certificate, IdentityStorage, PrivateKeyStorage
+   * and PolicyManager).
+   * @param pibLocator The PIB locator, e.g., "pib-sqlite3:/example/dir".
+   * @param tpmLocator The TPM locator, e.g., "tpm-memory:".
+   * @param allowReset (optional) If true, the PIB will be reset when the
+   * supplied tpmLocator mismatches the one in the PIB. If omitted, don't allow
+   * reset.
+   * @throws KeyChain::LocatorMismatchError if the supplied TPM locator does not
+   * match the locator stored in the PIB.
+   */
+  KeyChain
+    (const std::string& pibLocator, const std::string& tpmLocator,
+     bool allowReset = false);
+
+  /**
+   * Create a new security v1 KeyChain with the given IdentityManager and
+   * PolicyManager. For security v2, use KeyChain(pibLocator, tpmLocator) or the
+   * default constructor if your .ndn folder is already initialized for v2.
    * @param identityManager An object of a subclass of IdentityManager.
    * @param policyManager An object of a subclass of PolicyManager.
    */
@@ -54,8 +110,9 @@ public:
      const ptr_lib::shared_ptr<PolicyManager>& policyManager);
 
   /**
-   * Create a new KeyChain with the given IdentityManager and a
-   * NoVerifyPolicyManager.
+   * Create a new security v1 KeyChain with the given IdentityManager and a
+   * NoVerifyPolicyManager. For security v2, use KeyChain(pibLocator, tpmLocator)
+   * or the default constructor if your .ndn folder is already initialized for v2.
    * @param identityManager An object of a subclass of IdentityManager.
    */
   KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager);
@@ -65,6 +122,12 @@ public:
    * NoVerifyPolicyManager.
    */
   KeyChain();
+
+  const Pib&
+  getPib() const { return *pib_; }
+
+  const Tpm&
+  getTpm() const { return *tpm_; }
 
   /*****************************************
    *          Identity Management          *
@@ -619,7 +682,107 @@ public:
 
   static const RsaKeyParams DEFAULT_KEY_PARAMS;
 
+  /**
+   * Add to the PIB factories map where scheme is the key and makePibImpl is the
+   * value. If your application has its own PIB implementations, this must be
+   * called before creating a KeyChain instance which uses your PIB scheme.
+   * @param scheme The PIB scheme.
+   * @param makePibImpl A callback which takes the PIB location and returns a
+   * new PibImpl instance.
+   */
+  static void
+  registerPibBackend(const std::string& scheme, const MakePibImpl& makePibImpl)
+  {
+    getPibFactories()[scheme] = makePibImpl;
+  }
+
+  /**
+   * Add to the TPM factories map where scheme is the key and makeTpmBackEnd is
+   * the value. If your application has its own TPM implementations, this must
+   * be called before creating a KeyChain instance which uses your TPM scheme.
+   * @param scheme The TPM scheme.
+   * @param makeTpmBackEnd A callback which takes the TPM location and returns a
+   * new TpmBackEnd instance.
+   */
+  static void
+  registerTpmBackend
+    (const std::string& scheme, const MakeTpmBackEnd& makeTpmBackEnd)
+  {
+    getTpmFactories()[scheme] = makeTpmBackEnd;
+  }
+
 private:
+  /**
+   * Get the PIB factories map. On the first call, this initializes the map with
+   * factories for standard PibImpl implementations.
+   * @return A map where the key is the scheme string and the value is the
+   * MakePibImpl callback.
+   */
+  static std::map<std::string, MakePibImpl>&
+  getPibFactories();
+
+  /**
+   * Get the TPM factories map. On the first call, this initializes the map with
+   * factories for standard TpmBackEnd implementations.
+   * @return A map where the key is the scheme string and the value is the
+   * MakeTpmBackEnd callback.
+   */
+  static std::map<std::string, MakeTpmBackEnd>&
+  getTpmFactories();
+
+  /**
+   * Parse the uri and set the scheme and location.
+   */
+  static void
+  parseLocatorUri
+    (const std::string& uri, std::string& scheme, std::string& location);
+
+  /**
+   * Parse the pibLocator and set the pibScheme and pibLocation.
+   */
+  static void
+  parseAndCheckPibLocator
+    (const std::string& pibLocator, std::string& pibScheme,
+     std::string& pibLocation);
+
+  /**
+   * Parse the tpmLocator and set the tpmScheme and tpmLocation.
+   */
+  static void
+  parseAndCheckTpmLocator
+    (const std::string& tpmLocator, std::string& tpmScheme,
+     std::string& tpmLocation);
+
+  static std::string
+  getDefaultPibScheme();
+
+  static std::string
+  getDefaultTpmScheme();
+
+  /**
+   * Create a Pib according to the pibLocator
+   * @param pibLocator The PIB locator, e.g., "pib-sqlite3:/example/dir".
+   * @return A new Pib object.
+   */
+  static ptr_lib::shared_ptr<Pib>
+  createPib(const std::string& pibLocator);
+
+  /**
+   * Create a Tpm according to the tpmLocator
+   * @param tpmLocator The TPM locator, e.g., "tpm-memory:".
+   * @return A new Tpm object.
+   */
+  static ptr_lib::shared_ptr<Tpm>
+  createTpm(const std::string& tpmLocator);
+
+  static std::string
+  getDefaultPibLocator(ConfigFile& config);
+
+  static std::string
+  getDefaultTpmLocator(ConfigFile& config);
+
+  // Security V1 methods
+
   void
   onCertificateData
     (const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep);
@@ -657,9 +820,18 @@ private:
   void
   setDefaultCertificate();
 
-  ptr_lib::shared_ptr<IdentityManager> identityManager_;
-  ptr_lib::shared_ptr<PolicyManager> policyManager_;
-  Face* face_;
+  bool isSecurityV1_;
+  ptr_lib::shared_ptr<IdentityManager> identityManager_; // for security v1
+  ptr_lib::shared_ptr<PolicyManager> policyManager_;     // for security v1
+  Face* face_; // for security v1
+
+  ptr_lib::shared_ptr<Pib> pib_;
+  ptr_lib::shared_ptr<Tpm> tpm_;
+
+  static std::string* defaultPibLocator_;
+  static std::string* defaultTpmLocator_;
+  static std::map<std::string, MakePibImpl>* pibFactories_;
+  static std::map<std::string, MakeTpmBackEnd>* tpmFactories_;
 };
 
 }
