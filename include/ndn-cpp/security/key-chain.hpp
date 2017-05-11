@@ -32,6 +32,7 @@
 #include "policy/validation-request.hpp"
 #include "pib/pib.hpp"
 #include "tpm/tpm.hpp"
+#include "signing-info.hpp"
 #include "key-params.hpp"
 
 namespace ndn {
@@ -58,6 +59,19 @@ public:
   public:
     Error(const std::string& what)
     : std::runtime_error(what)
+    {
+    }
+  };
+
+  /**
+   * A KeyChain::InvalidSigningInfoError extends KeyChain::Error to indicate
+   * that the supplied SigningInfo is invalid.
+   */
+  class InvalidSigningInfoError : public Error
+  {
+  public:
+    InvalidSigningInfoError(const std::string& what)
+    : Error(what)
     {
     }
   };
@@ -369,8 +383,24 @@ public:
   getPolicyManager() { return policyManager_; }
 
   /*****************************************
-   *              Sign/Verify              *
+   *              Signing                  *
    *****************************************/
+
+  /**
+   * Wire encode the Data object, sign it according to the supplied signing
+   * parameters, and set its signature.
+   * @param data The Data object to be signed.  This updates its signature and
+   * key locator field and wireEncoding.
+   * @param params The signing parameters.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @throw KeyChain::Error if signing fails.
+   * @throw KeyChain::InvalidSigningInfoError if params is invalid, or if the
+   * identity, key or certificate specified in params does not exist.
+   */
+  void
+  sign(Data& data, const SigningInfo& params,
+       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Wire encode the Data object, sign it and set its signature.
@@ -386,8 +416,10 @@ public:
   }
 
   /**
-   * Wire encode the Data object, sign it with the default identity and set its
-   * signature.
+   * Wire encode the Data object, sign it with the default key of the default
+   * identity, and set its signature. 
+   * If this is a security v1 KeyChain then use the IdentityManager to get the
+   * default identity. Otherwise use the PIB.
    * @param data The Data object to be signed.  This updates its signature and
    * key locator field and wireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
@@ -396,8 +428,13 @@ public:
   void
   sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
-    identityManager_->signByCertificate
-      (data, prepareDefaultCertificateName(), wireFormat);
+    if (isSecurityV1_) {
+      identityManager_->signByCertificate
+        (data, prepareDefaultCertificateName(), wireFormat);
+      return;
+    }
+
+    sign(data, getDefaultSigningInfo(), wireFormat);
   }
 
   /**
@@ -781,6 +818,34 @@ private:
   static std::string
   getDefaultTpmLocator(ConfigFile& config);
 
+  /**
+   * Prepare a Signature object according to signingInfo and get the signing key
+   * name.
+   * @param params The signing parameters.
+   * @param keyName Set keyName to the signing key name.
+   * @return A new Signature object with the SignatureInfo.
+   * @throw InvalidSigningInfoError when the requested signing method cannot be
+   * satisfied.
+   */
+  ptr_lib::shared_ptr<Signature>
+  prepareSignatureInfo(const SigningInfo& params, Name& keyName);
+
+  /**
+   * Sign the byte array using the key with name keyName.
+   * @param buffer The byte array to be signed.
+   * @param bufferLength the length of buffer.
+   * @param keyName The name of the key.
+   * @param digestAlgorithm The digest algorithm.
+   * @return The signature Blob, or an isNull Blob for an unrecognized
+   * digestAlgorithm.
+   */
+  Blob
+  sign(const uint8_t* buffer, size_t bufferLength, const Name& keyName,
+       DigestAlgorithm digestAlgorithm) const;
+
+  static const SigningInfo&
+  getDefaultSigningInfo();
+
   // Security V1 methods
 
   void
@@ -832,6 +897,7 @@ private:
   static std::string* defaultTpmLocator_;
   static std::map<std::string, MakePibImpl>* pibFactories_;
   static std::map<std::string, MakeTpmBackEnd>* tpmFactories_;
+  static SigningInfo* defaultSigningInfo_;
 };
 
 }

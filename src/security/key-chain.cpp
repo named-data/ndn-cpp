@@ -26,7 +26,9 @@
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
+#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
 
 #include <ndn-cpp/security/pib/pib-sqlite3.hpp>
@@ -50,6 +52,7 @@ string* KeyChain::defaultPibLocator_ = 0;
 string* KeyChain::defaultTpmLocator_ = 0;
 map<string, KeyChain::MakePibImpl>* KeyChain::pibFactories_ = 0;
 map<string, KeyChain::MakeTpmBackEnd>* KeyChain::tpmFactories_ = 0;
+SigningInfo* KeyChain::defaultSigningInfo_;
 
 #ifdef NDN_CPP_HAVE_SQLITE3
 static ptr_lib::shared_ptr<PibImpl>
@@ -162,6 +165,28 @@ KeyChain::KeyChain()
   face_(0)
 {
   isSecurityV1_ = true;
+}
+
+void
+KeyChain::sign
+  (Data& data, const SigningInfo& params, WireFormat& wireFormat)
+{
+  Name keyName;
+  ptr_lib::shared_ptr<Signature> signatureInfo = prepareSignatureInfo
+    (params, keyName);
+
+  data.setSignature(*signatureInfo);
+
+  // Encode once to get the signed portion.
+  SignedBlob encoding = data.wireEncode(wireFormat);
+
+  Blob signatureValue = sign
+    (encoding.signedBuf(), encoding.signedSize(), keyName,
+     params.getDigestAlgorithm());
+  data.getSignature()->setSignature(signatureValue);
+
+  // Encode again to include the signature.
+  data.wireEncode(wireFormat);
 }
 
 void
@@ -565,6 +590,132 @@ KeyChain::getDefaultTpmLocator(ConfigFile& config)
      *defaultTpmLocator_ = config.get("tpm", getDefaultTpmScheme() + ":");
 
   return *defaultTpmLocator_;
+}
+
+ptr_lib::shared_ptr<Signature>
+KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
+{
+  ptr_lib::shared_ptr<PibIdentity> identity;
+  ptr_lib::shared_ptr<PibKey> key;
+
+  if (params.getSignerType() == SigningInfo::SIGNER_TYPE_NULL) {
+    try {
+      identity = pib_->getDefaultIdentity();
+    }
+    catch (const Pib::Error&) {
+      // There is no default identity, so use sha256 for signing.
+      keyName = SigningInfo::getDigestSha256Identity();
+      return ptr_lib::shared_ptr<Signature>(new DigestSha256Signature());
+    }
+  }
+  else if (params.getSignerType() == SigningInfo::SIGNER_TYPE_ID) {
+    identity = params.getPibIdentity();
+    if (!identity) {
+      try {
+        identity = pib_->getIdentity(params.getSignerName());
+      }
+      catch (const Pib::Error&) {
+        throw InvalidSigningInfoError
+          ("Signing identity `" + params.getSignerName().toUri() +
+           "` does not exist");
+      }
+    }
+  }
+  else if (params.getSignerType() == SigningInfo::SIGNER_TYPE_KEY) {
+    key = params.getPibKey();
+    if (!key) {
+      Name identityName = PibKey::extractIdentityFromKeyName
+        (params.getSignerName());
+
+      try {
+        identity = pib_->getIdentity(identityName);
+        key = identity->getKey(params.getSignerName());
+        // We will use the PIB key instance, so reset the identity.
+        identity.reset();
+      }
+      catch (const Pib::Error&) {
+        throw InvalidSigningInfoError
+          ("Signing key `" + params.getSignerName().toUri() + "` does not exist");
+      }
+    }
+  }
+  else if (params.getSignerType() == SigningInfo::SIGNER_TYPE_CERT) {
+    Name identityName = CertificateV2::extractIdentityFromCertName
+      (params.getSignerName());
+    Name keyName = CertificateV2::extractKeyNameFromCertName(params.getSignerName());
+
+    try {
+      identity = pib_->getIdentity(identityName);
+      key = identity->getKey(keyName);
+    }
+    catch (const Pib::Error&) {
+      throw InvalidSigningInfoError
+        ("Signing certificate `" + params.getSignerName().toUri() +
+         "` does not exist");
+    }
+  }
+  else if (params.getSignerType() == SigningInfo::SIGNER_TYPE_SHA256) {
+    keyName = SigningInfo::getDigestSha256Identity();
+    return ptr_lib::shared_ptr<Signature>(new DigestSha256Signature());
+  }
+  else
+    // We don't expect this to happen.
+    throw InvalidSigningInfoError("Unrecognized signer type");
+
+  if (!identity && !key)
+    throw InvalidSigningInfoError("Cannot determine signing parameters");
+
+  if (identity && !key) {
+    try {
+      key = identity->getDefaultKey();
+    }
+    catch (const Pib::Error&) {
+      throw InvalidSigningInfoError
+        ("Signing identity `" + identity->getName().toUri() +
+         "` does not have default certificate");
+    }
+  }
+
+  ptr_lib::shared_ptr<Signature> signatureInfo;
+
+  if (key->getKeyType() == KEY_TYPE_RSA)
+    signatureInfo.reset(new Sha256WithRsaSignature());
+  else if (key->getKeyType() == KEY_TYPE_ECDSA)
+    signatureInfo.reset(new Sha256WithEcdsaSignature());
+  else
+    throw Error("Unsupported key type");
+
+  KeyLocator& keyLocator = const_cast<KeyLocator&>
+    (KeyLocator::getFromSignature(signatureInfo.get()));
+  keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
+  keyLocator.setKeyName(key->getName());
+
+  keyName = key->getName();
+  return signatureInfo;
+}
+
+Blob
+KeyChain::sign
+  (const uint8_t* buffer, size_t bufferLength, const Name& keyName,
+   DigestAlgorithm digestAlgorithm) const
+{
+  if (keyName == SigningInfo::getDigestSha256Identity()) {
+    uint8_t digest[ndn_SHA256_DIGEST_SIZE];
+    CryptoLite::digestSha256(buffer, bufferLength, digest);
+    return Blob(digest, sizeof(digest));
+  }
+
+  return tpm_->sign(buffer, bufferLength, keyName, digestAlgorithm);
+}
+
+const SigningInfo&
+KeyChain::getDefaultSigningInfo()
+{
+  if (!defaultSigningInfo_)
+    // Allocate because some C++ environments don't handle static constructors well.
+    defaultSigningInfo_ = new SigningInfo();
+
+  return *defaultSigningInfo_;
 }
 
 void
