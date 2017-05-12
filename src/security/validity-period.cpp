@@ -45,18 +45,18 @@ ValidityPeriod::canGetFromSignature(const Signature* signature)
          dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
 }
 
-const ValidityPeriod&
-ValidityPeriod::getFromSignature(const Signature* signature)
+ValidityPeriod&
+ValidityPeriod::getFromSignature(Signature* signature)
 {
   {
-    const Sha256WithRsaSignature *castSignature =
-      dynamic_cast<const Sha256WithRsaSignature *>(signature);
+    Sha256WithRsaSignature *castSignature =
+      dynamic_cast<Sha256WithRsaSignature *>(signature);
     if (castSignature)
       return castSignature->getValidityPeriod();
   }
   {
-    const Sha256WithEcdsaSignature *castSignature =
-      dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+    Sha256WithEcdsaSignature *castSignature =
+      dynamic_cast<Sha256WithEcdsaSignature *>(signature);
     if (castSignature)
       return castSignature->getValidityPeriod();
   }

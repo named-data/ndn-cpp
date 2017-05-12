@@ -133,8 +133,14 @@ public:
    * @return The signature's ValidityPeriod. It is an error if signature doesn't
    * have a ValidityPeriod.
    */
+  static ValidityPeriod&
+  getFromSignature(Signature* signature);
+
   static const ValidityPeriod&
-  getFromSignature(const Signature* signature);
+  getFromSignature(const Signature* signature)
+  {
+    return getFromSignature(signature);
+  }
 
   /**
    * Get the change count, which is incremented each time this object is changed.
