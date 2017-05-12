@@ -153,7 +153,7 @@ public:
   static const KeyLocator&
   getFromSignature(const Signature* signature)
   {
-    return getFromSignature(signature);
+    return getFromSignature(const_cast<Signature*>(signature));
   }
 
   /**
