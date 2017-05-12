@@ -270,7 +270,6 @@ TEST_F(InvalidCertificateFixture, InvalidName)
   data.setSignature(generateFakeSignature());
 
   ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
-  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
 }
 
 TEST_F(InvalidCertificateFixture, InvalidType)
@@ -280,7 +279,6 @@ TEST_F(InvalidCertificateFixture, InvalidType)
   data.setSignature(generateFakeSignature());
 
   ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
-  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
 }
 
 TEST_F(InvalidCertificateFixture, EmptyContent)
@@ -289,7 +287,6 @@ TEST_F(InvalidCertificateFixture, EmptyContent)
   data.setContent(Blob());
   data.setSignature(generateFakeSignature());
 
-  ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
   ASSERT_THROW((CertificateV2(data)), CertificateV2::Error);
 
   CertificateV2 certificate(*certificateBase_);
