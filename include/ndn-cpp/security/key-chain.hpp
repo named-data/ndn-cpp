@@ -189,6 +189,21 @@ public:
     sign(data, getDefaultSigningInfo(), wireFormat);
   }
 
+  /**
+   * Sign the byte array according to the supplied signing information params.
+   * @param buffer The byte array to be signed.
+   * @param bufferLength the length of buffer.
+   * @param params (optional) The signing parameters. If params refers to an
+   * identity, this selects the default key of the identity. If params refers to
+   * a key or certificate, this selects the corresponding key. If params is
+   * omitted, this selects the default key of the default identity.
+   * @return The signature Blob, or an isNull Blob if params.getDigestAlgorithm()
+   * is unrecognized.
+   */
+  Blob
+  sign(const uint8_t* buffer, size_t bufferLength, 
+       const SigningInfo& params = getDefaultSigningInfo());
+
   // Import and export
 
   // PIB & TPM backend registry
@@ -850,8 +865,8 @@ private:
    * @param bufferLength the length of buffer.
    * @param keyName The name of the key.
    * @param digestAlgorithm The digest algorithm.
-   * @return The signature Blob, or an isNull Blob for an unrecognized
-   * digestAlgorithm.
+   * @return The signature Blob, or an isNull Blob if the key does not exist, or
+   * for an unrecognized digestAlgorithm.
    */
   Blob
   sign(const uint8_t* buffer, size_t bufferLength, const Name& keyName,

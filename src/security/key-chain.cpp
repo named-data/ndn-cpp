@@ -189,6 +189,17 @@ KeyChain::sign
   data.wireEncode(wireFormat);
 }
 
+Blob
+KeyChain::sign
+  (const uint8_t* buffer, size_t bufferLength, const SigningInfo& params)
+{
+  Name keyName;
+  ptr_lib::shared_ptr<Signature> signatureInfo = prepareSignatureInfo
+    (params, keyName);
+
+  return sign(buffer, bufferLength, keyName, params.getDigestAlgorithm());
+}
+
 // Security v1 methods
 
 void
