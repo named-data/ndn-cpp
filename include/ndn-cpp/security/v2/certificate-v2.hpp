@@ -144,6 +144,7 @@ public:
 
   /**
    * Get the certificate validity period from the SignatureInfo.
+   * @return The ValidityPeriod object.
    * @throws runtime_error If the SignatureInfo doesn't have a ValidityPeriod.
    */
   const ValidityPeriod&
