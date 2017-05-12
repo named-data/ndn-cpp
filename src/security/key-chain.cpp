@@ -180,13 +180,38 @@ KeyChain::sign
   // Encode once to get the signed portion.
   SignedBlob encoding = data.wireEncode(wireFormat);
 
-  Blob signatureValue = sign
+  Blob signatureBytes = sign
     (encoding.signedBuf(), encoding.signedSize(), keyName,
      params.getDigestAlgorithm());
-  data.getSignature()->setSignature(signatureValue);
+  data.getSignature()->setSignature(signatureBytes);
 
   // Encode again to include the signature.
   data.wireEncode(wireFormat);
+}
+
+void
+KeyChain::sign
+  (Interest& interest, const SigningInfo& params, WireFormat& wireFormat)
+{
+  Name keyName;
+  ptr_lib::shared_ptr<Signature> signatureInfo = prepareSignatureInfo
+    (params, keyName);
+
+  // Append the encoded SignatureInfo.
+  interest.getName().append(wireFormat.encodeSignatureInfo(*signatureInfo));
+
+  // Append an empty signature so that the "signedPortion" is correct.
+  interest.getName().append(Name::Component());
+  // Encode once to get the signed portion, and sign.
+  SignedBlob encoding = interest.wireEncode(wireFormat);
+  Blob signatureBytes = sign
+    (encoding.signedBuf(), encoding.signedSize(), keyName,
+     params.getDigestAlgorithm());
+  signatureInfo->setSignature(signatureBytes);
+
+  // Remove the empty signature and append the real one.
+  interest.setName(interest.getName().getPrefix(-1).append
+    (wireFormat.encodeSignatureValue(*signatureInfo)));
 }
 
 Blob
