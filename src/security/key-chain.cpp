@@ -70,20 +70,20 @@ makePibMemory(const string& location)
 
 #if NDN_CPP_HAVE_OSX_SECURITY
 static ptr_lib::shared_ptr<TpmBackEnd>
-makeTpmBackEndOsx(const std::string& location)
+makeTpmBackEndOsx(const string& location)
 {
   return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndOsx(location));
 }
 #endif
 
 static ptr_lib::shared_ptr<TpmBackEnd>
-makeTpmBackEndFile(const std::string& location)
+makeTpmBackEndFile(const string& location)
 {
   return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndFile(location));
 }
 
 static ptr_lib::shared_ptr<TpmBackEnd>
-makeTpmBackEndMemory(const std::string& location)
+makeTpmBackEndMemory(const string& location)
 {
   // Ignore the location.
   return ptr_lib::shared_ptr<TpmBackEnd>(new TpmBackEndMemory());
@@ -544,7 +544,7 @@ KeyChain::createPib(const string& pibLocator)
 }
 
 ptr_lib::shared_ptr<Tpm>
-KeyChain::createTpm(const std::string& tpmLocator)
+KeyChain::createTpm(const string& tpmLocator)
 {
   string tpmScheme, tpmLocation;
   parseAndCheckTpmLocator(tpmLocator, tpmScheme, tpmLocation);
@@ -685,8 +685,7 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
   else
     throw Error("Unsupported key type");
 
-  KeyLocator& keyLocator = const_cast<KeyLocator&>
-    (KeyLocator::getFromSignature(signatureInfo.get()));
+  KeyLocator& keyLocator = KeyLocator::getFromSignature(signatureInfo.get());
   keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
   keyLocator.setKeyName(key->getName());
 

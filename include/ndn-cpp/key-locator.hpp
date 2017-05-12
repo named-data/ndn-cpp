@@ -147,8 +147,14 @@ public:
    * @return The signature's KeyLocator. It is an error if signature doesn't
    * have a KeyLocator.
    */
+  static KeyLocator&
+  getFromSignature(Signature* signature);
+
   static const KeyLocator&
-  getFromSignature(const Signature* signature);
+  getFromSignature(const Signature* signature)
+  {
+    return getFromSignature(signature);
+  }
 
   /**
    * Get the change count, which is incremented each time this object (or a child object) is changed.
