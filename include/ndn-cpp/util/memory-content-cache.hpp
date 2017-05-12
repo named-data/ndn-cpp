@@ -117,6 +117,49 @@ public:
   };
 
   /**
+   * Content is a private class to hold the name and encoding for each entry
+   * in the cache.
+   */
+  class Content {
+  public:
+    /**
+     * Create a new Content entry to hold data's name and wire encoding.
+     * @param data The Data packet whose name and wire encoding are copied.
+     */
+    Content(const Data& data)
+    // wireEncode returns the cached encoding if available.
+    : name_(data.getName()), dataEncoding_(data.wireEncode())
+    {}
+
+    /**
+     * Get the content Name.
+     * @return The content Name.
+     */
+    const Name&
+    getName() const { return name_; }
+
+    /**
+     * Get the encoded content Data packet.
+     * @return The encoded content Blob.
+     */
+    const Blob&
+    getDataEncoding() const { return dataEncoding_; }
+
+  private:
+    Name name_;
+    Blob dataEncoding_;
+  };
+
+  typedef std::vector<ptr_lib::shared_ptr<const Content> > ContentList;
+
+  /**
+   * An OnContentRemoved function object is called when content is removed from
+   * the cache. See setOnContentRemoved().
+   */
+  typedef func_lib::function<void
+    (const ptr_lib::shared_ptr<ContentList>& contentList)> OnContentRemoved;
+
+  /**
    * Call registerPrefix on the Face given to the constructor so that this
    * MemoryContentCache will answer interests whose name has the prefix.
    * Alternatively, if the Face's registerPrefix has already been called, then
@@ -333,6 +376,22 @@ public:
     impl_->getPendingInterestsForName(name, pendingInterests);
   }
 
+  /**
+   * Set the OnContentRemoved callback to call when stale content is removed
+   * from the cache during cleanup. Note: Because onContentRemoved is called
+   * while processing incoming Interests, it should return quickly to allow the
+   * Interest to be processed quickly.
+   * @param onContentRemoved This calls onContentRemoved(contentList) where
+   * contentList is the list of MemoryContentCache::Content objects that were
+   * removed, where each Content has the Name and encoding of the removed
+   * content.
+   */
+  void
+  setOnContentRemoved(const OnContentRemoved& onContentRemoved)
+  {
+    impl_->setOnContentRemoved(onContentRemoved);
+  }
+
 private:
   /**
    * MemoryContentCache::Impl does the work of MemoryContentCache. It is a
@@ -388,6 +447,12 @@ private:
       (const Name& name,
        std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
 
+    void
+    setOnContentRemoved(const OnContentRemoved& onContentRemoved)
+    {
+      onContentRemoved_ = onContentRemoved;
+    }
+
     /**
      * This is the OnInterestCallback which is called when the library receives
      * an interest whose name has the prefix given to registerPrefix. First
@@ -405,33 +470,6 @@ private:
        const ptr_lib::shared_ptr<const InterestFilter>& filter);
 
   private:
-    /**
-     * Content is a private class to hold the name and encoding for each entry
-     * in the cache. This base class is for a Data packet without a
-     * FreshnessPeriod.
-     */
-    class Content {
-    public:
-      /**
-       * Create a new Content entry to hold data's name and wire encoding.
-       * @param data The Data packet whose name and wire encoding are copied.
-       */
-      Content(const Data& data)
-      // wireEncode returns the cached encoding if available.
-      : name_(data.getName()), dataEncoding_(data.wireEncode())
-      {}
-
-      const Name&
-      getName() const { return name_; }
-
-      const Blob&
-      getDataEncoding() const { return dataEncoding_; }
-
-    private:
-      Name name_;
-      Blob dataEncoding_;
-    };
-
     /**
      * StaleTimeContent extends Content to include the staleTimeMilliseconds
      * for when this entry should be cleaned up from the cache.
@@ -482,7 +520,8 @@ private:
      * content from staleTimeCache_ and reset nextCleanupTime_ based on
      * cleanupIntervalMilliseconds_. Since add(Data) does a sorted insert into
      * staleTimeCache_, the check for stale data is quick and does not require
-     * searching the entire staleTimeCache_.
+     * searching the entire staleTimeCache_. If onContentRemoved_ is defined,
+     * this calls onContentRemoved_(content) for the removed content.
      */
     void
     doCleanup();
@@ -515,6 +554,8 @@ private:
     Name::Component emptyComponent_;
     std::vector<ptr_lib::shared_ptr<const PendingInterest> > pendingInterestTable_;
     OnInterestCallback storePendingInterestCallback_;
+    OnContentRemoved onContentRemoved_;
+    bool isDoingCleanup_;
   };
 
   ndn::ptr_lib::shared_ptr<Impl> impl_;
