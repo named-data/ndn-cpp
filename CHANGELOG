@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.12 (2017-04-28)
+Interim changes since NDN-CPP v0.12 (2017-05-12)
 ------------------------------------------------
 
 Changes
@@ -7,6 +7,7 @@ Changes
 * https://github.com/named-data/ndn-cpp/pull/3 Added Esp8266TcpTransportLite 
   uses the WiFiClient class of the esp8266 core for Arduino to communicate 
   over TCP. (Thanks to José Quevedo!)
+* In MemoryContentCache, added support for the OnContentRemoved callback.
 * Lite: Added DynamicMallocUInt8ArrayLite.
 * Examples: Added test-publish-async-nfd-lite and test-echo-consumer-lite .
 
