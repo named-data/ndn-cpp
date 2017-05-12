@@ -155,7 +155,6 @@ class TestCertificate : public ::testing::Test {
 
 TEST_F(TestCertificate, Constructor)
 {
-  // Debug: This should be a Certificate.
   CertificateV2 certificate;
   certificate.wireDecode(Blob(CERT, sizeof(CERT)));
 
