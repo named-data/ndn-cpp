@@ -143,6 +143,87 @@ public:
   const Tpm&
   getTpm() const { return *tpm_; }
 
+  // Identity management
+
+  // Key management
+
+  // Certificate management
+
+  // Signing
+
+  /**
+   * Wire encode the Data object, sign it according to the supplied signing
+   * parameters, and set its signature.
+   * @param data The Data object to be signed.  This updates its signature and
+   * key locator field and wireEncoding.
+   * @param params The signing parameters.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   * @throw KeyChain::Error if signing fails.
+   * @throw KeyChain::InvalidSigningInfoError if params is invalid, or if the
+   * identity, key or certificate specified in params does not exist.
+   */
+  void
+  sign(Data& data, const SigningInfo& params,
+       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Wire encode the Data object, sign it with the default key of the default
+   * identity, and set its signature.
+   * If this is a security v1 KeyChain then use the IdentityManager to get the
+   * default identity. Otherwise use the PIB.
+   * @param data The Data object to be signed.  This updates its signature and
+   * key locator field and wireEncoding.
+   * @param wireFormat (optional) A WireFormat object used to encode the input.
+   * If omitted, use WireFormat getDefaultWireFormat().
+   */
+  void
+  sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    if (isSecurityV1_) {
+      identityManager_->signByCertificate
+        (data, prepareDefaultCertificateName(), wireFormat);
+      return;
+    }
+
+    sign(data, getDefaultSigningInfo(), wireFormat);
+  }
+
+  // Import and export
+
+  // PIB & TPM backend registry
+
+  /**
+   * Add to the PIB factories map where scheme is the key and makePibImpl is the
+   * value. If your application has its own PIB implementations, this must be
+   * called before creating a KeyChain instance which uses your PIB scheme.
+   * @param scheme The PIB scheme.
+   * @param makePibImpl A callback which takes the PIB location and returns a
+   * new PibImpl instance.
+   */
+  static void
+  registerPibBackend(const std::string& scheme, const MakePibImpl& makePibImpl)
+  {
+    getPibFactories()[scheme] = makePibImpl;
+  }
+
+  /**
+   * Add to the TPM factories map where scheme is the key and makeTpmBackEnd is
+   * the value. If your application has its own TPM implementations, this must
+   * be called before creating a KeyChain instance which uses your TPM scheme.
+   * @param scheme The TPM scheme.
+   * @param makeTpmBackEnd A callback which takes the TPM location and returns a
+   * new TpmBackEnd instance.
+   */
+  static void
+  registerTpmBackend
+    (const std::string& scheme, const MakeTpmBackEnd& makeTpmBackEnd)
+  {
+    getTpmFactories()[scheme] = makeTpmBackEnd;
+  }
+
+  // Security v1 methods
+
   /*****************************************
    *          Identity Management          *
    *****************************************/
@@ -383,24 +464,8 @@ public:
   getPolicyManager() { return policyManager_; }
 
   /*****************************************
-   *              Signing                  *
+   *              Sign/Verify              *
    *****************************************/
-
-  /**
-   * Wire encode the Data object, sign it according to the supplied signing
-   * parameters, and set its signature.
-   * @param data The Data object to be signed.  This updates its signature and
-   * key locator field and wireEncoding.
-   * @param params The signing parameters.
-   * @param wireFormat (optional) A WireFormat object used to encode the input.
-   * If omitted, use WireFormat getDefaultWireFormat().
-   * @throw KeyChain::Error if signing fails.
-   * @throw KeyChain::InvalidSigningInfoError if params is invalid, or if the
-   * identity, key or certificate specified in params does not exist.
-   */
-  void
-  sign(Data& data, const SigningInfo& params,
-       WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
    * Wire encode the Data object, sign it and set its signature.
@@ -413,28 +478,6 @@ public:
        WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     identityManager_->signByCertificate(data, certificateName, wireFormat);
-  }
-
-  /**
-   * Wire encode the Data object, sign it with the default key of the default
-   * identity, and set its signature. 
-   * If this is a security v1 KeyChain then use the IdentityManager to get the
-   * default identity. Otherwise use the PIB.
-   * @param data The Data object to be signed.  This updates its signature and
-   * key locator field and wireEncoding.
-   * @param wireFormat (optional) A WireFormat object used to encode the input.
-   * If omitted, use WireFormat getDefaultWireFormat().
-   */
-  void
-  sign(Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-  {
-    if (isSecurityV1_) {
-      identityManager_->signByCertificate
-        (data, prepareDefaultCertificateName(), wireFormat);
-      return;
-    }
-
-    sign(data, getDefaultSigningInfo(), wireFormat);
   }
 
   /**
@@ -719,35 +762,6 @@ public:
 
   static const RsaKeyParams DEFAULT_KEY_PARAMS;
 
-  /**
-   * Add to the PIB factories map where scheme is the key and makePibImpl is the
-   * value. If your application has its own PIB implementations, this must be
-   * called before creating a KeyChain instance which uses your PIB scheme.
-   * @param scheme The PIB scheme.
-   * @param makePibImpl A callback which takes the PIB location and returns a
-   * new PibImpl instance.
-   */
-  static void
-  registerPibBackend(const std::string& scheme, const MakePibImpl& makePibImpl)
-  {
-    getPibFactories()[scheme] = makePibImpl;
-  }
-
-  /**
-   * Add to the TPM factories map where scheme is the key and makeTpmBackEnd is
-   * the value. If your application has its own TPM implementations, this must
-   * be called before creating a KeyChain instance which uses your TPM scheme.
-   * @param scheme The TPM scheme.
-   * @param makeTpmBackEnd A callback which takes the TPM location and returns a
-   * new TpmBackEnd instance.
-   */
-  static void
-  registerTpmBackend
-    (const std::string& scheme, const MakeTpmBackEnd& makeTpmBackEnd)
-  {
-    getTpmFactories()[scheme] = makeTpmBackEnd;
-  }
-
 private:
   /**
    * Get the PIB factories map. On the first call, this initializes the map with
@@ -846,7 +860,7 @@ private:
   static const SigningInfo&
   getDefaultSigningInfo();
 
-  // Security V1 methods
+  // Private security v1 methods
 
   void
   onCertificateData

@@ -189,6 +189,8 @@ KeyChain::sign
   data.wireEncode(wireFormat);
 }
 
+// Security v1 methods
+
 void
 KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireFormat)
 {
@@ -430,6 +432,8 @@ KeyChain::verifyInterestWithHmacWithSha256
   return newSignatureBits == *signature->getSignature();
 }
 #endif
+
+// Private security v2 methods
 
 map<string, KeyChain::MakePibImpl>&
 KeyChain::getPibFactories()
@@ -716,6 +720,8 @@ KeyChain::getDefaultSigningInfo()
 
   return *defaultSigningInfo_;
 }
+
+// Private security v1 methods
 
 void
 KeyChain::onCertificateData(const ptr_lib::shared_ptr<const Interest> &interest, const ptr_lib::shared_ptr<Data> &data, ptr_lib::shared_ptr<ValidationRequest> nextStep)
