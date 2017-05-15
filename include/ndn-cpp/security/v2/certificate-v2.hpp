@@ -186,6 +186,34 @@ public:
   printCertificate() const { printCertificate(std::cout); }
 
   /**
+   * Override to call the base class wireDecode then check the certificate
+   * format.
+   * @param input The input byte array to be decoded as an immutable Blob.
+   * @param wireFormat A WireFormat object used to decode the input. If omitted,
+   * use WireFormat getDefaultWireFormat().
+   */
+  virtual void
+  wireDecode
+    (const Blob& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  void
+  wireDecode
+    (const uint8_t* input, size_t inputLength,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(Blob(input, inputLength), wireFormat);
+  }
+
+  void
+  wireDecode
+    (const std::vector<uint8_t>& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  {
+    wireDecode(&input[0], input.size(), wireFormat);
+  }
+
+  /**
    * Check if certificateName follows the naming convention for a certificate.
    * @param certificateName The name of the certificate.
    * @return True if certificateName follows the naming convention.
@@ -226,6 +254,9 @@ public:
 
 private:
   static Name::Component* KEY_COMPONENT;
+
+  void
+  checkFormat();
 };
 
 inline std::ostream&

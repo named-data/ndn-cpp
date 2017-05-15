@@ -42,6 +42,12 @@ CertificateV2::CertificateV2(const Data& data)
 // Use the copy constructor.  It clones the signature object.
 : Data(data)
 {
+  checkFormat();
+}
+
+void
+CertificateV2::checkFormat()
+{
   if (!isValidName(getName()))
     throw Error
       ("The Data Name does not follow the certificate naming convention");
@@ -123,6 +129,13 @@ CertificateV2::printCertificate(ostream& output) const
     else
       output << "<no KeyLocator key name>\n";
   }
+}
+
+void
+CertificateV2::wireDecode(const Blob& input, WireFormat& wireFormat)
+{
+  Data::wireDecode(input, wireFormat);
+  checkFormat();
 }
 
 bool
