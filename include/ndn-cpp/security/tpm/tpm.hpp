@@ -199,13 +199,16 @@ private:
     (const Name& keyName, const char* password, size_t passwordLength);
 
   /**
-   * Import a password-encrypted, encoded private key with name keyName in PKCS
-   * #8 format.
+   * Import an encoded private key with name keyName in PKCS #8 format, possibly
+   * passwprd-encrypted.
    * @param keyName The name of the key to use in the TPM.
    * @param pkcs8 The input byte array with the encoded PKCS #8 key.
    * @param pkcs8Length The length of the input byte array.
-   * @param password The password to for decrypting the private key.
-   * @param passwordLength The length of the password.
+   * @param password The password to for decrypting the private key. If the
+   * password is supplied, use it to decrypt the PKCS #8 EncryptedPrivateKeyInfo.
+   * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
+   * @param passwordLength The length of the password. If password is null, this
+   * is ignored.
    * @return True for success, false if importing fails.
    */
   bool
