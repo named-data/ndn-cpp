@@ -81,6 +81,13 @@ public:
   get(const Name& keyName) const;
 
   /**
+   * Get the names of all the keys in the container.
+   * @return A new list of Name. 
+   */
+  ptr_lib::shared_ptr<std::vector<Name> >
+  getKeyNames() const;
+
+  /**
    * Check if the container is consistent with the backend storage.
    * @note This method is heavy-weight and should be used in a debugging mode
    * only.

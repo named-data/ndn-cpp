@@ -89,6 +89,20 @@ PibKeyContainer::get(const Name& keyName) const
   return ptr_lib::shared_ptr<PibKey>(new PibKey(pibKeyImpl));
 }
 
+ptr_lib::shared_ptr<std::vector<Name> >
+PibKeyContainer::getKeyNames() const
+{
+  ptr_lib::shared_ptr<vector<Name> > result(new vector<Name>);
+
+  for (map<Name, ptr_lib::shared_ptr<PibKeyImpl>>::const_iterator it =
+         keys_.begin();
+       it != keys_.end();
+       ++it)
+    result->push_back(it->first);
+
+  return result;
+}
+
 bool
 PibKeyContainer::isConsistent() const
 {
