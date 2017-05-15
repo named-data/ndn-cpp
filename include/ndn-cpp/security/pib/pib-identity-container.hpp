@@ -50,8 +50,8 @@ public:
   size() const { return identityNames_.size(); }
 
   /**
-   * Add an identity with name identityName into the container. If an identity
-   * with the same name already exists, do nothing.
+   * Add an identity with name identityName into the container. Create the
+   * identity if it does not exist.
    * @param identityName The name of the identity, which is copied.
    * @return The PibIdentity object.
    */
