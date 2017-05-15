@@ -348,30 +348,47 @@ public:
   void
   deleteIdentity(const Name& identityName)
   {
+    if (!isSecurityV1_) {
+      try {
+        deleteIdentity(*pib_->getIdentity(identityName));
+      } catch (const Pib::Error& ex) {
+      }
+      return;
+    }
+
     identityManager_->deleteIdentity(identityName);
   }
 
   /**
    * Get the default identity.
    * @return The name of default identity.
-   * @throws SecurityException if the default identity is not set.
+   * @throws SecurityException (for security v1) or Pib::Error (for security v2)
+   * if the default identity is not set.
    */
   Name
   getDefaultIdentity()
   {
+    if (!isSecurityV1_)
+      return pib_->getDefaultIdentity()->getName();
+
     return identityManager_->getDefaultIdentity();
   }
 
   /**
    * Get the default certificate name of the default identity.
    * @return The requested certificate name.
-   * @throws SecurityException if the default identity is not set or the default
-   * key name for the identity is not set or the default certificate name for
-   * the key name is not set.
+   * @throws SecurityException (for security v1) or Pib::Error (for security v2)
+   * if the default identity is not set or the default key name for the
+   * identity is not set or the default certificate name for the key name is not
+   * set.
    */
   Name
   getDefaultCertificateName()
   {
+    if (!isSecurityV1_)
+      return pib_->getDefaultIdentity()->getDefaultKey()->getDefaultCertificate()
+        ->getName();
+
     return identityManager_->getDefaultCertificateName();
   }
 
@@ -387,6 +404,10 @@ public:
   Name
   generateRSAKeyPair(const Name& identityName, bool isKsk = false, int keySize = 2048)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("generateRSAKeyPair is not supported for security v2. Use createIdentityV2.");
+
     return identityManager_->generateRSAKeyPair(identityName, isKsk, keySize);
   }
 
@@ -402,6 +423,10 @@ public:
   Name
   generateEcdsaKeyPair(const Name& identityName, bool isKsk = false, int keySize = 256)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("generateEcdsaKeyPair is not supported for security v2. Use createIdentityV2.");
+
     return identityManager_->generateEcdsaKeyPair(identityName, isKsk, keySize);
   }
 
@@ -415,6 +440,10 @@ public:
   void
   setDefaultKeyForIdentity(const Name& keyName, const Name& identityNameCheck = Name())
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("setDefaultKeyForIdentity is not supported for security v2. Use getPib() methods.");
+
     return identityManager_->setDefaultKeyForIdentity(keyName, identityNameCheck);
   }
 
@@ -430,6 +459,10 @@ public:
   Name
   generateRSAKeyPairAsDefault(const Name& identityName, bool isKsk = false, int keySize = 2048)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("generateRSAKeyPairAsDefault is not supported for security v2. Use createIdentityV2.");
+
     return identityManager_->generateRSAKeyPairAsDefault(identityName, isKsk, keySize);
   }
 
@@ -445,6 +478,10 @@ public:
   Name
   generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk = false, int keySize = 256)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("generateEcdsaKeyPairAsDefault is not supported for security v2. Use createIdentityV2.");
+
     return identityManager_->generateEcdsaKeyPairAsDefault(identityName, isKsk, keySize);
   }
 
@@ -456,6 +493,10 @@ public:
   Blob
   createSigningRequest(const Name& keyName)
   {
+    if (!isSecurityV1_)
+      return pib_->getIdentity(PibKey::extractIdentityFromKeyName(keyName))
+        ->getKey(keyName)->getPublicKey();
+
     return identityManager_->getPublicKey(keyName)->getKeyDer();
   }
 
@@ -466,6 +507,10 @@ public:
   void
   installIdentityCertificate(const IdentityCertificate& certificate)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("installIdentityCertificate is not supported for security v2. Use getPib() methods.");
+
     identityManager_->addCertificate(certificate);
   }
 
@@ -476,6 +521,10 @@ public:
   void
   setDefaultCertificateForKey(const IdentityCertificate& certificate)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("setDefaultCertificateForKey is not supported for security v2. Use getPib() methods.");
+
     identityManager_->setDefaultCertificateForKey(certificate);
   }
 
@@ -487,6 +536,10 @@ public:
   ptr_lib::shared_ptr<IdentityCertificate>
   getCertificate(const Name& certificateName)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("getCertificate is not supported for security v2. Use getPib() methods.");
+
     return identityManager_->getCertificate(certificateName);
   }
 
@@ -496,6 +549,10 @@ public:
   ptr_lib::shared_ptr<IdentityCertificate>
   DEPRECATED_IN_NDN_CPP getIdentityCertificate(const Name& certificateName)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("getIdentityCertificate is not supported for security v2. Use getPib() methods.");
+
     return identityManager_->getCertificate(certificateName);
   }
 
@@ -524,7 +581,13 @@ public:
    * @return The identity manager.
    */
   const ptr_lib::shared_ptr<IdentityManager>&
-  getIdentityManager() { return identityManager_; }
+  getIdentityManager() 
+  {
+    if (!isSecurityV1_)
+      throw Error("getIdentityManager is not supported for security v2");
+
+    return identityManager_;
+  }
 
   /*****************************************
    *           Policy Management           *
@@ -551,6 +614,13 @@ public:
   sign(Data& data, const Name& certificateName,
        WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
+    if (!isSecurityV1_) {
+      SigningInfo signingInfo;
+      signingInfo.setSigningCertificateName(certificateName);
+      sign(data, signingInfo, wireFormat);
+      return;
+    }
+
     identityManager_->signByCertificate(data, certificateName, wireFormat);
   }
 
@@ -568,6 +638,13 @@ public:
     (Interest& interest, const Name& certificateName,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
+    if (!isSecurityV1_) {
+      SigningInfo signingInfo;
+      signingInfo.setSigningCertificateName(certificateName);
+      sign(interest, signingInfo, wireFormat);
+      return;
+    }
+
     identityManager_->signInterestByCertificate
       (interest, certificateName, wireFormat);
   }
@@ -582,6 +659,10 @@ public:
   ptr_lib::shared_ptr<Signature>
   sign(const uint8_t* buffer, size_t bufferLength, const Name& certificateName)
   {
+    if (!isSecurityV1_)
+      throw Error
+        ("sign(buffer, certificateName) is not supported for security v2. Use sign with SigningInfo.");
+
     return identityManager_->signByCertificate
       (buffer, bufferLength, certificateName);
   }
@@ -641,6 +722,13 @@ public:
   signWithSha256
     (Data& data, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
+    if (!isSecurityV1_) {
+      SigningInfo signingInfo;
+      signingInfo.setSha256Signing();
+      sign(data, signingInfo, wireFormat);
+      return;
+    }
+
     identityManager_->signWithSha256(data, wireFormat);
   }
 
@@ -657,6 +745,13 @@ public:
   signWithSha256
     (Interest& interest, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
+    if (!isSecurityV1_) {
+      SigningInfo signingInfo;
+      signingInfo.setSha256Signing();
+      sign(interest, signingInfo, wireFormat);
+      return;
+    }
+
     identityManager_->signInterestWithSha256(interest, wireFormat);
   }
 

@@ -251,6 +251,13 @@ KeyChain::sign
 void
 KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireFormat)
 {
+  if (!isSecurityV1_) {
+    SigningInfo signingInfo;
+    signingInfo.setSigningIdentity(identityName);
+    sign(data, signingInfo, wireFormat);
+    return;
+  }
+
   Name signingCertificateName;
 
   if (identityName.size() == 0) {
@@ -275,6 +282,10 @@ KeyChain::signByIdentity(Data& data, const Name& identityName, WireFormat& wireF
 ptr_lib::shared_ptr<Signature>
 KeyChain::signByIdentity(const uint8_t* buffer, size_t bufferLength, const Name& identityName)
 {
+  if (!isSecurityV1_)
+    throw Error
+      ("signByIdentity(buffer, identityName) is not supported for security v2. Use sign with SigningInfo.");
+
   Name signingCertificateName = identityManager_->getDefaultCertificateNameForIdentity(identityName);
 
   if (signingCertificateName.size() == 0)
