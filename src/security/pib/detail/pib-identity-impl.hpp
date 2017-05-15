@@ -132,6 +132,7 @@ public:
   getDefaultKey() const;
 
 private:
+  friend class PibIdentity;
   // Give friend access to the tests.
   friend TestPibIdentityImpl_KeyOperation_Test;
 
