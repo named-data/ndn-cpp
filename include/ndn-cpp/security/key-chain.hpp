@@ -263,6 +263,17 @@ public:
   sign(const uint8_t* buffer, size_t bufferLength, 
        const SigningInfo& params = getDefaultSigningInfo());
 
+  /**
+   * Generate a self-signed certificate for the public key and add it to the
+   * PIB. This creates the certificate name from the key name by appending
+   * "self" and a version based on the current time. If no default certificate
+   * for the key has been set, then set the certificate as default for the key.
+   * @param key The PibKey with the key name and public key.
+   * @return The new certificate.
+   */
+  ptr_lib::shared_ptr<CertificateV2>
+  selfSign(ptr_lib::shared_ptr<PibKey>& key);
+
   // Import and export
 
   // PIB & TPM backend registry
