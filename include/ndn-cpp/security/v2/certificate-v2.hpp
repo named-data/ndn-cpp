@@ -147,8 +147,14 @@ public:
    * @return The ValidityPeriod object.
    * @throws runtime_error If the SignatureInfo doesn't have a ValidityPeriod.
    */
+  ValidityPeriod&
+  getValidityPeriod();
+
   const ValidityPeriod&
-  getValidityPeriod() const;
+  getValidityPeriod() const
+  {
+    return const_cast<CertificateV2*>(this)->getValidityPeriod();
+  }
 
   /**
    * Check if the time falls within the validity period.

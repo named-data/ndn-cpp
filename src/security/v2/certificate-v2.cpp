@@ -65,8 +65,8 @@ CertificateV2::getPublicKey() const
   return getContent();
 }
 
-const ValidityPeriod&
-CertificateV2::getValidityPeriod() const
+ValidityPeriod&
+CertificateV2::getValidityPeriod()
 {
   if (!ValidityPeriod::canGetFromSignature(getSignature()))
     throw invalid_argument("The SignatureInfo does not have a ValidityPeriod");
