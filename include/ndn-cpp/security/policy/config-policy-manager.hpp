@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include "certificate-cache.hpp"
+#include "../v2/certificate-cache-v2.hpp"
 #include "policy-manager.hpp"
 
 // Give friend access to the tests.
@@ -48,7 +49,7 @@ class IdentityCertificate;
  * http://named-data.net/doc/ndn-cxx/current/tutorials/security-validator-config.html
  *
  * Once a rule is matched, the ConfigPolicyManager looks in the
- * CertificateCache for the IdentityCertificate matching the name in the KeyLocator
+ * certificate cache for the certificate matching the name in the KeyLocator
  * and uses its public key to verify the data packet or signed interest. If the
  * certificate can't be found, it is downloaded, verified and installed. A chain
  * of certificates will be followed to a maximum depth.
@@ -62,6 +63,9 @@ public:
   /**
    * Create a new ConfigPolicyManager which will act on the rules specified in
    * the configuration and download unknown certificates when necessary.
+   * This creates a security v1 PolicyManager to verify certificates in format
+   * v1. To verify certificate format v2, use the ConfigPolicyManager with a
+   * CertificateCacheV2.
    * @param configFileName (optional) If not empty, the path to the
    * configuration file containing verification rules. Otherwise, you should
    * separately call load().
@@ -85,6 +89,31 @@ public:
      ptr_lib::shared_ptr<CertificateCache>(), int searchDepth = 5,
      Milliseconds graceInterval = 3000, Milliseconds keyTimestampTtl = 3600000,
      int maxTrackedKeys = 1000);
+
+  /**
+   * Create a new ConfigPolicyManager which will act on the rules specified in
+   * the configuration and download unknown certificates when necessary. This
+   * uses certificate format v2.
+   * @param configFileName If not empty, the path to the configuration file
+   * containing verification rules. Otherwise, you can give an empty string and
+   * separately call load().
+   * @param certificateCache A CertificateCacheV2 to hold known certificates.
+   * @param searchDepth (optional) The maximum number of links to follow when
+   * verifying a certificate chain.
+   * @param graceInterval (optional) The window of time difference (in milliseconds)
+   * allowed between the timestamp of the first interest signed with a new
+   * public key and the validation time. If omitted, use a default value.
+   * @param keyTimestampTtl (optional) How long a public key's last-used
+   * timestamp is kept in the store (milliseconds). If omitted, use a default
+   * value.
+   * @param maxTrackedKeys The maximum number of public key use timestamps to
+   * track.
+   */
+  ConfigPolicyManager
+    (const std::string& configFileName,
+     const ptr_lib::shared_ptr<CertificateCacheV2>& certificateCache,
+     int searchDepth = 5, Milliseconds graceInterval = 3000,
+     Milliseconds keyTimestampTtl = 3600000, int maxTrackedKeys = 1000);
 
   /**
    * The virtual destructor.
@@ -240,18 +269,35 @@ private:
    */
   class TrustAnchorRefreshManager {
   public:
-    TrustAnchorRefreshManager()
+    TrustAnchorRefreshManager(bool isSecurityV1)
+    : isSecurityV1_(isSecurityV1)
     {
     }
 
     static ptr_lib::shared_ptr<IdentityCertificate>
     loadIdentityCertificateFromFile(const std::string& filename);
 
+    static ptr_lib::shared_ptr<CertificateV2>
+    loadCertificateV2FromFile(const std::string& filename);
+
     ptr_lib::shared_ptr<IdentityCertificate>
     getCertificate(Name certificateName) const
     {
+      if (!isSecurityV1_)
+        throw SecurityException("getCertificate: For security v2, use getCertificateV2()");
+
       // Assume the timestamp is already removed.
       return certificateCache_.getCertificate(certificateName);
+    }
+
+    ptr_lib::shared_ptr<CertificateV2>
+    getCertificateV2(Name certificateName) const
+    {
+      if (isSecurityV1_)
+        throw SecurityException("getCertificateV2: For security v1, use getCertificate()");
+
+      // Assume the timestamp is already removed.
+      return certificateCacheV2_.find(certificateName);
     }
 
     void
@@ -276,7 +322,9 @@ private:
       Milliseconds refreshPeriod_;
     };
 
+    bool isSecurityV1_;
     CertificateCache certificateCache_;
+    CertificateCacheV2 certificateCacheV2_;
     // refreshDirectories_ maps the directory name to certificate names so they
     //   can be deleted when necessary, and the next refresh time.
     std::map<std::string, ptr_lib::shared_ptr<DirectoryInfo> > refreshDirectories_;
@@ -316,10 +364,21 @@ private:
    * or decoding.
    * @param certID
    * @param isPath
-   * @return
+   * @return The IdentityCertificate or null if not found.
    */
   ptr_lib::shared_ptr<IdentityCertificate>
   lookupCertificate(const std::string& certID, bool isPath);
+
+  /**
+   * This looks up certificates specified as base64-encoded data or file names.
+   * These are cached by filename or encoding to avoid repeated reading of files
+   * or decoding.
+   * @param certID
+   * @param isPath
+   * @return The CertificateV2 or null if not found.
+   */
+  ptr_lib::shared_ptr<CertificateV2>
+  lookupCertificateV2(const std::string& certID, bool isPath);
 
   /**
    * Search the configuration file for the first rule that matches the data or
@@ -467,7 +526,9 @@ private:
      const OnInterestValidationFailed& onValidationFailed,
      WireFormat& wireFormat);
 
+  bool isSecurityV1_;
   ptr_lib::shared_ptr<CertificateCache> certificateCache_;
+  ptr_lib::shared_ptr<CertificateCacheV2> certificateCacheV2_;
   int maxDepth_;
   Milliseconds keyGraceInterval_;
   Milliseconds keyTimestampTtl_;

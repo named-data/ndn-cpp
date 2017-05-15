@@ -78,10 +78,31 @@ ConfigPolicyManager::ConfigPolicyManager
     keyTimestampTtl_(keyTimestampTtl),
     maxTrackedKeys_(maxTrackedKeys)
 {
+  isSecurityV1_ = true;
+
   if (!certificateCache)
     certificateCache_.reset(new CertificateCache());
   else
     certificateCache_ = certificateCache;
+
+  reset();
+
+  if (configFileName != "")
+    load(configFileName);
+}
+
+ConfigPolicyManager::ConfigPolicyManager
+  (const std::string& configFileName,
+   const ptr_lib::shared_ptr<CertificateCacheV2>& certificateCache,
+   int searchDepth, Milliseconds graceInterval, Milliseconds keyTimestampTtl,
+   int maxTrackedKeys)
+  : certificateCacheV2_(certificateCache),
+    maxDepth_(searchDepth),
+    keyGraceInterval_(graceInterval),
+    keyTimestampTtl_(keyTimestampTtl),
+    maxTrackedKeys_(maxTrackedKeys)
+{
+  isSecurityV1_ = false;
 
   reset();
 
@@ -96,12 +117,15 @@ ConfigPolicyManager::~ConfigPolicyManager()
 void
 ConfigPolicyManager::reset()
 {
-  certificateCache_->reset();
+  if (isSecurityV1_)
+    certificateCache_->reset();
+  else
+    certificateCacheV2_->reset();
   fixedCertificateCache_.clear();
   keyTimestamps_.clear();
   requiresVerification_ = true;
   config_.reset(new BoostInfoParser());
-  refreshManager_.reset(new TrustAnchorRefreshManager());
+  refreshManager_.reset(new TrustAnchorRefreshManager(isSecurityV1_));
 }
 
 void
@@ -246,7 +270,12 @@ ConfigPolicyManager::checkVerificationPolicy
     // This is done after (possibly) downloading the certificate to avoid filling
     // the cache with bad keys.
     const Name& signatureName = KeyLocator::getFromSignature(signature.get()).getKeyName();
-    Name keyName = IdentityCertificate::certificateNameToPublicKeyName(signatureName);
+    Name keyName;
+    if (isSecurityV1_)
+      keyName = IdentityCertificate::certificateNameToPublicKeyName(signatureName);
+    else
+      // For security V2, the KeyLocator name is already the key name.
+      keyName = signatureName;
     MillisecondsSince1970 timestamp = interest->getName().get(-4).toNumber();
 
     if (!interestTimestampIsFresh(keyName, timestamp, failureReason)) {
@@ -341,14 +370,24 @@ ConfigPolicyManager::getCertificateInterest
 
   // If we don't actually have the certificate yet, return a certificateInterest
   //   for it.
-  ptr_lib::shared_ptr<IdentityCertificate> foundCert =
-    refreshManager_->getCertificate(signatureName);
-  if (!foundCert)
-    foundCert = certificateCache_->getCertificate(signatureName);
-  if (!foundCert)
-    return ptr_lib::make_shared<Interest>(signatureName);
-  else
-    return ptr_lib::make_shared<Interest>();
+  if (isSecurityV1_) {
+    ptr_lib::shared_ptr<IdentityCertificate> foundCert =
+      refreshManager_->getCertificate(signatureName);
+    if (!foundCert)
+      foundCert = certificateCache_->getCertificate(signatureName);
+    if (!foundCert)
+      return ptr_lib::make_shared<Interest>(signatureName);
+  }
+  else {
+    ptr_lib::shared_ptr<CertificateV2> foundCert =
+      refreshManager_->getCertificateV2(signatureName);
+    if (!foundCert)
+      foundCert = certificateCacheV2_->find(signatureName);
+    if (!foundCert)
+      return ptr_lib::make_shared<Interest>(signatureName);
+  }
+
+  return ptr_lib::make_shared<Interest>();
 }
 
 void
@@ -358,8 +397,14 @@ ConfigPolicyManager::onCertificateDownloadComplete
    const OnVerified& onVerified, 
    const OnDataValidationFailed& onValidationFailed)
 {
-  IdentityCertificate certificate(*data);
-  certificateCache_->insertCertificate(certificate);
+  if (isSecurityV1_) {
+    IdentityCertificate certificate(*data);
+    certificateCache_->insertCertificate(certificate);
+  }
+  else {
+    CertificateV2 certificate(*data);
+    certificateCacheV2_->insert(certificate);
+  }
 
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
@@ -374,8 +419,14 @@ ConfigPolicyManager::onCertificateDownloadCompleteForInterest
    const OnVerifiedInterest& onVerified,
    const OnInterestValidationFailed& onValidationFailed, WireFormat& wireFormat)
 {
-  IdentityCertificate certificate(*data);
-  certificateCache_->insertCertificate(certificate);
+  if (isSecurityV1_) {
+    IdentityCertificate certificate(*data);
+    certificateCache_->insertCertificate(certificate);
+  }
+  else {
+    CertificateV2 certificate(*data);
+    certificateCacheV2_->insert(certificate);
+  }
 
   // Now that we stored the needed certificate, increment stepCount and try again
   //   to verify the originalData.
@@ -448,7 +499,10 @@ ConfigPolicyManager::loadTrustAnchorCertificates()
       break;
     }
 
-    lookupCertificate(certID, isPath);
+    if (isSecurityV1_)
+      lookupCertificate(certID, isPath);
+    else
+      lookupCertificateV2(certID, isPath);
   }
 }
 
@@ -463,21 +517,49 @@ ConfigPolicyManager::checkSignatureMatch
     const BoostInfoTree& signerInfo = *checker["signer"][0];
     const string& signerType = signerInfo["type"][0]->getValue();
 
-    ptr_lib::shared_ptr<Certificate> cert;
+    Name certificateName;
     if (signerType == "file") {
-      cert = lookupCertificate(signerInfo["file-name"][0]->getValue(), true);
-      if (!cert) {
-        failureReason = "Can't find fixed-signer certificate file: " +
-          signerInfo["file-name"][0]->getValue();
-        return false;
+      if (isSecurityV1_) {
+        ptr_lib::shared_ptr<Certificate> cert =
+          lookupCertificate(signerInfo["file-name"][0]->getValue(), true);
+        if (!cert) {
+          failureReason = "Can't find fixed-signer certificate file: " +
+            signerInfo["file-name"][0]->getValue();
+          return false;
+        }
+        certificateName = cert->getName();
+      }
+      else {
+        ptr_lib::shared_ptr<CertificateV2> cert =
+          lookupCertificateV2(signerInfo["file-name"][0]->getValue(), true);
+        if (!cert) {
+          failureReason = "Can't find fixed-signer certificate file: " +
+            signerInfo["file-name"][0]->getValue();
+          return false;
+        }
+        certificateName = cert->getName();
       }
     }
     else if (signerType == "base64") {
-      cert = lookupCertificate(signerInfo["base64-string"][0]->getValue(), false);
-      if (!cert) {
-        failureReason = "Can't find fixed-signer certificate base64: " +
-          signerInfo["base64-string"][0]->getValue();
-        return false;
+      if (isSecurityV1_) {
+        ptr_lib::shared_ptr<Certificate> cert = lookupCertificate
+          (signerInfo["base64-string"][0]->getValue(), false);
+        if (!cert) {
+          failureReason = "Can't find fixed-signer certificate base64: " +
+            signerInfo["base64-string"][0]->getValue();
+          return false;
+        }
+        certificateName = cert->getName();
+      }
+      else {
+        ptr_lib::shared_ptr<CertificateV2> cert = lookupCertificateV2
+          (signerInfo["base64-string"][0]->getValue(), false);
+        if (!cert) {
+          failureReason = "Can't find fixed-signer certificate base64: " +
+            signerInfo["base64-string"][0]->getValue();
+          return false;
+        }
+        certificateName = cert->getName();
       }
     }
     else {
@@ -485,10 +567,10 @@ ConfigPolicyManager::checkSignatureMatch
       return false;
     }
 
-    if (cert->getName().equals(signatureName))
+    if (certificateName.equals(signatureName))
       return true;
     else {
-      failureReason = "fixed-signer cert name \"" + cert->getName().toUri() +
+      failureReason = "fixed-signer cert name \"" + certificateName.toUri() +
         "\" does not equal signatureName \"" + signatureName.toUri() + "\"";
       return false;
     }
@@ -593,6 +675,9 @@ ConfigPolicyManager::checkSignatureMatch
 ptr_lib::shared_ptr<IdentityCertificate>
 ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
 {
+  if (!isSecurityV1_)
+    throw SecurityException("lookupCertificate: For security v2, use lookupCertificateV2()");
+
   ptr_lib::shared_ptr<IdentityCertificate> cert;
 
   map<string, string>::iterator iCertUri = fixedCertificateCache_.find(certID);
@@ -613,6 +698,36 @@ ConfigPolicyManager::lookupCertificate(const string& certID, bool isPath)
   }
   else
     cert = certificateCache_->getCertificate(Name(iCertUri->second));
+
+  return cert;
+}
+
+ptr_lib::shared_ptr<CertificateV2>
+ConfigPolicyManager::lookupCertificateV2(const string& certID, bool isPath)
+{
+  if (isSecurityV1_)
+    throw SecurityException("lookupCertificateV2: For security v1, use lookupCertificate()");
+
+  ptr_lib::shared_ptr<CertificateV2> cert;
+
+  map<string, string>::iterator iCertUri = fixedCertificateCache_.find(certID);
+  if (iCertUri == fixedCertificateCache_.end()) {
+    if (isPath)
+      // Load the certificate data (base64 encoded CertificateV2)
+      cert = TrustAnchorRefreshManager::loadCertificateV2FromFile(certID);
+    else {
+      vector<uint8_t> certData;
+      fromBase64(certID.c_str(), certData);
+      cert.reset(new CertificateV2());
+      cert->wireDecode(certData);
+    }
+
+    string certUri = cert->getName().getPrefix(-1).toUri();
+    fixedCertificateCache_[certID] = certUri;
+    certificateCacheV2_->insert(*cert);
+  }
+  else
+    cert = certificateCacheV2_->find(Name(iCertUri->second));
 
   return cert;
 }
@@ -795,22 +910,38 @@ ConfigPolicyManager::verify
   if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME) {
     // Assume the key name is a certificate name.
     Name signatureName = keyLocator.getKeyName();
-    ptr_lib::shared_ptr<IdentityCertificate> certificate =
-      refreshManager_->getCertificate(signatureName);
-    if (!certificate)
-      certificate = certificateCache_->getCertificate(signatureName);
-    if (!certificate) {
-      failureReason = "Cannot find a certificate with name " +
-        signatureName.toUri();
-      return false;
-    }
+    Blob publicKeyDer;
+    if (isSecurityV1_) {
+      ptr_lib::shared_ptr<IdentityCertificate> certificate =
+        refreshManager_->getCertificate(signatureName);
+      if (!certificate)
+        certificate = certificateCache_->getCertificate(signatureName);
+      if (!certificate) {
+        failureReason = "Cannot find a certificate with name " +
+          signatureName.toUri();
+        return false;
+      }
 
-    Blob publicKeyDer = certificate->getPublicKeyInfo().getKeyDer();
-    if (publicKeyDer.isNull()) {
-      // We don't expect this to happen.
-      failureReason = "There is no public key in the certificate with name " +
-        certificate->getName().toUri();
-      return false;
+      publicKeyDer = certificate->getPublicKeyInfo().getKeyDer();
+      if (publicKeyDer.isNull()) {
+        // We don't expect this to happen.
+        failureReason = "There is no public key in the certificate with name " +
+          certificate->getName().toUri();
+        return false;
+      }
+    }
+    else {
+      ptr_lib::shared_ptr<CertificateV2> certificate =
+        refreshManager_->getCertificateV2(signatureName);
+      if (!certificate)
+        certificate = certificateCacheV2_->find(signatureName);
+      if (!certificate) {
+        failureReason = "Cannot find a certificate with name " +
+          signatureName.toUri();
+        return false;
+      }
+
+      publicKeyDer = certificate->getPublicKey();
     }
 
     if (verifySignature(signatureInfo, signedBlob, publicKeyDer))
@@ -844,6 +975,24 @@ ConfigPolicyManager::TrustAnchorRefreshManager::loadIdentityCertificateFromFile
   return cert;
 }
 
+ptr_lib::shared_ptr<CertificateV2>
+ConfigPolicyManager::TrustAnchorRefreshManager::loadCertificateV2FromFile
+  (const string& filename)
+{
+  ifstream certFile(filename.c_str());
+
+  stringstream encodedData;
+  encodedData << certFile.rdbuf();
+
+  // Use a vector in a shared_ptr so we can make it a Blob without copying.
+  ptr_lib::shared_ptr<vector<uint8_t> > decodedData(new vector<uint8_t>());
+  fromBase64(encodedData.str(), *decodedData);
+
+  ptr_lib::shared_ptr<CertificateV2> cert(new CertificateV2());
+  cert->wireDecode(Blob(decodedData, false));
+  return cert;
+}
+
 void
 ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
   (const string& directoryName, Milliseconds refreshPeriod)
@@ -865,19 +1014,37 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
     if (!S_ISREG(fileStat.st_mode))
       continue;
 
-    ptr_lib::shared_ptr<IdentityCertificate> cert;
-    try {
-      cert = loadIdentityCertificateFromFile(fullPath);
-    }
-    catch (SecurityException& ex) {
-      // Allow files that are not certificates.
-      continue;
-    }
+    if (isSecurityV1_) {
+      ptr_lib::shared_ptr<IdentityCertificate> cert;
+      try {
+        cert = loadIdentityCertificateFromFile(fullPath);
+      }
+      catch (const exception& ex) {
+        // Allow files that are not certificates.
+        continue;
+      }
 
-    // Cut off the timestamp so it matches KeyLocator Name format.
-    string certUri = cert->getName().getPrefix(-1).toUri();
-    certificateCache_.insertCertificate(*cert);
-    certificateNames.push_back(certUri);
+      // Cut off the timestamp so it matches KeyLocator Name format.
+      string certUri = cert->getName().getPrefix(-1).toUri();
+      certificateCache_.insertCertificate(*cert);
+      certificateNames.push_back(certUri);
+    }
+    else {
+      ptr_lib::shared_ptr<CertificateV2> cert;
+      try {
+        cert = loadCertificateV2FromFile(fullPath);
+      }
+      catch (const exception& ex) {
+        // Allow files that are not certificates.
+        continue;
+      }
+
+      // Get the key name since this is in the KeyLocator.
+      string certUri = 
+        CertificateV2::extractKeyNameFromCertName(cert->getName()).toUri();
+      certificateCacheV2_.insert(*cert);
+      certificateNames.push_back(certUri);
+    }
   }
 
   ::closedir(directory);
@@ -908,8 +1075,12 @@ ConfigPolicyManager::TrustAnchorRefreshManager::refreshAnchors()
       // Delete the certificates associated with this directory if possible
       //   then re-import.
       // IdentityStorage subclasses may not support deletion.
-      for (size_t i = 0; i < certificateList.size(); ++i)
-        certificateCache_.deleteCertificate(Name(certificateList[i]));
+      for (size_t i = 0; i < certificateList.size(); ++i) {
+        if (isSecurityV1_)
+          certificateCache_.deleteCertificate(Name(certificateList[i]));
+        else
+          certificateCacheV2_.deleteCertificate(Name(certificateList[i]));
+      }
 
       directoriesToAdd.push_back(directory);
       refreshPeriodsToAdd.push_back(info.refreshPeriod_);
