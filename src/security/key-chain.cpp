@@ -91,6 +91,7 @@ makeTpmBackEndMemory(const string& location)
 
 KeyChain::KeyChain
   (const string& pibLocator, const string& tpmLocator, bool allowReset)
+: face_(0)
 {
   isSecurityV1_ = false;
 
