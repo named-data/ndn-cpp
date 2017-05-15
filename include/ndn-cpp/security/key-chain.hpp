@@ -113,6 +113,21 @@ public:
      bool allowReset = false);
 
   /**
+   * This is a temporary constructor for the transition to security v2. This
+   * creates a security v2 KeyChain but still uses the v1 PolicyManager.
+   */
+  KeyChain
+    (ptr_lib::shared_ptr<PibImpl> pibImpl,
+     ptr_lib::shared_ptr<TpmBackEnd> tpmBackEnd,
+     const ptr_lib::shared_ptr<PolicyManager>& policyManager)
+  : policyManager_(policyManager), face_(0)
+  {
+    isSecurityV1_ = false;
+    pib_.reset(new Pib("", "", pibImpl));
+    tpm_.reset(new Tpm("", "", tpmBackEnd));
+  }
+
+  /**
    * Create a new security v1 KeyChain with the given IdentityManager and
    * PolicyManager. For security v2, use KeyChain(pibLocator, tpmLocator) or the
    * default constructor if your .ndn folder is already initialized for v2.
