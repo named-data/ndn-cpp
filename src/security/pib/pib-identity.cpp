@@ -42,6 +42,9 @@ PibIdentity::PibIdentity(ptr_lib::weak_ptr<PibIdentityImpl> impl)
 {
 }
 
+PibKeyContainer&
+PibIdentity::getKeys() { return lock()->keys_; }
+
 ptr_lib::shared_ptr<PibIdentityImpl>
 PibIdentity::lock() const
 {

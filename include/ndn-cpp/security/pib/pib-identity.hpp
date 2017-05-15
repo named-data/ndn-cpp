@@ -65,12 +65,20 @@ public:
 
 private:
   friend class PibIdentityContainer;
+  friend class KeyChain;
 
   /**
    * Create a PibIdentity which uses the impl backend implementation. This
    * constructor should only be called by PibIdentityContainer.
    */
   PibIdentity(ptr_lib::weak_ptr<PibIdentityImpl> impl);
+
+  /**
+   * Get the PibKeyContainer in the PibIdentityImpl. This should only be called
+   * by KeyChain.
+   */
+  PibKeyContainer&
+  getKeys();
 
   /**
    * Check the validity of the impl_ instance.
