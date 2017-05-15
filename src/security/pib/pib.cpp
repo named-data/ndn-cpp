@@ -68,6 +68,36 @@ Pib::reset()
 }
 
 ptr_lib::shared_ptr<PibIdentity>
+Pib::addIdentity(const Name& identityName)
+{
+  // BOOST_ASSERT(identities_.isConsistent());
+
+  return identities_.add(identityName);
+}
+
+void
+Pib::removeIdentity(const Name& identityName)
+{
+  // BOOST_ASSERT(identities_.isConsistent());
+
+  if (defaultIdentity_ && defaultIdentity_->getName() == identityName)
+    defaultIdentity_.reset();
+
+  identities_.remove(identityName);
+}
+
+ptr_lib::shared_ptr<PibIdentity>
+Pib::setDefaultIdentity(const Name& identityName)
+{
+  // BOOST_ASSERT(identities_.isConsistent());
+
+  defaultIdentity_ = identities_.add(identityName);
+
+  pibImpl_->setDefaultIdentity(identityName);
+  return defaultIdentity_;
+}
+
+ptr_lib::shared_ptr<PibIdentity>
 Pib::getIdentity(const Name& identityName) const
 {
   // BOOST_ASSERT(identities_.isConsistent());

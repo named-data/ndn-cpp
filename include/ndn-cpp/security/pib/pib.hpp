@@ -127,6 +127,33 @@ private:
   void
   reset();
 
+  /**
+   * Add an identity with name identityName. Create the identity if it does not
+   * exist.
+   * @param identityName The name of the identity, which is copied.
+   * @return The PibIdentity object.
+   */
+  ptr_lib::shared_ptr<PibIdentity>
+  addIdentity(const Name& identityName);
+
+  /**
+   * Remove the identity with name identityName, and its related keys and
+   * certificates. If the default identity is being removed, no default identity
+   * will be selected.  If the identity does not exist, do nothing.
+   * @param identityName The name of the identity.
+   */
+  void
+  removeIdentity(const Name& identityName);
+
+  /**
+   * Set the identity with name identityName as the default identity.
+   * Create the identity if it does not exist.
+   * @param identityName The name of the identity.
+   * @return The PibIdentity object of the default identity.
+   */
+  ptr_lib::shared_ptr<PibIdentity>
+  setDefaultIdentity(const Name& identityName);
+
   // Disable the copy constructor and assignment operator.
   Pib(const Pib& other);
   Pib& operator=(const Pib& other);
