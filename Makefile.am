@@ -35,7 +35,8 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-pib-identity-container \
   bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
   bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-key-impl \
-  bin/unit-tests/test-policy-manager bin/unit-tests/test-producer \
+  bin/unit-tests/test-policy-manager bin/unit-tests/test-policy-manager-v2 \
+  bin/unit-tests/test-producer \
   bin/unit-tests/test-producer-db bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
@@ -210,6 +211,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
+  include/ndn-cpp/security/v2/certificate-cache-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
@@ -416,6 +418,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
+  src/security/v2/certificate-cache-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
@@ -630,6 +633,10 @@ bin_unit_tests_test_pib_key_impl_LDADD = libndn-cpp.la
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_policy_manager_v2_SOURCES = tests/unit-tests/test-policy-manager-v2.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_policy_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_policy_manager_v2_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

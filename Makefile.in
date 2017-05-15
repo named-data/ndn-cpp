@@ -119,6 +119,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-pib-key-container$(EXEEXT) \
 	bin/unit-tests/test-pib-key-impl$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
+	bin/unit-tests/test-policy-manager-v2$(EXEEXT) \
 	bin/unit-tests/test-producer$(EXEEXT) \
 	bin/unit-tests/test-producer-db$(EXEEXT) \
 	bin/unit-tests/test-regex$(EXEEXT) \
@@ -369,9 +370,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/tpm/tpm-key-handle-memory.lo \
 	src/security/tpm/tpm-key-handle-osx.lo \
 	src/security/tpm/tpm-private-key.lo \
-	src/security/v2/certificate-v2.lo src/sync/chrono-sync2013.lo \
-	src/sync/digest-tree.lo src/sync/sync-state.pb.lo \
-	src/transport/async-tcp-transport.lo \
+	src/security/v2/certificate-v2.lo \
+	src/security/v2/certificate-cache-v2.lo \
+	src/sync/chrono-sync2013.lo src/sync/digest-tree.lo \
+	src/sync/sync-state.pb.lo src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
 	src/transport/udp-transport.lo src/transport/unix-transport.lo \
@@ -632,6 +634,11 @@ am_bin_unit_tests_test_policy_manager_OBJECTS = tests/unit-tests/bin_unit_tests_
 bin_unit_tests_test_policy_manager_OBJECTS =  \
 	$(am_bin_unit_tests_test_policy_manager_OBJECTS)
 bin_unit_tests_test_policy_manager_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_policy_manager_v2_OBJECTS = tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.$(OBJEXT)
+bin_unit_tests_test_policy_manager_v2_OBJECTS =  \
+	$(am_bin_unit_tests_test_policy_manager_v2_OBJECTS)
+bin_unit_tests_test_policy_manager_v2_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_producer_OBJECTS = tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.$(OBJEXT)
 bin_unit_tests_test_producer_OBJECTS =  \
@@ -789,6 +796,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_pib_key_container_SOURCES) \
 	$(bin_unit_tests_test_pib_key_impl_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
@@ -847,6 +855,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_pib_key_container_SOURCES) \
 	$(bin_unit_tests_test_pib_key_impl_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
@@ -1472,6 +1481,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
+  include/ndn-cpp/security/v2/certificate-cache-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
@@ -1681,6 +1691,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-v2.cpp \
+  src/security/v2/certificate-cache-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
@@ -1859,6 +1870,9 @@ bin_unit_tests_test_pib_key_impl_LDADD = libndn-cpp.la
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+bin_unit_tests_test_policy_manager_v2_SOURCES = tests/unit-tests/test-policy-manager-v2.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_policy_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_policy_manager_v2_LDADD = libndn-cpp.la
 bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_producer_LDADD = libndn-cpp.la
@@ -2547,6 +2561,9 @@ src/security/v2/$(DEPDIR)/$(am__dirstamp):
 	@: > src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/certificate-v2.lo: src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/certificate-cache-v2.lo:  \
+	src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/sync/$(am__dirstamp):
 	@$(MKDIR_P) src/sync
 	@: > src/sync/$(am__dirstamp)
@@ -3111,6 +3128,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 bin/unit-tests/test-policy-manager$(EXEEXT): $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_policy_manager_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-policy-manager$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-policy-manager-v2$(EXEEXT): $(bin_unit_tests_test_policy_manager_v2_OBJECTS) $(bin_unit_tests_test_policy_manager_v2_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_policy_manager_v2_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-policy-manager-v2$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_policy_manager_v2_OBJECTS) $(bin_unit_tests_test_policy_manager_v2_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -3331,6 +3358,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po@am__quote@
@@ -3534,6 +3562,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-cache-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@
@@ -3594,6 +3623,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po@am__quote@
@@ -4469,6 +4499,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o: tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o `test -f 'tests/unit-tests/test-policy-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-policy-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o `test -f 'tests/unit-tests/test-policy-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-policy-manager-v2.cpp
+
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj: tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj `if test -f 'tests/unit-tests/test-policy-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-policy-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-policy-manager-v2.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-policy-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj `if test -f 'tests/unit-tests/test-policy-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-policy-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-policy-manager-v2.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_producer-test-producer.o: tests/unit-tests/test-producer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_producer-test-producer.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.o `test -f 'tests/unit-tests/test-producer.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-producer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po
@@ -5267,6 +5325,13 @@ bin/unit-tests/test-pib-key-impl.log: bin/unit-tests/test-pib-key-impl$(EXEEXT)
 bin/unit-tests/test-policy-manager.log: bin/unit-tests/test-policy-manager$(EXEEXT)
 	@p='bin/unit-tests/test-policy-manager$(EXEEXT)'; \
 	b='bin/unit-tests/test-policy-manager'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-policy-manager-v2.log: bin/unit-tests/test-policy-manager-v2$(EXEEXT)
+	@p='bin/unit-tests/test-policy-manager-v2$(EXEEXT)'; \
+	b='bin/unit-tests/test-policy-manager-v2'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
