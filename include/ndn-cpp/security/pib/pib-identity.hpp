@@ -80,6 +80,9 @@ private:
   PibKeyContainer&
   getKeys();
 
+  const PibKeyContainer&
+  getKeys() const { return const_cast<PibIdentity*>(this)->getKeys(); }
+
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
