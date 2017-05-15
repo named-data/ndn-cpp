@@ -115,12 +115,63 @@ public:
 
 private:
   friend class PibKeyContainer;
+  friend class KeyChain;
 
   /**
    * Create a PibKey which uses the impl backend implementation. This
    * constructor should only be called by PibKeyContainer.
    */
   PibKey(ptr_lib::weak_ptr<PibKeyImpl> impl);
+
+  /**
+   * Add the certificate. If a certificate with the same name (without implicit
+   * digest) already exists, then overwrite the certificate. If no default
+   * certificate for the key has been set, then set the added certificate as
+   * default for the key.
+   * This should only be called by KeyChain.
+   * @param certificate The certificate to add. This copies the object.
+   * @throws std::invalid_argument if the name of the certificate does not
+   * match the key name.
+   */
+  void
+  addCertificate(const CertificateV2& certificate);
+
+  /**
+   * Remove the certificate with name certificateName. If the certificate does
+   * not exist, do nothing.
+   * This should only be called by KeyChain.
+   * @param certificateName The name of the certificate.
+   * @throws std::invalid_argument if certificateName does not match the key
+   * name.
+   */
+  void
+  removeCertificate(const Name& certificateName);
+
+  /**
+   * Set the existing certificate with name certificateName as the default
+   * certificate.
+   * This should only be called by KeyChain.
+   * @param certificateName The name of the certificate.
+   * @return The default certificate.
+   * @throws std::invalid_argument if certificateName does not match the key
+   * name
+   * @throws Pib::Error if the certificate does not exist.
+   */
+  const ptr_lib::shared_ptr<CertificateV2>&
+  setDefaultCertificate(const Name& certificateName);
+
+  /**
+   * Add the certificate and set it as the default certificate of the key.
+   * If a certificate with the same name (without implicit digest) already
+   * exists, then overwrite the certificate.
+   * This should only be called by KeyChain.
+   * @param certificate The certificate to add. This copies the object.
+   * @throws std::invalid_argument if the name of the certificate does not
+   * match the key name.
+   * @return The default certificate.
+   */
+  const ptr_lib::shared_ptr<CertificateV2>&
+  setDefaultCertificate(const CertificateV2& certificate);
 
   /**
    * Check the validity of the impl_ instance.

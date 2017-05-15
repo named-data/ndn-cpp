@@ -96,4 +96,28 @@ PibKey::extractIdentityFromKeyName(const Name& keyName)
     (-CertificateV2::MIN_KEY_NAME_LENGTH);
 }
 
+void
+PibKey::addCertificate(const CertificateV2& certificate)
+{
+  lock()->addCertificate(certificate);
+}
+
+void
+PibKey::removeCertificate(const Name& certificateName)
+{
+  lock()->removeCertificate(certificateName);
+}
+
+const ptr_lib::shared_ptr<CertificateV2>&
+PibKey::setDefaultCertificate(const Name& certificateName)
+{
+  return lock()->setDefaultCertificate(certificateName);
+}
+
+const ptr_lib::shared_ptr<CertificateV2>&
+PibKey::setDefaultCertificate(const CertificateV2& certificate)
+{
+  return lock()->setDefaultCertificate(certificate);
+}
+
 }
