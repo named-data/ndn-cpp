@@ -169,6 +169,26 @@ KeyChain::KeyChain()
 }
 
 void
+KeyChain::deleteIdentity(const PibIdentity& identity)
+{
+  Name identityName = identity.getName();
+
+  ptr_lib::shared_ptr<std::vector<Name> > keyNames =
+    identity.getKeys().getKeyNames();
+  for (size_t i = 0; i < keyNames->size(); ++i)
+    tpm_->deleteKey(keyNames->at(i));
+
+  pib_->removeIdentity(identityName);
+  // TODO: Mark identity as invalid.
+}
+
+void
+KeyChain::setDefaultIdentity(const PibIdentity& identity)
+{
+  pib_->setDefaultIdentity(identity.getName());
+}
+
+void
 KeyChain::sign
   (Data& data, const SigningInfo& params, WireFormat& wireFormat)
 {

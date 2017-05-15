@@ -145,6 +145,22 @@ public:
 
   // Identity management
 
+  // TODO: createIdentity
+
+  /**
+   * Delete the identity. After this operation, the identity is invalid.
+   * @param identity The identity to delete.
+   */
+  void
+  deleteIdentity(const PibIdentity& identity);
+
+  /**
+   * Set the identity as the default identity.
+   * @param identity The identity to make the default.
+   */
+  void
+  setDefaultIdentity(const PibIdentity& identity);
+
   // Key management
 
   // Certificate management
