@@ -281,24 +281,10 @@ private:
     loadCertificateV2FromFile(const std::string& filename);
 
     ptr_lib::shared_ptr<IdentityCertificate>
-    getCertificate(Name certificateName) const
-    {
-      if (!isSecurityV1_)
-        throw SecurityException("getCertificate: For security v2, use getCertificateV2()");
-
-      // Assume the timestamp is already removed.
-      return certificateCache_.getCertificate(certificateName);
-    }
+    getCertificate(Name certificateName) const;
 
     ptr_lib::shared_ptr<CertificateV2>
-    getCertificateV2(Name certificateName) const
-    {
-      if (isSecurityV1_)
-        throw SecurityException("getCertificateV2: For security v1, use getCertificate()");
-
-      // Assume the timestamp is already removed.
-      return certificateCacheV2_.find(certificateName);
-    }
+    getCertificateV2(Name certificateName) const;
 
     void
     addDirectory(const std::string& directoryName, Milliseconds refreshPeriod);

@@ -993,6 +993,26 @@ ConfigPolicyManager::TrustAnchorRefreshManager::loadCertificateV2FromFile
   return cert;
 }
 
+ptr_lib::shared_ptr<IdentityCertificate>
+ConfigPolicyManager::TrustAnchorRefreshManager::getCertificate(Name certificateName) const
+{
+  if (!isSecurityV1_)
+    throw SecurityException("getCertificate: For security v2, use getCertificateV2()");
+
+  // Assume the timestamp is already removed.
+  return certificateCache_.getCertificate(certificateName);
+}
+
+ptr_lib::shared_ptr<CertificateV2>
+ConfigPolicyManager::TrustAnchorRefreshManager::getCertificateV2(Name certificateName) const
+{
+  if (isSecurityV1_)
+    throw SecurityException("getCertificateV2: For security v1, use getCertificate()");
+
+  // Assume the timestamp is already removed.
+  return certificateCacheV2_.find(certificateName);
+}
+
 void
 ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
   (const string& directoryName, Milliseconds refreshPeriod)
