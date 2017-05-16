@@ -100,7 +100,6 @@ public:
   getDefaultLifetime() { return 3600.0 * 1000; }
 
 private:
-public: // debug
   /**
    * Remove all outdated certificate entries.
    */
