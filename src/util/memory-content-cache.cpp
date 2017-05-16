@@ -34,7 +34,8 @@ namespace ndn {
 MemoryContentCache::Impl::Impl
   (Face* face, Milliseconds cleanupIntervalMilliseconds)
 : face_(face), cleanupIntervalMilliseconds_(cleanupIntervalMilliseconds),
-  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds)
+  nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds),
+  isDoingCleanup_(false)
 {
 }
 
@@ -257,15 +258,46 @@ MemoryContentCache::Impl::onInterest
 void
 MemoryContentCache::Impl::doCleanup()
 {
+  if (isDoingCleanup_)
+    // The OnContentRemoved callback may have called add, which has called this
+    // doCleanup function again, so wait to do cleanup until later.
+    return;
+
+  isDoingCleanup_ = true;
+
+  ptr_lib::shared_ptr<ContentList> contentList;
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
   if (now >= nextCleanupTime_) {
     // staleTimeCache_ is sorted on staleTimeMilliseconds_, so we only need to
     // erase the stale entries at the front, then quit.
-    while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(now))
+    while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(now)) {
+      if (onContentRemoved_) {
+        // Add to the list of removed content for the OnContentRemoved callback.
+        // We make a separate list instead of calling the callback each time
+        // because the callback might call add again to modify the staleTimeCache_.
+        if (!contentList)
+          contentList.reset(new ContentList());
+
+        contentList->push_back(staleTimeCache_.front());
+      }
+
       staleTimeCache_.erase(staleTimeCache_.begin());
+    }
 
     nextCleanupTime_ = now + cleanupIntervalMilliseconds_;
   }
+
+  if (onContentRemoved_ && contentList) {
+    try {
+      onContentRemoved_(contentList);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("MemoryContentCache::doCleanup(): Error in onContentRemoved: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("MemoryContentCache::doCleanup(): Error in onContentRemoved.");
+    }
+  }
+
+  isDoingCleanup_ = false;
 }
 
 MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent(const Data& data)
