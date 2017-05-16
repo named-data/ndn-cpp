@@ -80,8 +80,8 @@ public:
    * @param keyTimestampTtl (optional) How long a public key's last-used
    * timestamp is kept in the store (milliseconds). If omitted, use a default
    * value.
-   * @param maxTrackedKeys The maximum number of public key use timestamps to
-   * track.
+   * @param maxTrackedKeys (optional) The maximum number of public key use
+   * timestamps to track. If omitted, use a default.
    */
   ConfigPolicyManager
     (const std::string& configFileName = "",
@@ -106,8 +106,8 @@ public:
    * @param keyTimestampTtl (optional) How long a public key's last-used
    * timestamp is kept in the store (milliseconds). If omitted, use a default
    * value.
-   * @param maxTrackedKeys The maximum number of public key use timestamps to
-   * track.
+   * @param maxTrackedKeys (optional) The maximum number of public key use
+   * timestamps to track. If omitted, use a default.
    */
   ConfigPolicyManager
     (const std::string& configFileName,
