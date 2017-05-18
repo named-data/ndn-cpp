@@ -148,8 +148,8 @@ public:
   toPkcs8(bool includeParameters = true);
 
   /**
-   * Generate a key pair according to and return a new TpmPrivateKey with the
-   * private key. You can get the public key with derivePublicKey.
+   * Generate a key pair according to keyParams and return a new TpmPrivateKey
+   * with the private key. You can get the public key with derivePublicKey.
    * @param keyParams The parameters of the key.
    * @return A new TpmPrivateKey.
    * @throws std::invalid_argument if the key type is not supported.
