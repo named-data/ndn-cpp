@@ -42,7 +42,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-signing-info bin/unit-tests/test-tpm-back-ends \
-  bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-tpm-private-key bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-echo-consumer bin/test-echo-consumer-lite \
@@ -673,6 +673,10 @@ bin_unit_tests_test_signing_info_LDADD = libndn-cpp.la
 bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
