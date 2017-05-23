@@ -44,7 +44,7 @@ public:
 private:
   /**
    * Check if the key with name keyName exists in the TPM.
-   * @param The name of the key.
+   * @param keyName The name of the key.
    * @return True if the key exists.
    */
   virtual bool
@@ -52,7 +52,7 @@ private:
 
   /**
    * Get the handle of the key with name keyName.
-   * @param The name of the key.
+   * @param keyName The name of the key.
    * @return The handle of the key, or null if the key does not exist.
    */
   virtual ptr_lib::shared_ptr<TpmKeyHandle>

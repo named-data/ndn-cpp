@@ -71,7 +71,7 @@ public:
 
   /**
    * Check if the key with name keyName exists in the TPM.
-   * @param The name of the key.
+   * @param keyName The name of the key.
    * @return True if the key exists.
    */
   bool
