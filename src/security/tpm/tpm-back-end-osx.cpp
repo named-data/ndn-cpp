@@ -104,7 +104,7 @@ TpmBackEndOsx::isTpmLocked() const
 }
 
 bool
-TpmBackEndOsx::unlockTpm(const char* password, size_t passwordLength) const
+TpmBackEndOsx::unlockTpm(const uint8_t* password, size_t passwordLength) const
 {
   // If the default key chain is already unlocked, return immediately.
   if (!isTpmLocked())

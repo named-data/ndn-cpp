@@ -89,7 +89,7 @@ private:
    * exported, e.g., insufficient privileges.
    */
   virtual Blob
-  doExportKey(const Name& keyName, const char* password, size_t passwordLength);
+  doExportKey(const Name& keyName, const uint8_t* password, size_t passwordLength);
 
   /**
    * Import an encoded private key with name keyName in PKCS #8 format, possibly
@@ -110,7 +110,7 @@ private:
   virtual void
   doImportKey
     (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-     const char* password, size_t passwordLength);
+     const uint8_t* password, size_t passwordLength);
 
   // Disable the copy constructor and assignment operator.
   TpmBackEndMemory(const TpmBackEndMemory& other);

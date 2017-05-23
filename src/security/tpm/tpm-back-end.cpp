@@ -69,7 +69,7 @@ TpmBackEnd::createKey(const Name& identityName, const KeyParams& params)
 
 Blob
 TpmBackEnd::exportKey
-  (const Name& keyName, const char* password, size_t passwordLength)
+  (const Name& keyName, const uint8_t* password, size_t passwordLength)
 {
   if (!hasKey(keyName))
     throw Error("Key `" + keyName.toUri() + "` does not exist");
@@ -80,7 +80,7 @@ TpmBackEnd::exportKey
 void
 TpmBackEnd::importKey
   (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-   const char* password, size_t passwordLength)
+   const uint8_t* password, size_t passwordLength)
 {
   if (hasKey(keyName))
     throw Error("Key `" + keyName.toUri() + "` already exists");
@@ -121,14 +121,14 @@ bool
 TpmBackEnd::isTpmLocked() const { return false; }
 
 bool
-TpmBackEnd::unlockTpm(const char* password, size_t passwordLength) const
+TpmBackEnd::unlockTpm(const uint8_t* password, size_t passwordLength) const
 {
   return !isTpmLocked();
 }
 
 Blob
 TpmBackEnd::doExportKey
-  (const Name& keyName, const char* password, size_t passwordLength)
+  (const Name& keyName, const uint8_t* password, size_t passwordLength)
 {
   throw runtime_error("TpmBackEnd doExportKey is not implemented");
 }
@@ -136,7 +136,7 @@ TpmBackEnd::doExportKey
 void
 TpmBackEnd::doImportKey
   (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-   const char* password, size_t passwordLength)
+   const uint8_t* password, size_t passwordLength)
 {
   throw runtime_error("TpmBackEnd doImportKey is not implemented");
 }

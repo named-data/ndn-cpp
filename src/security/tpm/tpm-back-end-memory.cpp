@@ -66,7 +66,7 @@ TpmBackEndMemory::doDeleteKey(const Name& keyName) { keys_.erase(keyName); }
 
 Blob
 TpmBackEndMemory::doExportKey
-  (const Name& keyName, const char* password, size_t passwordLength)
+  (const Name& keyName, const uint8_t* password, size_t passwordLength)
 {
   if (password)
     throw Error("Private key password-encryption is not implemented");
@@ -77,7 +77,7 @@ TpmBackEndMemory::doExportKey
 void
 TpmBackEndMemory::doImportKey
   (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-   const char* password, size_t passwordLength)
+   const uint8_t* password, size_t passwordLength)
 {
   try {
     if (password)

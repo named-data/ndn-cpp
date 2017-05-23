@@ -92,7 +92,7 @@ public:
    * @return True if the TPM was unlocked.
    */
   virtual bool
-  unlockTpm(const char* password, size_t passwordLength) const;
+  unlockTpm(const uint8_t* password, size_t passwordLength) const;
 
   // Cryptographic transformation
 

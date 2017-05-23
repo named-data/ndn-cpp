@@ -92,7 +92,7 @@ bool
 Tpm::isTpmLocked() const { return backEnd_->isTpmLocked(); }
 
 bool
-Tpm::unlockTpm(const char* password, size_t passwordLength) const
+Tpm::unlockTpm(const uint8_t* password, size_t passwordLength) const
 {
   return backEnd_->unlockTpm(password, passwordLength);
 }
@@ -125,7 +125,7 @@ Tpm::deleteKey(const Name& keyName)
 
 Blob
 Tpm::exportPrivateKey
-  (const Name& keyName, const char* password, size_t passwordLength)
+  (const Name& keyName, const uint8_t* password, size_t passwordLength)
 {
   return backEnd_->exportKey(keyName, password, passwordLength);
 }
@@ -133,7 +133,7 @@ Tpm::exportPrivateKey
 bool
 Tpm::importPrivateKey
   (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-   const char* password, size_t passwordLength)
+   const uint8_t* password, size_t passwordLength)
 {
   try {
     backEnd_->importKey(keyName, pkcs8, pkcs8Length, password, passwordLength);

@@ -144,7 +144,7 @@ public:
    * @return True if the TPM was unlocked.
    */
   bool
-  unlockTpm(const char* password, size_t passwordLength) const;
+  unlockTpm(const uint8_t* password, size_t passwordLength) const;
 
 private:
   friend class KeyChain;
@@ -196,7 +196,7 @@ private:
    */
   Blob
   exportPrivateKey
-    (const Name& keyName, const char* password, size_t passwordLength);
+    (const Name& keyName, const uint8_t* password, size_t passwordLength);
 
   /**
    * Import an encoded private key with name keyName in PKCS #8 format, possibly
@@ -214,7 +214,7 @@ private:
   bool
   importPrivateKey
     (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
-     const char* password, size_t passwordLength);
+     const uint8_t* password, size_t passwordLength);
 
   /**
    * Get the TpmKeyHandle with name keyName, using backEnd_->getKeyHandle if it
