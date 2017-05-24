@@ -70,8 +70,12 @@ TpmBackEndMemory::doExportKey
 {
   if (password)
     throw Error("Private key password-encryption is not implemented");
-  else
+  else {
+    if (!hasKey(keyName))
+      throw Error("exportKey: The key does not exist");
+
     return keys_[keyName]->toPkcs8();
+  }
 }
 
 void
