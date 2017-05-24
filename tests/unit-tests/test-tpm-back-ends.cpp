@@ -220,7 +220,6 @@ TEST_F(TestBackEnds, RandomKeyId)
     ptr_lib::shared_ptr<TpmKeyHandle> key =
       tpm.createKey(identityName, RsaKeyParams());
     Name keyName = key->getKeyName();
-    tpm.deleteKey(keyName);
     ASSERT_TRUE(keyNames.insert(keyName).second);
   }
 }
