@@ -221,7 +221,7 @@ TEST_F(TestBackEnds, RandomKeyId)
       tpm.createKey(identityName, RsaKeyParams());
     Name keyName = key->getKeyName();
     tpm.deleteKey(keyName);
-    ASSERT_TRUE(!!keyNames.insert(keyName).second);
+    ASSERT_TRUE(keyNames.insert(keyName).second);
   }
 }
 
