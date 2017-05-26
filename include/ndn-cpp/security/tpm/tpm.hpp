@@ -184,11 +184,14 @@ private:
   deleteKey(const Name& keyName);
 
   /**
-   * Get the password-encrypted, encoded private key with name keyName in PKCS
-   * #8 format.
+   * Get the encoded private key with name keyName in PKCS #8 format, possiby
+   * encrypted.
    * @param keyName The name of the key in the TPM.
-   * @param password The password for encrypting the private key.
-   * @param passwordLength The length of the password.
+   * @param password The password for encrypting the private key. If the
+   * password is supplied, use it to return a PKCS #8 EncryptedPrivateKeyInfo.
+   * If the password is null, return an unencrypted PKCS #8 PrivateKeyInfo.
+   * @param passwordLength The length of the password. If password is null, this
+   * is ignored.
    * @return The private key encoded in PKCS #8 format, or an isNull Blob if
    * the key does not exist.
    * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
@@ -202,7 +205,9 @@ private:
    * Import an encoded private key with name keyName in PKCS #8 format, possibly
    * passwprd-encrypted.
    * @param keyName The name of the key to use in the TPM.
-   * @param pkcs8 The input byte array with the encoded PKCS #8 key.
+   * @param pkcs8 The input byte array. If the password is supplied, this is a
+   * PKCS #8 EncryptedPrivateKeyInfo. If the password is null, this is an
+   * unencrypted PKCS #8 PrivateKeyInfo.
    * @param pkcs8Length The length of the input byte array.
    * @param password The password to for decrypting the private key. If the
    * password is supplied, use it to decrypt the PKCS #8 EncryptedPrivateKeyInfo.
