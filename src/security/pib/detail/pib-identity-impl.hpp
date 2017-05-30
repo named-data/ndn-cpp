@@ -55,15 +55,6 @@ public:
     (const Name& identityName, ptr_lib::shared_ptr<PibImpl> pibImpl,
      bool needInit);
 
-  /**
-   * Create a PibIdentityImpl with keyName. Initialize the cached key encoding with
-   * pibImpl->getKeyBits().
-   * @param keyName The name of the key, which is copied.
-   * @param pibImpl The Pib backend implementation.
-   * @throws Pib::Error the key with keyName does not exist.
-   */
-  PibIdentityImpl(const Name& keyName, ptr_lib::shared_ptr<PibImpl> pibImpl);
-
   /*
    * Get the name of the identity.
    * @return The name of the identity.
