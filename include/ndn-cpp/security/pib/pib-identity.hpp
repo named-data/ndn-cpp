@@ -41,7 +41,7 @@ public:
   /*
    * Get the name of the identity.
    * @return The name of the identity.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
   getName() const;
@@ -86,7 +86,7 @@ private:
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   ptr_lib::shared_ptr<PibIdentityImpl>
   lock() const;

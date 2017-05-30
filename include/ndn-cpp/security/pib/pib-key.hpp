@@ -42,7 +42,7 @@ public:
   /*
    * Get the key name.
    * @return The key name.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
   getName() const;
@@ -50,7 +50,7 @@ public:
   /**
    * Get the name of the identity this key belongs to.
    * @return The name of the identity.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
   getIdentityName() const;
@@ -58,7 +58,7 @@ public:
   /**
    * Get the key type.
    * @return The key type.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   KeyType
   getKeyType() const;
@@ -66,7 +66,7 @@ public:
   /**
    * Get the public key encoding.
    * @return The public key encoding.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Blob&
   getPublicKey() const;
@@ -176,7 +176,7 @@ private:
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
-   * @throws std::domain_error the backend implementation instance is invalid.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    */
   ptr_lib::shared_ptr<PibKeyImpl>
   lock() const;
