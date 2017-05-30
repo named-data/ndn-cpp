@@ -747,11 +747,11 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
   else if (params.getSignerType() == SigningInfo::SIGNER_TYPE_CERT) {
     Name identityName = CertificateV2::extractIdentityFromCertName
       (params.getSignerName());
-    Name keyName = CertificateV2::extractKeyNameFromCertName(params.getSignerName());
 
     try {
       identity = pib_->getIdentity(identityName);
-      key = identity->getKey(keyName);
+      key = identity->getKey
+        (CertificateV2::extractKeyNameFromCertName(params.getSignerName()));
     }
     catch (const Pib::Error&) {
       throw InvalidSigningInfoError
