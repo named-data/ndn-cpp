@@ -86,6 +86,7 @@ public:
 
   /**
    * Check if the container is consistent with the backend storage.
+   * @return True if the container is consistent, false otherwise.
    * @note This method is heavy-weight and should be used in a debugging mode
    * only.
    */
