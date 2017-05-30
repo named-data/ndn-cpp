@@ -290,7 +290,6 @@ public:
   TearDown()
   {
     remove(testCertFile_.c_str());
-    face_.shutdown();
   }
 
   string policyConfigDirectory_;
@@ -301,7 +300,6 @@ public:
   ptr_lib::shared_ptr<TpmBackEndMemory> tpmBackEnd_;
   ptr_lib::shared_ptr<PolicyManager> policyManager_;
   ptr_lib::shared_ptr<KeyChain> keyChain_;
-  Face face_;
 };
 
 TEST_F(TestConfigPolicyManager, InterestTimestamp)
@@ -309,15 +307,16 @@ TEST_F(TestConfigPolicyManager, InterestTimestamp)
   Name interestName = Name("/ndn/ucla/edu/something");
   Name certName = keyChain_->getPib().getIdentity(identityName_)
     ->getKey(keyName_)->getDefaultCertificate()->getName();
-  face_.setCommandSigningInfo(*keyChain_, certName);
+  Face face("localhost");
+  face.setCommandSigningInfo(*keyChain_, certName);
 
   ptr_lib::shared_ptr<Interest> oldInterest(new Interest(interestName));
-  face_.makeCommandInterest(*oldInterest);
+  face.makeCommandInterest(*oldInterest);
 
   // Make sure timestamps are different.
   usleep(100000);
   ptr_lib::shared_ptr<Interest> newInterest(new Interest(interestName));
-  face_.makeCommandInterest(*newInterest);
+  face.makeCommandInterest(*newInterest);
 
   VerificationResult vr = doVerify(*policyManager_, newInterest);
 
