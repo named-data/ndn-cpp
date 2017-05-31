@@ -365,7 +365,9 @@ TEST_F(TestConfigPolicyManager, Refresh10s)
   vector<uint8_t> certData;
   fromBase64(CERT_DUMP, certData);
   cert.wireDecode(Blob(certData));
-  keyChain_->signByIdentity(cert, identityName_);
+  SigningInfo signingInfo;
+  signingInfo.setSigningIdentity(identityName_);
+  keyChain_->sign(cert, signingInfo);
   Blob signedCertBlob = cert.wireEncode();
   string encodedCert = toBase64(signedCertBlob.buf(), signedCertBlob.size(), true);
   {
