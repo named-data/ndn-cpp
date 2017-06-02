@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <ndn-cpp/security/pib/pib-memory.hpp>
-#include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../src/security/pib/detail/pib-key-impl.hpp"
 #include "pib-data-fixture.hpp"
 
@@ -43,13 +43,13 @@ TEST_F(TestPibKeyImpl, Basic)
 
   ASSERT_EQ(fixture.id1Key1Name, key11.getName());
   ASSERT_EQ(fixture.id1, key11.getIdentityName());
-  ASSERT_EQ(KEY_TYPE_ECDSA, key11.getKeyType());
+  ASSERT_EQ(KEY_TYPE_RSA, key11.getKeyType());
   ASSERT_TRUE(key11.getPublicKey().equals(fixture.id1Key1));
 
   PibKeyImpl key11FromBackend(fixture.id1Key1Name, pibImpl);
   ASSERT_EQ(fixture.id1Key1Name, key11FromBackend.getName());
   ASSERT_EQ(fixture.id1, key11FromBackend.getIdentityName());
-  ASSERT_EQ(KEY_TYPE_ECDSA, key11FromBackend.getKeyType());
+  ASSERT_EQ(KEY_TYPE_RSA, key11FromBackend.getKeyType());
   ASSERT_TRUE(key11FromBackend.getPublicKey().equals(fixture.id1Key1));
 }
 
@@ -160,7 +160,7 @@ TEST_F(TestPibKeyImpl, Overwrite)
 
   ptr_lib::shared_ptr<CertificateV2> otherCert
     (new CertificateV2(*fixture.id1Key1Cert1));
-  dynamic_cast<Sha256WithEcdsaSignature*>(otherCert->getSignature())
+  dynamic_cast<Sha256WithRsaSignature*>(otherCert->getSignature())
     ->getValidityPeriod().setPeriod
       (ndn_getNowMilliseconds(), ndn_getNowMilliseconds() + 1000);
   // Don't bother resigning so we don't have to load a private key.
