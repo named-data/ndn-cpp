@@ -142,7 +142,8 @@ noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) \
 	bin/test-get-async-threadsafe$(EXEEXT) \
 	bin/test-list-channels$(EXEEXT) bin/test-list-faces$(EXEEXT) \
-	bin/test-list-rib$(EXEEXT) bin/test-publish-async-nfd$(EXEEXT) \
+	bin/test-list-rib$(EXEEXT) bin/test-prefix-discovery$(EXEEXT) \
+	bin/test-publish-async-nfd$(EXEEXT) \
 	bin/test-publish-async-nfd-lite$(EXEEXT) \
 	bin/test-register-route$(EXEEXT) \
 	bin/test-sign-verify-data-hmac$(EXEEXT) \
@@ -243,7 +244,8 @@ am_libndn_cpp_tools_la_OBJECTS = $(am__objects_1) $(am__objects_1) \
 	tools/usersync/channel-discovery.lo \
 	tools/usersync/content-meta-info.lo \
 	tools/usersync/content-meta-info.pb.lo \
-	tools/usersync/generalized-content.lo
+	tools/usersync/generalized-content.lo \
+	tools/usersync/prefix-discovery.lo
 libndn_cpp_tools_la_OBJECTS = $(am_libndn_cpp_tools_la_OBJECTS)
 libndn_cpp_la_LIBADD =
 am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
@@ -473,6 +475,12 @@ am_bin_test_list_rib_OBJECTS = examples/test-list-rib.$(OBJEXT) \
 	examples/rib-entry.pb.$(OBJEXT)
 bin_test_list_rib_OBJECTS = $(am_bin_test_list_rib_OBJECTS)
 bin_test_list_rib_DEPENDENCIES = libndn-cpp.la
+am_bin_test_prefix_discovery_OBJECTS =  \
+	examples/test-prefix-discovery.$(OBJEXT)
+bin_test_prefix_discovery_OBJECTS =  \
+	$(am_bin_test_prefix_discovery_OBJECTS)
+bin_test_prefix_discovery_DEPENDENCIES = libndn-cpp.la \
+	libndn-cpp-tools.la
 am_bin_test_publish_async_nfd_OBJECTS =  \
 	examples/test-publish-async-nfd.$(OBJEXT)
 bin_test_publish_async_nfd_OBJECTS =  \
@@ -772,6 +780,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
+	$(bin_test_prefix_discovery_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_publish_async_nfd_lite_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
@@ -832,6 +841,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
 	$(bin_test_list_channels_SOURCES) \
 	$(bin_test_list_faces_SOURCES) $(bin_test_list_rib_SOURCES) \
+	$(bin_test_prefix_discovery_SOURCES) \
 	$(bin_test_publish_async_nfd_SOURCES) \
 	$(bin_test_publish_async_nfd_lite_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
@@ -1511,7 +1521,8 @@ ndn_cpp_cpp_headers = \
 ndn_cpp_tools_cpp_headers = \
   include/ndn-cpp-tools/usersync/channel-discovery.hpp \
   include/ndn-cpp-tools/usersync/content-meta-info.hpp \
-  include/ndn-cpp-tools/usersync/generalized-content.hpp
+  include/ndn-cpp-tools/usersync/generalized-content.hpp \
+  include/ndn-cpp-tools/usersync/prefix-discovery.hpp
 
 
 # Just the C code.
@@ -1735,7 +1746,7 @@ libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers
   tools/usersync/channel-discovery.cpp \
   tools/usersync/content-meta-info.cpp \
   tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
-  tools/usersync/generalized-content.cpp
+  tools/usersync/generalized-content.cpp tools/usersync/prefix-discovery.cpp
 
 bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
 bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
@@ -1765,6 +1776,8 @@ bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.
 bin_test_list_faces_LDADD = libndn-cpp.la
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
+bin_test_prefix_discovery_SOURCES = examples/test-prefix-discovery.cpp
+bin_test_prefix_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
 bin_test_publish_async_nfd_lite_SOURCES = examples/test-publish-async-nfd-lite.cpp
@@ -2142,6 +2155,8 @@ tools/usersync/content-meta-info.pb.lo:  \
 	tools/usersync/$(am__dirstamp) \
 	tools/usersync/$(DEPDIR)/$(am__dirstamp)
 tools/usersync/generalized-content.lo: tools/usersync/$(am__dirstamp) \
+	tools/usersync/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/prefix-discovery.lo: tools/usersync/$(am__dirstamp) \
 	tools/usersync/$(DEPDIR)/$(am__dirstamp)
 
 libndn-cpp-tools.la: $(libndn_cpp_tools_la_OBJECTS) $(libndn_cpp_tools_la_DEPENDENCIES) $(EXTRA_libndn_cpp_tools_la_DEPENDENCIES) 
@@ -2818,6 +2833,12 @@ examples/rib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-list-rib$(EXEEXT): $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_DEPENDENCIES) $(EXTRA_bin_test_list_rib_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-list-rib$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_LDADD) $(LIBS)
+examples/test-prefix-discovery.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-prefix-discovery$(EXEEXT): $(bin_test_prefix_discovery_OBJECTS) $(bin_test_prefix_discovery_DEPENDENCIES) $(EXTRA_bin_test_prefix_discovery_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-prefix-discovery$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_prefix_discovery_OBJECTS) $(bin_test_prefix_discovery_LDADD) $(LIBS)
 examples/test-publish-async-nfd.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -3412,6 +3433,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-channels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-faces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-list-rib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-prefix-discovery.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd-lite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-publish-async-nfd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-register-route.Po@am__quote@
@@ -3661,6 +3683,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.pb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/generalized-content.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/prefix-discovery.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

@@ -103,8 +103,8 @@ TEST_F(TestRegex, ComponentSetMatcher)
 
 TEST_F(TestRegex, RepeatMatcher)
 {
-  shared_ptr<NdnRegexBackrefManager> backRef = make_shared<NdnRegexBackrefManager>();
-  shared_ptr<NdnRegexRepeatMatcher> cm = make_shared<NdnRegexRepeatMatcher>
+  ptr_lib::shared_ptr<NdnRegexBackrefManager> backRef = make_shared<NdnRegexBackrefManager>();
+  ptr_lib::shared_ptr<NdnRegexRepeatMatcher> cm = make_shared<NdnRegexRepeatMatcher>
     ("[<a><b>]*", backRef, 8);
   bool res = cm->match(Name("/a/b/c"), 0, 0);
   ASSERT_EQ(true, res);

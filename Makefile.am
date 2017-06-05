@@ -50,6 +50,7 @@ noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
   bin/test-generalized-content bin/test-get-async bin/test-get-async-threadsafe \
   bin/test-list-channels bin/test-list-faces bin/test-list-rib \
+  bin/test-prefix-discovery \
   bin/test-publish-async-nfd bin/test-publish-async-nfd-lite \
   bin/test-register-route bin/test-sign-verify-data-hmac \
   bin/analog-reading-consumer bin/basic-insertion bin/watched-insertion
@@ -232,7 +233,8 @@ ndn_cpp_cpp_headers = \
 ndn_cpp_tools_cpp_headers = \
   include/ndn-cpp-tools/usersync/channel-discovery.hpp \
   include/ndn-cpp-tools/usersync/content-meta-info.hpp \
-  include/ndn-cpp-tools/usersync/generalized-content.hpp
+  include/ndn-cpp-tools/usersync/generalized-content.hpp \
+  include/ndn-cpp-tools/usersync/prefix-discovery.hpp
 
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
@@ -453,7 +455,7 @@ libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers
   tools/usersync/channel-discovery.cpp \
   tools/usersync/content-meta-info.cpp \
   tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
-  tools/usersync/generalized-content.cpp
+  tools/usersync/generalized-content.cpp tools/usersync/prefix-discovery.cpp
 
 bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
 bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
@@ -496,6 +498,9 @@ bin_test_list_faces_LDADD = libndn-cpp.la
 
 bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
 bin_test_list_rib_LDADD = libndn-cpp.la
+
+bin_test_prefix_discovery_SOURCES = examples/test-prefix-discovery.cpp
+bin_test_prefix_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 
 bin_test_publish_async_nfd_SOURCES = examples/test-publish-async-nfd.cpp
 bin_test_publish_async_nfd_LDADD = libndn-cpp.la
