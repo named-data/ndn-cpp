@@ -33,16 +33,16 @@
 namespace ndn {
 
 /**
- * PibSqlite3 is used by the Pib class as an implementation of a PIB based on an
- * SQLite3 database.
- * All the contents in the PIB are stored in an SQLite3 database file. This
- * provides more persistent storage than PibMemory.
+ * PibSqlite3 extends PibImpl and is used by the Pib class as an implementation
+ * of a PIB based on an SQLite3 database. All the contents in the PIB are stored
+ * in an SQLite3 database file. This provides more persistent storage than
+ * PibMemory.
  */
 class PibSqlite3 : public PibImpl {
 public:
   /**
    * Create a new PibSqlite3 to work with an SQLite3 file. This assumes that the
-   * database directory does not contain a PIB database of an older version,
+   * database directory does not contain a PIB database of an older version.
    * @param databaseDirectoryPath (optional) The directory where the
    * database file is located. If omitted, use $HOME/.ndn . If the directory
    * does not exist, create it.
