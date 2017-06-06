@@ -192,7 +192,7 @@ CREATE TRIGGER IF NOT EXISTS                       \n\
 PibSqlite3::PibSqlite3
   (const string& databaseDirectoryPathIn, const string& databaseFilename)
 {
-  string databaseDirectoryPath = databaseDirectoryPathIn;
+  string databaseDirectoryPath;
   if (databaseDirectoryPathIn != "") {
     databaseDirectoryPath = databaseDirectoryPathIn;
     if (databaseDirectoryPath[databaseDirectoryPath.size() - 1] == '/' ||
