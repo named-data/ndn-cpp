@@ -29,9 +29,9 @@
 namespace ndn {
 
 /**
- * PibMemory is used by the Pib class as an in-memory implementation of a PIB.
- * All the contents in the PIB are stored in memory and have the same lifetime
- * as the PibMemory instance.
+ * PibMemory extends PibImpl and is used by the Pib class as an in-memory
+ * implementation of a PIB. All the contents in the PIB are stored in memory and
+ * have the same lifetime as the PibMemory instance.
  */
 class PibMemory : public PibImpl {
 public:
