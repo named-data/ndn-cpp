@@ -78,7 +78,7 @@ NdnRegexComponentSetMatcher::compileSingleComponent()
       ptr_lib::make_shared<NdnRegexComponentMatcher>
         (expr_.substr(1, end - 2), backrefManager_);
 
-    components_.insert(component);
+    components_.push_back(component);
   }
 }
 
@@ -100,7 +100,7 @@ NdnRegexComponentSetMatcher::compileMultipleComponents
       ptr_lib::make_shared<NdnRegexComponentMatcher>
         (expr_.substr(tempIndex, index - tempIndex - 1), backrefManager_);
 
-    components_.insert(component);
+    components_.push_back(component);
   }
 
   if (index != lastIndex)
@@ -116,7 +116,7 @@ NdnRegexComponentSetMatcher::match(const Name& name, size_t offset, size_t len)
   if (len != 1)
     return false;
 
-  for (set<ptr_lib::shared_ptr<NdnRegexComponentMatcher> >::iterator it = components_.begin();
+  for (vector<ptr_lib::shared_ptr<NdnRegexComponentMatcher> >::iterator it = components_.begin();
        it != components_.end();
        ++it) {
     if ((*it)->match(name, offset, len)) {
