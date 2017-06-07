@@ -49,7 +49,7 @@ public:
   ~NdnRegexComponentSetMatcher();
 
   virtual bool
-  match(const Name& name, size_t offset, size_t len = 1);
+  match(const Name& name, size_t offset, size_t len);
 
 protected:
   /**
