@@ -331,6 +331,13 @@ PibSqlite3::getIdentities() const
 void
 PibSqlite3::setDefaultIdentity(const Name& identityName)
 {
+  if (!hasIdentity(identityName)) {
+    Sqlite3Statement statement
+      (database_, "INSERT INTO identities (identity) values (?)");
+    statement.bind(1, identityName.wireEncode());
+    statement.step();
+  }
+
   Sqlite3Statement statement
     (database_, "UPDATE identities SET is_default=1 WHERE identity=?");
   statement.bind(1, identityName.wireEncode());
