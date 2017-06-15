@@ -215,8 +215,8 @@ TEST_F(TestPibImpl, IdentityManagement)
     ASSERT_EQ(false, pib.hasIdentity(fixture.id2));
     ASSERT_THROW(pib.getDefaultIdentity(), Pib::Error);
 
-    // Add id2 again, which should be default.
-    pib.addIdentity(fixture.id2);
+    // Set id2 as the default. This should add id2 again.
+    pib.setDefaultIdentity(fixture.id2);
     ASSERT_EQ(fixture.id2, pib.getDefaultIdentity());
 
     // Get all the identities, which should have id1 and id2.
