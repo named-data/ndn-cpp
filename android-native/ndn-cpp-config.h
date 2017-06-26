@@ -147,7 +147,7 @@
 
 /* 1 if have std::regex. */
 #ifndef NDN_CPP_HAVE_STD_REGEX
-#define NDN_CPP_HAVE_STD_REGEX 1
+#define NDN_CPP_HAVE_STD_REGEX 0
 #endif
 
 /* 1 if have the `std::shared_ptr' class. */
