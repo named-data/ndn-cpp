@@ -107,6 +107,7 @@ ndn_getEcKeyInfo(int i) { return EC_KEY_INFO + i; }
 #include "time.h"
 // Use the openssl code in contrib.
 #include "../../../contrib/openssl/sha.h"
+#include "ndn_memory.h"
 
 void
 ndn_digestSha256(const uint8_t *data, size_t dataLength, uint8_t *digest)
