@@ -20,6 +20,7 @@ add_library( # Sets the name of the library.
              src/ndn-cpp/contrib/apache/apr_base64.c
              src/ndn-cpp/contrib/openssl/sha256.c
              src/ndn-cpp/src/c/control-parameters_c.c
+             src/ndn-cpp/src/c/errors.c
              src/ndn-cpp/src/c/forwarding-flags.c
              src/ndn-cpp/src/c/interest_c.c
              src/ndn-cpp/src/c/name_c.c
@@ -53,6 +54,43 @@ add_library( # Sets the name of the library.
              src/ndn-cpp/src/c/util/ndn_memory.c
              src/ndn-cpp/src/c/util/ndn_realloc.c
              src/ndn-cpp/src/c/util/time.c
+             src/ndn-cpp/src/common.cpp
+             src/ndn-cpp/src/control-parameters.cpp
+             src/ndn-cpp/src/control-response.cpp
+             src/ndn-cpp/src/data.cpp
+             src/ndn-cpp/src/delegation-set.cpp
+             src/ndn-cpp/src/digest-sha256-signature.cpp
+             src/ndn-cpp/src/exclude.cpp
+             src/ndn-cpp/src/face.cpp
+             src/ndn-cpp/src/generic-signature.cpp
+             src/ndn-cpp/src/hmac-with-sha256-signature.cpp
+             src/ndn-cpp/src/interest-filter.cpp
+             src/ndn-cpp/src/interest.cpp
+             src/ndn-cpp/src/key-locator.cpp
+             src/ndn-cpp/src/link.cpp
+             src/ndn-cpp/src/meta-info.cpp
+             src/ndn-cpp/src/name.cpp
+             src/ndn-cpp/src/network-nack.cpp
+             src/ndn-cpp/src/node.cpp
+             src/ndn-cpp/src/signature.cpp
+             src/ndn-cpp/src/sha256-with-ecdsa-signature.cpp
+             src/ndn-cpp/src/sha256-with-rsa-signature.cpp
+             src/ndn-cpp/src/encoding/base64.cpp
+             src/ndn-cpp/src/encoding/element-listener.cpp
+             src/ndn-cpp/src/encoding/oid.cpp
+             src/ndn-cpp/src/encoding/protobuf-tlv.cpp
+             src/ndn-cpp/src/encoding/tlv-0_1-wire-format.cpp
+             src/ndn-cpp/src/encoding/tlv-0_1_1-wire-format.cpp
+             src/ndn-cpp/src/encoding/tlv-0_2-wire-format.cpp
+             src/ndn-cpp/src/encoding/tlv-wire-format.cpp
+             src/ndn-cpp/src/encoding/wire-format.cpp
+             src/ndn-cpp/src/encoding/der/der-exception.cpp
+             src/ndn-cpp/src/encoding/der/der-node.cpp
+             src/ndn-cpp/src/encrypt/encrypted-content.cpp
+             src/ndn-cpp/src/impl/delayed-call-table.cpp
+             src/ndn-cpp/src/impl/interest-filter-table.cpp
+             src/ndn-cpp/src/impl/pending-interest-table.cpp
+             src/ndn-cpp/src/impl/registered-prefix-table.cpp
              src/ndn-cpp/src/lite/control-parameters-lite.cpp
              src/ndn-cpp/src/lite/control-response-lite.cpp
              src/ndn-cpp/src/lite/data-lite.cpp
@@ -83,6 +121,48 @@ add_library( # Sets the name of the library.
              src/ndn-cpp/src/lite/util/crypto-lite.cpp
              src/ndn-cpp/src/lite/util/dynamic-malloc-uint8-array-lite.cpp
              src/ndn-cpp/src/lite/util/dynamic-uint8-array-lite.cpp
+             src/ndn-cpp/src/lp/incoming-face-id.cpp
+             src/ndn-cpp/src/lp/lp-packet.cpp
+             src/ndn-cpp/src/security/key-chain.cpp
+             src/ndn-cpp/src/security/security-exception.cpp
+             src/ndn-cpp/src/security/certificate/certificate-extension.cpp
+             src/ndn-cpp/src/security/certificate/certificate-subject-description.cpp
+             src/ndn-cpp/src/security/certificate/certificate.cpp
+             src/ndn-cpp/src/security/certificate/identity-certificate.cpp
+             src/ndn-cpp/src/security/certificate/public-key.cpp
+             src/ndn-cpp/src/security/identity/basic-identity-storage.cpp
+             src/ndn-cpp/src/security/identity/file-private-key-storage.cpp
+             src/ndn-cpp/src/security/identity/identity-manager.cpp
+             src/ndn-cpp/src/security/identity/identity-storage.cpp
+             src/ndn-cpp/src/security/identity/memory-identity-storage.cpp
+             src/ndn-cpp/src/security/identity/private-key-storage.cpp
+             src/ndn-cpp/src/security/policy/config-policy-manager.cpp
+             src/ndn-cpp/src/security/policy/no-verify-policy-manager.cpp
+             src/ndn-cpp/src/security/policy/policy-manager.cpp
+             src/ndn-cpp/src/security/policy/self-verify-policy-manager.cpp
+             src/ndn-cpp/src/transport/async-tcp-transport.cpp
+             src/ndn-cpp/src/transport/async-unix-transport.cpp
+             src/ndn-cpp/src/transport/tcp-transport.cpp
+             src/ndn-cpp/src/transport/transport.cpp
+             src/ndn-cpp/src/transport/udp-transport.cpp
+             src/ndn-cpp/src/transport/unix-transport.cpp
+             src/ndn-cpp/src/util/boost-info-parser.cpp
+             src/ndn-cpp/src/util/command-interest-generator.cpp
+             src/ndn-cpp/src/util/config-file.cpp
+             src/ndn-cpp/src/util/dynamic-uint8-vector.cpp
+             src/ndn-cpp/src/util/exponential-re-express.cpp
+             src/ndn-cpp/src/util/logging.cpp
+             src/ndn-cpp/src/util/memory-content-cache.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-backref-manager.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-backref-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-component-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-component-set-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-matcher-base.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-pattern-list-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-pseudo-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-repeat-matcher.cpp
+             src/ndn-cpp/src/util/regex/ndn-regex-top-matcher.cpp
+             src/ndn-cpp/src/util/segment-fetcher.cpp
              )
 
 include_directories(src/ndn-cpp/include)
