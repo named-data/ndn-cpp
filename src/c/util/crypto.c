@@ -135,6 +135,18 @@ ndn_generateRandomBytes(uint8_t *buffer, size_t bufferLength)
   return NDN_ERROR_success;
 }
 
+int
+ndn_verifyDigestSha256Signature
+  (const uint8_t *signature, size_t signatureLength, const uint8_t *data,
+   size_t dataLength)
+{
+  uint8_t dataDigest[ndn_SHA256_DIGEST_SIZE];
+  ndn_digestSha256(data, dataLength, dataDigest);
+
+  return signatureLength == ndn_SHA256_DIGEST_SIZE && ndn_memcmp
+    (signature, dataDigest, ndn_SHA256_DIGEST_SIZE) == 0;
+}
+
 size_t
 ndn_getEcKeyInfoCount() { return 0; }
 
