@@ -142,17 +142,17 @@
 
 /* 1 if have the `std::function' class. */
 #ifndef NDN_CPP_HAVE_STD_FUNCTION
-#define NDN_CPP_HAVE_STD_FUNCTION 0
+#define NDN_CPP_HAVE_STD_FUNCTION 1
 #endif
 
 /* 1 if have std::regex. */
 #ifndef NDN_CPP_HAVE_STD_REGEX
-#define NDN_CPP_HAVE_STD_REGEX 0
+#define NDN_CPP_HAVE_STD_REGEX 1
 #endif
 
 /* 1 if have the `std::shared_ptr' class. */
 #ifndef NDN_CPP_HAVE_STD_SHARED_PTR
-#define NDN_CPP_HAVE_STD_SHARED_PTR 0
+#define NDN_CPP_HAVE_STD_SHARED_PTR 1
 #endif
 
 /* Define to 1 if you have the `strchr' function. */
@@ -253,12 +253,12 @@
 
 /* Define to 1 if func_lib should use std::function, etc. if available */
 #ifndef NDN_CPP_WITH_STD_FUNCTION
-#define NDN_CPP_WITH_STD_FUNCTION 0
+#define NDN_CPP_WITH_STD_FUNCTION 1
 #endif
 
 /* Define to 1 if ptr_lib should use std::shared_ptr, etc. if available */
 #ifndef NDN_CPP_WITH_STD_SHARED_PTR
-#define NDN_CPP_WITH_STD_SHARED_PTR 0
+#define NDN_CPP_WITH_STD_SHARED_PTR 1
 #endif
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
