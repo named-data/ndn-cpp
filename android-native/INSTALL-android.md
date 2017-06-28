@@ -25,7 +25,7 @@ Create a new Android project with the following configuration:
 * In the New Project wizard, name the project (e.g. "ndn-cpp-native"). Be sure to check "Include C++ support".
 * Select a minimum SDK. This has been tested with "API 21: Android 5.0 (Lollipop)".
 * Select the Basic Activity template.
-* In the Customize C++ Support screen, for the C++ Standard, select "Toolchain Default". Check "Exceptions Support"
+* In the Customize C++ Support screen, for the C++ Standard, select "C++11". Check "Exceptions Support"
   and "Runtime Type Information Support".
 * Click Finish to complete the New Project wizard.
 
