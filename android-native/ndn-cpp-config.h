@@ -61,7 +61,7 @@
 
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #ifndef NDN_CPP_HAVE_LIBCRYPTO
-#define NDN_CPP_HAVE_LIBCRYPTO 0
+#define NDN_CPP_HAVE_LIBCRYPTO 1
 #endif
 
 /* Define to 1 if you have the `log4cxx' library (-llog4cxx). */
