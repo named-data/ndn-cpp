@@ -8,6 +8,8 @@ Prerequisites
 
 * Required: Android Studio (version 2.2 or higher)
 * Required: Android LLDB, CMake and NDK
+* Required: OpenSSL 1.0.x.
+* Required: perl (for configuring the OpenSSL build)
 
 ## macOS 10.12
 
@@ -16,6 +18,35 @@ Required: Install Android Studio from https://developer.android.com/studio/index
 
 Required: In the Android Studio SDK Manager, install LLDB, CMake and NDK following the instructions at
 https://developer.android.com/ndk/guides/index.html
+
+Set the environment variables ANDROID_SDK_ROOT and ANDROID_NDK_ROOT to the installed location, for example:
+
+    export ANDROID_SDK_ROOT=~/Library/Android/sdk
+    export ANDROID_NDK_ROOT=~/Library/Android/sdk/ndk-bundle
+
+Required: Download the latest OpenSSL 1.0.x from https://www.openssl.org/source . Extract the files, for example:
+
+    tar xvfz openssl-1.0.2l.tar.gz
+
+Prepare OpenSSL
+===============
+
+(These instructions are taken from https://wiki.openssl.org/index.php/Android .)
+Make sure the environment variables ANDROID_SDK_ROOT and ANDROID_NDK_ROOT are set (see above).
+To run the OpenSSL setup script, in the following change <NDN-CPP-root> to the root of the NDN-CPP distribution. In
+a terminal, enter:
+
+    . <NDN-CPP-root>/android-native/setenv-android.sh
+
+(This runs the script from https://wiki.openssl.org/images/7/70/Setenv-android.sh which is configured for
+android-ndk-r9 and arm . You may need to edit it to change _ANDROID_NDK, _ANDROID_ARCH, _ANDROID_EABI
+and _ANDROID_API . For details, see https://wiki.openssl.org/index.php/Android#Adjust_the_Cross-Compile_Script .)
+
+In a terminal, change directory to the extracted openssl distribution and enter:
+
+   perl -pi -e 's/install: all install_docs install_sw/install: install_docs install_sw/g' Makefile.org
+   ./config shared no-asm no-ssl2 no-ssl3 no-comp no-hw no-engine --openssldir=.
+   make depend
 
 Build
 =====
@@ -36,7 +67,11 @@ To make a link to NDN-CPP, in the following change <NDN-CPP-root> to the root of
 
     ln -s <NDN-CPP-root> app/src/ndn-cpp
 
-The Android config.h mainly disables Boost and std shared_ptr so that it uses ndnboost included in NDN-CPP.
+To make a link to OpenSSL, in the following change <OpenSSL> to the extracted OpenSSL distribution:
+
+    ln -s <OpenSSL> app/src/openssl
+
+The Android config.h mainly selects the std shared_ptr and other defaults.
 Copy it to the NDN-CPP include folder:
 
     cp app/src/ndn-cpp/android-native/ndn-cpp-config.h app/src/ndn-cpp/include/ndn-cpp
