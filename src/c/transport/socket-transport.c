@@ -36,6 +36,11 @@
 #include "socket-transport.h"
 #include <errno.h>
 
+#ifndef SUN_LEN
+#define SUN_LEN(su) \
+	(sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
+#endif
+
 ndn_Error ndn_SocketTransport_connect
   (struct ndn_SocketTransport *self, ndn_SocketType socketType, const char *host,
    unsigned short port, struct ndn_ElementListener *elementListener)

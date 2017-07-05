@@ -154,7 +154,8 @@ NdnRegexTopMatcher::getItemFromExpand(const string& expand, size_t& offset)
     if (offset >= expand.size())
       throw NdnRegexMatcherBase::Error("wrong format of expand string!");
 
-    while (expand[offset] <= '9' && expand[offset] >= '0') {
+    while (offset < expand.size() &&
+           expand[offset] <= '9' && expand[offset] >= '0') {
       ++offset;
       if (offset > expand.size())
         throw NdnRegexMatcherBase::Error("wrong format of expand string!");

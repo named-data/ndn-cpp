@@ -109,8 +109,8 @@ public:
   match(const Name& name, size_t offset, size_t len);
 
   /**
-   * @brief get the matched name components
-   * @returns the matched name components
+   * Get the list of matched name components.
+   * @return The matched name components.
    */
   const std::vector<Name::Component>&
   getMatchResult() const { return matchResult_; }

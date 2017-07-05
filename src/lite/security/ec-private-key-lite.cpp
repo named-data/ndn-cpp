@@ -22,6 +22,8 @@
 #include "../../c/security/ec-private-key.h"
 #include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
 
+#if NDN_CPP_HAVE_LIBCRYPTO
+
 namespace ndn {
 
 EcPrivateKeyLite::EcPrivateKeyLite()
@@ -86,3 +88,5 @@ EcPrivateKeyLite::getCurveId(int& curveId) const
 }
 
 }
+
+#endif // NDN_CPP_HAVE_LIBCRYPTO

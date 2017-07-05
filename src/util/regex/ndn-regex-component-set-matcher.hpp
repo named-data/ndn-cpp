@@ -23,7 +23,6 @@
 #ifndef NDN_NDN_REGEX_COMPONENT_SET_MATCHER_HPP
 #define NDN_NDN_REGEX_COMPONENT_SET_MATCHER_HPP
 
-#include <set>
 #include "ndn-regex-component-matcher.hpp"
 #include "ndn-regex-matcher-base.hpp"
 
@@ -49,7 +48,7 @@ public:
   ~NdnRegexComponentSetMatcher();
 
   virtual bool
-  match(const Name& name, size_t offset, size_t len = 1);
+  match(const Name& name, size_t offset, size_t len);
 
 protected:
   /**
@@ -68,7 +67,7 @@ private:
   void
   compileMultipleComponents(size_t start, size_t lastIndex);
 
-  std::set<ptr_lib::shared_ptr<NdnRegexComponentMatcher> > components_;
+  std::vector<ptr_lib::shared_ptr<NdnRegexComponentMatcher> > components_;
   bool isInclusion_;
 };
 

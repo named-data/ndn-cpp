@@ -110,12 +110,12 @@ NdnRegexRepeatMatcher::parseRepetition()
       else if (regex_lib::regex_match
                (repeatStruct, regex_lib::regex("\\{[0-9]+,\\}"))) {
         size_t separator = repeatStruct.find_first_of(',', 0);
-        min = ::atoi(repeatStruct.substr(1, separator).c_str());
+        min = ::atoi(repeatStruct.substr(1, separator - 1).c_str());
         max = MAX_REPETITIONS;
       }
       else if (regex_lib::regex_match
                (repeatStruct, regex_lib::regex("\\{[0-9]+\\}"))) {
-        min = ::atoi(repeatStruct.substr(1, rsSize - 1).c_str());
+        min = ::atoi(repeatStruct.substr(1, rsSize - 2).c_str());
         max = min;
       }
       else

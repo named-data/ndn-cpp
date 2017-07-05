@@ -1,6 +1,9 @@
 NDN-CPP:  A Named Data Networking client library for C++ and C
 ==============================================================
 
+These are instructions to build and install NDN-CPP.
+To cross compile for Anrdoid, see android-native/INSTALL-android.md .
+
 Prerequisites
 =============
 (These are prerequisites to build NDN-CPP.  To do development of NDN-CPP code and update the build system,

@@ -50,11 +50,11 @@ public:
   ~NdnRegexComponentMatcher();
 
   virtual bool
-  match(const Name& name, size_t offset, size_t len = 1);
+  match(const Name& name, size_t offset, size_t len);
 
 protected:
   /**
-   * @brief Compile the regular expression to generate the more matchers when necessary
+   * Compile the regular expression to generate more matchers when necessary.
    */
   virtual void
   compile();
