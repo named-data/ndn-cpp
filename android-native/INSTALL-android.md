@@ -44,9 +44,9 @@ and _ANDROID_API . For details, see https://wiki.openssl.org/index.php/Android#A
 
 In a terminal, change directory to the extracted openssl distribution and enter:
 
-   perl -pi -e 's/install: all install_docs install_sw/install: install_docs install_sw/g' Makefile.org
-   ./config shared no-asm no-ssl2 no-ssl3 no-comp no-hw no-engine --openssldir=.
-   make depend
+    perl -pi -e 's/install: all install_docs install_sw/install: install_docs install_sw/g' Makefile.org
+    ./config shared no-asm no-ssl2 no-ssl3 no-comp no-hw no-engine --openssldir=.
+    make depend
 
 Build
 =====
