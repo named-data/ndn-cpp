@@ -30,7 +30,7 @@ namespace ndn {
 class TpmPrivateKey;
 
 /**
- * TpmBackEndMemory extends TpmBackEnd to implement a TPM back-end using
+ * TpmBackEndFile extends TpmBackEnd to implement a TPM back-end using
  * on-disk file storage. In this TPM, each private key is stored in a separate
  * file with permission 0400, i.e., owner read-only.  The key is stored in
  * PKCS #1 format in base64 encoding.
@@ -53,7 +53,8 @@ public:
   /**
    * Create a TpmBackEndFile to use the given path to store files.
    * @param locationPath (optional) The path of the directory to store private
-   * keys. If omitted use $HOME/.ndn/ndnsec-key-file .
+   * keys. This creates the directory if it doesn't exist. If omitted or empty
+   * use $HOME/.ndn/ndnsec-key-file .
    */
   TpmBackEndFile(const std::string& locationPath = "");
 
