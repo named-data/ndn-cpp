@@ -41,21 +41,31 @@ namespace ndn {
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
 
-FilePrivateKeyStorage::FilePrivateKeyStorage()
+FilePrivateKeyStorage::FilePrivateKeyStorage(const string& keyStoreDirectoryPath)
 {
-  // Note: We don't use <filesystem> support because it is not "header-only" and
-  // require linking to libraries.
-  // TODO: Handle non-unix file system paths which don't use '/'.
-  const char* home = getenv("HOME");
-  if (!home || *home == '\0')
-    // Don't expect this to happen;
-    home = ".";
-  string homeDir(home);
-  if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
-    // Strip the ending path separator.
-    homeDir.erase(homeDir.size() - 1);
+  if (keyStoreDirectoryPath != "") {
+    keyStorePath_ = keyStoreDirectoryPath;
+    if (keyStorePath_[keyStorePath_.size() - 1] == '/' ||
+        keyStorePath_[keyStorePath_.size() - 1] == '\\')
+      // Strip the ending path separator.
+      keyStorePath_.erase(keyStorePath_.size() - 1);
+  }
+  else {
+    // Note: We don't use <filesystem> support because it is not "header-only" and
+    // require linking to libraries.
+    // TODO: Handle non-unix file system paths which don't use '/'.
+    const char* home = getenv("HOME");
+    if (!home || *home == '\0')
+      // Don't expect this to happen;
+      home = ".";
+    string homeDir(home);
+    if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
+      // Strip the ending path separator.
+      homeDir.erase(homeDir.size() - 1);
 
-  keyStorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";
+    keyStorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";
+  }
+  
   // TODO: Handle non-unix file systems which don't have "mkdir -p".
   ::system(("mkdir -p " + keyStorePath_).c_str());
 }
