@@ -33,6 +33,30 @@ namespace ndn {
  */
 class ExponentialReExpress : public ptr_lib::enable_shared_from_this<ExponentialReExpress> {
 public:
+  /**
+   * Return a function object to use in expressInterest for onTimeout which will 
+   * express the interest again with double the interestLifetime. If the
+   * interesLifetime goes over maxInterestLifetime (see below), then call the
+   * provided onTimeout. If a Data packet is received, this calls the provided
+   * onData.
+   * @param face This calls face.expressInterest.
+   * @param onData When a matching data packet is received, this calls
+   * onData(interest, data) where interest is the interest given to
+   * expressInterest and data is the received Data object. This is normally the
+   * same onData you initially passed to expressInterest.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param onTimeout If the interesLifetime goes over maxInterestLifetime, this
+   * calls onTimeout(interest). However, if onTimeout is the default
+   * OnTimeout(), this does not use it.
+   * NOTE: The library will log any exceptions thrown by this callback, but for
+   * better error handling the callback should catch and properly handle any
+   * exceptions.
+   * @param maxInterestLifetime (optional) The maximum lifetime in milliseconds
+   * for re-expressed interests. If omitted, use 16000.
+   * @return The OnTimeout function object to pass to expressInterest.
+   */
   static OnTimeout
   makeOnTimeout
     (Face* face, const OnData& onData, const OnTimeout& onTimeout,
