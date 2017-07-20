@@ -37,9 +37,13 @@ class DerNode;
 class FilePrivateKeyStorage : public PrivateKeyStorage {
 public:
   /**
-   * Create a new FilePrivateKeyStorage to connect to the default directory.
+   * Create a new FilePrivateKeyStorage to connect to the given or default
+   * directory.
+   * @param keyStoreDirectoryPath (optional) The path of the directory to store
+   * private keys. This creates the directory if it doesn't exist. If omitted or
+   * empty use $HOME/.ndn/ndnsec-tpm-file .
    */
-  FilePrivateKeyStorage();
+  FilePrivateKeyStorage(const std::string& keyStoreDirectoryPath = "");
 
   /**
    * The virtual Destructor.
