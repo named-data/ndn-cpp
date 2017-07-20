@@ -360,7 +360,8 @@ public:
   /**
    * Remove timed-out pending interests, then for each pending interest which
    * matches according to Interest.matchesName(name), append the PendingInterest
-   * entry to the given pendingInterests list.
+   * entry to the given pendingInterests list. (To get interests with a given
+   * prefix, see getPendingInterestsWithPrefix().)
    * Because this modifies the internal tables, you should call this on the same
    * thread as processEvents, which can also modify the tables.
    * @param name The name to check.
@@ -374,6 +375,27 @@ public:
      std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests)
   {
     impl_->getPendingInterestsForName(name, pendingInterests);
+  }
+
+  /**
+   * Remove timed-out pending interests, then for each pending interest which
+   * matches according to prefix.isPrefixOf(interest.getName()), append the
+   * PendingInterest entry to the given pendingInterests list. Note that
+   * interest selectors are ignored. (To get interests which would match a
+   * given data packet name, see getPendingInterestsForName().)
+   * Because this modifies the internal tables, you should call this on the same
+   * thread as processEvents, which can also modify the tables.
+   * @param prefix The prefix of the interest names to match.
+   * @param pendingInterests The vector to receive the matching PendingInterest
+   * objects. This first clears the list before adding objects. You should not
+   * modify the PendingInterest objects.
+   */
+  void
+  getPendingInterestsWithPrefix
+    (const Name& prefix,
+     std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests)
+  {
+    impl_->getPendingInterestsWithPrefix(prefix, pendingInterests);
   }
 
   /**
@@ -445,6 +467,11 @@ private:
     void
     getPendingInterestsForName
       (const Name& name,
+       std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
+
+    void
+    getPendingInterestsWithPrefix
+      (const Name& prefix,
        std::vector<ptr_lib::shared_ptr<const PendingInterest> >& pendingInterests);
 
     void
