@@ -116,7 +116,8 @@ public:
 
     identityStorage.reset(new BasicIdentityStorage(databaseFilePath));
     identityManager.reset(new IdentityManager
-      (identityStorage, ptr_lib::make_shared<FilePrivateKeyStorage>()));
+      (identityStorage, ptr_lib::make_shared<FilePrivateKeyStorage>
+       (getPolicyConfigDirectory() + "/test-private-keys")));
     policyManager.reset(new SelfVerifyPolicyManager(identityStorage.get()));
     keyChain.reset(new KeyChain(identityManager, policyManager));
   }
