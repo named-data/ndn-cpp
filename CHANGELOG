@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.12 (2017-05-12)
+Interim changes since NDN-CPP v0.12 (2017-07-20)
 ------------------------------------------------
 
 Changes
@@ -9,6 +9,7 @@ Changes
   over TCP. (Thanks to José Quevedo!)
 * In MemoryContentCache, added support for the OnContentRemoved callback.
 * Lite: Added DynamicMallocUInt8ArrayLite.
+* MemoryContentCache: Added getPendingInterestsWithPrefix().
 * Examples: Added test-publish-async-nfd-lite and test-echo-consumer-lite .
 
 Bug fixes
