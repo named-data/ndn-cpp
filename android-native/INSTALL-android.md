@@ -82,6 +82,11 @@ Copy the project mk files:
     cp app/src/ndn-cpp/android-native/Android.mk app
     cp app/src/ndn-cpp/android-native/Application.mk app
 
+(This uses SQLite by default. To omit SQLite, edit ndn-cpp-config.h to remove the line
+`#define NDN_CPP_HAVE_SQLITE3` and edit Android.mk to remove sqlite3 from the line
+`LOCAL_SHARED_LIBRARIES := openssl sqlite3` . Also, you don't need to install
+libsqlite3.so on your Android.)
+
 Use NDK to build:
 
     ndk-build NDK_PROJECT_PATH=`pwd` NDK_LIBS_OUT=`pwd`/app/build/intermediates/cmake/debug/obj/armeabi APP_BUILD_SCRIPT=app/Android.mk NDK_APPLICATION_MK=app/Application.mk
