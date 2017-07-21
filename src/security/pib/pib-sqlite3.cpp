@@ -24,6 +24,7 @@
 #include <ndn-cpp/ndn-cpp-config.h>
 #ifdef NDN_CPP_HAVE_SQLITE3
 
+#include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>

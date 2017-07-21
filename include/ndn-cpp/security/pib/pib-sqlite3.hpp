@@ -27,8 +27,9 @@
 #include "../../ndn-cpp-config.h"
 #ifdef NDN_CPP_HAVE_SQLITE3
 
-#include <sqlite3.h>
 #include "pib-impl.hpp"
+
+struct sqlite3;
 
 namespace ndn {
 
@@ -298,7 +299,7 @@ private:
   PibSqlite3(const PibSqlite3& other);
   PibSqlite3& operator=(const PibSqlite3& other);
 
-  sqlite3 *database_;
+  struct sqlite3 *database_;
 };
 
 }
