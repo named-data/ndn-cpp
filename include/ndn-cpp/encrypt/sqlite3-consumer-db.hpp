@@ -27,9 +27,10 @@
 #include "../ndn-cpp-config.h"
 #ifdef NDN_CPP_HAVE_SQLITE3
 
-#include <sqlite3.h>
 #include "../common.hpp"
 #include "consumer-db.hpp"
+
+struct sqlite3;
 
 namespace ndn {
 
@@ -76,7 +77,7 @@ public:
   deleteKey(const Name& keyName);
 
 private:
-  sqlite3 *database_;
+  struct sqlite3 *database_;
 };
 
 }

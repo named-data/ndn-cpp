@@ -27,9 +27,10 @@
 #include "../../ndn-cpp-config.h"
 #ifdef NDN_CPP_HAVE_SQLITE3
 
-#include <sqlite3.h>
 #include "../../common.hpp"
 #include "identity-storage.hpp"
+
+struct sqlite3;
 
 namespace ndn
 {
@@ -269,7 +270,7 @@ private:
   void
   updateKeyStatus(const Name& keyName, bool isActive);
 
-  sqlite3 *database_;
+  struct sqlite3 *database_;
 };
 
 }
