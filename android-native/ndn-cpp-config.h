@@ -123,7 +123,7 @@
 #endif
 
 /* Have the SQLITE3 library */
-//#define NDN_CPP_HAVE_SQLITE3 /**/
+#define NDN_CPP_HAVE_SQLITE3
 
 /* Define to 1 if you have the `sscanf' function. */
 #ifndef NDN_CPP_HAVE_SSCANF
