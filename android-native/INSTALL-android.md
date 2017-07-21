@@ -10,6 +10,7 @@ Prerequisites
 * Required: Android LLDB, CMake and NDK
 * Required: OpenSSL 1.0.x.
 * Required: perl (for configuring the OpenSSL build)
+* Optional: SQLite3 (compiled from the source in contrib/sqlite3)
 
 ## macOS 10.12
 
@@ -60,7 +61,7 @@ Create a new Android project with the following configuration:
   and "Runtime Type Information Support".
 * Click Finish to complete the New Project wizard.
 
-Set up CMake as follows. In a terminal, change directory to the root of your Android Studio project,
+In a terminal, change directory to the root of your Android Studio project,
 for example "/Users/myusername/AndroidStudioProjects/ndn-cpp-native".
 
 To make a link to NDN-CPP, in the following change <NDN-CPP-root> to the root of the NDN-CPP distribution:
@@ -76,15 +77,35 @@ Copy it to the NDN-CPP include folder:
 
     cp app/src/ndn-cpp/android-native/ndn-cpp-config.h app/src/ndn-cpp/include/ndn-cpp
 
-Replace the CMake file with the NDN-CPP version that makes libndn-cpp:
+Copy the project mk files:
 
-    cp app/src/ndn-cpp/android-native/CMakeLists.txt app
+    cp app/src/ndn-cpp/android-native/Android.mk app
+    cp app/src/ndn-cpp/android-native/Application.mk app
 
-(In Android Studio, if it says "Unregistered VCS root detected", click ignore.)
+Use NDK to build:
 
-in Android Studio, in the Build menu, click Rebuild Project. The libndn-cpp.so library file is in the
-app/build/intermediates/cmake/debug/obj subfolder of your Android Studio project. For example if your
-Android system is armeabi, then the library file is app/build/intermediates/cmake/debug/obj/armeabi/libndn-cpp.so .
+    ndk-build NDK_PROJECT_PATH=`pwd` NDK_LIBS_OUT=`pwd`/app/build/intermediates/cmake/debug/obj/armeabi APP_BUILD_SCRIPT=app/Android.mk NDK_APPLICATION_MK=app/Application.mk
+
+The libndn-cpp.so library and other files are in a subfolder based on the APP_ABI target in Application.mk .
+For example, if the target is armeabi-v7a then the files are in
+app/build/intermediates/cmake/debug/obj/armeabi/armeabi-v7a . The default Android.mk
+builds an Android executable ndn-example from test-encode-decode-data.
+
+## Running on Android with adb shell
+
+To copy the library files and example application to Android (attached by USB cable), enter:
+
+    adb push app/build/intermediates/cmake/debug/obj/armeabi/armeabi-v7a/* /data/local/tmp
+
+Start the adb shell:
+
+    adb shell
+
+In the adb shell, set the library path and run the application:
+
+    cd /data/local/tmp
+    export LD_LIBRARY_PATH=`pwd`
+    ./ndn-example
 
 ## Unity on Android
 
