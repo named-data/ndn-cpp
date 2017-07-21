@@ -27,9 +27,10 @@
 #include "../ndn-cpp-config.h"
 #ifdef NDN_CPP_HAVE_SQLITE3
 
-#include <sqlite3.h>
 #include "../common.hpp"
 #include "group-manager-db.hpp"
+
+struct sqlite3;
 
 namespace ndn {
 
@@ -202,7 +203,7 @@ private:
   int
   getScheduleId(const std::string& name);
 
-  sqlite3 *database_;
+  struct sqlite3 *database_;
 };
 
 }
