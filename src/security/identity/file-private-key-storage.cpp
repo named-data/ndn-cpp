@@ -36,6 +36,9 @@ using namespace std;
 
 namespace ndn {
 
+static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
+static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
+
 FilePrivateKeyStorage::FilePrivateKeyStorage(const string& keyStoreDirectoryPath)
 {
   if (keyStoreDirectoryPath != "") {
