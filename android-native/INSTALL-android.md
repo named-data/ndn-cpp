@@ -25,6 +25,10 @@ Set the environment variables ANDROID_SDK_ROOT and ANDROID_NDK_ROOT to the insta
     export ANDROID_SDK_ROOT=~/Library/Android/sdk
     export ANDROID_NDK_ROOT=~/Library/Android/sdk/ndk-bundle
 
+Add the folders with ndk-build and adb to the PATH, for example:
+
+    export PATH=$PATH:$ANDROID_NDK_ROOT:$ANDROID_SDK_ROOT/platform-tools
+
 Required: Download the latest OpenSSL 1.0.x from https://www.openssl.org/source . Extract the files, for example:
 
     tar xvfz openssl-1.0.2l.tar.gz
@@ -62,7 +66,7 @@ Create a new Android project with the following configuration:
 * Click Finish to complete the New Project wizard.
 
 In a terminal, change directory to the root of your Android Studio project,
-for example "/Users/myusername/AndroidStudioProjects/ndn-cpp-native".
+for example "~/AndroidStudioProjects/ndn-cpp-native".
 
 To make a link to NDN-CPP, in the following change <NDN-CPP-root> to the root of the NDN-CPP distribution:
 
