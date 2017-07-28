@@ -101,7 +101,7 @@ public:
   removeIdentity(const Name& identityName) = 0;
 
   /**
-   * Erase all certificates, keys, and identities
+   * Erase all certificates, keys, and identities.
    */
   virtual void
   clearIdentities() = 0;

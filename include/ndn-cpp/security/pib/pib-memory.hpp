@@ -93,7 +93,7 @@ public:
   removeIdentity(const Name& identityName);
 
   /**
-   * Erase all certificates, keys, and identities
+   * Erase all certificates, keys, and identities.
    */
   virtual void
   clearIdentities();
@@ -127,7 +127,7 @@ public:
    * Check for the existence of a key with keyName.
    * @param keyName The name of the key.
    * @return True if the key exists, otherwise false. Return false if the
-   * identity does not exist
+   * identity does not exist.
    */
   virtual bool
   hasKey(const Name& keyName) const;
