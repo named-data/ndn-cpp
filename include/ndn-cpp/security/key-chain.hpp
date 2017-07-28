@@ -282,7 +282,8 @@ public:
    * Generate a self-signed certificate for the public key and add it to the
    * PIB. This creates the certificate name from the key name by appending
    * "self" and a version based on the current time. If no default certificate
-   * for the key has been set, then set the certificate as default for the key.
+   * for the key has been set, then set the certificate as the default for the
+   * key.
    * @param key The PibKey with the key name and public key.
    * @return The new certificate.
    */
@@ -474,7 +475,8 @@ public:
   }
 
   /**
-   * Generate a pair of RSA keys for the specified identity and set it as default key for the identity.
+   * Generate a pair of RSA keys for the specified identity and set it as the
+   * default key for the identity.
    * @param identityName The name of the identity.
    * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
    * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
@@ -493,7 +495,8 @@ public:
   }
 
   /**
-   * Generate a pair of ECDSA keys for the specified identity and set it as default key for the identity.
+   * Generate a pair of ECDSA keys for the specified identity and set it as the
+   * default key for the identity.
    * @param identityName The name of the identity.
    * @param isKsk (optional) true for generating a Key-Signing-Key (KSK), false
    * for a Data-Signing-Key (DSK). If omitted, generate a Data-Signing-Key.
