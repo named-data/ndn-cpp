@@ -41,14 +41,14 @@ PibMemory::getTpmLocator() const { return tpmLocator_; }
 bool
 PibMemory::hasIdentity(const Name& identityName) const
 {
-  return identitieNames_.count(identityName) > 0;
+  return identityNames_.count(identityName) > 0;
 }
 
 void
 PibMemory::addIdentity(const Name& identityName)
 {
   // This copies the name.
-  identitieNames_.insert(identityName);
+  identityNames_.insert(identityName);
 
   if (!hasDefaultIdentity_) {
     defaultIdentityName_ = identityName;
@@ -59,7 +59,7 @@ PibMemory::addIdentity(const Name& identityName)
 void
 PibMemory::removeIdentity(const Name& identityName)
 {
-  identitieNames_.erase(identityName);
+  identityNames_.erase(identityName);
   if (identityName == defaultIdentityName_) {
     hasDefaultIdentity_ = false;
     defaultIdentityName_.clear();
@@ -75,7 +75,7 @@ PibMemory::clearIdentities()
 {
   hasDefaultIdentity_ = false;
   defaultIdentityName_.clear();
-  identitieNames_.clear();
+  identityNames_.clear();
   defaultKeyNames_.clear();
   keys_.clear();
   defaultCertificateNames_.clear();
@@ -86,7 +86,7 @@ set<Name>
 PibMemory::getIdentities() const
 {
   // The set copy constructor will copy the Name objects.
-  return identitieNames_;
+  return identityNames_;
 }
 
 void

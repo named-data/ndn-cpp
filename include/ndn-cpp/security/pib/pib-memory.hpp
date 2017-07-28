@@ -279,7 +279,7 @@ private:
   bool hasDefaultIdentity_;
   Name defaultIdentityName_;
 
-  std::set<Name> identitieNames_;
+  std::set<Name> identityNames_;
 
   // identity => default key Name.
   std::map<Name, Name> defaultKeyNames_;
