@@ -87,6 +87,7 @@ public:
    * Delete the key with name keyName. If the key doesn't exist, do nothing.
    * Note: Continuing to use existing Key handles on a deleted key results in
    * undefined behavior.
+   * @param keyName The name of the key to delete.
    * @throw TpmBackEnd::Error if the deletion fails.
    */
   void
@@ -193,6 +194,8 @@ private:
    * Create a key for identityName according to params. The created key is
    * named as: /<identityName>/[keyId]/KEY . The key name is set in the returned
    * TpmKeyHandle.
+   * @param identityName The name if the identity.
+   * @param params The KeyParams for creating the key.
    * @return The handle of the created key.
    * @throw TpmBackEnd::Error if the key cannot be created.
    */
@@ -201,6 +204,7 @@ private:
 
   /**
    * Delete the key with name keyName. If the key doesn't exist, do nothing.
+   * @param keyName The name of the key to delete.
    * @throw TpmBackEnd::Error if the deletion fails.
    */
   virtual void
@@ -216,7 +220,7 @@ private:
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
    * @return The encoded private key.
-   * @throw TpmBackEnd::Error the key does not exist or if the key cannot be
+   * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
   virtual Blob
