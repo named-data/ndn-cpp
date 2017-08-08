@@ -150,7 +150,8 @@ public:
 
   /**
    * Get the default certificate for this Key.
-   * @throws Pib::Error the default certificate does not exist.
+   * @return A copy of the default certificate.
+   * @throws Pib::Error if the default certificate does not exist.
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   getDefaultCertificate() const;

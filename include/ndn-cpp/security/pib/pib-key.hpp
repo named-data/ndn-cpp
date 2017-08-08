@@ -75,6 +75,7 @@ public:
    * Get the certificate with name certificateName.
    * @param certificateName The name of the certificate.
    * @return A copy of the CertificateV2 object.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    * @throws std::invalid_argument if certificateName does not match the key name.
    * @throws Pib::Error if the certificate does not exist.
    */
@@ -83,7 +84,9 @@ public:
 
   /**
    * Get the default certificate for this Key.
-   * @throws Pib::Error the default certificate does not exist.
+   * @return A copy of the default certificate.
+   * @throws std::domain_error if the backend implementation instance is invalid.
+   * @throws Pib::Error if the default certificate does not exist.
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   getDefaultCertificate() const;
