@@ -56,6 +56,7 @@ public:
    * Get the key with name keyName.
    * @param keyName The name of the key.
    * @return The PibKey object.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    * @throws std::invalid_argument if keyName does not match the identity name.
    * @throws Pib::Error if the key does not exist.
    */
@@ -64,6 +65,8 @@ public:
 
   /**
    * Get the default key of this Identity.
+   * @return The default PibKey.
+   * @throws std::domain_error if the backend implementation instance is invalid.
    * @throws Pib::Error if the default key has not been set.
    */
   const ptr_lib::shared_ptr<PibKey>&
