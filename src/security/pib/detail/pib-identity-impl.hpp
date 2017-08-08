@@ -94,10 +94,11 @@ public:
 
   /**
    * Set the key with name keyName as the default key of the identity.
+   * @param keyName The name of the key. This copies the name.
+   * @return The PibKey object of the default key.
    * @throws std::invalid_argument if the name of the key does not match the
    * identity name.
    * @throws Pib::Error if the key does not exist.
-   * @return The PibKey object of the default key.
    */
   const ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const Name& keyName);
@@ -117,6 +118,7 @@ public:
 
   /**
    * Get the default key of this Identity.
+   * @return The default PibKey.
    * @throws Pib::Error if the default key has not been set.
    */
   const ptr_lib::shared_ptr<PibKey>&
