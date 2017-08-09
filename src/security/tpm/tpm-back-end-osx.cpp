@@ -141,20 +141,20 @@ TpmBackEndOsx::sign
   if (error.get() != 0)
     throw Error("Failed to configure the input of the signer");
   
-  // Enable the use of padding.
+  // Set the padding type.
   SecTransformSetAttribute
     (signer.get(), kSecPaddingKey, kSecPaddingPKCS1Key, &error.get());
   if (error.get() != 0)
     throw Error("Failed to configure the padding algorithm of the signer");
 
-  // Set the padding type.
+  // Set the digest attribute.
   SecTransformSetAttribute
     (signer.get(), kSecDigestTypeAttribute, getDigestAlgorithm(digestAlgorithm),
      &error.get());
   if (error.get() != 0)
     throw Error("Failed to configure the digest algorithm of the signer");
 
-  // Set the digest attribute.
+  // Set the digest size attribute.
   long digestSize = getDigestSize(digestAlgorithm);
   CFReleaser<CFNumberRef> cfDigestSize = CFNumberCreate
     (nullptr, kCFNumberLongType, &digestSize);
