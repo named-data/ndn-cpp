@@ -57,7 +57,7 @@ protected:
   compile();
 
 private:
-  std::string
+  static std::string
   getItemFromExpand(const std::string& expand, size_t& offset);
 
   static std::string

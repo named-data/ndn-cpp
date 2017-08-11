@@ -152,24 +152,24 @@ NdnRegexTopMatcher::getItemFromExpand(const string& expand, size_t& offset)
   if (expand[offset] == '\\') {
     ++offset;
     if (offset >= expand.size())
-      throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+      throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
 
     while (offset < expand.size() &&
            expand[offset] <= '9' && expand[offset] >= '0') {
       ++offset;
       if (offset > expand.size())
-        throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+        throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
     }
 
     if (offset > begin + 1)
       return expand.substr(begin, offset - begin);
     else
-      throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+      throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
   }
   else if (expand[offset] == '<') {
     ++offset;
     if (offset >= expand.size())
-      throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+      throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
 
     size_t left = 1;
     size_t right = 0;
@@ -181,13 +181,13 @@ NdnRegexTopMatcher::getItemFromExpand(const string& expand, size_t& offset)
 
       ++offset;
       if (offset >= expand.size())
-        throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+        throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
     }
 
     return expand.substr(begin, offset - begin);
   }
   else
-    throw NdnRegexMatcherBase::Error("wrong format of expand string!");
+    throw NdnRegexMatcherBase::Error("Wrong format of expand string!");
 }
 
 ptr_lib::shared_ptr<NdnRegexTopMatcher>
