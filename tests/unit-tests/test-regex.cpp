@@ -110,7 +110,7 @@ TEST_F(TestRegex, RepeatMatcher)
   ASSERT_EQ(true, res);
   ASSERT_EQ(0, cm->getMatchResult().size());
 
-  cm->match(Name("/a/b/c"), 0, 2);
+  res = cm->match(Name("/a/b/c"), 0, 2);
   ASSERT_EQ(true, res);
   ASSERT_EQ(2, cm->getMatchResult().size());
   ASSERT_EQ(string("a"), cm->getMatchResult()[0].toEscapedString());
