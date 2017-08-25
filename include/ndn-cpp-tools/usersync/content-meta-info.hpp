@@ -26,6 +26,10 @@
 
 namespace ndntools {
 
+/**
+ * ContentMetaInfo represents the information in the _meta packet of a
+ * Generalized Content.
+ */
 class ContentMetaInfo {
 public:
   /**

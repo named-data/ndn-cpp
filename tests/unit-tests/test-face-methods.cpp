@@ -378,20 +378,6 @@ public:
   Face face;
 };
 
-TEST_F(TestFaceInterestMethods, AnyInterest)
-{
-  string uri = "/";
-  CallbackCounter counter = runExpressNameTest(face, uri);
-  ASSERT_TRUE(counter.onTimeoutCallCount_ == 0) << "Timeout on expressed interest";
-
-  // check that the callback was correct
-  ASSERT_EQ(counter.onDataCallCount_, 1) << "Expected 1 onData callback, got " << counter.onDataCallCount_;
-
-  // just check that the interest was returned correctly?
-  const Interest& callbackInterest = counter.interest_;
-  ASSERT_TRUE(callbackInterest.getName().equals(Name(uri))) << "Interest returned on callback had different name";
-}
-
 /*
 TODO: Replace this with a test that connects to a Face on localhost
 def test_specific_interest(self):
