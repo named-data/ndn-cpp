@@ -232,9 +232,9 @@ Consumer::Impl::decryptContent
   const Name& cKeyName = dataEncryptedContent->getKeyLocator().getKeyName();
 
   // Check if the content key is already in the store.
-  if (dKeyMap_.find(cKeyName) != dKeyMap_.end())
+  if (cKeyMap_.find(cKeyName) != cKeyMap_.end())
     decryptEncryptedContent
-      (*dataEncryptedContent, dKeyMap_[cKeyName], onPlainText, onError);
+      (*dataEncryptedContent, cKeyMap_[cKeyName], onPlainText, onError);
   else {
     // Retrieve the C-KEY Data from the network.
     Name interestName(cKeyName);
