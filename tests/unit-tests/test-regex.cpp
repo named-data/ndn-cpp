@@ -99,6 +99,10 @@ TEST_F(TestRegex, ComponentSetMatcher)
   ASSERT_EQ(true, res);
   ASSERT_EQ(1, cm->getMatchResult().size());
   ASSERT_EQ(string("d"), cm->getMatchResult()[0].toEscapedString());
+
+  backRef = ptr_lib::make_shared<NdnRegexBackrefManager>();
+  ASSERT_THROW(NdnRegexComponentSetMatcher("[<a]", backRef),
+               NdnRegexMatcherBase::Error);
 }
 
 TEST_F(TestRegex, RepeatMatcher)
