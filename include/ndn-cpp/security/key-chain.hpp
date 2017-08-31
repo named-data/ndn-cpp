@@ -147,8 +147,13 @@ public:
   KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager);
 
   /**
-   * Create a new KeyChain with the the default IdentityManager and a
-   * NoVerifyPolicyManager.
+   * Create a KeyChain with the default PIB and TPM, which are
+   * platform-dependent and can be overridden system-wide or individually by the
+   * user. This creates a security v2 KeyChain that uses CertificateV2, Pib, Tpm
+   * and Validator. However, if the default security v1 database file still
+   * exists, and the default security v2 database file does not yet exists,then
+   * assume that the system is running an older NFD and create a security v1
+   * KeyChain with the default IdentityManager and a NoVerifyPolicyManager.
    */
   KeyChain();
 
@@ -943,6 +948,20 @@ public:
   static const RsaKeyParams DEFAULT_KEY_PARAMS;
 
 private:
+  /**
+   * Do the work of the constructor to create a KeyChain from the given locators.
+   * @param pibLocator The PIB locator, e.g., "pib-sqlite3:/example/dir".
+   * @param tpmLocator The TPM locator, e.g., "tpm-memory:".
+   * @param allowReset If true, the PIB will be reset when the supplied
+   * tpmLocator mismatches the one in the PIB.
+   * @throws KeyChain::LocatorMismatchError if the supplied TPM locator does not
+   * match the locator stored in the PIB.
+   */
+  void
+  construct
+    (const std::string& pibLocator, const std::string& tpmLocator,
+     bool allowReset);
+
   /**
    * Get the PIB factories map. On the first call, this initializes the map with
    * factories for standard PibImpl implementations.

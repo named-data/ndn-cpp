@@ -20,10 +20,12 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdio.h>
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
@@ -94,7 +96,49 @@ KeyChain::KeyChain
 : face_(0)
 {
   isSecurityV1_ = false;
+  construct(pibLocator, tpmLocator, allowReset);
+}
 
+KeyChain::KeyChain
+  (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
+   const ptr_lib::shared_ptr<PolicyManager>& policyManager)
+: identityManager_(identityManager), policyManager_(policyManager),
+  face_(0)
+{
+  isSecurityV1_ = true;
+}
+
+KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
+: identityManager_(identityManager),
+  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
+  face_(0)
+{
+  isSecurityV1_ = true;
+}
+
+KeyChain::KeyChain()
+: face_(0)
+{
+  isSecurityV1_ = false;
+
+  if (::access(BasicIdentityStorage::getDefaultDatabaseFilePath().c_str(), R_OK)
+        == 0 &&
+      ::access(PibSqlite3::getDefaultDatabaseFilePath().c_str(), R_OK) != 0) {
+    // The security v1 SQLite file still exists and the security v2 does not yet.
+    isSecurityV1_ = true;
+    identityManager_.reset(new IdentityManager());
+    policyManager_.reset(new NoVerifyPolicyManager());
+
+    return;
+  }
+
+  construct("", "", true);
+}
+
+void
+KeyChain::construct
+  (const string& pibLocator, const string& tpmLocator, bool allowReset)
+{
   // PIB locator.
   string pibScheme, pibLocation;
   parseAndCheckPibLocator(pibLocator, pibScheme, pibLocation);
@@ -141,31 +185,6 @@ KeyChain::KeyChain
   // this problem.
   tpm_ = createTpm(canonicalTpmLocator);
   pib_->setTpmLocator(canonicalTpmLocator);
-}
-
-KeyChain::KeyChain
-  (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
-   const ptr_lib::shared_ptr<PolicyManager>& policyManager)
-: identityManager_(identityManager), policyManager_(policyManager),
-  face_(0)
-{
-  isSecurityV1_ = true;
-}
-
-KeyChain::KeyChain(const ptr_lib::shared_ptr<IdentityManager>& identityManager)
-: identityManager_(identityManager),
-  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
-  face_(0)
-{
-  isSecurityV1_ = true;
-}
-
-KeyChain::KeyChain()
-: identityManager_(ptr_lib::make_shared<IdentityManager>()),
-  policyManager_(ptr_lib::make_shared<NoVerifyPolicyManager>()),
-  face_(0)
-{
-  isSecurityV1_ = true;
 }
 
 void
