@@ -285,6 +285,25 @@ public:
   virtual ptr_lib::shared_ptr<CertificateV2>
   getDefaultCertificateOfKey(const Name& keyName) const;
 
+  /**
+   * Get the default that the constructor uses if databaseDirectoryPath is
+   * omitted. This does not try to create the directory.
+   * @return The default database directory path. 
+   */
+  static std::string
+  getDefaultDatabaseDirectoryPath();
+
+  /**
+   * Get the default database file path that the constructor uses if
+   * databaseDirectoryPath and databaseFilename are omitted.
+   * @return The default database file path.
+   */
+  static std::string
+  getDefaultDatabaseFilePath()
+  {
+    return getDefaultDatabaseDirectoryPath() + '/' + "pib.db";
+  }
+
 private:
   bool
   hasDefaultIdentity() const;

@@ -201,21 +201,8 @@ PibSqlite3::PibSqlite3
       // Strip the ending path separator.
       databaseDirectoryPath.erase(databaseDirectoryPath.size() - 1);
   }
-  else {
-    // Note: We don't use <filesystem> support because it is not "header-only"
-    // and requires linking to libraries.
-    const char* home = getenv("HOME");
-    if (!home || *home == '\0')
-      // Don't expect this to happen;
-      home = ".";
-    string homeDir(home);
-    if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
-      // Strip the ending path separator.
-      homeDir.erase(homeDir.size() - 1);
-
-    // TODO: Handle non-unix file systems which don't use "/".
-    databaseDirectoryPath = homeDir + '/' + ".ndn";
-  }
+  else
+    databaseDirectoryPath = getDefaultDatabaseDirectoryPath();
 
   // TODO: Handle non-unix file systems which don't have "mkdir -p".
   ::system(("mkdir -p \"" + databaseDirectoryPath + "\"").c_str());
@@ -590,6 +577,24 @@ WHERE certificates.is_default=1 AND keys.key_name=?");
   }
   else
     throw Pib::Error("No default certificate for key `" + keyName.toUri() + "`");
+}
+
+string
+PibSqlite3::getDefaultDatabaseDirectoryPath()
+{
+  // Note: We don't use <filesystem> support because it is not "header-only"
+  // and requires linking to libraries.
+  const char* home = getenv("HOME");
+  if (!home || *home == '\0')
+    // Don't expect this to happen;
+    home = ".";
+  string homeDir(home);
+  if (homeDir[homeDir.size() - 1] == '/' || homeDir[homeDir.size() - 1] == '\\')
+    // Strip the ending path separator.
+    homeDir.erase(homeDir.size() - 1);
+
+  // TODO: Handle non-unix file systems which don't use "/".
+  return homeDir + '/' + ".ndn";
 }
 
 bool
