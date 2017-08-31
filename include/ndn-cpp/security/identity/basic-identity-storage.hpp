@@ -265,6 +265,25 @@ public:
   virtual void
   deleteIdentityInfo(const Name& identity);
 
+  /**
+   * Get the default directory that the constructor uses if databaseFilePath is
+   * omitted. This does not try to create the directory.
+   * @return The default database directory path.
+   */
+  static std::string
+  getDefaultDatabaseDirectoryPath();
+
+  /**
+   * Get the default database file path that the constructor uses if
+   * databaseDirectoryPath and databaseFilename are omitted.
+   * @return The default database file path.
+   */
+  static std::string
+  getDefaultDatabaseFilePath()
+  {
+    return getDefaultDatabaseDirectoryPath() + '/' + "ndnsec-public-info.db";
+  }
+
 private:
 
   void
