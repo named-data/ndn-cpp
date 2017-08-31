@@ -54,7 +54,8 @@ string* KeyChain::defaultPibLocator_ = 0;
 string* KeyChain::defaultTpmLocator_ = 0;
 map<string, KeyChain::MakePibImpl>* KeyChain::pibFactories_ = 0;
 map<string, KeyChain::MakeTpmBackEnd>* KeyChain::tpmFactories_ = 0;
-SigningInfo* KeyChain::defaultSigningInfo_;
+SigningInfo* KeyChain::defaultSigningInfo_ = 0;
+KeyParams* KeyChain::defaultKeyParams_ = 0;
 
 #ifdef NDN_CPP_HAVE_SQLITE3
 static ptr_lib::shared_ptr<PibImpl>
@@ -839,6 +840,16 @@ KeyChain::getDefaultSigningInfo()
     defaultSigningInfo_ = new SigningInfo();
 
   return *defaultSigningInfo_;
+}
+
+const KeyParams&
+KeyChain::getDefaultKeyParams()
+{
+  if (!defaultKeyParams_)
+    // Allocate because some C++ environments don't handle static constructors well.
+    defaultKeyParams_ = new RsaKeyParams();
+
+  return *defaultKeyParams_;
 }
 
 // Private security v1 methods

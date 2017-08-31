@@ -340,12 +340,12 @@ public:
    * certificate for the identity already exists, use it.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
-   * for the identity. If omitted, use DEFAULT_KEY_PARAMS.
+   * for the identity. If omitted, use getDefaultKeyParams().
    * @return The name of the default certificate of the identity.
    */
   Name
   createIdentityAndCertificate
-    (const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
+    (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
   {
     return identityManager_->createIdentityAndCertificate(identityName, params);
   }
@@ -360,12 +360,12 @@ public:
    * certificate name to the key name.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
-   * for the identity. If omitted, use DEFAULT_KEY_PARAMS.
+   * for the identity. If omitted, use getDefaultKeyParams().
    * @return The key name of the auto-generated KSK of the identity.
    */
   Name
   DEPRECATED_IN_NDN_CPP createIdentity
-    (const Name& identityName, const KeyParams& params = DEFAULT_KEY_PARAMS)
+    (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
   {
     return IdentityCertificate::certificateNameToPublicKeyName
       (createIdentityAndCertificate(identityName, params));
@@ -945,7 +945,10 @@ public:
     (const Interest& interest, const Blob& key,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
-  static const RsaKeyParams DEFAULT_KEY_PARAMS;
+  /**
+   * @deprecated Use getDefaultKeyParams().
+   */
+  static const RsaKeyParams DEPRECATED_IN_NDN_CPP DEFAULT_KEY_PARAMS;
 
 private:
   /**
@@ -1059,6 +1062,9 @@ private:
   static const SigningInfo&
   getDefaultSigningInfo();
 
+  static const KeyParams&
+  getDefaultKeyParams();
+
   // Private security v1 methods
 
   void
@@ -1111,6 +1117,7 @@ private:
   static std::map<std::string, MakePibImpl>* pibFactories_;
   static std::map<std::string, MakeTpmBackEnd>* tpmFactories_;
   static SigningInfo* defaultSigningInfo_;
+  static KeyParams* defaultKeyParams_;
 };
 
 }
