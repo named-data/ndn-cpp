@@ -83,6 +83,50 @@ private:
   PibIdentity(ptr_lib::weak_ptr<PibIdentityImpl> impl);
 
   /**
+   * Add the key. If a key with the same name already exists, overwrite the key.
+   * If no default key for the identity has been set, then set the added key as
+   * default for the identity.
+   * @param key The public key bits. This copies the array.
+   * @param keyLength The length of the public key bits array.
+   * @param keyName The name of the key. This copies the name.
+   * @return The PibKey object.
+   */
+  ptr_lib::shared_ptr<PibKey>
+  addKey(const uint8_t* key, size_t keyLength, const Name& keyName);
+
+  /**
+   * Remove the key with keyName and its related certificates. If the key does
+   * not exist, do nothing.
+   * @param keyName The name of the key.
+   */
+  void
+  removeKey(const Name& keyName);
+
+  /**
+   * Set the key with name keyName as the default key of the identity.
+   * @param keyName The name of the key. This copies the name.
+   * @return The PibKey object of the default key.
+   * @throws std::invalid_argument if the name of the key does not match the
+   * identity name.
+   * @throws Pib::Error if the key does not exist.
+   */
+  const ptr_lib::shared_ptr<PibKey>&
+  setDefaultKey(const Name& keyName);
+
+  /**
+   * Add a key with name keyName and set it as the default key of the identity.
+   * @param key The array of encoded key bytes.
+   * @param keyLength The number of bytes in the key array.
+   * @param keyName The name of the key, which is copied.
+   * @return The PibKey object of the default key.
+   * @throws std::invalid_argument if the name of the key does not match the
+   * identity name.
+   * @throws Pib::Error if a key with the same name already exists.
+   */
+  const ptr_lib::shared_ptr<PibKey>&
+  setDefaultKey(const uint8_t* key, size_t keyLength, const Name& keyName);
+
+  /**
    * Get the PibKeyContainer in the PibIdentityImpl. This should only be called
    * by KeyChain.
    */

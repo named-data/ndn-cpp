@@ -42,6 +42,54 @@ PibIdentity::PibIdentity(ptr_lib::weak_ptr<PibIdentityImpl> impl)
 {
 }
 
+ptr_lib::shared_ptr<PibKey>
+PibIdentity::addKey(const uint8_t* key, size_t keyLength, const Name& keyName)
+{
+  return lock()->addKey(key, keyLength, keyName);
+}
+
+/**
+ * Remove the key with keyName and its related certificates. If the key does
+ * not exist, do nothing.
+ * @param keyName The name of the key.
+ */
+void
+PibIdentity::removeKey(const Name& keyName)
+{
+  lock()->removeKey(keyName);
+}
+
+/**
+ * Set the key with name keyName as the default key of the identity.
+ * @param keyName The name of the key. This copies the name.
+ * @return The PibKey object of the default key.
+ * @throws std::invalid_argument if the name of the key does not match the
+ * identity name.
+ * @throws Pib::Error if the key does not exist.
+ */
+const ptr_lib::shared_ptr<PibKey>&
+PibIdentity::setDefaultKey(const Name& keyName)
+{
+  return lock()->setDefaultKey(keyName);
+}
+
+/**
+ * Add a key with name keyName and set it as the default key of the identity.
+ * @param key The array of encoded key bytes.
+ * @param keyLength The number of bytes in the key array.
+ * @param keyName The name of the key, which is copied.
+ * @return The PibKey object of the default key.
+ * @throws std::invalid_argument if the name of the key does not match the
+ * identity name.
+ * @throws Pib::Error if a key with the same name already exists.
+ */
+const ptr_lib::shared_ptr<PibKey>&
+PibIdentity::setDefaultKey
+  (const uint8_t* key, size_t keyLength, const Name& keyName)
+{
+  return lock()->setDefaultKey(key, keyLength, keyName);
+}
+
 PibKeyContainer&
 PibIdentity::getKeys() { return lock()->keys_; }
 
