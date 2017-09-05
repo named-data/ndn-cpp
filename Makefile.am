@@ -29,7 +29,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-face-methods bin/unit-tests/test-group-manager-db \
   bin/unit-tests/test-group-manager bin/unit-tests/test-identity-methods \
   bin/unit-tests/test-interest-methods \
-  bin/unit-tests/test-interval \
+  bin/unit-tests/test-interval bin/unit-tests/test-key-chain \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
   bin/unit-tests/test-pib-identity-container \
@@ -592,6 +592,10 @@ bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
