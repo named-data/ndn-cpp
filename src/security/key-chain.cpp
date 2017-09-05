@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <stdexcept>
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
@@ -188,8 +189,32 @@ KeyChain::construct
   pib_->setTpmLocator(canonicalTpmLocator);
 }
 
+ptr_lib::shared_ptr<PibIdentity>
+KeyChain::createIdentity(const Name& identityName, const KeyParams& params)
+{
+  ptr_lib::shared_ptr<PibIdentity> id = pib_->addIdentity(identityName);
+
+  ptr_lib::shared_ptr<PibKey> key;
+  try {
+    key = id->getDefaultKey();
+  }
+  catch (const Pib::Error&) {
+    key = createKey(*id, params);
+  }
+
+  try {
+    key->getDefaultCertificate();
+  }
+  catch (const Pib::Error&) {
+    _LOG_TRACE("No default cert for " << key.getName() << ", requesting self-signing");
+    selfSign(key);
+  }
+
+  return id;
+}
+
 void
-KeyChain::deleteIdentity(const PibIdentity& identity)
+KeyChain::deleteIdentity(PibIdentity& identity)
 {
   Name identityName = identity.getName();
 
@@ -203,9 +228,84 @@ KeyChain::deleteIdentity(const PibIdentity& identity)
 }
 
 void
-KeyChain::setDefaultIdentity(const PibIdentity& identity)
+KeyChain::setDefaultIdentity(PibIdentity& identity)
 {
   pib_->setDefaultIdentity(identity.getName());
+}
+
+ptr_lib::shared_ptr<PibKey>
+KeyChain::createKey(PibIdentity& identity, const KeyParams& params)
+{
+  // Create the key in the TPM.
+  Name keyName = tpm_->createKey(identity.getName(), params);
+
+  // Set up the key info in the PIB.
+  Blob publicKey = tpm_->getPublicKey(keyName);
+  ptr_lib::shared_ptr<PibKey> key = identity.addKey
+    (publicKey.buf(), publicKey.size(), keyName);
+
+  _LOG_TRACE("Requesting self-signing for newly created key " << key.getName());
+  selfSign(key);
+
+  return key;
+}
+
+void
+KeyChain::deleteKey(PibIdentity& identity, PibKey& key)
+{
+  Name keyName = key.getName();
+  if (identity.getName() != key.getIdentityName())
+    throw invalid_argument("Identity `" + identity.getName().toUri() +
+      "` does match key `" + keyName.toUri() + "`");
+
+  identity.removeKey(keyName);
+  tpm_->deleteKey(keyName);
+}
+
+void
+KeyChain::setDefaultKey(PibIdentity& identity, PibKey& key)
+{
+  if (identity.getName() != key.getIdentityName())
+    throw invalid_argument("Identity `" + identity.getName().toUri() +
+      "` does match key `" + key.getName().toUri() + "`");
+
+  identity.setDefaultKey(key.getName());
+}
+
+void
+KeyChain::addCertificate(PibKey& key, const CertificateV2& certificate)
+{
+  if (key.getName() != certificate.getKeyName() ||
+      !certificate.getContent().equals(key.getPublicKey()))
+    throw invalid_argument("Key `" + key.getName().toUri() +
+      "` does match certificate `" + certificate.getName().toUri() + "`");
+
+  key.addCertificate(certificate);
+}
+
+void
+KeyChain::deleteCertificate(PibKey& key, const Name& certificateName)
+{
+  if (!CertificateV2::isValidName(certificateName))
+    throw invalid_argument("Wrong certificate name `" + certificateName.toUri() +
+      "`");
+
+  key.removeCertificate(certificateName);
+}
+
+void
+KeyChain::setDefaultCertificate(PibKey& key, const CertificateV2& certificate)
+{
+  try {
+    addCertificate(key, certificate);
+  }
+  catch (const Pib::Error&) { 
+    // Force to overwrite the existing certificate.
+    key.removeCertificate(certificate.getName());
+    addCertificate(key, certificate);
+  }
+
+  key.setDefaultCertificate(certificate.getName());
 }
 
 void

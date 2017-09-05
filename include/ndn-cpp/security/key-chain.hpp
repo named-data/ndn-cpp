@@ -31,6 +31,7 @@
 #include "identity/identity-manager.hpp"
 #include "policy/validation-request.hpp"
 #include "pib/pib.hpp"
+#include "pib/pib.hpp"
 #include "tpm/tpm.hpp"
 #include "signing-info.hpp"
 #include "key-params.hpp"
@@ -157,33 +158,115 @@ public:
    */
   KeyChain();
 
-  const Pib&
-  getPib() const { return *pib_; }
+  Pib&
+  getPib() { return *pib_; }
 
-  const Tpm&
-  getTpm() const { return *tpm_; }
+  Tpm&
+  getTpm() { return *tpm_; }
 
   // Identity management
 
-  // TODO: createIdentity
+  /**
+   * Create an identity for identityName. This method will check if the identity
+   * exists in PIB and whether the identity has a default key and default
+   * certificate. If the identity does not exist, this method will create the
+   * identity in PIB. If the identity's default key does not exist, this method
+   * will create a key pair and set it as the identity's default key. If the
+   * key's default certificate is missing, this method will create a self-signed
+   * certificate for the key. If identityName did not exist and no default
+   * identity was selected before, the created identity will be set as the
+   * default identity.
+   * @param identityName The name of the identity.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use getDefaultKeyParams().
+   * @return The created Identity instance.
+   */
+  ptr_lib::shared_ptr<PibIdentity>
+  createIdentity
+    (const Name& identityName, const KeyParams& params = getDefaultKeyParams());
 
   /**
    * Delete the identity. After this operation, the identity is invalid.
    * @param identity The identity to delete.
    */
   void
-  deleteIdentity(const PibIdentity& identity);
+  deleteIdentity(PibIdentity& identity);
 
   /**
    * Set the identity as the default identity.
    * @param identity The identity to make the default.
    */
   void
-  setDefaultIdentity(const PibIdentity& identity);
+  setDefaultIdentity(PibIdentity& identity);
 
   // Key management
 
+  /**
+   * Create a key for the identity according to params. If the identity had no
+   * default key selected, the created key will be set as the default for this
+   * identity. This method will also create a self-signed certificate for the
+   * created key.
+   * @param identity A valid PibIdentity object.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use getDefaultKeyParams().
+   */
+  ptr_lib::shared_ptr<PibKey>
+  createKey
+    (PibIdentity& identity, const KeyParams& params = getDefaultKeyParams());
+
+  /**
+   * Delete the given key of the given identity. The key becomes invalid.
+   * @param identity A valid PibIdentity object.
+   * @param key The key to delete.
+   * @throw invalid_argument If the key does not belong to the identity.
+   */
+  void
+  deleteKey(PibIdentity& identity, PibKey& key);
+
+  /**
+   * Set the key as the default key of identity.
+   * @param identity A valid PibIdentity object.
+   * @param key The key to become the default.
+   * @throw invalid_argument If the key does not belong to the identity.
+   */
+  void
+  setDefaultKey(PibIdentity& identity, PibKey& key);
+
   // Certificate management
+
+  /**
+   * Add a certificate for the key. If the key had no default certificate
+   * selected, the added certificate will be set as the default certificate for
+   * this key.
+   * @param key A valid PibKey object.
+   * @param certificate The certificate to add.
+   * @note This method overwrites a certificate with the same name, without
+   * considering the implicit digest.
+   * @throw invalid_argument If the key does not match the certificate.
+   */
+  void
+  addCertificate(PibKey& key, const CertificateV2& certificate);
+
+  /**
+   * Delete the certificate with the given name from the given key.
+   * If the certificate does not exist, this does nothing.
+   * @param key A valid PibKey object.
+   * @param certificateName The name of the certificate to delete.
+   * @throw invalid_argument If certificateName does not follow certificate
+   * naming conventions.
+   */
+  void
+  deleteCertificate(PibKey& key, const Name& certificateName);
+
+  /**
+   * Set the certificate as the default certificate of the key. The certificate 
+   * will be added to the key, potentially overriding an existing certificate if
+   * it has the same name (without considering implicit digest).
+   * @param key A valid PibKey object.
+   * @param certificate The certificate to become the default.
+   */
+  void
+  setDefaultCertificate(PibKey& key, const CertificateV2& certificate);
 
   // Signing
 
@@ -297,6 +380,9 @@ public:
 
   // Import and export
 
+  // TODO: exportSafeBag
+  // TODO: importSafeBag
+
   // PIB & TPM backend registry
 
   /**
@@ -348,27 +434,6 @@ public:
     (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
   {
     return identityManager_->createIdentityAndCertificate(identityName, params);
-  }
-
-  /**
-   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
-   * identity and a self-signed certificate of the KSK. If a key pair or
-   * certificate for the identity already exists, use it.
-   * @deprecated Use createIdentityAndCertificate which returns the
-   * certificate name instead of the key name. You can use
-   * IdentityCertificate.certificateNameToPublicKeyName to convert the
-   * certificate name to the key name.
-   * @param identityName The name of the identity.
-   * @param params (optional) The key parameters if a key needs to be generated
-   * for the identity. If omitted, use getDefaultKeyParams().
-   * @return The key name of the auto-generated KSK of the identity.
-   */
-  Name
-  DEPRECATED_IN_NDN_CPP createIdentity
-    (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
-  {
-    return IdentityCertificate::certificateNameToPublicKeyName
-      (createIdentityAndCertificate(identityName, params));
   }
 
   /**
