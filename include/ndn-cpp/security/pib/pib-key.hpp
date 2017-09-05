@@ -26,6 +26,9 @@
 #include <ndn-cpp/security/security-common.hpp>
 #include "pib-certificate-container.hpp"
 
+// Give friend access to the tests.
+class TestKeyChain_Management_Test;
+
 namespace ndn {
 
 class PibKeyImpl;
@@ -119,6 +122,8 @@ public:
 private:
   friend class PibKeyContainer;
   friend class KeyChain;
+  // Give friend access to the tests.
+  friend TestKeyChain_Management_Test;
 
   /**
    * Create a PibKey which uses the impl backend implementation. This
@@ -175,6 +180,16 @@ private:
    */
   const ptr_lib::shared_ptr<CertificateV2>&
   setDefaultCertificate(const CertificateV2& certificate);
+
+  /**
+   * Get the PibCertificateContainer in the PibKeyImpl. This should only be
+   * called by KeyChain.
+   */
+  PibCertificateContainer&
+  getCertificates();
+
+  const PibCertificateContainer&
+  getCertificates() const { return const_cast<PibKey*>(this)->getCertificates(); }
 
   /**
    * Check the validity of the impl_ instance.

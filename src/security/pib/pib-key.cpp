@@ -54,6 +54,9 @@ PibKey::getCertificate(const Name& certificateName) const
 const ptr_lib::shared_ptr<CertificateV2>&
 PibKey::getDefaultCertificate() const { return lock()->getDefaultCertificate(); }
 
+PibCertificateContainer&
+PibKey::getCertificates() { return lock()->certificates_; }
+
 ptr_lib::shared_ptr<PibKeyImpl>
 PibKey::lock() const
 {
