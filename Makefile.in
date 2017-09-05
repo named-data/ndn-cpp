@@ -109,6 +109,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-identity-methods$(EXEEXT) \
 	bin/unit-tests/test-interest-methods$(EXEEXT) \
 	bin/unit-tests/test-interval$(EXEEXT) \
+	bin/unit-tests/test-key-chain$(EXEEXT) \
 	bin/unit-tests/test-link$(EXEEXT) \
 	bin/unit-tests/test-name-conventions$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
@@ -584,6 +585,11 @@ am_bin_unit_tests_test_interval_OBJECTS = tests/unit-tests/bin_unit_tests_test_i
 bin_unit_tests_test_interval_OBJECTS =  \
 	$(am_bin_unit_tests_test_interval_OBJECTS)
 bin_unit_tests_test_interval_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_key_chain_OBJECTS = tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT)
+bin_unit_tests_test_key_chain_OBJECTS =  \
+	$(am_bin_unit_tests_test_key_chain_OBJECTS)
+bin_unit_tests_test_key_chain_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_link_OBJECTS =  \
 	tests/unit-tests/bin_unit_tests_test_link-test-link.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_link-gtest-all.$(OBJEXT)
@@ -801,6 +807,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
@@ -862,6 +869,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
@@ -1849,6 +1857,9 @@ bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_link_LDADD = libndn-cpp.la
@@ -3042,6 +3053,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.$(OBJ
 bin/unit-tests/test-interval$(EXEEXT): $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_interval_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-interval$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-key-chain$(EXEEXT): $(bin_unit_tests_test_key_chain_OBJECTS) $(bin_unit_tests_test_key_chain_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_key_chain_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-key-chain$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_key_chain_OBJECTS) $(bin_unit_tests_test_key_chain_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_link-test-link.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -3390,6 +3411,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
@@ -3651,6 +3673,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po@am__quote@
@@ -4180,6 +4203,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interval_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o: tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o `test -f 'tests/unit-tests/test-key-chain.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-key-chain.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o `test -f 'tests/unit-tests/test-key-chain.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-key-chain.cpp
+
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj: tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj `if test -f 'tests/unit-tests/test-key-chain.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-key-chain.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-key-chain.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-key-chain.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj `if test -f 'tests/unit-tests/test-key-chain.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-key-chain.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-key-chain.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_link-test-link.o: tests/unit-tests/test-link.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_link_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_link-test-link.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Tpo -c -o tests/unit-tests/bin_unit_tests_test_link-test-link.o `test -f 'tests/unit-tests/test-link.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-link.cpp
@@ -5329,6 +5380,13 @@ bin/unit-tests/test-interest-methods.log: bin/unit-tests/test-interest-methods$(
 bin/unit-tests/test-interval.log: bin/unit-tests/test-interval$(EXEEXT)
 	@p='bin/unit-tests/test-interval$(EXEEXT)'; \
 	b='bin/unit-tests/test-interval'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-key-chain.log: bin/unit-tests/test-key-chain$(EXEEXT)
+	@p='bin/unit-tests/test-key-chain$(EXEEXT)'; \
+	b='bin/unit-tests/test-key-chain'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
