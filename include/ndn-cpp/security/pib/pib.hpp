@@ -26,6 +26,9 @@
 #include <stdexcept>
 #include "pib-identity-container.hpp"
 
+// Give friend access to the tests.
+class TestKeyChain_Management_Test;
+
 namespace ndn {
 
 class PibImpl;
@@ -111,6 +114,8 @@ public:
 
 private:
   friend class KeyChain;
+  // Give friend access to the tests.
+  friend TestKeyChain_Management_Test;
 
   /*
    * Create a Pib instance. This constructor should only be called by KeyChain.

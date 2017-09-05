@@ -20,8 +20,6 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "pib-key-container.hpp"
-
 /**
  * The PibIdentity class provides access to an identity at the top level in the
  * PIB's Identity-Key-Certificate hierarchy. A PibIdentity object has a Name,
@@ -31,6 +29,11 @@
  */
 #ifndef NDN_PIB_IDENTITY_HPP
 #define NDN_PIB_IDENTITY_HPP
+
+#include "pib-key-container.hpp"
+
+// Give friend access to the tests.
+class TestKeyChain_Management_Test;
 
 namespace ndn {
 
@@ -75,6 +78,8 @@ public:
 private:
   friend class PibIdentityContainer;
   friend class KeyChain;
+  // Give friend access to the tests.
+  friend TestKeyChain_Management_Test;
 
   /**
    * Create a PibIdentity which uses the impl backend implementation. This

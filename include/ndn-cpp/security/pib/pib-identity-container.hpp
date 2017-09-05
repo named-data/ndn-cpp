@@ -30,6 +30,7 @@
 // Give friend access to the tests.
 class TestPibIdentityContainer_Basic_Test;
 class TestPibIdentityContainer_Errors_Test;
+class TestKeyChain_Management_Test;
 
 namespace ndn {
 
@@ -98,6 +99,7 @@ private:
   // Give friend access to the tests.
   friend TestPibIdentityContainer_Basic_Test;
   friend TestPibIdentityContainer_Errors_Test;
+  friend TestKeyChain_Management_Test;
 
   /**
    * Create a PibIdentityContainer using to use the pibImpl backend

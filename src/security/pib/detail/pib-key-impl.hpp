@@ -157,6 +157,7 @@ public:
   getDefaultCertificate() const;
 
 private:
+  friend class PibKey;
   // Give friend access to the tests.
   friend TestPibKeyImpl_CertificateOperation_Test;
 

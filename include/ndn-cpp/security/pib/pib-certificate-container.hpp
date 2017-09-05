@@ -30,6 +30,7 @@
 // Give friend access to the tests.
 class TestPibCertificateContainer_Basic_Test;
 class TestPibCertificateContainer_Errors_Test;
+class TestKeyChain_Management_Test;
 
 namespace ndn {
 
@@ -94,6 +95,7 @@ private:
   // Give friend access to the tests.
   friend TestPibCertificateContainer_Basic_Test;
   friend TestPibCertificateContainer_Errors_Test;
+  friend TestKeyChain_Management_Test;
 
   /**
    * Create a CertificateContainer for a key with keyName. This constructor
