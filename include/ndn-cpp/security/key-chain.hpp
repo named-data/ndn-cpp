@@ -1010,6 +1010,9 @@ public:
     (const Interest& interest, const Blob& key,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
+  static const KeyParams&
+  getDefaultKeyParams();
+
   /**
    * @deprecated Use getDefaultKeyParams().
    */
@@ -1126,9 +1129,6 @@ private:
 
   static const SigningInfo&
   getDefaultSigningInfo();
-
-  static const KeyParams&
-  getDefaultKeyParams();
 
   // Private security v1 methods
 
