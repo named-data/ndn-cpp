@@ -237,7 +237,7 @@ TEST_F(TestSqlIdentityStorage, CertificateAddDelete)
     ((uint64_t)getNowSeconds());
 
   identityManager->createIdentityAndCertificate
-    (identityName, KeyChain::DEFAULT_KEY_PARAMS);
+    (identityName, KeyChain::getDefaultKeyParams());
   Name keyName1 = identityManager->getDefaultKeyNameForIdentity(identityName);
   ptr_lib::shared_ptr<IdentityCertificate> cert2 =
     identityManager->selfSign(keyName1);
