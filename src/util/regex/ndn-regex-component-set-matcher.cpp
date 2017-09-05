@@ -142,6 +142,9 @@ NdnRegexComponentSetMatcher::extractComponent(size_t index)
   size_t rcount = 0;
 
   while (lcount > rcount) {
+    if (index >= expr_.size())
+      throw NdnRegexMatcherBase::Error("Error: angle brackets mismatch");
+
     switch (expr_[index]) {
     case '<':
       ++lcount;
@@ -149,10 +152,6 @@ NdnRegexComponentSetMatcher::extractComponent(size_t index)
 
     case '>':
       ++rcount;
-      break;
-
-    case 0:
-      throw NdnRegexMatcherBase::Error("Error: square brackets mismatch");
       break;
     }
 
