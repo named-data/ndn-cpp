@@ -76,7 +76,7 @@ TEST_F(TestKeyChain, Management)
   ASSERT_THROW(keyChain_.getPib().getDefaultIdentity(), Pib::Error);
 
   // Create an identity.
-  ptr_lib::shared_ptr<PibIdentity> id = keyChain_.createIdentity(identityName);
+  ptr_lib::shared_ptr<PibIdentity> id = keyChain_.createIdentityV2(identityName);
   ASSERT_TRUE(!!id);
   ASSERT_TRUE(keyChain_.getPib().identities_.identities_.find(identityName) !=
               keyChain_.getPib().identities_.identities_.end());
@@ -154,7 +154,7 @@ TEST_F(TestKeyChain, Management)
   ASSERT_TRUE(id->getDefaultKey()->getName().equals(key3->getName()));
 
   // Set the default identity.
-  ptr_lib::shared_ptr<PibIdentity> id2 = keyChain_.createIdentity(identity2Name);
+  ptr_lib::shared_ptr<PibIdentity> id2 = keyChain_.createIdentityV2(identity2Name);
   ASSERT_TRUE(keyChain_.getPib().getDefaultIdentity()->getName().equals(id->getName()));
   keyChain_.setDefaultIdentity(*id2);
   ASSERT_TRUE(keyChain_.getPib().getDefaultIdentity()->getName().equals(id2->getName()));
