@@ -167,22 +167,22 @@ public:
   // Identity management
 
   /**
-   * Create an identity for identityName. This method will check if the identity
-   * exists in PIB and whether the identity has a default key and default
-   * certificate. If the identity does not exist, this method will create the
-   * identity in PIB. If the identity's default key does not exist, this method
-   * will create a key pair and set it as the identity's default key. If the
-   * key's default certificate is missing, this method will create a self-signed
-   * certificate for the key. If identityName did not exist and no default
-   * identity was selected before, the created identity will be set as the
-   * default identity.
+   * Create a security V2 identity for identityName. This method will check if
+   * the identity exists in PIB and whether the identity has a default key and
+   * default certificate. If the identity does not exist, this method will
+   * create the identity in PIB. If the identity's default key does not exist,
+   * this method will create a key pair and set it as the identity's default
+   * key. If the key's default certificate is missing, this method will create a
+   * self-signed certificate for the key. If identityName did not exist and no
+   * default identity was selected before, the created identity will be set as
+   * the default identity.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use getDefaultKeyParams().
    * @return The created Identity instance.
    */
   ptr_lib::shared_ptr<PibIdentity>
-  createIdentity
+  createIdentityV2
     (const Name& identityName, const KeyParams& params = getDefaultKeyParams());
 
   /**
@@ -209,6 +209,7 @@ public:
    * @param identity A valid PibIdentity object.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use getDefaultKeyParams().
+   * @return The new PibKey.
    */
   ptr_lib::shared_ptr<PibKey>
   createKey
@@ -421,9 +422,9 @@ public:
    *****************************************/
 
   /**
-   * Create an identity by creating a pair of Key-Signing-Key (KSK) for this
-   * identity and a self-signed certificate of the KSK. If a key pair or
-   * certificate for the identity already exists, use it.
+   * Create a security v1 identity by creating a pair of Key-Signing-Key (KSK)
+   * for this identity and a self-signed certificate of the KSK. If a key pair
+   * or certificate for the identity already exists, use it.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use getDefaultKeyParams().
@@ -434,6 +435,27 @@ public:
     (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
   {
     return identityManager_->createIdentityAndCertificate(identityName, params);
+  }
+
+  /**
+   * Create a security v1 identity by creating a pair of Key-Signing-Key (KSK)
+   * for this identity and a self-signed certificate of the KSK. If a key pair
+   * or certificate for the identity already exists, use it.
+   * @deprecated Use createIdentityAndCertificate which returns the
+   * certificate name instead of the key name. You can use
+   * IdentityCertificate.certificateNameToPublicKeyName to convert the
+   * certificate name to the key name.
+   * @param identityName The name of the identity.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use getDefaultKeyParams().
+   * @return The key name of the auto-generated KSK of the identity.
+   */
+  Name
+  DEPRECATED_IN_NDN_CPP createIdentity
+    (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
+  {
+    return IdentityCertificate::certificateNameToPublicKeyName
+      (createIdentityAndCertificate(identityName, params));
   }
 
   /**

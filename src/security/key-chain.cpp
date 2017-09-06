@@ -190,7 +190,7 @@ KeyChain::construct
 }
 
 ptr_lib::shared_ptr<PibIdentity>
-KeyChain::createIdentity(const Name& identityName, const KeyParams& params)
+KeyChain::createIdentityV2(const Name& identityName, const KeyParams& params)
 {
   ptr_lib::shared_ptr<PibIdentity> id = pib_->addIdentity(identityName);
 
@@ -256,7 +256,7 @@ KeyChain::deleteKey(PibIdentity& identity, PibKey& key)
   Name keyName = key.getName();
   if (identity.getName() != key.getIdentityName())
     throw invalid_argument("Identity `" + identity.getName().toUri() +
-      "` does match key `" + keyName.toUri() + "`");
+      "` does not match key `" + keyName.toUri() + "`");
 
   identity.removeKey(keyName);
   tpm_->deleteKey(keyName);
@@ -267,7 +267,7 @@ KeyChain::setDefaultKey(PibIdentity& identity, PibKey& key)
 {
   if (identity.getName() != key.getIdentityName())
     throw invalid_argument("Identity `" + identity.getName().toUri() +
-      "` does match key `" + key.getName().toUri() + "`");
+      "` does not match key `" + key.getName().toUri() + "`");
 
   identity.setDefaultKey(key.getName());
 }
@@ -278,7 +278,7 @@ KeyChain::addCertificate(PibKey& key, const CertificateV2& certificate)
   if (key.getName() != certificate.getKeyName() ||
       !certificate.getContent().equals(key.getPublicKey()))
     throw invalid_argument("Key `" + key.getName().toUri() +
-      "` does match certificate `" + certificate.getName().toUri() + "`");
+      "` does not match certificate `" + certificate.getName().toUri() + "`");
 
   key.addCertificate(certificate);
 }
@@ -296,15 +296,8 @@ KeyChain::deleteCertificate(PibKey& key, const Name& certificateName)
 void
 KeyChain::setDefaultCertificate(PibKey& key, const CertificateV2& certificate)
 {
-  try {
-    addCertificate(key, certificate);
-  }
-  catch (const Pib::Error&) { 
-    // Force to overwrite the existing certificate.
-    key.removeCertificate(certificate.getName());
-    addCertificate(key, certificate);
-  }
-
+  // This replaces the certificate it it exists.
+  addCertificate(key, certificate);
   key.setDefaultCertificate(certificate.getName());
 }
 
