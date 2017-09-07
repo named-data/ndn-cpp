@@ -30,33 +30,6 @@
 using namespace std;
 using namespace ndn;
 
-static bool
-fileExists(const string& filePath)
-{
-  ifstream stream(filePath.c_str());
-  bool result = (bool)stream;
-  stream.close();
-  return result;
-}
-
-static string
-getPolicyConfigDirectory()
-{
-  string policyConfigDirectory = "policy_config";
-  // Check if expected files are in this directory.
-  if (!fileExists(policyConfigDirectory + "/regex_ruleset.conf")) {
-    // Maybe we are running "make check" from the ndn-cpp root.  There may be
-    //   a way to tell "make check" to run from tests/unit-tests, but for
-    //   now just set policyConfigDirectory explicitly.
-    policyConfigDirectory = "tests/unit-tests/policy_config";
-
-    if(!fileExists(policyConfigDirectory + "/regex_ruleset.conf"))
-      throw runtime_error("Cannot find the directory for policy-config");
-  }
-
-  return policyConfigDirectory;
-}
-
 class TestKeyChain : public ::testing::Test {
 public:
   TestKeyChain()
@@ -98,7 +71,7 @@ TEST_F(TestKeyChain, Management)
   ASSERT_TRUE(!key);
 */
   ASSERT_THROW(id->getKey(key1Name), Pib::Error);
-  ASSERT_EQ(id->getKeys().size(), 0);
+  ASSERT_EQ(0, id->getKeys().size());
 
   // Create another key.
   keyChain_.createKey(*id);
