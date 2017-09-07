@@ -191,7 +191,7 @@ public:
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use getDefaultKeyParams().
-   * @return The created Identity instance.
+   * @return The created PibIdentity instance.
    */
   ptr_lib::shared_ptr<PibIdentity>
   createIdentityV2
@@ -252,7 +252,7 @@ public:
    * selected, the added certificate will be set as the default certificate for
    * this key.
    * @param key A valid PibKey object.
-   * @param certificate The certificate to add.
+   * @param certificate The certificate to add. This copies the object.
    * @note This method overwrites a certificate with the same name, without
    * considering the implicit digest.
    * @throw invalid_argument If the key does not match the certificate.
@@ -276,7 +276,8 @@ public:
    * will be added to the key, potentially overriding an existing certificate if
    * it has the same name (without considering implicit digest).
    * @param key A valid PibKey object.
-   * @param certificate The certificate to become the default.
+   * @param certificate The certificate to become the default. This copies the
+   * object.
    */
   void
   setDefaultCertificate(PibKey& key, const CertificateV2& certificate);
