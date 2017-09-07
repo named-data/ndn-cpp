@@ -159,10 +159,22 @@ public:
   KeyChain();
 
   Pib&
-  getPib() { return *pib_; }
+  getPib()
+  {
+    if (isSecurityV1_)
+      throw Error("getPib is not supported for security v1");
+
+    return *pib_;
+  }
 
   Tpm&
-  getTpm() { return *tpm_; }
+  getTpm()
+  {
+    if (isSecurityV1_)
+      throw Error("getTpm is not supported for security v1");
+
+    return *tpm_;
+  }
 
   // Identity management
 
