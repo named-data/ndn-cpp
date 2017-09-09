@@ -171,6 +171,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/key-params.hpp \
+  include/ndn-cpp/security/safe-bag.hpp \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
@@ -380,6 +381,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/key-params.cpp \
+  src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
   src/security/validity-period.cpp \

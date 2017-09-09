@@ -338,7 +338,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
 	src/security/key-chain.lo src/security/key-params.lo \
-	src/security/security-exception.lo \
+	src/security/safe-bag.lo src/security/security-exception.lo \
 	src/security/signing-info.lo src/security/validity-period.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
@@ -1466,6 +1466,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/key-params.hpp \
+  include/ndn-cpp/security/safe-bag.hpp \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
@@ -1678,6 +1679,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
   src/security/key-params.cpp \
+  src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
   src/security/validity-period.cpp \
@@ -2448,6 +2450,8 @@ src/security/$(DEPDIR)/$(am__dirstamp):
 src/security/key-chain.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/key-params.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/safe-bag.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/security-exception.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
@@ -3589,6 +3593,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-params.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/safe-bag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/signing-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/validity-period.Plo@am__quote@
