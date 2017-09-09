@@ -27,10 +27,11 @@
 namespace ndn {
 
 class IdentityStorage;
+class PibImpl;
 
 /**
  * A SelfVerifyPolicyManager implements a PolicyManager to look in the
- * IdentityStorage for the public key with the name in the KeyLocator (if
+ * storage for the public key with the name in the KeyLocator (if
  * available) and use it to verify the data packet, without searching a
  * certificate chain.  If the public key can't be found, the verification fails.
  */
@@ -45,7 +46,20 @@ public:
    * public key with the name in the KeyLocator.
    */
   SelfVerifyPolicyManager(IdentityStorage* identityStorage = 0)
-  : identityStorage_(identityStorage)
+  : identityStorage_(identityStorage), pibImpl_(0)
+  {
+  }
+
+  /**
+   * Create a new SelfVerifyPolicyManager which will look up the public key in
+   * the given pibImpl.
+   * @param identityStorage (optional) The IdentityStorage for looking up the
+   * public key.  This points to an object which must remain valid during the
+   * life of this SelfVerifyPolicyManager. If omitted, then don't look for a
+   * public key with the name in the KeyLocator.
+   */
+  SelfVerifyPolicyManager(PibImpl* pibImpl)
+  : identityStorage_(0), pibImpl_(pibImpl)
   {
   }
 
@@ -89,7 +103,7 @@ public:
   requireVerify(const Interest& interest);
 
   /**
-   * Look in the IdentityStorage for the public key with the name in the
+   * Look in the IdentityStorage or PibImpl for the public key with the name in the
    * KeyLocator (if available) and use it to verify the data packet. If the
    * public key can't be found, call onValidationFailed.
    * @param data The Data object with the signature to check.
@@ -114,7 +128,7 @@ public:
 
   /**
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
-   * components of the signed interest. Look in the IdentityStorage for the
+   * components of the signed interest. Look in the IdentityStorage or PibImpl for the
    * public key with the name in the KeyLocator (if available) and use it to
    * verify the interest. If the public key can't be found, call 
    * onValidationFailed.
@@ -159,7 +173,7 @@ public:
 private:
   /**
    * Check the type of signatureInfo to get the KeyLocator. Look in the
-   * IdentityStorage for the public key with the name in the KeyLocator
+   * IdentityStorage or PibImpl for the public key with the name in the KeyLocator
    * (if available) and use it to verify the signedBlob. If the public key can't
    * be found, return false. (This is a generalized method which can verify both
    * a Data packet and an interest.)
@@ -176,7 +190,7 @@ private:
      std::string& failureReason);
 
   /**
-   * Look in the IdentityStorage for the public key with the name in the
+   * Look in the IdentityStorage or PibImpl for the public key with the name in the
    * KeyLocator (if available). If the public key can't be found, return and
    * empty Blob.
    * @param keyLocator The KeyLocator.
@@ -188,6 +202,7 @@ private:
   getPublicKeyDer(const KeyLocator& keyLocator, std::string& failureReason);
 
   IdentityStorage* identityStorage_;
+  PibImpl* pibImpl_;
 };
 
 }
