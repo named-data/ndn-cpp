@@ -35,6 +35,7 @@
 #include "tpm/tpm.hpp"
 #include "signing-info.hpp"
 #include "key-params.hpp"
+#include "safe-bag.hpp"
 
 namespace ndn {
 
@@ -395,7 +396,27 @@ public:
   // Import and export
 
   // TODO: exportSafeBag
-  // TODO: importSafeBag
+
+  /**
+   * Import a certificate and its corresponding private key encapsulated in a
+   * SafeBag. If the certificate and key are imported properly, the default
+   * setting will be updated as if a new key and certificate is added into this
+   * KeyChain.
+   * @param safeBag The SafeBag containing the certificate and private key. This
+   * copies the values from the SafeBag.
+   * @param password The password for decrypting the private key. If the
+   * password is supplied, use it to decrypt the PKCS #8 EncryptedPrivateKeyInfo.
+   * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
+   * @param passwordLength The length of the password. If password is null, this
+   * is ignored.
+   * @throws KeyChain.Error if the private key cannot be imported, or if a
+   * public key or private key of the same name already exists, or if a
+   * certificate of the same name already exists.
+   */
+  void
+  importSafeBag
+    (const SafeBag& safeBag, const uint8_t* password = 0,
+     size_t passwordLength = 0);
 
   // PIB & TPM backend registry
 

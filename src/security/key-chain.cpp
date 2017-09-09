@@ -25,6 +25,8 @@
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
+#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
@@ -390,6 +392,77 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
 
   key->addCertificate(*certificate);
   return certificate;
+}
+
+void
+KeyChain::importSafeBag
+  (const SafeBag& safeBag, const uint8_t* password, size_t passwordLength)
+{
+  CertificateV2 certificate(*safeBag.getCertificate());
+  Name identity = certificate.getIdentity();
+  Name keyName = certificate.getKeyName();
+  Blob publicKeyBits = certificate.getPublicKey();
+
+  if (tpm_->hasKey(keyName))
+    throw Error("Private key `" + keyName.toUri() + "` already exists");
+
+  try {
+    ptr_lib::shared_ptr<PibIdentity> existingId = pib_->getIdentity(identity);
+    existingId->getKey(keyName);
+    throw Error("Public key `" + keyName.toUri() + "` already exists");
+  }
+  catch (const Pib::Error& ex) {
+    // Either the identity or the key doesn't exist, so OK to import.
+  }
+
+  try {
+    tpm_->importPrivateKey
+      (keyName, safeBag.getPrivateKeyBag().buf(),
+       safeBag.getPrivateKeyBag().size(), password, passwordLength);
+  }
+  catch (const std::exception& ex) {
+    throw Error("Failed to import private key `" + keyName.toUri() + "`");
+  }
+
+  // Check the consistency of the private key and certificate.
+  uint8_t content[] = {0x01, 0x02, 0x03, 0x04};
+  Blob signatureBits;
+  try {
+    signatureBits = tpm_->sign
+      (content, sizeof(content), keyName, DIGEST_ALGORITHM_SHA256);
+  } catch (const std::exception& ex) {
+    tpm_->deleteKey(keyName);
+    throw Error("Invalid private key `" + keyName.toUri() + "`");
+  }
+
+  PublicKey publicKey(publicKeyBits);
+  // TODO: Move verify into PublicKey?
+  bool isVerified;
+  ndn_Error error;
+  if (publicKey.getKeyType() == KEY_TYPE_ECDSA)
+    error = EcPublicKeyLite::verifySha256WithEcdsaSignature
+      (signatureBits, Blob(content, sizeof(content)), publicKey.getKeyDer(),
+       isVerified);
+  else if (publicKey.getKeyType() == KEY_TYPE_RSA)
+    error = RsaPublicKeyLite::verifySha256WithRsaSignature
+      (signatureBits, Blob(content, sizeof(content)), publicKey.getKeyDer(),
+       isVerified);
+  else
+    // We don't expect this.
+    throw Error("Unrecognized key type");
+
+  if (!isVerified) {
+    tpm_->deleteKey(keyName);
+    throw Error("Certificate `" + certificate.getName().toUri() +
+      "` and private key `" + keyName.toUri() + "` do not match");
+  }
+
+  // The consistency is verified. Add to the PIB.
+  ptr_lib::shared_ptr<PibIdentity> id = pib_->addIdentity(identity);
+  ptr_lib::shared_ptr<PibKey> key = id->addKey
+    (certificate.getPublicKey().buf(), certificate.getPublicKey().size(),
+     keyName);
+  key->addCertificate(certificate);
 }
 
 // Security v1 methods
