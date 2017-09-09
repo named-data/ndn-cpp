@@ -148,6 +148,7 @@ public:
 
 private:
   friend class KeyChain;
+  friend class SafeBag;
 
   /*
    * Create a new TPM instance with the specified location. This constructor
