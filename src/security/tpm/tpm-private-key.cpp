@@ -95,19 +95,35 @@ TpmPrivateKey::loadPkcs1
 void
 TpmPrivateKey::loadPkcs8(const uint8_t* encoding, size_t encodingLength)
 {
-  // Decode to find the algorithm OID and the inner private key DER.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
-    (encoding, encodingLength);
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
-    parsedNode->getChildren();
-  // Get the algorithm OID and parameters.
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
-    DerNode::getSequence(pkcs8Children, 1).getChildren();
-  string oidString
-    (dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr());
-  ptr_lib::shared_ptr<DerNode> algorithmParameters = algorithmIdChildren[1];
-  // Get the value of the 3rd child which is the octet string.
-  Blob privateKeyDer = pkcs8Children[2]->toVal();
+  string oidString;
+  ptr_lib::shared_ptr<DerNode> algorithmParameters;
+  Blob privateKeyDer;
+
+  try {
+    // Decode to find the algorithm OID and the inner private key DER.
+    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+      (encoding, encodingLength);
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
+      parsedNode->getChildren();
+
+    // Get the algorithm OID and parameters.
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
+      DerNode::getSequence(pkcs8Children, 1).getChildren();
+    oidString =
+      dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr();
+    algorithmParameters = algorithmIdChildren[1];
+
+    // Get the value of the 3rd child which is the octet string.
+    privateKeyDer = pkcs8Children[2]->toVal();
+  } catch (const DerDecodingException&) {
+    // Error decoding as PKCS #8. Try PKCS #1 for backwards compatibility.
+    try {
+      loadPkcs1(encoding, encodingLength);
+      return;
+    } catch (const exception& ex) {
+      throw Error(string("loadPkcs8: Error decoding private key: ") + ex.what());
+    }
+  }
 
   keyType_ = (KeyType)-1;
 #if NDN_CPP_HAVE_LIBCRYPTO
