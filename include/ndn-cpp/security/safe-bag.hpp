@@ -35,7 +35,7 @@ namespace ndn {
 class SafeBag {
 public:
   /**
-   * Create a new Safe object with the given certificate and private key.
+   * Create a SafeBag with the given certificate and private key.
    * @param certificate The certificate data packet. This copies the object.
    * @param privateKeyBag The encoded private key. If encrypted, this is a
    * PKCS #8 EncryptedPrivateKeyInfo. If not encrypted, this is an unencrypted
@@ -47,6 +47,28 @@ public:
     privateKeyBag_ = privateKeyBag;
   }
 
+  /**
+   * Create a SafeBag with given private key and a new self-signed certificate
+   * for the given public key.
+   * @param keyName The name of the public key. The certificate name will be
+   * {keyName}/self/{version} where the version is based on the current time.
+   * This copies the Name.
+   * @param privateKeyBag The encoded private key. If encrypted, this is a
+   * PKCS #8 EncryptedPrivateKeyInfo. If not encrypted, this is an unencrypted
+   * PKCS #8 PrivateKeyInfo.
+   * @param publicKeyEncoding The encoded public key for the certificate.
+   * @param password (optional) The password for decrypting the private key in
+   * order to sign the self-signed certificate. If the password is supplied, use
+   * it to decrypt the PKCS #8 EncryptedPrivateKeyInfo. If the password is
+   * omitted or null, privateKeyBag is an unencrypted PKCS #8 PrivateKeyInfo.
+   * @param passwordLength (optional) The length of the password. If password is
+   * omitted ornull, this is ignored.
+   * @param digestAlgorithm (optional) The digest algorithm for signing the
+   * self-signed certificate. If omitted, use DIGEST_ALGORITHM_SHA256 .
+   * @param wireFormat (optional) A WireFormat object used to encode the
+   * self-signed certificate in order to sign it. If omitted, use WireFormat
+   * getDefaultWireFormat().
+   */
   SafeBag
     (const Name& keyName, Blob privateKeyBag, Blob publicKeyEncoding,
      const uint8_t* password = 0, size_t passwordLength = 0,

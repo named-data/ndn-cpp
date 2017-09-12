@@ -404,11 +404,12 @@ public:
    * KeyChain.
    * @param safeBag The SafeBag containing the certificate and private key. This
    * copies the values from the SafeBag.
-   * @param password The password for decrypting the private key. If the
-   * password is supplied, use it to decrypt the PKCS #8 EncryptedPrivateKeyInfo.
-   * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
-   * @param passwordLength The length of the password. If password is null, this
-   * is ignored.
+   * @param password (optional) The password for decrypting the private key. If
+   * the password is supplied, use it to decrypt the PKCS #8
+   * EncryptedPrivateKeyInfo. If the password is omitted or null, import an
+   * unencrypted PKCS #8 PrivateKeyInfo.
+   * @param passwordLength (optional) The length of the password. If password is
+   * omitted or null, this is ignored.
    * @throws KeyChain.Error if the private key cannot be imported, or if a
    * public key or private key of the same name already exists, or if a
    * certificate of the same name already exists.
