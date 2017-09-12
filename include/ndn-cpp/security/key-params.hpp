@@ -101,13 +101,13 @@ public:
     return size_;
   }
 
-private:
   static uint32_t
   getDefaultSize() { return 2048; }
 
   static KeyType
   getType() { return KEY_TYPE_RSA; }
 
+private:
   uint32_t size_;
 };
 
@@ -135,13 +135,13 @@ public:
     return size_;
   }
 
-private:
   static uint32_t
   getDefaultSize() { return 256; }
 
   static KeyType
   getType() { return KEY_TYPE_ECDSA; }
 
+private:
   uint32_t size_;
 };
 
@@ -169,13 +169,13 @@ public:
     return size_;
   }
 
-private:
   static uint32_t
   getDefaultSize() { return 64; }
 
   static KeyType
   getType() { return KEY_TYPE_AES; }
 
+private:
   uint32_t size_;
 };
 
