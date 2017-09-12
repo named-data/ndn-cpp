@@ -217,7 +217,7 @@ SelfVerifyPolicyManager::getPublicKeyDer
     try {
       return pibImpl_->getKeyBits(keyLocator.getKeyName());
     } catch (Pib::Error&) {
-      failureReason = "The identityStorage doesn't have the key named " +
+      failureReason = "The pibImpl doesn't have the key named " +
         keyLocator.getKeyName().toUri();
       return Blob();
     } catch (PibImpl::Error&) {
