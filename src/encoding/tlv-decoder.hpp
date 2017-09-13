@@ -108,6 +108,9 @@ public:
 
     return value != 0;
   }
+
+  void
+  seek(size_t offset) { ndn_TlvDecoder_seek(this, offset); }
 };
 
 }
