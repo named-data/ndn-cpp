@@ -57,24 +57,24 @@ KeyLocator::canGetFromSignature(const Signature* signature)
          dynamic_cast<const HmacWithSha256Signature *>(signature);
 }
 
-const KeyLocator&
-KeyLocator::getFromSignature(const Signature* signature)
+KeyLocator&
+KeyLocator::getFromSignature(Signature* signature)
 {
   {
-    const Sha256WithRsaSignature *castSignature =
-      dynamic_cast<const Sha256WithRsaSignature *>(signature);
+    Sha256WithRsaSignature *castSignature =
+      dynamic_cast<Sha256WithRsaSignature *>(signature);
     if (castSignature)
       return castSignature->getKeyLocator();
   }
   {
-    const Sha256WithEcdsaSignature *castSignature =
-      dynamic_cast<const Sha256WithEcdsaSignature *>(signature);
+    Sha256WithEcdsaSignature *castSignature =
+      dynamic_cast<Sha256WithEcdsaSignature *>(signature);
     if (castSignature)
       return castSignature->getKeyLocator();
   }
   {
-    const HmacWithSha256Signature *castSignature =
-      dynamic_cast<const HmacWithSha256Signature *>(signature);
+    HmacWithSha256Signature *castSignature =
+      dynamic_cast<HmacWithSha256Signature *>(signature);
     if (castSignature)
       return castSignature->getKeyLocator();
   }

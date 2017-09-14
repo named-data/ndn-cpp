@@ -22,6 +22,7 @@
 
 #include "../../c/util/crypto.h"
 #include <ndn-cpp/security/security-exception.hpp>
+#include <ndn-cpp/security/pib/pib-impl.hpp>
 #include <ndn-cpp/security/identity/identity-storage.hpp>
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
@@ -209,6 +210,19 @@ SelfVerifyPolicyManager::getPublicKeyDer
     } catch (SecurityException&) {
       failureReason = "The identityStorage doesn't have the key named " +
         keyName.toUri();
+      return Blob();
+    }
+  }
+  else if (keyLocator.getType() == ndn_KeyLocatorType_KEYNAME && pibImpl_) {
+    try {
+      return pibImpl_->getKeyBits(keyLocator.getKeyName());
+    } catch (Pib::Error&) {
+      failureReason = "The pibImpl doesn't have the key named " +
+        keyLocator.getKeyName().toUri();
+      return Blob();
+    } catch (PibImpl::Error&) {
+      failureReason = "Error getting the key named " +
+        keyLocator.getKeyName().toUri();
       return Blob();
     }
   }

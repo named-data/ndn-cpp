@@ -373,7 +373,10 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/security/*.*) \
   $(wildcard ndn-cpp/security/certificate/*.*) \
   $(wildcard ndn-cpp/security/identity/*.*) \
+  $(wildcard ndn-cpp/security/pib/*.*) \
   $(wildcard ndn-cpp/security/policy/*.*) \
+  $(wildcard ndn-cpp/security/tpm/*.*) \
+  $(wildcard ndn-cpp/security/v2/*.*) \
   $(wildcard ndn-cpp/sync/*.*) \
   $(wildcard ndn-cpp/tools/usersync/*.*) \
   $(wildcard ndn-cpp/transport/*.*) \

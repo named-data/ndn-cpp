@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_BASIC_IDENTITY_STORAGE_H
-#define NDN_BASIC_IDENTITY_STORAGE_H
+#ifndef NDN_BASIC_IDENTITY_STORAGE_HPP
+#define NDN_BASIC_IDENTITY_STORAGE_HPP
 
 // Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_SQLITE3.
 #include "../../ndn-cpp-config.h"
@@ -264,6 +264,25 @@ public:
    */
   virtual void
   deleteIdentityInfo(const Name& identity);
+
+  /**
+   * Get the default directory that the constructor uses if databaseFilePath is
+   * omitted. This does not try to create the directory.
+   * @return The default database directory path.
+   */
+  static std::string
+  getDefaultDatabaseDirectoryPath();
+
+  /**
+   * Get the default database file path that the constructor uses if
+   * databaseDirectoryPath and databaseFilename are omitted.
+   * @return The default database file path.
+   */
+  static std::string
+  getDefaultDatabaseFilePath()
+  {
+    return getDefaultDatabaseDirectoryPath() + '/' + "ndnsec-public-info.db";
+  }
 
 private:
 

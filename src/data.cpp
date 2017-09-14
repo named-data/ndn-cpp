@@ -64,7 +64,7 @@ Data::Data(const Data& data)
     ++changeCount_;
   }
   setDefaultWireEncoding
-    (data.defaultWireEncoding_, data.defaultWireEncodingFormat_);
+    (data.getDefaultWireEncoding(), data.defaultWireEncodingFormat_);
 }
 
 Data::~Data()

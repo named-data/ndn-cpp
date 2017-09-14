@@ -27,8 +27,9 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/key-locator.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
-#include <ndn-cpp/security/identity/memory-identity-storage.hpp>
-#include <ndn-cpp/security/identity/memory-private-key-storage.hpp>
+#include <ndn-cpp/security/safe-bag.hpp>
+#include <ndn-cpp/security/pib/pib-memory.hpp>
+#include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
@@ -202,24 +203,22 @@ benchmarkEncodeDataSecondsCpp
   Blob finalBlockId((uint8_t*)"\x00", 1);
 
   // Initialize the KeyChain storage in case useCrypto is true.
-  ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage(new MemoryIdentityStorage());
-  ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage(new MemoryPrivateKeyStorage());
+  ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
   KeyChain keyChain
-    (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage),
-     ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
-  Name keyName("/testname/DSK-123");
-  Name certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append
-    (keyName.get(keyName.size() - 1)).append("ID-CERT").append("0");
-  privateKeyStorage->setKeyPairForKeyName
-    (keyName, keyType,
-     keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
-                               : DEFAULT_RSA_PUBLIC_KEY_DER,
-     keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
-                               : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER),
-     keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
-                               : DEFAULT_RSA_PRIVATE_KEY_DER,
-     keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
-                               : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER));
+    (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
+     ptr_lib::make_shared<SelfVerifyPolicyManager>(pibImpl.get()));
+  // This puts the public key in the pibImpl used by the SelfVerifyPolicyManager.
+  keyChain.importSafeBag(SafeBag
+    (Name("/testname/KEY/123"),
+     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
+                                    : DEFAULT_RSA_PRIVATE_KEY_DER,
+          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
+                                    : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),
+     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+                                    : DEFAULT_RSA_PUBLIC_KEY_DER,
+          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+                                    : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
+  Name certificateName = keyChain.getDefaultCertificateName();
 
   uint8_t signatureBitsArray[256];
   memset(signatureBitsArray, 0, sizeof(signatureBitsArray));
@@ -236,7 +235,7 @@ benchmarkEncodeDataSecondsCpp
 
     if (useCrypto)
       // This sets the signature fields.
-      keyChain.sign(data, certificateName);
+      keyChain.sign(data);
     else {
       // Imitate IdentityManager::signByCertificate to set up the signature fields, but don't sign.
       KeyLocator keyLocator;
@@ -280,18 +279,21 @@ benchmarkDecodeDataSecondsCpp
   (int nIterations, bool useCrypto, KeyType keyType, const Blob& encoding)
 {
   // Initialize the KeyChain storage in case useCrypto is true.
-  ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage(new MemoryIdentityStorage());
-  ptr_lib::shared_ptr<MemoryPrivateKeyStorage> privateKeyStorage(new MemoryPrivateKeyStorage());
+  ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
   KeyChain keyChain
-    (ptr_lib::make_shared<IdentityManager>(identityStorage, privateKeyStorage),
-     ptr_lib::make_shared<SelfVerifyPolicyManager>(identityStorage.get()));
-  Name keyName("/testname/DSK-123");
-  identityStorage->addKey
-    (keyName, keyType, Blob
-      (keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
-                                 : DEFAULT_RSA_PUBLIC_KEY_DER,
-       keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
-                                 : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER)));
+    (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
+     ptr_lib::make_shared<SelfVerifyPolicyManager>(pibImpl.get()));
+  // This puts the public key in the pibImpl used by the SelfVerifyPolicyManager.
+  keyChain.importSafeBag(SafeBag
+    (Name("/testname/KEY/123"),
+     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
+                                    : DEFAULT_RSA_PRIVATE_KEY_DER,
+          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
+                                    : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),
+     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+                                    : DEFAULT_RSA_PUBLIC_KEY_DER,
+          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+                                    : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {

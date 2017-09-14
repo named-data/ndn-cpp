@@ -28,6 +28,8 @@
 
 namespace ndn {
 
+  class Signature;
+
 /**
  * A ValidityPeriod is used in a Data packet's SignatureInfo and represents the
  * begin and end times of a certificate's validity period.
@@ -102,14 +104,42 @@ public:
 
   /**
    * Check if the time falls within the validity period.
-   * @param time The time to check as milliseconds since Jan 1, 1970 UTC.
+   * @param time (optional) The time to check as milliseconds since Jan 1,
+   * 1970 UTC. If omitted, use the current time.
    * @return True if the beginning of the validity period is less than or equal
    * to time and time is less than or equal to the end of the validity period.
    */
   bool
-  isValid(const MillisecondsSince1970& time) const
+  isValid(MillisecondsSince1970 time = -1.0) const;
+
+  /**
+   * If the signature is a type that has a ValidityPeriod (so that
+   * getFromSignature will succeed), return true.
+   * Note: This is a static method of ValidityPeriod instead of a method of
+   * Signature so that the Signature base class does not need to be overloaded
+   * with all the different kinds of information that various signature
+   * algorithms may use.
+   * @param signature An object of a subclass of Signature.
+   * @return True if the signature is a type that has a ValidityPeriod,
+   * otherwise false.
+   */
+  static bool
+  canGetFromSignature(const Signature* signature);
+
+  /**
+   * If the signature is a type that has a ValidityPeriod, then return it.
+   * Otherwise throw an error.
+   * @param signature An object of a subclass of Signature.
+   * @return The signature's ValidityPeriod. It is an error if signature doesn't
+   * have a ValidityPeriod.
+   */
+  static ValidityPeriod&
+  getFromSignature(Signature* signature);
+
+  static const ValidityPeriod&
+  getFromSignature(const Signature* signature)
   {
-    return validityPeriod_.isValid(time);
+    return getFromSignature(const_cast<Signature*>(signature));
   }
 
   /**

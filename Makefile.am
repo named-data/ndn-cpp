@@ -29,15 +29,20 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-face-methods bin/unit-tests/test-group-manager-db \
   bin/unit-tests/test-group-manager bin/unit-tests/test-identity-methods \
   bin/unit-tests/test-interest-methods \
-  bin/unit-tests/test-interval \
+  bin/unit-tests/test-interval bin/unit-tests/test-key-chain \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
-  bin/unit-tests/test-name-methods bin/unit-tests/test-policy-manager \
-  bin/unit-tests/test-producer bin/unit-tests/test-producer-db \
-  bin/unit-tests/test-regex \
+  bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
+  bin/unit-tests/test-pib-identity-container \
+  bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
+  bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-key-impl \
+  bin/unit-tests/test-policy-manager bin/unit-tests/test-policy-manager-v2 \
+  bin/unit-tests/test-producer \
+  bin/unit-tests/test-producer-db bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
-  bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-signing-info bin/unit-tests/test-tpm-back-ends \
+  bin/unit-tests/test-tpm-private-key bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-echo-consumer bin/test-echo-consumer-lite \
@@ -165,7 +170,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
+  include/ndn-cpp/security/key-params.hpp \
+  include/ndn-cpp/security/safe-bag.hpp \
   include/ndn-cpp/security/security-exception.hpp \
+  include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
@@ -180,11 +188,32 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/identity/memory-private-key-storage.hpp \
   include/ndn-cpp/security/identity/osx-private-key-storage.hpp \
   include/ndn-cpp/security/identity/private-key-storage.hpp \
+  include/ndn-cpp/security/pib/pib-certificate-container.hpp \
+  include/ndn-cpp/security/pib/pib-identity.hpp \
+  include/ndn-cpp/security/pib/pib-identity-container.hpp \
+  include/ndn-cpp/security/pib/pib-impl.hpp \
+  include/ndn-cpp/security/pib/pib-key.hpp \
+  include/ndn-cpp/security/pib/pib-key-container.hpp \
+  include/ndn-cpp/security/pib/pib-memory.hpp \
+  include/ndn-cpp/security/pib/pib-sqlite3.hpp \
+  include/ndn-cpp/security/pib/pib.hpp \
   include/ndn-cpp/security/policy/config-policy-manager.hpp \
   include/ndn-cpp/security/policy/no-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/helper-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-file.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm-private-key.hpp \
+  include/ndn-cpp/security/v2/certificate-v2.hpp \
+  include/ndn-cpp/security/v2/certificate-cache-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
@@ -351,7 +380,11 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
+  src/security/key-params.cpp \
+  src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
+  src/security/signing-info.cpp \
+  src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \
@@ -365,10 +398,31 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/identity/memory-private-key-storage.cpp \
   src/security/identity/osx-private-key-storage.cpp \
   src/security/identity/private-key-storage.cpp \
+  src/security/pib/pib-certificate-container.cpp \
+  src/security/pib/pib-identity.cpp \
+  src/security/pib/pib-identity-container.cpp \
+  src/security/pib/pib-key.cpp \
+  src/security/pib/pib-key-container.cpp \
+  src/security/pib/pib-memory.cpp \
+  src/security/pib/pib-sqlite3.cpp \
+  src/security/pib/pib.cpp \
+  src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
+  src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
   src/security/policy/config-policy-manager.cpp \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm.cpp \
+  src/security/tpm/tpm-back-end.cpp \
+  src/security/tpm/tpm-back-end-file.cpp \
+  src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-back-end-osx.cpp \
+  src/security/tpm/tpm-key-handle.cpp \
+  src/security/tpm/tpm-key-handle-memory.cpp \
+  src/security/tpm/tpm-key-handle-osx.cpp \
+  src/security/tpm/tpm-private-key.cpp \
+  src/security/v2/certificate-v2.cpp \
+  src/security/v2/certificate-cache-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
@@ -386,6 +440,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
+  src/util/segment-fetcher.cpp \
+  src/util/sqlite3-statement.cpp src/util/sqlite3-statement.hpp \
   src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
   src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
   src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
@@ -394,8 +450,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
   src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
   src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
-  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
-  src/util/segment-fetcher.cpp
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp
 
 # The ndn-cpp-tools library.
 libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
@@ -540,6 +595,10 @@ bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contri
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
 
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
+
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_link_LDADD = libndn-cpp.la
@@ -552,9 +611,43 @@ bin_unit_tests_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cp
 bin_unit_tests_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
 
+bin_unit_tests_test_pib_certificate_container_SOURCES = tests/unit-tests/test-pib-certificate-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_certificate_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_certificate_container_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_identity_container_SOURCES = tests/unit-tests/test-pib-identity-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_identity_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_container_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_identity_impl_SOURCES = tests/unit-tests/test-pib-identity-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_identity_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_impl_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_impl_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_key_container_SOURCES = tests/unit-tests/test-pib-key-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_key_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_container_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_pib_key_impl_SOURCES = tests/unit-tests/test-pib-key-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_pib_key_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_impl_LDADD = libndn-cpp.la
+
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_policy_manager_v2_SOURCES = tests/unit-tests/test-policy-manager-v2.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_policy_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_policy_manager_v2_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
@@ -583,6 +676,18 @@ bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_signing_info_SOURCES = tests/unit-tests/test-signing-info.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_signing_info_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_signing_info_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

@@ -201,7 +201,7 @@ TEST_F(TestCertificate, Extension)
 
   // Decode and check the extension value.
   ptr_lib::shared_ptr<DerNode> parsedExtValue = DerNode::parse
-    (decodedExtension.getValue().buf());
+    (decodedExtension.getValue());
   const std::vector<ptr_lib::shared_ptr<DerNode> >& decodedExtValueRoot =
     parsedExtValue->getChildren();
   ASSERT_EQ(3, decodedExtValueRoot.size()) <<

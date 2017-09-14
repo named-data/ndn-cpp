@@ -24,6 +24,27 @@
 
 namespace ndn {
 
+/**
+ * The KeyIdType enum represents the type of a KeyId component in a key name.
+ */
+enum KeyIdType {
+  /**
+   * USER_SPECIFIED: A user-specified key ID. It is the user's responsibility to
+   * ensure the uniqueness of key names.
+   */
+  KEY_ID_TYPE_USER_SPECIFIED = 0,
+  /**
+   * SHA256: The SHA256 hash of the public key as the key id. This KeyId type
+   * guarantees the uniqueness of key names.
+   */
+  KEY_ID_TYPE_SHA256 = 1,
+  /**
+   * RANDOM: A 64-bit random number as the key id. This KeyId provides rough
+   * uniqueness of key names.
+   */
+  KEY_ID_TYPE_RANDOM = 2
+};
+
 // The KeyType integer is used by the Sqlite key storage, so don't change them.
 // Make these the same as ndn-cxx in case the storage file is shared.
 enum KeyType {

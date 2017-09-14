@@ -109,10 +109,18 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-identity-methods$(EXEEXT) \
 	bin/unit-tests/test-interest-methods$(EXEEXT) \
 	bin/unit-tests/test-interval$(EXEEXT) \
+	bin/unit-tests/test-key-chain$(EXEEXT) \
 	bin/unit-tests/test-link$(EXEEXT) \
 	bin/unit-tests/test-name-conventions$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
+	bin/unit-tests/test-pib-certificate-container$(EXEEXT) \
+	bin/unit-tests/test-pib-identity-container$(EXEEXT) \
+	bin/unit-tests/test-pib-identity-impl$(EXEEXT) \
+	bin/unit-tests/test-pib-impl$(EXEEXT) \
+	bin/unit-tests/test-pib-key-container$(EXEEXT) \
+	bin/unit-tests/test-pib-key-impl$(EXEEXT) \
 	bin/unit-tests/test-policy-manager$(EXEEXT) \
+	bin/unit-tests/test-policy-manager-v2$(EXEEXT) \
 	bin/unit-tests/test-producer$(EXEEXT) \
 	bin/unit-tests/test-producer-db$(EXEEXT) \
 	bin/unit-tests/test-regex$(EXEEXT) \
@@ -120,6 +128,9 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-repetitive-interval$(EXEEXT) \
 	bin/unit-tests/test-rsa-algorithm$(EXEEXT) \
 	bin/unit-tests/test-schedule$(EXEEXT) \
+	bin/unit-tests/test-signing-info$(EXEEXT) \
+	bin/unit-tests/test-tpm-back-ends$(EXEEXT) \
+	bin/unit-tests/test-tpm-private-key$(EXEEXT) \
 	bin/unit-tests/test-verification-rules$(EXEEXT)
 noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-chrono-chat$(EXEEXT) bin/test-echo-consumer$(EXEEXT) \
@@ -326,7 +337,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/util/dynamic-malloc-uint8-array-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
-	src/security/key-chain.lo src/security/security-exception.lo \
+	src/security/key-chain.lo src/security/key-params.lo \
+	src/security/safe-bag.lo src/security/security-exception.lo \
+	src/security/signing-info.lo src/security/validity-period.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
 	src/security/certificate/certificate.lo \
@@ -340,10 +353,29 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/identity/memory-private-key-storage.lo \
 	src/security/identity/osx-private-key-storage.lo \
 	src/security/identity/private-key-storage.lo \
+	src/security/pib/pib-certificate-container.lo \
+	src/security/pib/pib-identity.lo \
+	src/security/pib/pib-identity-container.lo \
+	src/security/pib/pib-key.lo \
+	src/security/pib/pib-key-container.lo \
+	src/security/pib/pib-memory.lo src/security/pib/pib-sqlite3.lo \
+	src/security/pib/pib.lo \
+	src/security/pib/detail/pib-identity-impl.lo \
+	src/security/pib/detail/pib-key-impl.lo \
 	src/security/policy/config-policy-manager.lo \
 	src/security/policy/no-verify-policy-manager.lo \
 	src/security/policy/policy-manager.lo \
 	src/security/policy/self-verify-policy-manager.lo \
+	src/security/tpm/tpm.lo src/security/tpm/tpm-back-end.lo \
+	src/security/tpm/tpm-back-end-file.lo \
+	src/security/tpm/tpm-back-end-memory.lo \
+	src/security/tpm/tpm-back-end-osx.lo \
+	src/security/tpm/tpm-key-handle.lo \
+	src/security/tpm/tpm-key-handle-memory.lo \
+	src/security/tpm/tpm-key-handle-osx.lo \
+	src/security/tpm/tpm-private-key.lo \
+	src/security/v2/certificate-v2.lo \
+	src/security/v2/certificate-cache-v2.lo \
 	src/sync/chrono-sync2013.lo src/sync/digest-tree.lo \
 	src/sync/sync-state.pb.lo src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
@@ -353,7 +385,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/command-interest-generator.lo src/util/config-file.lo \
 	src/util/dynamic-uint8-vector.lo \
 	src/util/exponential-re-express.lo src/util/logging.lo \
-	src/util/memory-content-cache.lo \
+	src/util/memory-content-cache.lo src/util/segment-fetcher.lo \
+	src/util/sqlite3-statement.lo \
 	src/util/regex/ndn-regex-backref-manager.lo \
 	src/util/regex/ndn-regex-backref-matcher.lo \
 	src/util/regex/ndn-regex-component-matcher.lo \
@@ -362,8 +395,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/util/regex/ndn-regex-pattern-list-matcher.lo \
 	src/util/regex/ndn-regex-pseudo-matcher.lo \
 	src/util/regex/ndn-regex-repeat-matcher.lo \
-	src/util/regex/ndn-regex-top-matcher.lo \
-	src/util/segment-fetcher.lo
+	src/util/regex/ndn-regex-top-matcher.lo
 libndn_cpp_la_OBJECTS = $(am_libndn_cpp_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_bin_analog_reading_consumer_OBJECTS =  \
@@ -553,6 +585,11 @@ am_bin_unit_tests_test_interval_OBJECTS = tests/unit-tests/bin_unit_tests_test_i
 bin_unit_tests_test_interval_OBJECTS =  \
 	$(am_bin_unit_tests_test_interval_OBJECTS)
 bin_unit_tests_test_interval_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_key_chain_OBJECTS = tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT)
+bin_unit_tests_test_key_chain_OBJECTS =  \
+	$(am_bin_unit_tests_test_key_chain_OBJECTS)
+bin_unit_tests_test_key_chain_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_link_OBJECTS =  \
 	tests/unit-tests/bin_unit_tests_test_link-test-link.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_link-gtest-all.$(OBJEXT)
@@ -569,11 +606,54 @@ am_bin_unit_tests_test_name_methods_OBJECTS = tests/unit-tests/bin_unit_tests_te
 bin_unit_tests_test_name_methods_OBJECTS =  \
 	$(am_bin_unit_tests_test_name_methods_OBJECTS)
 bin_unit_tests_test_name_methods_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_pib_certificate_container_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_certificate_container_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_certificate_container_OBJECTS)
+bin_unit_tests_test_pib_certificate_container_DEPENDENCIES =  \
+	libndn-cpp.la
+am_bin_unit_tests_test_pib_identity_container_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_identity_container_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_identity_container_OBJECTS)
+bin_unit_tests_test_pib_identity_container_DEPENDENCIES =  \
+	libndn-cpp.la
+am_bin_unit_tests_test_pib_identity_impl_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_identity_impl_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_identity_impl_OBJECTS)
+bin_unit_tests_test_pib_identity_impl_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_pib_impl_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_impl_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_impl_OBJECTS)
+bin_unit_tests_test_pib_impl_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_pib_key_container_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_key_container_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_key_container_OBJECTS)
+bin_unit_tests_test_pib_key_container_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_pib_key_impl_OBJECTS = tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.$(OBJEXT)
+bin_unit_tests_test_pib_key_impl_OBJECTS =  \
+	$(am_bin_unit_tests_test_pib_key_impl_OBJECTS)
+bin_unit_tests_test_pib_key_impl_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_policy_manager_OBJECTS = tests/unit-tests/bin_unit_tests_test_policy_manager-test-policy-manager.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.$(OBJEXT)
 bin_unit_tests_test_policy_manager_OBJECTS =  \
 	$(am_bin_unit_tests_test_policy_manager_OBJECTS)
 bin_unit_tests_test_policy_manager_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_policy_manager_v2_OBJECTS = tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.$(OBJEXT)
+bin_unit_tests_test_policy_manager_v2_OBJECTS =  \
+	$(am_bin_unit_tests_test_policy_manager_v2_OBJECTS)
+bin_unit_tests_test_policy_manager_v2_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_producer_OBJECTS = tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer-gtest-all.$(OBJEXT)
 bin_unit_tests_test_producer_OBJECTS =  \
@@ -610,6 +690,21 @@ am_bin_unit_tests_test_schedule_OBJECTS = tests/unit-tests/bin_unit_tests_test_s
 bin_unit_tests_test_schedule_OBJECTS =  \
 	$(am_bin_unit_tests_test_schedule_OBJECTS)
 bin_unit_tests_test_schedule_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_signing_info_OBJECTS = tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.$(OBJEXT)
+bin_unit_tests_test_signing_info_OBJECTS =  \
+	$(am_bin_unit_tests_test_signing_info_OBJECTS)
+bin_unit_tests_test_signing_info_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_tpm_back_ends_OBJECTS = tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.$(OBJEXT)
+bin_unit_tests_test_tpm_back_ends_OBJECTS =  \
+	$(am_bin_unit_tests_test_tpm_back_ends_OBJECTS)
+bin_unit_tests_test_tpm_back_ends_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_tpm_private_key_OBJECTS = tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.$(OBJEXT)
+bin_unit_tests_test_tpm_private_key_OBJECTS =  \
+	$(am_bin_unit_tests_test_tpm_private_key_OBJECTS)
+bin_unit_tests_test_tpm_private_key_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_verification_rules_OBJECTS = tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_verification_rules-gtest-all.$(OBJEXT)
 bin_unit_tests_test_verification_rules_OBJECTS =  \
@@ -712,10 +807,18 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
+	$(bin_unit_tests_test_pib_certificate_container_SOURCES) \
+	$(bin_unit_tests_test_pib_identity_container_SOURCES) \
+	$(bin_unit_tests_test_pib_identity_impl_SOURCES) \
+	$(bin_unit_tests_test_pib_impl_SOURCES) \
+	$(bin_unit_tests_test_pib_key_container_SOURCES) \
+	$(bin_unit_tests_test_pib_key_impl_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
@@ -723,6 +826,9 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_schedule_SOURCES) \
+	$(bin_unit_tests_test_signing_info_SOURCES) \
+	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
+	$(bin_unit_tests_test_tpm_private_key_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
@@ -763,10 +869,18 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
 	$(bin_unit_tests_test_name_methods_SOURCES) \
+	$(bin_unit_tests_test_pib_certificate_container_SOURCES) \
+	$(bin_unit_tests_test_pib_identity_container_SOURCES) \
+	$(bin_unit_tests_test_pib_identity_impl_SOURCES) \
+	$(bin_unit_tests_test_pib_impl_SOURCES) \
+	$(bin_unit_tests_test_pib_key_container_SOURCES) \
+	$(bin_unit_tests_test_pib_key_impl_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_SOURCES) \
+	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
@@ -774,6 +888,9 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
 	$(bin_unit_tests_test_rsa_algorithm_SOURCES) \
 	$(bin_unit_tests_test_schedule_SOURCES) \
+	$(bin_unit_tests_test_signing_info_SOURCES) \
+	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
+	$(bin_unit_tests_test_tpm_private_key_SOURCES) \
 	$(bin_unit_tests_test_verification_rules_SOURCES) \
 	$(bin_watched_insertion_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
@@ -1348,7 +1465,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
   include/ndn-cpp/security/key-chain.hpp \
+  include/ndn-cpp/security/key-params.hpp \
+  include/ndn-cpp/security/safe-bag.hpp \
   include/ndn-cpp/security/security-exception.hpp \
+  include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
@@ -1363,11 +1483,32 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/identity/memory-private-key-storage.hpp \
   include/ndn-cpp/security/identity/osx-private-key-storage.hpp \
   include/ndn-cpp/security/identity/private-key-storage.hpp \
+  include/ndn-cpp/security/pib/pib-certificate-container.hpp \
+  include/ndn-cpp/security/pib/pib-identity.hpp \
+  include/ndn-cpp/security/pib/pib-identity-container.hpp \
+  include/ndn-cpp/security/pib/pib-impl.hpp \
+  include/ndn-cpp/security/pib/pib-key.hpp \
+  include/ndn-cpp/security/pib/pib-key-container.hpp \
+  include/ndn-cpp/security/pib/pib-memory.hpp \
+  include/ndn-cpp/security/pib/pib-sqlite3.hpp \
+  include/ndn-cpp/security/pib/pib.hpp \
   include/ndn-cpp/security/policy/config-policy-manager.hpp \
   include/ndn-cpp/security/policy/no-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/policy-manager.hpp \
   include/ndn-cpp/security/policy/self-verify-policy-manager.hpp \
   include/ndn-cpp/security/policy/validation-request.hpp \
+  include/ndn-cpp/security/tpm/helper-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-file.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-back-end-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
+  include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
+  include/ndn-cpp/security/tpm/tpm-private-key.hpp \
+  include/ndn-cpp/security/v2/certificate-v2.hpp \
+  include/ndn-cpp/security/v2/certificate-cache-v2.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
@@ -1537,7 +1678,11 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
+  src/security/key-params.cpp \
+  src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
+  src/security/signing-info.cpp \
+  src/security/validity-period.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \
@@ -1551,10 +1696,31 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/identity/memory-private-key-storage.cpp \
   src/security/identity/osx-private-key-storage.cpp \
   src/security/identity/private-key-storage.cpp \
+  src/security/pib/pib-certificate-container.cpp \
+  src/security/pib/pib-identity.cpp \
+  src/security/pib/pib-identity-container.cpp \
+  src/security/pib/pib-key.cpp \
+  src/security/pib/pib-key-container.cpp \
+  src/security/pib/pib-memory.cpp \
+  src/security/pib/pib-sqlite3.cpp \
+  src/security/pib/pib.cpp \
+  src/security/pib/detail/pib-identity-impl.cpp \src/security/pib/detail/pib-identity-impl.hpp \
+  src/security/pib/detail/pib-key-impl.cpp \src/security/pib/detail/pib-key-impl.hpp \
   src/security/policy/config-policy-manager.cpp \
   src/security/policy/no-verify-policy-manager.cpp \
   src/security/policy/policy-manager.cpp \
   src/security/policy/self-verify-policy-manager.cpp \
+  src/security/tpm/tpm.cpp \
+  src/security/tpm/tpm-back-end.cpp \
+  src/security/tpm/tpm-back-end-file.cpp \
+  src/security/tpm/tpm-back-end-memory.cpp \
+  src/security/tpm/tpm-back-end-osx.cpp \
+  src/security/tpm/tpm-key-handle.cpp \
+  src/security/tpm/tpm-key-handle-memory.cpp \
+  src/security/tpm/tpm-key-handle-osx.cpp \
+  src/security/tpm/tpm-private-key.cpp \
+  src/security/v2/certificate-v2.cpp \
+  src/security/v2/certificate-cache-v2.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
@@ -1572,6 +1738,8 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/exponential-re-express.cpp \
   src/util/logging.cpp \
   src/util/memory-content-cache.cpp \
+  src/util/segment-fetcher.cpp \
+  src/util/sqlite3-statement.cpp src/util/sqlite3-statement.hpp \
   src/util/regex/ndn-regex-backref-manager.cpp src/util/regex/ndn-regex-backref-manager.hpp \
   src/util/regex/ndn-regex-backref-matcher.cpp src/util/regex/ndn-regex-backref-matcher.hpp \
   src/util/regex/ndn-regex-component-matcher.cpp src/util/regex/ndn-regex-component-matcher.hpp \
@@ -1580,8 +1748,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/util/regex/ndn-regex-pattern-list-matcher.cpp src/util/regex/ndn-regex-pattern-list-matcher.hpp \
   src/util/regex/ndn-regex-pseudo-matcher.cpp src/util/regex/ndn-regex-pseudo-matcher.hpp \
   src/util/regex/ndn-regex-repeat-matcher.cpp src/util/regex/ndn-regex-repeat-matcher.hpp \
-  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp \
-  src/util/segment-fetcher.cpp
+  src/util/regex/ndn-regex-top-matcher.cpp src/util/regex/ndn-regex-top-matcher.hpp
 
 
 # The ndn-cpp-tools library.
@@ -1692,6 +1859,9 @@ bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_link_LDADD = libndn-cpp.la
@@ -1701,9 +1871,42 @@ bin_unit_tests_test_name_conventions_LDADD = libndn-cpp.la
 bin_unit_tests_test_name_methods_SOURCES = tests/unit-tests/test-name-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_name_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_name_methods_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_certificate_container_SOURCES = tests/unit-tests/test-pib-certificate-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_certificate_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_certificate_container_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_identity_container_SOURCES = tests/unit-tests/test-pib-identity-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_identity_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_container_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_identity_impl_SOURCES = tests/unit-tests/test-pib-identity-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_identity_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_identity_impl_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_impl_SOURCES = tests/unit-tests/test-pib-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_impl_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_key_container_SOURCES = tests/unit-tests/test-pib-key-container.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_key_container_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_container_LDADD = libndn-cpp.la
+bin_unit_tests_test_pib_key_impl_SOURCES = tests/unit-tests/test-pib-key-impl.cpp \
+  tests/unit-tests/pib-data-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_pib_key_impl_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_pib_key_impl_LDADD = libndn-cpp.la
 bin_unit_tests_test_policy_manager_SOURCES = tests/unit-tests/test-policy-manager.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_policy_manager_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_policy_manager_LDADD = libndn-cpp.la
+bin_unit_tests_test_policy_manager_v2_SOURCES = tests/unit-tests/test-policy-manager-v2.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_policy_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_policy_manager_v2_LDADD = libndn-cpp.la
 bin_unit_tests_test_producer_SOURCES = tests/unit-tests/test-producer.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_producer_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_producer_LDADD = libndn-cpp.la
@@ -1725,6 +1928,15 @@ bin_unit_tests_test_rsa_algorithm_LDADD = libndn-cpp.la
 bin_unit_tests_test_schedule_SOURCES = tests/unit-tests/test-schedule.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_schedule_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_schedule_LDADD = libndn-cpp.la
+bin_unit_tests_test_signing_info_SOURCES = tests/unit-tests/test-signing-info.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_signing_info_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_signing_info_LDADD = libndn-cpp.la
+bin_unit_tests_test_tpm_back_ends_SOURCES = tests/unit-tests/test-tpm-back-ends.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_back_ends_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
+bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_verification_rules_LDADD = libndn-cpp.la
@@ -2237,7 +2449,15 @@ src/security/$(DEPDIR)/$(am__dirstamp):
 	@: > src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/key-chain.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/key-params.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/safe-bag.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/security-exception.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/signing-info.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/validity-period.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/certificate/$(am__dirstamp):
 	@$(MKDIR_P) src/security/certificate
@@ -2290,6 +2510,43 @@ src/security/identity/osx-private-key-storage.lo:  \
 src/security/identity/private-key-storage.lo:  \
 	src/security/identity/$(am__dirstamp) \
 	src/security/identity/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/$(am__dirstamp):
+	@$(MKDIR_P) src/security/pib
+	@: > src/security/pib/$(am__dirstamp)
+src/security/pib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/security/pib/$(DEPDIR)
+	@: > src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-certificate-container.lo:  \
+	src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-identity.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-identity-container.lo:  \
+	src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-key.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-key-container.lo:  \
+	src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-memory.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib-sqlite3.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/pib.lo: src/security/pib/$(am__dirstamp) \
+	src/security/pib/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/detail/$(am__dirstamp):
+	@$(MKDIR_P) src/security/pib/detail
+	@: > src/security/pib/detail/$(am__dirstamp)
+src/security/pib/detail/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/security/pib/detail/$(DEPDIR)
+	@: > src/security/pib/detail/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/detail/pib-identity-impl.lo:  \
+	src/security/pib/detail/$(am__dirstamp) \
+	src/security/pib/detail/$(DEPDIR)/$(am__dirstamp)
+src/security/pib/detail/pib-key-impl.lo:  \
+	src/security/pib/detail/$(am__dirstamp) \
+	src/security/pib/detail/$(DEPDIR)/$(am__dirstamp)
 src/security/policy/$(am__dirstamp):
 	@$(MKDIR_P) src/security/policy
 	@: > src/security/policy/$(am__dirstamp)
@@ -2308,6 +2565,46 @@ src/security/policy/policy-manager.lo:  \
 src/security/policy/self-verify-policy-manager.lo:  \
 	src/security/policy/$(am__dirstamp) \
 	src/security/policy/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/$(am__dirstamp):
+	@$(MKDIR_P) src/security/tpm
+	@: > src/security/tpm/$(am__dirstamp)
+src/security/tpm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/security/tpm/$(DEPDIR)
+	@: > src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end-file.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end-memory.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-back-end-osx.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle-memory.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-key-handle-osx.lo:  \
+	src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/tpm/tpm-private-key.lo: src/security/tpm/$(am__dirstamp) \
+	src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/$(am__dirstamp):
+	@$(MKDIR_P) src/security/v2
+	@: > src/security/v2/$(am__dirstamp)
+src/security/v2/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/security/v2/$(DEPDIR)
+	@: > src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/certificate-v2.lo: src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/certificate-cache-v2.lo:  \
+	src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/sync/$(am__dirstamp):
 	@$(MKDIR_P) src/sync
 	@: > src/sync/$(am__dirstamp)
@@ -2358,6 +2655,10 @@ src/util/logging.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/memory-content-cache.lo: src/util/$(am__dirstamp) \
 	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
+src/util/sqlite3-statement.lo: src/util/$(am__dirstamp) \
+	src/util/$(DEPDIR)/$(am__dirstamp)
 src/util/regex/$(am__dirstamp):
 	@$(MKDIR_P) src/util/regex
 	@: > src/util/regex/$(am__dirstamp)
@@ -2391,8 +2692,6 @@ src/util/regex/ndn-regex-repeat-matcher.lo:  \
 src/util/regex/ndn-regex-top-matcher.lo:  \
 	src/util/regex/$(am__dirstamp) \
 	src/util/regex/$(DEPDIR)/$(am__dirstamp)
-src/util/segment-fetcher.lo: src/util/$(am__dirstamp) \
-	src/util/$(DEPDIR)/$(am__dirstamp)
 
 libndn-cpp.la: $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_DEPENDENCIES) $(EXTRA_libndn_cpp_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libndn_cpp_la_OBJECTS) $(libndn_cpp_la_LIBADD) $(LIBS)
@@ -2758,6 +3057,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.$(OBJ
 bin/unit-tests/test-interval$(EXEEXT): $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_interval_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-interval$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-key-chain$(EXEEXT): $(bin_unit_tests_test_key_chain_OBJECTS) $(bin_unit_tests_test_key_chain_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_key_chain_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-key-chain$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_key_chain_OBJECTS) $(bin_unit_tests_test_key_chain_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_link-test-link.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2788,6 +3097,84 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.$
 bin/unit-tests/test-name-methods$(EXEEXT): $(bin_unit_tests_test_name_methods_OBJECTS) $(bin_unit_tests_test_name_methods_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_name_methods_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-name-methods$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_name_methods_OBJECTS) $(bin_unit_tests_test_name_methods_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-certificate-container$(EXEEXT): $(bin_unit_tests_test_pib_certificate_container_OBJECTS) $(bin_unit_tests_test_pib_certificate_container_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_certificate_container_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-certificate-container$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_certificate_container_OBJECTS) $(bin_unit_tests_test_pib_certificate_container_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-identity-container$(EXEEXT): $(bin_unit_tests_test_pib_identity_container_OBJECTS) $(bin_unit_tests_test_pib_identity_container_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_identity_container_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-identity-container$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_identity_container_OBJECTS) $(bin_unit_tests_test_pib_identity_container_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-identity-impl$(EXEEXT): $(bin_unit_tests_test_pib_identity_impl_OBJECTS) $(bin_unit_tests_test_pib_identity_impl_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_identity_impl_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-identity-impl$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_identity_impl_OBJECTS) $(bin_unit_tests_test_pib_identity_impl_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-impl$(EXEEXT): $(bin_unit_tests_test_pib_impl_OBJECTS) $(bin_unit_tests_test_pib_impl_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_impl_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-impl$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_impl_OBJECTS) $(bin_unit_tests_test_pib_impl_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-key-container$(EXEEXT): $(bin_unit_tests_test_pib_key_container_OBJECTS) $(bin_unit_tests_test_pib_key_container_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_key_container_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-key-container$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_key_container_OBJECTS) $(bin_unit_tests_test_pib_key_container_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-pib-key-impl$(EXEEXT): $(bin_unit_tests_test_pib_key_impl_OBJECTS) $(bin_unit_tests_test_pib_key_impl_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_pib_key_impl_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-pib-key-impl$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_pib_key_impl_OBJECTS) $(bin_unit_tests_test_pib_key_impl_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_policy_manager-test-policy-manager.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2798,6 +3185,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 bin/unit-tests/test-policy-manager$(EXEEXT): $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_policy_manager_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-policy-manager$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_policy_manager_OBJECTS) $(bin_unit_tests_test_policy_manager_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-policy-manager-v2$(EXEEXT): $(bin_unit_tests_test_policy_manager_v2_OBJECTS) $(bin_unit_tests_test_policy_manager_v2_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_policy_manager_v2_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-policy-manager-v2$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_policy_manager_v2_OBJECTS) $(bin_unit_tests_test_policy_manager_v2_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_producer-test-producer.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2868,6 +3265,36 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.$(OBJ
 bin/unit-tests/test-schedule$(EXEEXT): $(bin_unit_tests_test_schedule_OBJECTS) $(bin_unit_tests_test_schedule_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_schedule_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-schedule$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_schedule_OBJECTS) $(bin_unit_tests_test_schedule_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-signing-info$(EXEEXT): $(bin_unit_tests_test_signing_info_OBJECTS) $(bin_unit_tests_test_signing_info_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_signing_info_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-signing-info$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_signing_info_OBJECTS) $(bin_unit_tests_test_signing_info_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-tpm-back-ends$(EXEEXT): $(bin_unit_tests_test_tpm_back_ends_OBJECTS) $(bin_unit_tests_test_tpm_back_ends_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_tpm_back_ends_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-tpm-back-ends$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_tpm_back_ends_OBJECTS) $(bin_unit_tests_test_tpm_back_ends_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-tpm-private-key$(EXEEXT): $(bin_unit_tests_test_tpm_private_key_OBJECTS) $(bin_unit_tests_test_tpm_private_key_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_tpm_private_key_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-tpm-private-key$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_tpm_private_key_OBJECTS) $(bin_unit_tests_test_tpm_private_key_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -2946,8 +3373,16 @@ mostlyclean-compile:
 	-rm -f src/security/certificate/*.lo
 	-rm -f src/security/identity/*.$(OBJEXT)
 	-rm -f src/security/identity/*.lo
+	-rm -f src/security/pib/*.$(OBJEXT)
+	-rm -f src/security/pib/*.lo
+	-rm -f src/security/pib/detail/*.$(OBJEXT)
+	-rm -f src/security/pib/detail/*.lo
 	-rm -f src/security/policy/*.$(OBJEXT)
 	-rm -f src/security/policy/*.lo
+	-rm -f src/security/tpm/*.$(OBJEXT)
+	-rm -f src/security/tpm/*.lo
+	-rm -f src/security/v2/*.$(OBJEXT)
+	-rm -f src/security/v2/*.lo
 	-rm -f src/sync/*.$(OBJEXT)
 	-rm -f src/sync/*.lo
 	-rm -f src/transport/*.$(OBJEXT)
@@ -2980,10 +3415,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_methods-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po@am__quote@
@@ -2991,6 +3434,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_schedule-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@
@@ -3146,7 +3592,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-params.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/safe-bag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/signing-info.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/validity-period.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-subject-description.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate.Plo@am__quote@
@@ -3160,10 +3610,31 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/memory-private-key-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/osx-private-key-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/identity/$(DEPDIR)/private-key-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-certificate-container.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-identity-container.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-identity.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key-container.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-key.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib-sqlite3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/$(DEPDIR)/pib.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-identity-impl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/pib/detail/$(DEPDIR)/pib-key-impl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/config-policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/no-verify-policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/policy-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/policy/$(DEPDIR)/self-verify-policy-manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end-osx.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-back-end.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle-osx.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-key-handle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-cache-v2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@
@@ -3181,6 +3652,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/logging.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/memory-content-cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/segment-fetcher.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/util/$(DEPDIR)/sqlite3-statement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-backref-matcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-component-matcher.Plo@am__quote@
@@ -3206,10 +3678,24 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_methods-test-name-methods.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po@am__quote@
@@ -3217,6 +3703,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_rsa_algorithm-test-rsa-algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_schedule-test-schedule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/channel-discovery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/usersync/$(DEPDIR)/content-meta-info.Plo@am__quote@
@@ -3720,6 +4209,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interval_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o: tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o `test -f 'tests/unit-tests/test-key-chain.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-key-chain.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o `test -f 'tests/unit-tests/test-key-chain.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-key-chain.cpp
+
+tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj: tests/unit-tests/test-key-chain.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj `if test -f 'tests/unit-tests/test-key-chain.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-key-chain.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-key-chain.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-key-chain.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj `if test -f 'tests/unit-tests/test-key-chain.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-key-chain.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-key-chain.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_link-test-link.o: tests/unit-tests/test-link.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_link_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_link-test-link.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Tpo -c -o tests/unit-tests/bin_unit_tests_test_link-test-link.o `test -f 'tests/unit-tests/test-link.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-link.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po
@@ -3804,6 +4321,258 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.o
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_name_methods_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_name_methods-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.o: tests/unit-tests/test-pib-certificate-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.o `test -f 'tests/unit-tests/test-pib-certificate-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-certificate-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-certificate-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.o `test -f 'tests/unit-tests/test-pib-certificate-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-certificate-container.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.obj: tests/unit-tests/test-pib-certificate-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.obj `if test -f 'tests/unit-tests/test-pib-certificate-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-certificate-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-certificate-container.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-certificate-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-test-pib-certificate-container.obj `if test -f 'tests/unit-tests/test-pib-certificate-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-certificate-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-certificate-container.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_certificate_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_certificate_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_certificate_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_certificate_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.o: tests/unit-tests/test-pib-identity-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.o `test -f 'tests/unit-tests/test-pib-identity-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-identity-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-identity-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.o `test -f 'tests/unit-tests/test-pib-identity-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-identity-container.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.obj: tests/unit-tests/test-pib-identity-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.obj `if test -f 'tests/unit-tests/test-pib-identity-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-identity-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-identity-container.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-identity-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-test-pib-identity-container.obj `if test -f 'tests/unit-tests/test-pib-identity-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-identity-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-identity-container.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.o: tests/unit-tests/test-pib-identity-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.o `test -f 'tests/unit-tests/test-pib-identity-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-identity-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-identity-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.o `test -f 'tests/unit-tests/test-pib-identity-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-identity-impl.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.obj: tests/unit-tests/test-pib-identity-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.obj `if test -f 'tests/unit-tests/test-pib-identity-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-identity-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-identity-impl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-identity-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-test-pib-identity-impl.obj `if test -f 'tests/unit-tests/test-pib-identity-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-identity-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-identity-impl.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_identity_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_identity_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_identity_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_identity_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.o: tests/unit-tests/test-pib-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.o `test -f 'tests/unit-tests/test-pib-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.o `test -f 'tests/unit-tests/test-pib-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-impl.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.obj: tests/unit-tests/test-pib-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.obj `if test -f 'tests/unit-tests/test-pib-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-impl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-test-pib-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-test-pib-impl.obj `if test -f 'tests/unit-tests/test-pib-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-impl.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.o: tests/unit-tests/test-pib-key-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.o `test -f 'tests/unit-tests/test-pib-key-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-key-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-key-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.o `test -f 'tests/unit-tests/test-pib-key-container.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-key-container.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.obj: tests/unit-tests/test-pib-key-container.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.obj `if test -f 'tests/unit-tests/test-pib-key-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-key-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-key-container.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-test-pib-key-container.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-key-container.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-test-pib-key-container.obj `if test -f 'tests/unit-tests/test-pib-key-container.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-key-container.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-key-container.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_container-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_container-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_container-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_container_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_container-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.o: tests/unit-tests/test-pib-key-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.o `test -f 'tests/unit-tests/test-pib-key-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-key-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-key-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.o `test -f 'tests/unit-tests/test-pib-key-impl.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-pib-key-impl.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.obj: tests/unit-tests/test-pib-key-impl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.obj `if test -f 'tests/unit-tests/test-pib-key-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-key-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-key-impl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-pib-key-impl.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-test-pib-key-impl.obj `if test -f 'tests/unit-tests/test-pib-key-impl.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-pib-key-impl.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-pib-key-impl.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.o: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.o `test -f 'tests/unit-tests/pib-data-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/pib-data-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.obj: tests/unit-tests/pib-data-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-pib-data-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/pib-data-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_pib_key_impl-pib-data-fixture.obj `if test -f 'tests/unit-tests/pib-data-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/pib-data-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/pib-data-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_pib_key_impl-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_pib_key_impl_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_pib_key_impl-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_policy_manager-test-policy-manager.o: tests/unit-tests/test-policy-manager.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_policy_manager-test-policy-manager.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Tpo -c -o tests/unit-tests/bin_unit_tests_test_policy_manager-test-policy-manager.o `test -f 'tests/unit-tests/test-policy-manager.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-policy-manager.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager-test-policy-manager.Po
@@ -3831,6 +4600,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o: tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o `test -f 'tests/unit-tests/test-policy-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-policy-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.o `test -f 'tests/unit-tests/test-policy-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-policy-manager-v2.cpp
+
+tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj: tests/unit-tests/test-policy-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj `if test -f 'tests/unit-tests/test-policy-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-policy-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-policy-manager-v2.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-policy-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.obj `if test -f 'tests/unit-tests/test-policy-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-policy-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-policy-manager-v2.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_policy_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_policy_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_producer-test-producer.o: tests/unit-tests/test-producer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_producer-test-producer.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Tpo -c -o tests/unit-tests/bin_unit_tests_test_producer-test-producer.o `test -f 'tests/unit-tests/test-producer.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-producer.cpp
@@ -4028,6 +4825,90 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_schedule_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_schedule-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.o: tests/unit-tests/test-signing-info.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Tpo -c -o tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.o `test -f 'tests/unit-tests/test-signing-info.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-signing-info.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-signing-info.cpp' object='tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.o `test -f 'tests/unit-tests/test-signing-info.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-signing-info.cpp
+
+tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.obj: tests/unit-tests/test-signing-info.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Tpo -c -o tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.obj `if test -f 'tests/unit-tests/test-signing-info.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-signing-info.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-signing-info.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-signing-info.cpp' object='tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_signing_info-test-signing-info.obj `if test -f 'tests/unit-tests/test-signing-info.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-signing-info.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-signing-info.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_signing_info_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_signing_info-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o: tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o `test -f 'tests/unit-tests/test-tpm-back-ends.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-back-ends.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.o `test -f 'tests/unit-tests/test-tpm-back-ends.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-back-ends.cpp
+
+tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj: tests/unit-tests/test-tpm-back-ends.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj `if test -f 'tests/unit-tests/test-tpm-back-ends.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-back-ends.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-back-ends.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-back-ends.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.obj `if test -f 'tests/unit-tests/test-tpm-back-ends.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-back-ends.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-back-ends.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_back_ends_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_back_ends-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.o: tests/unit-tests/test-tpm-private-key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.o `test -f 'tests/unit-tests/test-tpm-private-key.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-private-key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-private-key.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.o `test -f 'tests/unit-tests/test-tpm-private-key.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-tpm-private-key.cpp
+
+tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.obj: tests/unit-tests/test-tpm-private-key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Tpo -c -o tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.obj `if test -f 'tests/unit-tests/test-tpm-private-key.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-private-key.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-private-key.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-tpm-private-key.cpp' object='tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.obj `if test -f 'tests/unit-tests/test-tpm-private-key.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-tpm-private-key.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-tpm-private-key.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o: tests/unit-tests/test-verification-rules.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_verification_rules_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Tpo -c -o tests/unit-tests/bin_unit_tests_test_verification_rules-test-verification-rules.o `test -f 'tests/unit-tests/test-verification-rules.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-verification-rules.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po
@@ -4114,7 +4995,11 @@ clean-libtool:
 	-rm -rf src/security/.libs src/security/_libs
 	-rm -rf src/security/certificate/.libs src/security/certificate/_libs
 	-rm -rf src/security/identity/.libs src/security/identity/_libs
+	-rm -rf src/security/pib/.libs src/security/pib/_libs
+	-rm -rf src/security/pib/detail/.libs src/security/pib/detail/_libs
 	-rm -rf src/security/policy/.libs src/security/policy/_libs
+	-rm -rf src/security/tpm/.libs src/security/tpm/_libs
+	-rm -rf src/security/v2/.libs src/security/v2/_libs
 	-rm -rf src/sync/.libs src/sync/_libs
 	-rm -rf src/transport/.libs src/transport/_libs
 	-rm -rf src/util/.libs src/util/_libs
@@ -4504,6 +5389,13 @@ bin/unit-tests/test-interval.log: bin/unit-tests/test-interval$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-key-chain.log: bin/unit-tests/test-key-chain$(EXEEXT)
+	@p='bin/unit-tests/test-key-chain$(EXEEXT)'; \
+	b='bin/unit-tests/test-key-chain'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-link.log: bin/unit-tests/test-link$(EXEEXT)
 	@p='bin/unit-tests/test-link$(EXEEXT)'; \
 	b='bin/unit-tests/test-link'; \
@@ -4525,9 +5417,58 @@ bin/unit-tests/test-name-methods.log: bin/unit-tests/test-name-methods$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-certificate-container.log: bin/unit-tests/test-pib-certificate-container$(EXEEXT)
+	@p='bin/unit-tests/test-pib-certificate-container$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-certificate-container'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-identity-container.log: bin/unit-tests/test-pib-identity-container$(EXEEXT)
+	@p='bin/unit-tests/test-pib-identity-container$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-identity-container'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-identity-impl.log: bin/unit-tests/test-pib-identity-impl$(EXEEXT)
+	@p='bin/unit-tests/test-pib-identity-impl$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-identity-impl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-impl.log: bin/unit-tests/test-pib-impl$(EXEEXT)
+	@p='bin/unit-tests/test-pib-impl$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-impl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-key-container.log: bin/unit-tests/test-pib-key-container$(EXEEXT)
+	@p='bin/unit-tests/test-pib-key-container$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-key-container'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-pib-key-impl.log: bin/unit-tests/test-pib-key-impl$(EXEEXT)
+	@p='bin/unit-tests/test-pib-key-impl$(EXEEXT)'; \
+	b='bin/unit-tests/test-pib-key-impl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-policy-manager.log: bin/unit-tests/test-policy-manager$(EXEEXT)
 	@p='bin/unit-tests/test-policy-manager$(EXEEXT)'; \
 	b='bin/unit-tests/test-policy-manager'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-policy-manager-v2.log: bin/unit-tests/test-policy-manager-v2$(EXEEXT)
+	@p='bin/unit-tests/test-policy-manager-v2$(EXEEXT)'; \
+	b='bin/unit-tests/test-policy-manager-v2'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4577,6 +5518,27 @@ bin/unit-tests/test-rsa-algorithm.log: bin/unit-tests/test-rsa-algorithm$(EXEEXT
 bin/unit-tests/test-schedule.log: bin/unit-tests/test-schedule$(EXEEXT)
 	@p='bin/unit-tests/test-schedule$(EXEEXT)'; \
 	b='bin/unit-tests/test-schedule'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-signing-info.log: bin/unit-tests/test-signing-info$(EXEEXT)
+	@p='bin/unit-tests/test-signing-info$(EXEEXT)'; \
+	b='bin/unit-tests/test-signing-info'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-tpm-back-ends.log: bin/unit-tests/test-tpm-back-ends$(EXEEXT)
+	@p='bin/unit-tests/test-tpm-back-ends$(EXEEXT)'; \
+	b='bin/unit-tests/test-tpm-back-ends'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-tpm-private-key.log: bin/unit-tests/test-tpm-private-key$(EXEEXT)
+	@p='bin/unit-tests/test-tpm-private-key$(EXEEXT)'; \
+	b='bin/unit-tests/test-tpm-private-key'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4894,8 +5856,16 @@ distclean-generic:
 	-rm -f src/security/certificate/$(am__dirstamp)
 	-rm -f src/security/identity/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/identity/$(am__dirstamp)
+	-rm -f src/security/pib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/security/pib/$(am__dirstamp)
+	-rm -f src/security/pib/detail/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/security/pib/detail/$(am__dirstamp)
 	-rm -f src/security/policy/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/security/policy/$(am__dirstamp)
+	-rm -f src/security/tpm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/security/tpm/$(am__dirstamp)
+	-rm -f src/security/v2/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/security/v2/$(am__dirstamp)
 	-rm -f src/sync/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/sync/$(am__dirstamp)
 	-rm -f src/transport/$(DEPDIR)/$(am__dirstamp)
@@ -4919,7 +5889,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/tpm/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -4967,7 +5937,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/policy/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
+	-rm -rf contrib/apache/$(DEPDIR) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR) examples/$(DEPDIR) examples/arduino/$(DEPDIR) examples/repo-ng/$(DEPDIR) src/$(DEPDIR) src/c/$(DEPDIR) src/c/encoding/$(DEPDIR) src/c/encoding/tlv/$(DEPDIR) src/c/encrypt/algo/$(DEPDIR) src/c/lp/$(DEPDIR) src/c/security/$(DEPDIR) src/c/transport/$(DEPDIR) src/c/util/$(DEPDIR) src/encoding/$(DEPDIR) src/encoding/der/$(DEPDIR) src/encrypt/$(DEPDIR) src/encrypt/algo/$(DEPDIR) src/impl/$(DEPDIR) src/lite/$(DEPDIR) src/lite/encoding/$(DEPDIR) src/lite/encrypt/$(DEPDIR) src/lite/encrypt/algo/$(DEPDIR) src/lite/lp/$(DEPDIR) src/lite/security/$(DEPDIR) src/lite/transport/$(DEPDIR) src/lite/util/$(DEPDIR) src/lp/$(DEPDIR) src/security/$(DEPDIR) src/security/certificate/$(DEPDIR) src/security/identity/$(DEPDIR) src/security/pib/$(DEPDIR) src/security/pib/detail/$(DEPDIR) src/security/policy/$(DEPDIR) src/security/tpm/$(DEPDIR) src/security/v2/$(DEPDIR) src/sync/$(DEPDIR) src/transport/$(DEPDIR) src/util/$(DEPDIR) src/util/regex/$(DEPDIR) tests/unit-tests/$(DEPDIR) tools/usersync/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

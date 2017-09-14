@@ -21,79 +21,29 @@
  */
 
 #include <stdexcept>
-#include "../../encoding/der/der-node.hpp"
-#include "../../encoding/der/der-exception.hpp"
-#include <ndn-cpp/security/identity/private-key-storage.hpp>
 #include <ndn-cpp/security/security-exception.hpp>
-#include <ndn-cpp/lite/security/rsa-private-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
+#include <ndn-cpp/security/tpm/tpm-private-key.hpp>
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 
 using namespace std;
 
 namespace ndn {
 
-typedef DerNode::DerSequence DerSequence;
-static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
-
 DecryptKey
 RsaAlgorithm::generateKey(const RsaKeyParams& params)
 {
-  RsaPrivateKeyLite privateKey;
-  ndn_Error error;
-  if ((error = privateKey.generate(params.getKeySize())))
-    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
-
-  // Get the encoding length and encode.
-  size_t encodingLength;
-  if ((error = privateKey.encodePrivateKey(0, encodingLength)))
-    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
-  vector<uint8_t> pkcs1PrivateKeyDer(encodingLength);
-  if ((error = privateKey.encodePrivateKey(&pkcs1PrivateKeyDer[0], encodingLength)))
-    throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
-
-  return DecryptKey(PrivateKeyStorage::encodePkcs8PrivateKey
-    (pkcs1PrivateKeyDer, OID(RSA_ENCRYPTION_OID),
-     ptr_lib::make_shared<DerNode::DerNull>()));
+  ptr_lib::shared_ptr<TpmPrivateKey> privateKey =
+    TpmPrivateKey::generatePrivateKey(params);
+  return privateKey->toPkcs8();
 }
 
 EncryptKey
 RsaAlgorithm::deriveEncryptKey(const Blob& keyBits)
 {
-  // Decode the PKCS #8 private key.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits.buf(), 0);
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
-    parsedNode->getChildren();
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
-    DerNode::getSequence(pkcs8Children, 1).getChildren();
-  string oidString
-    (dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr());
-  Blob rsaPrivateKeyDer = pkcs8Children[2]->toVal();
-
-  if (oidString != RSA_ENCRYPTION_OID)
-    throw DerDecodingException
-      ("RsaAlgorithm: The PKCS #8 private key is not RSA_ENCRYPTION");
-
-  // Decode the PKCS #1 RSAPrivateKey.
-  parsedNode = DerNode::parse(rsaPrivateKeyDer.buf(), 0);
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& rsaPrivateKeyChildren =
-    parsedNode->getChildren();
-  ptr_lib::shared_ptr<DerNode> modulus = rsaPrivateKeyChildren[1];
-  ptr_lib::shared_ptr<DerNode> publicExponent = rsaPrivateKeyChildren[2];
-
-  // Encode the PKCS #1 RSAPublicKey.
-  ptr_lib::shared_ptr<DerSequence> rsaPublicKey(new DerSequence());
-  rsaPublicKey->addChild(modulus);
-  rsaPublicKey->addChild(publicExponent);
-  Blob rsaPublicKeyDer = rsaPublicKey->encode();
-
-  // Encode the SubjectPublicKeyInfo.
-  Blob publicKeyDer = PrivateKeyStorage::encodeSubjectPublicKeyInfo
-    (OID(RSA_ENCRYPTION_OID), ptr_lib::make_shared<DerNode::DerNull>(),
-     ptr_lib::make_shared<DerNode::DerBitString>
-       (rsaPublicKeyDer.buf(), rsaPublicKeyDer.size(), 0));
-
-  return EncryptKey(publicKeyDer);
+  TpmPrivateKey privateKey;
+  privateKey.loadPkcs8(keyBits.buf(), keyBits.size());
+  return EncryptKey(privateKey.derivePublicKey());
 }
 
 #if NDN_CPP_HAVE_LIBCRYPTO
@@ -101,40 +51,10 @@ Blob
 RsaAlgorithm::decrypt
   (const Blob& keyBits, const Blob& encryptedData, const EncryptParams& params)
 {
-  // Decode the PKCS #8 private key.
-  ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse(keyBits.buf(), 0);
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& pkcs8Children =
-    parsedNode->getChildren();
-  const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
-    DerNode::getSequence(pkcs8Children, 1).getChildren();
-  string oidString
-    (dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr());
-  Blob rsaPrivateKeyDer = pkcs8Children[2]->toVal();
-
-  if (oidString != RSA_ENCRYPTION_OID)
-    throw DerDecodingException
-      ("RsaAlgorithm: The PKCS #8 private key is not RSA_ENCRYPTION");
-
-  RsaPrivateKeyLite privateKey;
-  if (privateKey.decode(rsaPrivateKeyDer) != NDN_ERROR_success)
-    throw UnrecognizedKeyFormatException
-      ("RsaAlgorithm: Error decoding the private key");
-
-  // TODO: use RSA_size, etc. to get the proper size of the output buffer.
-  ptr_lib::shared_ptr<vector<uint8_t> > plainData(new vector<uint8_t>(1000));
-  size_t plainDataLength;
-  ndn_Error error;
-  if ((error = privateKey.decrypt
-       (encryptedData, params.getAlgorithmType(), &plainData->front(),
-        plainDataLength))) {
-    if (error == NDN_ERROR_Unsupported_algorithm_type)
-      throw runtime_error("RsaAlgorithm: Unsupported padding scheme");
-    else
-      throw SecurityException(string("RsaAlgorithm: ") + ndn_getErrorString(error));
-  }
-  
-  plainData->resize(plainDataLength);
-  return Blob(plainData, false);
+  TpmPrivateKey privateKey;
+  privateKey.loadPkcs8(keyBits.buf(), keyBits.size());
+  return privateKey.decrypt
+    (encryptedData.buf(), encryptedData.size(), params.getAlgorithmType());
 }
 
 Blob
