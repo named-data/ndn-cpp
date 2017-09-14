@@ -41,6 +41,7 @@ public:
    * Create a DelegationSet with an empty list of delegations.
    */
   DelegationSet()
+  : changeCount_(0), getDefaultWireEncodingChangeCount_(0)
   {
   }
 
@@ -50,9 +51,15 @@ public:
    */
   DelegationSet(const DelegationSet& delegationSet)
   // A DelegationSet::Delegation is immutable, so just make a shallow copy.
-  : delegations_(delegationSet.delegations_)
+  : delegations_(delegationSet.delegations_), 
+    changeCount_(delegationSet.changeCount_)
   {
+    setDefaultWireEncoding
+      (delegationSet.getDefaultWireEncoding(),
+       delegationSet.defaultWireEncodingFormat_);
   }
+
+  DelegationSet& operator=(const DelegationSet& delegationSet);
 
   /**
    * A DelegationSet::Delegation holds a preference number and delegation name.
@@ -138,6 +145,7 @@ public:
   addUnsorted(const ptr_lib::shared_ptr<Delegation>& delegation)
   {
     delegations_.push_back(delegation);
+    ++changeCount_;
   }
 
   /**
@@ -152,7 +160,11 @@ public:
    * Clear the list of delegations.
    */
   void
-  clear() { delegations_.clear(); }
+  clear()
+  {
+    delegations_.clear();
+    ++changeCount_;
+  }
 
   /**
    * Get the number of delegation entries.
@@ -180,19 +192,23 @@ public:
   find(const Name& name) const;
 
   /**
-   * Encode this DelegationSet for a particular wire format.
+   * Encode this DelegationSet for a particular wire format. If wireFormat is
+   * the default wire format, also set the defaultWireEncoding field to the
+   * encoded result. Even though this is const, if wireFormat is the default
+   * wire format we update the defaultWireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode this
    * DelegationSet. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
    */
   Blob
-  wireEncode(WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const
-  {
-    return wireFormat.encodeDelegationSet(*this);
-  }
+  wireEncode
+    (WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**
-   * Decode the input using a particular wire format and update this DelegationSet.
+   * Decode the input using a particular wire format and update this 
+   * DelegationSet. If wireFormat is the default wire format, also set the
+   * defaultWireEncoding field to a copy of the input. (To not copy the input,
+   * see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
@@ -201,25 +217,29 @@ public:
   void
   wireDecode
     (const uint8_t *input, size_t inputLength,
-     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
-  {
-    wireFormat.decodeDelegationSet(*this, input, inputLength);
-  }
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
-   * Decode the input using a particular wire format and update this DelegationSet.
+   * Decode the input using a particular wire format and update this
+   * DelegationSet. If wireFormat is the default wire format, also set the
+   * defaultWireEncoding field to a copy of the input. (To not copy the input,
+   * see wireDecode(Blob).)
    * @param input The input byte array to be decoded.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
    */
   void
-  wireDecode(const std::vector<uint8_t>& input, WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+  wireDecode
+    (const std::vector<uint8_t>& input,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     wireDecode(&input[0], input.size(), wireFormat);
   }
 
   /**
-   * Decode the input using a particular wire format and update this DelegationSet.
+   * Decode the input using a particular wire format and update this 
+   * DelegationSet. If wireFormat is the default wire format, also set the
+   * defaultWireEncoding to another pointer to the input Blob.
    * @param input The input byte array to be decoded as an immutable Blob.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
@@ -227,13 +247,60 @@ public:
   void
   wireDecode
     (const Blob& input,
-     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
+   * Return a reference to the defaultWireEncoding, which was encoded with
+   * getDefaultWireEncodingFormat().  The Blob may have a null pointer.
+   */
+  const Blob&
+  getDefaultWireEncoding() const
   {
-    wireDecode(input.buf(), input.size(), wireFormat);
+    if (getDefaultWireEncodingChangeCount_ != getChangeCount()) {
+      // The values have changed, so the default wire encoding is invalidated.
+      // This method can be called on a const object, but we want to be able to
+      // update the default cached value.
+      const_cast<DelegationSet*>(this)->defaultWireEncoding_ = Blob();
+      const_cast<DelegationSet*>(this)->defaultWireEncodingFormat_ = 0;
+      const_cast<DelegationSet*>(this)->getDefaultWireEncodingChangeCount_ =
+        getChangeCount();
+    }
+
+    return defaultWireEncoding_;
   }
 
+  /**
+   * Get the WireFormat which is used by getDefaultWireEncoding().
+   * @return The WireFormat, which is only meaningful if the
+   * getDefaultWireEncoding() does not have a null pointer.
+   */
+  WireFormat*
+  getDefaultWireEncodingFormat() const { return defaultWireEncodingFormat_; }
+
+  /**
+   * Get the change count, which is incremented each time this object is changed.
+   * @return The change count.
+   */
+  uint64_t
+  getChangeCount() const { return changeCount_; }
+
 private:
+  void
+  setDefaultWireEncoding
+    (const Blob& defaultWireEncoding, WireFormat *defaultWireEncodingFormat)
+  {
+    defaultWireEncoding_ = defaultWireEncoding;
+    defaultWireEncodingFormat_ = defaultWireEncodingFormat;
+    // Set getDefaultWireEncodingChangeCount_ so that the next call to
+    //   getDefaultWireEncoding() won't clear defaultWireEncoding_.
+    getDefaultWireEncodingChangeCount_ = getChangeCount();
+  }
+
   std::vector<ptr_lib::shared_ptr<Delegation> > delegations_;
+  Blob defaultWireEncoding_;
+  WireFormat *defaultWireEncodingFormat_;
+  uint64_t getDefaultWireEncodingChangeCount_;
+  uint64_t changeCount_;
 };
 
 }

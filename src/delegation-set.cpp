@@ -51,6 +51,17 @@ DelegationSet::Delegation::get(DelegationSetLite::Delegation& delegationLite) co
   name_.get(delegationLite.getName());
 }
 
+DelegationSet& DelegationSet::operator=(const DelegationSet& delegationSet)
+{
+  // A DelegationSet::Delegation is immutable, so just make a shallow copy.
+  delegations_ = delegationSet.delegations_;
+  setDefaultWireEncoding
+    (delegationSet.getDefaultWireEncoding(),
+     delegationSet.defaultWireEncodingFormat_);
+
+  return *this;
+}
+
 void
 DelegationSet::add(int preference, const Name& name)
 {
@@ -67,6 +78,7 @@ DelegationSet::add(int preference, const Name& name)
   }
 
   delegations_.insert(delegations_.begin() + i, newDelegation);
+  ++changeCount_;
 }
 
 bool
@@ -81,6 +93,8 @@ DelegationSet::remove(const Name& name)
     }
   }
 
+  if (wasRemoved)
+    ++changeCount_;
   return wasRemoved;
 }
 
@@ -102,6 +116,51 @@ DelegationSet::find(const Name& name) const
   }
 
   return -1;
+}
+
+Blob
+DelegationSet::wireEncode(WireFormat& wireFormat) const
+{
+  if (getDefaultWireEncoding() && getDefaultWireEncodingFormat() == &wireFormat)
+    // We already have an encoding in the desired format.
+    return getDefaultWireEncoding();
+
+  Blob wireEncoding = wireFormat.encodeDelegationSet(*this);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    const_cast<DelegationSet*>(this)->setDefaultWireEncoding
+      (wireEncoding, WireFormat::getDefaultWireFormat());
+
+  return wireEncoding;
+}
+
+void
+DelegationSet::wireDecode
+  (const uint8_t *input, size_t inputLength, WireFormat& wireFormat)
+{
+  wireFormat.decodeDelegationSet(*this, input, inputLength);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    // The input is not an immutable Blob, so we need to copy.
+    setDefaultWireEncoding
+      (Blob(input, inputLength), WireFormat::getDefaultWireFormat());
+  else
+    setDefaultWireEncoding(Blob(), 0);
+}
+
+void
+DelegationSet::wireDecode(const Blob& input, WireFormat& wireFormat)
+{
+  wireDecode(input.buf(), input.size(), wireFormat);
+
+  if (&wireFormat == WireFormat::getDefaultWireFormat())
+    // This is the default wire encoding.
+    // Take a pointer to the input Blob without copying.
+    setDefaultWireEncoding(input, WireFormat::getDefaultWireFormat());
+  else
+    setDefaultWireEncoding(Blob(), 0);
 }
 
 }
