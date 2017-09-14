@@ -30,6 +30,7 @@
 #include "util/signed-blob.hpp"
 #include "util/change-counter.hpp"
 #include "exclude.hpp"
+#include "delegation-set.hpp"
 
 namespace ndn {
 
@@ -71,6 +72,7 @@ public:
     mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0),
+    forwardingHint_(interest.forwardingHint_),
     linkWireEncoding_(interest.linkWireEncoding_),
     linkWireEncodingFormat_(interest.linkWireEncodingFormat_),
     selectedDelegationIndex_(interest.selectedDelegationIndex_),
@@ -234,6 +236,17 @@ public:
 
     return nonce_;
   }
+
+  /**
+   * Get the forwarding hint object which you can modify to add or remove
+   * forwarding hints.
+   * @return The forwarding hint as a DelegationSet.
+   */
+  DelegationSet&
+  getForwardingHint() { return forwardingHint_.get(); }
+
+  const DelegationSet&
+  getForwardingHint() const { return forwardingHint_.get(); }
 
   /**
    * Check if this interest has a link object (or a link wire encoding which
@@ -415,6 +428,24 @@ public:
   }
 
   /**
+   * Set this interest to use a copy of the given DelegationSet object as the
+   * forwarding hint.
+   * @note You can also call getForwardingHint and change the forwarding hint
+   * directly.
+   * @param forwardingHint The DelegationSet object to use as the forwarding
+   * hint. This makes a copy of the object. If no forwarding hint is specified,
+   * set to a new default DelegationSet() with no entries.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  setForwardingHint(const DelegationSet& forwardingHint)
+  {
+    forwardingHint_ = forwardingHint;
+    ++changeCount_;
+    return *this;
+  }
+
+  /**
    * Set the link wire encoding bytes, without decoding them. If there is
    * a link object, set it to 0. If you later call getLink(), it will
    * decode the wireEncoding to create the link object.
@@ -550,6 +581,7 @@ public:
     bool changed = name_.checkChanged();
     changed = keyLocator_.checkChanged() || changed;
     changed = exclude_.checkChanged() || changed;
+    changed = forwardingHint_.checkChanged() || changed;
     changed = link_.checkChanged() || changed;
     if (changed)
       // A child object has changed, so update the change count.
@@ -594,6 +626,7 @@ private:
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;
+  ChangeCounter<DelegationSet> forwardingHint_;
   Blob linkWireEncoding_;
   WireFormat* linkWireEncodingFormat_;
   SharedPointerChangeCounter<Link> link_;
