@@ -36,7 +36,7 @@ using namespace ndn;
 using namespace ndn::func_lib;
 
 static const uint8_t codedInterest[] = {
-0x05, 0x50, // Interest
+0x05, 0x5C, // Interest
   0x07, 0x0A, 0x08, 0x03, 0x6E, 0x64, 0x6E, 0x08, 0x03, 0x61, 0x62, 0x63, // Name
   0x09, 0x38, // Selectors
     0x0D, 0x01, 0x04, // MinSuffixComponents
@@ -52,6 +52,10 @@ static const uint8_t codedInterest[] = {
     0x12, 0x00, // MustBeFesh
   0x0A, 0x04, 0x61, 0x62, 0x61, 0x62,   // Nonce
   0x0C, 0x02, 0x75, 0x30, // InterestLifetime
+  0x1e, 0x0a, // ForwardingHint
+        0x1f, 0x08, // Delegation
+              0x1e, 0x01, 0x01, // Preference=1
+              0x07, 0x03, 0x08, 0x01, 0x41, // Name=/A
 1
 };
 
@@ -67,7 +71,9 @@ static const char* initialDumpValues[] = {
   "childSelector: 1",
   "mustBeFresh: True",
   "nonce: 61626162",
-  "lifetimeMilliseconds: 30000"
+  "lifetimeMilliseconds: 30000",
+  "forwardingHint:",
+  "  Preference: 1, Name: /A"
 };
 
 static string
@@ -124,6 +130,16 @@ dumpInterest(const Interest& interest)
   result.push_back(dump("lifetimeMilliseconds:",
     interest.getInterestLifetimeMilliseconds() < 0 ? "<none>" :
       toString(interest.getInterestLifetimeMilliseconds())));
+  if (interest.getForwardingHint().size() > 0) {
+    result.push_back(dump("forwardingHint:"));
+    for (int i = 0; i < interest.getForwardingHint().size(); ++i)
+      result.push_back(dump("  Preference: " +
+        toString(interest.getForwardingHint().get(i).getPreference()) +
+        ", Name: " +
+        interest.getForwardingHint().get(i).getName().toUri()));
+  }
+  else
+    result.push_back(dump("forwardingHint: <none>"));
 
   return result;
 };
@@ -167,6 +183,7 @@ createFreshInterest()
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F };
   freshInterest.getKeyLocator().setKeyData(Blob(digest, sizeof(digest)));
   freshInterest.getExclude().appendComponent(Name("abc")[0]).appendAny();
+  freshInterest.getForwardingHint().add(1, Name("/A"));
 
   return freshInterest;
 }
