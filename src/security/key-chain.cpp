@@ -35,6 +35,9 @@
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/hmac-with-sha256-signature.hpp>
+#if NDN_CPP_HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include <ndn-cpp/security/pib/pib-sqlite3.hpp>
 #include <ndn-cpp/security/pib/pib-memory.hpp>
@@ -125,6 +128,8 @@ KeyChain::KeyChain()
 {
   isSecurityV1_ = false;
 
+// Only check for v1 files if we have Unix support.
+#if NDN_CPP_HAVE_UNISTD_H
   if (::access(BasicIdentityStorage::getDefaultDatabaseFilePath().c_str(), R_OK)
         == 0 &&
       ::access(PibSqlite3::getDefaultDatabaseFilePath().c_str(), R_OK) != 0) {
@@ -135,6 +140,7 @@ KeyChain::KeyChain()
 
     return;
   }
+#endif
 
   construct("", "", true);
 }
