@@ -119,6 +119,14 @@ Tlv0_2WireFormat::decodeInterest
         signedPortionEndOffset)))
     throw runtime_error(ndn_getErrorString(error));
 
+  if (interestLite.getForwardingHintWireEncoding().buf()) {
+    // Throw any decoding exceptions now before calling set.
+    DelegationSet delegationSet;
+    decodeDelegationSet
+      (delegationSet, interestLite.getForwardingHintWireEncoding().buf(),
+       interestLite.getForwardingHintWireEncoding().size());
+  }
+
   interest.set(interestLite, *this);
 }
 
