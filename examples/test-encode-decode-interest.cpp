@@ -132,7 +132,7 @@ static uint8_t DEFAULT_RSA_PRIVATE_KEY_DER[] = {
 };
 
 uint8_t TlvInterest[] = {
-0x05, 0x50, // Interest
+0x05, 0x5C, // Interest
   0x07, 0x0A, 0x08, 0x03, 0x6E, 0x64, 0x6E, 0x08, 0x03, 0x61, 0x62, 0x63, // Name
   0x09, 0x38, // Selectors
     0x0D, 0x01, 0x04, // MinSuffixComponents
@@ -148,6 +148,10 @@ uint8_t TlvInterest[] = {
     0x12, 0x00, // MustBeFesh
   0x0A, 0x04, 0x61, 0x62, 0x61, 0x62,	// Nonce
   0x0C, 0x02, 0x75, 0x30, // InterestLifetime
+  0x1e, 0x0a, // ForwardingHint
+        0x1f, 0x08, // Delegation
+              0x1e, 0x01, 0x01, // Preference=1
+              0x07, 0x03, 0x08, 0x01, 0x41, // Name=/A
 1
 };
 
@@ -191,6 +195,15 @@ static void dumpInterest(const Interest& interest)
   cout << "mustBeFresh: " << (interest.getMustBeFresh() ? "true" : "false") << endl;
   cout << "nonce: "
        << (interest.getNonce().size() > 0 ? interest.getNonce().toHex() : "<none>") << endl;
+  if (interest.getForwardingHint().size() > 0) {
+    cout << "forwardingHint:" << endl;
+    for (int i = 0; i < interest.getForwardingHint().size(); ++i)
+      cout << "  Preference: " <<
+        interest.getForwardingHint().get(i).getPreference() << ", Name: " <<
+        interest.getForwardingHint().get(i).getName().toUri() << endl;
+  }
+  else
+    cout << "forwardingHint: <none>" << endl;
 }
 
 static void onVerified(const char *prefix, const ptr_lib::shared_ptr<Interest>& interest)
@@ -235,6 +248,7 @@ int main(int argc, char** argv)
       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F };
     freshInterest.getKeyLocator().setKeyData(Blob(digest, sizeof(digest)));
     freshInterest.getExclude().appendComponent(Name("abc")[0]).appendAny();
+    freshInterest.getForwardingHint().add(1, Name("/A"));
 
     ptr_lib::shared_ptr<MemoryIdentityStorage> identityStorage
       (new MemoryIdentityStorage());
