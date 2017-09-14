@@ -77,6 +77,7 @@ Face::Face()
   commandKeyChain_(0)
 {
 }
+#endif
 
 Face::Face(const char *host, unsigned short port)
 : node_(new Node(ptr_lib::shared_ptr<TcpTransport>(new TcpTransport()),
@@ -84,7 +85,6 @@ Face::Face(const char *host, unsigned short port)
   commandKeyChain_(0)
 {
 }
-#endif
 
 Face::Face(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo)
 : node_(new Node(transport, connectionInfo)), commandKeyChain_(0)
