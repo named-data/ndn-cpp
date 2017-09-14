@@ -1,5 +1,9 @@
-Interim changes since NDN-CPP v0.12 (2017-07-20)
+Interim changes since NDN-CPP v0.12 (2017-09-14)
 ------------------------------------------------
+
+Bug fixes
+* https://redmine.named-data.net/issues/4023 Ported the latest NDN regex code
+  from ndn-cxx which fixes crashes with boost::regex and complex expressions.
 
 Changes
 * https://redmine.named-data.net/issues/4001 In MemoryContentCache, use
@@ -7,14 +11,15 @@ Changes
 * https://github.com/named-data/ndn-cpp/pull/3 Added Esp8266TcpTransportLite 
   uses the WiFiClient class of the esp8266 core for Arduino to communicate 
   over TCP. (Thanks to José Quevedo!)
+* https://redmine.named-data.net/issues/4251 Added Interest get/setForwardingHint.
 * In MemoryContentCache, added support for the OnContentRemoved callback.
 * Lite: Added DynamicMallocUInt8ArrayLite.
 * MemoryContentCache: Added getPendingInterestsWithPrefix().
 * Examples: Added test-publish-async-nfd-lite and test-echo-consumer-lite .
 
-Bug fixes
-* https://redmine.named-data.net/issues/4023 Ported the latest NDN regex code
-  from ndn-cxx which fixes crashes with boost::regex and complex expressions.
+Deprecated
+* In Interest, deprecated link object and selected delegation methods.
+  Use get/setForwardingHint.
 
 NDN-CPP v0.12 (2017-03-16)
 --------------------------
