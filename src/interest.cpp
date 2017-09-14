@@ -25,7 +25,10 @@
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "lp/incoming-face-id.hpp"
 #include <ndn-cpp/data.hpp>
+#include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/interest.hpp>
+
+INIT_LOGGER("ndn.Interest");
 
 using namespace std;
 
@@ -77,6 +80,13 @@ Interest::get(InterestLite& interestLite, WireFormat& wireFormat) const
   interestLite.setMustBeFresh(mustBeFresh_);
   interestLite.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
   interestLite.setNonce(nonce_);
+  if (getForwardingHint().size() > 0)
+    // InterestLite only stores the encoded delegation set. The DelegationSet
+    // will cache the wire encoding long enough to encode the Interest.
+    interestLite.setForwardingHintWireEncoding
+      (getForwardingHint().wireEncode(wireFormat));
+  else
+    interestLite.setForwardingHintWireEncoding(Blob());
   try {
     interestLite.setLinkWireEncoding(getLinkWireEncoding(wireFormat));
   } catch (...) {
@@ -99,6 +109,17 @@ Interest::set(const InterestLite& interestLite, WireFormat& wireFormat)
   setChildSelector(interestLite.getChildSelector());
   mustBeFresh_ = (interestLite.getMustBeFresh());
   setInterestLifetimeMilliseconds(interestLite.getInterestLifetimeMilliseconds());
+  if (interestLite.getForwardingHintWireEncoding().buf()) {
+    // InterestLite only stores the encoded delegation set.
+    try {
+      forwardingHint_.get().wireDecode(interestLite.getForwardingHintWireEncoding());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Interest: Error decoding forwarding hint: " << ex.what());
+      forwardingHint_.get().clear();
+    }
+  }
+  else
+    forwardingHint_.get().clear();
   if (interestLite.getLinkWireEncoding().buf())
     setLinkWireEncoding(interestLite.getLinkWireEncoding(), wireFormat);
   else

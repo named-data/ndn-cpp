@@ -30,6 +30,7 @@
 #include "util/signed-blob.hpp"
 #include "util/change-counter.hpp"
 #include "exclude.hpp"
+#include "delegation-set.hpp"
 
 namespace ndn {
 
@@ -71,6 +72,7 @@ public:
     mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0),
+    forwardingHint_(interest.forwardingHint_),
     linkWireEncoding_(interest.linkWireEncoding_),
     linkWireEncodingFormat_(interest.linkWireEncodingFormat_),
     selectedDelegationIndex_(interest.selectedDelegationIndex_),
@@ -236,12 +238,24 @@ public:
   }
 
   /**
+   * Get the forwarding hint object which you can modify to add or remove
+   * forwarding hints.
+   * @return The forwarding hint as a DelegationSet.
+   */
+  DelegationSet&
+  getForwardingHint() { return forwardingHint_.get(); }
+
+  const DelegationSet&
+  getForwardingHint() const { return forwardingHint_.get(); }
+
+  /**
    * Check if this interest has a link object (or a link wire encoding which
    * can be decoded to make the link object).
    * @return True if this interest has a link object, false if not.
+   * @deprecated Use getForwardingHint.
    */
   bool
-  hasLink() const
+  DEPRECATED_IN_NDN_CPP hasLink() const
   {
     return link_.get() || !linkWireEncoding_.isNull();
   }
@@ -252,12 +266,13 @@ public:
    * @return  The link object, or 0 if not specified.
    * @throws runtime_error For error decoding the link wire encoding (if
    * necessary).
+   * @deprecated Use getForwardingHint.
    */
   Link*
-  getLink();
+  DEPRECATED_IN_NDN_CPP getLink();
 
   const Link*
-  getLink() const { return const_cast<Interest*>(this)->getLink(); }
+  DEPRECATED_IN_NDN_CPP getLink() const { return const_cast<Interest*>(this)->getLink(); }
 
   /**
    * Get the wire encoding of the link object. If there is already a wire
@@ -267,17 +282,19 @@ public:
    * If omitted, use WireFormat::getDefaultWireFormat().
    * @return The wire encoding, or an isNull Blob if the link is not specified.
    * @throws runtime_error for error encoding the link object.
+   * @deprecated Use getForwardingHint.
    */
   Blob
-  getLinkWireEncoding
+  DEPRECATED_IN_NDN_CPP getLinkWireEncoding
     (WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**
    * Get the selected delegation index.
    * @return The selected delegation index. If not specified, return -1.
+   * @deprecated Use getForwardingHint.
    */
   int
-  getSelectedDelegationIndex() const { return selectedDelegationIndex_; }
+  DEPRECATED_IN_NDN_CPP getSelectedDelegationIndex() const { return selectedDelegationIndex_; }
 
   /**
    * Get the incoming face ID according to the incoming packet header.
@@ -415,6 +432,24 @@ public:
   }
 
   /**
+   * Set this interest to use a copy of the given DelegationSet object as the
+   * forwarding hint.
+   * @note You can also call getForwardingHint and change the forwarding hint
+   * directly.
+   * @param forwardingHint The DelegationSet object to use as the forwarding
+   * hint. This makes a copy of the object. If no forwarding hint is specified,
+   * set to a new default DelegationSet() with no entries.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  setForwardingHint(const DelegationSet& forwardingHint)
+  {
+    forwardingHint_ = forwardingHint;
+    ++changeCount_;
+    return *this;
+  }
+
+  /**
    * Set the link wire encoding bytes, without decoding them. If there is
    * a link object, set it to 0. If you later call getLink(), it will
    * decode the wireEncoding to create the link object.
@@ -424,9 +459,10 @@ public:
    * later if necessary to decode. If omitted, use
    * WireFormat::getDefaultWireFormat().
    * @return This Interest so that you can chain calls to update values.
+   * @deprecated Use setForwardingHint.
    */
   Interest&
-  setLinkWireEncoding
+  DEPRECATED_IN_NDN_CPP setLinkWireEncoding
     (Blob encoding,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
@@ -443,9 +479,10 @@ public:
   /**
    * Clear the link wire encoding and link object so that getLink() returns null.
    * @return This Interest so that you can chain calls to update values.
+   * @deprecated Use setForwardingHint.
    */
   Interest&
-  unsetLink()
+  DEPRECATED_IN_NDN_CPP unsetLink()
   {
     WireFormat* wireFormat = 0;
     return setLinkWireEncoding(Blob(), *wireFormat);
@@ -456,9 +493,10 @@ public:
    * @param selectedDelegationIndex The selected delegation index. If not
    * specified, set to -1.
    * @return This Interest so that you can chain calls to update values.
+   * @deprecated Use setForwardingHint.
    */
   Interest&
-  setSelectedDelegationIndex(int selectedDelegationIndex)
+  DEPRECATED_IN_NDN_CPP setSelectedDelegationIndex(int selectedDelegationIndex)
   {
     selectedDelegationIndex_ = selectedDelegationIndex;
     ++changeCount_;
@@ -550,6 +588,7 @@ public:
     bool changed = name_.checkChanged();
     changed = keyLocator_.checkChanged() || changed;
     changed = exclude_.checkChanged() || changed;
+    changed = forwardingHint_.checkChanged() || changed;
     changed = link_.checkChanged() || changed;
     if (changed)
       // A child object has changed, so update the change count.
@@ -594,6 +633,7 @@ private:
   Milliseconds interestLifetimeMilliseconds_; /**< -1 for none */
   Blob nonce_;
   uint64_t getNonceChangeCount_;
+  ChangeCounter<DelegationSet> forwardingHint_;
   Blob linkWireEncoding_;
   WireFormat* linkWireEncodingFormat_;
   SharedPointerChangeCounter<Link> link_;
