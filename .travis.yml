@@ -1,0 +1,22 @@
+language: cpp
+sudo: false
+branches:
+  only:
+    - master
+addons:
+  apt:
+    packages:
+      - doxygen
+      - graphviz
+      - build-essential
+      - libssl-dev
+      - libsqlite3-dev
+script:
+  - ./configure
+  - make doxygen-doc
+after_success:
+  - ssh-keyscan -H $HOSTNAME 2>&1 | tee -a $HOME/.ssh/known_hosts
+  - openssl aes-256-cbc -K $encrypted_31fcab4e3357_key -iv $encrypted_31fcab4e3357_iv -in .travis.d/id-rsa.enc -out .travis.d/id-rsa -d
+  - mkdir -p ~/.ssh && mv .travis.d/id-rsa ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+  - rsync -arv --delete --progress doc/html/ $USERNAME@$HOSTNAME:/var/www/named-data.net/www/doc/ndn-ccl/latest/ndn-cpp
+  # TODO: sync tagged versions
