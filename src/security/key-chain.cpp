@@ -128,8 +128,9 @@ KeyChain::KeyChain()
 {
   isSecurityV1_ = false;
 
-// Only check for v1 files if we have Unix support.
+// Only check for v1 files if we have Unix support and SQLite3.
 #if NDN_CPP_HAVE_UNISTD_H
+#ifdef NDN_CPP_HAVE_SQLITE3
   if (::access(BasicIdentityStorage::getDefaultDatabaseFilePath().c_str(), R_OK)
         == 0 &&
       ::access(PibSqlite3::getDefaultDatabaseFilePath().c_str(), R_OK) != 0) {
@@ -140,6 +141,7 @@ KeyChain::KeyChain()
 
     return;
   }
+#endif
 #endif
 
   construct("", "", true);
