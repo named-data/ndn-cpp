@@ -53,7 +53,7 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
-  getName() const;
+  getName();
 
   /**
    * Get the key with name keyName.
@@ -64,7 +64,7 @@ public:
    * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
-  getKey(const Name& keyName) const;
+  getKey(const Name& keyName);
 
   /**
    * Get the default key of this Identity.
@@ -72,8 +72,8 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    * @throws Pib::Error if the default key has not been set.
    */
-  const ptr_lib::shared_ptr<PibKey>&
-  getDefaultKey() const;
+  ptr_lib::shared_ptr<PibKey>&
+  getDefaultKey();
 
 private:
   friend class PibIdentityContainer;
@@ -115,7 +115,7 @@ private:
    * identity name.
    * @throws Pib::Error if the key does not exist.
    */
-  const ptr_lib::shared_ptr<PibKey>&
+  ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const Name& keyName);
 
   /**
@@ -128,7 +128,7 @@ private:
    * identity name.
    * @throws Pib::Error if a key with the same name already exists.
    */
-  const ptr_lib::shared_ptr<PibKey>&
+  ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const uint8_t* key, size_t keyLength, const Name& keyName);
 
   /**
@@ -138,16 +138,13 @@ private:
   PibKeyContainer&
   getKeys();
 
-  const PibKeyContainer&
-  getKeys() const { return const_cast<PibIdentity*>(this)->getKeys(); }
-
   /**
    * Check the validity of the impl_ instance.
    * @return A shared_ptr when the instance is valid.
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   ptr_lib::shared_ptr<PibIdentityImpl>
-  lock() const;
+  lock();
 
   // Disable the copy constructor and assignment operator.
   PibIdentity(const PibIdentity& other);

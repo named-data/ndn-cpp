@@ -68,7 +68,7 @@ PibKeyContainer::remove(const Name& keyName)
 }
 
 ptr_lib::shared_ptr<PibKey>
-PibKeyContainer::get(const Name& keyName) const
+PibKeyContainer::get(const Name& keyName)
 {
   if (identityName_ != PibKey::extractIdentityFromKeyName(keyName))
     throw invalid_argument
@@ -83,7 +83,7 @@ PibKeyContainer::get(const Name& keyName) const
     pibKeyImpl = it->second;
   else {
     pibKeyImpl = ptr_lib::make_shared<PibKeyImpl>(keyName, pibImpl_);
-    const_cast<PibKeyContainer*>(this)->keys_[keyName] = pibKeyImpl;
+    keys_[keyName] = pibKeyImpl;
   }
 
   return ptr_lib::shared_ptr<PibKey>(new PibKey(pibKeyImpl));

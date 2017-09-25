@@ -87,13 +87,13 @@ PibKeyImpl::removeCertificate(const Name& certificateName)
 }
 
 ptr_lib::shared_ptr<CertificateV2>
-PibKeyImpl::getCertificate(const Name& certificateName) const
+PibKeyImpl::getCertificate(const Name& certificateName)
 {
   // BOOST_ASSERT(certificates_.isConsistent());
   return certificates_.get(certificateName);
 }
 
-const ptr_lib::shared_ptr<CertificateV2>&
+ptr_lib::shared_ptr<CertificateV2>&
 PibKeyImpl::setDefaultCertificate(const Name& certificateName)
 {
   // BOOST_ASSERT(certificates_.isConsistent());
@@ -103,14 +103,13 @@ PibKeyImpl::setDefaultCertificate(const Name& certificateName)
   return defaultCertificate_;
 }
 
-const ptr_lib::shared_ptr<CertificateV2>&
-PibKeyImpl::getDefaultCertificate() const
+ptr_lib::shared_ptr<CertificateV2>&
+PibKeyImpl::getDefaultCertificate()
 {
   // BOOST_ASSERT(certificates_.isConsistent());
 
   if (!defaultCertificate_)
-    const_cast<PibKeyImpl*>(this)->defaultCertificate_ =
-      pibImpl_->getDefaultCertificateOfKey(keyName_);
+    defaultCertificate_ = pibImpl_->getDefaultCertificateOfKey(keyName_);
 
   // BOOST_ASSERT(pibImpl_->getDefaultCertificateOfKey(keyName_)->wireEncode() == defaultCertificate_->wireEncode());
 

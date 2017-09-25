@@ -93,7 +93,7 @@ public:
    * @throws Pib::Error if the TPM locator is empty.
    */
   std::string
-  getTpmLocator() const;
+  getTpmLocator();
 
   /**
    * Get the identity with name identityName.
@@ -102,15 +102,15 @@ public:
    * @throws Pib::Error if the identity does not exist.
    */
   ptr_lib::shared_ptr<PibIdentity>
-  getIdentity(const Name& identityName) const;
+  getIdentity(const Name& identityName);
 
   /**
    * Get the default identity.
    * @return The PibIdentity object.
    * @throws Pib::Error if there is no default identity.
    */
-  const ptr_lib::shared_ptr<PibIdentity>&
-  getDefaultIdentity() const;
+  ptr_lib::shared_ptr<PibIdentity>&
+  getDefaultIdentity();
 
 private:
   friend class KeyChain;

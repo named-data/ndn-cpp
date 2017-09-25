@@ -48,7 +48,7 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
-  getName() const;
+  getName();
 
   /**
    * Get the name of the identity this key belongs to.
@@ -56,7 +56,7 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Name&
-  getIdentityName() const;
+  getIdentityName();
 
   /**
    * Get the key type.
@@ -64,7 +64,7 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   KeyType
-  getKeyType() const;
+  getKeyType();
 
   /**
    * Get the public key encoding.
@@ -72,7 +72,7 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    */
   const Blob&
-  getPublicKey() const;
+  getPublicKey();
 
   /**
    * Get the certificate with name certificateName.
@@ -83,7 +83,7 @@ public:
    * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
-  getCertificate(const Name& certificateName) const;
+  getCertificate(const Name& certificateName);
 
   /**
    * Get the default certificate for this Key.
@@ -91,8 +91,8 @@ public:
    * @throws std::domain_error if the backend implementation instance is invalid.
    * @throws Pib::Error if the default certificate does not exist.
    */
-  const ptr_lib::shared_ptr<CertificateV2>&
-  getDefaultCertificate() const;
+  ptr_lib::shared_ptr<CertificateV2>&
+  getDefaultCertificate();
 
   /**
    * Construct a key name based on the appropriate naming conventions.

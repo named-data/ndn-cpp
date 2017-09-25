@@ -69,7 +69,7 @@ PibCertificateContainer::remove(const Name& certificateName)
 }
 
 ptr_lib::shared_ptr<CertificateV2>
-PibCertificateContainer::get(const Name& certificateName) const
+PibCertificateContainer::get(const Name& certificateName)
 {
   map<Name, ptr_lib::shared_ptr<CertificateV2>>::const_iterator it =
     certificates_.find(certificateName);
@@ -88,8 +88,7 @@ PibCertificateContainer::get(const Name& certificateName) const
 
   ptr_lib::shared_ptr<CertificateV2> certificate =
     pibImpl_->getCertificate(certificateName);
-  const_cast<PibCertificateContainer*>(this)->certificates_[certificateName] =
-    certificate;
+  certificates_[certificateName] = certificate;
   // Make a copy.
   // TODO: Copy is expensive. Can we just tell the caller not to modify it?
   return ptr_lib::make_shared<CertificateV2>(*certificate);

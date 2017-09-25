@@ -28,13 +28,13 @@ using namespace std;
 namespace ndn {
 
 const Name&
-PibIdentity::getName() const { return lock()->getName(); }
+PibIdentity::getName() { return lock()->getName(); }
 
 ptr_lib::shared_ptr<PibKey>
-PibIdentity::getKey(const Name& keyName) const { return lock()->getKey(keyName); }
+PibIdentity::getKey(const Name& keyName) { return lock()->getKey(keyName); }
 
-const ptr_lib::shared_ptr<PibKey>&
-PibIdentity::getDefaultKey() const { return lock()->getDefaultKey(); }
+ptr_lib::shared_ptr<PibKey>&
+PibIdentity::getDefaultKey() { return lock()->getDefaultKey(); }
 
 
 PibIdentity::PibIdentity(ptr_lib::weak_ptr<PibIdentityImpl> impl)
@@ -67,7 +67,7 @@ PibIdentity::removeKey(const Name& keyName)
  * identity name.
  * @throws Pib::Error if the key does not exist.
  */
-const ptr_lib::shared_ptr<PibKey>&
+ptr_lib::shared_ptr<PibKey>&
 PibIdentity::setDefaultKey(const Name& keyName)
 {
   return lock()->setDefaultKey(keyName);
@@ -83,7 +83,7 @@ PibIdentity::setDefaultKey(const Name& keyName)
  * identity name.
  * @throws Pib::Error if a key with the same name already exists.
  */
-const ptr_lib::shared_ptr<PibKey>&
+ptr_lib::shared_ptr<PibKey>&
 PibIdentity::setDefaultKey
   (const uint8_t* key, size_t keyLength, const Name& keyName)
 {
@@ -94,7 +94,7 @@ PibKeyContainer&
 PibIdentity::getKeys() { return lock()->keys_; }
 
 ptr_lib::shared_ptr<PibIdentityImpl>
-PibIdentity::lock() const
+PibIdentity::lock()
 {
   // TODO: What is this needed for? Use something more general than weak_ptr?
   ptr_lib::shared_ptr<PibIdentityImpl> impl = impl_.lock();

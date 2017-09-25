@@ -79,7 +79,7 @@ public:
    * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
-  get(const Name& certificateName) const;
+  get(const Name& certificateName);
 
   /**
    * Check if the container is consistent with the backend storage.

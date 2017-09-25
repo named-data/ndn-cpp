@@ -59,7 +59,7 @@ PibIdentityContainer::remove(const Name& identityName)
 }
 
 ptr_lib::shared_ptr<PibIdentity>
-PibIdentityContainer::get(const Name& identityName) const
+PibIdentityContainer::get(const Name& identityName)
 {
   map<Name, ptr_lib::shared_ptr<PibIdentityImpl>>::const_iterator it =
     identities_.find(identityName);
@@ -70,8 +70,7 @@ PibIdentityContainer::get(const Name& identityName) const
   else {
     pibIdentityImpl = ptr_lib::make_shared<PibIdentityImpl>
       (identityName, pibImpl_, false);
-    const_cast<PibIdentityContainer*>(this)->identities_[identityName] =
-      pibIdentityImpl;
+    identities_[identityName] = pibIdentityImpl;
   }
 
   return ptr_lib::shared_ptr<PibIdentity>(new PibIdentity(pibIdentityImpl));

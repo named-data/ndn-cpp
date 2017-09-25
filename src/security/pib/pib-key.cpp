@@ -34,25 +34,25 @@ PibKey::PibKey(ptr_lib::weak_ptr<PibKeyImpl> impl)
 }
 
 const Name&
-PibKey::getName() const { return lock()->getName(); }
+PibKey::getName() { return lock()->getName(); }
 
 const Name&
-PibKey::getIdentityName() const { return lock()->getIdentityName(); }
+PibKey::getIdentityName() { return lock()->getIdentityName(); }
 
 KeyType
-PibKey::getKeyType() const { return lock()->getKeyType(); }
+PibKey::getKeyType() { return lock()->getKeyType(); }
 
 const Blob&
-PibKey::getPublicKey() const { return lock()->getPublicKey(); }
+PibKey::getPublicKey() { return lock()->getPublicKey(); }
 
 ptr_lib::shared_ptr<CertificateV2>
-PibKey::getCertificate(const Name& certificateName) const
+PibKey::getCertificate(const Name& certificateName)
 {
   return lock()->getCertificate(certificateName);
 }
 
-const ptr_lib::shared_ptr<CertificateV2>&
-PibKey::getDefaultCertificate() const { return lock()->getDefaultCertificate(); }
+ptr_lib::shared_ptr<CertificateV2>&
+PibKey::getDefaultCertificate() { return lock()->getDefaultCertificate(); }
 
 PibCertificateContainer&
 PibKey::getCertificates() { return lock()->certificates_; }

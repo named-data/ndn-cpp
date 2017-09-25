@@ -78,7 +78,7 @@ public:
    * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
-  get(const Name& keyName) const;
+  get(const Name& keyName);
 
   /**
    * Get the names of all the keys in the container.

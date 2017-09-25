@@ -76,7 +76,7 @@ public:
    * @throws Pib::Error if the identity does not exist.
    */
   ptr_lib::shared_ptr<PibIdentity>
-  get(const Name& identityName) const;
+  get(const Name& identityName);
 
   /**
    * Reset the state of the container. This method removes all loaded identities

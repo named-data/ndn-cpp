@@ -118,7 +118,7 @@ public:
    * @throws Pib::Error if the certificate does not exist.
    */
   ptr_lib::shared_ptr<CertificateV2>
-  getCertificate(const Name& certificateName) const;
+  getCertificate(const Name& certificateName);
 
   /**
    * Set the existing certificate with name certificateName as the default
@@ -129,7 +129,7 @@ public:
    * name
    * @throws Pib::Error if the certificate does not exist.
    */
-  const ptr_lib::shared_ptr<CertificateV2>&
+  ptr_lib::shared_ptr<CertificateV2>&
   setDefaultCertificate(const Name& certificateName);
 
   /**
@@ -141,7 +141,7 @@ public:
    * match the key name.
    * @return The default certificate.
    */
-  const ptr_lib::shared_ptr<CertificateV2>&
+  ptr_lib::shared_ptr<CertificateV2>&
   setDefaultCertificate(const CertificateV2& certificate)
   {
     addCertificate(certificate);
@@ -153,8 +153,8 @@ public:
    * @return A copy of the default certificate.
    * @throws Pib::Error if the default certificate does not exist.
    */
-  const ptr_lib::shared_ptr<CertificateV2>&
-  getDefaultCertificate() const;
+  ptr_lib::shared_ptr<CertificateV2>&
+  getDefaultCertificate();
 
 private:
   friend class PibKey;

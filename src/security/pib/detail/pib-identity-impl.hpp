@@ -60,7 +60,7 @@ public:
    * @return The name of the identity.
    */
   const Name&
-  getName() const { return identityName_; }
+  getName() { return identityName_; }
 
   /**
    * Add the key. If a key with the same name already exists, overwrite the key.
@@ -90,7 +90,7 @@ public:
    * @throws Pib::Error if the key does not exist.
    */
   ptr_lib::shared_ptr<PibKey>
-  getKey(const Name& keyName) const;
+  getKey(const Name& keyName);
 
   /**
    * Set the key with name keyName as the default key of the identity.
@@ -100,7 +100,7 @@ public:
    * identity name.
    * @throws Pib::Error if the key does not exist.
    */
-  const ptr_lib::shared_ptr<PibKey>&
+  ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const Name& keyName);
 
   /**
@@ -113,7 +113,7 @@ public:
    * identity name.
    * @throws Pib::Error if a key with the same name already exists.
    */
-  const ptr_lib::shared_ptr<PibKey>&
+  ptr_lib::shared_ptr<PibKey>&
   setDefaultKey(const uint8_t* key, size_t keyLength, const Name& keyName);
 
   /**
@@ -121,8 +121,8 @@ public:
    * @return The default PibKey.
    * @throws Pib::Error if the default key has not been set.
    */
-  const ptr_lib::shared_ptr<PibKey>&
-  getDefaultKey() const;
+  ptr_lib::shared_ptr<PibKey>&
+  getDefaultKey();
 
 private:
   friend class PibIdentity;

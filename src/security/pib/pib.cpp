@@ -49,7 +49,7 @@ Pib::setTpmLocator(const string& tpmLocator)
 }
 
 string
-Pib::getTpmLocator() const
+Pib::getTpmLocator()
 {
   string tpmLocator = pibImpl_->getTpmLocator();
   if (tpmLocator == "")
@@ -98,21 +98,20 @@ Pib::setDefaultIdentity(const Name& identityName)
 }
 
 ptr_lib::shared_ptr<PibIdentity>
-Pib::getIdentity(const Name& identityName) const
+Pib::getIdentity(const Name& identityName)
 {
   // BOOST_ASSERT(identities_.isConsistent());
 
   return identities_.get(identityName);
 }
 
-const ptr_lib::shared_ptr<PibIdentity>&
-Pib::getDefaultIdentity() const
+ptr_lib::shared_ptr<PibIdentity>&
+Pib::getDefaultIdentity()
 {
   // BOOST_ASSERT(identities_.isConsistent());
 
   if (!defaultIdentity_)
-    const_cast<Pib*>(this)->defaultIdentity_ =
-      identities_.get(pibImpl_->getDefaultIdentity());
+    defaultIdentity_ = identities_.get(pibImpl_->getDefaultIdentity());
 
   // BOOST_ASSERT(pibImpl_->getDefaultIdentity() == defaultIdentity_->getName());
 

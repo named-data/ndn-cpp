@@ -66,14 +66,14 @@ PibIdentityImpl::removeKey(const Name& keyName)
 }
 
 ptr_lib::shared_ptr<PibKey>
-PibIdentityImpl::getKey(const Name& keyName) const
+PibIdentityImpl::getKey(const Name& keyName)
 {
   // BOOST_ASSERT(keys_.isConsistent());
 
   return keys_.get(keyName);
 }
 
-const ptr_lib::shared_ptr<PibKey>&
+ptr_lib::shared_ptr<PibKey>&
 PibIdentityImpl::setDefaultKey(const Name& keyName)
 {
   // BOOST_ASSERT(keys_.isConsistent());
@@ -83,7 +83,7 @@ PibIdentityImpl::setDefaultKey(const Name& keyName)
   return defaultKey_;
 }
 
-const ptr_lib::shared_ptr<PibKey>&
+ptr_lib::shared_ptr<PibKey>&
 PibIdentityImpl::setDefaultKey
   (const uint8_t* key, size_t keyLength, const Name& keyName)
 {
@@ -91,14 +91,13 @@ PibIdentityImpl::setDefaultKey
   return setDefaultKey(keyName);
 }
 
-const ptr_lib::shared_ptr<PibKey>&
-PibIdentityImpl::getDefaultKey() const
+ptr_lib::shared_ptr<PibKey>&
+PibIdentityImpl::getDefaultKey()
 {
   // BOOST_ASSERT(keys_.isConsistent());
 
   if (!defaultKey_)
-    const_cast<PibIdentityImpl*>(this)->defaultKey_ = keys_.get
-      (pibImpl_->getDefaultKeyOfIdentity(identityName_));
+    defaultKey_ = keys_.get(pibImpl_->getDefaultKeyOfIdentity(identityName_));
 
   // BOOST_ASSERT(pibImpl_->getDefaultKeyOfIdentity(identityName_) == defaultKey_.getName());
 
