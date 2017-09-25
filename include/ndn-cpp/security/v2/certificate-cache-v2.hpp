@@ -86,7 +86,7 @@ public:
    * Clear all certificates from the cache.
    */
   void
-  reset()
+  clear()
   {
     certificatesByName_.clear();
     // TODO: certificatesByTime_.clear();
