@@ -175,6 +175,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
+  include/ndn-cpp/security/verification-helpers.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
   include/ndn-cpp/security/certificate/certificate.hpp \
@@ -385,6 +386,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
   src/security/validity-period.cpp \
+  src/security/verification-helpers.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \

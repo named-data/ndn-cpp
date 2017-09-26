@@ -340,6 +340,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/key-chain.lo src/security/key-params.lo \
 	src/security/safe-bag.lo src/security/security-exception.lo \
 	src/security/signing-info.lo src/security/validity-period.lo \
+	src/security/verification-helpers.lo \
 	src/security/certificate/certificate-extension.lo \
 	src/security/certificate/certificate-subject-description.lo \
 	src/security/certificate/certificate.lo \
@@ -1470,6 +1471,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
+  include/ndn-cpp/security/verification-helpers.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
   include/ndn-cpp/security/certificate/certificate.hpp \
@@ -1683,6 +1685,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
   src/security/validity-period.cpp \
+  src/security/verification-helpers.cpp \
   src/security/certificate/certificate-extension.cpp \
   src/security/certificate/certificate-subject-description.cpp \
   src/security/certificate/certificate.cpp \
@@ -2458,6 +2461,8 @@ src/security/security-exception.lo: src/security/$(am__dirstamp) \
 src/security/signing-info.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/validity-period.lo: src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/verification-helpers.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/certificate/$(am__dirstamp):
 	@$(MKDIR_P) src/security/certificate
@@ -3597,6 +3602,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/security-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/signing-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/validity-period.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/verification-helpers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-extension.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate-subject-description.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/certificate/$(DEPDIR)/certificate.Plo@am__quote@
