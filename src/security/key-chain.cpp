@@ -31,6 +31,7 @@
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 #include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
+#include <ndn-cpp/security/verification-helpers.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
@@ -443,23 +444,8 @@ KeyChain::importSafeBag
     throw Error("Invalid private key `" + keyName.toUri() + "`");
   }
 
-  PublicKey publicKey(publicKeyBits);
-  // TODO: Move verify into PublicKey?
-  bool isVerified;
-  ndn_Error error;
-  if (publicKey.getKeyType() == KEY_TYPE_ECDSA)
-    error = EcPublicKeyLite::verifySha256WithEcdsaSignature
-      (signatureBits, Blob(content, sizeof(content)), publicKey.getKeyDer(),
-       isVerified);
-  else if (publicKey.getKeyType() == KEY_TYPE_RSA)
-    error = RsaPublicKeyLite::verifySha256WithRsaSignature
-      (signatureBits, Blob(content, sizeof(content)), publicKey.getKeyDer(),
-       isVerified);
-  else
-    // We don't expect this.
-    throw Error("Unrecognized key type");
-
-  if (!isVerified) {
+  if (!VerificationHelpers::verifySignature
+      (Blob(content, sizeof(content)), signatureBits, PublicKey(publicKeyBits))) {
     tpm_->deleteKey(keyName);
     throw Error("Certificate `" + certificate.getName().toUri() +
       "` and private key `" + keyName.toUri() + "` do not match");

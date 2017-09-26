@@ -25,9 +25,7 @@
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
-#include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
+#include <ndn-cpp/security/verification-helpers.hpp>
 #include <ndn-cpp/security/policy/policy-manager.hpp>
 
 using namespace std;
@@ -39,38 +37,20 @@ PolicyManager::verifySignature
   (const Signature* signature, const SignedBlob& signedBlob,
    const Blob& publicKeyDer)
 {
-  ndn_Error error;
-  bool verified;
-
   if (dynamic_cast<const DigestSha256Signature *>(signature))
-    return CryptoLite::verifyDigestSha256Signature
-      (signature->getSignature(), signedBlob.getSignedPortionBlobLite());
+    return VerificationHelpers::verifyDigest
+      (signedBlob.signedBuf(), signedBlob.signedSize(),
+       signature->getSignature().buf(), signature->getSignature().size(),
+       DIGEST_ALGORITHM_SHA256);
 #if NDN_CPP_HAVE_LIBCRYPTO
-  else if (dynamic_cast<const Sha256WithRsaSignature *>(signature)) {
+  else if (dynamic_cast<const Sha256WithRsaSignature *>(signature) ||
+           dynamic_cast<const Sha256WithEcdsaSignature *>(signature)) {
     if (publicKeyDer.isNull())
       return false;
-    if ((error = RsaPublicKeyLite::verifySha256WithRsaSignature
-         (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
-          publicKeyDer, verified)) != 0) {
-      if (error == NDN_ERROR_Error_decoding_key)
-        throw UnrecognizedKeyFormatException("Error decoding public key");
-      else
-        throw SecurityException(ndn_getErrorString(error));
-    }
-    return verified;
-  }
-  else if (dynamic_cast<const Sha256WithEcdsaSignature *>(signature)) {
-    if (publicKeyDer.isNull())
-      return false;
-    if ((error = EcPublicKeyLite::verifySha256WithEcdsaSignature
-         (signature->getSignature(), signedBlob.getSignedPortionBlobLite(),
-          publicKeyDer, verified)) != 0) {
-      if (error == NDN_ERROR_Error_decoding_key)
-        throw UnrecognizedKeyFormatException("Error decoding public key");
-      else
-        throw SecurityException(ndn_getErrorString(error));
-    }
-    return verified;
+    return VerificationHelpers::verifySignature
+      (signedBlob.signedBuf(), signedBlob.signedSize(),
+       signature->getSignature().buf(), signature->getSignature().size(),
+       PublicKey(publicKeyDer), DIGEST_ALGORITHM_SHA256);
   }
   else
 #endif
