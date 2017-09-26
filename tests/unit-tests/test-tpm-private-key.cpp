@@ -25,6 +25,7 @@
 #include <ndn-cpp/lite/security/ec-public-key-lite.hpp>
 #include <ndn-cpp/lite/security/rsa-public-key-lite.hpp>
 #include <ndn-cpp/security/certificate/public-key.hpp>
+#include <ndn-cpp/security/verification-helpers.hpp>
 #include <ndn-cpp/security/tpm/tpm-private-key.hpp>
 
 using namespace std;
@@ -290,20 +291,8 @@ TEST_F(TestTpmPrivateKey, GenerateKey)
     // Sign and verify.
     Blob signature = key->sign(data, sizeof(data), DIGEST_ALGORITHM_SHA256);
 
-    // TODO: Move verify into PublicKey?
-    bool result;
-    ndn_Error error;
-    if (dataSet.keyParams->getKeyType() == KEY_TYPE_ECDSA)
-      error = EcPublicKeyLite::verifySha256WithEcdsaSignature
-        (signature, Blob(data, sizeof(data)), publicKey.getKeyDer(), result);
-    else if (dataSet.keyParams->getKeyType() == KEY_TYPE_RSA)
-      error = RsaPublicKeyLite::verifySha256WithRsaSignature
-        (signature, Blob(data, sizeof(data)), publicKey.getKeyDer(), result);
-    else
-      // We don't expect this.
-      FAIL() << "Unrecognized key type";
-
-    ASSERT_EQ(NDN_ERROR_success, error) << "Error in verify";
+    bool result = VerificationHelpers::verifySignature
+      (Blob(data, sizeof(data)), signature, publicKey);
     ASSERT_TRUE(result);
 
     // Check that another generated private key is different.
