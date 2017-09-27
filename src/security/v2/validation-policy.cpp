@@ -46,7 +46,7 @@ ValidationPolicy::setInnerPolicy
 }
 
 void
-ValidationPolicy::checkPolicy
+ValidationPolicy::checkCertificatePolicy
   (const CertificateV2& certificate,
    const ptr_lib::shared_ptr<ValidationState>& state,
    const ValidationContinuation& continueValidation)

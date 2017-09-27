@@ -131,7 +131,7 @@ public:
    * See the checkPolicy(Data) documentation for the semantics.
    */
   virtual void
-  checkPolicy
+  checkCertificatePolicy
     (const CertificateV2& certificate,
      const ptr_lib::shared_ptr<ValidationState>& state,
      const ValidationContinuation& continueValidation);
