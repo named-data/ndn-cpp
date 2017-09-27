@@ -89,7 +89,6 @@ public:
   const CertificateCacheV2&
   getUnverifiedCertificateCache() const { return verifiedCertificateCache_; }
 
-protected:
   /**
    * Load a static trust anchor. Static trust anchors are permanently associated
    * with the validator and never expire.
