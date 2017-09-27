@@ -62,7 +62,7 @@ CertificateFetcher::fetch
   // Fetch asynchronously.
   doFetch
     (certificateRequest, state,
-     bind(&CertificateFetcher::fetchContinuation, this, _1, _2, continueValidation));
+     bind(&CertificateFetcher::continueFetch, this, _1, _2, continueValidation));
 }
 
 }

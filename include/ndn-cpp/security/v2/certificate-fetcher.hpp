@@ -103,7 +103,7 @@ private:
    * This is the continuation for the fetch method.
    */
   void
-  fetchContinuation
+  continueFetch
     (const ptr_lib::shared_ptr<CertificateV2>& certificate,
      const ptr_lib::shared_ptr<ValidationState>& state,
      const ValidationContinuation& continueValidation)
