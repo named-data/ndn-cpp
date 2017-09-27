@@ -43,7 +43,7 @@ PibIdentityContainer::add(const Name& identityName)
 {
   if (identityNames_.count(identityName) == 0) {
     identityNames_.insert(identityName);
-    identities_[identityName] = shared_ptr<PibIdentityImpl>
+    identities_[identityName] = ptr_lib::shared_ptr<PibIdentityImpl>
       (new PibIdentityImpl(identityName, pibImpl_, true));
   }
 
