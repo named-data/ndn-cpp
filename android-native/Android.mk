@@ -524,7 +524,12 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/lp/incoming-face-id.cpp \
   src/ndn-cpp/src/lp/lp-packet.cpp \
   src/ndn-cpp/src/security/key-chain.cpp \
+  src/ndn-cpp/src/security/key-params.cpp \
+  src/ndn-cpp/src/security/safe-bag.cpp \
   src/ndn-cpp/src/security/security-exception.cpp \
+  src/ndn-cpp/src/security/signing-info.cpp \
+  src/ndn-cpp/src/security/validity-period.cpp \
+  src/ndn-cpp/src/security/verification-helpers.cpp \
   src/ndn-cpp/src/security/certificate/certificate-extension.cpp \
   src/ndn-cpp/src/security/certificate/certificate-subject-description.cpp \
   src/ndn-cpp/src/security/certificate/certificate.cpp \
@@ -537,10 +542,31 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/security/identity/memory-identity-storage.cpp \
   src/ndn-cpp/src/security/identity/memory-private-key-storage.cpp \
   src/ndn-cpp/src/security/identity/private-key-storage.cpp \
+  src/ndn-cpp/src/security/pib/pib-certificate-container.cpp \
+  src/ndn-cpp/src/security/pib/pib-identity-container.cpp \
+  src/ndn-cpp/src/security/pib/pib-identity.cpp \
+  src/ndn-cpp/src/security/pib/pib-key-container.cpp \
+  src/ndn-cpp/src/security/pib/pib-key.cpp \
+  src/ndn-cpp/src/security/pib/pib-memory.cpp \
+  src/ndn-cpp/src/security/pib/pib-sqlite3.cpp \
+  src/ndn-cpp/src/security/pib/pib.cpp \
+  src/ndn-cpp/src/security/pib/detail/pib-identity-impl.cpp \
+  src/ndn-cpp/src/security/pib/detail/pib-key-impl.cpp \
   src/ndn-cpp/src/security/policy/config-policy-manager.cpp \
   src/ndn-cpp/src/security/policy/no-verify-policy-manager.cpp \
   src/ndn-cpp/src/security/policy/policy-manager.cpp \
   src/ndn-cpp/src/security/policy/self-verify-policy-manager.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-back-end-file.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-back-end-memory.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-back-end-osx.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-back-end.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-key-handle-memory.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-key-handle-osx.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-key-handle.cpp \
+  src/ndn-cpp/src/security/tpm/tpm-private-key.cpp \
+  src/ndn-cpp/src/security/tpm/tpm.cpp \
+  src/ndn-cpp/src/security/v2/certificate-cache-v2.cpp \
+  src/ndn-cpp/src/security/v2/certificate-v2.cpp \
   src/ndn-cpp/src/transport/async-tcp-transport.cpp \
   src/ndn-cpp/src/transport/async-unix-transport.cpp \
   src/ndn-cpp/src/transport/tcp-transport.cpp \
@@ -555,6 +581,7 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/util/logging.cpp \
   src/ndn-cpp/src/util/memory-content-cache.cpp \
   src/ndn-cpp/src/util/segment-fetcher.cpp \
+  src/ndn-cpp/src/util/sqlite3-statement.cpp \
   src/ndn-cpp/src/util/regex/ndn-regex-backref-manager.cpp \
   src/ndn-cpp/src/util/regex/ndn-regex-backref-matcher.cpp \
   src/ndn-cpp/src/util/regex/ndn-regex-component-matcher.cpp \
