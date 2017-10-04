@@ -963,9 +963,11 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
 
   ptr_lib::shared_ptr<Signature> signatureInfo;
 
-  if (key->getKeyType() == KEY_TYPE_RSA)
+  if (key->getKeyType() == KEY_TYPE_RSA &&
+      params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithRsaSignature());
-  else if (key->getKeyType() == KEY_TYPE_ECDSA)
+  else if (key->getKeyType() == KEY_TYPE_ECDSA &&
+           params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithEcdsaSignature());
   else
     throw Error("Unsupported key type");
