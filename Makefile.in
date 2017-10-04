@@ -587,6 +587,7 @@ bin_unit_tests_test_interval_OBJECTS =  \
 	$(am_bin_unit_tests_test_interval_OBJECTS)
 bin_unit_tests_test_interval_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_key_chain_OBJECTS = tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT)
 bin_unit_tests_test_key_chain_OBJECTS =  \
 	$(am_bin_unit_tests_test_key_chain_OBJECTS)
@@ -1862,7 +1863,9 @@ bin_unit_tests_test_interest_methods_LDADD = libndn-cpp.la
 bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
-bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp \
+  tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
 bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
@@ -3065,6 +3068,9 @@ bin/unit-tests/test-interval$(EXEEXT): $(bin_unit_tests_test_interval_OBJECTS) $
 tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
@@ -3684,6 +3690,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_name_conventions-test-name-conventions.Po@am__quote@
@@ -4228,6 +4235,20 @@ tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj: tests/unit-te
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-key-chain.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.obj `if test -f 'tests/unit-tests/test-key-chain.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-key-chain.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-key-chain.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.o: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.obj: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
 
 contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
