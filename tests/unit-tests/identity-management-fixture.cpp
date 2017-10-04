@@ -96,17 +96,11 @@ IdentityManagementFixture::addCertificate
   // Set the content.
   certificate->setContent(key->getPublicKey());
 
-#if 0 // debug
-  // Set the SignatureInfo.
-  SignatureInfo info;
-  info.setValidityPeriod(security::ValidityPeriod(time::system_clock::now(),
-                                                  time::system_clock::now() + time::days(10)));
-#endif
-
   SigningInfo params(key);
-#if 0 // debug
-  params.setSignatureInfo(info);
-#endif
+  // Validity period of 10 days.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds();
+  params.setValidityPeriod(ValidityPeriod(now, now + 10 * 24 * 3600 * 1000.0));
+
   keyChain_.sign(*certificate, params);
   return certificate;
 }
