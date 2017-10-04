@@ -257,6 +257,29 @@ public:
   getDigestAlgorithm() const { return digestAlgorithm_; }
 
   /**
+   * Set the validity period for the signature info.
+   * Note that the equivalent ndn-cxx method uses a semi-prepared SignatureInfo,
+   * but this method only uses the ValidityPeriod from the SignatureInfo.
+   * @param validityPeriod The validity period, which is copied.
+   * @return This SigningInfo.
+   */
+  SigningInfo&
+  setValidityPeriod(const ValidityPeriod& validityPeriod)
+  {
+    validityPeriod_ = validityPeriod;
+    return *this;
+  }
+
+  /**
+   * Get the validity period for the signature info.
+   * Note that the equivalent ndn-cxx method uses a semi-prepared SignatureInfo,
+   * but this method only uses the ValidityPeriod from the SignatureInfo.
+   * @return The validity period.
+   */
+  const ValidityPeriod&
+  getValidityPeriod() const { return validityPeriod_; }
+
+  /**
    * Get the string representation of this SigningInfo.
    * @return The string representation.
    */
@@ -285,7 +308,7 @@ private:
   ptr_lib::shared_ptr<PibIdentity> identity_;
   ptr_lib::shared_ptr<PibKey> key_;
   DigestAlgorithm digestAlgorithm_;
-  // Omit signatureInfo_ until we need it.
+  ValidityPeriod validityPeriod_;
 };
 
 inline std::ostream&
