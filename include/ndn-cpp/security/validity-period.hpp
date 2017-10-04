@@ -40,6 +40,21 @@ public:
    */
   ValidityPeriod() {}
 
+  /** Create ValidityPeriod with the given period.
+   * @param notBefore The beginning of the validity period range as milliseconds
+   * since Jan 1, 1970 UTC. Note that this is rounded up to the nearest whole
+   * second.
+   * @param notAfter The end of the validity period range as milliseconds
+   * since Jan 1, 1970 UTC. Note that this is rounded down to the nearest whole
+   * second.
+   */
+  ValidityPeriod
+    (MillisecondsSince1970 notBefore,
+     MillisecondsSince1970 notAfter)
+  {
+    validityPeriod_.setPeriod(notBefore, notAfter);
+  }
+
   /**
    * Check if the period has been set.
    * @return True if the period has been set, false if the period is not

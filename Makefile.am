@@ -597,7 +597,8 @@ bin_unit_tests_test_interval_SOURCES = tests/unit-tests/test-interval.cpp contri
 bin_unit_tests_test_interval_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_interval_LDADD = libndn-cpp.la
 
-bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp \
+  tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
 

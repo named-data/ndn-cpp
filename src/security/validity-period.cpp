@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <math.h>
 #include <stdexcept>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
@@ -33,7 +34,8 @@ bool
 ValidityPeriod::isValid(MillisecondsSince1970 time) const
 {
   if (time < 0.0)
-    time = ndn_getNowMilliseconds();
+    // Round up to the nearest second like in setPeriod.
+    time = round(ceil(round(ndn_getNowMilliseconds()) / 1000.0) * 1000.0);
 
   return validityPeriod_.isValid(time);
 }
