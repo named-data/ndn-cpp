@@ -377,8 +377,6 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
 
   // Set the name.
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  // Round up to the nearest second.
-  now = round(ceil(round(now) / 1000.0) * 1000.0);
   Name certificateName = key->getName();
   certificateName.append("self").appendVersion((uint64_t)now);
   certificate->setName(certificateName);
