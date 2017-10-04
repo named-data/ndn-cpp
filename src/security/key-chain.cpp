@@ -377,6 +377,8 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
 
   // Set the name.
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
+  // Round up to the nearest second.
+  now = round(ceil(round(now) / 1000.0) * 1000.0);
   Name certificateName = key->getName();
   certificateName.append("self").appendVersion((uint64_t)now);
   certificate->setName(certificateName);
@@ -391,11 +393,9 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
 
   // Set the signature-info.
   SigningInfo signingInfo(key);
-  Name dummyKeyName;
-  certificate->setSignature(*prepareSignatureInfo(signingInfo, dummyKeyName));
   // Set a 20-year validity period.
-  ValidityPeriod::getFromSignature(certificate->getSignature()).setPeriod
-    (now, now + 20 * 365 * 24 * 3600 * 1000.0);
+  signingInfo.setValidityPeriod
+    (ValidityPeriod(now, now + 20 * 365 * 24 * 3600 * 1000.0));
 
   sign(*certificate, signingInfo);
 
@@ -969,6 +969,13 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
     signatureInfo.reset(new Sha256WithEcdsaSignature());
   else
     throw Error("Unsupported key type");
+
+  if (params.getValidityPeriod().hasPeriod() &&
+      ValidityPeriod::canGetFromSignature(signatureInfo.get()))
+    // Set the ValidityPeriod from the SigningInfo params.
+    ValidityPeriod::getFromSignature(signatureInfo.get()).setPeriod
+      (params.getValidityPeriod().getNotBefore(),
+       params.getValidityPeriod().getNotAfter());
 
   KeyLocator& keyLocator = KeyLocator::getFromSignature(signatureInfo.get());
   keyLocator.setType(ndn_KeyLocatorType_KEYNAME);
