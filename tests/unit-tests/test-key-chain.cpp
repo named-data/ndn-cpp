@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <cstdio>
+#include "identity-management-fixture.hpp"
 #include <ndn-cpp/security/key-chain.hpp>
 
 using namespace std;
@@ -38,6 +39,7 @@ public:
   }
 
   KeyChain keyChain_;
+  IdentityManagementFixture fixture_;
 };
 
 TEST_F(TestKeyChain, Management)
@@ -141,6 +143,20 @@ TEST_F(TestKeyChain, Management)
   ASSERT_THROW(keyChain_.getPib().getIdentity(identityName), Pib::Error);
   ASSERT_TRUE(keyChain_.getPib().identities_.identities_.find(identityName) ==
               keyChain_.getPib().identities_.identities_.end());
+}
+
+TEST_F(TestKeyChain, SelfSignedCertValidity)
+{
+  ptr_lib::shared_ptr<CertificateV2> certificate = fixture_.addIdentity
+    ("/Security/V2/TestKeyChain/SelfSignedCertValidity")->getDefaultKey
+     ()->getDefaultCertificate();
+  ASSERT_TRUE(certificate->isValid());
+  // Check 10 years from now.
+  ASSERT_TRUE(certificate->isValid
+    (ndn_getNowMilliseconds() + 10 * 365 * 24 * 3600 * 1000.0));
+  // Check that notAfter is later than 10 years from now.
+  ASSERT_TRUE(certificate->getValidityPeriod().getNotAfter() >
+    ndn_getNowMilliseconds() + 10 * 365 * 24 * 3600 * 1000.0);
 }
 
 int
