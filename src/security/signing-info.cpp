@@ -105,6 +105,7 @@ SigningInfo::reset(SignerType signerType)
   name_.clear();
   identity_.reset();
   key_.reset();
+  validityPeriod_.clear();
 }
 
 }
