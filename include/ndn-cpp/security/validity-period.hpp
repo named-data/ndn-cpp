@@ -40,7 +40,8 @@ public:
    */
   ValidityPeriod() {}
 
-  /** Create ValidityPeriod with the given period.
+  /** 
+   * Create a ValidityPeriod with the given period.
    * @param notBefore The beginning of the validity period range as milliseconds
    * since Jan 1, 1970 UTC. Note that this is rounded up to the nearest whole
    * second.

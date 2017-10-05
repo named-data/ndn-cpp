@@ -288,8 +288,9 @@ public:
   /**
    * Wire encode the Data object, sign it according to the supplied signing
    * parameters, and set its signature.
-   * @param data The Data object to be signed.  This updates its signature and
-   * key locator field and wireEncoding.
+   * @param data The Data object to be signed. This replaces its Signature
+   * object based on the type of key and other info in the SigningInfo params, 
+   * and updates the wireEncoding.
    * @param params The signing parameters.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
@@ -306,8 +307,9 @@ public:
    * identity, and set its signature.
    * If this is a security v1 KeyChain then use the IdentityManager to get the
    * default identity. Otherwise use the PIB.
-   * @param data The Data object to be signed.  This updates its signature and
-   * key locator field and wireEncoding.
+   * @param data The Data object to be signed. This replaces its Signature
+   * object based on the type of key of the default identity, and updates the
+   * wireEncoding.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
    */

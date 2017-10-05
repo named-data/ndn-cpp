@@ -377,8 +377,6 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
 
   // Set the name.
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  // Round up to the nearest second.
-  now = round(ceil(round(now) / 1000.0) * 1000.0);
   Name certificateName = key->getName();
   certificateName.append("self").appendVersion((uint64_t)now);
   certificate->setName(certificateName);
@@ -963,9 +961,11 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
 
   ptr_lib::shared_ptr<Signature> signatureInfo;
 
-  if (key->getKeyType() == KEY_TYPE_RSA)
+  if (key->getKeyType() == KEY_TYPE_RSA &&
+      params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithRsaSignature());
-  else if (key->getKeyType() == KEY_TYPE_ECDSA)
+  else if (key->getKeyType() == KEY_TYPE_ECDSA &&
+           params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithEcdsaSignature());
   else
     throw Error("Unsupported key type");
