@@ -52,9 +52,6 @@ namespace ndn {
  * already verified, and an unverified certificate cache for saving pre-fetched
  * but not yet verified certificates.
  */
-
-#include "certificate-storage.hpp"
-
 class Validator : public CertificateStorage {
 public:
   /**
