@@ -33,12 +33,6 @@ using namespace ndn;
 
 class TestKeyChain : public ::testing::Test {
 public:
-  TestKeyChain()
-  : keyChain_("pib-memory:", "tpm-memory:")
-  {
-  }
-
-  KeyChain keyChain_;
   IdentityManagementFixture fixture_;
 };
 
@@ -47,16 +41,16 @@ TEST_F(TestKeyChain, Management)
   Name identityName("/test/id");
   Name identity2Name("/test/id2");
 
-  ASSERT_EQ(0, keyChain_.getPib().identities_.size());
-  ASSERT_THROW(keyChain_.getPib().getDefaultIdentity(), Pib::Error);
+  ASSERT_EQ(0, fixture_.keyChain_.getPib().identities_.size());
+  ASSERT_THROW(fixture_.keyChain_.getPib().getDefaultIdentity(), Pib::Error);
 
   // Create an identity.
-  ptr_lib::shared_ptr<PibIdentity> id = keyChain_.createIdentityV2(identityName);
+  ptr_lib::shared_ptr<PibIdentity> id = fixture_.keyChain_.createIdentityV2(identityName);
   ASSERT_TRUE(!!id);
-  ASSERT_TRUE(keyChain_.getPib().identities_.identities_.find(identityName) !=
-              keyChain_.getPib().identities_.identities_.end());
+  ASSERT_TRUE(fixture_.keyChain_.getPib().identities_.identities_.find(identityName) !=
+              fixture_.keyChain_.getPib().identities_.identities_.end());
   // The first added identity becomes the default identity.
-  ASSERT_NO_THROW(keyChain_.getPib().getDefaultIdentity());
+  ASSERT_NO_THROW(fixture_.keyChain_.getPib().getDefaultIdentity());
   // The default key of the added identity must exist.
   ptr_lib::shared_ptr<PibKey> key;
   ASSERT_NO_THROW(key = id->getDefaultKey());
@@ -67,7 +61,7 @@ TEST_F(TestKeyChain, Management)
   Name key1Name = key->getName();
   ASSERT_NO_THROW(id->getKey(key1Name));
   ASSERT_EQ(1, id->getKeys().size());
-  keyChain_.deleteKey(*id, *key);
+  fixture_.keyChain_.deleteKey(*id, *key);
 /* TODO: Implement key validity.
   // The key instance should not be valid anymore.
   ASSERT_TRUE(!key);
@@ -76,7 +70,7 @@ TEST_F(TestKeyChain, Management)
   ASSERT_EQ(0, id->getKeys().size());
 
   // Create another key.
-  keyChain_.createKey(*id);
+  fixture_.keyChain_.createKey(*id);
   // The added key becomes the default key.
   ASSERT_NO_THROW(id->getDefaultKey());
   ptr_lib::shared_ptr<PibKey> key2 = id->getDefaultKey();
@@ -86,7 +80,7 @@ TEST_F(TestKeyChain, Management)
   ASSERT_NO_THROW(key2->getDefaultCertificate());
 
   // Create a third key.
-  ptr_lib::shared_ptr<PibKey> key3 = keyChain_.createKey(*id);
+  ptr_lib::shared_ptr<PibKey> key3 = fixture_.keyChain_.createKey(*id);
   ASSERT_TRUE(!key3->getName().equals(key2->getName()));
   // The added key will not be the default key, because the default key already exists.
   ASSERT_TRUE(id->getDefaultKey()->getName().equals(key2->getName()));
@@ -98,16 +92,16 @@ TEST_F(TestKeyChain, Management)
   ptr_lib::shared_ptr<CertificateV2> key3Cert1 = 
     key3->getCertificates().certificates_.begin()->second;
   Name key3CertName = key3Cert1->getName();
-  keyChain_.deleteCertificate(*key3, key3CertName);
+  fixture_.keyChain_.deleteCertificate(*key3, key3CertName);
   ASSERT_EQ(0, key3->getCertificates().size());
   ASSERT_THROW(key3->getDefaultCertificate(), Pib::Error);
 
   // Add a certificate.
-  keyChain_.addCertificate(*key3, *key3Cert1);
+  fixture_.keyChain_.addCertificate(*key3, *key3Cert1);
   ASSERT_EQ(1, key3->getCertificates().size());
   ASSERT_NO_THROW(key3->getDefaultCertificate());
   // Overwriting the certificate should work.
-  keyChain_.addCertificate(*key3, *key3Cert1);
+  fixture_.keyChain_.addCertificate(*key3, *key3Cert1);
   ASSERT_EQ(1, key3->getCertificates().size());
   // Add another certificate.
   ptr_lib::shared_ptr<CertificateV2> key3Cert2(new CertificateV2(*key3Cert1));
@@ -115,34 +109,37 @@ TEST_F(TestKeyChain, Management)
   key3Cert2Name.append("Self");
   key3Cert2Name.appendVersion(1);
   key3Cert2->setName(key3Cert2Name);
-  keyChain_.addCertificate(*key3, *key3Cert2);
+  fixture_.keyChain_.addCertificate(*key3, *key3Cert2);
   ASSERT_EQ(2, key3->getCertificates().size());
 
   // Set the default certificate.
   ASSERT_TRUE(key3->getDefaultCertificate()->getName().equals(key3CertName));
-  keyChain_.setDefaultCertificate(*key3, *key3Cert2);
+  fixture_.keyChain_.setDefaultCertificate(*key3, *key3Cert2);
   ASSERT_TRUE(key3->getDefaultCertificate()->getName().equals(key3Cert2Name));
 
   // Set the default key.
   ASSERT_TRUE(id->getDefaultKey()->getName().equals(key2->getName()));
-  keyChain_.setDefaultKey(*id, *key3);
+  fixture_.keyChain_.setDefaultKey(*id, *key3);
   ASSERT_TRUE(id->getDefaultKey()->getName().equals(key3->getName()));
 
   // Set the default identity.
-  ptr_lib::shared_ptr<PibIdentity> id2 = keyChain_.createIdentityV2(identity2Name);
-  ASSERT_TRUE(keyChain_.getPib().getDefaultIdentity()->getName().equals(id->getName()));
-  keyChain_.setDefaultIdentity(*id2);
-  ASSERT_TRUE(keyChain_.getPib().getDefaultIdentity()->getName().equals(id2->getName()));
+  ptr_lib::shared_ptr<PibIdentity> id2 = fixture_.keyChain_.createIdentityV2
+    (identity2Name);
+  ASSERT_TRUE(fixture_.keyChain_.getPib().getDefaultIdentity()->getName().equals
+              (id->getName()));
+  fixture_.keyChain_.setDefaultIdentity(*id2);
+  ASSERT_TRUE(fixture_.keyChain_.getPib().getDefaultIdentity()->getName().equals
+              (id2->getName()));
 
   // Delete an identity.
-  keyChain_.deleteIdentity(*id);
+  fixture_.keyChain_.deleteIdentity(*id);
 /* TODO: Implement identity validity.
   // The identity instance should not be valid any more.
   BOOST_CHECK(!id);
 */
-  ASSERT_THROW(keyChain_.getPib().getIdentity(identityName), Pib::Error);
-  ASSERT_TRUE(keyChain_.getPib().identities_.identities_.find(identityName) ==
-              keyChain_.getPib().identities_.identities_.end());
+  ASSERT_THROW(fixture_.keyChain_.getPib().getIdentity(identityName), Pib::Error);
+  ASSERT_TRUE(fixture_.keyChain_.getPib().identities_.identities_.find(identityName) ==
+              fixture_.keyChain_.getPib().identities_.identities_.end());
 }
 
 TEST_F(TestKeyChain, SelfSignedCertValidity)
