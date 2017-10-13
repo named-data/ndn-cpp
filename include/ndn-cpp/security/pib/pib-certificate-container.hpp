@@ -98,7 +98,7 @@ private:
   friend TestKeyChain_Management_Test;
 
   /**
-   * Create a CertificateContainer for a key with keyName. This constructor
+   * Create a PibCertificateContainer for a key with keyName. This constructor
    * should only be called by PibKeyImpl.
    * @param keyName The name of the key, which is copied.
    * @param pibImpl The PIB backend implementation.
