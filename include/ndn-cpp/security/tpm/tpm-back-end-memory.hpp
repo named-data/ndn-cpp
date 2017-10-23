@@ -107,8 +107,7 @@ private:
    * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @throw TpmBackEnd::Error if a key with name keyName already exists, or for
-   * an error importing the key.
+   * @throw TpmBackEnd::Error for an error importing the key.
    */
   virtual void
   doImportKey
