@@ -78,7 +78,7 @@ public:
    * @param params The KeyParams for creating the key.
    * @return The handle of the created key.
    * @throw Tpm::Error if params is invalid.
-   * @throw TpmBackEnd::Error if the key already exists or cannot be created.
+   * @throw TpmBackEnd::Error if the key cannot be created.
    */
   ptr_lib::shared_ptr<TpmKeyHandle>
   createKey(const Name& identityName, const KeyParams& params);
