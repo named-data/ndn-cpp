@@ -1098,8 +1098,15 @@ ConfigPolicyManager::TrustAnchorRefreshManager::refreshAnchors()
       for (size_t i = 0; i < certificateList.size(); ++i) {
         if (isSecurityV1_)
           certificateCache_.deleteCertificate(Name(certificateList[i]));
-        else
-          certificateCacheV2_.deleteCertificate(Name(certificateList[i]));
+        else {
+          // The name in the CertificateCacheV2 contains the but the name in the
+          // certificateList does not, so find the certificate based on the
+          // prefix first.
+          ptr_lib::shared_ptr<CertificateV2> foundCertificate =
+            certificateCacheV2_.find(Name(certificateList[i]));
+          if (foundCertificate)
+            certificateCacheV2_.deleteCertificate(foundCertificate->getName());
+        }
       }
 
       directoriesToAdd.push_back(directory);
