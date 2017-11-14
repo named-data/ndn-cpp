@@ -119,7 +119,7 @@ public:
   }
 
   /**
-   * @brief Generate a symmetric key.
+   * Generate a symmetric key.
    * @param keyName The name of the key.
    * @param params The parameters of the key.
    */

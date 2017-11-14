@@ -91,7 +91,7 @@ public:
   getMaxDepth() const { return maxDepth_; }
 
   /**
-   * @brief Asynchronously validate the Data packet.
+   * Asynchronously validate the Data packet.
    * @param The Data packet to validate, which is copied.
    * @param successCallback On validation success, this calls
    * successCallback(data).
@@ -104,7 +104,7 @@ public:
            const DataValidationFailureCallback& failureCallback);
 
   /**
-   * @brief Asynchronously validate the Interest.
+   * Asynchronously validate the Interest.
    * @param The Interest to validate, which is copied.
    * @param successCallback On validation success, this calls
    * successCallback(interest).

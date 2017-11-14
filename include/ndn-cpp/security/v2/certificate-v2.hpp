@@ -135,7 +135,7 @@ public:
   getIssuerId() const { return getName().get(ISSUER_ID_OFFSET); }
 
   /**
-   * @brief Get public key DER encoding.
+   * Get the public key DER encoding.
    * @return The DER encoding Blob.
    * @throws CertificateV2::Error If the public key is not set.
    */
