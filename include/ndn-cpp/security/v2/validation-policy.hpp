@@ -51,14 +51,14 @@ public:
   /**
    * Set the inner policy.
    * Multiple assignments of the inner policy will create a "chain" of linked
-   * policies.The inner policy from the latest invocation of setInnerPolicy will
-   * be at the bottom of the policy list.
+   * policies. The inner policy from the latest invocation of setInnerPolicy
+   * will be at the bottom of the policy list.
    * For example, the sequence `this->setInnerPolicy(policy1)` and
    * `this->setInnerPolicy(policy2)`, will result in
-   * `this->m_innerPolicy == policy1`,
-   * this->m_innerPolicy->m_innerPolicy == policy2', and
-   * `this->m_innerPolicy->m_innerPolicy->m_innerPolicy == null`.
-   * @throw invalid_argument exception, if the innerPolicy is null.
+   * `this->innerPolicy_ == policy1`,
+   * this->innerPolicy_->innerPolicy_ == policy2', and
+   * `this->innerPolicy_->innerPolicy_->innerPolicy_ == null`.
+   * @throw invalid_argument if the innerPolicy is null.
    */
   void
   setInnerPolicy(ptr_lib::shared_ptr<ValidationPolicy> innerPolicy);
@@ -104,6 +104,10 @@ public:
    * If the packet conforms to the policy and a key needs to be fetched, then
    * the policy should call
    * continueValidation(state, <appropriate-key-request-instance>).
+   * @param data The Data packet to check.
+   * @param state The ValidationState of this validation.
+   * @param continueValidation The policy should call continueValidation() as
+   * described above.
    */
   virtual void
   checkPolicy
@@ -116,6 +120,10 @@ public:
    * Depending on implementation of the policy, this check can be done 
    * synchronously or asynchronously.
    * See the checkPolicy(Data) documentation for the semantics.
+   * @param interest The Interest packet to check.
+   * @param state The ValidationState of this validation.
+   * @param continueValidation The policy should call continueValidation() as
+   * described above.
    */
   virtual void
   checkPolicy
@@ -129,6 +137,10 @@ public:
    * Depending on implementation of the policy, this check can be done
    * synchronously or asynchronously.
    * See the checkPolicy(Data) documentation for the semantics.
+   * @param certificate The certificate to check.
+   * @param state The ValidationState of this validation.
+   * @param continueValidation The policy should call continueValidation() as
+   * described above.
    */
   virtual void
   checkCertificatePolicy
