@@ -117,8 +117,8 @@ public:
   fail(const ValidationError& error) = 0;
 
   /**
-   * Get the depth of certificate chain.
-   * @return The depth of certificate chain.
+   * Get the depth of the certificate chain.
+   * @return The depth of the certificate chain.
    */
   size_t
   getDepth() const { return certificateChain_.size(); }
@@ -185,6 +185,7 @@ private:
    * trustedCertificate.
    * When the certificate chain cannot be verified, this method will call
    * fail() with the INVALID_SIGNATURE error code and the appropriate message.
+   * This is only called by the Validator class.
    * @return The certificate to validate the original data packet, either the
    * last entry in the certificate chain or trustedCertificate if the
    * certificate chain is empty. However, return null if the signature of at
@@ -263,6 +264,10 @@ public:
    * finishes (i.e., until validateCertificateChain() and
    * validateOriginalPacket() have been called).
    * @param interest The Interest packet being validated, which is copied.
+   * @param successCallback This calls successCallback(interest) to report a
+   * successful Interest validation.
+   * @param failureCallback This calls failureCallback(interest, error) to
+   * report a failed Interest validation, where error is a ValidationError.
    */
   InterestValidationState
     (const Interest& interest,
