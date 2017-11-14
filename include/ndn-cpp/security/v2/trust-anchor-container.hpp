@@ -80,7 +80,7 @@ public:
    * @param isDirectory (optional) If true, then path is a directory. If false
    * or omitted, it is a single file.
    * @throws std::invalid_argument If refreshPeriod is not positive.
-   * @throws TrustAnchorContainer::Error a group with @p groupId already exists
+   * @throws TrustAnchorContainer::Error a group with groupId already exists
    */
   void
   insert
