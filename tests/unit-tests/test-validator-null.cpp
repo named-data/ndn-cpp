@@ -56,15 +56,15 @@ public:
     FAIL() << "Validation should not have failed";
   }
 
-  IdentityManagementFixture fixture;
+  IdentityManagementFixture fixture_;
 };
 
 TEST_F(TestValidatorNull, ValidateData)
 {
   ptr_lib::shared_ptr<PibIdentity> identity =
-    fixture.addIdentity("/TestValidator/Null");
+    fixture_.addIdentity("/TestValidator/Null");
   Data data("/Some/Other/Data/Name");
-  fixture.keyChain_.sign(data, SigningInfo(identity));
+  fixture_.keyChain_.sign(data, SigningInfo(identity));
 
   ValidatorNull validator;
   validator.validate
@@ -76,9 +76,9 @@ TEST_F(TestValidatorNull, ValidateData)
 TEST_F(TestValidatorNull, ValidateInterest)
 {
   ptr_lib::shared_ptr<PibIdentity> identity =
-    fixture.addIdentity("/TestValidator/Null");
+    fixture_.addIdentity("/TestValidator/Null");
   Interest interest("/Some/Other/Interest/Name");
-  fixture.keyChain_.sign(interest, SigningInfo(identity));
+  fixture_.keyChain_.sign(interest, SigningInfo(identity));
 
   ValidatorNull validator;
   validator.validate
