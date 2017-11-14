@@ -92,29 +92,30 @@ public:
 
   /**
    * Asynchronously validate the Data packet.
-   * @param The Data packet to validate, which is copied.
+   * @param data The Data packet to validate, which is copied.
    * @param successCallback On validation success, this calls
    * successCallback(data).
    * @param failureCallback On validation failure, this calls
    * failureCallback(data, error) where error is a ValidationError.
    */
   void
-  validate(const Data& data,
-           const DataValidationSuccessCallback& successCallback,
-           const DataValidationFailureCallback& failureCallback);
+  validate
+    (const Data& data, const DataValidationSuccessCallback& successCallback,
+     const DataValidationFailureCallback& failureCallback);
 
   /**
    * Asynchronously validate the Interest.
-   * @param The Interest to validate, which is copied.
+   * @param interest The Interest to validate, which is copied.
    * @param successCallback On validation success, this calls
    * successCallback(interest).
    * @param failureCallback On validation failure, this calls
    * failureCallback(interest, error) where error is a ValidationError.
    */
   void
-  validate(const Interest& interest,
-           const InterestValidationSuccessCallback& successCallback,
-           const InterestValidationFailureCallback& failureCallback);
+  validate
+    (const Interest& interest,
+     const InterestValidationSuccessCallback& successCallback,
+     const InterestValidationFailureCallback& failureCallback);
 
 private:
   /**
