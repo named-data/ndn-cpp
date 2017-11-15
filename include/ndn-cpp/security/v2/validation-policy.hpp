@@ -25,6 +25,10 @@
 
 #include "validation-state.hpp"
 #include "certificate-request.hpp"
+#include "../../signature.hpp"
+
+// Give friend access to the tests.
+class TestValidator_ConstructorSetValidator_Test;
 
 namespace ndn {
 
@@ -148,12 +152,46 @@ public:
      const ptr_lib::shared_ptr<ValidationState>& state,
      const ValidationContinuation& continueValidation);
 
+  /** Extract the KeyLocator Name from a Data packet.
+   * The Data packet must contain a KeyLocator of type KEYNAME.
+   * Otherwise, state.fail is invoked with INVALID_KEY_LOCATOR.
+   * @param data The Data packet with the KeyLocator.
+   * @param state On error, this calls state.fail and returns an empty Name.
+   * @return The KeyLocator name, or an empty Name for failure.
+   */
+  static Name
+  getKeyLocatorName(const Data& data, ValidationState& state)
+  {
+    return getKeyLocatorNameFromSignature(*data.getSignature(), state);
+  }
+
+  /**
+   * Extract the KeyLocator Name from a signed Interest.
+   * The Interest must have SignatureInfo and contain a KeyLocator of type
+   * KEYNAME. Otherwise, state.fail is invoked with INVALID_KEY_LOCATOR.
+   * @param interest The signed Interest with the KeyLocator.
+   * @param state On error, this calls state.fail and returns an empty Name.
+   * @return The KeyLocator name, or an empty Name for failure.
+   */
+  static Name
+  getKeyLocatorName(const Interest& interest, ValidationState& state);
+
 private:
   // Disable the copy constructor and assignment operator.
   ValidationPolicy(const ValidationPolicy& other);
   ValidationPolicy& operator=(const ValidationPolicy& other);
 
+  /**
+   * A helper method for getKeyLocatorName.
+   */
+  static Name
+  getKeyLocatorNameFromSignature
+    (const Signature& signatureInfo, ValidationState& state);
+
 protected:
+  // Give friend access to the tests.
+  friend TestValidator_ConstructorSetValidator_Test;
+
   Validator* validator_;
   ptr_lib::shared_ptr<ValidationPolicy> innerPolicy_;
 };

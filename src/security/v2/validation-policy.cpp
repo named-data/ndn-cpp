@@ -54,4 +54,51 @@ ValidationPolicy::checkCertificatePolicy
   checkPolicy(static_cast<const Data&>(certificate), state, continueValidation);
 }
 
+Name
+ValidationPolicy::getKeyLocatorName
+  (const Interest& interest, ValidationState& state)
+{
+  const Name& name = interest.getName();
+  if (name.size() < 2) {
+    state.fail(ValidationError(ValidationError::INVALID_KEY_LOCATOR,
+      "Invalid signed Interest: name too short"));
+    return Name();
+  }
+
+  ptr_lib::shared_ptr<Signature> signatureInfo;
+  try {
+    // TODO: Generalize the WireFormat.
+    signatureInfo =
+      WireFormat::getDefaultWireFormat()->decodeSignatureInfoAndValue
+      (interest.getName().get(-2).getValue(),
+       interest.getName().get(-1).getValue());
+  } catch (std::exception& e) {
+    state.fail(ValidationError(ValidationError::INVALID_KEY_LOCATOR,
+      string("Invalid signed Interest: ") + e.what()));
+    return Name();
+  }
+
+  return getKeyLocatorNameFromSignature(*signatureInfo, state);
+}
+
+Name
+ValidationPolicy::getKeyLocatorNameFromSignature
+  (const Signature& signatureInfo, ValidationState& state)
+{
+  if (!KeyLocator::canGetFromSignature(&signatureInfo)) {
+    state.fail(ValidationError
+      (ValidationError::INVALID_KEY_LOCATOR, "KeyLocator is missing"));
+    return Name();
+  }
+
+  const KeyLocator& keyLocator = KeyLocator::getFromSignature(&signatureInfo);
+  if (keyLocator.getType() != ndn_KeyLocatorType_KEYNAME) {
+    state.fail(ValidationError
+      (ValidationError::INVALID_KEY_LOCATOR, "KeyLocator type is not Name"));
+    return Name();
+  }
+
+  return keyLocator.getKeyName();
+}
+
 }
