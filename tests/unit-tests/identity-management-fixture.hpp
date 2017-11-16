@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_PIB_DATA_FIXTURE_HPP
-#define NDN_PIB_DATA_FIXTURE_HPP
+#ifndef NDN_IDENTITY_MANAGEMENT_FIXTURE_HPP
+#define NDN_IDENTITY_MANAGEMENT_FIXTURE_HPP
 
 #include <set>
 #include <ndn-cpp/security/key-chain.hpp>
