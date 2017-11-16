@@ -65,7 +65,7 @@ public:
    * @throw invalid_argument if the innerPolicy is null.
    */
   void
-  setInnerPolicy(ptr_lib::shared_ptr<ValidationPolicy> innerPolicy);
+  setInnerPolicy(const ptr_lib::shared_ptr<ValidationPolicy>& innerPolicy);
 
   /**
    * Check if the inner policy is set.

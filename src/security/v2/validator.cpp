@@ -32,8 +32,8 @@ using namespace ndn::func_lib;
 namespace ndn {
 
 Validator::Validator
-  (ptr_lib::shared_ptr<ValidationPolicy> policy,
-   ptr_lib::shared_ptr<CertificateFetcher> certificateFetcher)
+  (const ptr_lib::shared_ptr<ValidationPolicy>& policy,
+   const ptr_lib::shared_ptr<CertificateFetcher>& certificateFetcher)
 : policy_(policy),
   certificateFetcher_(certificateFetcher),
   maxDepth_(25)

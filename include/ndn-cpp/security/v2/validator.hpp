@@ -60,8 +60,8 @@ public:
    * @param certificateFetcher The certificate fetcher implementation.
    */
   Validator
-    (ptr_lib::shared_ptr<ValidationPolicy> policy,
-     ptr_lib::shared_ptr<CertificateFetcher> certificateFetcher);
+    (const ptr_lib::shared_ptr<ValidationPolicy>& policy,
+     const ptr_lib::shared_ptr<CertificateFetcher>& certificateFetcher);
 
   /**
    * Get the ValidationPolicy given to the constructor.

@@ -31,7 +31,7 @@ ValidationPolicy::~ValidationPolicy() {}
 
 void
 ValidationPolicy::setInnerPolicy
-  (ptr_lib::shared_ptr<ValidationPolicy> innerPolicy)
+  (const ptr_lib::shared_ptr<ValidationPolicy>& innerPolicy)
 {
   if (!innerPolicy)
     throw invalid_argument("The innerPolicy argument cannot be null");
