@@ -79,6 +79,34 @@ IdentityManagementFixture::saveCertificate
   }
 }
 
+ptr_lib::shared_ptr<PibIdentity>
+IdentityManagementFixture::addSubCertificate
+  (const Name& subIdentityName, 
+   const ndn::ptr_lib::shared_ptr<ndn::PibIdentity>& issuer,
+   const KeyParams& params)
+{
+  ptr_lib::shared_ptr<PibIdentity> subIdentity =
+    addIdentity(subIdentityName, params);
+
+  ptr_lib::shared_ptr<CertificateV2> request = 
+    subIdentity->getDefaultKey()->getDefaultCertificate();
+
+  request->setName(request->getKeyName().append("parent").appendVersion(1));
+
+  SigningInfo certificateParams(issuer);
+  // Validity period of 20 years.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds();
+  certificateParams.setValidityPeriod
+    (ValidityPeriod(now, now + 20 * 365 * 24 * 3600 * 1000.0));
+
+  // Skip the AdditionalDescription.
+
+  keyChain_.sign(*request, certificateParams);
+  keyChain_.setDefaultCertificate(*subIdentity->getDefaultKey(), *request);
+
+  return subIdentity;
+}
+
 ptr_lib::shared_ptr<CertificateV2>
 IdentityManagementFixture::addCertificate
   (ptr_lib::shared_ptr<PibKey>& key, const string& issuerId)

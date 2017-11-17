@@ -60,7 +60,20 @@ public:
   bool
   saveCertificate(ndn::PibIdentity identity, const std::string& filePath);
 
-  // TODO: addSubCertificate
+  /**
+   * Issue a certificate for subIdentityName signed by issuer. If the identity
+   * does not exist, it is created. A new key is generated as the default key
+   * for the identity. A default certificate for the key is signed by the
+   * issuer using its default certificate.
+   * @param subIdentityName The name to issue the certificate for.
+   * @param issuer The identity of the signer.
+   * @return The sub identity.
+   */
+  ndn::ptr_lib::shared_ptr<ndn::PibIdentity>
+  addSubCertificate
+    (const ndn::Name& subIdentityName, 
+     const ndn::ptr_lib::shared_ptr<ndn::PibIdentity>& issuer,
+     const ndn::KeyParams& params = ndn::KeyChain::getDefaultKeyParams());
 
   /**
    * Add a self-signed certificate made from the key and issuer ID.
