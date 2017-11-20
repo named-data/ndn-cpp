@@ -67,6 +67,8 @@ public:
    * issuer using its default certificate.
    * @param subIdentityName The name to issue the certificate for.
    * @param issuer The identity of the signer.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use getDefaultKeyParams().
    * @return The sub identity.
    */
   ndn::ptr_lib::shared_ptr<ndn::PibIdentity>
