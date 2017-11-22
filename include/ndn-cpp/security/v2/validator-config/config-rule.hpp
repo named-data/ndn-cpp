@@ -91,7 +91,7 @@ public:
    * components are skipped but not removed.
    * @retur True if at least one filter matches the packet name, false if none
    * of the filters match the packet name.
-   * @throw ValidatorConfigError if the supplied isForInterest doesn't match the
+   * @throws ValidatorConfigError if the supplied isForInterest doesn't match the
    * one for which the rule is designed.
    */
   bool
@@ -108,7 +108,7 @@ public:
    * @return True if further signature verification is needed, or false if the
    * packet is immediately determined to be invalid in which case this calls
    * state.fail() with the proper code and message.
-   * @throw ValidatorConfigError if the supplied isForInterest doesn't match the
+   * @throws ValidatorConfigError if the supplied isForInterest doesn't match the
    * one for which the rule is designed.
    */
   bool

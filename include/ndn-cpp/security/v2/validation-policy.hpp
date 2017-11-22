@@ -62,7 +62,7 @@ public:
    * `this->innerPolicy_ == policy1`,
    * this->innerPolicy_->innerPolicy_ == policy2', and
    * `this->innerPolicy_->innerPolicy_->innerPolicy_ == null`.
-   * @throw invalid_argument if the innerPolicy is null.
+   * @throws invalid_argument if the innerPolicy is null.
    */
   void
   setInnerPolicy(const ptr_lib::shared_ptr<ValidationPolicy>& innerPolicy);
