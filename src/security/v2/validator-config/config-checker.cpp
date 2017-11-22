@@ -209,16 +209,19 @@ ConfigRegexChecker::checkNames
   (const Name& packetName, const Name& keyLocatorName,
    const ptr_lib::shared_ptr<ValidationState>& state)
 {
-  return regex_->match(keyLocatorName);
+  bool result = regex_->match(keyLocatorName);
+  if (!result)
     state->fail(ValidationError(ValidationError::POLICY_ERROR,
       "KeyLocator check failed: regex " + regex_->getExpr() + " for packet " +
       packetName.toUri() + " is invalid (KeyLocator=" + keyLocatorName.toUri() +
       ")"));
+
+  return result;
 }
 
 ConfigHyperRelationChecker::ConfigHyperRelationChecker
-  (const std::string& packetNameRegexString, const std::string& packetNameExpansion,
-   const std::string& keyNameRegexString, const std::string& keyNameExpansion,
+  (const string& packetNameRegexString, const string& packetNameExpansion,
+   const string& keyNameRegexString, const string& keyNameExpansion,
    ConfigNameRelation::Relation hyperRelation)
 : packetNameRegex_(new NdnRegexTopMatcher(packetNameRegexString)),
   packetNameExpansion_(packetNameExpansion),
