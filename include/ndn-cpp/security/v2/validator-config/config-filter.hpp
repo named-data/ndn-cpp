@@ -33,7 +33,7 @@ class BoostInfoTree;
 class NdnRegexTopMatcher;
 
 /**
- * Filter is an abstract base class for RegexNameFilter, etc. used by
+ * ConfigFilter is an abstract base class for RegexNameFilter, etc. used by
  * ValidatorConfig. The ValidatorConfig class consists of a set of rules.
  * The Filter class is a part of a rule and is used to match a packet.
  * Matched packets will be checked against the checkers defined in the rule.
