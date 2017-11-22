@@ -172,7 +172,7 @@ ndn_trim(std::string& str);
  * @return True if the strings are equal, ignoring case.
  */
 bool
-equalsCaseIgnore(const std::string& s1, const std::string& s2);
+equalsIgnoreCase(const std::string& s1, const std::string& s2);
 
 }
 

@@ -98,7 +98,7 @@ static bool
 charCompareCaseIgnore(char a, char b) { return(::tolower(a) == ::tolower(b)); }
 
 bool
-equalsCaseIgnore(const string& s1, const string& s2)
+equalsIgnoreCase(const string& s1, const string& s2)
 {
   return(s1.size() == s2.size() &&
          equal(s1.begin(), s1.end(), s2.begin(), charCompareCaseIgnore));
