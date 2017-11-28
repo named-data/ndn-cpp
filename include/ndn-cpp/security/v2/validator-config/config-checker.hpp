@@ -62,7 +62,8 @@ public:
 
   /**
    * Create a checker from the configuration section.
-   * @param configSection The section containing the definition of the checker.
+   * @param configSection The section containing the definition of the checker,
+   * e.g. one of <validation.rule.checker>.
    * @return A new checker created from the configuration section.
    */
   static ptr_lib::shared_ptr<ConfigChecker>

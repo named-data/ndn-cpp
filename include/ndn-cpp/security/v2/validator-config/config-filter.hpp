@@ -56,7 +56,8 @@ public:
 
   /**
    * Create a filter from the configuration section.
-   * @param configSection The section containing the definition of the filter.
+   * @param configSection The section containing the definition of the filter,
+   * e.g. one of <validator.rule.filter>.
    * @return A new filter created from the configuration section.
    */
   static ptr_lib::shared_ptr<ConfigFilter>

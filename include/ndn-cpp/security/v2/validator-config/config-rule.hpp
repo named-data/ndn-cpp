@@ -118,7 +118,8 @@ public:
 
   /**
    * Create a rule from configuration section.
-   * @param configSection The section containing the definition of the checker.
+   * @param configSection The section containing the definition of the rule,
+   * e.g. one of <validator.rule>.
    * @return A new ConfigRule created from the configuration
    */
   static ptr_lib::shared_ptr<ConfigRule>
