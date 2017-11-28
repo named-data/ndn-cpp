@@ -104,10 +104,10 @@ public:
    * If the packet violates the policy, then the policy should call
    * state.fail() with an appropriate error code and error description.
    * If the packet conforms to the policy and no further key retrievals are
-   * necessary, then the policy should call continueValidation(state, null).
+   * necessary, then the policy should call continueValidation(null, state).
    * If the packet conforms to the policy and a key needs to be fetched, then
    * the policy should call
-   * continueValidation(state, <appropriate-key-request-instance>).
+   * continueValidation(<appropriate-key-request-instance>, state).
    * @param data The Data packet to check.
    * @param state The ValidationState of this validation.
    * @param continueValidation The policy should call continueValidation() as
