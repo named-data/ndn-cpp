@@ -104,7 +104,7 @@ public:
    * If the packet violates the policy, then the policy should call
    * state.fail() with an appropriate error code and error description.
    * If the packet conforms to the policy and no further key retrievals are
-   * necessary, then the policy should call continueValidation(state, nullptr).
+   * necessary, then the policy should call continueValidation(state, null).
    * If the packet conforms to the policy and a key needs to be fetched, then
    * the policy should call
    * continueValidation(state, <appropriate-key-request-instance>).
