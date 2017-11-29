@@ -38,6 +38,7 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/security/policy/*.*) \
   $(wildcard ndn-cpp/security/tpm/*.*) \
   $(wildcard ndn-cpp/security/v2/*.*) \
+  $(wildcard ndn-cpp/security/v2/validator-config/*.*) \
   $(wildcard ndn-cpp/sync/*.*) \
   $(wildcard ndn-cpp/tools/usersync/*.*) \
   $(wildcard ndn-cpp/transport/*.*) \
