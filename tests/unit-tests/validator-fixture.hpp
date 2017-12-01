@@ -24,35 +24,73 @@
 #define NDN_VALIDATOR_FIXTURE_HPP
 
 #include <ndn-cpp/security/v2/validator.hpp>
+#include <ndn-cpp/security/v2/certificate-fetcher-from-network.hpp>
 #include "identity-management-fixture.hpp"
 
+/**
+ * ValidatorFixture extends IdentityManagementFixture to use the given policy
+ * and to set up a test face to answer Interests.
+ */
 class ValidatorFixture : public IdentityManagementFixture
 {
 public:
-  ValidatorFixture
-    (const ndn::ptr_lib::shared_ptr<ndn::ValidationPolicy>& policy,
-     const ndn::ptr_lib::shared_ptr<ndn::CertificateFetcher>& certificateFetcher)
-  : validator_(policy, certificateFetcher),
-    policy_(policy),
-    // Set maxLifetime to 100 days.
-    cache_(100 * 24 * 3600 * 1000.0)
-  {
-  }
+  /**
+   * Create a ValidatorFixture to use the given policy. Set the default
+   * face_.processInterest_ to use the cache_ to respond to expressInterest. To
+   * change this behavior, you can set face_.processInterest_ to your callback,
+   * or to null to always time out.
+   * @param policy The ValidationPolicy used by validator_.
+   */
+  ValidatorFixture(const ndn::ptr_lib::shared_ptr<ndn::ValidationPolicy>& policy);
 
-  // TODO: face_
-  // TODO: processInterest_
+  /**
+   * TestFace extends Face to instantly simulate a call to expressInterest.
+   * See expressInterest for details.
+   */
+  class TestFace : public ndn::Face {
+  public:
+    typedef ndn::func_lib::function<void
+      (const ndn::Interest& interest, const ndn::OnData& onData,
+       const ndn::OnTimeout& onTimeout, const ndn::OnNetworkNack& onNetworkNack)>
+      ProcessInterest;
+
+    TestFace()
+    : Face("localhost")
+    {}
+
+    /**
+     * If processInterest_ is not null, call
+     * processInterest_(interest, onData, onTimeout, onNetworkNack) which must
+     * call one of the callbacks to simulate the response. Otherwise, just call
+     * onTimeout(interest) to simulate a timeout. This adds the interest to
+     * sentInterests_ . 
+     */
+    virtual uint64_t
+    expressInterest
+      (const ndn::Interest& interest, const ndn::OnData& onData,
+       const ndn::OnTimeout& onTimeout, const ndn::OnNetworkNack& onNetworkNack,
+       ndn::WireFormat& wireFormat = *ndn::WireFormat::getDefaultWireFormat());
+
+    ProcessInterest processInterest_;
+    std::vector<ndn::Interest> sentInterests_;
+  };
+
+  void
+  processInterestFromCache
+    (const ndn::Interest& interest, const ndn::OnData& onData,
+     const ndn::OnTimeout& onTimeout, const ndn::OnNetworkNack& onNetworkNack);
+
+  TestFace face_;
   ndn::Validator validator_;
   ndn::ptr_lib::shared_ptr<ndn::ValidationPolicy> policy_;
-
   ndn::CertificateCacheV2 cache_;
 };
 
 class HierarchicalValidatorFixture : public ValidatorFixture {
 public:
   HierarchicalValidatorFixture
-    (const ndn::ptr_lib::shared_ptr<ndn::ValidationPolicy>& policy,
-     const ndn::ptr_lib::shared_ptr<ndn::CertificateFetcher>& certificateFetcher)
-  : ValidatorFixture(policy, certificateFetcher)
+    (const ndn::ptr_lib::shared_ptr<ndn::ValidationPolicy>& policy)
+  : ValidatorFixture(policy)
   {
     identity_ = addIdentity("/Security/V2/ValidatorFixture");
     subIdentity_ = addSubCertificate("/Security/V2/ValidatorFixture/Sub1", identity_);
