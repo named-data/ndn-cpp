@@ -408,7 +408,6 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
-  src/security/validator-config.cpp \
   src/security/validator-null.cpp \
   src/security/validity-period.cpp \
   src/security/verification-helpers.cpp \
