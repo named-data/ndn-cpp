@@ -24,6 +24,7 @@
 #define NDN_VALIDATOR_CONFIG_HPP
 
 #include "v2/validation-policy-config.hpp"
+#include "v2/certificate-fetcher-from-network.hpp"
 #include "v2/validator.hpp"
 
 namespace ndn {
@@ -36,6 +37,10 @@ class ValidatorConfig : public Validator {
 public:
   // TODO: Add Options.
   // TODO: Add ValidationPolicyCommandInterest.
+  /**
+   * Create a ValidatorConfig to use the given certificate fetcher.
+   * @param fetcher The certificate fetcher.
+   */
   ValidatorConfig(ptr_lib::shared_ptr<CertificateFetcher> fetcher)
   : Validator(ptr_lib::make_shared<ValidationPolicyConfig>(), fetcher),
     // TODO: Use getInnerPolicy().
@@ -43,7 +48,21 @@ public:
   {
   }
 
-  // TODO: ValidatorConfig(Face)
+  // TODO: Add Options.
+  // TODO: Add ValidationPolicyCommandInterest.
+  /**
+   * Create a ValidatorConfig that uses a CertificateFetcherFromNetwork for the
+   * given Face.
+   * @param face The face for the certificate fetcher to call expressInterest.
+   */
+  ValidatorConfig(Face& face)
+  : Validator
+      (ptr_lib::make_shared<ValidationPolicyConfig>(),
+       ptr_lib::make_shared<CertificateFetcherFromNetwork>(face)),
+    // TODO: Use getInnerPolicy().
+    policyConfig_(dynamic_cast<ValidationPolicyConfig&>(getPolicy()))
+  {
+  }
 
   /**
    * Load the configuration from the given config file. This replaces any
