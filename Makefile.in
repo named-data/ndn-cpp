@@ -380,6 +380,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/tpm/tpm-key-handle-osx.lo \
 	src/security/tpm/tpm-private-key.lo \
 	src/security/v2/certificate-cache-v2.lo \
+	src/security/v2/certificate-fetcher-from-network.lo \
 	src/security/v2/certificate-fetcher-offline.lo \
 	src/security/v2/certificate-fetcher.lo \
 	src/security/v2/certificate-storage.lo \
@@ -735,6 +736,7 @@ bin_unit_tests_test_validation_policy_config_DEPENDENCIES =  \
 	libndn-cpp.la
 am_bin_unit_tests_test_validator_OBJECTS = tests/unit-tests/bin_unit_tests_test_validator-test-validator.$(OBJEXT) \
 	tests/unit-tests/bin_unit_tests_test_validator-identity-management-fixture.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validator-gtest-all.$(OBJEXT)
 bin_unit_tests_test_validator_OBJECTS =  \
 	$(am_bin_unit_tests_test_validator_OBJECTS)
@@ -1558,6 +1560,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
+  include/ndn-cpp/security/v2/certificate-fetcher-from-network.hpp \
   include/ndn-cpp/security/v2/certificate-fetcher-offline.hpp \
   include/ndn-cpp/security/v2/certificate-fetcher.hpp \
   include/ndn-cpp/security/v2/certificate-request.hpp \
@@ -1790,6 +1793,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-cache-v2.cpp \
+  src/security/v2/certificate-fetcher-from-network.cpp \
   src/security/v2/certificate-fetcher-offline.cpp \
   src/security/v2/certificate-fetcher.cpp \
   src/security/v2/certificate-storage.cpp \
@@ -2034,7 +2038,8 @@ bin_unit_tests_test_validator_null_SOURCES = tests/unit-tests/test-validator-nul
 bin_unit_tests_test_validator_null_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_validator_null_LDADD = libndn-cpp.la
 bin_unit_tests_test_validator_SOURCES = tests/unit-tests/test-validator.cpp \
-  tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/validator-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 
 bin_unit_tests_test_validator_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_validator_LDADD = libndn-cpp.la
@@ -2708,6 +2713,9 @@ src/security/v2/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/security/v2/$(DEPDIR)
 	@: > src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/certificate-cache-v2.lo:  \
+	src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/certificate-fetcher-from-network.lo:  \
 	src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/certificate-fetcher-offline.lo:  \
@@ -3471,6 +3479,9 @@ tests/unit-tests/bin_unit_tests_test_validator-test-validator.$(OBJEXT):  \
 tests/unit-tests/bin_unit_tests_test_validator-identity-management-fixture.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validator-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
@@ -3838,6 +3849,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/tpm/$(DEPDIR)/tpm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-cache-v2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-fetcher-from-network.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-fetcher-offline.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-fetcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/certificate-storage.Plo@am__quote@
@@ -3930,6 +3942,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-identity-management-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-test-validator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator_null-identity-management-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator_null-test-validator-null.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_verification_rules-test-verification-rules.Po@am__quote@
@@ -5204,6 +5217,20 @@ tests/unit-tests/bin_unit_tests_test_validator-identity-management-fixture.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validator-identity-management-fixture.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validator-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.o: tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.o `test -f 'tests/unit-tests/validator-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/validator-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.o `test -f 'tests/unit-tests/validator-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/validator-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.obj: tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.obj `if test -f 'tests/unit-tests/validator-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/validator-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/validator-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-validator-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/validator-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validator-validator-fixture.obj `if test -f 'tests/unit-tests/validator-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/validator-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/validator-fixture.cpp'; fi`
 
 contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validator-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validator_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validator-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validator-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc

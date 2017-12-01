@@ -219,6 +219,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
+  include/ndn-cpp/security/v2/certificate-fetcher-from-network.hpp \
   include/ndn-cpp/security/v2/certificate-fetcher-offline.hpp \
   include/ndn-cpp/security/v2/certificate-fetcher.hpp \
   include/ndn-cpp/security/v2/certificate-request.hpp \
@@ -448,6 +449,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
   src/security/v2/certificate-cache-v2.cpp \
+  src/security/v2/certificate-fetcher-from-network.cpp \
   src/security/v2/certificate-fetcher-offline.cpp \
   src/security/v2/certificate-fetcher.cpp \
   src/security/v2/certificate-storage.cpp \
@@ -742,7 +744,8 @@ bin_unit_tests_test_validator_null_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_validator_null_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_validator_SOURCES = tests/unit-tests/test-validator.cpp \
-  tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/validator-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_validator_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_validator_LDADD = libndn-cpp.la
 
