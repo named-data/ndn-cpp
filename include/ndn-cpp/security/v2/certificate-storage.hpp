@@ -87,7 +87,7 @@ public:
    * @return The unverified certificate cache.
    */
   const CertificateCacheV2&
-  getUnverifiedCertificateCache() const { return verifiedCertificateCache_; }
+  getUnverifiedCertificateCache() const { return unverifiedCertificateCache_; }
 
   /**
    * Load a static trust anchor. Static trust anchors are permanently associated
