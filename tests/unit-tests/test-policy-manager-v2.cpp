@@ -367,6 +367,11 @@ TEST_F(TestConfigPolicyManager, Refresh10s)
   cert.wireDecode(Blob(certData));
   SigningInfo signingInfo;
   signingInfo.setSigningIdentity(identityName_);
+  // Make sure the validity period is current for two years.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds();
+  signingInfo.setValidityPeriod(ValidityPeriod
+    (now, now + 2 * 365 * 24 * 3600 * 1000.0));
+
   keyChain_->sign(cert, signingInfo);
   Blob signedCertBlob = cert.wireEncode();
   string encodedCert = toBase64(signedCertBlob.buf(), signedCertBlob.size(), true);
