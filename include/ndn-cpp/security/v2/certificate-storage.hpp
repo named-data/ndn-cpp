@@ -146,6 +146,18 @@ public:
   void
   resetVerifiedCertificates() { verifiedCertificateCache_.clear(); }
 
+  /**
+   * Set the offset when the cache insert() and refresh() get the current time,
+   * which should only be used for testing.
+   * @param nowOffsetMilliseconds The offset in milliseconds.
+   */
+  void
+  setCacheNowOffsetMilliseconds_(Milliseconds nowOffsetMilliseconds)
+  {
+    verifiedCertificateCache_.setNowOffsetMilliseconds_(nowOffsetMilliseconds);
+    unverifiedCertificateCache_.setNowOffsetMilliseconds_(nowOffsetMilliseconds);
+  }
+
 private:
   // Disable the copy constructor and assignment operator.
   CertificateStorage(const CertificateStorage& other);
