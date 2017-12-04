@@ -216,8 +216,9 @@ processInterestWithCertificate
 
 TEST_F(TestValidator, MalformedCertificate)
 {
-  ptr_lib::shared_ptr<Data> malformedCertificate =
-    fixture_.subIdentity_->getDefaultKey()->getDefaultCertificate();
+  // Copy the default certificate.
+  ptr_lib::shared_ptr<Data> malformedCertificate(new Data
+    (*fixture_.subIdentity_->getDefaultKey()->getDefaultCertificate()));
   malformedCertificate->getMetaInfo().setType(ndn_ContentType_BLOB);
   fixture_.keyChain_.sign(*malformedCertificate, SigningInfo(fixture_.identity_));
   // It has the wrong content type and a missing ValidityPeriod.
@@ -237,8 +238,9 @@ TEST_F(TestValidator, MalformedCertificate)
 
 TEST_F(TestValidator, ExpiredCertificate)
 {
-  ptr_lib::shared_ptr<Data> expiredCertificate =
-    fixture_.subIdentity_->getDefaultKey()->getDefaultCertificate();
+  // Copy the default certificate.
+  ptr_lib::shared_ptr<Data> expiredCertificate(new Data
+    (*fixture_.subIdentity_->getDefaultKey()->getDefaultCertificate()));
   SigningInfo info(fixture_.identity_);
   // Validity period from 2 hours ago do 1 hour ago.
   MillisecondsSince1970 now = ndn_getNowMilliseconds();
