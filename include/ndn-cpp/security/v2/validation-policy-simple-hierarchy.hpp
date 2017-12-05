@@ -28,8 +28,8 @@
 namespace ndn {
 
 /**
- * ValidationPolicyAcceptAll extends ValidationPolicy to implement a Validation
- * policy for a simple hierarchical trust model.
+ * ValidationPolicySimpleHierarchy extends ValidationPolicy to implement a
+ * Validation policy for a simple hierarchical trust model.
  */
 class ValidationPolicySimpleHierarchy : public ValidationPolicy {
 public:
