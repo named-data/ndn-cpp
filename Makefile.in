@@ -390,6 +390,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/validation-error.lo \
 	src/security/v2/validation-policy-accept-all.lo \
 	src/security/v2/validation-policy-config.lo \
+	src/security/v2/validation-policy-from-pib.lo \
 	src/security/v2/validation-policy-simple-hierarchy.lo \
 	src/security/v2/validation-policy.lo \
 	src/security/v2/validation-state.lo \
@@ -1571,6 +1572,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validation-error.hpp \
   include/ndn-cpp/security/v2/validation-policy-accept-all.hpp \
   include/ndn-cpp/security/v2/validation-policy-config.hpp \
+  include/ndn-cpp/security/v2/validation-policy-from-pib.hpp \
   include/ndn-cpp/security/v2/validation-policy-simple-hierarchy.hpp \
   include/ndn-cpp/security/v2/validation-policy.hpp \
   include/ndn-cpp/security/v2/validation-state.hpp \
@@ -1802,6 +1804,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/validation-error.cpp \
   src/security/v2/validation-policy-accept-all.cpp \
   src/security/v2/validation-policy-config.cpp \
+  src/security/v2/validation-policy-from-pib.cpp \
   src/security/v2/validation-policy-simple-hierarchy.cpp \
   src/security/v2/validation-policy.cpp \
   src/security/v2/validation-state.cpp \
@@ -2738,6 +2741,9 @@ src/security/v2/validation-policy-accept-all.lo:  \
 	src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/validation-policy-config.lo:  \
+	src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/validation-policy-from-pib.lo:  \
 	src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/validation-policy-simple-hierarchy.lo:  \
@@ -3855,6 +3861,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-accept-all.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-config.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-from-pib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-simple-hierarchy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-state.Plo@am__quote@

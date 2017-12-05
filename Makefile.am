@@ -230,6 +230,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validation-error.hpp \
   include/ndn-cpp/security/v2/validation-policy-accept-all.hpp \
   include/ndn-cpp/security/v2/validation-policy-config.hpp \
+  include/ndn-cpp/security/v2/validation-policy-from-pib.hpp \
   include/ndn-cpp/security/v2/validation-policy-simple-hierarchy.hpp \
   include/ndn-cpp/security/v2/validation-policy.hpp \
   include/ndn-cpp/security/v2/validation-state.hpp \
@@ -458,6 +459,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/validation-error.cpp \
   src/security/v2/validation-policy-accept-all.cpp \
   src/security/v2/validation-policy-config.cpp \
+  src/security/v2/validation-policy-from-pib.cpp \
   src/security/v2/validation-policy-simple-hierarchy.cpp \
   src/security/v2/validation-policy.cpp \
   src/security/v2/validation-state.cpp \
