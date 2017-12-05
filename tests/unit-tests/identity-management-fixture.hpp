@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_PIB_DATA_FIXTURE_HPP
-#define NDN_PIB_DATA_FIXTURE_HPP
+#ifndef NDN_IDENTITY_MANAGEMENT_FIXTURE_HPP
+#define NDN_IDENTITY_MANAGEMENT_FIXTURE_HPP
 
 #include <set>
 #include <ndn-cpp/security/key-chain.hpp>
@@ -60,7 +60,22 @@ public:
   bool
   saveCertificate(ndn::PibIdentity identity, const std::string& filePath);
 
-  // TODO: addSubCertificate
+  /**
+   * Issue a certificate for subIdentityName signed by issuer. If the identity
+   * does not exist, it is created. A new key is generated as the default key
+   * for the identity. A default certificate for the key is signed by the
+   * issuer using its default certificate.
+   * @param subIdentityName The name to issue the certificate for.
+   * @param issuer The identity of the signer.
+   * @param params (optional) The key parameters if a key needs to be generated
+   * for the identity. If omitted, use getDefaultKeyParams().
+   * @return The sub identity.
+   */
+  ndn::ptr_lib::shared_ptr<ndn::PibIdentity>
+  addSubCertificate
+    (const ndn::Name& subIdentityName, 
+     const ndn::ptr_lib::shared_ptr<ndn::PibIdentity>& issuer,
+     const ndn::KeyParams& params = ndn::KeyChain::getDefaultKeyParams());
 
   /**
    * Add a self-signed certificate made from the key and issuer ID.

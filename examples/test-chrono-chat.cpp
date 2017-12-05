@@ -33,9 +33,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <ndn-cpp/security/safe-bag.hpp>
-#include <ndn-cpp/security/pib/pib-memory.hpp>
-#include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
-#include <ndn-cpp/security/policy/no-verify-policy-manager.hpp>
 #include <ndn-cpp/transport/tcp-transport.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/sync/chrono-sync2013.hpp>
@@ -741,10 +738,7 @@ int main(int argc, char** argv)
     Face face(host);
 
     // Set up the key chain.
-    ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
-    KeyChain keyChain
-      (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
-       ptr_lib::make_shared<NoVerifyPolicyManager>());
+    KeyChain keyChain("pib-memory:", "tpm-memory:");
     keyChain.importSafeBag(SafeBag
       (Name("/testname/KEY/123"),
        Blob(DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),

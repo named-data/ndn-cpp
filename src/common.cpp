@@ -20,6 +20,8 @@
  */
 
 #include <sstream>
+#include <cctype>
+#include <algorithm>
 #include <ndn-cpp/common.hpp>
 
 using namespace std;
@@ -90,6 +92,16 @@ ndn_trim(string& str)
 {
   trimLeft(str);
   trimRight(str);
+}
+
+static bool
+charCompareCaseIgnore(char a, char b) { return(::tolower(a) == ::tolower(b)); }
+
+bool
+equalsIgnoreCase(const string& s1, const string& s2)
+{
+  return(s1.size() == s2.size() &&
+         equal(s1.begin(), s1.end(), s2.begin(), charCompareCaseIgnore));
 }
 
 }

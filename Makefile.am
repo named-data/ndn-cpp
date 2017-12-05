@@ -42,7 +42,9 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-signing-info bin/unit-tests/test-tpm-back-ends \
-  bin/unit-tests/test-tpm-private-key bin/unit-tests/test-verification-rules
+  bin/unit-tests/test-tpm-private-key \
+  bin/unit-tests/test-validation-policy-config bin/unit-tests/test-validator-null \
+  bin/unit-tests/test-validator bin/unit-tests/test-verification-rules
 
 noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-echo-consumer bin/test-echo-consumer-lite \
@@ -175,6 +177,10 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/security-exception.hpp \
   include/ndn-cpp/security/signing-info.hpp \
   include/ndn-cpp/security/validity-period.hpp \
+  include/ndn-cpp/security/validator-config-error.hpp \
+  include/ndn-cpp/security/validator-config.hpp \
+  include/ndn-cpp/security/validator-null.hpp \
+  include/ndn-cpp/security/validity-period.hpp \
   include/ndn-cpp/security/verification-helpers.hpp \
   include/ndn-cpp/security/certificate/certificate-extension.hpp \
   include/ndn-cpp/security/certificate/certificate-subject-description.hpp \
@@ -213,8 +219,26 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/tpm/tpm-key-handle-memory.hpp \
   include/ndn-cpp/security/tpm/tpm-key-handle-osx.hpp \
   include/ndn-cpp/security/tpm/tpm-private-key.hpp \
+  include/ndn-cpp/security/v2/certificate-fetcher-from-network.hpp \
+  include/ndn-cpp/security/v2/certificate-fetcher-offline.hpp \
+  include/ndn-cpp/security/v2/certificate-fetcher.hpp \
+  include/ndn-cpp/security/v2/certificate-request.hpp \
+  include/ndn-cpp/security/v2/certificate-storage.hpp \
   include/ndn-cpp/security/v2/certificate-v2.hpp \
-  include/ndn-cpp/security/v2/certificate-cache-v2.hpp \
+  include/ndn-cpp/security/v2/trust-anchor-container.hpp \
+  include/ndn-cpp/security/v2/trust-anchor-group.hpp \
+  include/ndn-cpp/security/v2/validation-error.hpp \
+  include/ndn-cpp/security/v2/validation-policy-accept-all.hpp \
+  include/ndn-cpp/security/v2/validation-policy-config.hpp \
+  include/ndn-cpp/security/v2/validation-policy-from-pib.hpp \
+  include/ndn-cpp/security/v2/validation-policy-simple-hierarchy.hpp \
+  include/ndn-cpp/security/v2/validation-policy.hpp \
+  include/ndn-cpp/security/v2/validation-state.hpp \
+  include/ndn-cpp/security/v2/validator.hpp \
+  include/ndn-cpp/security/v2/validator-config/config-checker.hpp \
+  include/ndn-cpp/security/v2/validator-config/config-filter.hpp \
+  include/ndn-cpp/security/v2/validator-config/config-name-relation.hpp \
+  include/ndn-cpp/security/v2/validator-config/config-rule.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
@@ -385,6 +409,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/safe-bag.cpp \
   src/security/security-exception.cpp \
   src/security/signing-info.cpp \
+  src/security/validator-null.cpp \
   src/security/validity-period.cpp \
   src/security/verification-helpers.cpp \
   src/security/certificate/certificate-extension.cpp \
@@ -423,8 +448,26 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/tpm/tpm-key-handle-memory.cpp \
   src/security/tpm/tpm-key-handle-osx.cpp \
   src/security/tpm/tpm-private-key.cpp \
-  src/security/v2/certificate-v2.cpp \
   src/security/v2/certificate-cache-v2.cpp \
+  src/security/v2/certificate-fetcher-from-network.cpp \
+  src/security/v2/certificate-fetcher-offline.cpp \
+  src/security/v2/certificate-fetcher.cpp \
+  src/security/v2/certificate-storage.cpp \
+  src/security/v2/certificate-v2.cpp \
+  src/security/v2/trust-anchor-container.cpp \
+  src/security/v2/trust-anchor-group.cpp \
+  src/security/v2/validation-error.cpp \
+  src/security/v2/validation-policy-accept-all.cpp \
+  src/security/v2/validation-policy-config.cpp \
+  src/security/v2/validation-policy-from-pib.cpp \
+  src/security/v2/validation-policy-simple-hierarchy.cpp \
+  src/security/v2/validation-policy.cpp \
+  src/security/v2/validation-state.cpp \
+  src/security/v2/validator.cpp \
+  src/security/v2/validator-config/config-checker.cpp \
+  src/security/v2/validator-config/config-filter.cpp \
+  src/security/v2/validator-config/config-name-relation.cpp \
+  src/security/v2/validator-config/config-rule.cpp \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
@@ -691,6 +734,21 @@ bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
 bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_validation_policy_config_SOURCES = tests/unit-tests/test-validation-policy-config.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_validation_policy_config_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_validation_policy_config_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_validator_null_SOURCES = tests/unit-tests/test-validator-null.cpp \
+  tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_validator_null_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_validator_null_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_validator_SOURCES = tests/unit-tests/test-validator.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/validator-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_validator_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_validator_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_verification_rules_SOURCES = tests/unit-tests/test-verification-rules.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_verification_rules_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

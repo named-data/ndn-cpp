@@ -23,6 +23,7 @@
 #ifndef NDN_CERTIFICATE_CACHE_V2_HPP
 #define NDN_CERTIFICATE_CACHE_V2_HPP
 
+#include <float.h>
 #include <map>
 #include "../../interest.hpp"
 #include "certificate-v2.hpp"
@@ -89,7 +90,7 @@ public:
   clear()
   {
     certificatesByName_.clear();
-    // TODO: certificatesByTime_.clear();
+    nextRefreshTime_ = DBL_MAX;
   }
 
   /**
@@ -99,7 +100,44 @@ public:
   static Milliseconds
   getDefaultLifetime() { return 3600.0 * 1000; }
 
+  /**
+   * Set the offset when insert() and refresh() get the current time, which
+   * should only be used for testing.
+   * @param nowOffsetMilliseconds The offset in milliseconds.
+   */
+  void
+  setNowOffsetMilliseconds_(Milliseconds nowOffsetMilliseconds)
+  {
+    nowOffsetMilliseconds_ = nowOffsetMilliseconds;
+  }
+
 private:
+  /**
+   * CertificateCacheV2::Entry is the value of the certificatesByName_ map.
+   */
+  class Entry {
+  public:
+    /**
+     * Create a new CertificateCacheV2::Entry with the given values.
+     * @param certificate The certificate.
+     * @param removalTime The removal time for this entry  as milliseconds since
+     * Jan 1, 1970 UTC.
+     */
+    Entry
+      (const ptr_lib::shared_ptr<CertificateV2>& certificate,
+       MillisecondsSince1970 removalTime)
+    : certificate_(certificate), removalTime_(removalTime)
+    {}
+
+    Entry()
+    {
+      removalTime_ = 0;
+    }
+
+    ptr_lib::shared_ptr<CertificateV2> certificate_;
+    MillisecondsSince1970 removalTime_;
+  };
+
   /**
    * Remove all outdated certificate entries.
    */
@@ -110,8 +148,10 @@ private:
   CertificateCacheV2(const CertificateCacheV2& other);
   CertificateCacheV2& operator=(const CertificateCacheV2& other);
 
-  std::map<Name, ptr_lib::shared_ptr<CertificateV2> > certificatesByName_;
+  std::map<Name, Entry> certificatesByName_;
+  MillisecondsSince1970 nextRefreshTime_;
   Milliseconds maxLifetimeMilliseconds_;
+  Milliseconds nowOffsetMilliseconds_;
 };
 
 }

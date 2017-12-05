@@ -165,6 +165,15 @@ toHex(const std::vector<uint8_t>& array)
 void
 ndn_trim(std::string& str);
 
+/**
+ * Compare the strings for equality, ignoring case.
+ * @param s1 The first string to compare.
+ * @param s2 The second string to compare.
+ * @return True if the strings are equal, ignoring case.
+ */
+bool
+equalsIgnoreCase(const std::string& s1, const std::string& s2);
+
 }
 
 #endif
