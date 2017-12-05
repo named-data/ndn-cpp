@@ -23,9 +23,8 @@
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/face.hpp>
 #include <ndn-cpp/security/safe-bag.hpp>
-#include <ndn-cpp/security/pib/pib-memory.hpp>
-#include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
-#include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
+#include <ndn-cpp/security/v2/validation-policy-from-pib.hpp>
+#include <ndn-cpp/security/v2/validator.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 
 using namespace std;
@@ -210,16 +209,15 @@ static void dumpInterest(const Interest& interest)
     cout << "forwardingHint: <none>" << endl;
 }
 
-static void onVerified(const char *prefix, const ptr_lib::shared_ptr<Interest>& interest)
+static void validationSuccess(const char *prefix, const Interest& interest)
 {
   cout << prefix << " signature verification: VERIFIED" << endl;
 }
 
-static void onInterestValidationFailed
-  (const char *prefix, const ptr_lib::shared_ptr<Interest>& interest,
-   const string& reason)
+static void validationFailure
+  (const char *prefix, const Interest& interest, const ValidationError& error)
 {
-  cout << prefix << " signature verification: FAILED. Reason: " << reason << endl;
+  cout << prefix << " signature verification: FAILED: " << error.getInfo() << endl;
 }
 
 int main(int argc, char** argv)
@@ -255,31 +253,28 @@ int main(int argc, char** argv)
     freshInterest.getForwardingHint().add(1, Name("/A"));
 
     // Set up the KeyChain.
-    ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
-    KeyChain keyChain
-      (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
-       ptr_lib::make_shared<SelfVerifyPolicyManager>(pibImpl.get()));
-    // This puts the public key in the pibImpl used by the SelfVerifyPolicyManager.
+    KeyChain keyChain("pib-memory:", "tpm-memory:");
     keyChain.importSafeBag(SafeBag
       (Name("/testname/KEY/123"),
        Blob(DEFAULT_RSA_PRIVATE_KEY_DER, sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),
        Blob(DEFAULT_RSA_PUBLIC_KEY_DER, sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
+    Validator validator
+      (ptr_lib::make_shared<ValidationPolicyFromPib>(keyChain.getPib()));
 
     // Make a Face just so that we can sign the interest.
     Face face("localhost");
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName());
     face.makeCommandInterest(freshInterest);
 
-    ptr_lib::shared_ptr<Interest> reDecodedFreshInterest(new Interest());
-    reDecodedFreshInterest->wireDecode(freshInterest.wireEncode());
+    Interest reDecodedFreshInterest;
+    reDecodedFreshInterest.wireDecode(freshInterest.wireEncode());
     cout << endl << "Re-decoded fresh Interest:" << endl;
-    dumpInterest(*reDecodedFreshInterest);
+    dumpInterest(reDecodedFreshInterest);
 
-    keyChain.verifyInterest
-      (reDecodedFreshInterest, bind(&onVerified, "Freshly-signed Interest", _1),
-       // Cast to disambiguate from the deprecated OnVerifyInterestFailed.
-       (const OnInterestValidationFailed)bind
-         (&onInterestValidationFailed, "Freshly-signed Interest", _1, _2));
+    validator.validate
+      (reDecodedFreshInterest,
+       bind(&validationSuccess, "Freshly-signed Interest", _1),
+       bind(&validationFailure, "Freshly-signed Interest", _1, _2));
   } catch (std::exception& e) {
     cout << "exception: " << e.what() << endl;
   }

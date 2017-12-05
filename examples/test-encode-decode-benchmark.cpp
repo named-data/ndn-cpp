@@ -28,9 +28,8 @@
 #include <ndn-cpp/key-locator.hpp>
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/security/safe-bag.hpp>
-#include <ndn-cpp/security/pib/pib-memory.hpp>
-#include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
-#include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
+#include <ndn-cpp/security/v2/validation-policy-from-pib.hpp>
+#include <ndn-cpp/security/v2/validator.hpp>
 #include <ndn-cpp/lite/data-lite.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 #include <ndn-cpp/lite/security/ec-private-key-lite.hpp>
@@ -203,11 +202,7 @@ benchmarkEncodeDataSecondsCpp
   Blob finalBlockId((uint8_t*)"\x00", 1);
 
   // Initialize the KeyChain storage in case useCrypto is true.
-  ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
-  KeyChain keyChain
-    (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
-     ptr_lib::make_shared<SelfVerifyPolicyManager>(pibImpl.get()));
-  // This puts the public key in the pibImpl used by the SelfVerifyPolicyManager.
+  KeyChain keyChain("pib-memory:", "tpm-memory:");
   keyChain.importSafeBag(SafeBag
     (Name("/testname/KEY/123"),
      Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
@@ -254,16 +249,15 @@ benchmarkEncodeDataSecondsCpp
 }
 
 static void
-onVerified(const ptr_lib::shared_ptr<Data>& data)
+validationSuccess(const Data& data)
 {
   // Do nothing since we expect it to verify.
 }
 
 static void
-onValidationFailed
-  (const ptr_lib::shared_ptr<Data>& data, const string& reason)
+validationFailure(const Data& data, const ValidationError& error)
 {
-  cout << "Signature verification: FAILED. Reason: " << reason << endl;
+  cout << "Signature verification: FAILED. Reason: " << error.getInfo() << endl;
 }
 
 /**
@@ -279,11 +273,7 @@ benchmarkDecodeDataSecondsCpp
   (int nIterations, bool useCrypto, KeyType keyType, const Blob& encoding)
 {
   // Initialize the KeyChain storage in case useCrypto is true.
-  ptr_lib::shared_ptr<PibImpl> pibImpl(new PibMemory());
-  KeyChain keyChain
-    (pibImpl, ptr_lib::make_shared<TpmBackEndMemory>(),
-     ptr_lib::make_shared<SelfVerifyPolicyManager>(pibImpl.get()));
-  // This puts the public key in the pibImpl used by the SelfVerifyPolicyManager.
+  KeyChain keyChain("pib-memory:", "tpm-memory:");
   keyChain.importSafeBag(SafeBag
     (Name("/testname/KEY/123"),
      Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
@@ -294,6 +284,8 @@ benchmarkDecodeDataSecondsCpp
                                     : DEFAULT_RSA_PUBLIC_KEY_DER,
           keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
                                     : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
+  Validator validator
+    (ptr_lib::make_shared<ValidationPolicyFromPib>(keyChain.getPib()));
 
   double start = getNowSeconds();
   for (int i = 0; i < nIterations; ++i) {
@@ -301,10 +293,7 @@ benchmarkDecodeDataSecondsCpp
     data->wireDecode(encoding);
 
     if (useCrypto)
-      keyChain.verifyData
-        (data, onVerified,
-         // Cast to disambiguate from the deprecated OnVerifyFailed.
-         (const OnDataValidationFailed)onValidationFailed);
+      validator.validate(*data, validationSuccess, validationFailure);
   }
   double finish = getNowSeconds();
 
