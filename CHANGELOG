@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.12 (2017-09-14)
+Interim changes since NDN-CPP v0.12 (2017-12-05)
 ------------------------------------------------
 
 Bug fixes
@@ -11,8 +11,9 @@ Changes
   In KeyChain, added security v2 constructors and methods.
   The default KeyChain constructor checks for and uses security v2 storage.
   Updated ConfigPolicyManager to support CertficiateV2.
-  Updated SelfVerifyPolicyManager to support security v2 PibImpl,
-  Updated examples to use the security v2 KeyChain.
+  Updated SelfVerifyPolicyManager to support security v2 PibImpl.
+  Added the security v2 Validator and policies such as ValidationPolicyConfig.
+  Updated examples to use the security v2 KeyChain and Validator.
   Added security v2 unit and integration tests.
 * https://redmine.named-data.net/issues/4001 In MemoryContentCache, use
   shared_from_this() for callbacks to avoid deallocation errors.
