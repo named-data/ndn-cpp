@@ -23,7 +23,7 @@
 #ifndef NDN_VALIDATOR_HPP
 #define NDN_VALIDATOR_HPP
 
-#include "certificate-fetcher.hpp"
+#include "certificate-fetcher-offline.hpp"
 #include "validation-policy.hpp"
 
 namespace ndn {
@@ -57,11 +57,14 @@ public:
   /**
    * Create a Validator with the policy and fetcher.
    * @param policy The validation policy to be associated with this validator.
-   * @param certificateFetcher The certificate fetcher implementation.
+   * @param certificateFetcher (optional) The certificate fetcher implementation.
+   * If omitted, use a CertificateFetcherOffline (assuming that the validation
+   * policy doesn't need to fetch certificates).
    */
   Validator
     (const ptr_lib::shared_ptr<ValidationPolicy>& policy,
-     const ptr_lib::shared_ptr<CertificateFetcher>& certificateFetcher);
+     const ptr_lib::shared_ptr<CertificateFetcher>& certificateFetcher =
+       ptr_lib::make_shared<CertificateFetcherOffline>());
 
   /**
    * Get the ValidationPolicy given to the constructor.
