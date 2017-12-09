@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.12 (2017-12-05)
-------------------------------------------------
+NDN-CPP v0.13 (2017-12-08)
+--------------------------
 
 Bug fixes
 * https://redmine.named-data.net/issues/4023 Ported the latest NDN regex code
