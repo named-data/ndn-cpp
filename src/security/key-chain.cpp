@@ -217,7 +217,7 @@ KeyChain::createIdentityV2(const Name& identityName, const KeyParams& params)
     key->getDefaultCertificate();
   }
   catch (const Pib::Error&) {
-    _LOG_TRACE("No default cert for " << key.getName() << ", requesting self-signing");
+    _LOG_TRACE("No default cert for " << key->getName() << ", requesting self-signing");
     selfSign(key);
   }
 
@@ -255,7 +255,7 @@ KeyChain::createKey(PibIdentity& identity, const KeyParams& params)
   ptr_lib::shared_ptr<PibKey> key = identity.addKey
     (publicKey.buf(), publicKey.size(), keyName);
 
-  _LOG_TRACE("Requesting self-signing for newly created key " << key.getName());
+  _LOG_TRACE("Requesting self-signing for newly created key " << key->getName());
   selfSign(key);
 
   return key;

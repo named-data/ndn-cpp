@@ -62,7 +62,7 @@ ValidationState::verifyCertificateChain
       return ptr_lib::shared_ptr<CertificateV2>();
     }
     else {
-      _LOG_TRACE("OK signature for certificate `" << certToValidate.getName() << "`");
+      _LOG_TRACE("OK signature for certificate `" << certificateToValidate->getName() << "`");
       validatedCertificate = certificateToValidate;
     }
   }

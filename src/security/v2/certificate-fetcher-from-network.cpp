@@ -54,7 +54,7 @@ CertificateFetcherFromNetwork::Impl::onData
    const ptr_lib::shared_ptr<ValidationState>& state,
    const CertificateFetcher::ValidationContinuation& continueValidation)
 {
-  _LOG_TRACE("Fetched certificate from network " << data.getName().toUri());
+  _LOG_TRACE("Fetched certificate from network " << data->getName().toUri());
 
   ptr_lib::shared_ptr<CertificateV2> certificate;
   try {
