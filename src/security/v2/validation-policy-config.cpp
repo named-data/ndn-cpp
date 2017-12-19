@@ -195,7 +195,7 @@ ValidationPolicyConfig::processConfigTrustAnchor
     CertificateV2 certificate;
     try {
       certificate.wireDecode(Blob(encoding));
-    } catch (const exception& ex) {
+    } catch (const std::exception& ex) {
       throw ValidatorConfigError("Cannot decode certificate from base64-string");
     }
     validator_->loadAnchor("", certificate);

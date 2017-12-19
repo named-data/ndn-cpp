@@ -120,7 +120,7 @@ TpmPrivateKey::loadPkcs8(const uint8_t* encoding, size_t encodingLength)
     try {
       loadPkcs1(encoding, encodingLength);
       return;
-    } catch (const exception& ex) {
+    } catch (const std::exception& ex) {
       throw Error(string("loadPkcs8: Error decoding private key: ") + ex.what());
     }
   }

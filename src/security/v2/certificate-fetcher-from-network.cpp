@@ -59,7 +59,7 @@ CertificateFetcherFromNetwork::Impl::onData
   ptr_lib::shared_ptr<CertificateV2> certificate;
   try {
     certificate.reset(new CertificateV2(*data));
-  } catch (const exception& ex) {
+  } catch (const std::exception& ex) {
     state->fail(ValidationError(ValidationError::MALFORMED_CERTIFICATE,
       "Fetched a malformed certificate `" + data->getName().toUri() +
       "` (" + ex.what() + ")"));

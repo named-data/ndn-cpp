@@ -85,7 +85,7 @@ ConfigFilter::createNameFilter(const BoostInfoTree& configSection)
     try {
       return ptr_lib::make_shared<ConfigRegexNameFilter>(*regexString);
     }
-    catch (const exception& e) {
+    catch (const std::exception& e) {
       throw ValidatorConfigError("Wrong filter.regex: " + *regexString);
     }
   }

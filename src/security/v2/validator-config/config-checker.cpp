@@ -124,7 +124,7 @@ ConfigChecker::createKeyLocatorNameChecker(const BoostInfoTree& configSection)
     try {
       return ptr_lib::make_shared<ConfigRegexChecker>(*regexString);
     }
-    catch (const exception& e) {
+    catch (const std::exception& e) {
       throw ValidatorConfigError
         ("Invalid checker.key-locator.regex: " + *regexString);
     }
@@ -171,7 +171,7 @@ ConfigChecker::createKeyLocatorNameChecker(const BoostInfoTree& configSection)
       return ptr_lib::make_shared<ConfigHyperRelationChecker>
         (*packetNameRegex, *packetNameExpansion, *keyRegex, *keyExpansion, relation);
     }
-    catch (const exception& e) {
+    catch (const std::exception& e) {
       throw ValidatorConfigError
         ("Invalid regex for key-locator.hyper-relation");
     }

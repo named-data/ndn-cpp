@@ -90,7 +90,7 @@ VerificationHelpers::verifyDataSignature
   SignedBlob encoding;
   try {
     encoding = data.wireEncode(wireFormat);
-  } catch (const exception&) {
+  } catch (const std::exception&) {
     return false;
   }
 
@@ -126,7 +126,7 @@ VerificationHelpers::verifyInterestSignature
   SignedBlob encoding;
   try {
     encoding = interest.wireEncode(wireFormat);
-  } catch (const exception&) {
+  } catch (const std::exception&) {
     return false;
   }
 
@@ -169,7 +169,7 @@ VerificationHelpers::verifyDataDigest
   SignedBlob encoding;
   try {
     encoding = data.wireEncode(wireFormat);
-  } catch (const exception&) {
+  } catch (const std::exception&) {
     return false;
   }
 
@@ -192,7 +192,7 @@ VerificationHelpers::verifyInterestDigest
   SignedBlob encoding;
   try {
     encoding = interest.wireEncode(wireFormat);
-  } catch (const exception&) {
+  } catch (const std::exception&) {
     return false;
   }
 

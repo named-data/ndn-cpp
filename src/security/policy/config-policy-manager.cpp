@@ -1039,7 +1039,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
       try {
         cert = loadIdentityCertificateFromFile(fullPath);
       }
-      catch (const exception& ex) {
+      catch (const std::exception& ex) {
         // Allow files that are not certificates.
         continue;
       }
@@ -1054,7 +1054,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
       try {
         cert = loadCertificateV2FromFile(fullPath);
       }
-      catch (const exception& ex) {
+      catch (const std::exception& ex) {
         // Allow files that are not certificates.
         continue;
       }

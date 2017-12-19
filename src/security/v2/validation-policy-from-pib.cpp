@@ -63,7 +63,7 @@ ValidationPolicyFromPib::checkPolicyHelper
   ptr_lib::shared_ptr<PibIdentity> identity;
   try {
     identity = pib_.getIdentity(PibKey::extractIdentityFromKeyName(keyName));
-  } catch (const exception& ex) {
+  } catch (const std::exception& ex) {
     state->fail(ValidationError
       (ValidationError::CANNOT_RETRIEVE_CERTIFICATE,
        "Cannot get the PIB identity for key " + keyName.toUri() + ": " + ex.what()));
@@ -73,7 +73,7 @@ ValidationPolicyFromPib::checkPolicyHelper
   ptr_lib::shared_ptr<PibKey> key;
   try {
     key = identity->getKey(keyName);
-  } catch (const exception& ex) {
+  } catch (const std::exception& ex) {
     state->fail(ValidationError
       (ValidationError::CANNOT_RETRIEVE_CERTIFICATE,
        "Cannot get the PIB key " + keyName.toUri() + ": " + ex.what()));
@@ -83,7 +83,7 @@ ValidationPolicyFromPib::checkPolicyHelper
   ptr_lib::shared_ptr<CertificateV2> certificate;
   try {
     certificate = key->getDefaultCertificate();
-  } catch (const exception& ex) {
+  } catch (const std::exception& ex) {
     state->fail(ValidationError
       (ValidationError::CANNOT_RETRIEVE_CERTIFICATE,
        "Cannot get the default certificate for key " + keyName.toUri() + ": " +
