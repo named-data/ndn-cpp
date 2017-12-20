@@ -21,9 +21,9 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 
 # Make ndn-cpp-config.h so we recompile the .pb.cc after Protobuf is installed or removed.
-%.pb.cc %.pb.h: %.proto include/ndn-cpp/ndn-cpp-config.h
+%.pb.cc: %.proto include/ndn-cpp/ndn-cpp-config.h
 	if test "no${PROTOC}" == "no"; then \
-	  echo "// If you need Protobuf, install it according to INSTALL.md and ./configure again." > $@ ; \
+	  cat protobuf-stub.txt > $@ ; \
 	else \
 	  $(PROTOC) --proto_path=$(dir $<) --cpp_out=$(dir $<) $< ; \
 	fi
