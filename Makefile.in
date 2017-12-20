@@ -245,9 +245,9 @@ am__v_lt_0 = --silent
 am__v_lt_1 = 
 libndn_cpp_tools_la_LIBADD =
 am_libndn_cpp_tools_la_OBJECTS = $(am__objects_1) $(am__objects_1) \
+	tools/usersync/content-meta-info.pb.lo \
 	tools/usersync/channel-discovery.lo \
 	tools/usersync/content-meta-info.lo \
-	tools/usersync/content-meta-info.pb.lo \
 	tools/usersync/generalized-content.lo \
 	tools/usersync/prefix-discovery.lo
 libndn_cpp_tools_la_OBJECTS = $(am_libndn_cpp_tools_la_OBJECTS)
@@ -399,8 +399,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/validator-config/config-filter.lo \
 	src/security/v2/validator-config/config-name-relation.lo \
 	src/security/v2/validator-config/config-rule.lo \
-	src/sync/chrono-sync2013.lo src/sync/digest-tree.lo \
-	src/sync/sync-state.pb.lo src/transport/async-tcp-transport.lo \
+	src/sync/sync-state.pb.lo src/sync/chrono-sync2013.lo \
+	src/sync/digest-tree.lo src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
 	src/transport/udp-transport.lo src/transport/unix-transport.lo \
@@ -427,9 +427,9 @@ bin_analog_reading_consumer_OBJECTS =  \
 	$(am_bin_analog_reading_consumer_OBJECTS)
 bin_analog_reading_consumer_DEPENDENCIES = libndn-cpp.la
 am_bin_basic_insertion_OBJECTS =  \
-	examples/repo-ng/basic-insertion.$(OBJEXT) \
 	examples/repo-ng/repo-command-parameter.pb.$(OBJEXT) \
-	examples/repo-ng/repo-command-response.pb.$(OBJEXT)
+	examples/repo-ng/repo-command-response.pb.$(OBJEXT) \
+	examples/repo-ng/basic-insertion.$(OBJEXT)
 bin_basic_insertion_OBJECTS = $(am_bin_basic_insertion_OBJECTS)
 bin_basic_insertion_DEPENDENCIES = libndn-cpp.la
 am_bin_test_channel_discovery_OBJECTS =  \
@@ -438,8 +438,8 @@ bin_test_channel_discovery_OBJECTS =  \
 	$(am_bin_test_channel_discovery_OBJECTS)
 bin_test_channel_discovery_DEPENDENCIES = libndn-cpp.la \
 	libndn-cpp-tools.la
-am_bin_test_chrono_chat_OBJECTS = examples/test-chrono-chat.$(OBJEXT) \
-	examples/chatbuf.pb.$(OBJEXT)
+am_bin_test_chrono_chat_OBJECTS = examples/chatbuf.pb.$(OBJEXT) \
+	examples/test-chrono-chat.$(OBJEXT)
 bin_test_chrono_chat_OBJECTS = $(am_bin_test_chrono_chat_OBJECTS)
 bin_test_chrono_chat_DEPENDENCIES = libndn-cpp.la
 am_bin_test_echo_consumer_OBJECTS =  \
@@ -462,8 +462,8 @@ bin_test_encode_decode_data_OBJECTS =  \
 	$(am_bin_test_encode_decode_data_OBJECTS)
 bin_test_encode_decode_data_DEPENDENCIES = libndn-cpp.la
 am_bin_test_encode_decode_fib_entry_OBJECTS =  \
-	examples/test-encode-decode-fib-entry.$(OBJEXT) \
-	examples/fib-entry.pb.$(OBJEXT)
+	examples/fib-entry.pb.$(OBJEXT) \
+	examples/test-encode-decode-fib-entry.$(OBJEXT)
 bin_test_encode_decode_fib_entry_OBJECTS =  \
 	$(am_bin_test_encode_decode_fib_entry_OBJECTS)
 bin_test_encode_decode_fib_entry_DEPENDENCIES = libndn-cpp.la
@@ -487,16 +487,16 @@ bin_test_get_async_threadsafe_OBJECTS =  \
 	$(am_bin_test_get_async_threadsafe_OBJECTS)
 bin_test_get_async_threadsafe_DEPENDENCIES = libndn-cpp.la
 am_bin_test_list_channels_OBJECTS =  \
-	examples/test-list-channels.$(OBJEXT) \
-	examples/channel-status.pb.$(OBJEXT)
+	examples/channel-status.pb.$(OBJEXT) \
+	examples/test-list-channels.$(OBJEXT)
 bin_test_list_channels_OBJECTS = $(am_bin_test_list_channels_OBJECTS)
 bin_test_list_channels_DEPENDENCIES = libndn-cpp.la
-am_bin_test_list_faces_OBJECTS = examples/test-list-faces.$(OBJEXT) \
-	examples/face-status.pb.$(OBJEXT)
+am_bin_test_list_faces_OBJECTS = examples/face-status.pb.$(OBJEXT) \
+	examples/test-list-faces.$(OBJEXT)
 bin_test_list_faces_OBJECTS = $(am_bin_test_list_faces_OBJECTS)
 bin_test_list_faces_DEPENDENCIES = libndn-cpp.la
-am_bin_test_list_rib_OBJECTS = examples/test-list-rib.$(OBJEXT) \
-	examples/rib-entry.pb.$(OBJEXT)
+am_bin_test_list_rib_OBJECTS = examples/rib-entry.pb.$(OBJEXT) \
+	examples/test-list-rib.$(OBJEXT)
 bin_test_list_rib_OBJECTS = $(am_bin_test_list_rib_OBJECTS)
 bin_test_list_rib_DEPENDENCIES = libndn-cpp.la
 am_bin_test_prefix_discovery_OBJECTS =  \
@@ -516,10 +516,10 @@ bin_test_publish_async_nfd_lite_OBJECTS =  \
 	$(am_bin_test_publish_async_nfd_lite_OBJECTS)
 bin_test_publish_async_nfd_lite_DEPENDENCIES = libndn-cpp.la
 am_bin_test_register_route_OBJECTS =  \
-	examples/test-register-route.$(OBJEXT) \
 	examples/control-parameters.pb.$(OBJEXT) \
 	examples/face-query-filter.pb.$(OBJEXT) \
-	examples/face-status.pb.$(OBJEXT)
+	examples/face-status.pb.$(OBJEXT) \
+	examples/test-register-route.$(OBJEXT)
 bin_test_register_route_OBJECTS =  \
 	$(am_bin_test_register_route_OBJECTS)
 bin_test_register_route_DEPENDENCIES = libndn-cpp.la
@@ -754,9 +754,9 @@ bin_unit_tests_test_verification_rules_OBJECTS =  \
 	$(am_bin_unit_tests_test_verification_rules_OBJECTS)
 bin_unit_tests_test_verification_rules_DEPENDENCIES = libndn-cpp.la
 am_bin_watched_insertion_OBJECTS =  \
-	examples/repo-ng/watched-insertion.$(OBJEXT) \
 	examples/repo-ng/repo-command-parameter.pb.$(OBJEXT) \
-	examples/repo-ng/repo-command-response.pb.$(OBJEXT)
+	examples/repo-ng/repo-command-response.pb.$(OBJEXT) \
+	examples/repo-ng/watched-insertion.$(OBJEXT)
 bin_watched_insertion_OBJECTS = $(am_bin_watched_insertion_OBJECTS)
 bin_watched_insertion_DEPENDENCIES = libndn-cpp.la
 SCRIPTS = $(dist_noinst_SCRIPTS)
@@ -1300,6 +1300,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PROTOC = @PROTOC@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -1813,9 +1814,9 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/validator-config/config-filter.cpp \
   src/security/v2/validator-config/config-name-relation.cpp \
   src/security/v2/validator-config/config-rule.cpp \
+  src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
-  src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -1845,14 +1846,14 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
 
 # The ndn-cpp-tools library.
 libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
+  tools/usersync/content-meta-info.pb.cc \
   tools/usersync/channel-discovery.cpp \
   tools/usersync/content-meta-info.cpp \
-  tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
   tools/usersync/generalized-content.cpp tools/usersync/prefix-discovery.cpp
 
 bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
 bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
-bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
+bin_test_chrono_chat_SOURCES = examples/chatbuf.pb.cc examples/test-chrono-chat.cpp
 bin_test_chrono_chat_LDADD = libndn-cpp.la
 bin_test_echo_consumer_lite_SOURCES = examples/test-echo-consumer-lite.cpp
 bin_test_echo_consumer_lite_LDADD = libndn-cpp.la
@@ -1862,7 +1863,7 @@ bin_test_encode_decode_benchmark_SOURCES = examples/test-encode-decode-benchmark
 bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
 bin_test_encode_decode_data_SOURCES = examples/test-encode-decode-data.cpp
 bin_test_encode_decode_data_LDADD = libndn-cpp.la
-bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
+bin_test_encode_decode_fib_entry_SOURCES = examples/fib-entry.pb.cc examples/test-encode-decode-fib-entry.cpp
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
@@ -1872,11 +1873,11 @@ bin_test_get_async_SOURCES = examples/test-get-async.cpp
 bin_test_get_async_LDADD = libndn-cpp.la
 bin_test_get_async_threadsafe_SOURCES = examples/test-get-async-threadsafe.cpp
 bin_test_get_async_threadsafe_LDADD = libndn-cpp.la
-bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_SOURCES = examples/channel-status.pb.cc examples/test-list-channels.cpp
 bin_test_list_channels_LDADD = libndn-cpp.la
-bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
+bin_test_list_faces_SOURCES = examples/face-status.pb.cc examples/test-list-faces.cpp
 bin_test_list_faces_LDADD = libndn-cpp.la
-bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
+bin_test_list_rib_SOURCES = examples/rib-entry.pb.cc examples/test-list-rib.cpp
 bin_test_list_rib_LDADD = libndn-cpp.la
 bin_test_prefix_discovery_SOURCES = examples/test-prefix-discovery.cpp
 bin_test_prefix_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
@@ -1888,17 +1889,19 @@ bin_analog_reading_consumer_SOURCES = examples/arduino/analog-reading-consumer.c
 bin_analog_reading_consumer_LDADD = libndn-cpp.la
 bin_test_sign_verify_data_hmac_SOURCES = examples/test-sign-verify-data-hmac.cpp
 bin_test_sign_verify_data_hmac_LDADD = libndn-cpp.la
-bin_basic_insertion_SOURCES = examples/repo-ng/basic-insertion.cpp \
-  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_basic_insertion_SOURCES = \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc \
+  examples/repo-ng/basic-insertion.cpp
 
 bin_basic_insertion_LDADD = libndn-cpp.la
-bin_watched_insertion_SOURCES = examples/repo-ng/watched-insertion.cpp \
-  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_watched_insertion_SOURCES = \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc \
+  examples/repo-ng/watched-insertion.cpp
 
 bin_watched_insertion_LDADD = libndn-cpp.la
-bin_test_register_route_SOURCES = examples/test-register-route.cpp \
+bin_test_register_route_SOURCES = \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
-  examples/face-status.pb.cc
+  examples/face-status.pb.cc examples/test-register-route.cpp
 
 bin_test_register_route_LDADD = libndn-cpp.la
 
@@ -2268,12 +2271,12 @@ tools/usersync/$(am__dirstamp):
 tools/usersync/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tools/usersync/$(DEPDIR)
 	@: > tools/usersync/$(DEPDIR)/$(am__dirstamp)
+tools/usersync/content-meta-info.pb.lo:  \
+	tools/usersync/$(am__dirstamp) \
+	tools/usersync/$(DEPDIR)/$(am__dirstamp)
 tools/usersync/channel-discovery.lo: tools/usersync/$(am__dirstamp) \
 	tools/usersync/$(DEPDIR)/$(am__dirstamp)
 tools/usersync/content-meta-info.lo: tools/usersync/$(am__dirstamp) \
-	tools/usersync/$(DEPDIR)/$(am__dirstamp)
-tools/usersync/content-meta-info.pb.lo:  \
-	tools/usersync/$(am__dirstamp) \
 	tools/usersync/$(DEPDIR)/$(am__dirstamp)
 tools/usersync/generalized-content.lo: tools/usersync/$(am__dirstamp) \
 	tools/usersync/$(DEPDIR)/$(am__dirstamp)
@@ -2779,11 +2782,11 @@ src/sync/$(am__dirstamp):
 src/sync/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/sync/$(DEPDIR)
 	@: > src/sync/$(DEPDIR)/$(am__dirstamp)
+src/sync/sync-state.pb.lo: src/sync/$(am__dirstamp) \
+	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/chrono-sync2013.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/digest-tree.lo: src/sync/$(am__dirstamp) \
-	src/sync/$(DEPDIR)/$(am__dirstamp)
-src/sync/sync-state.pb.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/transport
@@ -2903,13 +2906,13 @@ examples/repo-ng/$(am__dirstamp):
 examples/repo-ng/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) examples/repo-ng/$(DEPDIR)
 	@: > examples/repo-ng/$(DEPDIR)/$(am__dirstamp)
-examples/repo-ng/basic-insertion.$(OBJEXT):  \
-	examples/repo-ng/$(am__dirstamp) \
-	examples/repo-ng/$(DEPDIR)/$(am__dirstamp)
 examples/repo-ng/repo-command-parameter.pb.$(OBJEXT):  \
 	examples/repo-ng/$(am__dirstamp) \
 	examples/repo-ng/$(DEPDIR)/$(am__dirstamp)
 examples/repo-ng/repo-command-response.pb.$(OBJEXT):  \
+	examples/repo-ng/$(am__dirstamp) \
+	examples/repo-ng/$(DEPDIR)/$(am__dirstamp)
+examples/repo-ng/basic-insertion.$(OBJEXT):  \
 	examples/repo-ng/$(am__dirstamp) \
 	examples/repo-ng/$(DEPDIR)/$(am__dirstamp)
 
@@ -2928,9 +2931,9 @@ examples/test-channel-discovery.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-channel-discovery$(EXEEXT): $(bin_test_channel_discovery_OBJECTS) $(bin_test_channel_discovery_DEPENDENCIES) $(EXTRA_bin_test_channel_discovery_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-channel-discovery$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_channel_discovery_OBJECTS) $(bin_test_channel_discovery_LDADD) $(LIBS)
-examples/test-chrono-chat.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
 examples/chatbuf.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-chrono-chat.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-chrono-chat$(EXEEXT): $(bin_test_chrono_chat_OBJECTS) $(bin_test_chrono_chat_DEPENDENCIES) $(EXTRA_bin_test_chrono_chat_DEPENDENCIES) bin/$(am__dirstamp)
@@ -2960,10 +2963,10 @@ examples/test-encode-decode-data.$(OBJEXT): examples/$(am__dirstamp) \
 bin/test-encode-decode-data$(EXEEXT): $(bin_test_encode_decode_data_OBJECTS) $(bin_test_encode_decode_data_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_data_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-data$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_data_OBJECTS) $(bin_test_encode_decode_data_LDADD) $(LIBS)
-examples/test-encode-decode-fib-entry.$(OBJEXT):  \
-	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 examples/fib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-encode-decode-fib-entry.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-encode-decode-fib-entry$(EXEEXT): $(bin_test_encode_decode_fib_entry_OBJECTS) $(bin_test_encode_decode_fib_entry_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_fib_entry_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-fib-entry$(EXEEXT)
@@ -2992,25 +2995,25 @@ examples/test-get-async-threadsafe.$(OBJEXT):  \
 bin/test-get-async-threadsafe$(EXEEXT): $(bin_test_get_async_threadsafe_OBJECTS) $(bin_test_get_async_threadsafe_DEPENDENCIES) $(EXTRA_bin_test_get_async_threadsafe_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-get-async-threadsafe$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_get_async_threadsafe_OBJECTS) $(bin_test_get_async_threadsafe_LDADD) $(LIBS)
-examples/test-list-channels.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
 examples/channel-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-list-channels.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-list-channels$(EXEEXT): $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_DEPENDENCIES) $(EXTRA_bin_test_list_channels_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-list-channels$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_channels_OBJECTS) $(bin_test_list_channels_LDADD) $(LIBS)
-examples/test-list-faces.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
 examples/face-status.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-list-faces.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-list-faces$(EXEEXT): $(bin_test_list_faces_OBJECTS) $(bin_test_list_faces_DEPENDENCIES) $(EXTRA_bin_test_list_faces_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-list-faces$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_list_faces_OBJECTS) $(bin_test_list_faces_LDADD) $(LIBS)
-examples/test-list-rib.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
 examples/rib-entry.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-list-rib.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-list-rib$(EXEEXT): $(bin_test_list_rib_OBJECTS) $(bin_test_list_rib_DEPENDENCIES) $(EXTRA_bin_test_list_rib_DEPENDENCIES) bin/$(am__dirstamp)
@@ -3034,11 +3037,11 @@ examples/test-publish-async-nfd-lite.$(OBJEXT):  \
 bin/test-publish-async-nfd-lite$(EXEEXT): $(bin_test_publish_async_nfd_lite_OBJECTS) $(bin_test_publish_async_nfd_lite_DEPENDENCIES) $(EXTRA_bin_test_publish_async_nfd_lite_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-publish-async-nfd-lite$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_publish_async_nfd_lite_OBJECTS) $(bin_test_publish_async_nfd_lite_LDADD) $(LIBS)
-examples/test-register-route.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
 examples/control-parameters.pb.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 examples/face-query-filter.pb.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-register-route.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
 bin/test-register-route$(EXEEXT): $(bin_test_register_route_OBJECTS) $(bin_test_register_route_DEPENDENCIES) $(EXTRA_bin_test_register_route_DEPENDENCIES) bin/$(am__dirstamp)
@@ -6432,6 +6435,14 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-pkgconfigDATA
 @DX_COND_doc_TRUE@@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
 @DX_COND_doc_TRUE@	rm -rf @DX_DOCDIR@
 @DX_COND_doc_TRUE@	$(DX_ENV) $(DX_DOXYGEN) $(srcdir)/$(DX_CONFIG)
+
+# Make ndn-cpp-config.h so we recompile the .pb.cc after Protobuf is installed or removed.
+%.pb.cc %.pb.h: %.proto include/ndn-cpp/ndn-cpp-config.h
+	if test "no${PROTOC}" == "no"; then \
+	  echo "// If you need Protobuf, install it according to INSTALL.md and ./configure again." > $@ ; \
+	else \
+	  $(PROTOC) --proto_path=$(dir $<) --cpp_out=$(dir $<) $< ; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
