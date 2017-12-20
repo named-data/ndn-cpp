@@ -1,1 +1,7 @@
-// If you need Protobuf, install it according to INSTALL.md and ./configure again.
+// Check if ndn-cpp-config.h defines NDN_CPP_HAVE_PROTOBUF = 1.
+// When Protobuf is not installed, this is just a stub to be compiled.
+
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_PROTOBUF
+#error Protobuf is installed but protoc didn't run. Try again to ./configure && make
+#endif
