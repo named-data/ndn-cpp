@@ -234,7 +234,7 @@ PibSqlite3::~PibSqlite3()
 }
 
 string
-PibSqlite3::getScheme() { return "pib-sqlite3"; }
+PibSqlite3::getScheme() { return NDN_PIB_SQLITE3_SCHEME; }
 
 void
 PibSqlite3::setTpmLocator(const string& tpmLocator)
