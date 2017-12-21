@@ -475,8 +475,8 @@ ConfigPolicyManager::loadTrustAnchorCertificates()
       if (refreshTrees.size() >= 1) {
         const string& refreshPeriodStr = refreshTrees[0]->getValue();
 
-        regex regex1("(\\d+)([hms])");
-        smatch refreshMatch;
+        regex_lib::regex regex1("(\\d+)([hms])");
+        regex_lib::smatch refreshMatch;
         if (!regex_match(refreshPeriodStr, refreshMatch, regex1))
           refreshPeriod = 0;
         else {

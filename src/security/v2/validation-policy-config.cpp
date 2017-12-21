@@ -228,8 +228,8 @@ ValidationPolicyConfig::getRefreshPeriod(const BoostInfoTree& configSection)
     return 1e14;
 
   double refreshSeconds = 0;
-  regex regex1("(\\d+)([hms])");
-  smatch refreshMatch;
+  regex_lib::regex regex1("(\\d+)([hms])");
+  regex_lib::smatch refreshMatch;
   if (regex_match(*refreshString, refreshMatch, regex1)) {
     refreshSeconds = ::atoi(refreshMatch[1].str().c_str());
     if (refreshMatch[2].str() != "s") {
