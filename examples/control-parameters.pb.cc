@@ -3,5 +3,5 @@
 
 #include <ndn-cpp/ndn-cpp-config.h>
 #if NDN_CPP_HAVE_PROTOBUF
-#error Protobuf is installed but protoc didn't run. Try again to ./configure && make
+#error Protobuf is installed but protoc didn't run. Try again to ./configure && make clean && make
 #endif
