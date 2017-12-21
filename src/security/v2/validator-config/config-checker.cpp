@@ -20,6 +20,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "../../../util/regex/ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include "../../../util/boost-info-parser.hpp"
 #include "../../../util/regex/ndn-regex-top-matcher.hpp"
 #include <ndn-cpp/security/pib/pib-key.hpp>
@@ -269,3 +273,5 @@ ConfigHyperRelationChecker::checkNames
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB

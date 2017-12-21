@@ -796,13 +796,7 @@ KeyChain::parseAndCheckTpmLocator
 string
 KeyChain::getDefaultPibScheme()
 {
-#ifdef NDN_CPP_HAVE_SQLITE3
-  return PibSqlite3::getScheme();
-#else
-  // No SQLite, so we can't use PibSqlite3.
-  throw SecurityException
-    ("Can't create the default PIB. Try installing libsqlite3 and ./configure again.");
-#endif
+  return NDN_PIB_SQLITE3_SCHEME;
 }
 
 string

@@ -21,6 +21,10 @@
  */
 
 #include "../../util/regex/ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
+#include "../../util/regex/ndn-regex-matcher-base.hpp"
 
 #include <stdlib.h>
 #include <stdexcept>
@@ -228,8 +232,8 @@ ValidationPolicyConfig::getRefreshPeriod(const BoostInfoTree& configSection)
     return 1e14;
 
   double refreshSeconds = 0;
-  regex regex1("(\\d+)([hms])");
-  smatch refreshMatch;
+  regex_lib::regex regex1("(\\d+)([hms])");
+  regex_lib::smatch refreshMatch;
   if (regex_match(*refreshString, refreshMatch, regex1)) {
     refreshSeconds = ::atoi(refreshMatch[1].str().c_str());
     if (refreshMatch[2].str() != "s") {
@@ -248,3 +252,5 @@ ValidationPolicyConfig::getRefreshPeriod(const BoostInfoTree& configSection)
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB

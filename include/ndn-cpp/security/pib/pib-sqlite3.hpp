@@ -23,6 +23,9 @@
 #ifndef NDN_PIB_SQLITE3_HPP
 #define NDN_PIB_SQLITE3_HPP
 
+// Define this even if we don't have NDN_CPP_HAVE_SQLITE3 .
+#define NDN_PIB_SQLITE3_SCHEME "pib-sqlite3"
+
 // Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_SQLITE3.
 #include "../../ndn-cpp-config.h"
 #ifdef NDN_CPP_HAVE_SQLITE3
