@@ -28,6 +28,21 @@ pkgconfig_DATA = libndn-cpp.pc
 	  $(PROTOC) --proto_path=$(dir $<) --cpp_out=$(dir $<) $< ; \
 	fi
 
+# On clean, remake the Protobuf code.
+CLEANFILES = \
+  examples/channel-status.pb.cc \
+  examples/chatbuf.pb.cc \
+  examples/control-parameters.pb.cc \
+  examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc \
+  examples/fib-entry.pb.cc \
+  examples/repo-ng/repo-command-parameter.pb.cc \
+  examples/repo-ng/repo-command-response.pb.cc \
+  examples/rib-entry.pb.cc \
+  src/sync/sync-state.pb.cc \
+  tools/usersync/content-meta-info.pb.cc
+
+
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
   bin/unit-tests/test-consumer bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \

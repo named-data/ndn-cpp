@@ -1399,6 +1399,21 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la libndn-cpp-tools.la
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 
+# On clean, remake the Protobuf code.
+CLEANFILES = \
+  examples/channel-status.pb.cc \
+  examples/chatbuf.pb.cc \
+  examples/control-parameters.pb.cc \
+  examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc \
+  examples/fib-entry.pb.cc \
+  examples/repo-ng/repo-command-parameter.pb.cc \
+  examples/repo-ng/repo-command-response.pb.cc \
+  examples/rib-entry.pb.cc \
+  src/sync/sync-state.pb.cc \
+  tools/usersync/content-meta-info.pb.cc
+
+
 # Public C headers.
 # NOTE: If a new directory is added, then add it to ndn_cpp_c_headers in include/Makefile.am.
 ndn_cpp_c_headers = \
@@ -6195,6 +6210,7 @@ mostlyclean-generic:
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
