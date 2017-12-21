@@ -47,8 +47,6 @@ INIT_LOGGER("ndn.ConfigPolicyManager");
 
 namespace ndn {
 
-using namespace regex_lib;
-
 /**
  * Ignore data and call onValidationFailed(interest, reason). This is so that an
  * OnInterestValidationFailed can be passed as an OnDataValidationFailed.
