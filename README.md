@@ -12,6 +12,9 @@ Further classes and methods are in the Doxygen-generated documentation.
 
 See the file [INSTALL.md](https://github.com/named-data/ndn-cpp/blob/master/INSTALL.md) for build and install instructions.
 
+If you are new to the NDN community of software generally, read the
+[Contributor's Guide](https://github.com/named-data/NFD/blob/master/CONTRIBUTING.md).
+
 Please submit any bugs or issues to the NDN-CPP issue tracker:
 http://redmine.named-data.net/projects/ndn-cpp/issues
 
