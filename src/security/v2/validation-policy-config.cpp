@@ -21,6 +21,10 @@
  */
 
 #include "../../util/regex/ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
+#include "../../util/regex/ndn-regex-matcher-base.hpp"
 
 #include <stdlib.h>
 #include <stdexcept>
@@ -248,3 +252,5 @@ ValidationPolicyConfig::getRefreshPeriod(const BoostInfoTree& configSection)
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB

@@ -20,6 +20,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include "../../../util/regex/ndn-regex-matcher-base.hpp"
+// Only compile if we set NDN_CPP_HAVE_REGEX_LIB in ndn-regex-matcher-base.hpp.
+#if NDN_CPP_HAVE_REGEX_LIB
+
 #include <ndn-cpp/security/validator-config-error.hpp>
 #include <ndn-cpp/security/v2/validator-config/config-name-relation.hpp>
 #include "../../../util/boost-info-parser.hpp"
@@ -111,3 +115,5 @@ ConfigRegexNameFilter::matchName(const Name& packetName)
 }
 
 }
+
+#endif // NDN_CPP_HAVE_REGEX_LIB
