@@ -1,3 +1,10 @@
+NDN-CPP Interim changes since v0.13 (2017-12-22)
+------------------------------------------------
+
+Bug fixes
+* https://redmine.named-data.net/issues/4405 In make, use the system's protoc to
+  compile the Protobuf files.
+
 NDN-CPP v0.13 (2017-12-08)
 --------------------------
 
