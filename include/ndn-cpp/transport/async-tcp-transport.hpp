@@ -22,12 +22,15 @@
 #ifndef NDN_ASYNC_TCP_TRANSPORT_HPP
 #define NDN_ASYNC_TCP_TRANSPORT_HPP
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_BOOST_ASIO.
+#include "../ndn-cpp-config.h"
+#ifdef NDN_CPP_HAVE_BOOST_ASIO
+
 #include <string>
+#include <boost/asio.hpp>
 #include "../common.hpp"
 #include "../c/encoding/element-reader-types.h"
 #include "transport.hpp"
-
-namespace boost { namespace asio { class io_service; }}
 
 namespace ndn {
 
@@ -160,5 +163,7 @@ private:
 };
 
 }
+
+#endif // NDN_CPP_HAVE_BOOST_ASIO
 
 #endif

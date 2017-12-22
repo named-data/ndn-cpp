@@ -25,7 +25,6 @@
 
 #include <stdexcept>
 #include <boost/bind.hpp>
-#include <boost/asio.hpp>
 #include "../c/transport/tcp-transport.h"
 #include "../c/encoding/element-reader.h"
 #include "../encoding/element-listener.hpp"

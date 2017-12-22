@@ -22,11 +22,14 @@
 #ifndef NDN_ASYNC_UNIX_TRANSPORT_HPP
 #define NDN_ASYNC_UNIX_TRANSPORT_HPP
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_BOOST_ASIO.
+#include "../ndn-cpp-config.h"
+#ifdef NDN_CPP_HAVE_BOOST_ASIO
+
 #include <string>
+#include <boost/asio.hpp>
 #include "../common.hpp"
 #include "transport.hpp"
-
-namespace boost { namespace asio { namespace local { class stream_protocol; }}}
 
 namespace ndn {
 
@@ -142,5 +145,7 @@ private:
 };
 
 }
+
+#endif // NDN_CPP_HAVE_BOOST_ASIO
 
 #endif

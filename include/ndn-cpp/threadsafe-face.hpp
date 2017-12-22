@@ -22,9 +22,12 @@
 #ifndef NDN_THREADSAFE_FACE_HPP
 #define NDN_THREADSAFE_FACE_HPP
 
-#include "face.hpp"
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_BOOST_ASIO.
+#include "ndn-cpp-config.h"
+#ifdef NDN_CPP_HAVE_BOOST_ASIO
 
-namespace boost { namespace asio { class io_service; }}
+#include <boost/asio.hpp>
+#include "face.hpp"
 
 namespace ndn {
 
@@ -225,5 +228,7 @@ private:
 };
 
 }
+
+#endif // NDN_CPP_HAVE_BOOST_ASIO
 
 #endif

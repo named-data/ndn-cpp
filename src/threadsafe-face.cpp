@@ -24,7 +24,6 @@
 #ifdef NDN_CPP_HAVE_BOOST_ASIO
 
 #include <boost/bind.hpp>
-#include <boost/asio.hpp>
 #include <ndn-cpp/transport/async-tcp-transport.hpp>
 #include <ndn-cpp/transport/async-unix-transport.hpp>
 #include <ndn-cpp/threadsafe-face.hpp>

@@ -26,7 +26,6 @@
 
 #include <stdexcept>
 #include <boost/bind.hpp>
-#include <boost/asio.hpp>
 #include <stdlib.h>
 #include "../c/transport/unix-transport.h"
 #include "async-socket-transport.hpp"
