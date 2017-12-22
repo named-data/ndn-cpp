@@ -303,6 +303,17 @@ if test "$HAVE_PROTOBUF" == "1" ; then
   # libprotobuf needs libpthread.
   AC_CHECK_LIB([pthread], [main], [],
                [AC_MSG_FAILURE([have libprotobuf but no libpthread])])
+
+  # See https://stackoverflow.com/questions/13939904/how-to-use-protocol-buffers-with-autoconf-automake
+  AC_ARG_WITH([protoc],
+      [AS_HELP_STRING([--with-protoc=/path/of/protoc],
+          [Location of the protocol buffers compiler protoc. Defaults to looking on path.])],
+      [PROTOC="$withval"],
+      [ AS_IF([test "x${PROTOC}" == "x"],
+          [AC_PATH_PROG([PROTOC], [protoc], [no])])
+      ]
+  )
+  AS_IF([test "${PROTOC}" == "no"], [AC_MSG_ERROR([ProtoBuf compiler "protoc" not found.])])
 fi
 
 DX_HTML_FEATURE(ON)

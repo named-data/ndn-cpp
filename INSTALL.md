@@ -76,7 +76,7 @@ Optional: To install libsqlite3, in a terminal, enter:
 
 Optional: To install Protobuf, in a terminal, enter:
 
-    sudo apt-get install libprotobuf-dev
+    sudo apt-get install libprotobuf-dev protobuf-compiler
 
 Optional: To install log4cxx, in a terminal, enter:
 
@@ -101,7 +101,7 @@ Optional: To install libsqlite3, in a terminal, enter:
 
 Optional: To install Protobuf, in a terminal, enter:
 
-    sudo apt-get install libprotobuf-dev
+    sudo apt-get install libprotobuf-dev protobuf-compiler
 
 Optional: To install log4cxx, in a terminal, enter:
 

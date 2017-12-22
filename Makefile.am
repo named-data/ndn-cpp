@@ -20,6 +20,29 @@ lib_LTLIBRARIES = libndn-c.la libndn-cpp.la libndn-cpp-tools.la
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 
+# Make ndn-cpp-config.h so we recompile the .pb.cc after Protobuf is installed or removed.
+%.pb.cc: %.proto include/ndn-cpp/ndn-cpp-config.h
+	if test "no${PROTOC}" == "no"; then \
+	  cat protobuf-stub.txt > $@ ; \
+	else \
+	  $(PROTOC) --proto_path=$(dir $<) --cpp_out=$(dir $<) $< ; \
+	fi
+
+# On clean, remake the Protobuf code.
+CLEANFILES = \
+  examples/channel-status.pb.cc \
+  examples/chatbuf.pb.cc \
+  examples/control-parameters.pb.cc \
+  examples/face-query-filter.pb.cc \
+  examples/face-status.pb.cc \
+  examples/fib-entry.pb.cc \
+  examples/repo-ng/repo-command-parameter.pb.cc \
+  examples/repo-ng/repo-command-response.pb.cc \
+  examples/rib-entry.pb.cc \
+  src/sync/sync-state.pb.cc \
+  tools/usersync/content-meta-info.pb.cc
+
+
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
   bin/unit-tests/test-consumer bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \
@@ -468,9 +491,9 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/validator-config/config-filter.cpp \
   src/security/v2/validator-config/config-name-relation.cpp \
   src/security/v2/validator-config/config-rule.cpp \
+  src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
-  src/sync/sync-state.pb.cc src/sync/sync-state.pb.h \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -499,15 +522,15 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
 
 # The ndn-cpp-tools library.
 libndn_cpp_tools_la_SOURCES = ${ndn_cpp_tools_cpp_headers} ${ndn_cpp_cpp_headers} \
+  tools/usersync/content-meta-info.pb.cc \
   tools/usersync/channel-discovery.cpp \
   tools/usersync/content-meta-info.cpp \
-  tools/usersync/content-meta-info.pb.cc tools/usersync/content-meta-info.pb.h \
   tools/usersync/generalized-content.cpp tools/usersync/prefix-discovery.cpp
 
 bin_test_channel_discovery_SOURCES = examples/test-channel-discovery.cpp
 bin_test_channel_discovery_LDADD = libndn-cpp.la libndn-cpp-tools.la
 
-bin_test_chrono_chat_SOURCES = examples/test-chrono-chat.cpp examples/chatbuf.pb.cc
+bin_test_chrono_chat_SOURCES = examples/chatbuf.pb.cc examples/test-chrono-chat.cpp
 bin_test_chrono_chat_LDADD = libndn-cpp.la
 
 bin_test_echo_consumer_lite_SOURCES = examples/test-echo-consumer-lite.cpp
@@ -522,7 +545,7 @@ bin_test_encode_decode_benchmark_LDADD = libndn-cpp.la
 bin_test_encode_decode_data_SOURCES = examples/test-encode-decode-data.cpp
 bin_test_encode_decode_data_LDADD = libndn-cpp.la
 
-bin_test_encode_decode_fib_entry_SOURCES = examples/test-encode-decode-fib-entry.cpp examples/fib-entry.pb.cc
+bin_test_encode_decode_fib_entry_SOURCES = examples/fib-entry.pb.cc examples/test-encode-decode-fib-entry.cpp
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
@@ -537,13 +560,13 @@ bin_test_get_async_LDADD = libndn-cpp.la
 bin_test_get_async_threadsafe_SOURCES = examples/test-get-async-threadsafe.cpp
 bin_test_get_async_threadsafe_LDADD = libndn-cpp.la
 
-bin_test_list_channels_SOURCES = examples/test-list-channels.cpp examples/channel-status.pb.cc
+bin_test_list_channels_SOURCES = examples/channel-status.pb.cc examples/test-list-channels.cpp
 bin_test_list_channels_LDADD = libndn-cpp.la
 
-bin_test_list_faces_SOURCES = examples/test-list-faces.cpp examples/face-status.pb.cc
+bin_test_list_faces_SOURCES = examples/face-status.pb.cc examples/test-list-faces.cpp
 bin_test_list_faces_LDADD = libndn-cpp.la
 
-bin_test_list_rib_SOURCES = examples/test-list-rib.cpp examples/rib-entry.pb.cc
+bin_test_list_rib_SOURCES = examples/rib-entry.pb.cc examples/test-list-rib.cpp
 bin_test_list_rib_LDADD = libndn-cpp.la
 
 bin_test_prefix_discovery_SOURCES = examples/test-prefix-discovery.cpp
@@ -561,17 +584,19 @@ bin_analog_reading_consumer_LDADD = libndn-cpp.la
 bin_test_sign_verify_data_hmac_SOURCES = examples/test-sign-verify-data-hmac.cpp
 bin_test_sign_verify_data_hmac_LDADD = libndn-cpp.la
 
-bin_basic_insertion_SOURCES = examples/repo-ng/basic-insertion.cpp \
-  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_basic_insertion_SOURCES = \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc \
+  examples/repo-ng/basic-insertion.cpp
 bin_basic_insertion_LDADD = libndn-cpp.la
 
-bin_watched_insertion_SOURCES = examples/repo-ng/watched-insertion.cpp \
-  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc
+bin_watched_insertion_SOURCES = \
+  examples/repo-ng/repo-command-parameter.pb.cc examples/repo-ng/repo-command-response.pb.cc \
+  examples/repo-ng/watched-insertion.cpp
 bin_watched_insertion_LDADD = libndn-cpp.la
 
-bin_test_register_route_SOURCES = examples/test-register-route.cpp \
+bin_test_register_route_SOURCES = \
   examples/control-parameters.pb.cc examples/face-query-filter.pb.cc \
-  examples/face-status.pb.cc
+  examples/face-status.pb.cc examples/test-register-route.cpp
 bin_test_register_route_LDADD = libndn-cpp.la
 
 # Unit tests

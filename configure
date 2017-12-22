@@ -682,6 +682,7 @@ DX_ENV
 DX_DOCDIR
 DX_CONFIG
 DX_PROJECT
+PROTOC
 SQLITE3_VERSION
 SQLITE3_LDFLAGS
 SQLITE3_CFLAGS
@@ -843,6 +844,7 @@ with_boost_function
 with_boost_regex
 with_sqlite3
 with_osx_keychain
+with_protoc
 enable_doxygen_doc
 enable_doxygen_dot
 enable_doxygen_man
@@ -1557,6 +1559,9 @@ Optional Packages:
                           specify the prefix for sqlite3 library
   --with-osx-keychain     use the OS X Keychain as the default private key
                           store [default: yes]
+  --with-protoc=/path/of/protoc
+                          Location of the protocol buffers compiler protoc.
+                          Defaults to looking on path.
 
 Some influential environment variables:
   CC          C compiler command
@@ -18811,6 +18816,63 @@ as_fn_error $? "have libprotobuf but no libpthread
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
+
+  # See https://stackoverflow.com/questions/13939904/how-to-use-protocol-buffers-with-autoconf-automake
+
+# Check whether --with-protoc was given.
+if test "${with_protoc+set}" = set; then :
+  withval=$with_protoc; PROTOC="$withval"
+else
+   if test "x${PROTOC}" == "x"; then :
+  # Extract the first word of "protoc", so it can be a program name with args.
+set dummy protoc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PROTOC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PROTOC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PROTOC="$PROTOC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PROTOC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_PROTOC" && ac_cv_path_PROTOC="no"
+  ;;
+esac
+fi
+PROTOC=$ac_cv_path_PROTOC
+if test -n "$PROTOC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PROTOC" >&5
+$as_echo "$PROTOC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+
+
+fi
+
+  if test "${PROTOC}" == "no"; then :
+  as_fn_error $? "ProtoBuf compiler \"protoc\" not found." "$LINENO" 5
+fi
 fi
 
 
