@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2015-2017 Regents of the University of California.
+ * Copyright (C) 2015-2018 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * @author: José Quevedo <quevedo@av.it.pt>
  *
