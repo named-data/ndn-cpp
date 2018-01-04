@@ -177,6 +177,14 @@ public:
     return *tpm_;
   }
 
+  /**
+   * Get the flag set by the constructor if this is a security v1 or v2 KeyChain.
+   * @return True if this is a security v1 KeyChain, false if this is a security
+   * v2 KeyChain.
+   */
+  bool
+  getIsSecurityV1() const { return isSecurityV1_; }
+
   // Identity management
 
   /**
