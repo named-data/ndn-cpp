@@ -24,6 +24,7 @@
 
 #include "../util/blob-types.h"
 #include "incoming-face-id-types.h"
+#include "congestion-mark-types.h"
 #include "../network-nack-types.h"
 
 #ifdef __cplusplus
@@ -35,7 +36,8 @@ extern "C" {
  */
 typedef enum {
   ndn_LpPacketHeaderFieldType_INCOMING_FACE_ID = 1,
-  ndn_LpPacketHeaderFieldType_NETWORK_NACK = 2
+  ndn_LpPacketHeaderFieldType_NETWORK_NACK = 2,
+  ndn_LpPacketHeaderFieldType_CONGESTION_MARK = 3
 } ndn_LpPacketHeaderFieldType;
 
 /**
@@ -47,6 +49,7 @@ struct ndn_LpPacketHeaderField {
   union {
     struct ndn_IncomingFaceId incomingFaceId;
     struct ndn_NetworkNack networkNack;
+    struct ndn_CongestionMark congestionMark;
   };
 };
 

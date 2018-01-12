@@ -28,6 +28,7 @@
 #include <ndn-cpp/generic-signature.hpp>
 #include "c/data.h"
 #include "lp/incoming-face-id.hpp"
+#include "lp/congestion-mark.hpp"
 #include "ndn-cpp/lite/util/crypto-lite.hpp"
 #include <ndn-cpp/data.hpp>
 
@@ -95,6 +96,16 @@ Data::getIncomingFaceId() const
     field = IncomingFaceId::getFirstHeader(*lpPacket_);
 
   return field ? field->getFaceId() : (uint64_t)-1;
+}
+
+uint64_t
+Data::getCongestionMark() const
+{
+  ptr_lib::shared_ptr<CongestionMark> field;
+  if (lpPacket_)
+    field = CongestionMark::getFirstHeader(*lpPacket_);
+
+  return field ? field->getCongestionMark() : 0;
 }
 
 ptr_lib::shared_ptr<Name>

@@ -26,6 +26,7 @@
 #include "../util/blob-lite.hpp"
 #include "incoming-face-id-lite.hpp"
 #include "../network-nack-lite.hpp"
+#include "congestion-mark-lite.hpp"
 #include "../../c/lp/lp-packet-types.h"
 
 namespace ndn {
@@ -52,7 +53,7 @@ public:
 
   /**
    * Get this field as an NetworkNack. This assumes you checked that
-   * getType() is ndn_LpPacketHeaderFieldType_INCOMING_FACE_ID.
+   * getType() is ndn_LpPacketHeaderFieldType_NETWORK_NACK.
    * @return This field as an NetworkNack.
    */
   const NetworkNackLite&
@@ -60,6 +61,17 @@ public:
 
   NetworkNackLite&
   getNetworkNack() { return NetworkNackLite::downCast(networkNack); }
+
+  /**
+   * Get this field as a CongestionMark. This assumes you checked that
+   * getType() is ndn_LpPacketHeaderFieldType_CONGESTION_MARK.
+   * @return This field as a CongestionMark.
+   */
+  const CongestionMarkLite&
+  getCongestionMark() const { return CongestionMarkLite::downCast(congestionMark); }
+
+  CongestionMarkLite&
+  getCongestionMark() { return CongestionMarkLite::downCast(congestionMark); }
 
   /**
    * Downcast the reference to the ndn_LpPacketHeaderField struct to an
@@ -152,6 +164,7 @@ private:
   friend class Tlv0_2WireFormatLite;
   friend class IncomingFaceIdLite;
   friend class NetworkNackLite;
+  friend class CongestionMarkLite;
 
   /**
    * Don't allow the copy constructor. Instead use set(const LpPacketLite&) which

@@ -228,7 +228,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/encrypt/algo/aes-algorithm_c.lo \
-	src/c/lp/incoming-face-id_c.lo \
+	src/c/lp/congestion-mark_c.lo src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
 	src/c/security/ec-public-key.lo \
 	src/c/security/rsa-private-key.lo \
@@ -271,7 +271,7 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/encrypt/algo/aes-algorithm_c.lo \
-	src/c/lp/incoming-face-id_c.lo \
+	src/c/lp/congestion-mark_c.lo src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
 	src/c/security/ec-public-key.lo \
 	src/c/security/rsa-private-key.lo \
@@ -326,6 +326,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/encrypt/encrypted-content-lite.lo \
 	src/lite/encrypt/algo/aes-algorithm-lite.lo \
 	src/lite/encrypt/algo/encrypt-params-lite.lo \
+	src/lite/lp/congestion-mark-lite.lo \
 	src/lite/lp/incoming-face-id-lite.lo \
 	src/lite/lp/lp-packet-lite.lo \
 	src/lite/security/ec-private-key-lite.lo \
@@ -339,9 +340,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/util/blob-lite.lo src/lite/util/crypto-lite.lo \
 	src/lite/util/dynamic-malloc-uint8-array-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
-	src/lp/incoming-face-id.lo src/lp/lp-packet.lo \
-	src/security/key-chain.lo src/security/key-params.lo \
-	src/security/safe-bag.lo src/security/security-exception.lo \
+	src/lp/congestion-mark.lo src/lp/incoming-face-id.lo \
+	src/lp/lp-packet.lo src/security/key-chain.lo \
+	src/security/key-params.lo src/security/safe-bag.lo \
+	src/security/security-exception.lo \
 	src/security/signing-info.lo src/security/validator-null.lo \
 	src/security/validity-period.lo \
 	src/security/verification-helpers.lo \
@@ -1432,6 +1434,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/encrypt/encrypted-content-types.h \
   include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
+  include/ndn-cpp/c/lp/congestion-mark-types.h \
   include/ndn-cpp/c/lp/incoming-face-id-types.h \
   include/ndn-cpp/c/lp/lp-packet-types.h \
   include/ndn-cpp/c/security/ec-private-key-types.h \
@@ -1514,6 +1517,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
+  include/ndn-cpp/lite/lp/congestion-mark-lite.hpp \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
   include/ndn-cpp/lite/lp/lp-packet-lite.hpp \
   include/ndn-cpp/lite/security/ec-private-key-lite.hpp \
@@ -1655,6 +1659,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/aes-algorithm_c.c src/c/encrypt/algo/aes-algorithm.h \
   src/c/encrypt/algo/encrypt-params.h \
+  src/c/lp/congestion-mark_c.c src/c/lp/congestion-mark.h \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
   src/c/lp/lp-packet.h \
   src/c/security/ec-private-key.c src/c/util/ec-private-key.h \
@@ -1749,6 +1754,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
+  src/lite/lp/congestion-mark-lite.cpp \
   src/lite/lp/incoming-face-id-lite.cpp \
   src/lite/lp/lp-packet-lite.cpp \
   src/lite/security/ec-private-key-lite.cpp \
@@ -1763,6 +1769,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/util/crypto-lite.cpp \
   src/lite/util/dynamic-malloc-uint8-array-lite.cpp \
   src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/lp/congestion-mark.cpp src/lp/congestion-mark.hpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
   src/security/key-chain.cpp \
@@ -2233,6 +2240,8 @@ src/c/lp/$(am__dirstamp):
 src/c/lp/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/c/lp/$(DEPDIR)
 	@: > src/c/lp/$(DEPDIR)/$(am__dirstamp)
+src/c/lp/congestion-mark_c.lo: src/c/lp/$(am__dirstamp) \
+	src/c/lp/$(DEPDIR)/$(am__dirstamp)
 src/c/lp/incoming-face-id_c.lo: src/c/lp/$(am__dirstamp) \
 	src/c/lp/$(DEPDIR)/$(am__dirstamp)
 src/c/security/$(am__dirstamp):
@@ -2501,6 +2510,8 @@ src/lite/lp/$(am__dirstamp):
 src/lite/lp/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/lp/$(DEPDIR)
 	@: > src/lite/lp/$(DEPDIR)/$(am__dirstamp)
+src/lite/lp/congestion-mark-lite.lo: src/lite/lp/$(am__dirstamp) \
+	src/lite/lp/$(DEPDIR)/$(am__dirstamp)
 src/lite/lp/incoming-face-id-lite.lo: src/lite/lp/$(am__dirstamp) \
 	src/lite/lp/$(DEPDIR)/$(am__dirstamp)
 src/lite/lp/lp-packet-lite.lo: src/lite/lp/$(am__dirstamp) \
@@ -2563,6 +2574,8 @@ src/lp/$(am__dirstamp):
 src/lp/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/lp/$(DEPDIR)
 	@: > src/lp/$(DEPDIR)/$(am__dirstamp)
+src/lp/congestion-mark.lo: src/lp/$(am__dirstamp) \
+	src/lp/$(DEPDIR)/$(am__dirstamp)
 src/lp/incoming-face-id.lo: src/lp/$(am__dirstamp) \
 	src/lp/$(DEPDIR)/$(am__dirstamp)
 src/lp/lp-packet.lo: src/lp/$(am__dirstamp) \
@@ -3746,6 +3759,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encrypt/algo/$(DEPDIR)/aes-algorithm_c.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/congestion-mark_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/ec-private-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/ec-public-key.Plo@am__quote@
@@ -3808,6 +3822,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/congestion-mark-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/lp-packet-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/security/$(DEPDIR)/ec-private-key-lite.Plo@am__quote@
@@ -3822,6 +3837,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/crypto-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-malloc-uint8-array-lite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/util/$(DEPDIR)/dynamic-uint8-array-lite.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/congestion-mark.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@

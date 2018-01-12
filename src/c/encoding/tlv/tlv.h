@@ -100,6 +100,7 @@ enum {
   ndn_Tlv_LpPacket_IncomingFaceId =  817,
   ndn_Tlv_LpPacket_CachePolicy =     820,
   ndn_Tlv_LpPacket_CachePolicyType = 821,
+  ndn_Tlv_LpPacket_CongestionMark =  832,
   ndn_Tlv_LpPacket_IGNORE_MIN =      800,
   ndn_Tlv_LpPacket_IGNORE_MAX =      959
 };

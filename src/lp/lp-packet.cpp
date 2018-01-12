@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <ndn-cpp/network-nack.hpp>
 #include "incoming-face-id.hpp"
+#include "congestion-mark.hpp"
 #include "lp-packet.hpp"
 
 using namespace std;
@@ -47,6 +48,11 @@ LpPacket::set(const LpPacketLite& lpPacketLite)
       ptr_lib::shared_ptr<NetworkNack> networkNack(new NetworkNack());
       networkNack->set(field.getNetworkNack());
       headerFields_.push_back(networkNack);
+    }
+    else if (field.getType() == ndn_LpPacketHeaderFieldType_CONGESTION_MARK) {
+      ptr_lib::shared_ptr<CongestionMark> congestionMark(new CongestionMark());
+      congestionMark->set(field.getCongestionMark());
+      headerFields_.push_back(congestionMark);
     }
     else
       // We don't expect this to happen.
