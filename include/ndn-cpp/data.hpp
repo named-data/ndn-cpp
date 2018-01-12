@@ -157,6 +157,13 @@ public:
   getIncomingFaceId() const;
 
   /**
+   * Get the congestion mark according to the incoming packet header.
+   * @return The congestion mark. If not specified, return 0.
+   */
+  uint64_t
+  getCongestionMark() const;
+
+  /**
    * Get the Data packet's full name, which includes the final
    * ImplicitSha256Digest component based on the wire encoding for a particular
    * wire format.
