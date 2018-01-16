@@ -428,7 +428,8 @@ KeyChain::importSafeBag
        safeBag.getPrivateKeyBag().size(), password, passwordLength);
   }
   catch (const std::exception& ex) {
-    throw Error("Failed to import private key `" + keyName.toUri() + "`");
+    throw Error("Failed to import private key `" + keyName.toUri() + "`: " +
+                ex.what());
   }
 
   // Check the consistency of the private key and certificate.
