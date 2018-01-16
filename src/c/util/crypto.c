@@ -91,7 +91,7 @@ ndn_verifyDigestSha256Signature
   uint8_t dataDigest[ndn_SHA256_DIGEST_SIZE];
   ndn_digestSha256(data, dataLength, dataDigest);
 
-  return signatureLength == ndn_SHA256_DIGEST_SIZE && ndn_memcmp
+  return signatureLength == ndn_SHA256_DIGEST_SIZE && CRYPTO_memcmp
     (signature, dataDigest, ndn_SHA256_DIGEST_SIZE) == 0;
 }
 
