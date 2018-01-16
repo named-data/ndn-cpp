@@ -43,7 +43,14 @@ extern "C" {
 /**
  * Use the library version of memcmp.
  */
-static __inline int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len) { return memcmp(buf1, buf2, len); }
+static __inline int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len)
+{
+  if (len == 0)
+    // Allow buf1 or buf2 to be null.
+    return 0;
+  else
+    return memcmp(buf1, buf2, len);
+}
 #else
 /**
  * Use a local implementation of memcmp instead of the library version.
@@ -61,7 +68,12 @@ int ndn_memcmp(const uint8_t *buf1, const uint8_t *buf2, size_t len);
 /**
  * Use the library version of memcpy.
  */
-static __inline void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len) { memcpy(dest, src, len); }
+static __inline void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len)
+{
+  // If len == 0, allow dest or src to be null.
+  if (len > 0)
+    memcpy(dest, src, len);
+}
 #else
 /**
  * Use a local implementation of memcpy instead of the library version.
@@ -79,7 +91,12 @@ void ndn_memcpy(uint8_t *dest, const uint8_t *src, size_t len);
 /**
  * Use the library version of memset.
  */
-static __inline void ndn_memset(uint8_t *dest, int val, size_t len) { memset(dest, val, len); }
+static __inline void ndn_memset(uint8_t *dest, int val, size_t len)
+{
+  // If len == 0, allow dest to be null.
+  if (len > 0)
+    memset(dest, val, len);
+}
 #else
 /**
  * Use a local implementation of memset instead of the library version.

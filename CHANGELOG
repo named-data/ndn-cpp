@@ -1,4 +1,4 @@
-NDN-CPP Interim changes since v0.13 (2018-01-12)
+NDN-CPP Interim changes since v0.13 (2018-01-16)
 ------------------------------------------------
 
 Bug fixes
@@ -6,6 +6,8 @@ Bug fixes
   compile the Protobuf files.
 * https://redmine.named-data.net/issues/4422 Fix problem with include boost/asio.hpp
   with Boost 1.66 .
+* https://redmine.named-data.net/issues/4426 In ndn_memcpy, etc. don't execute
+  if len == 0 to avoid undefined behavior when pointers are null.
 
 Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().
