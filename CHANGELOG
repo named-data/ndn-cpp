@@ -10,6 +10,8 @@ Bug fixes
   if len == 0 to avoid undefined behavior when pointers are null.
 * https://redmine.named-data.net/issues/4427 In verifyDataWithHmacWithSha256 and
   verifyInterestWithHmacWithSha256, use CRYPTO_memcmp to avoid timing attacks.
+* https://redmine.named-data.net/issues/4466 In KeyChain::importSafeBag, handle
+  exceptions from Tpm::importPrivateKey.
 
 Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().

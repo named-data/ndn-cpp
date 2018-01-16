@@ -130,19 +130,12 @@ Tpm::exportPrivateKey
   return backEnd_->exportKey(keyName, password, passwordLength);
 }
 
-bool
+void
 Tpm::importPrivateKey
   (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
    const uint8_t* password, size_t passwordLength)
 {
-  try {
-    backEnd_->importKey(keyName, pkcs8, pkcs8Length, password, passwordLength);
-  }
-  catch (const TpmBackEnd::Error&) {
-    return false;
-  }
-
-  return true;
+  backEnd_->importKey(keyName, pkcs8, pkcs8Length, password, passwordLength);
 }
 
 const TpmKeyHandle*
