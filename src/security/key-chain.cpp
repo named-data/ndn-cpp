@@ -682,12 +682,8 @@ KeyChain::verifyDataWithHmacWithSha256
   // wireEncode returns the cached encoding if available.
   SignedBlob encoding = data.wireEncode(wireFormat);
 
-  vector<uint8_t> newSignatureBits(ndn_SHA256_DIGEST_SIZE);
-  CryptoLite::computeHmacWithSha256
-    (key, encoding.getSignedPortionBlobLite(), &newSignatureBits.front());
-
-  // Use the vector equals operator.
-  return newSignatureBits == *data.getSignature()->getSignature();
+  return CryptoLite::verifyHmacWithSha256Signature
+    (key, data.getSignature()->getSignature(), encoding.getSignedPortionBlobLite());
 }
 
 bool
@@ -704,11 +700,8 @@ KeyChain::verifyInterestWithHmacWithSha256
   SignedBlob encoding = interest.wireEncode(wireFormat);
 
   vector<uint8_t> newSignatureBits(ndn_SHA256_DIGEST_SIZE);
-  CryptoLite::computeHmacWithSha256
-    (key, encoding.getSignedPortionBlobLite(), &newSignatureBits.front());
-
-  // Use the vector equals operator.
-  return newSignatureBits == *signature->getSignature();
+  return CryptoLite::verifyHmacWithSha256Signature
+    (key, signature->getSignature(), encoding.getSignedPortionBlobLite());
 }
 #endif
 

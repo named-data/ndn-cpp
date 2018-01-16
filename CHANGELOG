@@ -8,6 +8,8 @@ Bug fixes
   with Boost 1.66 .
 * https://redmine.named-data.net/issues/4426 In ndn_memcpy, etc. don't execute
   if len == 0 to avoid undefined behavior when pointers are null.
+* https://redmine.named-data.net/issues/4427 In verifyDataWithHmacWithSha256 and
+  verifyInterestWithHmacWithSha256, use CRYPTO_memcmp to avoid timing attacks.
 
 Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().
