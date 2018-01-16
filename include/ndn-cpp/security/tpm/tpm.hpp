@@ -185,7 +185,7 @@ private:
   deleteKey(const Name& keyName);
 
   /**
-   * Get the encoded private key with name keyName in PKCS #8 format, possiby
+   * Get the encoded private key with name keyName in PKCS #8 format, possibly
    * encrypted.
    * @param keyName The name of the key in the TPM.
    * @param password The password for encrypting the private key. If the
@@ -204,7 +204,7 @@ private:
 
   /**
    * Import an encoded private key with name keyName in PKCS #8 format, possibly
-   * passwprd-encrypted.
+   * password-encrypted.
    * @param keyName The name of the key to use in the TPM.
    * @param pkcs8 The input byte array. If the password is supplied, this is a
    * PKCS #8 EncryptedPrivateKeyInfo. If the password is null, this is an
