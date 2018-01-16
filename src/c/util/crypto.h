@@ -73,6 +73,24 @@ ndn_computeHmacWithSha256
    uint8_t *digest);
 
 /**
+ * Verify that the HMAC with sha-256 of the data equals the signature, as
+ * defined in http://tools.ietf.org/html/rfc2104#section-2 . (This is a separate
+ * method from ndn_computeHmacWithSha256 so that we can use a crypto-safe
+ * comparison function.)
+ * @param key A pointer to buffer with the key.
+ * @param keyLength The length of key.
+ * @param signature A pointer to the signature bytes.
+ * @param signatureLength The length of signature.
+ * @param data A pointer to the input byte array to verify.
+ * @param dataLength The length of data.
+ * @return non-zero if the signature verifies, 0 if not.
+ */
+int
+ndn_verifyHmacWithSha256Signature
+  (const uint8_t *key, size_t keyLength, const uint8_t *signature,
+   size_t signatureLength, const uint8_t *data, size_t dataLength);
+
+/**
  * Verify that the DigestSha256 of the data equals the signature.
  * @param signature A pointer to the signature bytes.
  * @param signatureLength The length of signature.

@@ -95,6 +95,43 @@ public:
   }
 
   /**
+   * Verify that the HMAC with sha-256 of the data equals the signature, as
+   * defined in http://tools.ietf.org/html/rfc2104#section-2 . (This is a separate
+   * method from computeHmacWithSha256 so that we can use a crypto-safe
+   * comparison function.)
+   * @param key A pointer to buffer with the key.
+   * @param keyLength The length of key.
+   * @param signature A pointer to the signature bytes.
+   * @param signatureLength The length of signature.
+   * @param data A pointer to the input byte array to verify.
+   * @param dataLength The length of data.
+   * @return True if the signature verifies, false if not.
+   */
+  static bool
+  verifyHmacWithSha256Signature
+    (const uint8_t *key, size_t keyLength, const uint8_t* signature,
+     size_t signatureLength, const uint8_t *data, size_t dataLength);
+
+  /**
+   * Verify that the HMAC with sha-256 of the data equals the signature, as
+   * defined in http://tools.ietf.org/html/rfc2104#section-2 . (This is a separate
+   * method from computeHmacWithSha256 so that we can use a crypto-safe
+   * comparison function.)
+   * @param key The key.
+   * @param signature The signature bytes.
+   * @param data The byte array to verify.
+   * @return True if the signature verifies, false if not.
+   */
+  static bool
+  verifyHmacWithSha256Signature
+    (const BlobLite& key, const BlobLite& signature, const BlobLite& data)
+  {
+    return verifyHmacWithSha256Signature
+      (key.buf(), key.size(), signature.buf(), signature.size(), data.buf(),
+       data.size());
+  }
+
+  /**
    * Verify that the DigestSha256 of the data equals the signature.
    * @param signature A pointer to the signature bytes.
    * @param signatureLength The length of signature.

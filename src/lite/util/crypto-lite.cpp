@@ -46,6 +46,15 @@ CryptoLite::computeHmacWithSha256
   ndn_computeHmacWithSha256(key, keyLength, data, dataLength, digest);
 }
 
+bool
+CryptoLite::verifyHmacWithSha256Signature
+  (const uint8_t *key, size_t keyLength, const uint8_t* signature,
+   size_t signatureLength, const uint8_t *data, size_t dataLength)
+{
+  return ndn_verifyHmacWithSha256Signature
+    (key, keyLength, signature, signatureLength, data, dataLength) != 0;
+}
+
 #endif
 
 bool
