@@ -215,9 +215,9 @@ private:
    * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @return True for success, false if importing fails.
+   * @throw TpmBackEnd::Error if the key cannot be imported.
    */
-  bool
+  void
   importPrivateKey
     (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
      const uint8_t* password, size_t passwordLength);
