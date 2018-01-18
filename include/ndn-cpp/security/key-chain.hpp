@@ -469,7 +469,8 @@ public:
   /**
    * Create a security v1 identity by creating a pair of Key-Signing-Key (KSK)
    * for this identity and a self-signed certificate of the KSK. If a key pair
-   * or certificate for the identity already exists, use it.
+   * or certificate for the identity already exists, use it. However, if this is
+   * a security v2 KeyChain, use createIdentityV2.
    * @param identityName The name of the identity.
    * @param params (optional) The key parameters if a key needs to be generated
    * for the identity. If omitted, use getDefaultKeyParams().
@@ -479,6 +480,12 @@ public:
   createIdentityAndCertificate
     (const Name& identityName, const KeyParams& params = getDefaultKeyParams())
   {
+    if (!isSecurityV1_) {
+      ptr_lib::shared_ptr<PibIdentity> identity = createIdentityV2
+        (identityName, params);
+      return identity->getDefaultKey()->getDefaultCertificate()->getName();
+    }
+
     return identityManager_->createIdentityAndCertificate(identityName, params);
   }
 
