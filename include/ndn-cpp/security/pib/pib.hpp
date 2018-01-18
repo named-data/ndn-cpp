@@ -112,6 +112,13 @@ public:
   ptr_lib::shared_ptr<PibIdentity>&
   getDefaultIdentity();
 
+  /**
+   * Append all the identity names to the nameList.
+   * @param nameList Append a copy of each name to nameList.
+   */
+  void
+  getAllIdentityNames(std::vector<Name>& nameList);
+
 private:
   friend class KeyChain;
   // Give friend access to the tests.

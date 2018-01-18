@@ -118,4 +118,13 @@ Pib::getDefaultIdentity()
   return defaultIdentity_;
 }
 
+void
+Pib::getAllIdentityNames(vector<Name>& nameList)
+{
+  for (set<Name>::const_iterator it = identities_.identityNames_.begin();
+       it != identities_.identityNames_.end(); ++it)
+    // This copies the name.
+    nameList.push_back(*it);
+}
+
 }
