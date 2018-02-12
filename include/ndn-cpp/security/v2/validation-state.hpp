@@ -59,7 +59,7 @@ typedef func_lib::function<void
   InterestValidationFailureCallback;
 
 /**
- * Validation state is an abstract base class for DataValidationState and
+ * ValidationState is an abstract base class for DataValidationState and
  * InterestValidationState.
  *
  * One instance of the validation state is kept for the validation of the whole
