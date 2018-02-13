@@ -218,10 +218,10 @@ class DataValidationState : public ValidationState {
 public:
   /**
    * Create a DataValidationState for the Data packet.
-   * The caller must ensure that state instance is valid until validation
+   * The caller must ensure that the state instance is valid until the validation
    * finishes (i.e., until validateCertificateChain() and
    * validateOriginalPacket() have been called).
-   * @param data The Date packet being validated, which is copied.
+   * @param data The Data packet being validated, which is copied.
    */
   DataValidationState
     (const Data& data, const DataValidationSuccessCallback& successCallback,
@@ -260,7 +260,7 @@ class InterestValidationState : public ValidationState {
 public:
   /**
    * Create an InterestValidationState for the Data packet.
-   * The caller must ensure that state instance is valid until validation
+   * The caller must ensure that the state instance is valid until the validation
    * finishes (i.e., until validateCertificateChain() and
    * validateOriginalPacket() have been called).
    * @param interest The Interest packet being validated, which is copied.
