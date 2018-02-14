@@ -74,7 +74,7 @@ public:
   getPolicy() { return *policy_; }
 
   /**
-   * Get the CertificateFetcher given to the constructor.
+   * Get the CertificateFetcher given to (or created in) the constructor.
    * @return The CertificateFetcher.
    */
   CertificateFetcher&
@@ -88,7 +88,8 @@ public:
   setMaxDepth(size_t maxDepth) { maxDepth_ = maxDepth; }
 
   /**
-   * @return The maximum depth of the certificate chain
+   * Get the maximum depth of the certificate chain.
+   * @return The maximum depth.
    */
   size_t
   getMaxDepth() const { return maxDepth_; }
