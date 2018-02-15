@@ -256,7 +256,7 @@ TEST_F(TestValidator, ExpiredCertificate)
   Data data(Name("/Security/V2/ValidatorFixture/Sub1/Sub2/Data"));
   fixture_.keyChain_.sign(data, SigningInfo(fixture_.subIdentity_));
 
-  validateExpectFailure(data, "Signed by a malformed certificate");
+  validateExpectFailure(data, "Signed by an expired certificate");
   ASSERT_EQ(1, fixture_.face_.sentInterests_.size());
 }
 
