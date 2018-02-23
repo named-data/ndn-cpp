@@ -54,7 +54,7 @@ public:
    * Call fixture_.validator_.validate and if it calls the successCallback then
    * fail the test with the given message.
    * @param data The Data to validate.
-   * @param message The message to show if the test fails.
+   * @param message The message to show if the test succeeds.
    */
   void
   validateExpectFailure(const Data& data, const std::string& message)
@@ -439,7 +439,7 @@ public:
    * Call fixture_.validator_.validate and if it calls the successCallback then
    * fail the test with the given message.
    * @param data The Data to validate.
-   * @param message The message to show if the test fails.
+   * @param message The message to show if the test succeeds.
    */
   void
   validateExpectFailure(const Data& data, const std::string& message)
@@ -454,7 +454,7 @@ public:
    * Call fixture_.validator_.validate and if it calls the successCallback then
    * fail the test with the given message.
    * @param interest The Interest to validate.
-   * @param message The message to show if the test fails.
+   * @param message The message to show if the test succeeds.
    */
   void
   validateExpectFailure(const Interest& interest, const std::string& message)
