@@ -430,6 +430,61 @@ TEST_F(TestGroupManager, GetGroupKey)
   ASSERT_EQ(0, tempResult.size());
 }
 
+TEST_F(TestGroupManager, GetGroupKeyWithoutRegeneration)
+{
+  // Create the group manager.
+  GroupManager manager
+    (Name("Alice"), Name("data_type"),
+     ptr_lib::make_shared<Sqlite3GroupManagerDb>(groupKeyDatabaseFilePath),
+     1024, 1, keyChain.get());
+  setManager(manager);
+
+  // Get the data list from the group manager.
+  MillisecondsSince1970 timePoint1 = fromIsoString("20150825T093000");
+  vector<ptr_lib::shared_ptr<Data> > result;
+  manager.getGroupKey(timePoint1, result);
+
+  ASSERT_EQ(4, result.size());
+
+  // The first data packet contains the group's encryption key (public key).
+  Data* data1 = result[0].get();
+  ASSERT_EQ
+    ("/Alice/READ/data_type/E-KEY/20150825T090000/20150825T100000",
+     data1->getName().toUri());
+  EncryptKey groupEKey1(data1->getContent());
+
+  // Get the second data packet.
+  data1 = result[1].get();
+  ASSERT_EQ
+    ("/Alice/READ/data_type/D-KEY/20150825T090000/20150825T100000/FOR/ndn/memberA/ksk-123",
+     data1->getName().toUri());
+
+  // Add new members to the database.
+  Blob dataBlob = certificate.wireEncode();
+  Data memberD;
+  memberD.wireDecode(dataBlob);
+  memberD.setName(Name("/ndn/memberD/KEY/ksk-123/ID-CERT/123"));
+  manager.addMember("schedule1", memberD);
+
+  vector<ptr_lib::shared_ptr<Data> > result2;
+  manager.getGroupKey(timePoint1, result2, false);
+  ASSERT_EQ(5, result2.size());
+
+  // Check that the new EKey is the same as the previous one.
+  Data* data2 = result2[0].get();
+  ASSERT_EQ
+    ("/Alice/READ/data_type/E-KEY/20150825T090000/20150825T100000",
+     data2->getName().toUri());
+  EncryptKey groupEKey2(data2->getContent());
+  ASSERT_TRUE(groupEKey1.getKeyBits().equals(groupEKey2.getKeyBits()));
+
+  // Check the second data packet.
+  data2 = result2[1].get();
+  ASSERT_EQ
+    ("/Alice/READ/data_type/D-KEY/20150825T090000/20150825T100000/FOR/ndn/memberA/ksk-123",
+     data2->getName().toUri());
+}
+
 int
 main(int argc, char **argv)
 {

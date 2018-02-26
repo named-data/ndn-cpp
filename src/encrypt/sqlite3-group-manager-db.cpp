@@ -58,7 +58,16 @@ namespace ndn {
   "      ON UPDATE CASCADE                            \n"
   "  );                                               \n"
   "CREATE UNIQUE INDEX IF NOT EXISTS                  \n"
-  "   memNameIndex ON members(member_name);           \n";
+  "   memNameIndex ON members(member_name);           \n"
+  "                                                   \n"
+  "CREATE TABLE IF NOT EXISTS                         \n"
+  "  ekeys(                                           \n"
+  "    ekey_id             INTEGER PRIMARY KEY,       \n"
+  "    ekey_name           BLOB NOT NULL,             \n"
+  "    pub_key             BLOB NOT NULL              \n"
+  "  );                                               \n"
+  "CREATE UNIQUE INDEX IF NOT EXISTS                  \n"
+  "   ekeyNameIndex ON ekeys(ekey_name);              \n";
 
 /**
  * A utility function to call the normal sqlite3_bind_text where the value and
@@ -393,6 +402,82 @@ Sqlite3GroupManagerDb::deleteMember(const Name& identity)
   sqlite3_prepare_v2
     (database_, "DELETE FROM members WHERE member_name=?", -1, &statement, 0);
   sqlite3_bind_blob(statement, 1, identity.wireEncode(), SQLITE_TRANSIENT);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
+}
+
+bool
+Sqlite3GroupManagerDb::hasEKey(const Name& eKeyName)
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "SELECT ekey_id FROM ekeys where ekey_name=?", -1, &statement, 0);
+  sqlite3_bind_blob(statement, 1, eKeyName.wireEncode(), SQLITE_TRANSIENT);
+
+  bool result = (sqlite3_step(statement) == SQLITE_ROW);
+  sqlite3_finalize(statement);
+  return result;
+}
+
+void
+Sqlite3GroupManagerDb::addEKey
+  (const Name& eKeyName, const Blob& publicKey, const Blob& privateKey)
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "INSERT INTO ekeys(ekey_name, pub_key) values (?, ?)",
+     -1, &statement, 0);
+  sqlite3_bind_blob(statement, 1, eKeyName.wireEncode(), SQLITE_TRANSIENT);
+  sqlite3_bind_blob(statement, 2, publicKey, SQLITE_TRANSIENT);
+
+  int status = sqlite3_step(statement);
+  sqlite3_finalize(statement);
+  if (status != SQLITE_DONE)
+    throw GroupManagerDb::Error("Cannot add the EKey to database");
+
+  privateKeyBase_[eKeyName] = privateKey;
+}
+
+void
+Sqlite3GroupManagerDb::getEKey
+  (const Name& eKeyName, Blob& publicKey, Blob& privateKey)
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "SELECT pub_key FROM ekeys where ekey_name=?", -1, &statement, 0);
+  sqlite3_bind_blob(statement, 1, eKeyName.wireEncode(), SQLITE_TRANSIENT);
+
+  int status = sqlite3_step(statement);
+
+  if (status == SQLITE_ROW) {
+    publicKey = Blob((const uint8_t*)sqlite3_column_blob(statement, 0),
+      sqlite3_column_bytes(statement, 0));
+    sqlite3_finalize(statement);
+  }
+  else {
+    sqlite3_finalize(statement);
+    throw GroupManagerDb::Error("Cannot get the result from the database");
+  }
+
+  privateKey = privateKeyBase_[eKeyName];
+}
+
+void
+Sqlite3GroupManagerDb::cleanEKeys()
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2(database_, "DELETE FROM ekeys", -1, &statement, 0);
+  sqlite3_step(statement);
+  sqlite3_finalize(statement);
+}
+
+void
+Sqlite3GroupManagerDb::deleteEKey(const Name& eKeyName)
+{
+  sqlite3_stmt *statement;
+  sqlite3_prepare_v2
+    (database_, "DELETE FROM ekeys WHERE ekey_name=?", -1, &statement, 0);
+  sqlite3_bind_blob(statement, 1, eKeyName.wireEncode(), SQLITE_TRANSIENT);
   sqlite3_step(statement);
   sqlite3_finalize(statement);
 }
