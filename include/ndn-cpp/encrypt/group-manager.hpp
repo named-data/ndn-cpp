@@ -70,13 +70,18 @@ public:
    * where the first is the E-KEY data packet with the group's public key and
    * the rest are the D-KEY data packets with the group's private key encrypted
    * with the public key of each eligible member.
+   * @param needRegenerate needRegenerate (optional) should be true if this is
+   * the first time this method is called, or a member was removed.
+   * needRegenerate can be false if this is not the first time this method is
+   * called, or a member was added. If omitted, use true.
    * @throws GroupManagerDb::Error for a database error.
    * @throws SecurityException for an error using the security KeyChain.
    */
   void
   getGroupKey
     (MillisecondsSince1970 timeSlot, 
-     std::vector<ptr_lib::shared_ptr<Data> >& result);
+     std::vector<ptr_lib::shared_ptr<Data> >& result,
+     bool needRegenerate = true);
 
   /**
    * Add a schedule with the given scheduleName.
@@ -161,6 +166,15 @@ public:
     database_->updateMemberSchedule(identity, scheduleName);
   }
 
+  /**
+   * Delete all the EKeys in the database.
+   * The database will keep growing because EKeys will keep being added, so this
+   * method should be called periodically.
+   * @throws GroupManagerDb::Error for a database error.
+   */
+  void
+  cleanEKeys() { database_->cleanEKeys(); }
+
 private:
   // Give friend access to the tests.
   friend TestGroupManager_CreateDKeyData_Test;
@@ -220,6 +234,46 @@ private:
   createDKeyData
     (const std::string& startTimeStamp, const std::string& endTimeStamp,
      const Name& keyName, const Blob& privateKeyBlob, const Blob& certificateKey);
+
+  /**
+   * Add the EKey with name eKeyName to the database.
+   * @param eKeyName The name of the EKey. This copies the Name.
+   * @param publicKey The encoded public Key of the group key pair.
+   * @param privateKey The encoded private Key of the group key pair.
+   * @throws GroupManagerDb::Error If a key with name eKeyName already exists in
+   * the database, or other database error.
+   */
+  void
+  addEKey(const Name& eKeyName, const Blob& publicKey, const Blob& privateKey)
+  {
+    database_->addEKey(eKeyName, publicKey, privateKey);
+  }
+
+  /**
+   * Get the group key pair with the name eKeyName from the database.
+   * @param eKeyName The name of the EKey.
+   * @param publicKey Set publicKey to the encoded public Key.
+   * @param privateKey Set publicKey to the encoded private Key.
+   * @throws GroupManagerDb::Error If the key with name eKeyName does not exist
+   * in the database, or other database error.
+   */
+  void
+  getEKey(const Name& eKeyName, Blob& publicKey, Blob& privateKey)
+  {
+    database_->getEKey(eKeyName, publicKey, privateKey);
+  }
+
+  /**
+   * Delete the EKey with name eKeyName from the database. If no key with the
+   * name exists in the database, do nothing.
+   * @param eKeyName The name of the EKey.
+   * @throws GroupManagerDb::Error for a database error.
+   */
+  void
+  deleteEKey(const Name& eKeyName)
+  {
+    database_-> deleteEKey(eKeyName);
+  }
 
   Name namespace_;
   ptr_lib::shared_ptr<GroupManagerDb> database_;

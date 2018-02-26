@@ -45,7 +45,8 @@ GroupManager::GroupManager
 
 void
 GroupManager::getGroupKey
-  (MillisecondsSince1970 timeSlot, vector<ptr_lib::shared_ptr<Data> >& result)
+  (MillisecondsSince1970 timeSlot, vector<ptr_lib::shared_ptr<Data> >& result,
+   bool needRegenerate)
 {
   result.clear();
   map<Name, Blob> memberKeys;
@@ -61,7 +62,18 @@ GroupManager::getGroupKey
   // Generate the private and public keys.
   Blob privateKeyBlob;
   Blob publicKeyBlob;
-  generateKeyPair(privateKeyBlob, publicKeyBlob);
+  Name eKeyName(namespace_);
+  eKeyName.append(Encryptor::getNAME_COMPONENT_E_KEY()).append(startTimeStamp)
+    .append(endTimeStamp);
+
+  if (!needRegenerate && database_->hasEKey(eKeyName))
+    getEKey(eKeyName, publicKeyBlob, privateKeyBlob);
+  else {
+    generateKeyPair(privateKeyBlob, publicKeyBlob);
+    if (database_->hasEKey(eKeyName))
+      deleteEKey(eKeyName);
+    addEKey(eKeyName, publicKeyBlob, privateKeyBlob);
+  }
 
   // Add the first element to the result.
   // The E-KEY (public key) data packet name convention is:
