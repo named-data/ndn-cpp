@@ -209,6 +209,55 @@ public:
    */
   virtual void
   deleteMember(const Name& identity) = 0;
+
+  /**
+   * Check if there is an EKey with the name eKeyName in the database.
+   * @param eKeyName The name of the EKey.
+   * @return True if the EKey exists.
+   * @throws GroupManagerDb::Error for a database error.
+   */
+  virtual bool
+  hasEKey(const Name& eKeyName) = 0;
+
+  /**
+   * Add the EKey with name eKeyName to the database.
+   * @param eKeyName The name of the EKey. This copies the Name.
+   * @param publicKey The encoded public Key of the group key pair.
+   * @param privateKey The encoded private Key of the group key pair.
+   * @throws GroupManagerDb::Error If a key with name eKeyName already exists in
+   * the database, or other database error.
+   */
+  virtual void
+  addEKey(const Name& eKeyName, const Blob& publicKey, const Blob& privateKey) = 0;
+
+  /**
+   * Get the group key pair with the name eKeyName from the database.
+   * @param eKeyName The name of the EKey.
+   * @param publicKey Set publicKey to the encoded public Key.
+   * @param privateKey Set publicKey to the encoded private Key.
+   * @throws GroupManagerDb::Error If the key with name eKeyName does not exist
+   * in the database, or other database error.
+   */
+  virtual void
+  getEKey(const Name& eKeyName, Blob& publicKey, Blob& privateKey) = 0;
+
+  /**
+   * Delete all the EKeys in the database.
+   * The database will keep growing because EKeys will keep being added, so this
+   * method should be called periodically.
+   * @throws GroupManagerDb::Error for a database error.
+   */
+  virtual void
+  cleanEKeys() = 0;
+
+  /**
+   * Delete the EKey with name eKeyName from the database. If no key with the
+   * name exists in the database, do nothing.
+   * @param eKeyName The name of the EKey.
+   * @throws GroupManagerDb::Error for a database error.
+   */
+  virtual void
+  deleteEKey(const Name& eKeyName) = 0;
 };
 
 }
