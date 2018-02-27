@@ -469,6 +469,8 @@ Sqlite3GroupManagerDb::cleanEKeys()
   sqlite3_prepare_v2(database_, "DELETE FROM ekeys", -1, &statement, 0);
   sqlite3_step(statement);
   sqlite3_finalize(statement);
+
+  privateKeyBase_.clear();
 }
 
 void
@@ -480,6 +482,9 @@ Sqlite3GroupManagerDb::deleteEKey(const Name& eKeyName)
   sqlite3_bind_blob(statement, 1, eKeyName.wireEncode(), SQLITE_TRANSIENT);
   sqlite3_step(statement);
   sqlite3_finalize(statement);
+
+  map<Name, Blob>::iterator it = privateKeyBase_.find(eKeyName);
+  privateKeyBase_.erase(it);
 }
 
 int
