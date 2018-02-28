@@ -49,6 +49,10 @@ enum KeyIdType {
 // Make these the same as ndn-cxx in case the storage file is shared.
 enum KeyType {
   KEY_TYPE_RSA = 0,
+  KEY_TYPE_EC = 1,
+  /**
+   * @deprecated Use KEY_TYPE_EC .
+   */
   KEY_TYPE_ECDSA = 1,
   KEY_TYPE_AES   = 128,
 };
