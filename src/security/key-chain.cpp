@@ -952,7 +952,7 @@ KeyChain::prepareSignatureInfo(const SigningInfo& params, Name& keyName)
   if (key->getKeyType() == KEY_TYPE_RSA &&
       params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithRsaSignature());
-  else if (key->getKeyType() == KEY_TYPE_ECDSA &&
+  else if (key->getKeyType() == KEY_TYPE_EC &&
            params.getDigestAlgorithm() == DIGEST_ALGORITHM_SHA256)
     signatureInfo.reset(new Sha256WithEcdsaSignature());
   else

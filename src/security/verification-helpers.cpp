@@ -50,7 +50,7 @@ VerificationHelpers::verifySignature
 
       return verified;
     }
-    else if (publicKey.getKeyType() == KEY_TYPE_ECDSA) {
+    else if (publicKey.getKeyType() == KEY_TYPE_EC) {
       if (EcPublicKeyLite::verifySha256WithEcdsaSignature
           (signature, signatureLength, buffer, bufferLength, 
            publicKey.getKeyDer().buf(), publicKey.getKeyDer().size(),

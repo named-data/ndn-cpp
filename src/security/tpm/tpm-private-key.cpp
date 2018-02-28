@@ -63,16 +63,16 @@ TpmPrivateKey::loadPkcs1
         keyType = KEY_TYPE_RSA;
       else
         // Assume it is an EC key. Try decoding it below.
-        keyType = KEY_TYPE_ECDSA;
+        keyType = KEY_TYPE_EC;
     } catch (const DerDecodingException& ex) {
       // Assume it is an EC key. Try decoding it below.
-      keyType = KEY_TYPE_ECDSA;
+      keyType = KEY_TYPE_EC;
     }
   }
 
   keyType_ = (KeyType)-1;
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType == KEY_TYPE_ECDSA) {
+  if (keyType == KEY_TYPE_EC) {
     ecPrivateKey_.reset(new EcPrivateKeyLite());
     if ((error = ecPrivateKey_->decode(encoding, encodingLength)))
       throw Error
@@ -132,7 +132,7 @@ TpmPrivateKey::loadPkcs8(const uint8_t* encoding, size_t encodingLength)
     decodeEcPrivateKey(algorithmParameters, privateKeyDer, *ecPrivateKey_);
 
     // Successfully decoded, so set the keyType_.
-    keyType_ = KEY_TYPE_ECDSA;
+    keyType_ = KEY_TYPE_EC;
   }
   else if (oidString == RSA_ENCRYPTION_OID) {
     rsaPrivateKey_.reset(new RsaPrivateKeyLite());
@@ -152,7 +152,7 @@ Blob
 TpmPrivateKey::derivePublicKey() const
 {
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType_ == KEY_TYPE_ECDSA) {
+  if (keyType_ == KEY_TYPE_EC) {
     // Get the encoding length and encode the public key.
     size_t encodingLength;
     ndn_Error error;
@@ -202,7 +202,7 @@ TpmPrivateKey::decrypt
    ndn_EncryptAlgorithmType algorithmType)
 {
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType_ == KEY_TYPE_ECDSA)
+  if (keyType_ == KEY_TYPE_EC)
     throw Error("Decryption is not supported for EC keys");
   else if (keyType_ == KEY_TYPE_RSA) {
     // TODO: use RSA_size, etc. to get the proper size of the output buffer.
@@ -239,7 +239,7 @@ TpmPrivateKey::sign
   ndn_Error error;
 
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType_ == KEY_TYPE_ECDSA) {
+  if (keyType_ == KEY_TYPE_EC) {
     if ((error = ecPrivateKey_->signWithSha256
          (data, dataLength, signatureBits, signatureBitsLength)))
       throw Error
@@ -262,7 +262,7 @@ Blob
 TpmPrivateKey::toPkcs1(bool includeParameters)
 {
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType_ == KEY_TYPE_ECDSA) {
+  if (keyType_ == KEY_TYPE_EC) {
     // Get the encoding length and encode.
     size_t encodingLength;
     ndn_Error error;
@@ -298,7 +298,7 @@ Blob
 TpmPrivateKey::toPkcs8(bool includeParameters)
 {
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyType_ == KEY_TYPE_ECDSA) {
+  if (keyType_ == KEY_TYPE_EC) {
     OID parametersOid = getEcOid(*ecPrivateKey_);
     return encodePkcs8PrivateKey
       (*toPkcs1(includeParameters), OID(EC_ENCRYPTION_OID),
@@ -319,15 +319,15 @@ TpmPrivateKey::generatePrivateKey(const KeyParams& keyParams)
 {
   ptr_lib::shared_ptr<TpmPrivateKey> result(new TpmPrivateKey());
 #if NDN_CPP_HAVE_LIBCRYPTO
-  if (keyParams.getKeyType() == KEY_TYPE_ECDSA) {
-    const EcdsaKeyParams& ecParams = static_cast<const EcdsaKeyParams&>(keyParams);
+  if (keyParams.getKeyType() == KEY_TYPE_EC) {
+    const EcKeyParams& ecParams = static_cast<const EcKeyParams&>(keyParams);
     result->ecPrivateKey_.reset(new EcPrivateKeyLite());
 
     ndn_Error error;
     if ((error = result->ecPrivateKey_->generate(ecParams.getKeySize())))
       throw Error(string("generate: ") + ndn_getErrorString(error));
 
-    result->keyType_ = KEY_TYPE_ECDSA;
+    result->keyType_ = KEY_TYPE_EC;
   }
   else if (keyParams.getKeyType() == KEY_TYPE_RSA) {
     const RsaKeyParams& rsaParams = static_cast<const RsaKeyParams&>(keyParams);
@@ -432,7 +432,7 @@ TpmPrivateKey::getEcOid(const EcPrivateKeyLite& ecPrivateKey)
     }
   }
 
-  throw Error("Unsupported keySize for KEY_TYPE_ECDSA");
+  throw Error("Unsupported keySize for KEY_TYPE_EC");
 }
 
 }

@@ -101,7 +101,7 @@ Name
 Tpm::createKey(const Name& identityName, const KeyParams& params)
 {
   if (params.getKeyType() == KEY_TYPE_RSA ||
-      params.getKeyType() == KEY_TYPE_ECDSA) {
+      params.getKeyType() == KEY_TYPE_EC) {
     ptr_lib::shared_ptr<TpmKeyHandle> keyHandle = backEnd_->createKey
       (identityName, params);
     Name keyName = keyHandle->getKeyName();

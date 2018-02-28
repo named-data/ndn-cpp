@@ -41,7 +41,7 @@ getAsymKeyType(KeyType keyType)
   switch (keyType) {
   case KEY_TYPE_RSA:
     return kSecAttrKeyTypeRSA;
-  case KEY_TYPE_ECDSA:
+  case KEY_TYPE_EC:
     return kSecAttrKeyTypeECDSA;
   default:
     throw Tpm::Error("Unsupported key type");
@@ -282,8 +282,8 @@ TpmBackEndOsx::doCreateKey(const Name& identityName, const KeyParams& params)
       keySize = rsaParams.getKeySize();
       break;
     }
-    case KEY_TYPE_ECDSA: {
-      const EcdsaKeyParams& ecParams = static_cast<const EcdsaKeyParams&>(params);
+    case KEY_TYPE_EC: {
+      const EcKeyParams& ecParams = static_cast<const EcKeyParams&>(params);
       keySize = ecParams.getKeySize();
       break;
     }

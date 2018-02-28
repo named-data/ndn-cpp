@@ -63,8 +63,8 @@ namespace ndn
     uint32_t keySize;
     if (params.getKeyType() == KEY_TYPE_RSA)
       keySize = static_cast<const RsaKeyParams&>(params).getKeySize();
-    else if (params.getKeyType() == KEY_TYPE_ECDSA)
-      keySize = static_cast<const EcdsaKeyParams&>(params).getKeySize();
+    else if (params.getKeyType() == KEY_TYPE_EC)
+      keySize = static_cast<const EcKeyParams&>(params).getKeySize();
     else
       throw SecurityException("generateKeyPair: Unsupported key type");
 
@@ -420,7 +420,7 @@ namespace ndn
     switch(keyType){
     case KEY_TYPE_RSA:
       return kSecAttrKeyTypeRSA;
-    case KEY_TYPE_ECDSA:
+    case KEY_TYPE_EC:
       return kSecAttrKeyTypeECDSA;
     default:
       return NULL;
