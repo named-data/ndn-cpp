@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.13 (2018-02-26)
+Interim changes since NDN-CPP v0.13 (2018-02-28)
 ------------------------------------------------
 
 Bug fixes
@@ -17,6 +17,12 @@ Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().
 * https://redmine.named-data.net/issues/3812 In encrypt GroupManager, save private
   keys in memory to avoid regenerate group key pairs.
+* https://redmine.named-data.net/issues/4064 Rename KEY_TYPE_ECDSA and EcdsaKeyParams 
+  to KEY_TYPE_EC and EcKeyParams. Deprecated KEY_TYPE_ECDSA and EcdsaKeyParams.
+
+Deprecated
+* Deprecated KEY_TYPE_ECDSA. Use KEY_TYPE_EC.
+* Deprecated EcdsaKeyParams. Use EcKeyParams.
 
 NDN-CPP v0.13 (2017-12-08)
 --------------------------

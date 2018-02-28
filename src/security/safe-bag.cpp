@@ -63,7 +63,7 @@ SafeBag::makeSelfSignedCertificate
   // Set the signature info.
   if (publicKey.getKeyType() == KEY_TYPE_RSA)
     certificate->setSignature(Sha256WithRsaSignature());
-  else if (publicKey.getKeyType() == KEY_TYPE_ECDSA)
+  else if (publicKey.getKeyType() == KEY_TYPE_EC)
     certificate->setSignature(Sha256WithEcdsaSignature());
   else
     throw invalid_argument("Unsupported key type");

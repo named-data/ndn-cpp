@@ -189,7 +189,7 @@ TEST_F(TestBackEnds, EcdsaSigning)
     Name identityName("/Test/Ec/KeyName");
 
     ptr_lib::shared_ptr<TpmKeyHandle> key = tpm.createKey
-      (identityName, EcdsaKeyParams());
+      (identityName, EcKeyParams());
     Name ecKeyName = key->getKeyName();
 
     const uint8_t content[] = {0x01, 0x02, 0x03, 0x04};

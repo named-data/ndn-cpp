@@ -205,13 +205,13 @@ benchmarkEncodeDataSecondsCpp
   KeyChain keyChain("pib-memory:", "tpm-memory:");
   keyChain.importSafeBag(SafeBag
     (Name("/testname/KEY/123"),
-     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
+     Blob(keyType == KEY_TYPE_EC ? DEFAULT_EC_PRIVATE_KEY_DER
                                     : DEFAULT_RSA_PRIVATE_KEY_DER,
-          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
+          keyType == KEY_TYPE_EC ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
                                     : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),
-     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+     Blob(keyType == KEY_TYPE_EC ? DEFAULT_EC_PUBLIC_KEY_DER
                                     : DEFAULT_RSA_PUBLIC_KEY_DER,
-          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+          keyType == KEY_TYPE_EC ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
                                     : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
   Name certificateName = keyChain.getDefaultCertificateName();
 
@@ -276,13 +276,13 @@ benchmarkDecodeDataSecondsCpp
   KeyChain keyChain("pib-memory:", "tpm-memory:");
   keyChain.importSafeBag(SafeBag
     (Name("/testname/KEY/123"),
-     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PRIVATE_KEY_DER
+     Blob(keyType == KEY_TYPE_EC ? DEFAULT_EC_PRIVATE_KEY_DER
                                     : DEFAULT_RSA_PRIVATE_KEY_DER,
-          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
+          keyType == KEY_TYPE_EC ? sizeof(DEFAULT_EC_PRIVATE_KEY_DER)
                                     : sizeof(DEFAULT_RSA_PRIVATE_KEY_DER)),
-     Blob(keyType == KEY_TYPE_ECDSA ? DEFAULT_EC_PUBLIC_KEY_DER
+     Blob(keyType == KEY_TYPE_EC ? DEFAULT_EC_PUBLIC_KEY_DER
                                     : DEFAULT_RSA_PUBLIC_KEY_DER,
-          keyType == KEY_TYPE_ECDSA ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
+          keyType == KEY_TYPE_EC ? sizeof(DEFAULT_EC_PUBLIC_KEY_DER)
                                     : sizeof(DEFAULT_RSA_PUBLIC_KEY_DER))));
   Validator validator
     (ptr_lib::make_shared<ValidationPolicyFromPib>(keyChain.getPib()));
@@ -368,7 +368,7 @@ benchmarkEncodeDataSecondsC
   // Set up the private key now in case useCrypto is true.
   EcPrivateKeyLite ecPrivateKey;
   RsaPrivateKeyLite rsaPrivateKey;
-  if (keyType == KEY_TYPE_ECDSA) {
+  if (keyType == KEY_TYPE_EC) {
     if ((error = ecPrivateKey.decode
          (DEFAULT_EC_PRIVATE_KEY_DER, sizeof(DEFAULT_EC_PRIVATE_KEY_DER)))) {
       // Don't expect this to happen.
@@ -425,7 +425,7 @@ benchmarkEncodeDataSecondsC
       }
 
       size_t signatureBitsLength;
-      if (keyType == KEY_TYPE_ECDSA) {
+      if (keyType == KEY_TYPE_EC) {
         if ((error = ecPrivateKey.signWithSha256
              (encoding + signedPortionBeginOffset,
               signedPortionEndOffset - signedPortionBeginOffset,
@@ -452,7 +452,7 @@ benchmarkEncodeDataSecondsC
       // Set up the signature, but don't sign.
       data.getSignature().setSignature(BlobLite(signatureBitsArray, sizeof(signatureBitsArray)));
       data.getSignature().setType
-        (keyType == KEY_TYPE_ECDSA ? ndn_SignatureType_Sha256WithRsaSignature
+        (keyType == KEY_TYPE_EC ? ndn_SignatureType_Sha256WithRsaSignature
                                    : ndn_SignatureType_Sha256WithEcdsaSignature);
     }
 
@@ -501,7 +501,7 @@ benchmarkDecodeDataSecondsC
     if (useCrypto) {
       bool verified;
       ndn_Error error;
-      if (keyType == KEY_TYPE_ECDSA) {
+      if (keyType == KEY_TYPE_EC) {
         error = EcPublicKeyLite::verifySha256WithEcdsaSignature
           (data.getSignature().getSignature().buf(),
            data.getSignature().getSignature().size(),
@@ -543,24 +543,24 @@ benchmarkEncodeDecodeDataCpp(bool useComplex, bool useCrypto, KeyType keyType)
   const char *format = "TLV";
   Blob encoding;
   {
-    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 5000)
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_EC ? 10000 : 5000)
                                 : 2000000;
     double duration = benchmarkEncodeDataSecondsCpp
       (nIterations, useComplex, useCrypto, keyType, encoding);
     cout << "Encode " << (useComplex ? "complex " : "simple  ") << format
          << " data C++: Crypto? " 
-         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << (useCrypto ? (keyType == KEY_TYPE_EC ? "EC " : "RSA") : "-  ")
          << ", Duration sec, Hz: " << duration << ", "
          << (nIterations / duration) << endl;
   }
   {
-    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 5000 : 50000)
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_EC ? 5000 : 50000)
                                 : 1000000;
     double duration = benchmarkDecodeDataSecondsCpp
       (nIterations, useCrypto, keyType, encoding);
     cout << "Decode " << (useComplex ? "complex " : "simple  ") << format
          << " data C++: Crypto? "
-         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << (useCrypto ? (keyType == KEY_TYPE_EC ? "EC " : "RSA") : "-  ")
          << ", Duration sec, Hz: " << duration << ", "
          << (nIterations / duration) << endl;
   }
@@ -580,25 +580,25 @@ benchmarkEncodeDecodeDataC(bool useComplex, bool useCrypto, KeyType keyType)
   uint8_t encoding[1600];
   size_t encodingLength;
   {
-    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 5000)
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_EC ? 10000 : 5000)
                                 : 10000000;
     double duration = benchmarkEncodeDataSecondsC
       (nIterations, useComplex, useCrypto, keyType, encoding, sizeof(encoding),
        &encodingLength);
     cout << "Encode " << (useComplex ? "complex " : "simple  ") << format
          << " data C:   Crypto? "
-         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << (useCrypto ? (keyType == KEY_TYPE_EC ? "EC " : "RSA") : "-  ")
          << ", Duration sec, Hz: " << duration << ", "
          << (nIterations / duration) << endl;
   }
   {
-    int nIterations = useCrypto ? (keyType == KEY_TYPE_ECDSA ? 10000 : 100000)
+    int nIterations = useCrypto ? (keyType == KEY_TYPE_EC ? 10000 : 100000)
                                 : 25000000;
     double duration = benchmarkDecodeDataSecondsC
       (nIterations, useCrypto, keyType, encoding, encodingLength);
     cout << "Decode " << (useComplex ? "complex " : "simple  ") << format
          << " data C:   Crypto? "
-         << (useCrypto ? (keyType == KEY_TYPE_ECDSA ? "EC " : "RSA") : "-  ")
+         << (useCrypto ? (keyType == KEY_TYPE_EC ? "EC " : "RSA") : "-  ")
          << ", Duration sec, Hz: " << duration << ", "
          << (nIterations / duration) << endl;
   }
@@ -610,15 +610,15 @@ main(int argc, char** argv)
   try {
     benchmarkEncodeDecodeDataCpp(false, false, KEY_TYPE_RSA);
     benchmarkEncodeDecodeDataCpp(true, false, KEY_TYPE_RSA);
-    benchmarkEncodeDecodeDataCpp(false, true, KEY_TYPE_ECDSA);
-    benchmarkEncodeDecodeDataCpp(true, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataCpp(false, true, KEY_TYPE_EC);
+    benchmarkEncodeDecodeDataCpp(true, true, KEY_TYPE_EC);
     benchmarkEncodeDecodeDataCpp(false, true, KEY_TYPE_RSA);
     benchmarkEncodeDecodeDataCpp(true, true, KEY_TYPE_RSA);
 
     benchmarkEncodeDecodeDataC(false, false, KEY_TYPE_RSA);
     benchmarkEncodeDecodeDataC(true, false, KEY_TYPE_RSA);
-    benchmarkEncodeDecodeDataC(false, true, KEY_TYPE_ECDSA);
-    benchmarkEncodeDecodeDataC(true, true, KEY_TYPE_ECDSA);
+    benchmarkEncodeDecodeDataC(false, true, KEY_TYPE_EC);
+    benchmarkEncodeDecodeDataC(true, true, KEY_TYPE_EC);
     benchmarkEncodeDecodeDataC(false, true, KEY_TYPE_RSA);
     benchmarkEncodeDecodeDataC(true, true, KEY_TYPE_RSA);
   } catch (std::exception& e) {

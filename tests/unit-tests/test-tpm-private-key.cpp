@@ -145,7 +145,7 @@ class EcKeyTestData : public KeyTestData {
 public:
   EcKeyTestData()
   {
-    keyParams = ptr_lib::make_shared<EcdsaKeyParams>();
+    keyParams = ptr_lib::make_shared<EcKeyParams>();
 
     privateKeyPkcs1 =
 "MIIBaAIBAQQgRxwcbzK9RV6AHYFsDcykI86o3M/a1KlJn0z8PcLMBZOggfowgfcC\n\

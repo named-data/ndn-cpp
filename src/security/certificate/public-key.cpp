@@ -68,7 +68,7 @@ PublicKey::PublicKey(const Blob& keyDer)
       throw UnrecognizedKeyFormatException("Error decoding RSA public key DER");
   }
   else if (oidString == EC_ENCRYPTION_OID) {
-    keyType_ = KEY_TYPE_ECDSA;
+    keyType_ = KEY_TYPE_EC;
 
     EcPublicKeyLite publicKey;
     if (publicKey.decode(keyDer) != NDN_ERROR_success)

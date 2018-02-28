@@ -233,7 +233,7 @@ IdentityManager::generateRSAKeyPair(const Name& identityName, bool isKsk, int ke
 Name
 IdentityManager::generateEcdsaKeyPair(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, EcdsaKeyParams(keySize));
+  Name keyName = generateKeyPair(identityName, isKsk, EcKeyParams(keySize));
   return keyName;
 }
 
@@ -250,7 +250,7 @@ IdentityManager::generateRSAKeyPairAsDefault(const Name& identityName, bool isKs
 Name
 IdentityManager::generateEcdsaKeyPairAsDefault(const Name& identityName, bool isKsk, int keySize)
 {
-  Name keyName = generateKeyPair(identityName, isKsk, EcdsaKeyParams(keySize));
+  Name keyName = generateKeyPair(identityName, isKsk, EcKeyParams(keySize));
   identityStorage_->setDefaultKeyNameForIdentity(keyName);
   return keyName;
 }
@@ -615,7 +615,7 @@ IdentityManager::makeSignatureByCertificate
 
     return signature;
   }
-  else if (keyType == KEY_TYPE_ECDSA) {
+  else if (keyType == KEY_TYPE_EC) {
     ptr_lib::shared_ptr<Sha256WithEcdsaSignature> signature
       (new Sha256WithEcdsaSignature());
     digestAlgorithm = DIGEST_ALGORITHM_SHA256;
