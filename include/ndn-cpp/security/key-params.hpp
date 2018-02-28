@@ -111,20 +111,20 @@ private:
   uint32_t size_;
 };
 
-class EcdsaKeyParams : public KeyParams {
+class EcKeyParams : public KeyParams {
 public:
-  EcdsaKeyParams
+  EcKeyParams
     (const Name::Component& keyId,
-     uint32_t size = EcdsaKeyParams::getDefaultSize())
-  : KeyParams(EcdsaKeyParams::getType(), keyId),
+     uint32_t size = EcKeyParams::getDefaultSize())
+  : KeyParams(EcKeyParams::getType(), keyId),
     size_(size)
   {
   }
 
-  EcdsaKeyParams
-    (uint32_t size = EcdsaKeyParams::getDefaultSize(),
+  EcKeyParams
+    (uint32_t size = EcKeyParams::getDefaultSize(),
      KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
-  : KeyParams(EcdsaKeyParams::getType(), keyIdType),
+  : KeyParams(EcKeyParams::getType(), keyIdType),
     size_(size)
   {
   }
@@ -139,10 +139,31 @@ public:
   getDefaultSize() { return 256; }
 
   static KeyType
-  getType() { return KEY_TYPE_ECDSA; }
+  getType() { return KEY_TYPE_EC; }
 
 private:
   uint32_t size_;
+};
+
+
+/**
+ * @deprecated Use EcKeyParams
+ */
+class EcdsaKeyParams : public EcKeyParams {
+public:
+  EcdsaKeyParams
+    (const Name::Component& keyId,
+     uint32_t size = EcKeyParams::getDefaultSize())
+  : EcKeyParams(keyId, size)
+  {
+  }
+
+  EcdsaKeyParams
+    (uint32_t size = EcKeyParams::getDefaultSize(),
+     KeyIdType keyIdType = KEY_ID_TYPE_RANDOM)
+  : EcKeyParams(size, keyIdType)
+  {
+  }
 };
 
 class AesKeyParams : public KeyParams {
