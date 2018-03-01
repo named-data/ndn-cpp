@@ -398,10 +398,14 @@ public:
    * for the key has been set, then set the certificate as the default for the
    * key.
    * @param key The PibKey with the key name and public key.
+   * @param wireFormat (optional) A WireFormat object used to encode the
+   * certificate. If omitted, use WireFormat getDefaultWireFormat().
    * @return The new certificate.
    */
   ptr_lib::shared_ptr<CertificateV2>
-  selfSign(ptr_lib::shared_ptr<PibKey>& key);
+  selfSign
+    (ptr_lib::shared_ptr<PibKey>& key,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   // Import and export
 

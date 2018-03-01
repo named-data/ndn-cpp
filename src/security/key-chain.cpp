@@ -371,7 +371,7 @@ KeyChain::sign
 }
 
 ptr_lib::shared_ptr<CertificateV2>
-KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
+KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key, WireFormat& wireFormat)
 {
   ptr_lib::shared_ptr<CertificateV2> certificate(new CertificateV2());
 
@@ -395,7 +395,7 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key)
   signingInfo.setValidityPeriod
     (ValidityPeriod(now, now + 20 * 365 * 24 * 3600 * 1000.0));
 
-  sign(*certificate, signingInfo);
+  sign(*certificate, signingInfo, wireFormat);
 
   key->addCertificate(*certificate);
   return certificate;
