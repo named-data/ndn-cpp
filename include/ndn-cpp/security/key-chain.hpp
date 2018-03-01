@@ -240,7 +240,7 @@ public:
    * Delete the given key of the given identity. The key becomes invalid.
    * @param identity A valid PibIdentity object.
    * @param key The key to delete.
-   * @throw invalid_argument If the key does not belong to the identity.
+   * @throws invalid_argument If the key does not belong to the identity.
    */
   void
   deleteKey(PibIdentity& identity, PibKey& key);
@@ -249,7 +249,7 @@ public:
    * Set the key as the default key of identity.
    * @param identity A valid PibIdentity object.
    * @param key The key to become the default.
-   * @throw invalid_argument If the key does not belong to the identity.
+   * @throws invalid_argument If the key does not belong to the identity.
    */
   void
   setDefaultKey(PibIdentity& identity, PibKey& key);
@@ -264,7 +264,7 @@ public:
    * @param certificate The certificate to add. This copies the object.
    * @note This method overwrites a certificate with the same name, without
    * considering the implicit digest.
-   * @throw invalid_argument If the key does not match the certificate.
+   * @throws invalid_argument If the key does not match the certificate.
    */
   void
   addCertificate(PibKey& key, const CertificateV2& certificate);
@@ -274,7 +274,7 @@ public:
    * If the certificate does not exist, this does nothing.
    * @param key A valid PibKey object.
    * @param certificateName The name of the certificate to delete.
-   * @throw invalid_argument If certificateName does not follow certificate
+   * @throws invalid_argument If certificateName does not follow certificate
    * naming conventions.
    */
   void
@@ -302,8 +302,8 @@ public:
    * @param params The signing parameters.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
-   * @throw KeyChain::Error if signing fails.
-   * @throw KeyChain::InvalidSigningInfoError if params is invalid, or if the
+   * @throws KeyChain::Error if signing fails.
+   * @throws KeyChain::InvalidSigningInfoError if params is invalid, or if the
    * identity, key or certificate specified in params does not exist.
    */
   void
@@ -343,8 +343,8 @@ public:
    * @param wireFormat (optional) A WireFormat object used to encode the input
    * and encode the appended components. If omitted, use WireFormat
    * getDefaultWireFormat().
-   * @throw KeyChain::Error if signing fails.
-   * @throw KeyChain::InvalidSigningInfoError if params is invalid, or if the
+   * @throws KeyChain::Error if signing fails.
+   * @throws KeyChain::InvalidSigningInfoError if params is invalid, or if the
    * identity, key or certificate specified in params does not exist.
    */
   void
@@ -1182,7 +1182,7 @@ private:
    * @param params The signing parameters.
    * @param keyName Set keyName to the signing key name.
    * @return A new Signature object with the SignatureInfo.
-   * @throw InvalidSigningInfoError when the requested signing method cannot be
+   * @throws InvalidSigningInfoError when the requested signing method cannot be
    * satisfied.
    */
   ptr_lib::shared_ptr<Signature>

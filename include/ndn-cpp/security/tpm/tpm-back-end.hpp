@@ -77,8 +77,8 @@ public:
    * @param identityName The name if the identity.
    * @param params The KeyParams for creating the key.
    * @return The handle of the created key.
-   * @throw Tpm::Error if params is invalid.
-   * @throw TpmBackEnd::Error if the key cannot be created.
+   * @throws Tpm::Error if params is invalid.
+   * @throws TpmBackEnd::Error if the key cannot be created.
    */
   ptr_lib::shared_ptr<TpmKeyHandle>
   createKey(const Name& identityName, const KeyParams& params);
@@ -88,7 +88,7 @@ public:
    * Note: Continuing to use existing Key handles on a deleted key results in
    * undefined behavior.
    * @param keyName The name of the key to delete.
-   * @throw TpmBackEnd::Error if the deletion fails.
+   * @throws TpmBackEnd::Error if the deletion fails.
    */
   void
   deleteKey(const Name& keyName) { doDeleteKey(keyName); }
@@ -103,7 +103,7 @@ public:
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
    * @return The encoded private key.
-   * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
+   * @throws TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
   Blob
@@ -122,7 +122,7 @@ public:
    * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @throw TpmBackEnd::Error if a key with name keyName already exists, or for
+   * @throws TpmBackEnd::Error if a key with name keyName already exists, or for
    * an error importing the key.
    */
   void
@@ -197,7 +197,7 @@ private:
    * @param identityName The name if the identity.
    * @param params The KeyParams for creating the key.
    * @return The handle of the created key.
-   * @throw TpmBackEnd::Error if the key cannot be created.
+   * @throws TpmBackEnd::Error if the key cannot be created.
    */
   virtual ptr_lib::shared_ptr<TpmKeyHandle>
   doCreateKey(const Name& identityName, const KeyParams& params) = 0;
@@ -205,7 +205,7 @@ private:
   /**
    * Delete the key with name keyName. If the key doesn't exist, do nothing.
    * @param keyName The name of the key to delete.
-   * @throw TpmBackEnd::Error if the deletion fails.
+   * @throws TpmBackEnd::Error if the deletion fails.
    */
   virtual void
   doDeleteKey(const Name& keyName) = 0;
@@ -220,7 +220,7 @@ private:
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
    * @return The encoded private key.
-   * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
+   * @throws TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
   virtual Blob
@@ -239,7 +239,7 @@ private:
    * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @throw TpmBackEnd::Error for an error importing the key.
+   * @throws TpmBackEnd::Error for an error importing the key.
    */
   virtual void
   doImportKey

@@ -169,8 +169,8 @@ private:
    * @param identityName The name if the identity.
    * @param params The KeyParams for creating the key.
    * @return The name of the created key.
-   * @throw Tpm::Error if params is invalid or the key type is unsupported.
-   * @throw TpmBackEnd::Error if the key already exists or cannot be created.
+   * @throws Tpm::Error if params is invalid or the key type is unsupported.
+   * @throws TpmBackEnd::Error if the key already exists or cannot be created.
    */
   Name
   createKey(const Name& identityName, const KeyParams& params);
@@ -179,7 +179,7 @@ private:
    * Delete the key with name keyName. If the key doesn't exist, do nothing.
    * Note: Continuing to use existing Key handles on a deleted key results in
    * undefined behavior.
-   * @throw TpmBackEnd::Error if the deletion fails.
+   * @throws TpmBackEnd::Error if the deletion fails.
    */
   void
   deleteKey(const Name& keyName);
@@ -195,7 +195,7 @@ private:
    * is ignored.
    * @return The private key encoded in PKCS #8 format, or an isNull Blob if
    * the key does not exist.
-   * @throw TpmBackEnd::Error if the key does not exist or if the key cannot be
+   * @throws TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
   Blob
@@ -215,7 +215,7 @@ private:
    * If the password is null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @throw TpmBackEnd::Error if the key cannot be imported.
+   * @throws TpmBackEnd::Error if the key cannot be imported.
    */
   void
   importPrivateKey

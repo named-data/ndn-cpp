@@ -135,7 +135,7 @@ private:
    * @param identityName The name if the identity.
    * @param params The KeyParams for creating the key.
    * @return The handle of the created key.
-   * @throw TpmBackEnd::Error if the key cannot be created.
+   * @throws TpmBackEnd::Error if the key cannot be created.
    */
   virtual ptr_lib::shared_ptr<TpmKeyHandle>
   doCreateKey(const Name& identityName, const KeyParams& params);
@@ -143,7 +143,7 @@ private:
   /**
    * Delete the key with name keyName. If the key doesn't exist, do nothing.
    * @param keyName The name of the key to delete.
-   * @throw TpmBackEnd::Error if the deletion fails.
+   * @throws TpmBackEnd::Error if the deletion fails.
    */
   virtual void
   doDeleteKey(const Name& keyName);
