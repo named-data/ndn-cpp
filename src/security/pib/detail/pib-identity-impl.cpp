@@ -28,7 +28,7 @@ using namespace std;
 namespace ndn {
 
 PibIdentityImpl::PibIdentityImpl
-  (const Name& identityName, ptr_lib::shared_ptr<PibImpl> pibImpl,
+  (const Name& identityName, const ptr_lib::shared_ptr<PibImpl>& pibImpl,
    bool needInit)
 : identityName_(identityName),
   keys_(identityName, pibImpl),

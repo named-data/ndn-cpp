@@ -32,7 +32,7 @@ namespace ndn {
 
 PibKeyImpl::PibKeyImpl
   (const Name& keyName, const uint8_t* keyEncoding, size_t keyEncodingLength,
-   ptr_lib::shared_ptr<PibImpl> pibImpl)
+   const ptr_lib::shared_ptr<PibImpl>& pibImpl)
 : identityName_(PibKey::extractIdentityFromKeyName(keyName)),
   keyName_(keyName),
   keyEncoding_(keyEncoding, keyEncodingLength),
@@ -53,7 +53,8 @@ PibKeyImpl::PibKeyImpl
     (identityName_, keyName_, keyEncoding, keyEncodingLength);
 }
 
-PibKeyImpl::PibKeyImpl(const Name& keyName, ptr_lib::shared_ptr<PibImpl> pibImpl)
+PibKeyImpl::PibKeyImpl
+  (const Name& keyName, const ptr_lib::shared_ptr<PibImpl>& pibImpl)
 : identityName_(PibKey::extractIdentityFromKeyName(keyName)),
   keyName_(keyName),
   certificates_(keyName, pibImpl),

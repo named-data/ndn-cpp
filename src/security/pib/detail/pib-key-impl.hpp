@@ -49,7 +49,7 @@ public:
    */
   PibKeyImpl
     (const Name& keyName, const uint8_t* keyEncoding, size_t keyEncodingLength,
-     ptr_lib::shared_ptr<PibImpl> pibImpl);
+     const ptr_lib::shared_ptr<PibImpl>& pibImpl);
 
   /**
    * Create a PibKeyImpl with keyName. Initialize the cached key encoding with
@@ -58,7 +58,7 @@ public:
    * @param pibImpl The Pib backend implementation.
    * @throws Pib::Error the key with keyName does not exist.
    */
-  PibKeyImpl(const Name& keyName, ptr_lib::shared_ptr<PibImpl> pibImpl);
+  PibKeyImpl(const Name& keyName, const ptr_lib::shared_ptr<PibImpl>& pibImpl);
 
   /*
    * Get the key name.

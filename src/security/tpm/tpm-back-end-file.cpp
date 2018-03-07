@@ -139,7 +139,8 @@ TpmBackEndFile::loadKey(const Name& keyName) const
 }
 
 void
-TpmBackEndFile::saveKey(const Name& keyName, ptr_lib::shared_ptr<TpmPrivateKey> key)
+TpmBackEndFile::saveKey
+  (const Name& keyName, const ptr_lib::shared_ptr<TpmPrivateKey>& key)
 {
   string filePath = toFilePath(keyName);
   ofstream file(filePath.c_str());

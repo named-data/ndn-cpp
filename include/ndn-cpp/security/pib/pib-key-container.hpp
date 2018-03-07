@@ -109,7 +109,7 @@ private:
    * @param pibImpl The PIB backend implementation.
    */
   PibKeyContainer
-    (const Name& identityName, ptr_lib::shared_ptr<PibImpl> pibImpl);
+    (const Name& identityName, const ptr_lib::shared_ptr<PibImpl>& pibImpl);
 
   // Disable the copy constructor and assignment operator.
   PibKeyContainer(const PibKeyContainer& other);

@@ -106,7 +106,7 @@ private:
    * implementation. This constructor is only called by the Pib class.
    * @param pibImpl The PIB backend implementation.
    */
-  PibIdentityContainer(ptr_lib::shared_ptr<PibImpl> pibImpl);
+  PibIdentityContainer(const ptr_lib::shared_ptr<PibImpl>& pibImpl);
 
   // Disable the copy constructor and assignment operator.
   PibIdentityContainer(const PibIdentityContainer& other);

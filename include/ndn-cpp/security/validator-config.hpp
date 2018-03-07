@@ -41,7 +41,7 @@ public:
    * Create a ValidatorConfig to use the given certificate fetcher.
    * @param fetcher The certificate fetcher.
    */
-  ValidatorConfig(ptr_lib::shared_ptr<CertificateFetcher> fetcher)
+  ValidatorConfig(const ptr_lib::shared_ptr<CertificateFetcher>& fetcher)
   : Validator(ptr_lib::make_shared<ValidationPolicyConfig>(), fetcher),
     // TODO: Use getInnerPolicy().
     policyConfig_(dynamic_cast<ValidationPolicyConfig&>(getPolicy()))

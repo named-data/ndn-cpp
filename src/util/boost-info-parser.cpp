@@ -34,7 +34,7 @@ namespace ndn {
 
 void
 BoostInfoTree::addSubtree
-  (const string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree)
+  (const string& treeName, const ptr_lib::shared_ptr<BoostInfoTree>& newTree)
 {
   vector<ptr_lib::shared_ptr<BoostInfoTree> >* subtreeList = find(treeName);
   if (subtreeList)

@@ -28,7 +28,8 @@ using namespace std;
 
 namespace ndn {
 
-TpmKeyHandleMemory::TpmKeyHandleMemory(ptr_lib::shared_ptr<TpmPrivateKey> key)
+TpmKeyHandleMemory::TpmKeyHandleMemory
+  (const ptr_lib::shared_ptr<TpmPrivateKey>& key)
 : key_(key)
 {
   if (!key)

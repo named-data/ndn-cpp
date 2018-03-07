@@ -115,7 +115,7 @@ private:
    * @param key The private key to save.
    */
   void
-  saveKey(const Name& keyName, ptr_lib::shared_ptr<TpmPrivateKey> key);
+  saveKey(const Name& keyName, const ptr_lib::shared_ptr<TpmPrivateKey>& key);
 
   /**
    * Get the file path for the keyName, which is keyStorePath_ + "/" +

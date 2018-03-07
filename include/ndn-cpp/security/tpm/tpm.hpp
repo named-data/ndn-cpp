@@ -158,7 +158,7 @@ private:
    * @param backEnd The TPM back-end implementation.
    */
   Tpm(const std::string& scheme, const std::string& location, 
-      ptr_lib::shared_ptr<TpmBackEnd> backEnd);
+      const ptr_lib::shared_ptr<TpmBackEnd>& backEnd);
 
   TpmBackEnd*
   getBackEnd() { return backEnd_.get(); }

@@ -52,7 +52,7 @@ public:
    * and needInit is false.
    */
   PibIdentityImpl
-    (const Name& identityName, ptr_lib::shared_ptr<PibImpl> pibImpl,
+    (const Name& identityName, const ptr_lib::shared_ptr<PibImpl>& pibImpl,
      bool needInit);
 
   /*

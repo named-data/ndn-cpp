@@ -28,7 +28,7 @@ using namespace std;
 namespace ndn {
 
 Pib::Pib(const string& scheme, const string& location,
-         ptr_lib::shared_ptr<PibImpl> pibImpl)
+         const ptr_lib::shared_ptr<PibImpl>& pibImpl)
 : scheme_(scheme),
   location_(location),
   identities_(pibImpl),

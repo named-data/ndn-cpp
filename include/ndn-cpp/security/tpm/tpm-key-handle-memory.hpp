@@ -40,7 +40,7 @@ public:
    * Create a TpmKeyHandleMemory to use the given in-memory key.
    * @param key The in-memory key.
    */
-  TpmKeyHandleMemory(ptr_lib::shared_ptr<TpmPrivateKey> key);
+  TpmKeyHandleMemory(const ptr_lib::shared_ptr<TpmPrivateKey>& key);
 
 private:
   virtual Blob

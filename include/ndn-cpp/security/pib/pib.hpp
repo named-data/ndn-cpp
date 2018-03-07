@@ -131,7 +131,7 @@ private:
    * @param pibImpl The PIB backend implementation.
    */
   Pib(const std::string& scheme, const std::string& location,
-      ptr_lib::shared_ptr<PibImpl> pibImpl);
+      const ptr_lib::shared_ptr<PibImpl>& pibImpl);
 
   /**
    * Reset the content in the PIB, including a reset of the TPM locator.

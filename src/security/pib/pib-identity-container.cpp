@@ -29,7 +29,7 @@ using namespace std;
 namespace ndn {
 
 PibIdentityContainer::PibIdentityContainer
-  (ptr_lib::shared_ptr<PibImpl> pibImpl)
+  (const ptr_lib::shared_ptr<PibImpl>& pibImpl)
 : pibImpl_(pibImpl)
 {
   if (!pibImpl)

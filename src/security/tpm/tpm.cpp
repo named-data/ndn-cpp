@@ -30,7 +30,7 @@ namespace ndn {
 
 Tpm::Tpm
   (const std::string& scheme, const std::string& location,
-   ptr_lib::shared_ptr<TpmBackEnd> backEnd)
+   const ptr_lib::shared_ptr<TpmBackEnd>& backEnd)
 : scheme_(scheme),
   location_(location),
   backEnd_(backEnd)

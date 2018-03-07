@@ -119,8 +119,8 @@ public:
    * creates a security v2 KeyChain but still uses the v1 PolicyManager.
    */
   KeyChain
-    (ptr_lib::shared_ptr<PibImpl> pibImpl,
-     ptr_lib::shared_ptr<TpmBackEnd> tpmBackEnd,
+    (const ptr_lib::shared_ptr<PibImpl>& pibImpl,
+     const ptr_lib::shared_ptr<TpmBackEnd>& tpmBackEnd,
      const ptr_lib::shared_ptr<PolicyManager>& policyManager)
   : policyManager_(policyManager), face_(0)
   {

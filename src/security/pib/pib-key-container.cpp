@@ -29,7 +29,7 @@ using namespace std;
 namespace ndn {
 
 PibKeyContainer::PibKeyContainer
-  (const Name& identityName, ptr_lib::shared_ptr<PibImpl> pibImpl)
+  (const Name& identityName, const ptr_lib::shared_ptr<PibImpl>& pibImpl)
   // This copies the Name.
 : identityName_(identityName), pibImpl_(pibImpl)
 {

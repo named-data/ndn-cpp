@@ -58,7 +58,8 @@ public:
    */
   void
   addSubtree
-    (const std::string& treeName, ptr_lib::shared_ptr<BoostInfoTree> newTree);
+    (const std::string& treeName,
+     const ptr_lib::shared_ptr<BoostInfoTree>& newTree);
 
   /**
    * Create a new BoostInfo and insert it as a sub-tree with the given name.
