@@ -1097,6 +1097,8 @@ public:
   static const RsaKeyParams DEPRECATED_IN_NDN_CPP DEFAULT_KEY_PARAMS;
 
 private:
+  friend class CommandInterestSigner;
+
   /**
    * Do the work of the constructor to create a KeyChain from the given locators.
    * @param pibLocator The PIB locator, e.g., "pib-sqlite3:/example/dir".
