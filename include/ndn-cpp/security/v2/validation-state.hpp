@@ -287,6 +287,12 @@ public:
   const Interest&
   getOriginalInterest() const { return interest_; }
 
+  void
+  addSuccessCallback(const InterestValidationSuccessCallback& successCallback)
+  {
+    successCallbacks_.push_back(successCallback);
+  }
+
 private:
   virtual void
   verifyOriginalPacket(const CertificateV2& trustedCertificate);
@@ -295,7 +301,7 @@ private:
   bypassValidation();
 
   Interest interest_;
-  InterestValidationSuccessCallback successCallback_;
+  std::vector<InterestValidationSuccessCallback> successCallbacks_;
   InterestValidationFailureCallback failureCallback_;
 };
 

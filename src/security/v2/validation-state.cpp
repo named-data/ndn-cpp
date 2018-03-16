@@ -137,10 +137,10 @@ InterestValidationState::InterestValidationState
    const InterestValidationSuccessCallback& successCallback,
    const InterestValidationFailureCallback& failureCallback)
 : interest_(interest),
-  successCallback_(successCallback),
   failureCallback_(failureCallback)
 {
-  if (!successCallback_)
+  successCallbacks_.push_back(successCallback);
+  if (!successCallback)
     throw runtime_error("The successCallback is null");
   if (!failureCallback_)
     throw runtime_error("The failureCallback is null");
@@ -152,12 +152,14 @@ InterestValidationState::verifyOriginalPacket
 {
   if (VerificationHelpers::verifyInterestSignature(interest_, trustedCertificate)) {
     _LOG_TRACE("OK signature for interest `" << interest_.getName() << "`");
-    try {
-      successCallback_(interest_);
-    } catch (const std::exception& ex) {
-      _LOG_ERROR("InterestValidationState::fail: Error in successCallback: " << ex.what());
-    } catch (...) {
-      _LOG_ERROR("InterestValidationState::fail: Error in successCallback.");
+    for (size_t i = 0; i < successCallbacks_.size(); ++i) {
+      try {
+        successCallbacks_[i](interest_);
+      } catch (const std::exception& ex) {
+        _LOG_ERROR("InterestValidationState::fail: Error in successCallback: " << ex.what());
+      } catch (...) {
+        _LOG_ERROR("InterestValidationState::fail: Error in successCallback.");
+      }
     }
     setOutcome(true);
   }
@@ -171,12 +173,14 @@ InterestValidationState::bypassValidation()
 {
   _LOG_TRACE("Signature verification bypassed for interest `" <<
              interest_.getName() << "`");
-  try {
-    successCallback_(interest_);
-  } catch (const std::exception& ex) {
-    _LOG_ERROR("InterestValidationState::fail: Error in successCallback: " << ex.what());
-  } catch (...) {
-    _LOG_ERROR("InterestValidationState::fail: Error in successCallback.");
+  for (size_t i = 0; i < successCallbacks_.size(); ++i) {
+    try {
+      successCallbacks_[i](interest_);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("InterestValidationState::fail: Error in successCallback: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("InterestValidationState::fail: Error in successCallback.");
+    }
   }
   setOutcome(true);
 }
