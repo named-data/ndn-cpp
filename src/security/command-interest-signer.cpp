@@ -32,7 +32,8 @@ namespace ndn {
 
 CommandInterestSigner::CommandInterestSigner(KeyChain& keyChain)
 : keyChain_(keyChain),
-  lastUsedTimestamp_(::round(ndn_getNowMilliseconds()))
+  lastUsedTimestamp_(::round(ndn_getNowMilliseconds())),
+  nowOffsetMilliseconds_(0)
 {}
 
 ptr_lib::shared_ptr<Interest>
@@ -42,7 +43,9 @@ CommandInterestSigner::makeCommandInterest
   // This copies the Name.
   ptr_lib::shared_ptr<Interest> commandInterest(new Interest(name));
 
-  MillisecondsSince1970 timestamp = ::round(ndn_getNowMilliseconds());
+  // nowOffsetMilliseconds_ is only used for testing.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds() + nowOffsetMilliseconds_;
+  MillisecondsSince1970 timestamp = ::round(now);
   while (timestamp <= lastUsedTimestamp_)
     timestamp += 1.0;
 

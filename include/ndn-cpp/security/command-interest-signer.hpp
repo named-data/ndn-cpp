@@ -68,9 +68,21 @@ public:
      const SigningInfo& params = KeyChain::getDefaultSigningInfo(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
+  /**
+   * Set the offset when insert() and refresh() get the current time, which
+   * should only be used for testing.
+   * @param nowOffsetMilliseconds The offset in milliseconds.
+   */
+  void
+  setNowOffsetMilliseconds_(Milliseconds nowOffsetMilliseconds)
+  {
+    nowOffsetMilliseconds_ = nowOffsetMilliseconds;
+  }
+
 private:
   KeyChain& keyChain_;
   MillisecondsSince1970 lastUsedTimestamp_;
+  Milliseconds nowOffsetMilliseconds_;
 };
 
 }
