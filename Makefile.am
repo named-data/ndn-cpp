@@ -65,7 +65,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
   bin/unit-tests/test-signing-info bin/unit-tests/test-tpm-back-ends \
-  bin/unit-tests/test-tpm-private-key \
+  bin/unit-tests/test-tpm-private-key bin/unit-tests/test-validation-policy-command-interest \
   bin/unit-tests/test-validation-policy-config bin/unit-tests/test-validator-null \
   bin/unit-tests/test-validator bin/unit-tests/test-verification-rules
 
@@ -255,6 +255,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/trust-anchor-group.hpp \
   include/ndn-cpp/security/v2/validation-error.hpp \
   include/ndn-cpp/security/v2/validation-policy-accept-all.hpp \
+  include/ndn-cpp/security/v2/validation-policy-command-interest.hpp \
   include/ndn-cpp/security/v2/validation-policy-config.hpp \
   include/ndn-cpp/security/v2/validation-policy-from-pib.hpp \
   include/ndn-cpp/security/v2/validation-policy-simple-hierarchy.hpp \
@@ -488,6 +489,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/trust-anchor-group.cpp \
   src/security/v2/validation-error.cpp \
   src/security/v2/validation-policy-accept-all.cpp \
+  src/security/v2/validation-policy-command-interest.cpp \
   src/security/v2/validation-policy-config.cpp \
   src/security/v2/validation-policy-from-pib.cpp \
   src/security/v2/validation-policy-simple-hierarchy.cpp \
@@ -766,6 +768,13 @@ bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
 bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_validation_policy_command_interest_SOURCES = \
+  tests/unit-tests/test-validation-policy-command-interest.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/validator-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_validation_policy_command_interest_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_validation_policy_config_SOURCES = tests/unit-tests/test-validation-policy-config.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_validation_policy_config_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

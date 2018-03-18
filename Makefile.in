@@ -131,6 +131,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-signing-info$(EXEEXT) \
 	bin/unit-tests/test-tpm-back-ends$(EXEEXT) \
 	bin/unit-tests/test-tpm-private-key$(EXEEXT) \
+	bin/unit-tests/test-validation-policy-command-interest$(EXEEXT) \
 	bin/unit-tests/test-validation-policy-config$(EXEEXT) \
 	bin/unit-tests/test-validator-null$(EXEEXT) \
 	bin/unit-tests/test-validator$(EXEEXT) \
@@ -391,6 +392,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/trust-anchor-group.lo \
 	src/security/v2/validation-error.lo \
 	src/security/v2/validation-policy-accept-all.lo \
+	src/security/v2/validation-policy-command-interest.lo \
 	src/security/v2/validation-policy-config.lo \
 	src/security/v2/validation-policy-from-pib.lo \
 	src/security/v2/validation-policy-simple-hierarchy.lo \
@@ -731,6 +733,13 @@ am_bin_unit_tests_test_tpm_private_key_OBJECTS = tests/unit-tests/bin_unit_tests
 bin_unit_tests_test_tpm_private_key_OBJECTS =  \
 	$(am_bin_unit_tests_test_tpm_private_key_OBJECTS)
 bin_unit_tests_test_tpm_private_key_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_validation_policy_command_interest_OBJECTS = tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.$(OBJEXT)
+bin_unit_tests_test_validation_policy_command_interest_OBJECTS = $(am_bin_unit_tests_test_validation_policy_command_interest_OBJECTS)
+bin_unit_tests_test_validation_policy_command_interest_DEPENDENCIES =  \
+	libndn-cpp.la
 am_bin_unit_tests_test_validation_policy_config_OBJECTS = tests/unit-tests/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_config-gtest-all.$(OBJEXT)
 bin_unit_tests_test_validation_policy_config_OBJECTS =  \
@@ -874,6 +883,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_signing_info_SOURCES) \
 	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
 	$(bin_unit_tests_test_tpm_private_key_SOURCES) \
+	$(bin_unit_tests_test_validation_policy_command_interest_SOURCES) \
 	$(bin_unit_tests_test_validation_policy_config_SOURCES) \
 	$(bin_unit_tests_test_validator_SOURCES) \
 	$(bin_unit_tests_test_validator_null_SOURCES) \
@@ -939,6 +949,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_signing_info_SOURCES) \
 	$(bin_unit_tests_test_tpm_back_ends_SOURCES) \
 	$(bin_unit_tests_test_tpm_private_key_SOURCES) \
+	$(bin_unit_tests_test_validation_policy_command_interest_SOURCES) \
 	$(bin_unit_tests_test_validation_policy_config_SOURCES) \
 	$(bin_unit_tests_test_validator_SOURCES) \
 	$(bin_unit_tests_test_validator_null_SOURCES) \
@@ -1592,6 +1603,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/trust-anchor-group.hpp \
   include/ndn-cpp/security/v2/validation-error.hpp \
   include/ndn-cpp/security/v2/validation-policy-accept-all.hpp \
+  include/ndn-cpp/security/v2/validation-policy-command-interest.hpp \
   include/ndn-cpp/security/v2/validation-policy-config.hpp \
   include/ndn-cpp/security/v2/validation-policy-from-pib.hpp \
   include/ndn-cpp/security/v2/validation-policy-simple-hierarchy.hpp \
@@ -1828,6 +1840,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/security/v2/trust-anchor-group.cpp \
   src/security/v2/validation-error.cpp \
   src/security/v2/validation-policy-accept-all.cpp \
+  src/security/v2/validation-policy-command-interest.cpp \
   src/security/v2/validation-policy-config.cpp \
   src/security/v2/validation-policy-from-pib.cpp \
   src/security/v2/validation-policy-simple-hierarchy.cpp \
@@ -2058,6 +2071,13 @@ bin_unit_tests_test_tpm_back_ends_LDADD = libndn-cpp.la
 bin_unit_tests_test_tpm_private_key_SOURCES = tests/unit-tests/test-tpm-private-key.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_tpm_private_key_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_tpm_private_key_LDADD = libndn-cpp.la
+bin_unit_tests_test_validation_policy_command_interest_SOURCES = \
+  tests/unit-tests/test-validation-policy-command-interest.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/validator-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_validation_policy_command_interest_LDADD = libndn-cpp.la
 bin_unit_tests_test_validation_policy_config_SOURCES = tests/unit-tests/test-validation-policy-config.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_validation_policy_config_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_validation_policy_config_LDADD = libndn-cpp.la
@@ -2773,6 +2793,9 @@ src/security/v2/trust-anchor-group.lo:  \
 src/security/v2/validation-error.lo: src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/validation-policy-accept-all.lo:  \
+	src/security/v2/$(am__dirstamp) \
+	src/security/v2/$(DEPDIR)/$(am__dirstamp)
+src/security/v2/validation-policy-command-interest.lo:  \
 	src/security/v2/$(am__dirstamp) \
 	src/security/v2/$(DEPDIR)/$(am__dirstamp)
 src/security/v2/validation-policy-config.lo:  \
@@ -3501,6 +3524,22 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-al
 bin/unit-tests/test-tpm-private-key$(EXEEXT): $(bin_unit_tests_test_tpm_private_key_OBJECTS) $(bin_unit_tests_test_tpm_private_key_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_tpm_private_key_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-tpm-private-key$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_tpm_private_key_OBJECTS) $(bin_unit_tests_test_tpm_private_key_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-validation-policy-command-interest$(EXEEXT): $(bin_unit_tests_test_validation_policy_command_interest_OBJECTS) $(bin_unit_tests_test_validation_policy_command_interest_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_validation_policy_command_interest_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-validation-policy-command-interest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_validation_policy_command_interest_OBJECTS) $(bin_unit_tests_test_validation_policy_command_interest_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -3684,6 +3723,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_signing_info-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-gtest-all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator_null-gtest-all.Po@am__quote@
@@ -3899,6 +3939,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/trust-anchor-group.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-accept-all.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-command-interest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-from-pib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/$(DEPDIR)/validation-policy-simple-hierarchy.Plo@am__quote@
@@ -3981,6 +4022,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_signing_info-test-signing-info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_back_ends-test-tpm-back-ends.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_tpm_private_key-test-tpm-private-key.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-identity-management-fixture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validator-test-validator.Po@am__quote@
@@ -5204,6 +5248,62 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-al
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_tpm_private_key_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_tpm_private_key-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.o: tests/unit-tests/test-validation-policy-command-interest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.o `test -f 'tests/unit-tests/test-validation-policy-command-interest.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-validation-policy-command-interest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-validation-policy-command-interest.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.o `test -f 'tests/unit-tests/test-validation-policy-command-interest.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-validation-policy-command-interest.cpp
+
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.obj: tests/unit-tests/test-validation-policy-command-interest.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.obj `if test -f 'tests/unit-tests/test-validation-policy-command-interest.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-validation-policy-command-interest.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-validation-policy-command-interest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-validation-policy-command-interest.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-test-validation-policy-command-interest.obj `if test -f 'tests/unit-tests/test-validation-policy-command-interest.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-validation-policy-command-interest.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-validation-policy-command-interest.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.o: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.obj: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.o: tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.o `test -f 'tests/unit-tests/validator-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/validator-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.o `test -f 'tests/unit-tests/validator-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/validator-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.obj: tests/unit-tests/validator-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.obj `if test -f 'tests/unit-tests/validator-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/validator-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/validator-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/validator-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_command_interest-validator-fixture.obj `if test -f 'tests/unit-tests/validator-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/validator-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/validator-fixture.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validation_policy_command_interest-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_command_interest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_validation_policy_command_interest-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.o: tests/unit-tests/test-validation-policy-config.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_validation_policy_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.Tpo -c -o tests/unit-tests/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.o `test -f 'tests/unit-tests/test-validation-policy-config.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-validation-policy-config.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_validation_policy_config-test-validation-policy-config.Po
@@ -5961,6 +6061,13 @@ bin/unit-tests/test-tpm-back-ends.log: bin/unit-tests/test-tpm-back-ends$(EXEEXT
 bin/unit-tests/test-tpm-private-key.log: bin/unit-tests/test-tpm-private-key$(EXEEXT)
 	@p='bin/unit-tests/test-tpm-private-key$(EXEEXT)'; \
 	b='bin/unit-tests/test-tpm-private-key'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-validation-policy-command-interest.log: bin/unit-tests/test-validation-policy-command-interest$(EXEEXT)
+	@p='bin/unit-tests/test-validation-policy-command-interest$(EXEEXT)'; \
+	b='bin/unit-tests/test-validation-policy-command-interest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
