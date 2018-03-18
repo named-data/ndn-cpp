@@ -57,8 +57,8 @@ public:
    * @param name The Name for the Interest, which is copied.
    * @param params (optional) The signing parameters. If omitted, use a
    * default SigningInfo().
-   * @param wireFormat A WireFormat object used to encode the SignatureInfo and
-   * to encode interest name for signing. If omitted, use
+   * @param wireFormat (optional) A WireFormat object used to encode the
+   * SignatureInfo and to encode interest name for signing. If omitted, use
    * WireFormat getDefaultWireFormat().
    * @return A new command Interest object.
    */
@@ -69,7 +69,7 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
-   * Set the offset when insert() and refresh() get the current time, which
+   * Set the offset for when makeCommandInterest() gets the current time, which
    * should only be used for testing.
    * @param nowOffsetMilliseconds The offset in milliseconds.
    */
