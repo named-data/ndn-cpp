@@ -65,9 +65,9 @@ public:
   CommandInterestSigner signer_;
 };
 
-class TestValidationBase : public ::testing::Test {
+class TestValidationPolicyCommandInterest : public ::testing::Test {
 public:
-  TestValidationBase()
+  TestValidationPolicyCommandInterest()
   : fixture_(new ValidationPolicyCommandInterestFixture())
   {}
 
@@ -82,8 +82,8 @@ public:
   {
     fixture_->validator_.validate
       (data,
-       bind(&TestValidationBase::dataShouldSucceed, this, _1),
-       bind(&TestValidationBase::dataShouldNotFail, this, _1, _2, message));
+       bind(&TestValidationPolicyCommandInterest::dataShouldSucceed, this, _1),
+       bind(&TestValidationPolicyCommandInterest::dataShouldNotFail, this, _1, _2, message));
   }
 
   /**
@@ -97,8 +97,8 @@ public:
   {
     fixture_->validator_.validate
       (interest,
-       bind(&TestValidationBase::interestShouldSucceed, this, _1),
-       bind(&TestValidationBase::interestShouldNotFail, this, _1, _2, message));
+       bind(&TestValidationPolicyCommandInterest::interestShouldSucceed, this, _1),
+       bind(&TestValidationPolicyCommandInterest::interestShouldNotFail, this, _1, _2, message));
   }
 
   /**
@@ -112,8 +112,8 @@ public:
   {
     fixture_->validator_.validate
       (data,
-       bind(&TestValidationBase::dataShouldNotSucceed, this, _1, message),
-       bind(&TestValidationBase::dataShouldFail, this, _1, _2));
+       bind(&TestValidationPolicyCommandInterest::dataShouldNotSucceed, this, _1, message),
+       bind(&TestValidationPolicyCommandInterest::dataShouldFail, this, _1, _2));
   }
 
   /**
@@ -127,8 +127,8 @@ public:
   {
     fixture_->validator_.validate
       (interest,
-       bind(&TestValidationBase::interestShouldNotSucceed, this, _1, message),
-       bind(&TestValidationBase::interestShouldFail, this, _1, _2));
+       bind(&TestValidationPolicyCommandInterest::interestShouldNotSucceed, this, _1, message),
+       bind(&TestValidationPolicyCommandInterest::interestShouldFail, this, _1, _2));
   }
 
   void
@@ -189,9 +189,6 @@ public:
   }
 
   ptr_lib::shared_ptr<ValidationPolicyCommandInterestFixture> fixture_;
-};
-
-class TestValidationPolicyCommandInterest : public TestValidationBase {
 };
 
 TEST_F(TestValidationPolicyCommandInterest, Basic)
