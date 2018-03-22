@@ -20,6 +20,7 @@ Changes
 * https://redmine.named-data.net/issues/4064 Rename KEY_TYPE_ECDSA and EcdsaKeyParams 
   to KEY_TYPE_EC and EcKeyParams. Deprecated KEY_TYPE_ECDSA and EcdsaKeyParams.
 * Added security CommandInterestSigner.
+* Added security ValidationPolicyCommandInterest.
 
 Deprecated
 * Deprecated KEY_TYPE_ECDSA. Use KEY_TYPE_EC.
