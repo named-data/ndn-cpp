@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.13 (2018-03-16)
+Interim changes since NDN-CPP v0.13 (2018-03-22)
 ------------------------------------------------
 
 Bug fixes
@@ -12,6 +12,8 @@ Bug fixes
   verifyInterestWithHmacWithSha256, use CRYPTO_memcmp to avoid timing attacks.
 * https://redmine.named-data.net/issues/4466 In KeyChain::importSafeBag, handle
   exceptions from Tpm::importPrivateKey.
+* https://redmine.named-data.net/issues/4428 MustBeFresh should be false if the
+  decoded Interest has no selectors.
 
 Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().

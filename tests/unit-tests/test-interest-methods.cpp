@@ -59,6 +59,12 @@ static const uint8_t codedInterest[] = {
 1
 };
 
+static const uint8_t codedInterestNoSelectors[] = {
+0x05, 0x12, // Interest
+  0x07, 0x0A, 0x08, 0x03, 0x6E, 0x64, 0x6E, 0x08, 0x03, 0x61, 0x62, 0x63, // Name
+  0x0A, 0x04, 0x61, 0x62, 0x61, 0x62   // Nonce
+};
+
 static string dump(const string& s1) { return s1; }
 static string dump(const string& s1, const string& s2) { return s1 + " " + s2; }
 
@@ -273,6 +279,12 @@ TEST_F(TestInterestDump, CreateFresh)
   ASSERT_TRUE(interestDumpsEqual(freshDump, reDecodedFreshDump)) << "Redecoded fresh interest does not match original";
 }
 
+TEST_F(TestInterestDump, NoSelectorsMustBeFresh)
+{
+  Interest interest;
+  interest.wireDecode(codedInterestNoSelectors, sizeof(codedInterestNoSelectors));
+  ASSERT_EQ(false, interest.getMustBeFresh()) << "MustBeFresh should be false if no selectors";
+}
 
 class TestInterestMethods : public ::testing::Test {
 public:

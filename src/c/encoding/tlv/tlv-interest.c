@@ -322,7 +322,7 @@ ndn_decodeTlvInterest
     interest->maxSuffixComponents = -1;
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
-    interest->mustBeFresh = 1;
+    interest->mustBeFresh = 0;
   }
 
   // Require a Nonce, but don't force it to be 4 bytes.
