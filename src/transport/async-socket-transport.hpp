@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <ndn-cpp/transport/transport.hpp>
 #include "../c/encoding/element-reader.h"
 #include "../encoding/element-listener.hpp"
@@ -49,10 +50,8 @@ public:
    * application to start and stop the service.
    */
   AsyncSocketTransport(boost::asio::io_service& ioService)
-  : ioService_(ioService), socket_(new typename AsioProtocol::socket(ioService)),
-    elementBuffer_(new DynamicUInt8Vector(1000)), isConnected_(false)
+  : impl_(new Impl(ioService))
   {
-    ndn_ElementReader_initialize(&elementReader_, 0, elementBuffer_.get());
   }
 
   /**
@@ -71,17 +70,11 @@ public:
     (const typename AsioProtocol::endpoint& endPoint,
      ElementListener& elementListener, const Transport::OnConnected& onConnected)
   {
-    close();
-
-    ndn_ElementReader_reset(&elementReader_, &elementListener);
-
-    socket_->async_connect
-      (endPoint,
-       boost::bind(&AsyncSocketTransport::connectHandler, this, _1, onConnected));
+    impl_->connect(endPoint, elementListener, onConnected);
   }
 
   /**
-   * Set data to the host. To be thread-safe, this must be called from a
+   * Send data to the host. To be thread-safe, this must be called from a
    * dispatch to the ioService which was given to the constructor, as is done by
    * ThreadsafeFace.
    * @param data A pointer to the buffer of data to send.
@@ -90,23 +83,13 @@ public:
   void
   send(const uint8_t *data, size_t dataLength)
   {
-    if (!isConnected_)
-      throw std::runtime_error
-        ("AsyncSocketTransport.send: The socket is not connected");
-
-    // Assume that this is called from a dispatch so that we are already in the
-    // ioService_ thread. Just do a blocking write.
-    boost::system::error_code errorCode;
-    boost::asio::write
-      (*socket_, boost::asio::buffer(data, dataLength), errorCode);
-    if (errorCode != boost::system::errc::success)
-      throw std::runtime_error("AsyncSocketTransport.send: Error in write");
+    impl_->send(data, dataLength);
   }
 
   bool
   getIsConnected()
   {
-    return isConnected_;
+    return impl_->getIsConnected();
   }
 
   /**
@@ -115,72 +98,153 @@ public:
   void
   close()
   {
-    try {
-      socket_->close();
-    }
-    catch (...) {
-      // Ignore any exceptions.
-    }
-
-    isConnected_ = false;
+    impl_->close();
   }
 
 private:
   /**
-   * This is called by async_connect to do the first async_receive.
+   * AsyncSocketTransport::Impl does the work of AsyncSocketTransport. It is a
+   * separate class so that AsyncSocketTransport can create an instance in a
+   * shared_ptr to use in callbacks.
    */
-  void
-  connectHandler
-    (const boost::system::error_code& errorCode,
-     const Transport::OnConnected& onConnected)
-  {
-    if (errorCode != boost::system::errc::success)
-      // TODO: How to report errors to the application?
-      throw std::runtime_error("AsyncSocketTransport: Error in async_connect");
-
-    isConnected_ = true;
-    onConnected();
-
-    socket_->async_receive
-      (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
-       boost::bind(&AsyncSocketTransport::readHandler, this, _1, _2));
-  }
-
-  /**
-   * This is called by async_receive to call elementReader_.onReceivedData and
-   * to call itself again.
-   */
-  void
-  readHandler(const boost::system::error_code& errorCode, size_t nBytesReceived)
-  {
-    if (errorCode != boost::system::errc::success) {
-      if (errorCode == boost::system::errc::operation_canceled)
-        // Assume the socket has been closed. Do nothing.
-        return;
-
-      close();
-      // TODO: How to report errors to the application?
-      throw std::runtime_error("AsyncSocketTransport: Error in async_receive");
+  class Impl : public boost::enable_shared_from_this<Impl> {
+  public:
+    Impl(boost::asio::io_service& ioService)
+    : ioService_(ioService), socket_(new typename AsioProtocol::socket(ioService)),
+      elementBuffer_(new DynamicUInt8Vector(1000)), isConnected_(false)
+    {
+      ndn_ElementReader_initialize(&elementReader_, 0, elementBuffer_.get());
     }
 
-    ndn_Error error;
-    if ((error = ndn_ElementReader_onReceivedData
-         (&elementReader_, receiveBuffer_, nBytesReceived)))
-      throw std::runtime_error(ndn_getErrorString(error));
+    /**
+     * Implement connect according to the info in connectionInfo, and use
+     * elementListener.
+     * @param endPoint The asio endpoint for the protocol containing the
+     * connection info.
+     * @param elementListener Not a shared_ptr because we assume that it will
+     * remain valid during the life of this object.
+     * @param onConnected This calls onConnected() when the connection is
+     * established.
+     */
+    void
+    connect
+      (const typename AsioProtocol::endpoint& endPoint,
+       ElementListener& elementListener, const Transport::OnConnected& onConnected)
+    {
+      close();
 
-    // Request another async receive to loop back to here.
-    if (socket_->is_open())
+      ndn_ElementReader_reset(&elementReader_, &elementListener);
+
+      socket_->async_connect
+        (endPoint,
+         boost::bind(&AsyncSocketTransport::Impl::connectHandler, 
+                     this->shared_from_this(), _1, onConnected));
+    }
+
+    /**
+     * Implement to send data to the host.
+     * @param data A pointer to the buffer of data to send.
+     * @param dataLength The number of bytes in data.
+     */
+    void
+    send(const uint8_t *data, size_t dataLength)
+    {
+      if (!isConnected_)
+        throw std::runtime_error
+          ("AsyncSocketTransport.send: The socket is not connected");
+
+      // Assume that this is called from a dispatch so that we are already in the
+      // ioService_ thread. Just do a blocking write.
+      boost::system::error_code errorCode;
+      boost::asio::write
+        (*socket_, boost::asio::buffer(data, dataLength), errorCode);
+      if (errorCode != boost::system::errc::success)
+        throw std::runtime_error("AsyncSocketTransport.send: Error in write");
+    }
+
+    bool
+    getIsConnected()
+    {
+      return isConnected_;
+    }
+
+    /**
+     * Implement to close the connection to the host.
+     */
+    void
+    close()
+    {
+      try {
+        socket_->close();
+      }
+      catch (...) {
+        // Ignore any exceptions.
+      }
+
+      isConnected_ = false;
+    }
+
+  private:
+    /**
+     * This is called by async_connect to do the first async_receive.
+     */
+    void
+    connectHandler
+      (const boost::system::error_code& errorCode,
+       const Transport::OnConnected& onConnected)
+    {
+      if (errorCode != boost::system::errc::success)
+        // TODO: How to report errors to the application?
+        throw std::runtime_error("AsyncSocketTransport: Error in async_connect");
+
+      isConnected_ = true;
+      onConnected();
+
       socket_->async_receive
         (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
-         boost::bind(&AsyncSocketTransport::readHandler, this, _1, _2));
-  }
+         boost::bind(&AsyncSocketTransport::Impl::readHandler, 
+                     this->shared_from_this(), _1, _2));
+    }
 
-  boost::asio::io_service& ioService_;
-  ptr_lib::shared_ptr<typename AsioProtocol::socket> socket_;
-  uint8_t receiveBuffer_[MAX_NDN_PACKET_SIZE];
-  ptr_lib::shared_ptr<DynamicUInt8Vector> elementBuffer_;
-  ndn_ElementReader elementReader_;
-  bool isConnected_;
+    /**
+     * This is called by async_receive to call elementReader_.onReceivedData and
+     * to call itself again.
+     */
+    void
+    readHandler(const boost::system::error_code& errorCode, size_t nBytesReceived)
+    {
+      if (errorCode != boost::system::errc::success) {
+        if (errorCode == boost::system::errc::operation_canceled)
+          // Assume the socket has been closed. Do nothing.
+          return;
+
+        close();
+        // TODO: How to report errors to the application?
+        throw std::runtime_error("AsyncSocketTransport: Error in async_receive");
+      }
+
+      ndn_Error error;
+      if ((error = ndn_ElementReader_onReceivedData
+           (&elementReader_, receiveBuffer_, nBytesReceived)))
+        throw std::runtime_error(ndn_getErrorString(error));
+
+      // Request another async receive to loop back to here.
+      if (socket_->is_open())
+        socket_->async_receive
+          (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
+           boost::bind(&AsyncSocketTransport::Impl::readHandler, 
+                       this->shared_from_this(), _1, _2));
+    }
+
+    boost::asio::io_service& ioService_;
+    boost::shared_ptr<typename AsioProtocol::socket> socket_;
+    uint8_t receiveBuffer_[MAX_NDN_PACKET_SIZE];
+    boost::shared_ptr<DynamicUInt8Vector> elementBuffer_;
+    ndn_ElementReader elementReader_;
+    bool isConnected_;
+  };
+
+  boost::shared_ptr<Impl> impl_;
 };
 
 }
