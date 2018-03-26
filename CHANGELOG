@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.13 (2018-03-22)
+Interim changes since NDN-CPP v0.13 (2018-03-26)
 ------------------------------------------------
 
 Bug fixes
@@ -14,6 +14,8 @@ Bug fixes
   exceptions from Tpm::importPrivateKey.
 * https://redmine.named-data.net/issues/4428 MustBeFresh should be false if the
   decoded Interest has no selectors.
+* https://redmine.named-data.net/issues/4558 AsyncSocketTransport callbacks can
+  crash if deallocated.
 
 Changes
 * https://redmine.named-data.net/issues/4449 In Data, added getCongestionMark().
