@@ -130,8 +130,8 @@ public:
      const ValidationContinuation& continueValidation);
 
   /**
-   * Set the offset when insert() and refresh() get the current time, which
-   * should only be used for testing.
+   * Set the offset when insertNewRecord() and cleanUp() get the current time,
+   * which should only be used for testing.
    * @param nowOffsetMilliseconds The offset in milliseconds.
    */
   void
