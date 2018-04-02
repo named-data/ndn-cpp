@@ -335,9 +335,9 @@ MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent
 : Content(data)
 {
   cacheRemovalTimeMilliseconds_ = nowMilliseconds +
-    data.getMetaInfo().getFreshnessPeriod();
-  freshnessExpiryTimeMilliseconds_ = nowMilliseconds +
     max(data.getMetaInfo().getFreshnessPeriod(), minimumCacheLifetime);
+  freshnessExpiryTimeMilliseconds_ = nowMilliseconds +
+    data.getMetaInfo().getFreshnessPeriod();
 }
 
 MemoryContentCache::PendingInterest::PendingInterest
