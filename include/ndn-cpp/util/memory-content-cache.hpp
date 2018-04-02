@@ -312,9 +312,10 @@ public:
   /**
    * Add the Data packet to the cache so that it is available to use to
    * answer interests. If data.getMetaInfo().getFreshnessPeriod() is not
-   * negative, set the staleness time to now plus
-   * data.getMetaInfo().getFreshnessPeriod(), which is checked during cleanup to
-   * remove stale content. This also checks if cleanupIntervalMilliseconds
+   * negative, set the staleness time to now plus the maximum of
+   * data.getMetaInfo().getFreshnessPeriod() and minimumCacheLifetime, which is
+   * checked during cleanup to remove stale content.
+   * This also checks if cleanupIntervalMilliseconds
    * milliseconds have passed and removes stale content from the cache. After
    * removing stale content, remove timed-out pending interests from
    * storePendingInterest(), then if the added Data packet satisfies any
@@ -414,6 +415,27 @@ public:
     impl_->setOnContentRemoved(onContentRemoved);
   }
 
+  /**
+   * Get the minimum lifetime before removing stale content from the cache.
+   * @return The minimum cache lifetime in milliseconds.
+   */
+  Milliseconds
+  getMinimumCacheLifetime() { return impl_->getMinimumCacheLifetime(); }
+
+  /**
+   * Set the minimum lifetime before removing stale content from the cache which
+   * can keep content in the cache longer than the lifetime defined in the meta
+   * info. This can be useful for matching interests where MustBeFresh is false.
+   * The default minimum cache lifetime is zero, meaning that content is removed
+   * when its lifetime expires.
+   * @param minimumCacheLifetime The minimum cache lifetime in milliseconds.
+   */
+  void
+  setMinimumCacheLifetime(Milliseconds minimumCacheLifetime)
+  {
+    impl_->setMinimumCacheLifetime(minimumCacheLifetime);
+  }
+
 private:
   /**
    * MemoryContentCache::Impl does the work of MemoryContentCache. It is a
@@ -480,6 +502,15 @@ private:
       onContentRemoved_ = onContentRemoved;
     }
 
+    Milliseconds
+    getMinimumCacheLifetime() { return minimumCacheLifetime_; }
+
+    void
+    setMinimumCacheLifetime(Milliseconds minimumCacheLifetime)
+    {
+      minimumCacheLifetime_ = minimumCacheLifetime;
+    }
+
     /**
      * This is the OnInterestCallback which is called when the library receives
      * an interest whose name has the prefix given to registerPrefix. First
@@ -505,16 +536,20 @@ private:
     public:
       /**
        * Create a new StaleTimeContent to hold data's name and wire encoding
-       * as well as the staleTimeMilliseconds which is now plus
-       * data.getMetaInfo().getFreshnessPeriod().
+       * as well as the staleTimeMilliseconds which is now plus the maximum of
+       * data.getMetaInfo().getFreshnessPeriod() and the minimumCacheLifetime.
        * @param data The Data packet whose name and wire encoding are copied.
        * @param nowMilliseconds The current time in milliseconds from
        * ndn_getNowMilliseconds.
+       * @param minimumCacheLifetime The minimum cache lifetime in milliseconds.
        */
-      StaleTimeContent(const Data& data, MillisecondsSince1970 nowMilliseconds);
+      StaleTimeContent
+        (const Data& data, MillisecondsSince1970 nowMilliseconds,
+         Milliseconds minimumCacheLifetime);
 
       /**
-       * Check if this content is stale and should be removed from the cache.
+       * Check if this content is stale and should be removed from the cache,
+       * according to the content freshness period and the minimumCacheLifetime.
        * @param nowMilliseconds The current time in milliseconds from
        * ndn_getNowMilliseconds.
        * @return True if this content should be removed, otherwise false.
@@ -604,6 +639,7 @@ private:
     OnInterestCallback storePendingInterestCallback_;
     OnContentRemoved onContentRemoved_;
     bool isDoingCleanup_;
+    Milliseconds minimumCacheLifetime_;
   };
 
   ndn::ptr_lib::shared_ptr<Impl> impl_;

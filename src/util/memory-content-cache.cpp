@@ -35,7 +35,7 @@ MemoryContentCache::Impl::Impl
   (Face* face, Milliseconds cleanupIntervalMilliseconds)
 : face_(face), cleanupIntervalMilliseconds_(cleanupIntervalMilliseconds),
   nextCleanupTime_(ndn_getNowMilliseconds() + cleanupIntervalMilliseconds),
-  isDoingCleanup_(false)
+  isDoingCleanup_(false), minimumCacheLifetime_(0)
 {
 }
 
@@ -111,7 +111,7 @@ MemoryContentCache::Impl::add(const Data& data)
   if (data.getMetaInfo().getFreshnessPeriod() >= 0.0) {
     // The content will go stale, so use staleTimeCache_.
     ptr_lib::shared_ptr<const StaleTimeContent> content
-      (new StaleTimeContent(data, nowMilliseconds));
+      (new StaleTimeContent(data, nowMilliseconds, minimumCacheLifetime_));
     // Insert into staleTimeCache_, sorted on content->staleTimeMilliseconds_.
     staleTimeCache_.insert
       (std::lower_bound(staleTimeCache_.begin(), staleTimeCache_.end(), content, contentCompare_),
@@ -329,13 +329,15 @@ MemoryContentCache::Impl::doCleanup(MillisecondsSince1970 nowMilliseconds)
 }
 
 MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent
-  (const Data& data, MillisecondsSince1970 nowMilliseconds)
+  (const Data& data, MillisecondsSince1970 nowMilliseconds,
+   Milliseconds minimumCacheLifetime)
 // wireEncode returns the cached encoding if available.
 : Content(data)
 {
   cacheRemovalTimeMilliseconds_ = nowMilliseconds +
     data.getMetaInfo().getFreshnessPeriod();
-  freshnessExpiryTimeMilliseconds_ = cacheRemovalTimeMilliseconds_;
+  freshnessExpiryTimeMilliseconds_ = nowMilliseconds +
+    max(data.getMetaInfo().getFreshnessPeriod(), minimumCacheLifetime);
 }
 
 MemoryContentCache::PendingInterest::PendingInterest
