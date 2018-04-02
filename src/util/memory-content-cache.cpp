@@ -105,11 +105,13 @@ MemoryContentCache::Impl::unregisterAll()
 void
 MemoryContentCache::Impl::add(const Data& data)
 {
-  doCleanup();
+  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
+  doCleanup(nowMilliseconds);
 
   if (data.getMetaInfo().getFreshnessPeriod() >= 0.0) {
     // The content will go stale, so use staleTimeCache_.
-    ptr_lib::shared_ptr<const StaleTimeContent> content(new StaleTimeContent(data));
+    ptr_lib::shared_ptr<const StaleTimeContent> content
+      (new StaleTimeContent(data, nowMilliseconds));
     // Insert into staleTimeCache_, sorted on content->staleTimeMilliseconds_.
     staleTimeCache_.insert
       (std::lower_bound(staleTimeCache_.begin(), staleTimeCache_.end(), content, contentCompare_),
@@ -123,7 +125,6 @@ MemoryContentCache::Impl::add(const Data& data)
   // Remove timed-out interests and check if the data packet matches any pending
   // interest.
   // Go backwards through the list so we can erase entries.
-  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
   for (int i = (int)pendingInterestTable_.size() - 1; i >= 0; --i) {
     if (pendingInterestTable_[i]->isTimedOut(nowMilliseconds)) {
       pendingInterestTable_.erase(pendingInterestTable_.begin() + i);
@@ -203,7 +204,8 @@ MemoryContentCache::Impl::onInterest
    uint64_t interestFilterId,
    const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
-  doCleanup();
+  MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
+  doCleanup(nowMilliseconds);
 
   const Name::Component* selectedComponent = 0;
   Blob selectedEncoding;
@@ -277,7 +279,7 @@ MemoryContentCache::Impl::onInterest
 }
 
 void
-MemoryContentCache::Impl::doCleanup()
+MemoryContentCache::Impl::doCleanup(MillisecondsSince1970 nowMilliseconds)
 {
   if (isDoingCleanup_)
     // The OnContentRemoved callback may have called add, which has called this
@@ -287,11 +289,10 @@ MemoryContentCache::Impl::doCleanup()
   isDoingCleanup_ = true;
 
   ptr_lib::shared_ptr<ContentList> contentList;
-  MillisecondsSince1970 now = ndn_getNowMilliseconds();
-  if (now >= nextCleanupTime_) {
+  if (nowMilliseconds >= nextCleanupTime_) {
     // staleTimeCache_ is sorted on staleTimeMilliseconds_, so we only need to
     // erase the stale entries at the front, then quit.
-    while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(now)) {
+    while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(nowMilliseconds)) {
       if (onContentRemoved_) {
         // Add to the list of removed content for the OnContentRemoved callback.
         // We make a separate list instead of calling the callback each time
@@ -305,7 +306,7 @@ MemoryContentCache::Impl::doCleanup()
       staleTimeCache_.erase(staleTimeCache_.begin());
     }
 
-    nextCleanupTime_ = now + cleanupIntervalMilliseconds_;
+    nextCleanupTime_ = nowMilliseconds + cleanupIntervalMilliseconds_;
   }
 
   if (onContentRemoved_ && contentList) {
@@ -321,12 +322,13 @@ MemoryContentCache::Impl::doCleanup()
   isDoingCleanup_ = false;
 }
 
-MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent(const Data& data)
+MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent
+  (const Data& data, MillisecondsSince1970 nowMilliseconds)
 // wireEncode returns the cached encoding if available.
 : Content(data)
 {
   // Set up staleTimeMilliseconds_.
-  staleTimeMilliseconds_ = ndn_getNowMilliseconds() +
+  staleTimeMilliseconds_ = nowMilliseconds +
     data.getMetaInfo().getFreshnessPeriod();
 }
 

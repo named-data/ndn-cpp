@@ -508,8 +508,10 @@ private:
        * as well as the staleTimeMilliseconds which is now plus
        * data.getMetaInfo().getFreshnessPeriod().
        * @param data The Data packet whose name and wire encoding are copied.
+       * @param nowMilliseconds The current time in milliseconds from
+       * ndn_getNowMilliseconds.
        */
-      StaleTimeContent(const Data& data);
+      StaleTimeContent(const Data& data, MillisecondsSince1970 nowMilliseconds);
 
       /**
        * Check if this content is stale.
@@ -549,9 +551,11 @@ private:
      * staleTimeCache_, the check for stale data is quick and does not require
      * searching the entire staleTimeCache_. If onContentRemoved_ is defined,
      * this calls onContentRemoved_(content) for the removed content.
+       * @param nowMilliseconds The current time in milliseconds from
+       * ndn_getNowMilliseconds.
      */
     void
-    doCleanup();
+    doCleanup(MillisecondsSince1970 now);
 
     /**
      * This is a private method to return for setting storePendingInterestCallback_.
