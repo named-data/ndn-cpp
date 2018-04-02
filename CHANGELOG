@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.13 (2018-03-26)
+Interim changes since NDN-CPP v0.13 (2018-04-01)
 ------------------------------------------------
 
 Bug fixes
@@ -25,6 +25,8 @@ Changes
   to KEY_TYPE_EC and EcKeyParams. Deprecated KEY_TYPE_ECDSA and EcdsaKeyParams.
 * Added security CommandInterestSigner.
 * Added security ValidationPolicyCommandInterest.
+* In MemoryContentCache, added setMinimumCacheLifetime which can extend the
+  cache time of content to match an Interest where MustBeFresh is false.
 
 Deprecated
 * Deprecated KEY_TYPE_ECDSA. Use KEY_TYPE_EC.
