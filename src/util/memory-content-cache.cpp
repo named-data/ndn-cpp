@@ -213,13 +213,18 @@ MemoryContentCache::Impl::onInterest
   size_t totalSize = staleTimeCache_.size() + noStaleTimeCache_.size();
   for (size_t i = 0; i < totalSize; ++i) {
     const Content* content;
-    if (i < staleTimeCache_.size())
-      content = staleTimeCache_[i].get();
+    bool isFresh = true;
+    if (i < staleTimeCache_.size()) {
+      const StaleTimeContent *staleTimeContent = staleTimeCache_[i].get();
+      content = staleTimeContent;
+      isFresh = staleTimeContent->isFresh(nowMilliseconds);
+    }
     else
       // We have iterated over the first array. Get from the second.
       content = noStaleTimeCache_[i - staleTimeCache_.size()].get();
 
-    if (interest->matchesName(content->getName())) {
+    if (interest->matchesName(content->getName()) &&
+        !(interest->getMustBeFresh() && !isFresh)) {
       if (interest->getChildSelector() < 0) {
         // No child selector, so send the first match that we have found.
         face.send(*content->getDataEncoding());
@@ -292,7 +297,8 @@ MemoryContentCache::Impl::doCleanup(MillisecondsSince1970 nowMilliseconds)
   if (nowMilliseconds >= nextCleanupTime_) {
     // staleTimeCache_ is sorted on staleTimeMilliseconds_, so we only need to
     // erase the stale entries at the front, then quit.
-    while (staleTimeCache_.size() > 0 && staleTimeCache_.front()->isStale(nowMilliseconds)) {
+    while (staleTimeCache_.size() > 0 && 
+           staleTimeCache_.front()->isPastRemovalTime(nowMilliseconds)) {
       if (onContentRemoved_) {
         // Add to the list of removed content for the OnContentRemoved callback.
         // We make a separate list instead of calling the callback each time
@@ -327,9 +333,9 @@ MemoryContentCache::Impl::StaleTimeContent::StaleTimeContent
 // wireEncode returns the cached encoding if available.
 : Content(data)
 {
-  // Set up staleTimeMilliseconds_.
-  staleTimeMilliseconds_ = nowMilliseconds +
+  cacheRemovalTimeMilliseconds_ = nowMilliseconds +
     data.getMetaInfo().getFreshnessPeriod();
+  freshnessExpiryTimeMilliseconds_ = cacheRemovalTimeMilliseconds_;
 }
 
 MemoryContentCache::PendingInterest::PendingInterest

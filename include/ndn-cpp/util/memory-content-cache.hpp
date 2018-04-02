@@ -514,15 +514,28 @@ private:
       StaleTimeContent(const Data& data, MillisecondsSince1970 nowMilliseconds);
 
       /**
-       * Check if this content is stale.
+       * Check if this content is stale and should be removed from the cache.
        * @param nowMilliseconds The current time in milliseconds from
        * ndn_getNowMilliseconds.
-       * @return True if this content is stale, otherwise false.
+       * @return True if this content should be removed, otherwise false.
        */
       bool
-      isStale(MillisecondsSince1970 nowMilliseconds) const
+      isPastRemovalTime(MillisecondsSince1970 nowMilliseconds) const
       {
-        return staleTimeMilliseconds_ <= nowMilliseconds;
+        return cacheRemovalTimeMilliseconds_ <= nowMilliseconds;
+      }
+
+      /**
+       * Check if the content is still fresh according to its freshness period
+       * (independent of when to remove from the cache).
+       * @param nowMilliseconds The current time in milliseconds from
+       * ndn_getNowMilliseconds.
+       * @return True if the content is still fresh, otherwise false.
+       */
+      bool
+      isFresh(MillisecondsSince1970 nowMilliseconds) const
+      {
+        return freshnessExpiryTimeMilliseconds_ > nowMilliseconds;
       }
 
       /**
@@ -535,13 +548,17 @@ private:
           (const ptr_lib::shared_ptr<const StaleTimeContent>& x,
            const ptr_lib::shared_ptr<const StaleTimeContent>& y) const
         {
-          return x->staleTimeMilliseconds_ < y->staleTimeMilliseconds_;
+          return x->cacheRemovalTimeMilliseconds_ < y->cacheRemovalTimeMilliseconds_;
         }
       };
 
     private:
-      MillisecondsSince1970 staleTimeMilliseconds_; /**< The time when the content
-        becomse stale in milliseconds according to ndn_getNowMilliseconds */
+      MillisecondsSince1970 cacheRemovalTimeMilliseconds_; /**< The time when the content
+        becomes stale and should be remove from the cache in milliseconds
+        according to ndn_getNowMilliseconds */
+      MillisecondsSince1970 freshnessExpiryTimeMilliseconds_; /**< The time when
+        the freshness period of the content expires (independent of when to
+        remove from the cache) in milliseconds according to ndn_getNowMilliseconds */
     };
 
     /**
