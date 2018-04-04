@@ -19,51 +19,32 @@ Prerequisites
 
 Following are the detailed steps for each platform to install the prerequisites.
 
-## OS X 10.9.5, OS X 10.10.2
-Install Xcode.  (Xcode seems to already have the Command Line Tools.)
+## 10.9.5, OS X 10.10.2, OS X 10.11, macOS 10.12 and macOS 10.13
+Install Xcode. To install the command line tools, in a terminal enter:
 
-Optional: To install Protobuf, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
+    xcode-select --install
 
-    sudo port install protobuf-cpp
+Install Brew from https://brew.sh
 
-Optional: To install log4cxx, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
+In a terminal, enter:
 
-    sudo port install log4cxx
-
-Optional: To install Doxygen, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install doxygen
-
-Optional: To install Boost with asio, install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install boost
-
-## OS X 10.11, macOS 10.12
-Install Xcode.
-install MacPorts from http://www.macports.org/install.php .
-In a new terminal, enter:
-
-    sudo port install openssl
+    brew install openssl
 
 Optional: To install Protobuf, in a terminal, enter:
 
-    sudo port install protobuf-cpp
+    brew install protobuf
 
 Optional: To install log4cxx, in a terminal, enter:
 
-    sudo port install log4cxx
+    brew install log4cxx
 
 Optional: To install Doxygen, in a terminal, enter:
 
-    sudo port install doxygen
+    brew install doxygen
 
 Optional: To install Boost with asio, in a terminal, enter:
 
-    sudo port install boost
+    brew install boost
 
 ## Ubuntu 12.04 (64 bit and 32 bit)
 In a terminal, enter:
@@ -130,9 +111,18 @@ Build
 =====
 (These are instructions to build NDN-CPP. To do development of NDN-CPP code and update the build system, see Development.)
 
-To build in a terminal, change directory to the NDN-CPP root.  Enter:
+To build in a terminal, change directory to the NDN-CPP root.
+
+To configure on macOS, enter:
+
+    ./configure CFLAGS="-I/usr/local/opt/openssl/include" CXXFLAGS="-I/usr/local/opt/openssl/include" LDFLAGS="-L/usr/local/opt/openssl/lib"
+
+To configure on other systems, enter:
 
     ./configure
+
+Enter:
+
     make
     sudo make install
 
@@ -175,13 +165,12 @@ Running make doxygen-doc puts code documentation in doc/html.
 Development Prerequisites
 =========================
 These steps are only needed to do development of NDN-CPP code and update the build system.
-First follow the Prerequisites above for your platforms.
+First follow the Prerequisites above for your platform.
 
-## OS X 10.9, OS X 10.10.2, OS X 10.11 and macOS 10.12
-Install MacPorts from http://www.macports.org/install.php .
+## OS X 10.9, OS X 10.10.2, OS X 10.11, macOS 10.12 and macOS 10.13
 In a terminal, enter:
 
-    sudo port install automake autoconf libtool doxygen
+    brew install automake libtool doxygen
 
 ## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
 In a terminal, enter:

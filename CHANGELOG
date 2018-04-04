@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.13 (2018-04-01)
+Interim changes since NDN-CPP v0.13 (2018-04-04)
 ------------------------------------------------
 
 Bug fixes
@@ -25,6 +25,7 @@ Changes
   to KEY_TYPE_EC and EcKeyParams. Deprecated KEY_TYPE_ECDSA and EcdsaKeyParams.
 * Added security CommandInterestSigner.
 * Added security ValidationPolicyCommandInterest.
+* Updated the INSTALL instructions on macOS to use Homebrew (not Macports).
 * In MemoryContentCache, added setMinimumCacheLifetime which can extend the
   cache time of content to match an Interest where MustBeFresh is false.
 
