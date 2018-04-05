@@ -574,7 +574,7 @@ private:
       }
 
       /**
-       * Compare shared_ptrs to Content based only on staleTimeMilliseconds_.
+       * Compare shared_ptrs to Content based only on cacheRemovalTimeMilliseconds_.
        */
       class Compare {
       public:
@@ -589,7 +589,7 @@ private:
 
     private:
       MillisecondsSince1970 cacheRemovalTimeMilliseconds_; /**< The time when the content
-        becomes stale and should be remove from the cache in milliseconds
+        becomes stale and should be removed from the cache in milliseconds
         according to ndn_getNowMilliseconds */
       MillisecondsSince1970 freshnessExpiryTimeMilliseconds_; /**< The time when
         the freshness period of the content expires (independent of when to
@@ -603,11 +603,11 @@ private:
      * staleTimeCache_, the check for stale data is quick and does not require
      * searching the entire staleTimeCache_. If onContentRemoved_ is defined,
      * this calls onContentRemoved_(content) for the removed content.
-       * @param nowMilliseconds The current time in milliseconds from
-       * ndn_getNowMilliseconds.
+     * @param nowMilliseconds The current time in milliseconds from
+     * ndn_getNowMilliseconds.
      */
     void
-    doCleanup(MillisecondsSince1970 now);
+    doCleanup(MillisecondsSince1970 nowMilliseconds);
 
     /**
      * This is a private method to return for setting storePendingInterestCallback_.

@@ -112,7 +112,7 @@ MemoryContentCache::Impl::add(const Data& data)
     // The content will go stale, so use staleTimeCache_.
     ptr_lib::shared_ptr<const StaleTimeContent> content
       (new StaleTimeContent(data, nowMilliseconds, minimumCacheLifetime_));
-    // Insert into staleTimeCache_, sorted on content->staleTimeMilliseconds_.
+    // Insert into staleTimeCache_, sorted on content->cacheRemovalTimeMilliseconds_.
     staleTimeCache_.insert
       (std::lower_bound(staleTimeCache_.begin(), staleTimeCache_.end(), content, contentCompare_),
        content);
@@ -295,7 +295,7 @@ MemoryContentCache::Impl::doCleanup(MillisecondsSince1970 nowMilliseconds)
 
   ptr_lib::shared_ptr<ContentList> contentList;
   if (nowMilliseconds >= nextCleanupTime_) {
-    // staleTimeCache_ is sorted on staleTimeMilliseconds_, so we only need to
+    // staleTimeCache_ is sorted on cacheRemovalTimeMilliseconds_, so we only need to
     // erase the stale entries at the front, then quit.
     while (staleTimeCache_.size() > 0 && 
            staleTimeCache_.front()->isPastRemovalTime(nowMilliseconds)) {
