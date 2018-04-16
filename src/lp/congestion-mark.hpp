@@ -30,6 +30,11 @@ namespace ndn {
 
 class LpPacket;
 
+/**
+ * CongestionMark represents the congestion mark header field in an NDNLPv2
+ * packet.
+ * http://redmine.named-data.net/projects/nfd/wiki/NDNLPv2
+ */
 class CongestionMark : public LpPacketHeaderField {
 public:
   /**
