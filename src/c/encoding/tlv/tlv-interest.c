@@ -320,6 +320,9 @@ ndn_decodeTlvInterest
     // Set selectors to none.
     interest->minSuffixComponents = -1;
     interest->maxSuffixComponents = -1;
+    ndn_KeyLocator_initialize
+      (&interest->keyLocator, interest->keyLocator.keyName.components,
+       interest->keyLocator.keyName.maxComponents);
     interest->exclude.nEntries = 0;
     interest->childSelector = -1;
     interest->mustBeFresh = 0;
