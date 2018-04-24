@@ -62,6 +62,14 @@ public:
       throw runtime_error(ndn_getErrorString(error));
   }
 
+  void
+  finishNestedTlvsSkipCritical(int endOffset)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_finishNestedTlvsSkipCritical(this, endOffset)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+
   bool
   peekType(unsigned int expectedType, size_t endOffset)
   {
