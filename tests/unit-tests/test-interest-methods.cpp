@@ -82,6 +82,54 @@ static const char* initialDumpValues[] = {
   "  Preference: 1, Name: /A"
 };
 
+static const uint8_t simpleCodedInterestV03[] = {
+0x05, 0x07, // Interest
+  0x07, 0x03, 0x08, 0x01, 0x49, // Name = /I
+  0x12, 0x00, // MustBeFresh
+};
+
+static const char* simpleCodedInterestV03DumpValues[] = {
+  "name: /I",
+  "minSuffixComponents: <none>",
+  "maxSuffixComponents: 1",
+  "keyLocator: <none>",
+  "exclude: <none>",
+  "childSelector: <none>",
+  "mustBeFresh: True",
+  "nonce: <none>",
+  "lifetimeMilliseconds: <none>",
+  "forwardingHint: <none>"
+};
+
+static const uint8_t fullCodedInterestV03[] = {
+0x05, 0x29, // Interest
+  0x07, 0x03, 0x08, 0x01, 0x49, // Name = /I
+  0x21, 0x00, // CanBePrefix
+  0x12, 0x00, // MustBeFresh
+  0x1E, 0x0B, // ForwardingHint
+    0x1F, 0x09, // Delegation
+      0x1E, 0x02, 0x01, 0x00, // Preference = 256
+      0x07, 0x03, 0x08, 0x01, 0x48, // Name = /H
+  0x0A, 0x04, 0x12, 0x34, 0x56, 0x78, // Nonce
+  0x0C, 0x02, 0x10, 0x00, // InterestLifetime = 4096
+  0x22, 0x01, 0xD6, // HopLimit
+  0x23, 0x04, 0xC0, 0xC1, 0xC2, 0xC3 // Parameters
+};
+
+static const char* fullCodedInterestV03DumpValues[] = {
+  "name: /I",
+  "minSuffixComponents: <none>",
+  "maxSuffixComponents: <none>",
+  "keyLocator: <none>",
+  "exclude: <none>",
+  "childSelector: <none>",
+  "mustBeFresh: True",
+  "nonce: 12345678",
+  "lifetimeMilliseconds: 4096",
+  "forwardingHint:",
+  "  Preference: 256, Name: /H"
+};
+
 static string
 toString(int value)
 {
@@ -224,12 +272,20 @@ class TestInterestDump : public ::testing::Test {
 public:
   TestInterestDump()
   : initialDump(initialDumpValues,
-      initialDumpValues + sizeof(initialDumpValues) / sizeof(initialDumpValues[0]))
+      initialDumpValues + sizeof(initialDumpValues) / sizeof(initialDumpValues[0])),
+    simpleCodedInterestV03Dump(simpleCodedInterestV03DumpValues,
+      simpleCodedInterestV03DumpValues + sizeof(simpleCodedInterestV03DumpValues) /
+        sizeof(simpleCodedInterestV03DumpValues[0])),
+    fullCodedInterestV03Dump(fullCodedInterestV03DumpValues,
+      fullCodedInterestV03DumpValues + sizeof(fullCodedInterestV03DumpValues) /
+        sizeof(fullCodedInterestV03DumpValues[0]))
   {
     referenceInterest.wireDecode(codedInterest, sizeof(codedInterest));
   }
 
   vector<string> initialDump;
+  vector<string> simpleCodedInterestV03Dump;
+  vector<string> fullCodedInterestV03Dump;
   Interest referenceInterest;
 };
 
@@ -284,6 +340,23 @@ TEST_F(TestInterestDump, NoSelectorsMustBeFresh)
   Interest interest;
   interest.wireDecode(codedInterestNoSelectors, sizeof(codedInterestNoSelectors));
   ASSERT_EQ(false, interest.getMustBeFresh()) << "MustBeFresh should be false if no selectors";
+}
+
+TEST_F(TestInterestDump, DecodeV03AsV02)
+{
+  Interest interest1;
+  interest1.wireDecode(simpleCodedInterestV03, sizeof(simpleCodedInterestV03));
+
+  vector<string> dump1 = dumpInterest(interest1);
+  ASSERT_EQ(simpleCodedInterestV03Dump, dump1) <<
+    "Decoded simpleCodedInterestV03 does not match the dump";
+
+  Interest interest2;
+  interest2.wireDecode(fullCodedInterestV03, sizeof(fullCodedInterestV03));
+
+  vector<string> dump2 = dumpInterest(interest2);
+  ASSERT_EQ(fullCodedInterestV03Dump, dump2) <<
+    "Decoded fullCodedInterestV03Dump does not match the dump";
 }
 
 class TestInterestMethods : public ::testing::Test {
