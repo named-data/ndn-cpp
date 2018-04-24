@@ -142,6 +142,8 @@ ndn_getErrorString(int error)
     return      "An Interest may not have a selected delegation when encoding a forwarding hint";
   case NDN_ERROR_An_Interest_may_not_have_a_link_object_when_encoding_a_forwarding_hint:
     return      "An Interest may not have a link object when encoding a forwarding hint";
+  case NDN_ERROR_Unrecognized_critical_TLV_type_code:
+    return      "Unrecognized critical TLV type code";
   default:
     return "unrecognized ndn_Error code";
   }
