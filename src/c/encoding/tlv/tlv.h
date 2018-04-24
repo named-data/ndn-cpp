@@ -54,7 +54,10 @@ enum {
   ndn_Tlv_KeyLocator =       28,
   ndn_Tlv_KeyLocatorDigest = 29,
   ndn_Tlv_ForwardingHint =   30,
-  ndn_Tlv_SelectedDelegation = 32
+  ndn_Tlv_SelectedDelegation = 32,
+  ndn_Tlv_CanBePrefix =      33,
+  ndn_Tlv_HopLimit =         34,
+  ndn_Tlv_Parameters =       35
 };
 
 enum {
