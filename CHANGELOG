@@ -1,6 +1,10 @@
 Interim changes since NDN-CPP v0.14 (2018-04-24)
 ------------------------------------------------
 
+Bug fixes
+* https://redmine.named-data.net/issues/4595 For ./configure on macOS, update
+  to not overwrite optimization CFLAGS.
+
 Changes
 * https://redmine.named-data.net/issues/4591 Accept Interests encoded with
   packet format v0.3.
