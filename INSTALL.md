@@ -115,7 +115,7 @@ To build in a terminal, change directory to the NDN-CPP root.
 
 To configure on macOS, enter:
 
-    ./configure CFLAGS="-I/usr/local/opt/openssl/include" CXXFLAGS="-I/usr/local/opt/openssl/include" LDFLAGS="-L/usr/local/opt/openssl/lib"
+    ./configure ADD_CFLAGS=-I/usr/local/opt/openssl/include ADD_CXXFLAGS=-I/usr/local/opt/openssl/include ADD_LDFLAGS=-L/usr/local/opt/openssl/lib
 
 To configure on other systems, enter:
 
