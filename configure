@@ -691,6 +691,10 @@ BOOST_ASIO_LIB
 BOOST_LDFLAGS
 BOOST_CPPFLAGS
 HAVE_CXX11
+ADD_LDFLAGS
+ADD_CPPFLAGS
+ADD_CXXFLAGS
+ADD_CFLAGS
 am__fastdepOBJCXX_FALSE
 am__fastdepOBJCXX_TRUE
 OBJCXXDEPMODE
@@ -872,6 +876,10 @@ CCC
 CXXCPP
 OBJCXX
 OBJCXXFLAGS
+ADD_CFLAGS
+ADD_CXXFLAGS
+ADD_CPPFLAGS
+ADD_LDFLAGS
 DOXYGEN_PAPER_SIZE'
 
 
@@ -1579,6 +1587,12 @@ Some influential environment variables:
   CXXCPP      C++ preprocessor
   OBJCXX      Objective C++ compiler command
   OBJCXXFLAGS Objective C++ compiler flags
+  ADD_CFLAGS  Append this to CFLAGS
+  ADD_CXXFLAGS
+              Append this to CXXFLAGS
+  ADD_CPPFLAGS
+              Append this to CPPFLAGS
+  ADD_LDFLAGS Append this to LDFLAGS
   DOXYGEN_PAPER_SIZE
               a4wide (default), a4, letter, legal or executive
 
@@ -16790,6 +16804,15 @@ case "$host" in
      fi
   ;;
 esac
+
+
+CFLAGS="$CFLAGS $ADD_CFLAGS"
+
+CXXFLAGS="$CXXFLAGS $ADD_CXXFLAGS"
+
+CPPFLAGS="$CPPFLAGS $ADD_CPPFLAGS"
+
+LDFLAGS="$LDFLAGS $ADD_LDFLAGS"
 
 ac_fn_cxx_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes; then :
