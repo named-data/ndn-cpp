@@ -46,7 +46,7 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     brew install boost
 
-## Ubuntu 12.04 (64 bit and 32 bit)
+## Ubuntu 12.04
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev
@@ -71,7 +71,7 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     sudo apt-get install libboost1.48-all-dev
 
-## Ubuntu 14.04 (64 bit and 32 bit), 15.04 (64 bit), 16.04 (64 bit and 32 bit), 16.10 (64 bit) and 17.04 (64 bit)
+## Ubuntu 14.04, 15.04, 16.04, 16.10, 17.04 and 18.04
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev
