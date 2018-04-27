@@ -589,11 +589,26 @@ ConfigPolicyManager::checkSignatureMatch
         return false;
       }
     }
-    else {
-      failureReason = "The hierarchical identityRegex \"" + identityRegex +
-        "\" does not match signatureName \"" + signatureName.toUri() + "\"";
-      return false;
+
+    if (!isSecurityV1_) {
+      // Check for a security v2 key name.
+      string identityRegex2 = "^(<>*)<KEY><>$";
+      NdnRegexTopMatcher identityMatch2(identityRegex2);
+      if (identityMatch2.match(signatureName)) {
+        Name identityPrefix = identityMatch2.expand("\\1");
+        if (matchesRelation(objectName, identityPrefix, "is-prefix-of"))
+          return true;
+        else {
+          failureReason = "The hierarchical objectName \"" + objectName.toUri() +
+            "\" is not a prefix of \"" + identityPrefix.toUri() + "\"";
+          return false;
+        }
+      }
     }
+
+    failureReason = "The hierarchical identityRegex \"" + identityRegex +
+      "\" does not match signatureName \"" + signatureName.toUri() + "\"";
+    return false;
   }
   else if (checkerType == "customized") {
     const BoostInfoTree& keyLocatorInfo = *checker["key-locator"][0];
