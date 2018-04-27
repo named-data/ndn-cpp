@@ -75,12 +75,7 @@ ndn_computeHmacWithSha256
   (const uint8_t *key, size_t keyLength, const uint8_t *data, size_t dataLength,
    uint8_t *digest)
 {
-  HMAC_CTX hmac;
-  unsigned int dummyDigestLength;
-
-  HMAC_Init(&hmac, key, keyLength, EVP_sha256());
-  HMAC_Update(&hmac, data, dataLength);
-  HMAC_Final(&hmac, digest, &dummyDigestLength);
+  HMAC(EVP_sha256(), key, keyLength, data, dataLength, digest, 0);
 }
 
 int
