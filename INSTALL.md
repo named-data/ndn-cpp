@@ -71,7 +71,7 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     sudo apt-get install libboost1.48-all-dev
 
-## Ubuntu 14.04, 15.04, 16.04, 16.10, 17.04 and 18.04
+## Ubuntu 14.04 and 15.04
 In a terminal, enter:
 
     sudo apt-get install build-essential libssl-dev
@@ -95,6 +95,31 @@ Optional: To install Doxygen, in a terminal, enter:
 Optional: To install Boost with asio, in a terminal, enter:
 
     sudo apt-get install libboost-all-dev
+
+## Ubuntu 16.04, 16.10, 17.04 and 18.04
+In a terminal, enter:
+
+    sudo apt install build-essential libssl-dev
+
+Optional: To install libsqlite3, in a terminal, enter:
+
+    sudo apt install libsqlite3-dev
+
+Optional: To install Protobuf, in a terminal, enter:
+
+    sudo apt install libprotobuf-dev protobuf-compiler
+
+Optional: To install log4cxx, in a terminal, enter:
+
+    sudo apt install liblog4cxx-dev
+
+Optional: To install Doxygen, in a terminal, enter:
+
+    sudo apt install doxygen
+
+Optional: To install Boost with asio, in a terminal, enter:
+
+    sudo apt install libboost-all-dev
 
 ### Odroid Ubuntu
 
@@ -172,7 +197,7 @@ In a terminal, enter:
 
     brew install automake libtool doxygen
 
-## Ubuntu 12.04 (64 bit and 32 bit), Ubuntu 14.04 (64 bit and 32 bit)
+## Ubuntu 12.04, 14.04, 16.04 and 18.04
 In a terminal, enter:
 
     sudo apt-get install automake libtool doxygen
