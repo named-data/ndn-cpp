@@ -425,6 +425,7 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/c/encoding/tlv/tlv-signature-info.c \
   src/ndn-cpp/src/c/encoding/tlv/tlv-structure-decoder.c \
   src/ndn-cpp/src/c/encrypt/algo/aes-algorithm_c.c \
+  src/ndn-cpp/src/c/lp/congestion-mark_c.c \
   src/ndn-cpp/src/c/lp/incoming-face-id_c.c \
   src/ndn-cpp/src/c/security/ec-private-key.c \
   src/ndn-cpp/src/c/security/ec-public-key.c \
@@ -508,6 +509,7 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/lite/encrypt/encrypted-content-lite.cpp \
   src/ndn-cpp/src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/ndn-cpp/src/lite/encrypt/algo/encrypt-params-lite.cpp \
+  src/ndn-cpp/src/lite/lp/congestion-mark-lite.cpp \
   src/ndn-cpp/src/lite/lp/incoming-face-id-lite.cpp \
   src/ndn-cpp/src/lite/lp/lp-packet-lite.cpp \
   src/ndn-cpp/src/lite/security/ec-private-key-lite.cpp \
@@ -521,13 +523,16 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/lite/util/crypto-lite.cpp \
   src/ndn-cpp/src/lite/util/dynamic-malloc-uint8-array-lite.cpp \
   src/ndn-cpp/src/lite/util/dynamic-uint8-array-lite.cpp \
+  src/ndn-cpp/src/lp/congestion-mark.cpp \
   src/ndn-cpp/src/lp/incoming-face-id.cpp \
   src/ndn-cpp/src/lp/lp-packet.cpp \
+  src/ndn-cpp/src/security/command-interest-signer.cpp \
   src/ndn-cpp/src/security/key-chain.cpp \
   src/ndn-cpp/src/security/key-params.cpp \
   src/ndn-cpp/src/security/safe-bag.cpp \
   src/ndn-cpp/src/security/security-exception.cpp \
   src/ndn-cpp/src/security/signing-info.cpp \
+  src/ndn-cpp/src/security/validator-null.cpp \
   src/ndn-cpp/src/security/validity-period.cpp \
   src/ndn-cpp/src/security/verification-helpers.cpp \
   src/ndn-cpp/src/security/certificate/certificate-extension.cpp \
@@ -566,7 +571,26 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/security/tpm/tpm-private-key.cpp \
   src/ndn-cpp/src/security/tpm/tpm.cpp \
   src/ndn-cpp/src/security/v2/certificate-cache-v2.cpp \
+  src/ndn-cpp/src/security/v2/certificate-fetcher-from-network.cpp \
+  src/ndn-cpp/src/security/v2/certificate-fetcher-offline.cpp \
+  src/ndn-cpp/src/security/v2/certificate-fetcher.cpp \
+  src/ndn-cpp/src/security/v2/certificate-storage.cpp \
   src/ndn-cpp/src/security/v2/certificate-v2.cpp \
+  src/ndn-cpp/src/security/v2/trust-anchor-container.cpp \
+  src/ndn-cpp/src/security/v2/trust-anchor-group.cpp \
+  src/ndn-cpp/src/security/v2/validation-error.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy-accept-all.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy-command-interest.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy-config.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy-from-pib.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy-simple-hierarchy.cpp \
+  src/ndn-cpp/src/security/v2/validation-policy.cpp \
+  src/ndn-cpp/src/security/v2/validation-state.cpp \
+  src/ndn-cpp/src/security/v2/validator.cpp \
+  src/ndn-cpp/src/security/v2/validator-config/config-checker.cpp \
+  src/ndn-cpp/src/security/v2/validator-config/config-filter.cpp \
+  src/ndn-cpp/src/security/v2/validator-config/config-name-relation.cpp \
+  src/ndn-cpp/src/security/v2/validator-config/config-rule.cpp \
   src/ndn-cpp/src/transport/async-tcp-transport.cpp \
   src/ndn-cpp/src/transport/async-unix-transport.cpp \
   src/ndn-cpp/src/transport/tcp-transport.cpp \
