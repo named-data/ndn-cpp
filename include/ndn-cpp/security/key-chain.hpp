@@ -1076,7 +1076,7 @@ public:
   /**
    * Compute a new HmacWithSha256 for all but the final name component and
    * verify it against the signature value in the final name component.
-   * @param interest The Interest object to signed name to verify.
+   * @param interest The Interest object to verify.
    * @param key The key for the HmacWithSha256.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
    * If omitted, use WireFormat getDefaultWireFormat().
