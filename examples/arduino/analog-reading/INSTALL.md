@@ -11,13 +11,13 @@ If the Java JDK is not installed, enter:
 
     sudo apt install openjdk-7-jdk
 
-## Ubuntu 16.04
+## Ubuntu 16.04 and 18.04
 
 If the Java JDK is not installed, enter:
 
     sudo apt install openjdk-8-jdk-headless
 
-## Both Ubuntu 14.04 and Ubuntu 16.04
+## Both Ubuntu 14.04, 16.04 and 18.04
 
 Enter the following so that ./configure will run:
 
