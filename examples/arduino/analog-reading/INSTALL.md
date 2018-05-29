@@ -19,7 +19,7 @@ If the Java JDK is not installed, enter:
 
 ## Both Ubuntu 14.04 and Ubuntu 16.04
 
-Enter the following install so that ./configure will run:
+Enter the following so that ./configure will run:
 
     sudo apt install build-essential libssl-dev
 
@@ -51,6 +51,15 @@ Arduino build path. Change to the directory `<ARDUINO>/hardware/tools/avr/avr/in
 and enter:
 
     ln -s <NDN-CPP root>/include/ndn-cpp
+
+The declaration of atexit() defined in Arduino.h conflicts with the one defined in stdlib.h. Edit
+`<ARDUINO>/hardware/arduino/avr/cores/arduino/Arduino.h` and change the following line:
+
+    int atexit(void (*func)()) __attribute__((weak));
+
+to
+
+    int atexit(void (*func)(void)) __attribute__((weak));
 
 Enter the following to start the Arduino IDE:
 
