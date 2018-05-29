@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include "time.h"
 
+// Note: configure.ac requires gettimeofday, but check anyway.
+#if NDN_CPP_HAVE_GETTIMEOFDAY || defined(_WIN32)
 ndn_MillisecondsSince1970
 ndn_getNowMilliseconds()
 {
@@ -47,16 +49,12 @@ ndn_getNowMilliseconds()
   ularge.HighPart = fileTime.dwHighDateTime;
   return (double)(ularge.QuadPart - epoch) / 10000.0;
 #else
-#if NDN_CPP_HAVE_GETTIMEOFDAY
   struct timeval t;
   gettimeofday(&t, 0);
   return t.tv_sec * 1000.0 + t.tv_usec / 1000.0;
-#else
-  // Note: configure.ac requires gettimeofday, so this shouldn't happen.
-  return 0;
-#endif
 #endif
 }
+#endif
 
 ndn_Error
 ndn_toIsoString
