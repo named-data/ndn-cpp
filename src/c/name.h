@@ -39,6 +39,7 @@ extern "C" {
 static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength)
 {
   self->type = ndn_NameComponentType_GENERIC;
+  self->otherTypeCode = -1;
   ndn_Blob_initialize(&self->value, value, valueLength);
 }
 

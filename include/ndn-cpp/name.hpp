@@ -48,67 +48,126 @@ public:
      * Create a new GENERIC Name::Component with a zero-length value.
      */
     Component()
-    : type_(ndn_NameComponentType_GENERIC), value_((const uint8_t*)0, 0)
+    : type_(ndn_NameComponentType_GENERIC),
+      otherTypeCode_(-1),
+      value_((const uint8_t*)0, 0)
     {
     }
 
     /**
-     * Create a new GENERIC Name::Component, copying the given value.
+     * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
      * @param value The value byte array.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const std::vector<uint8_t>& value)
-    : type_(ndn_NameComponentType_GENERIC), value_(value)
+    Component
+      (const std::vector<uint8_t>& value,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1)
+    : value_(value)
     {
+      setType(type, otherTypeCode);
     }
 
     /**
-     * Create a new GENERIC Name::Component, copying the given value.
+     * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
      * @param value Pointer to the value byte array.
      * @param valueLength Length of value.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const uint8_t *value, size_t valueLength)
-    : type_(ndn_NameComponentType_GENERIC), value_(value, valueLength)
+    Component
+      (const uint8_t *value, size_t valueLength,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1)
+    : value_(value, valueLength)
     {
+      setType(type, otherTypeCode);
     }
 
     /**
-     * Create a new GENERIC Name::Component, copying the bytes from the value
-     * string.
+     * Create a new Name::Component, copying the bytes from the value string.
      * NOTE: This does not escape %XX values.  If you need to escape, use
      * Name::fromEscapedString.  Also, if the string has "/", this does not split
      * into separate components.  If you need that then use Name(value).
      * @param value A null-terminated string with the bytes to copy.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const char* value)
-    : type_(ndn_NameComponentType_GENERIC), value_((const uint8_t*)value, ::strlen(value))
+    Component
+      (const char* value,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1)
+    : value_((const uint8_t*)value, ::strlen(value))
     {
+      setType(type, otherTypeCode);
     }
 
     /**
-     * Create a new GENERIC Name::Component, copying the bytes from the value
-     * string.
+     * Create a new Name::Component, copying the bytes from the value string.
      * NOTE: This does not escape %XX values.  If you need to escape, use
      * Name::fromEscapedString.  Also, if the string has "/", this does not split
      * into separate components.  If you need that then use Name(value).
      * @param value A string with the bytes to copy.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const std::string& value)
-    : type_(ndn_NameComponentType_GENERIC),
-      value_((const uint8_t*)&value[0], value.size())
+    Component
+      (const std::string& value,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1)
+    : value_((const uint8_t*)&value[0], value.size())
     {
+      setType(type, otherTypeCode);
     }
 
     /**
-     * Create a new GENERIC Name::Component, taking another pointer to the Blob
-     * value.
+     * Create a new Name::Component, taking another pointer to the Blob value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
-     * @param value A blob with a pointer to an immutable array.  The pointer is copied.
+     * @param value A blob with a pointer to an immutable array. The pointer is
+     * copied.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const Blob &value)
-    : type_(ndn_NameComponentType_GENERIC), value_(value)
+    Component
+      (const Blob &value,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1)
+    : value_(value)
     {
+      setType(type, otherTypeCode);
     }
 
     /**
@@ -117,8 +176,8 @@ public:
      * @param componentLite A NameLite::Component with the values to copy.
      */
     Component(const NameLite::Component &componentLite)
-    : type_(componentLite.isImplicitSha256Digest() ?
-        ndn_NameComponentType_IMPLICIT_SHA256_DIGEST : ndn_NameComponentType_GENERIC),
+    : type_(componentLite.getType()),
+      otherTypeCode_(componentLite.getOtherTypeCode()),
       value_(componentLite.getValue())
     {
     }
@@ -132,8 +191,30 @@ public:
     void
     get(NameLite::Component& componentLite) const;
 
+    /**
+     * Get the component value.
+     * @return The component value.
+     */
     const Blob&
     getValue() const { return value_; }
+
+    /**
+     * Get the name component type.
+     * @return The name component type enum value. If this is
+     * ndn_NameComponentType_OTHER_CODE, then call getOtherTypeCode() to get the
+     * unrecognized component type code.
+     */
+    ndn_NameComponentType
+    getType() { return type_; }
+
+    /**
+     * Get the component type code from the packet which is other than a
+     * recognized ndn_NameComponentType enum value. This is only meaningful if
+     * getType() is ndn_NameComponentType_OTHER_CODE.
+     * @return The type code.
+     */
+    int
+    getOtherTypeCode() { return otherTypeCode_; }
 
     /**
      * Write this component value to result, escaping characters according to the NDN URI Scheme.
@@ -601,15 +682,22 @@ public:
 
   private:
     /**
+     * A private helper for the constructor to check and set the type and
+     * otherTypeCode.
+     * @param type
+     * @param otherTypeCode
+     */
+    void
+    setType(ndn_NameComponentType type, int otherTypeCode);
+
+    /**
      * FINAL_SEGMENT_PREFIX has the bytes of the component prefix used by toFinalSegment, etc.
      */
     static const uint8_t FINAL_SEGMENT_PREFIX[];
     static size_t FINAL_SEGMENT_PREFIX_LENGTH;
 
-    // Note: We keep the type_ internal because it is only used to distinguish
-    // from ImplicitSha256Digest. If we support general typed components then
-    // we can provide public access.
     ndn_NameComponentType type_;
+    int otherTypeCode_;
     Blob value_;
   };
 

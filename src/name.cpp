@@ -202,7 +202,7 @@ Name::Component::get(NameLite::Component& componentLite) const
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
     componentLite.setImplicitSha256Digest(value_);
   else
-    componentLite = NameLite::Component(value_);
+    componentLite = NameLite::Component(value_, type_, otherTypeCode_);
 }
 
 void
@@ -289,6 +289,25 @@ Name::Component::getSuccessor() const
     result->resize(value_.size());
 
   return Component(Blob(result, false));
+}
+
+void
+Name::Component::setType(ndn_NameComponentType type, int otherTypeCode)
+{
+  type_ = type;
+
+  if (type == ndn_NameComponentType_OTHER_CODE) {
+    if (otherTypeCode == -1)
+      throw invalid_argument
+        ("To use an other code, call Name::Component(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+    if (otherTypeCode < -1)
+      throw invalid_argument
+        ("Name::Component other type code must be non-negative");
+
+    otherTypeCode_ = otherTypeCode;
+  }
+  else
+    otherTypeCode_ = -1;
 }
 
 void

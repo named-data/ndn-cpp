@@ -29,14 +29,23 @@ NameLite::Component::Component()
   ndn_NameComponent_initialize(this, 0, 0);
 }
 
-NameLite::Component::Component(const uint8_t* value, size_t valueLength)
+NameLite::Component::Component
+  (const uint8_t* value, size_t valueLength, ndn_NameComponentType type,
+   int otherTypeCode)
 {
   ndn_NameComponent_initialize(this, value, valueLength);
+  this->type = type;
+  this->otherTypeCode =
+    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
 }
 
-NameLite::Component::Component(const BlobLite& value)
+NameLite::Component::Component
+  (const BlobLite& value, ndn_NameComponentType type, int otherTypeCode)
 {
   ndn_NameComponent_initialize(this, value.buf(), value.size());
+  this->type = type;
+  this->otherTypeCode =
+    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
 }
 
 bool
