@@ -165,6 +165,15 @@ Name::Component
 Name::Component::fromNumber
   (uint64_t number, ndn_NameComponentType type, int otherTypeCode)
 {
+  if (type == ndn_NameComponentType_OTHER_CODE) {
+    if (otherTypeCode == -1)
+      throw invalid_argument
+        ("To use an other code, call fromNumber(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+    if (otherTypeCode < -1)
+      throw invalid_argument
+        ("fromNumber: other type code must be non-negative");
+  }
+
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger(number);
   return Name::Component(Blob(encoder.finish()), type, otherTypeCode);
@@ -624,4 +633,13 @@ Name::compare
     return 0;
 }
 
+void
+Name::checkAppendOtherTypeCode(int otherTypeCode)
+{
+  if (otherTypeCode == -1)
+    throw invalid_argument
+      ("To use an other code, call append(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+  if (otherTypeCode < -1)
+    throw invalid_argument("Name::append: other type code must be non-negative");
+}
 }

@@ -57,7 +57,7 @@ public:
     /**
      * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
-     * @param value The value byte array.
+     * @param value The value byte array, which is copied.
      * @param type (optional) The component type as an int from the
      * ndn_NameComponentType enum. If the name component type is not a
      * recognized ndn_NameComponentType enum value, then set this to
@@ -79,8 +79,8 @@ public:
     /**
      * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
-     * @param value Pointer to the value byte array.
-     * @param valueLength Length of value.
+     * @param value A pointer to the value byte array, which is copied.
+     * @param valueLength The length of value.
      * @param type (optional) The component type as an int from the
      * ndn_NameComponentType enum. If the name component type is not a
      * recognized ndn_NameComponentType enum value, then set this to
@@ -446,8 +446,8 @@ public:
     }
 
     /**
-     * Create a GENERIC component whose value is the nonNegativeInteger encoding
-     * of the number.
+     * Create a component whose value is the nonNegativeInteger encoding of the
+     * number.
      * @param number The number to be encoded.
      * @param type (optional) The component type as an int from the
      * ndn_NameComponentType enum. If the name component type is not a
@@ -786,36 +786,83 @@ public:
   set(const std::string& uri) { set(uri.c_str()); }
 
   /**
-   * Append a new GENERIC component, copying from value of length valueLength.
+   * Append a new component, copying from value of length valueLength.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * @param value A pointer to the value byte array, which is copied.
+   * @param valueLength The length of value.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return This name so that you can chain calls to append.
    */
   Name&
-  append(const uint8_t *value, size_t valueLength)
+  append
+    (const uint8_t *value, size_t valueLength,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
   {
-    return append(Component(value, valueLength));
+    if (type == ndn_NameComponentType_OTHER_CODE)
+      checkAppendOtherTypeCode(otherTypeCode);
+
+    return append(Component(value, valueLength, type, otherTypeCode));
   }
 
   /**
-   * Append a new GENERIC component, copying from value.
+   * Append a new component, copying from value.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * @param value The value byte array, which is copied.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return This name so that you can chain calls to append.
    */
   Name&
-  append(const std::vector<uint8_t>& value)
+  append
+    (const std::vector<uint8_t>& value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
   {
-    return append(Component(value));
+    if (type == ndn_NameComponentType_OTHER_CODE)
+      checkAppendOtherTypeCode(otherTypeCode);
+
+    return append(Component(value, type, otherTypeCode));
   }
 
   /**
-   * Append a new GENERIC component, using the existing Blob value.
+   * Append a new component, using the existing Blob value.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * @param value A blob with a pointer to an immutable array. The pointer is
+   * copied.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return This name so that you can chain calls to append.
    */
   Name&
-  append(const Blob &value)
+  append
+    (const Blob &value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
   {
-    return append(Component(value));
+    if (type == ndn_NameComponentType_OTHER_CODE)
+      checkAppendOtherTypeCode(otherTypeCode);
+
+    return append(Component(value, type, otherTypeCode));
   }
 
   Name&
@@ -827,31 +874,59 @@ public:
   }
 
   /**
-   * Append a new GENERIC component, copying the bytes from the value string.
+   * Append a new component, copying the bytes from the value string.
    * NOTE: This does not escape %XX values.  If you need to escape, use
    * Name::fromEscapedString.  Also, if the string has "/", this does not split
    * into separate components.  If you need that then use Name(value).
    * @param value A null-terminated string with the bytes to copy.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return This name so that you can chain calls to append.
    */
   Name&
-  append(const char* value)
+  append
+    (const char* value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
   {
-    return append(Component(value));
+    if (type == ndn_NameComponentType_OTHER_CODE)
+      checkAppendOtherTypeCode(otherTypeCode);
+
+    return append(Component(value, type, otherTypeCode));
   }
 
   /**
-   * Append a new GENERIC component, copying the bytes from the value string.
+   * Append a new component, copying the bytes from the value string.
    * NOTE: This does not escape %XX values.  If you need to escape, use
    * Name::fromEscapedString.  Also, if the string has "/", this does not split
    * into separate components.  If you need that then use Name(value).
    * @param value A string with the bytes to copy.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return This name so that you can chain calls to append.
    */
   Name&
-  append(const std::string& value)
+  append
+    (const std::string& value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
   {
-    return append(Component(value));
+    if (type == ndn_NameComponentType_OTHER_CODE)
+      checkAppendOtherTypeCode(otherTypeCode);
+
+    return append(Component(value, type, otherTypeCode));
   }
 
   /**
@@ -1493,6 +1568,14 @@ public:
   rend() const { return components_.rend(); }
 
 private:
+  /**
+   * If type == ndn_NameComponentType_OTHER_CODE, an append method calls this
+   * to check otherTypeCode and throw an exception for an illegal value.
+   * @param otherTypeCode
+   */
+  void
+  checkAppendOtherTypeCode(int otherTypeCode);
+
   std::vector<Component> components_;
   uint64_t changeCount_;
 };

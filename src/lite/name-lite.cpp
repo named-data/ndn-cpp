@@ -34,18 +34,14 @@ NameLite::Component::Component
    int otherTypeCode)
 {
   ndn_NameComponent_initialize(this, value, valueLength);
-  this->type = type;
-  this->otherTypeCode =
-    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
+  ndn_NameComponent_setType(this, type, otherTypeCode);
 }
 
 NameLite::Component::Component
   (const BlobLite& value, ndn_NameComponentType type, int otherTypeCode)
 {
   ndn_NameComponent_initialize(this, value.buf(), value.size());
-  this->type = type;
-  this->otherTypeCode =
-    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
+  ndn_NameComponent_setType(this, type, otherTypeCode);
 }
 
 bool
@@ -168,9 +164,7 @@ NameLite::Component::setFromNumber
        (this, number, buffer, bufferLength)))
     return error;
 
-  this->type = type;
-  this->otherTypeCode =
-    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
+  ndn_NameComponent_setType(this, type, otherTypeCode);
   return NDN_ERROR_success;
 }
 
@@ -247,9 +241,16 @@ void
 NameLite::clear() { ndn_Name_clear(this); }
 
 ndn_Error
-NameLite::append(const uint8_t* value, size_t valueLength)
+NameLite::append
+  (const uint8_t* value, size_t valueLength, ndn_NameComponentType type,
+   int otherTypeCode)
 {
-  return ndn_Name_appendComponent(this, value, valueLength);
+  ndn_Error error;
+  if ((error = ndn_Name_appendComponent(this, value, valueLength)))
+    return error;
+
+  ndn_NameComponent_setType(&components[nComponents - 1], type, otherTypeCode);
+  return NDN_ERROR_success;
 }
 
 ndn_Error
@@ -265,7 +266,17 @@ NameLite::append(const NameLite& name)
 }
 
 ndn_Error
-NameLite::append(const char *value) { return ndn_Name_appendString(this, value); }
+NameLite::append
+  (const char *value, ndn_NameComponentType type,
+   int otherTypeCode)
+{
+  ndn_Error error;
+  if ((error = ndn_Name_appendString(this, value)))
+    return error;
+
+  ndn_NameComponent_setType(&components[nComponents - 1], type, otherTypeCode);
+  return NDN_ERROR_success;
+}
 
 ndn_Error
 NameLite::appendSegment(uint64_t segment, uint8_t* buffer, size_t bufferLength)
