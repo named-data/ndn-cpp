@@ -289,7 +289,7 @@ Name::Component::getSuccessor() const
     // We didn't need the extra byte.
     result->resize(value_.size());
 
-  return Component(Blob(result, false));
+  return Component(Blob(result, false), type_, otherTypeCode_);
 }
 
 void
