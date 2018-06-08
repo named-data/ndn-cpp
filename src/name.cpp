@@ -162,11 +162,12 @@ Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
 }
 
 Name::Component
-Name::Component::fromNumber(uint64_t number)
+Name::Component::fromNumber
+  (uint64_t number, ndn_NameComponentType type, int otherTypeCode)
 {
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger(number);
-  return Name::Component(Blob(encoder.finish()));
+  return Name::Component(Blob(encoder.finish()), type, otherTypeCode);
 }
 
 Name::Component

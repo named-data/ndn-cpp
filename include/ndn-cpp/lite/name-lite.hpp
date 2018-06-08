@@ -291,10 +291,21 @@ public:
      * with it.
      * @param bufferLength The number of bytes in the allocated buffer. This
      * should be at least 8 bytes to hold a 64-bit value.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      * @return 0 for success, or an error code if bufferLength is too small.
      */
     ndn_Error
-    setFromNumber(uint64_t number, uint8_t* buffer, size_t bufferLength);
+    setFromNumber
+      (uint64_t number, uint8_t* buffer, size_t bufferLength,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1);
 
     /**
      * Set this name component to have a value which is the marker appended with

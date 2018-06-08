@@ -160,10 +160,18 @@ NameLite::Component::compare(const NameLite::Component& other) const
 
 ndn_Error
 NameLite::Component::setFromNumber
-  (uint64_t number, uint8_t* buffer, size_t bufferLength)
+  (uint64_t number, uint8_t* buffer, size_t bufferLength,
+   ndn_NameComponentType type, int otherTypeCode)
 {
-  return ndn_NameComponent_setFromNumber
-  (this, number, buffer, bufferLength);
+  ndn_Error error;
+  if ((error =ndn_NameComponent_setFromNumber
+       (this, number, buffer, bufferLength)))
+    return error;
+
+  this->type = type;
+  this->otherTypeCode =
+    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
+  return NDN_ERROR_success;
 }
 
 ndn_Error

@@ -449,10 +449,21 @@ public:
      * Create a GENERIC component whose value is the nonNegativeInteger encoding
      * of the number.
      * @param number The number to be encoded.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      * @return The component value.
      */
     static Component
-    fromNumber(uint64_t number);
+    fromNumber
+      (uint64_t number,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1);
 
     /**
      * Create a GENERIC component whose value is the marker appended with the
