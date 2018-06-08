@@ -205,7 +205,7 @@ public:
      * unrecognized component type code.
      */
     ndn_NameComponentType
-    getType() { return type_; }
+    getType() const { return type_; }
 
     /**
      * Get the component type code from the packet which is other than a
@@ -214,7 +214,7 @@ public:
      * @return The type code.
      */
     int
-    getOtherTypeCode() { return otherTypeCode_; }
+    getOtherTypeCode() const { return otherTypeCode_; }
 
     /**
      * Write this component value to result, escaping characters according to the NDN URI Scheme.
