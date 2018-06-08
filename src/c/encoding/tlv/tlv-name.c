@@ -25,8 +25,12 @@ ndn_encodeTlvNameComponent
   (const struct ndn_NameComponent *component, struct ndn_TlvEncoder *encoder)
 {
   unsigned int type;
-  if (component->type == ndn_NameComponentType_OTHER_CODE)
+  if (component->type == ndn_NameComponentType_OTHER_CODE) {
+    if (component->otherTypeCode < 0)
+      return NDN_ERROR_Name_component_otherTypeCode_must_be_non_negative;
+
     type = (unsigned int)component->otherTypeCode;
+  }
   else
     // The enum values are the same as the TLV type codes.
     type = (unsigned int)component->type;
