@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <string.h>
 #include <stdexcept>
+#include <stdlib.h>
 #include <ndn-cpp/name.hpp>
 #include "c/util/ndn_memory.h"
 #include "encoding/tlv-encoder.hpp"
@@ -221,9 +222,16 @@ Name::Component::toEscapedString(std::ostringstream& result) const
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST) {
     result << "sha256digest=";
     value_.toHex(result);
+    return;
   }
-  else
-    Name::toEscapedString(*value_, result);
+
+  if (type_ != ndn_NameComponentType_GENERIC) {
+    result << (type_ == ndn_NameComponentType_OTHER_CODE ?
+               otherTypeCode_ : (int)type_);
+    result << '=';
+  }
+
+  Name::toEscapedString(*value_, result);
 }
 
 std::string
@@ -381,9 +389,38 @@ Name::set(const char *uri_cstr)
       component = Component::fromImplicitSha256Digest
             (fromHex(uri, iComponentStart + sha256digestPrefix.size(),
                      iComponentEnd));
-    else
+    else {
+      ndn_NameComponentType type = ndn_NameComponentType_GENERIC;
+      int otherTypeCode = -1;
+
+      // Check for a component type.
+      int iTypeCodeEnd = uri.find("=", iComponentStart);
+      if (iTypeCodeEnd != string::npos && iTypeCodeEnd < iComponentEnd) {
+        string typeString = uri.substr
+          (iComponentStart, iTypeCodeEnd - iComponentStart);
+        if (typeString == "0")
+          otherTypeCode = 0;
+        else {
+          otherTypeCode = ::atoi(typeString.c_str());
+          if (otherTypeCode == 0)
+          throw runtime_error
+            ("Can't parse decimal Name Component type: " + typeString +
+             " in URI " + uri);
+        }
+
+        if (otherTypeCode == (int)ndn_NameComponentType_GENERIC ||
+            otherTypeCode == (int)ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
+          throw runtime_error("Unexpected Name Component type: " + typeString +
+             " in URI " + uri);
+
+        type = ndn_NameComponentType_OTHER_CODE;
+        iComponentStart = iTypeCodeEnd + 1;
+      }
+
       component = Component
-        (fromEscapedString(&uri[0], iComponentStart, iComponentEnd));
+        (fromEscapedString(&uri[0], iComponentStart, iComponentEnd), type,
+         otherTypeCode);
+    }
 
     // Ignore illegal components.  This also gets rid of a trailing '/'.
     if (component.getValue())
