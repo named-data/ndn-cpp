@@ -44,6 +44,26 @@ static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self
 }
 
 /**
+ * Set this name component to have the values from the other name component.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param type The component type as an int from the
+ * ndn_NameComponentType enum. If the name component type is not a
+ * recognized ndn_NameComponentType enum value, then set this to
+ * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+ * @param otherTypeCode If type is ndn_NameComponentType_OTHER_CODE, then this
+ * is the packet's unrecognized content type code, which must be non-negative.
+ */
+static __inline void
+ndn_NameComponent_setType
+  (struct ndn_NameComponent *self, ndn_NameComponentType type,
+   int otherTypeCode)
+{
+  self->type = type;
+  self->otherTypeCode =
+    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
+}
+
+/**
  * Check if this component is a segment number according to NDN naming
  * conventions for "Segment number" (marker 0x00) and return an integer.
  * http://named-data.net/doc/tech-memos/naming-conventions.pdf
