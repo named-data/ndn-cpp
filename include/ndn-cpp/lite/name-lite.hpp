@@ -46,21 +46,65 @@ public:
     Component();
 
     /**
-     * Create a GENERIC NameLite::Component with the given value.
+     * Create a NameLite::Component with the given value.
      * @param value The pre-allocated buffer for the value.
      * @param valueLength The number of bytes in value.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is 
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const uint8_t* value, size_t valueLength);
+    Component
+      (const uint8_t* value, size_t valueLength,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1);
 
     /**
-     * Create a GENERIC NameLite::Component taking the pointer and size from the
+     * Create a NameLite::Component taking the pointer and size from the
      * BlobLite value.
      * @param value The BlobLite with the pointer to use for this component.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      */
-    Component(const BlobLite& value);
+    Component
+      (const BlobLite& value,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1);
 
+    /**
+     * Get the component value.
+     * @return The component value.
+     */
     const BlobLite&
     getValue() const { return BlobLite::downCast(value); }
+
+    /**
+     * Get the name component type.
+     * @return The name component type enum value. If this is
+     * ndn_NameComponentType_OTHER_CODE, then call getOtherTypeCode() to get the
+     * unrecognized component type code.
+     */
+    ndn_NameComponentType
+    getType() const { return type; }
+
+    /**
+     * Get the component type code from the packet which is other than a
+     * recognized ndn_NameComponentType enum value. This is only meaningful if
+     * getType() is ndn_NameComponentType_OTHER_CODE.
+     * @return The type code.
+     */
+    int
+    getOtherTypeCode() const { return otherTypeCode; }
 
     /**
      * Check if this component is a segment number according to NDN naming
@@ -247,10 +291,21 @@ public:
      * with it.
      * @param bufferLength The number of bytes in the allocated buffer. This
      * should be at least 8 bytes to hold a 64-bit value.
+     * @param type (optional) The component type as an int from the
+     * ndn_NameComponentType enum. If the name component type is not a
+     * recognized ndn_NameComponentType enum value, then set this to
+     * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+     * If omitted, use ndn_NameComponentType_GENERIC.
+     * @param otherTypeCode (optional) If type is
+     * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+     * content type code, which must be non-negative.
      * @return 0 for success, or an error code if bufferLength is too small.
      */
     ndn_Error
-    setFromNumber(uint64_t number, uint8_t* buffer, size_t bufferLength);
+    setFromNumber
+      (uint64_t number, uint8_t* buffer, size_t bufferLength,
+       ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+       int otherTypeCode = -1);
 
     /**
      * Set this name component to have a value which is the marker appended with
@@ -458,25 +513,50 @@ public:
   clear();
 
   /**
-   * Append a GENERIC component to this name with the bytes in the given buffer.
+   * Append a component to this name with the bytes in the given buffer.
    * @param value A pointer to the buffer with the bytes of the component.
    * This does not copy the bytes.
    * @param valueLength The number of bytes in value.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return 0 for success, or an error code if there is no more room in the
    * components array.
    */
   ndn_Error
-  append(const uint8_t* value, size_t valueLength);
+  append
+    (const uint8_t* value, size_t valueLength,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1);
 
   /**
-   * Append a GENERIC component to this name with the bytes in the given blob.
+   * Append a component to this name with the bytes in the given blob.
    * @param value A BlobLite with the bytes of the component.  This does not
    * copy the bytes.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return 0 for success, or an error code if there is no more room in the
    * components array.
    */
   ndn_Error
-  append(const BlobLite& value) { return append(value.buf(), value.size()); }
+  append
+    (const BlobLite& value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
+  {
+    return append(value.buf(), value.size(), type, otherTypeCode);
+  }
 
   /**
    * Append a component to this name with the bytes in the given
@@ -500,14 +580,25 @@ public:
   append(const NameLite& name);
 
   /**
-   * Append a GENERIC component to this name with the bytes in raw string value.
+   * Append a component to this name with the bytes in raw string value.
    * @param value The null-terminated string, treated as a byte array.  This
    * does not copy the bytes.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
    * @return 0 for success, or an error code if there is no more room in the
    * components array (nComponents is already maxComponents).
    */
   ndn_Error
-  append(const char *value);
+  append
+    (const char *value,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1);
 
   /**
    * Append a component with the encoded segment number according to NDN

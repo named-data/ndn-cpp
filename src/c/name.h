@@ -39,7 +39,28 @@ extern "C" {
 static __inline void ndn_NameComponent_initialize(struct ndn_NameComponent *self, const uint8_t *value, size_t valueLength)
 {
   self->type = ndn_NameComponentType_GENERIC;
+  self->otherTypeCode = -1;
   ndn_Blob_initialize(&self->value, value, valueLength);
+}
+
+/**
+ * Set this name component to have the values from the other name component.
+ * @param self A pointer to this ndn_NameComponent struct.
+ * @param type The component type as an int from the
+ * ndn_NameComponentType enum. If the name component type is not a
+ * recognized ndn_NameComponentType enum value, then set this to
+ * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+ * @param otherTypeCode If type is ndn_NameComponentType_OTHER_CODE, then this
+ * is the packet's unrecognized content type code, which must be non-negative.
+ */
+static __inline void
+ndn_NameComponent_setType
+  (struct ndn_NameComponent *self, ndn_NameComponentType type,
+   int otherTypeCode)
+{
+  self->type = type;
+  self->otherTypeCode =
+    (type == ndn_NameComponentType_OTHER_CODE ? otherTypeCode : -1);
 }
 
 /**

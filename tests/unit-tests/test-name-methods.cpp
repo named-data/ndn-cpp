@@ -328,13 +328,24 @@ TEST_F(TestNameMethods, ImplicitSha256Digest)
     ("/hello/sha256digest="
      "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
   ASSERT_EQ(name.get(0), name2.get(1));
+}
 
-  // This is not valid sha256digest component. It should be treated as generic.
-  name2 = Name
-    ("/hello/SHA256DIGEST="
-     "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
-  ASSERT_FALSE(name.get(0).equals(name2.get(1)));
-  ASSERT_TRUE(name2.get(1).isGeneric());
+TEST_F(TestNameMethods, TypedNameComponent)
+{
+  int otherTypeCode = 99;
+  string uri = "/ndn/99=value";
+  Name name;
+  name.append("ndn").append("value", ndn_NameComponentType_OTHER_CODE, otherTypeCode);
+  ASSERT_EQ(uri, name.toUri());
+
+  Name nameFromUri(uri);
+  ASSERT_EQ("value", nameFromUri.get(1).getValue().toRawStr());
+  ASSERT_EQ(otherTypeCode, nameFromUri.get(1).getOtherTypeCode());
+
+  Name decodedName;
+  decodedName.wireDecode(name.wireEncode());
+  ASSERT_EQ("value", decodedName.get(1).getValue().toRawStr());
+  ASSERT_EQ(otherTypeCode, decodedName.get(1).getOtherTypeCode());
 }
 
 int

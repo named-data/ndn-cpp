@@ -144,6 +144,8 @@ ndn_getErrorString(int error)
     return      "An Interest may not have a link object when encoding a forwarding hint";
   case NDN_ERROR_Unrecognized_critical_TLV_type_code:
     return      "Unrecognized critical TLV type code";
+  case NDN_ERROR_Name_component_otherTypeCode_must_be_non_negative:
+    return      "Name component otherTypeCode must be non-negative";
   default:
     return "unrecognized ndn_Error code";
   }

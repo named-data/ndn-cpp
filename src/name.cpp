@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <string.h>
 #include <stdexcept>
+#include <stdlib.h>
 #include <ndn-cpp/name.hpp>
 #include "c/util/ndn_memory.h"
 #include "encoding/tlv-encoder.hpp"
@@ -162,11 +163,21 @@ Name::Component::hasPrefix(const uint8_t* prefix, size_t prefixLength) const
 }
 
 Name::Component
-Name::Component::fromNumber(uint64_t number)
+Name::Component::fromNumber
+  (uint64_t number, ndn_NameComponentType type, int otherTypeCode)
 {
+  if (type == ndn_NameComponentType_OTHER_CODE) {
+    if (otherTypeCode == -1)
+      throw invalid_argument
+        ("To use an other code, call fromNumber(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+    if (otherTypeCode < -1)
+      throw invalid_argument
+        ("fromNumber: other type code must be non-negative");
+  }
+
   TlvEncoder encoder(8);
   encoder.writeNonNegativeInteger(number);
-  return Name::Component(Blob(encoder.finish()));
+  return Name::Component(Blob(encoder.finish()), type, otherTypeCode);
 }
 
 Name::Component
@@ -202,7 +213,7 @@ Name::Component::get(NameLite::Component& componentLite) const
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
     componentLite.setImplicitSha256Digest(value_);
   else
-    componentLite = NameLite::Component(value_);
+    componentLite = NameLite::Component(value_, type_, otherTypeCode_);
 }
 
 void
@@ -211,9 +222,16 @@ Name::Component::toEscapedString(std::ostringstream& result) const
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST) {
     result << "sha256digest=";
     value_.toHex(result);
+    return;
   }
-  else
-    Name::toEscapedString(*value_, result);
+
+  if (type_ != ndn_NameComponentType_GENERIC) {
+    result << (type_ == ndn_NameComponentType_OTHER_CODE ?
+               otherTypeCode_ : (int)type_);
+    result << '=';
+  }
+
+  Name::toEscapedString(*value_, result);
 }
 
 std::string
@@ -236,9 +254,14 @@ int
 Name::Component::compare(const Name::Component& other) const
 {
   // Imitate ndn_NameComponent_compare.
-  if (type_ < other.type_)
+  int myTypeCode = (type_ == ndn_NameComponentType_OTHER_CODE ?
+                    otherTypeCode_ : (int)type_);
+  int otherTypeCode = (other.type_ == ndn_NameComponentType_OTHER_CODE ?
+                       other.otherTypeCode_ : (int)other.type_);
+
+  if (myTypeCode < otherTypeCode)
     return -1;
-  if (type_ > other.type_)
+  if (myTypeCode > otherTypeCode)
     return 1;
 
   if (value_.size() < other.value_.size())
@@ -288,7 +311,26 @@ Name::Component::getSuccessor() const
     // We didn't need the extra byte.
     result->resize(value_.size());
 
-  return Component(Blob(result, false));
+  return Component(Blob(result, false), type_, otherTypeCode_);
+}
+
+void
+Name::Component::setType(ndn_NameComponentType type, int otherTypeCode)
+{
+  type_ = type;
+
+  if (type == ndn_NameComponentType_OTHER_CODE) {
+    if (otherTypeCode == -1)
+      throw invalid_argument
+        ("To use an other code, call Name::Component(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+    if (otherTypeCode < -1)
+      throw invalid_argument
+        ("Name::Component other type code must be non-negative");
+
+    otherTypeCode_ = otherTypeCode;
+  }
+  else
+    otherTypeCode_ = -1;
 }
 
 void
@@ -347,9 +389,38 @@ Name::set(const char *uri_cstr)
       component = Component::fromImplicitSha256Digest
             (fromHex(uri, iComponentStart + sha256digestPrefix.size(),
                      iComponentEnd));
-    else
+    else {
+      ndn_NameComponentType type = ndn_NameComponentType_GENERIC;
+      int otherTypeCode = -1;
+
+      // Check for a component type.
+      int iTypeCodeEnd = uri.find("=", iComponentStart);
+      if (iTypeCodeEnd != string::npos && iTypeCodeEnd < iComponentEnd) {
+        string typeString = uri.substr
+          (iComponentStart, iTypeCodeEnd - iComponentStart);
+        if (typeString == "0")
+          otherTypeCode = 0;
+        else {
+          otherTypeCode = ::atoi(typeString.c_str());
+          if (otherTypeCode == 0)
+          throw runtime_error
+            ("Can't parse decimal Name Component type: " + typeString +
+             " in URI " + uri);
+        }
+
+        if (otherTypeCode == (int)ndn_NameComponentType_GENERIC ||
+            otherTypeCode == (int)ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
+          throw runtime_error("Unexpected Name Component type: " + typeString +
+             " in URI " + uri);
+
+        type = ndn_NameComponentType_OTHER_CODE;
+        iComponentStart = iTypeCodeEnd + 1;
+      }
+
       component = Component
-        (fromEscapedString(&uri[0], iComponentStart, iComponentEnd));
+        (fromEscapedString(&uri[0], iComponentStart, iComponentEnd), type,
+         otherTypeCode);
+    }
 
     // Ignore illegal components.  This also gets rid of a trailing '/'.
     if (component.getValue())
@@ -599,4 +670,13 @@ Name::compare
     return 0;
 }
 
+void
+Name::checkAppendOtherTypeCode(int otherTypeCode)
+{
+  if (otherTypeCode == -1)
+    throw invalid_argument
+      ("To use an other code, call append(value, ndn_NameComponentType_OTHER_CODE, otherTypeCode)");
+  if (otherTypeCode < -1)
+    throw invalid_argument("Name::append: other type code must be non-negative");
+}
 }
