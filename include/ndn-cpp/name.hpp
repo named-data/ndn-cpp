@@ -625,7 +625,12 @@ public:
     bool
     equals(const Component& other) const
     {
-      return *value_ == *other.value_ && type_ == other.type_;
+      if (type_ == ndn_NameComponentType_OTHER_CODE)
+        return  *value_ == *other.value_ &&
+          other.type_ == ndn_NameComponentType_OTHER_CODE &&
+          otherTypeCode_ == other.otherTypeCode_;
+      else
+        return *value_ == *other.value_ && type_ == other.type_;
     }
 
     /**

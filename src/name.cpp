@@ -237,9 +237,14 @@ int
 Name::Component::compare(const Name::Component& other) const
 {
   // Imitate ndn_NameComponent_compare.
-  if (type_ < other.type_)
+  int myTypeCode = (type_ == ndn_NameComponentType_OTHER_CODE ?
+                    otherTypeCode_ : (int)type_);
+  int otherTypeCode = (other.type_ == ndn_NameComponentType_OTHER_CODE ?
+                       other.otherTypeCode_ : (int)other.type_);
+
+  if (myTypeCode < otherTypeCode)
     return -1;
-  if (type_ > other.type_)
+  if (myTypeCode > otherTypeCode)
     return 1;
 
   if (value_.size() < other.value_.size())
