@@ -22,7 +22,7 @@
 #ifndef NDN_NFD_COMMAND_INTEREST_GENERATOR_HPP
 #define NDN_NFD_COMMAND_INTEREST_GENERATOR_HPP
 
-#include <ndn-cpp/interest.hpp>
+#include <ndn-cpp/security/command-interest-preparer.hpp>
 
 namespace ndn {
 
@@ -30,15 +30,17 @@ class KeyChain;
 
 /** An CommandInterestGenerator keeps track of a timestamp and generates
  * command interests according to the NFD Signed Command Interests protocol:
- * http://redmine.named-data.net/projects/nfd/wiki/Command_Interests
+ * https://redmine.named-data.net/projects/ndn-cxx/wiki/CommandInterest
  */
-class CommandInterestGenerator {
+class CommandInterestGenerator : public CommandInterestPreparer {
 public:
   /**
    * Create a new CommandInterestGenerator and initialize the timestamp to
    * now.
    */
-  CommandInterestGenerator();
+  CommandInterestGenerator()
+  {
+  }
 
   /**
    * Append a timestamp component and a random value component to interest's
@@ -57,9 +59,6 @@ public:
   generate
     (Interest& interest, KeyChain& keyChain, const Name& certificateName,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
-
-private:
-  MillisecondsSince1970 lastTimestamp_;
 };
 
 }
