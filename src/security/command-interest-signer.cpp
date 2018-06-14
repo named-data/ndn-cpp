@@ -20,10 +20,6 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include <math.h>
-#include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include "../c/util/time.h"
-#include "../encoding/tlv-encoder.hpp"
 #include <ndn-cpp/security/command-interest-signer.hpp>
 
 using namespace std;
@@ -31,9 +27,7 @@ using namespace std;
 namespace ndn {
 
 CommandInterestSigner::CommandInterestSigner(KeyChain& keyChain)
-: keyChain_(keyChain),
-  lastUsedTimestamp_(::round(ndn_getNowMilliseconds())),
-  nowOffsetMilliseconds_(0)
+: keyChain_(keyChain)
 {}
 
 ptr_lib::shared_ptr<Interest>
@@ -43,29 +37,8 @@ CommandInterestSigner::makeCommandInterest
   // This copies the Name.
   ptr_lib::shared_ptr<Interest> commandInterest(new Interest(name));
 
-  // nowOffsetMilliseconds_ is only used for testing.
-  MillisecondsSince1970 now = ndn_getNowMilliseconds() + nowOffsetMilliseconds_;
-  MillisecondsSince1970 timestamp = ::round(now);
-  while (timestamp <= lastUsedTimestamp_)
-    timestamp += 1.0;
-
-  // The timestamp is encoded as a TLV nonNegativeInteger.
-  TlvEncoder encoder(8);
-  encoder.writeNonNegativeInteger((uint64_t)timestamp);
-  commandInterest->getName().append(Blob(encoder.finish()));
-
-  // The random value is a TLV nonNegativeInteger too, but we know it is 8 bytes,
-  //   so we don't need to call the nonNegativeInteger encoder.
-  uint8_t randomBuffer[8];
-  ndn_Error error;
-  if ((error = CryptoLite::generateRandomBytes(randomBuffer, sizeof(randomBuffer))))
-    throw runtime_error(ndn_getErrorString(error));
-  commandInterest->getName().append(randomBuffer, sizeof(randomBuffer));
-
+  prepareCommandInterestName(*commandInterest, wireFormat);
   keyChain_.sign(*commandInterest, params, wireFormat);
-
-  // We successfully signed the Interest, so update the timestamp.
-  lastUsedTimestamp_ = timestamp;
 
   return commandInterest;
 }

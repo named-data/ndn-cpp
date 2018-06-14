@@ -24,6 +24,7 @@
 #define NDN_COMMAND_INTEREST_SIGNER_HPP
 
 #include "key-chain.hpp"
+#include "command-interest-preparer.hpp"
 
 namespace ndn {
 
@@ -34,7 +35,7 @@ namespace ndn {
  * See makeCommandInterest() for details.
  * https://redmine.named-data.net/projects/ndn-cxx/wiki/CommandInterest
  */
-class CommandInterestSigner {
+class CommandInterestSigner : public CommandInterestPreparer {
 public:
   /**
    * Create a CommandInterestSigner to use the keyChain to sign.
@@ -68,21 +69,8 @@ public:
      const SigningInfo& params = KeyChain::getDefaultSigningInfo(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
-  /**
-   * Set the offset for when makeCommandInterest() gets the current time, which
-   * should only be used for testing.
-   * @param nowOffsetMilliseconds The offset in milliseconds.
-   */
-  void
-  setNowOffsetMilliseconds_(Milliseconds nowOffsetMilliseconds)
-  {
-    nowOffsetMilliseconds_ = nowOffsetMilliseconds;
-  }
-
 private:
   KeyChain& keyChain_;
-  MillisecondsSince1970 lastUsedTimestamp_;
-  Milliseconds nowOffsetMilliseconds_;
 };
 
 }
