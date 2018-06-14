@@ -343,7 +343,8 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/util/dynamic-malloc-uint8-array-lite.lo \
 	src/lite/util/dynamic-uint8-array-lite.lo \
 	src/lp/congestion-mark.lo src/lp/incoming-face-id.lo \
-	src/lp/lp-packet.lo src/security/command-interest-signer.lo \
+	src/lp/lp-packet.lo src/security/command-interest-preparer.lo \
+	src/security/command-interest-signer.lo \
 	src/security/key-chain.lo src/security/key-params.lo \
 	src/security/safe-bag.lo src/security/security-exception.lo \
 	src/security/signing-info.lo src/security/validator-null.lo \
@@ -977,6 +978,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/lp/$(DEPDIR)/congestion-mark.Plo \
 	src/lp/$(DEPDIR)/incoming-face-id.Plo \
 	src/lp/$(DEPDIR)/lp-packet.Plo \
+	src/security/$(DEPDIR)/command-interest-preparer.Plo \
 	src/security/$(DEPDIR)/command-interest-signer.Plo \
 	src/security/$(DEPDIR)/key-chain.Plo \
 	src/security/$(DEPDIR)/key-params.Plo \
@@ -1893,6 +1895,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/dynamic-malloc-uint8-array-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
+  include/ndn-cpp/security/command-interest-preparer.hpp \
   include/ndn-cpp/security/command-interest-signer.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/key-params.hpp \
@@ -2134,6 +2137,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/congestion-mark.cpp src/lp/congestion-mark.hpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
+  src/security/command-interest-preparer.cpp \
   src/security/command-interest-signer.cpp \
   src/security/key-chain.cpp \
   src/security/key-params.cpp \
@@ -2975,6 +2979,9 @@ src/security/$(am__dirstamp):
 src/security/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/security/$(DEPDIR)
 	@: > src/security/$(DEPDIR)/$(am__dirstamp)
+src/security/command-interest-preparer.lo:  \
+	src/security/$(am__dirstamp) \
+	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/command-interest-signer.lo: src/security/$(am__dirstamp) \
 	src/security/$(DEPDIR)/$(am__dirstamp)
 src/security/key-chain.lo: src/security/$(am__dirstamp) \
@@ -4233,6 +4240,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/congestion-mark.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/incoming-face-id.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lp/$(DEPDIR)/lp-packet.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/command-interest-preparer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/command-interest-signer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-chain.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/$(DEPDIR)/key-params.Plo@am__quote@ # am--include-marker
@@ -7000,6 +7008,7 @@ distclean: distclean-recursive
 	-rm -f src/lp/$(DEPDIR)/congestion-mark.Plo
 	-rm -f src/lp/$(DEPDIR)/incoming-face-id.Plo
 	-rm -f src/lp/$(DEPDIR)/lp-packet.Plo
+	-rm -f src/security/$(DEPDIR)/command-interest-preparer.Plo
 	-rm -f src/security/$(DEPDIR)/command-interest-signer.Plo
 	-rm -f src/security/$(DEPDIR)/key-chain.Plo
 	-rm -f src/security/$(DEPDIR)/key-params.Plo
@@ -7400,6 +7409,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/lp/$(DEPDIR)/congestion-mark.Plo
 	-rm -f src/lp/$(DEPDIR)/incoming-face-id.Plo
 	-rm -f src/lp/$(DEPDIR)/lp-packet.Plo
+	-rm -f src/security/$(DEPDIR)/command-interest-preparer.Plo
 	-rm -f src/security/$(DEPDIR)/command-interest-signer.Plo
 	-rm -f src/security/$(DEPDIR)/key-chain.Plo
 	-rm -f src/security/$(DEPDIR)/key-params.Plo

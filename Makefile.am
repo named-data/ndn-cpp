@@ -196,6 +196,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/util/dynamic-malloc-uint8-array-lite.hpp \
   include/ndn-cpp/lite/util/dynamic-uint8-array-lite.hpp \
   include/ndn-cpp/security/security-common.hpp \
+  include/ndn-cpp/security/command-interest-preparer.hpp \
   include/ndn-cpp/security/command-interest-signer.hpp \
   include/ndn-cpp/security/key-chain.hpp \
   include/ndn-cpp/security/key-params.hpp \
@@ -434,6 +435,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lp/congestion-mark.cpp src/lp/congestion-mark.hpp \
   src/lp/incoming-face-id.cpp src/lp/incoming-face-id.hpp \
   src/lp/lp-packet.cpp src/lp/lp-packet.hpp \
+  src/security/command-interest-preparer.cpp \
   src/security/command-interest-signer.cpp \
   src/security/key-chain.cpp \
   src/security/key-params.cpp \
