@@ -85,8 +85,7 @@ int main(int argc, char** argv)
 {
   try {
     boost::asio::io_service ioService;
-    // Connect to the demo host at memoria.ndn.ucla.edu .
-    ThreadsafeFace face(ioService, "128.97.98.8");
+    ThreadsafeFace face(ioService, "memoria.ndn.ucla.edu");
 
     // Counter will stop the ioService after callbacks for all expressInterest.
     Counter counter(ioService, 3);

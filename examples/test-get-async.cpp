@@ -55,8 +55,7 @@ public:
 int main(int argc, char** argv)
 {
   try {
-    // Connect to the demo host at memoria.ndn.ucla.edu .
-    Face face("128.97.98.8");
+    Face face("memoria.ndn.ucla.edu");
 
     // Counter holds data used by the callbacks.
     Counter counter;
