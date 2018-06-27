@@ -425,7 +425,7 @@ ndn_decodeTlvInterestV03
 {
   ndn_Error error;
   size_t endOffset;
-  int gotExpectedType, canBePrefix;
+  int canBePrefix;
   struct ndn_Blob dummyBlob;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
@@ -444,7 +444,7 @@ ndn_decodeTlvInterestV03
     // No limit on MaxSuffixComponents.
     interest->maxSuffixComponents = -1;
   else
-    // The one suffix components is for the implicit digest.
+    // The one suffix component is for the implicit digest.
     interest->maxSuffixComponents = 1;
 
   if ((error = ndn_TlvDecoder_readBooleanTlv
