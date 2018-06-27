@@ -194,6 +194,18 @@ public:
   int
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
 
+  /**
+   * Get the CanBePrefix flag. If not specified, the default is true.
+   * @return The CanBePrefix flag.
+   */
+  bool
+  getCanBePrefix()
+  {
+    // Use the closest v0.2 semantics. CanBePrefix is the opposite of exact
+    // match where MaxSuffixComponents is 1 (for the implicit digest).
+    return maxSuffixComponents_ != 1;
+  }
+
   const KeyLocator&
   getKeyLocator() const { return keyLocator_.get(); }
 
@@ -341,6 +353,22 @@ public:
   setMaxSuffixComponents(int maxSuffixComponents)
   {
     maxSuffixComponents_ = maxSuffixComponents;
+    ++changeCount_;
+    return *this;
+  }
+
+  /**
+   * Set the CanBePrefix flag.
+   * @param canBePrefix True if the Interest name can be a prefix. If you do not
+   * set this flag, the default value is true.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  setCanBePrefix(int canBePrefix)
+  {
+    // Use the closest v0.2 semantics. CanBePrefix is the opposite of exact
+    // match where MaxSuffixComponents is 1 (for the implicit digest).
+    maxSuffixComponents_ = (canBePrefix ? -1 : 1);
     ++changeCount_;
     return *this;
   }
