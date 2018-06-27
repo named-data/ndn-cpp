@@ -425,7 +425,7 @@ ndn_decodeTlvInterestV03
 {
   ndn_Error error;
   size_t endOffset;
-  int canBePrefix;
+  int canBePrefix, mustBeFresh;
   struct ndn_Blob dummyBlob;
 
   if ((error = ndn_TlvDecoder_readNestedTlvsStart
@@ -440,16 +440,12 @@ ndn_decodeTlvInterestV03
   if ((error = ndn_TlvDecoder_readBooleanTlv
        (decoder, ndn_Tlv_CanBePrefix, endOffset, &canBePrefix)))
     return error;
-  if (canBePrefix)
-    // No limit on MaxSuffixComponents.
-    interest->maxSuffixComponents = -1;
-  else
-    // The one suffix component is for the implicit digest.
-    interest->maxSuffixComponents = 1;
+  ndn_Interest_setCanBePrefix(interest, canBePrefix);
 
   if ((error = ndn_TlvDecoder_readBooleanTlv
-       (decoder, ndn_Tlv_MustBeFresh, endOffset, &interest->mustBeFresh)))
+       (decoder, ndn_Tlv_MustBeFresh, endOffset, &mustBeFresh)))
     return error;
+  ndn_Interest_setMustBeFresh(interest, mustBeFresh);
 
   // Get the encoded sequence of delegations as is.
   if ((error = ndn_TlvDecoder_readOptionalBlobTlv
