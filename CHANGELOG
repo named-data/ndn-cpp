@@ -1,9 +1,11 @@
-Interim changes since NDN-CPP v0.14 (2018-06-08)
+Interim changes since NDN-CPP v0.14 (2018-07-26)
 ------------------------------------------------
 
 Bug fixes
 * https://redmine.named-data.net/issues/4595 For ./configure on macOS, update
   to not overwrite optimization CFLAGS.
+* https://redmine.named-data.net/issues/4686 In decodeLpPacket, fix the check for
+  ignoring an unrecognized field type.
 
 Changes
 * https://redmine.named-data.net/issues/4591 Accept Interests encoded with
