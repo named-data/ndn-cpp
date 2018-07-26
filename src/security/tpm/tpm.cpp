@@ -84,7 +84,7 @@ Tpm::isTerminalMode() const { return backEnd_->isTerminalMode(); }
 
 void
 Tpm::setTerminalMode(bool isTerminal) const
-{ 
+{
   backEnd_->setTerminalMode(isTerminal);
 }
 

@@ -30,7 +30,7 @@ namespace ndn {
 class NdnRegexRepeatMatcher : public NdnRegexMatcherBase {
 public:
   NdnRegexRepeatMatcher
-    (const std::string& expr, 
+    (const std::string& expr,
      ptr_lib::shared_ptr<NdnRegexBackrefManager> backrefManager,
      size_t indicator)
   : NdnRegexMatcherBase(expr, NDN_REGEX_EXPR_REPEAT_PATTERN, backrefManager),

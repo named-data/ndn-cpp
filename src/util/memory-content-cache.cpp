@@ -56,7 +56,7 @@ MemoryContentCache::Impl::registerPrefix
 {
   onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
   uint64_t registeredPrefixId = face_->registerPrefix
-    (prefix, 
+    (prefix,
      bind(&MemoryContentCache::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
      onRegisterFailed, onRegisterSuccess, flags, wireFormat);
   // Remember the registeredPrefixId so unregisterAll can remove it.
@@ -297,7 +297,7 @@ MemoryContentCache::Impl::doCleanup(MillisecondsSince1970 nowMilliseconds)
   if (nowMilliseconds >= nextCleanupTime_) {
     // staleTimeCache_ is sorted on cacheRemovalTimeMilliseconds_, so we only need to
     // erase the stale entries at the front, then quit.
-    while (staleTimeCache_.size() > 0 && 
+    while (staleTimeCache_.size() > 0 &&
            staleTimeCache_.front()->isPastRemovalTime(nowMilliseconds)) {
       if (onContentRemoved_) {
         // Add to the list of removed content for the OnContentRemoved callback.

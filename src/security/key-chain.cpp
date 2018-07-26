@@ -520,7 +520,7 @@ KeyChain::verifyData
       face_->expressInterest
         (*nextStep->interest_,
          bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
-         bind(&KeyChain::onCertificateInterestTimeout, this, _1, 
+         bind(&KeyChain::onCertificateInterestTimeout, this, _1,
               nextStep->retry_, onValidationFailed, data, nextStep));
   }
   else if (policyManager_->skipVerifyAndTrust(*data)) {
@@ -1030,7 +1030,7 @@ KeyChain::onCertificateInterestTimeout
     face_->expressInterest
       (*interest,
        bind(&KeyChain::onCertificateData, this, _1, _2, nextStep),
-       bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1, 
+       bind(&KeyChain::onCertificateInterestTimeout, this, _1, retry - 1,
             onValidationFailed, data, nextStep));
   else {
     try {

@@ -303,7 +303,7 @@ ndn_decodeTlvInterestV02
 
 /**
  * Decode input as an Interest in NDN-TLV format v0.3 and set the fields of
- * the Interest object. This private method is called if the main 
+ * the Interest object. This private method is called if the main
  * decodeTlvInterest fails to decode as v0.2. This ignores HopLimit and
  * Parameters, and interprets CanBePrefix using MaxSuffixComponents.
  */

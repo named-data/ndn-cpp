@@ -82,7 +82,7 @@ public:
 
   /**
    * Get the names of all the keys in the container.
-   * @return A new list of Name. 
+   * @return A new list of Name.
    */
   ptr_lib::shared_ptr<std::vector<Name> >
   getKeyNames() const;

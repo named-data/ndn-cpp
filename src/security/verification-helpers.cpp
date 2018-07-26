@@ -52,7 +52,7 @@ VerificationHelpers::verifySignature
     }
     else if (publicKey.getKeyType() == KEY_TYPE_EC) {
       if (EcPublicKeyLite::verifySha256WithEcdsaSignature
-          (signature, signatureLength, buffer, bufferLength, 
+          (signature, signatureLength, buffer, bufferLength,
            publicKey.getKeyDer().buf(), publicKey.getKeyDer().size(),
            verified) != 0)
         return false;
@@ -95,7 +95,7 @@ VerificationHelpers::verifyDataSignature
   }
 
   return verifySignature
-    (encoding.signedBuf(), encoding.signedSize(), 
+    (encoding.signedBuf(), encoding.signedSize(),
      data.getSignature()->getSignature().buf(),
      data.getSignature()->getSignature().size(), publicKey, digestAlgorithm);
 }

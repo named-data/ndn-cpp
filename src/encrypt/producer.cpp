@@ -64,7 +64,7 @@ Producer::Impl::Impl
     eKeyInfo_[nodeName] = ptr_lib::make_shared<KeyInfo>();
     fixedDataType = fixedDataType.getPrefix(-1);
   }
-  
+
   fixedPrefix.append(dataType);
   namespace_ = Name(prefix);
   namespace_.append(Encryptor::getNAME_COMPONENT_SAMPLE());

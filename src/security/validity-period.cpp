@@ -39,7 +39,7 @@ ValidityPeriod::isValid(MillisecondsSince1970 time) const
 
   return validityPeriod_.isValid(time);
 }
-  
+
 bool
 ValidityPeriod::canGetFromSignature(const Signature* signature)
 {

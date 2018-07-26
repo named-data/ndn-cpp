@@ -44,7 +44,7 @@ public:
    * Create a PibIdentityImpl with identityName.
    * @param identityName The name of the identity, which is copied.
    * @param pibImpl The Pib backend implementation.
-   * @param needInit If true and the identity does not exist in the pibImpl back 
+   * @param needInit If true and the identity does not exist in the pibImpl back
    * end, then create it (and If no default identity has been set, identityName
    * becomes the default). If false, then throw Pib::Error if the identity does
    * not exist in the pibImpl back end.
@@ -64,7 +64,7 @@ public:
 
   /**
    * Add the key. If a key with the same name already exists, overwrite the key.
-   * If no default key for the identity has been set, then set the added key as 
+   * If no default key for the identity has been set, then set the added key as
    * default for the identity.
    * @param key The public key bits. This copies the array.
    * @param keyLength The length of the public key bits array.

@@ -208,7 +208,7 @@ public:
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
     (const ptr_lib::shared_ptr<Data>& data, int stepCount,
-     const OnVerified& onVerified, 
+     const OnVerified& onVerified,
      const OnDataValidationFailed& onValidationFailed);
 
   /**
@@ -341,7 +341,7 @@ private:
    */
   bool
   checkSignatureMatch
-    (const Name& signatureName, const Name& objectName, 
+    (const Name& signatureName, const Name& objectName,
      const BoostInfoTree& rule, std::string& failureReason);
 
   /**
@@ -489,7 +489,7 @@ private:
   onCertificateDownloadComplete
     (const ptr_lib::shared_ptr<Data> &data,
      const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
-     const OnVerified& onVerified, 
+     const OnVerified& onVerified,
      const OnDataValidationFailed& onValidationFailed);
 
   /**

@@ -65,7 +65,7 @@ RsaAlgorithm::encrypt
   if (publicKey.decode(keyBits) != NDN_ERROR_success)
     throw UnrecognizedKeyFormatException
       ("RsaAlgorithm: Error decoding public key");
-  
+
   // TODO: use RSA_size, etc. to get the proper size of the output buffer.
   ptr_lib::shared_ptr<vector<uint8_t> > encryptedData(new vector<uint8_t>(1000));
   size_t encryptedDataLength;

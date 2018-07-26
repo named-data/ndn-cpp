@@ -63,7 +63,7 @@ FilePrivateKeyStorage::FilePrivateKeyStorage(const string& keyStoreDirectoryPath
 
     keyStorePath_ = homeDir + '/' + ".ndn/ndnsec-tpm-file";
   }
-  
+
   // TODO: Handle non-unix file systems which don't have "mkdir -p".
   ::system(("mkdir -p " + keyStorePath_).c_str());
 }

@@ -70,9 +70,9 @@ typedef func_lib::function<void(const ptr_lib::shared_ptr<Interest>& interest)>
 class ValidationRequest {
 public:
   ValidationRequest
-    (const ptr_lib::shared_ptr<Interest> &interest, const OnVerified& onVerified, 
+    (const ptr_lib::shared_ptr<Interest> &interest, const OnVerified& onVerified,
      const OnDataValidationFailed& onValidationFailed, int retry, int stepCount)
-  : interest_(interest), onVerified_(onVerified), 
+  : interest_(interest), onVerified_(onVerified),
     onValidationFailed_(onValidationFailed), retry_(retry), stepCount_(stepCount)
   {
   }

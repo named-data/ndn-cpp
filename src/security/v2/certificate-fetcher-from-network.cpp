@@ -77,8 +77,8 @@ CertificateFetcherFromNetwork::Impl::onNetworkNack
    const ptr_lib::shared_ptr<ValidationState>& state,
    const CertificateFetcher::ValidationContinuation& continueValidation)
 {
-  _LOG_TRACE("NACK (" << networkNack->getReason() <<  
-    ") while fetching certificate " << 
+  _LOG_TRACE("NACK (" << networkNack->getReason() <<
+    ") while fetching certificate " <<
     certificateRequest->interest_.getName().toUri());
 
   --certificateRequest->nRetriesLeft_;

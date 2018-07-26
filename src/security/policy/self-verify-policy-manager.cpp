@@ -63,7 +63,7 @@ SelfVerifyPolicyManager::requireVerify(const Interest& interest)
 
 ptr_lib::shared_ptr<ValidationRequest>
 SelfVerifyPolicyManager::checkVerificationPolicy
-  (const ptr_lib::shared_ptr<Data>& data, int stepCount, 
+  (const ptr_lib::shared_ptr<Data>& data, int stepCount,
    const OnVerified& onVerified,
    const OnDataValidationFailed& onValidationFailed)
 {
@@ -124,7 +124,7 @@ SelfVerifyPolicyManager::checkVerificationPolicy
   } catch (const std::exception& ex) {
     try {
       onValidationFailed
-        (interest, 
+        (interest,
          string("Error decoding the signed interest signature: ") + ex.what());
     } catch (const std::exception& ex) {
       _LOG_ERROR("SelfVerifyPolicyManager::checkVerificationPolicy: Error in onValidationFailed: " << ex.what());

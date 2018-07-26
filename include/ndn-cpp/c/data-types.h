@@ -28,10 +28,10 @@
 extern "C" {
 #endif
 
-/** 
+/**
  * ndn_ContentType specifies the content type in a MetaInfo object. If the
  * content type in the packet is not a recognized enum value, then we use
- * ndn_ContentType_OTHER_CODE and you can call MetaInfo::getOtherTypeCode(). We 
+ * ndn_ContentType_OTHER_CODE and you can call MetaInfo::getOtherTypeCode(). We
  * do this to keep the recognized content type values independent of packet
  * encoding formats. Note that the constants for BLOB, LINK, KEY and NACK are
  * the same as defined in the NDN-TLV spec.

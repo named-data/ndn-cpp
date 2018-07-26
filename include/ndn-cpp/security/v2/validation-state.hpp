@@ -173,7 +173,7 @@ private:
   verifyOriginalPacket(const CertificateV2& trustedCertificate) = 0;
 
   /**
-   * Call the success callback of the original packet without signature 
+   * Call the success callback of the original packet without signature
    * validation. This is only called by the Validator class.
    */
   virtual void

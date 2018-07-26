@@ -127,7 +127,7 @@ ndn_verifySha256WithRsaSignature
  */
 ndn_Error
 ndn_RsaPublicKey_encrypt
-  (const struct ndn_RsaPublicKey *self, const uint8_t *plainData, 
+  (const struct ndn_RsaPublicKey *self, const uint8_t *plainData,
    size_t plainDataLength, ndn_EncryptAlgorithmType algorithmType,
    uint8_t *encryptedData, size_t *encryptedDataLength);
 

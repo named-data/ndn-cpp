@@ -122,7 +122,7 @@ public:
    */
   virtual ptr_lib::shared_ptr<ValidationRequest>
   checkVerificationPolicy
-    (const ptr_lib::shared_ptr<Data>& data, int stepCount, 
+    (const ptr_lib::shared_ptr<Data>& data, int stepCount,
      const OnVerified& onVerified,
      const OnDataValidationFailed& onValidationFailed);
 
@@ -130,7 +130,7 @@ public:
    * Use wireFormat.decodeSignatureInfoAndValue to decode the last two name
    * components of the signed interest. Look in the IdentityStorage or PibImpl for the
    * public key with the name in the KeyLocator (if available) and use it to
-   * verify the interest. If the public key can't be found, call 
+   * verify the interest. If the public key can't be found, call
    * onValidationFailed.
    * @param interest The interest with the signature to check.
    * @param stepCount The number of verification steps that have been done, used to track the verification progress.

@@ -243,7 +243,7 @@ ConfigHyperRelationChecker::checkNames
   if (!packetNameRegex_->match(packetName)) {
     state->fail(ValidationError(ValidationError::POLICY_ERROR,
       "The packet " + packetName.toUri() + " (KeyLocator=" +
-      keyLocatorName.toUri() + 
+      keyLocatorName.toUri() +
       ") does not match the hyper relation packet name regex " +
       packetNameRegex_->getExpr()));
     return false;

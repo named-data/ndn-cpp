@@ -58,7 +58,7 @@ ndn_ValidityPeriod_initialize(struct ndn_ValidityPeriod *self)
  */
 static __inline int
 ndn_ValidityPeriod_hasPeriod(const struct ndn_ValidityPeriod *self)
-{   
+{
   return !(self->notBefore == DBL_MAX && self->notAfter == -DBL_MAX);
 }
 

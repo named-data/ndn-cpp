@@ -106,7 +106,7 @@ public:
   {
     impl_->consume(contentName, onConsumeComplete, onError, link);
   }
-  
+
   /**
    * Set the group name.
    * @param groupName The reading group name that the consumer belongs to.

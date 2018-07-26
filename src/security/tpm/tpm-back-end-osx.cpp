@@ -140,7 +140,7 @@ TpmBackEndOsx::sign
     (signer.get(), kSecTransformInputAttributeName, dataRef.get(), &error.get());
   if (error.get() != 0)
     throw Error("Failed to configure the input of the signer");
-  
+
   // Set the padding type.
   SecTransformSetAttribute
     (signer.get(), kSecPaddingKey, kSecPaddingPKCS1Key, &error.get());

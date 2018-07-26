@@ -28,13 +28,13 @@ namespace ndn {
 
 /**
  * An ExponentialReExpress uses an internal onTimeout to express the interest
- * again with double the interestLifetime. See 
+ * again with double the interestLifetime. See
  * ExponentialReExpress.makeOnTimeout.
  */
 class ExponentialReExpress : public ptr_lib::enable_shared_from_this<ExponentialReExpress> {
 public:
   /**
-   * Return a function object to use in expressInterest for onTimeout which will 
+   * Return a function object to use in expressInterest for onTimeout which will
    * express the interest again with double the interestLifetime. If the
    * interesLifetime goes over maxInterestLifetime (see below), then call the
    * provided onTimeout. If a Data packet is received, this calls the provided

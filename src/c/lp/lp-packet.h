@@ -54,7 +54,7 @@ ndn_LpPacket_initialize
  */
 static __inline void
 ndn_LpPacket_clear(struct ndn_LpPacket *self)
-{ 
+{
   self->nHeaderFields = 0;
   ndn_Blob_initialize(&self->fragmentWireEncoding, 0, 0);
 }

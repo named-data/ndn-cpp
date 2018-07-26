@@ -121,7 +121,7 @@ public:
   /**
    * Check the Interest against the policy.
    * Your derived class must implement this.
-   * Depending on implementation of the policy, this check can be done 
+   * Depending on implementation of the policy, this check can be done
    * synchronously or asynchronously.
    * See the checkPolicy(Data) documentation for the semantics.
    * @param interest The Interest packet to check.

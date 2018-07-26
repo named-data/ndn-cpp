@@ -66,7 +66,7 @@ ValidationState::verifyCertificateChain
       validatedCertificate = certificateToValidate;
     }
   }
-  
+
   return validatedCertificate;
 }
 

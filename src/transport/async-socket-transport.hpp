@@ -137,7 +137,7 @@ private:
 
       socket_->async_connect
         (endPoint,
-         boost::bind(&AsyncSocketTransport::Impl::connectHandler, 
+         boost::bind(&AsyncSocketTransport::Impl::connectHandler,
                      this->shared_from_this(), _1, onConnected));
     }
 
@@ -202,7 +202,7 @@ private:
 
       socket_->async_receive
         (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
-         boost::bind(&AsyncSocketTransport::Impl::readHandler, 
+         boost::bind(&AsyncSocketTransport::Impl::readHandler,
                      this->shared_from_this(), _1, _2));
     }
 
@@ -232,7 +232,7 @@ private:
       if (socket_->is_open())
         socket_->async_receive
           (boost::asio::buffer(receiveBuffer_, sizeof(receiveBuffer_)), 0,
-           boost::bind(&AsyncSocketTransport::Impl::readHandler, 
+           boost::bind(&AsyncSocketTransport::Impl::readHandler,
                        this->shared_from_this(), _1, _2));
     }
 

@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 /**
- * Convert the time from milliseconds to an ISO time string, for example 
+ * Convert the time from milliseconds to an ISO time string, for example
  * "20131018T184138.623355", or "20131018T184139" if includeFraction is 0.
  * @param milliseconds The time in milliseconds since 1/1/1970, including
  * optional fractions of a millisecond.

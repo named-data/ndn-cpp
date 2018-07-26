@@ -37,7 +37,7 @@ public:
   std::string
   Msg() const { return errorMessage_; }
 
-  virtual const char* 
+  virtual const char*
   what() const throw();
 
 private:

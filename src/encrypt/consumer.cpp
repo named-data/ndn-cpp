@@ -288,7 +288,7 @@ Consumer::Impl::decryptContent
 
 void
 Consumer::Impl::decryptCKey
-  (const Data& cKeyData, const OnPlainText& onPlainText, 
+  (const Data& cKeyData, const OnPlainText& onPlainText,
    const EncryptError::OnError& onError)
 {
   // Get the encrypted content.
@@ -328,7 +328,7 @@ Consumer::Impl::decryptCKey
     class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
     public:
       Callbacks
-        (Consumer::Impl* parent, 
+        (Consumer::Impl* parent,
          const ptr_lib::shared_ptr<EncryptedContent>& cKeyEncryptedContent,
          const Name& dKeyName, const OnPlainText& onPlainText,
          const EncryptError::OnError& onError)

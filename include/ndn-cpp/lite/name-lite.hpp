@@ -54,7 +54,7 @@ public:
      * recognized ndn_NameComponentType enum value, then set this to
      * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
      * If omitted, use ndn_NameComponentType_GENERIC.
-     * @param otherTypeCode (optional) If type is 
+     * @param otherTypeCode (optional) If type is
      * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
      * content type code, which must be non-negative.
      */

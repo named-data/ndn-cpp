@@ -49,7 +49,7 @@ public:
      * 2 minutes.
      * @param maxRecords (optional) See below for description. If omitted, use
      * 1000 records.
-     * @param recordLifetime (optional) See below for description. If omitted, 
+     * @param recordLifetime (optional) See below for description. If omitted,
      * use 1 hour.
      */
     Options
@@ -71,7 +71,7 @@ public:
      * Interest is rejected if the absolute difference is greater than the grace
      * interval.
      *
-     * This should be positive. Setting this option to 0 or negative causes the 
+     * This should be positive. Setting this option to 0 or negative causes the
      * validator to require exactly the same timestamp as the system clock,
      * which most likely rejects all command Interests.
      */
@@ -87,10 +87,10 @@ public:
      * Interest is rejected if its timestamp is less than or equal to the
      * recorded timestamp.
      *
-     * This option limits the number of distinct public keys being tracked. If 
+     * This option limits the number of distinct public keys being tracked. If
      * the limit is exceeded, then the oldest record is deleted.
      *
-     * Setting this option to -1 allows tracking unlimited public keys. Setting 
+     * Setting this option to -1 allows tracking unlimited public keys. Setting
      * this option to 0 disables using last timestamp records and causes every
      * command Interest to be processed as initial.
      */

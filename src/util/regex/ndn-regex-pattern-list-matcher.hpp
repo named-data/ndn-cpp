@@ -32,7 +32,7 @@ class NdnRegexPatternListMatcher;
 class NdnRegexPatternListMatcher : public NdnRegexMatcherBase {
 public:
   NdnRegexPatternListMatcher
-    (const std::string& expr, 
+    (const std::string& expr,
      ptr_lib::shared_ptr<NdnRegexBackrefManager> backrefManager)
   : NdnRegexMatcherBase(expr, NDN_REGEX_EXPR_PATTERN_LIST, backrefManager)
   {

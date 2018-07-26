@@ -536,7 +536,7 @@ private:
     public:
       /**
        * Create a new StaleTimeContent to hold data's name and wire encoding
-       * as well as the cacheRemovalTimeMilliseconds_ which is now plus the 
+       * as well as the cacheRemovalTimeMilliseconds_ which is now plus the
        * maximum of data.getMetaInfo().getFreshnessPeriod() and the
        * minimumCacheLifetime.
        * @param data The Data packet whose name and wire encoding are copied.

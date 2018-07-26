@@ -59,7 +59,7 @@ NoVerifyPolicyManager::requireVerify(const Interest& interest)
 
 ptr_lib::shared_ptr<ValidationRequest>
 NoVerifyPolicyManager::checkVerificationPolicy
-  (const ptr_lib::shared_ptr<Data>& data, int stepCount, 
+  (const ptr_lib::shared_ptr<Data>& data, int stepCount,
    const OnVerified& onVerified,
    const OnDataValidationFailed& onValidationFailed)
 {

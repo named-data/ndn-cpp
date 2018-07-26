@@ -177,7 +177,7 @@ public:
    * @param result The output stream to write to.
    */
   void
-  toHex(std::ostringstream& result) const 
+  toHex(std::ostringstream& result) const
   {
     if (*this)
       ndn::toHex(**this, result);

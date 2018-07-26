@@ -162,7 +162,7 @@ public:
    */
   virtual bool
   unlockTpm(const uint8_t* password, size_t passwordLength) const;
-  
+
 protected:
   TpmBackEnd() {}
 

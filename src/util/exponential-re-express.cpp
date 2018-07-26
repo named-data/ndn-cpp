@@ -77,7 +77,7 @@ ExponentialReExpress::onTimeout
   Interest nextInterest(*interest);
   nextInterest.setInterestLifetimeMilliseconds(nextInterestLifetime);
   face_->expressInterest
-    (nextInterest, callerOnData_, 
+    (nextInterest, callerOnData_,
      bind(&ExponentialReExpress::onTimeout, shared_from_this(), _1));
 }
 

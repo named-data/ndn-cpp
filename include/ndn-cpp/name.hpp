@@ -241,7 +241,7 @@ public:
      * @return True if this is a segment number.
      */
     bool
-    isSegment() const 
+    isSegment() const
     {
       return value_.size() >= 1 && value_.buf()[0] == 0x00 &&
              type_ == ndn_NameComponentType_GENERIC;
@@ -254,7 +254,7 @@ public:
      * @return True if this is a segment byte offset.
      */
     bool
-    isSegmentOffset() const 
+    isSegmentOffset() const
     {
       return value_.size() >= 1 && value_.buf()[0] == 0xFB &&
              type_ == ndn_NameComponentType_GENERIC;
@@ -267,7 +267,7 @@ public:
      * @return True if this is a version number.
      */
     bool
-    isVersion() const 
+    isVersion() const
     {
       return value_.size() >= 1 && value_.buf()[0] == 0xFD &&
              type_ == ndn_NameComponentType_GENERIC;
@@ -280,7 +280,7 @@ public:
      * @return True if this is a timestamp.
      */
     bool
-    isTimestamp() const 
+    isTimestamp() const
     {
       return value_.size() >= 1 && value_.buf()[0] == 0xFC &&
              type_ == ndn_NameComponentType_GENERIC;
@@ -293,7 +293,7 @@ public:
      * @return True if this is a sequence number.
      */
     bool
-    isSequenceNumber() const 
+    isSequenceNumber() const
     {
       return value_.size() >= 1 && value_.buf()[0] == 0xFE &&
              type_ == ndn_NameComponentType_GENERIC;

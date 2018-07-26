@@ -159,7 +159,7 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
-   * Verify the Data packet using the public key in the certificate. This does 
+   * Verify the Data packet using the public key in the certificate. This does
    * not check the type of public key or digest algorithm against the type of
    * SignatureInfo in the Data packet such as Sha256WithRsaSignature.
    * @param data The Data packet to verify.

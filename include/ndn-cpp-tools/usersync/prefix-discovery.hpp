@@ -90,7 +90,7 @@ private:
     }
 
     void
-    start() 
+    start()
     {
       if (isEnabled_)
         // Already started.

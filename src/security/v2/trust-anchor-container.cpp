@@ -83,7 +83,7 @@ TrustAnchorContainer::find(const Interest& interest) const
 
   for (map<Name, ptr_lib::shared_ptr<CertificateV2> >::const_iterator it =
          anchors_.anchorsByName_.lower_bound(interest.getName());
-       it != anchors_.anchorsByName_.end() && 
+       it != anchors_.anchorsByName_.end() &&
          interest.getName().isPrefixOf(it->second->getName());
        ++it) {
     if (interest.matchesData(*it->second))

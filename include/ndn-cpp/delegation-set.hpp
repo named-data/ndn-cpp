@@ -51,7 +51,7 @@ public:
    */
   DelegationSet(const DelegationSet& delegationSet)
   // A DelegationSet::Delegation is immutable, so just make a shallow copy.
-  : delegations_(delegationSet.delegations_), 
+  : delegations_(delegationSet.delegations_),
     changeCount_(delegationSet.changeCount_)
   {
     setDefaultWireEncoding
@@ -205,7 +205,7 @@ public:
     (WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**
-   * Decode the input using a particular wire format and update this 
+   * Decode the input using a particular wire format and update this
    * DelegationSet. If wireFormat is the default wire format, also set the
    * defaultWireEncoding field to a copy of the input. (To not copy the input,
    * see wireDecode(Blob).)
@@ -237,7 +237,7 @@ public:
   }
 
   /**
-   * Decode the input using a particular wire format and update this 
+   * Decode the input using a particular wire format and update this
    * DelegationSet. If wireFormat is the default wire format, also set the
    * defaultWireEncoding to another pointer to the input Blob.
    * @param input The input byte array to be decoded as an immutable Blob.

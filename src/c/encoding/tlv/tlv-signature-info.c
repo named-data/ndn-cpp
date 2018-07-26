@@ -61,7 +61,7 @@ encodeValidityPeriodValue(const void *context, struct ndn_TlvEncoder *encoder)
 }
 
 /**
- * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the 
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the
  * TLVs in the body of a signature value which has a KeyLocator and
  * ValidityPeriod, e.g. SignatureSha256WithRsa.
  * @param context This is the ndn_Signature struct pointer which was passed to
@@ -191,7 +191,7 @@ ndn_encodeTlvSignatureInfo
       signatureInfo->type == ndn_SignatureType_Sha256WithEcdsaSignature ||
       signatureInfo->type == ndn_SignatureType_HmacWithSha256Signature)
     return ndn_TlvEncoder_writeNestedTlv
-      (encoder, ndn_Tlv_SignatureInfo, 
+      (encoder, ndn_Tlv_SignatureInfo,
        encodeSignatureWithKeyLocatorAndValidityPeriodValue, signatureInfo, 0);
   else if (signatureInfo->type == ndn_SignatureType_DigestSha256Signature)
     return ndn_TlvEncoder_writeNestedTlv

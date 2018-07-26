@@ -79,7 +79,7 @@ public:
    */
   void
   getGroupKey
-    (MillisecondsSince1970 timeSlot, 
+    (MillisecondsSince1970 timeSlot,
      std::vector<ptr_lib::shared_ptr<Data> >& result,
      bool needRegenerate = true);
 

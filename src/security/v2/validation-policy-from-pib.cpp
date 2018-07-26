@@ -38,7 +38,7 @@ ValidationPolicyFromPib::checkPolicy
   if (state->isOutcomeFailed())
     // Already called state.fail() .
     return;
-  
+
   checkPolicyHelper(keyName, state, continueValidation);
 }
 

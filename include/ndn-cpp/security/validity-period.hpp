@@ -40,7 +40,7 @@ public:
    */
   ValidityPeriod() {}
 
-  /** 
+  /**
    * Create a ValidityPeriod with the given period.
    * @param notBefore The beginning of the validity period range as milliseconds
    * since Jan 1, 1970 UTC. Note that this is rounded up to the nearest whole
@@ -81,7 +81,7 @@ public:
   /** Reset to a default ValidityPeriod where the period is not specified.
    */
   void
-  clear() 
+  clear()
   {
     validityPeriod_.clear();
     ++changeCount_;

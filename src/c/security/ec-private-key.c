@@ -68,7 +68,7 @@ ndn_EcPrivateKey_setByCurve
     BN_free(keyBignum);
     return NDN_ERROR_Error_decoding_key;
   }
-  
+
   EC_KEY_set_private_key(self->privateKey, keyBignum);
   BN_free(keyBignum);
   return NDN_ERROR_success;

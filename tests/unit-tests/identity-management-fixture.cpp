@@ -81,14 +81,14 @@ IdentityManagementFixture::saveCertificate
 
 ptr_lib::shared_ptr<PibIdentity>
 IdentityManagementFixture::addSubCertificate
-  (const Name& subIdentityName, 
+  (const Name& subIdentityName,
    const ndn::ptr_lib::shared_ptr<ndn::PibIdentity>& issuer,
    const KeyParams& params)
 {
   ptr_lib::shared_ptr<PibIdentity> subIdentity =
     addIdentity(subIdentityName, params);
 
-  ptr_lib::shared_ptr<CertificateV2> request = 
+  ptr_lib::shared_ptr<CertificateV2> request =
     subIdentity->getDefaultKey()->getDefaultCertificate();
 
   request->setName(request->getKeyName().append("parent").appendVersion(1));

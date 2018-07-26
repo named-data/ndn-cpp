@@ -281,7 +281,7 @@ public:
   deleteCertificate(PibKey& key, const Name& certificateName);
 
   /**
-   * Set the certificate as the default certificate of the key. The certificate 
+   * Set the certificate as the default certificate of the key. The certificate
    * will be added to the key, potentially overriding an existing certificate if
    * it has the same name (without considering implicit digest).
    * @param key A valid PibKey object.
@@ -297,7 +297,7 @@ public:
    * Wire encode the Data object, sign it according to the supplied signing
    * parameters, and set its signature.
    * @param data The Data object to be signed. This replaces its Signature
-   * object based on the type of key and other info in the SigningInfo params, 
+   * object based on the type of key and other info in the SigningInfo params,
    * and updates the wireEncoding.
    * @param params The signing parameters.
    * @param wireFormat (optional) A WireFormat object used to encode the input.
@@ -388,7 +388,7 @@ public:
    * is unrecognized.
    */
   Blob
-  sign(const uint8_t* buffer, size_t bufferLength, 
+  sign(const uint8_t* buffer, size_t bufferLength,
        const SigningInfo& params = getDefaultSigningInfo());
 
   /**
@@ -758,7 +758,7 @@ public:
    * @return The identity manager.
    */
   const ptr_lib::shared_ptr<IdentityManager>&
-  getIdentityManager() 
+  getIdentityManager()
   {
     if (!isSecurityV1_)
       throw Error("getIdentityManager is not supported for security v2");
@@ -949,7 +949,7 @@ public:
    */
   void
   verifyData
-    (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified, 
+    (const ptr_lib::shared_ptr<Data>& data, const OnVerified& onVerified,
      const OnDataValidationFailed& onValidationFailed, int stepCount = 0);
 
   /**
@@ -1218,7 +1218,7 @@ private:
 
   void
   onCertificateInterestTimeout
-    (const ptr_lib::shared_ptr<const Interest> &interest, int retry, 
+    (const ptr_lib::shared_ptr<const Interest> &interest, int retry,
      const OnDataValidationFailed& onValidationFailed,
      const ptr_lib::shared_ptr<Data> &data,
      ptr_lib::shared_ptr<ValidationRequest> nextStep);

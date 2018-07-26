@@ -113,7 +113,7 @@ Face::expressInterest
 
 uint64_t
 Face::expressInterest
-  (const Name& name, const Interest *interestTemplate, const OnData& onData, 
+  (const Name& name, const Interest *interestTemplate, const OnData& onData,
    const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
    WireFormat& wireFormat)
 {

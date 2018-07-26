@@ -59,7 +59,7 @@ public:
   /**
    * Set the network Nack reason.
    * @param reason The network Nack reason enum value. If the packet's reason
-   * code is not a recognized Reason enum value, use 
+   * code is not a recognized Reason enum value, use
    * ndn_NetworkNackReason_OTHER_CODE and call setOtherReasonCode().
    */
   void

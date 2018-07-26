@@ -124,7 +124,7 @@ NdnRegexPatternListMatcher::extractSubPattern
 
     ++index;
   }
-  
+
   return index;
 }
 

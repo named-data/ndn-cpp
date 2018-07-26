@@ -45,7 +45,7 @@ extern "C" {
  * encryptedDataLength bytes.
  * @param plainDataLength This sets plainDataLength to the number of bytes
  * placed in the plainData buffer.
- * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect 
+ * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
  * keyLength or NDN_ERROR_Incorrect_initial_vector_size for incorrect
  * initialVectorLength.
  */

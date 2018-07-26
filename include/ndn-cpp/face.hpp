@@ -60,7 +60,7 @@ typedef func_lib::function<void
  */
 typedef func_lib::function<void
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Face& face, 
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
    uint64_t interestFilterId,
    const ptr_lib::shared_ptr<const InterestFilter>& filter)> OnInterestCallback;
 
@@ -74,7 +74,7 @@ typedef func_lib::function<void
  * An OnRegisterSuccess function object is used to report when registerPrefix succeeds.
  */
 typedef func_lib::function<void
-  (const ptr_lib::shared_ptr<const Name>& prefix, 
+  (const ptr_lib::shared_ptr<const Name>& prefix,
    uint64_t registeredPrefixId)> OnRegisterSuccess;
 
 class Node;
@@ -146,7 +146,7 @@ public:
    */
   virtual uint64_t
   expressInterest
-    (const Interest& interest, const OnData& onData, 
+    (const Interest& interest, const OnData& onData,
      const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
@@ -189,7 +189,7 @@ public:
    */
   virtual uint64_t
   expressInterest
-    (const Name& name, const Interest *interestTemplate, const OnData& onData, 
+    (const Name& name, const Interest *interestTemplate, const OnData& onData,
      const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
@@ -229,7 +229,7 @@ public:
    */
   uint64_t
   expressInterest
-    (const Name& name, const OnData& onData, 
+    (const Name& name, const OnData& onData,
      const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {

@@ -576,7 +576,7 @@ public:
    */
   bool
   matchesData
-    (const Data& data, 
+    (const Data& data,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat()) const;
 
   /**

@@ -227,7 +227,7 @@ private:
 
     /**
      * This is called from an expressInterest OnNetworkNack to handle a network
-     * Nack for the E-KEY requested through the Interest. Decrease the 
+     * Nack for the E-KEY requested through the Interest. Decrease the
      * outstanding E-KEY interest count for the C-KEY corresponding to the
      * timeSlot.
      * @param interest The interest given to expressInterest.
@@ -287,7 +287,7 @@ private:
      * @param eKeyName The key name for the EncryptedContent.
      * @param timeSlot The time slot as milliseconds since Jan 1, 1970 UTC.
      * @param onEncryptedKeys When there are no more interests to process, this
-     * calls onEncryptedKeys(keys) where keys is a list of encrypted content key 
+     * calls onEncryptedKeys(keys) where keys is a list of encrypted content key
      * Data packets. If onEncryptedKeys is an empty OnEncryptedKeys(), this does
      * not use it.
      * @return True if encryption succeeds, otherwise false.
@@ -335,7 +335,7 @@ private:
      */
     static int
     findEntryBeforeOrAt
-      (const std::vector<ExcludeEntry>& entries, 
+      (const std::vector<ExcludeEntry>& entries,
        const Name::Component& component);
 
     /**

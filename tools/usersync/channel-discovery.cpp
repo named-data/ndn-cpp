@@ -192,7 +192,7 @@ ChannelDiscovery::Impl::onReceivedSyncState
     if (syncStates[i].getDataPrefix() == applicationDataPrefix_.toUri())
       // Ignore updates from this user.
       continue;
-    
+
     Interest interest(Name(syncStates[i].getDataPrefix()));
     ostringstream sessionNoString;
     sessionNoString << syncStates[i].getSessionNo();
@@ -203,10 +203,10 @@ ChannelDiscovery::Impl::onReceivedSyncState
     interest.setInterestLifetimeMilliseconds(syncLifetime_);
 
     face_.expressInterest
-      (interest, 
+      (interest,
        bind(&ChannelDiscovery::Impl::onData, shared_from_this(), _1, _2),
        bind(&ChannelDiscovery::Impl::onTimeout, shared_from_this(), _1));
-    
+
   }
 }
 
@@ -240,7 +240,7 @@ ChannelDiscovery::Impl::onData
 void
 ChannelDiscovery::Impl::onApplicationInterest
   (const ptr_lib::shared_ptr<const Name>& prefix,
-   const ptr_lib::shared_ptr<const Interest>& interest, Face& face, 
+   const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
    uint64_t interestFilterId,
    const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
@@ -261,7 +261,7 @@ ChannelDiscovery::Impl::onApplicationInterest
     // Don't respond to requests for old channel lists.
     return;
 
-  if (!channelListData_ || 
+  if (!channelListData_ ||
       !channelListData_->getName().equals(interest->getName())) {
     // Debug: This shouldn't be necessary. But when ChronoChat starts, it increments
     // and publishes a new sequence number which the other users fetch.

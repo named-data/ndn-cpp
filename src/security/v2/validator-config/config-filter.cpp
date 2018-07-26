@@ -41,7 +41,7 @@ ConfigFilter::match(bool isForInterest, const Name& packetName)
 {
   if (isForInterest) {
     const int signedInterestMinSize = 2;
-    
+
     if (packetName.size() < signedInterestMinSize)
       return false;
 

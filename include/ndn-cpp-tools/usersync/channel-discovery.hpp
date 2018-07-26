@@ -85,9 +85,9 @@ public:
   ChannelDiscovery
     (const ndn::Name& applicationDataPrefix,
      const std::string& channelListFilePath,
-     const ndn::Name& applicationBroadcastPrefix, ndn::Face& face, 
+     const ndn::Name& applicationBroadcastPrefix, ndn::Face& face,
      ndn::KeyChain& keyChain, const ndn::Name& certificateName,
-     ndn::Milliseconds syncLifetime, 
+     ndn::Milliseconds syncLifetime,
      const OnReceivedChannelList& onReceivedChannelList, const OnError& onError)
   : impl_(new Impl
       (*this, applicationDataPrefix, channelListFilePath, face, keyChain,
@@ -207,7 +207,7 @@ private:
      */
     void
     onRegisterApplicationPrefixSuccess
-      (const ndn::ptr_lib::shared_ptr<const ndn::Name>& prefix, 
+      (const ndn::ptr_lib::shared_ptr<const ndn::Name>& prefix,
        uint64_t registeredPrefixId, const ndn::Name& applicationBroadcastPrefix,
        int previousSequenceNumber);
 
@@ -217,7 +217,7 @@ private:
     void
     onInitialized();
 
-    /** This is called when ChronoSync reports a new sequence number from 
+    /** This is called when ChronoSync reports a new sequence number from
      * another user. Express an interest for the user's channel list.
      */
     void
@@ -267,7 +267,7 @@ private:
     publishChannelListData();
 
     /**
-     * Make a new Data packet where the name is 
+     * Make a new Data packet where the name is
      * <applicationDataPrefix_>/<sessionNo_>/<sequenceNumber> and the content is
      * myChannelList_.
      * @param sequenceNo The sequence number for the Data name.

@@ -30,7 +30,7 @@ namespace ndn {
 
 /**
  * CommandInterestSigner is a helper class to create command interests. This
- * keeps track of a timestamp and generates command interests by adding name 
+ * keeps track of a timestamp and generates command interests by adding name
  * components according to the NFD Signed Command Interests protocol.
  * See makeCommandInterest() for details.
  * https://redmine.named-data.net/projects/ndn-cxx/wiki/CommandInterest

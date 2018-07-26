@@ -32,7 +32,7 @@ class BoostInfoTree;
 
 /**
  * ValidationPolicyConfig implements a validator which can be set up via a
- * configuration file. For command Interest validation, this policy must be 
+ * configuration file. For command Interest validation, this policy must be
  * combined with ValidationPolicyCommandInterest in order to guard against
  * replay attacks.
  * @note This policy does not support inner policies (a sole policy or a

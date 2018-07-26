@@ -85,7 +85,7 @@ ndn_AesAlgorithm_decrypt128Ecb
   EVP_CIPHER_CTX_free(ctx);
   *plainDataLength = outLength1 + outLength2;
 
-  return NDN_ERROR_success;  
+  return NDN_ERROR_success;
 }
 
 ndn_Error

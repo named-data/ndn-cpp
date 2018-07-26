@@ -88,7 +88,7 @@ public:
   expressInterest
     (uint64_t pendingInterestId,
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
-     const OnData& onData, const OnTimeout& onTimeout, 
+     const OnData& onData, const OnTimeout& onTimeout,
      const OnNetworkNack& onNetworkNack, WireFormat& wireFormat, Face* face);
 
   /**
@@ -408,7 +408,7 @@ private:
   expressInterestHelper
     (uint64_t pendingInterestId,
      const ptr_lib::shared_ptr<const Interest>& interestCopy,
-     const OnData& onData, const OnTimeout& onTimeout, 
+     const OnData& onData, const OnTimeout& onTimeout,
      const OnNetworkNack& onNetworkNack, WireFormat* wireFormat, Face* face);
 
   /**

@@ -36,7 +36,7 @@ public:
    * @param backrefManager A back-reference manager.
    */
   NdnRegexComponentSetMatcher
-    (const std::string& expr, 
+    (const std::string& expr,
      ptr_lib::shared_ptr<NdnRegexBackrefManager> backrefManager)
   : NdnRegexMatcherBase(expr, NDN_REGEX_EXPR_COMPONENT_SET, backrefManager),
     isInclusion_(true)

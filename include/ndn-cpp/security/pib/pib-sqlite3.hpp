@@ -291,7 +291,7 @@ public:
   /**
    * Get the default that the constructor uses if databaseDirectoryPath is
    * omitted. This does not try to create the directory.
-   * @return The default database directory path. 
+   * @return The default database directory path.
    */
   static std::string
   getDefaultDatabaseDirectoryPath();

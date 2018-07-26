@@ -169,7 +169,7 @@ ConfigPolicyManager::requireVerify(const Interest& interest)
 ptr_lib::shared_ptr<ValidationRequest>
 ConfigPolicyManager::checkVerificationPolicy
   (const ptr_lib::shared_ptr<Data>& data, int stepCount,
-   const OnVerified& onVerified, 
+   const OnVerified& onVerified,
    const OnDataValidationFailed& onValidationFailed)
 {
   string failureReason = "unknown";
@@ -243,7 +243,7 @@ ConfigPolicyManager::checkVerificationPolicy
   // For command interests, we need to ignore the last 4 components when
   //   matching the name.
   ptr_lib::shared_ptr<Interest> certificateInterest = getCertificateInterest
-    (stepCount, "interest", interest->getName().getPrefix(-4), 
+    (stepCount, "interest", interest->getName().getPrefix(-4),
      signature.get(), failureReason);
   if (!certificateInterest) {
     try {
@@ -392,7 +392,7 @@ void
 ConfigPolicyManager::onCertificateDownloadComplete
   (const ptr_lib::shared_ptr<Data> &data,
    const ptr_lib::shared_ptr<Data> &originalData, int stepCount,
-   const OnVerified& onVerified, 
+   const OnVerified& onVerified,
    const OnDataValidationFailed& onValidationFailed)
 {
   if (isSecurityV1_) {
@@ -1073,7 +1073,7 @@ ConfigPolicyManager::TrustAnchorRefreshManager::addDirectory
       }
 
       // Get the key name since this is in the KeyLocator.
-      string certUri = 
+      string certUri =
         CertificateV2::extractKeyNameFromCertName(cert->getName()).toUri();
       certificateCacheV2_.insert(*cert);
       certificateNames.push_back(certUri);

@@ -133,7 +133,7 @@ public:
     SyncState
       (const std::string& dataPrefixUri, int sessionNo, int sequenceNo,
        const Blob& applicationInfo)
-    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo), 
+    : dataPrefixUri_(dataPrefixUri), sessionNo_(sessionNo),
       sequenceNo_(sequenceNo), applicationInfo_(applicationInfo)
     {
     }

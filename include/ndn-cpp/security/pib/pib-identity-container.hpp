@@ -61,7 +61,7 @@ public:
 
   /**
    * Remove the identity with name identityName from the container, and its
-   * related keys and certificates. If the default identity is being removed, 
+   * related keys and certificates. If the default identity is being removed,
    * no default identity will be selected.  If the identity does not exist, do
    * nothing.
    * @param identityName The name of the identity.

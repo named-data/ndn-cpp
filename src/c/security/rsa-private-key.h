@@ -77,7 +77,7 @@ ndn_RsaPrivateKey_generate(struct ndn_RsaPrivateKey *self, uint32_t keySize);
  * Encode the DER-encoded PKCS #1 private key.
  * @param self A pointer to the ndn_RsaPrivateKey struct.
  * @param encoding A pointer to the encoding output buffer. If this is null then
- * only set encodingLength (which can be used to allocate a buffer of the 
+ * only set encodingLength (which can be used to allocate a buffer of the
  * correct size). Otherwise, the caller must provide a buffer large enough to
  * receive the encoding bytes.
  * @param encodingLength Set encodingLength to the number of bytes in the

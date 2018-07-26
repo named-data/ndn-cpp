@@ -109,7 +109,7 @@ Validator::requestCertificate
   if (state->hasSeenCertificateName(certificateRequest->interest_.getName())) {
     state->fail(ValidationError
       (ValidationError::LOOP_DETECTED,
-       "Validation loop detected for certificate `" + 
+       "Validation loop detected for certificate `" +
          certificateRequest->interest_.getName().toUri() + "`"));
     return;
   }

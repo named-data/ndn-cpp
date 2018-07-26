@@ -31,18 +31,18 @@ namespace ndn {
 /**
  * A TrustAnchorContainer represents a container for trust anchors.
  *
- * There are two kinds of anchors: 
+ * There are two kinds of anchors:
  * static anchors that are permanent for the lifetime of the container, and
  * dynamic anchors that are periodically updated.
  *
- * Trust anchors are organized in groups. Each group has a unique group id. 
+ * Trust anchors are organized in groups. Each group has a unique group id.
  * The same anchor certificate (same name without considering the implicit
  * digest) can be inserted into multiple groups, but no more than once into each.
  *
  * Dynamic groups are created using the appropriate TrustAnchorContainer.insert
  * method. Once created, the dynamic anchor group cannot be updated.
  *
- * The returned pointer to Certificate from `find` methods is only guaranteed to 
+ * The returned pointer to Certificate from `find` methods is only guaranteed to
  * be valid until the next invocation of `find` and may be invalidated
  * afterwards.
  */

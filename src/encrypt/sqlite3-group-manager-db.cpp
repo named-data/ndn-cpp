@@ -126,7 +126,7 @@ void
 Sqlite3GroupManagerDb::listAllScheduleNames(vector<string>& nameList)
 {
   nameList.clear();
-  
+
   sqlite3_stmt* statement;
   sqlite3_prepare_v2
     (database_, "SELECT schedule_name FROM schedules", -1, &statement, 0);

@@ -51,7 +51,7 @@ CertificateCacheV2::insert(const CertificateV2& certificate)
     return;
   }
 
-  MillisecondsSince1970 removalTime = 
+  MillisecondsSince1970 removalTime =
     min(notAfterTime, now + maxLifetimeMilliseconds_);
   if (removalTime < nextRefreshTime_)
     // We need to run refresh() sooner.)
@@ -61,7 +61,7 @@ CertificateCacheV2::insert(const CertificateV2& certificate)
   _LOG_DEBUG("Adding " << certificate.getName().toUri() << ", will remove in "
     << removalHours << " hours");
   ptr_lib::shared_ptr<CertificateV2> certificateCopy(new CertificateV2(certificate));
-  certificatesByName_[certificateCopy->getName()] = 
+  certificatesByName_[certificateCopy->getName()] =
     Entry(certificateCopy, removalTime);
 }
 
