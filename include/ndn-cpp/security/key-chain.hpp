@@ -115,19 +115,19 @@ public:
      bool allowReset = false);
 
   /**
-   * This is a temporary constructor for the transition to security v2. This
-   * creates a security v2 KeyChain but still uses the v1 PolicyManager.
+   * Creates a security v2 KeyChain with explicitly-created PIB and TPM objects,
+   * and that optionally still uses the v1 PolicyManager.
+   * @param pibImpl An explicitly-created PIB object of a subclass of PibImpl.
+   * @param tpmBackEnd An explicitly-created TPM object of a subclass of
+   * TpmBackEnd.
+   * @param policyManager (optional) An object of a subclass of a security v1
+   * PolicyManager. If omitted or null, use a new NoVerifyPolicyManager.
    */
   KeyChain
     (const ptr_lib::shared_ptr<PibImpl>& pibImpl,
      const ptr_lib::shared_ptr<TpmBackEnd>& tpmBackEnd,
-     const ptr_lib::shared_ptr<PolicyManager>& policyManager)
-  : policyManager_(policyManager), face_(0)
-  {
-    isSecurityV1_ = false;
-    pib_.reset(new Pib("", "", pibImpl));
-    tpm_.reset(new Tpm("", "", tpmBackEnd));
-  }
+     const ptr_lib::shared_ptr<PolicyManager>& policyManager =
+       ptr_lib::shared_ptr<PolicyManager>());
 
   /**
    * Create a new security v1 KeyChain with the given IdentityManager and

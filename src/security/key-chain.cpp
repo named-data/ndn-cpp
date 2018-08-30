@@ -108,6 +108,20 @@ KeyChain::KeyChain
 }
 
 KeyChain::KeyChain
+  (const ptr_lib::shared_ptr<PibImpl>& pibImpl,
+   const ptr_lib::shared_ptr<TpmBackEnd>& tpmBackEnd,
+   const ptr_lib::shared_ptr<PolicyManager>& policyManager)
+: policyManager_(policyManager), face_(0)
+{
+  isSecurityV1_ = false;
+  if (!policyManager_)
+    policyManager_.reset(new NoVerifyPolicyManager());
+
+  pib_.reset(new Pib("", "", pibImpl));
+  tpm_.reset(new Tpm("", "", tpmBackEnd));
+}
+
+KeyChain::KeyChain
   (const ptr_lib::shared_ptr<IdentityManager>& identityManager,
    const ptr_lib::shared_ptr<PolicyManager>& policyManager)
 : identityManager_(identityManager), policyManager_(policyManager),
