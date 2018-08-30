@@ -115,7 +115,7 @@ public:
      bool allowReset = false);
 
   /**
-   * Creates a security v2 KeyChain with explicitly-created PIB and TPM objects,
+   * Create a security v2 KeyChain with explicitly-created PIB and TPM objects,
    * and that optionally still uses the v1 PolicyManager.
    * @param pibImpl An explicitly-created PIB object of a subclass of PibImpl.
    * @param tpmBackEnd An explicitly-created TPM object of a subclass of
