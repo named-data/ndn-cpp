@@ -56,6 +56,8 @@ ndn_decodeTlvNameComponent
     return error;
   if (type == ndn_Tlv_ImplicitSha256DigestComponent)
     component->type = ndn_NameComponentType_IMPLICIT_SHA256_DIGEST;
+  if (type == ndn_Tlv_ParametersSha256DigestComponent)
+    component->type = ndn_NameComponentType_PARAMETERS_SHA256_DIGEST;
   else if (type == ndn_Tlv_NameComponent)
     component->type = ndn_NameComponentType_GENERIC;
   else {
