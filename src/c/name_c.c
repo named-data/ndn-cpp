@@ -141,6 +141,18 @@ ndn_NameComponent_setImplicitSha256Digest
   return NDN_ERROR_success;
 }
 
+ndn_Error
+ndn_NameComponent_setParametersSha256Digest
+  (struct ndn_NameComponent *self, const uint8_t* digest, size_t digestLength)
+{
+  if (digestLength != ndn_SHA256_DIGEST_SIZE)
+    return NDN_ERROR_Incorrect_digest_size;
+
+  ndn_NameComponent_initialize(self, digest, digestLength);
+  self->type = ndn_NameComponentType_PARAMETERS_SHA256_DIGEST;
+  return NDN_ERROR_success;
+}
+
 int ndn_NameComponent_equals
   (const struct ndn_NameComponent *self, const struct ndn_NameComponent *other)
 {

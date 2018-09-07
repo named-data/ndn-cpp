@@ -36,6 +36,7 @@ extern "C" {
  */
 typedef enum {
   ndn_NameComponentType_IMPLICIT_SHA256_DIGEST = 1,
+  ndn_NameComponentType_PARAMETERS_SHA256_DIGEST = 2,
   ndn_NameComponentType_GENERIC = 8,
   ndn_NameComponentType_OTHER_CODE = 0x7fff
 } ndn_NameComponentType;

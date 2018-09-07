@@ -212,6 +212,8 @@ Name::Component::get(NameLite::Component& componentLite) const
 {
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
     componentLite.setImplicitSha256Digest(value_);
+  if (type_ == ndn_NameComponentType_PARAMETERS_SHA256_DIGEST)
+    componentLite.setParametersSha256Digest(value_);
   else
     componentLite = NameLite::Component(value_, type_, otherTypeCode_);
 }
@@ -221,6 +223,11 @@ Name::Component::toEscapedString(std::ostringstream& result) const
 {
   if (type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST) {
     result << "sha256digest=";
+    value_.toHex(result);
+    return;
+  }
+  if (type_ == ndn_NameComponentType_PARAMETERS_SHA256_DIGEST) {
+    result << "params-sha256=";
     value_.toHex(result);
     return;
   }
@@ -282,6 +289,18 @@ Name::Component::fromImplicitSha256Digest(const Blob& digest)
 
   Component result(digest);
   result.type_ = ndn_NameComponentType_IMPLICIT_SHA256_DIGEST;
+  return result;
+}
+
+Name::Component
+Name::Component::fromParametersSha256Digest(const Blob& digest)
+{
+  if (digest.size() != ndn_SHA256_DIGEST_SIZE)
+    throw runtime_error
+      ("Name::Component::fromParametersSha256Digest: The digest length must be 32 bytes");
+
+  Component result(digest);
+  result.type_ = ndn_NameComponentType_PARAMETERS_SHA256_DIGEST;
   return result;
 }
 
@@ -377,6 +396,7 @@ Name::set(const char *uri_cstr)
 
   // Unescape the components.
   string sha256digestPrefix("sha256digest=");
+  string paramsSha256Prefix("params-sha256=");
   while (iComponentStart < uri.size()) {
     size_t iComponentEnd = uri.find("/", iComponentStart);
     if (iComponentEnd == string::npos)
@@ -388,6 +408,12 @@ Name::set(const char *uri_cstr)
           (iComponentStart, sha256digestPrefix.size(), sha256digestPrefix) == 0)
       component = Component::fromImplicitSha256Digest
             (fromHex(uri, iComponentStart + sha256digestPrefix.size(),
+                     iComponentEnd));
+    else if (iComponentStart + paramsSha256Prefix.size() <= uri.size() &&
+        uri.compare
+          (iComponentStart, paramsSha256Prefix.size(), paramsSha256Prefix) == 0)
+      component = Component::fromParametersSha256Digest
+            (fromHex(uri, iComponentStart + paramsSha256Prefix.size(),
                      iComponentEnd));
     else {
       ndn_NameComponentType type = ndn_NameComponentType_GENERIC;
@@ -408,12 +434,15 @@ Name::set(const char *uri_cstr)
              " in URI " + uri);
         }
 
+        // Allow for a decimal value of recognized component types.
         if (otherTypeCode == (int)ndn_NameComponentType_GENERIC ||
-            otherTypeCode == (int)ndn_NameComponentType_IMPLICIT_SHA256_DIGEST)
-          throw runtime_error("Unexpected Name Component type: " + typeString +
-             " in URI " + uri);
+            otherTypeCode == (int)ndn_NameComponentType_IMPLICIT_SHA256_DIGEST ||
+            otherTypeCode == (int)ndn_NameComponentType_PARAMETERS_SHA256_DIGEST)
+          // The enum values are the same as the TLV type codes.
+          type = (ndn_NameComponentType)otherTypeCode;
+        else
+          type = ndn_NameComponentType_OTHER_CODE;
 
-        type = ndn_NameComponentType_OTHER_CODE;
         iComponentStart = iTypeCodeEnd + 1;
       }
 

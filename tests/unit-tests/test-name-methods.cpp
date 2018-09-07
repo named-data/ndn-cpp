@@ -54,6 +54,19 @@ static const uint8_t TEST_NAME_IMPLICIT_DIGEST[] = {
       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
 };
 
+static const uint8_t TEST_NAME_PARAMETERS_DIGEST[] = {
+  0x7,  0x36, // Name
+    0x8,  0x5, // NameComponent
+        0x6c,  0x6f,  0x63,  0x61,  0x6c,
+    0x8,  0x3, // NameComponent
+        0x6e,  0x64,  0x6e,
+    0x8,  0x6, // NameComponent
+        0x70,  0x72,  0x65,  0x66,  0x69,  0x78,
+    0x02, 0x20, // ParametersSha256DigestComponent
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+      0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
+};
+
 class TestNameComponentMethods : public ::testing::Test {
 };
 
@@ -268,9 +281,24 @@ TEST_F(TestNameMethods, EncodeDecode)
     (Blob(TEST_NAME_IMPLICIT_DIGEST, sizeof(TEST_NAME_IMPLICIT_DIGEST))));
 
   Name decodedName2;
-  decodedName2.wireDecode(Blob(TEST_NAME_IMPLICIT_DIGEST, sizeof(TEST_NAME_IMPLICIT_DIGEST)),
-                          *TlvWireFormat::get());
+  decodedName2.wireDecode
+    (Blob(TEST_NAME_IMPLICIT_DIGEST, sizeof(TEST_NAME_IMPLICIT_DIGEST)),
+     *TlvWireFormat::get());
   ASSERT_EQ(decodedName2, name2);
+
+  // Test ParametersSha256Digest.
+  Name name3("/local/ndn/prefix/params-sha256="
+             "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
+
+  Blob encoding3 = name3.wireEncode(*TlvWireFormat::get());
+  ASSERT_TRUE(encoding3.equals
+    (Blob(TEST_NAME_PARAMETERS_DIGEST, sizeof(TEST_NAME_PARAMETERS_DIGEST))));
+
+  Name decodedName3;
+  decodedName3.wireDecode
+    (Blob(TEST_NAME_PARAMETERS_DIGEST, sizeof(TEST_NAME_PARAMETERS_DIGEST)),
+     *TlvWireFormat::get());
+  ASSERT_EQ(decodedName3, name3);
 }
 
 TEST_F(TestNameMethods, ImplicitSha256Digest)
@@ -326,6 +354,63 @@ TEST_F(TestNameMethods, ImplicitSha256Digest)
   // Check that it will accept a hex value in upper case too.
   name2 = Name
     ("/hello/sha256digest="
+     "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
+  ASSERT_EQ(name.get(0), name2.get(1));
+}
+
+TEST_F(TestNameMethods, ParametersSha256Digest)
+{
+  Name name;
+
+  uint8_t digest[] = {
+    0x28, 0xba, 0xd4, 0xb5, 0x27, 0x5b, 0xd3, 0x92,
+    0xdb, 0xb6, 0x70, 0xc7, 0x5c, 0xf0, 0xb6, 0x6f,
+    0x13, 0xf7, 0x94, 0x2b, 0x21, 0xe8, 0x0f, 0x55,
+    0xc0, 0xe8, 0x6b, 0x37, 0x47, 0x53, 0xa5, 0x48,
+    0x00, 0x00
+  };
+
+  name.appendParametersSha256Digest(digest, 32);
+  name.appendParametersSha256Digest(Blob(digest, 32));
+  ASSERT_EQ(name.get(0), name.get(1));
+
+  ASSERT_THROW
+    (name.appendParametersSha256Digest(Blob(digest, 34)),
+    runtime_error) << "Expected error in appendParametersSha256Digest";
+  ASSERT_THROW
+    (name.appendParametersSha256Digest(Blob(digest, 30)),
+    runtime_error) << "Expected error in appendParametersSha256Digest";
+
+  // Add name.get(2) as a generic component.
+  name.append(digest, 32);
+  ASSERT_TRUE(name.get(0).compare(name.get(2)) < 0);
+  ASSERT_TRUE(name.get(0).getValue().equals(name.get(2).getValue()));
+
+  // Add name.get(3) as a generic component whose first byte is greater.
+  name.append(digest + 1, 32);
+  ASSERT_TRUE(name.get(0).compare(name.get(3)) < 0);
+
+  ASSERT_EQ
+    ("params-sha256="
+     "28bad4b5275bd392dbb670c75cf0b66f13f7942b21e80f55c0e86b374753a548",
+     name.get(0).toEscapedString());
+
+  ASSERT_EQ(true, name.get(0).isParametersSha256Digest());
+  ASSERT_EQ(false, name.get(2).isParametersSha256Digest());
+
+  ASSERT_THROW
+    (Name("/hello/params-sha256=hmm"),
+    runtime_error) << "Expected error in new Name from URI";
+
+  // Check canonical URI encoding (lower case).
+  Name name2
+    ("/hello/params-sha256="
+     "28bad4b5275bd392dbb670c75cf0b66f13f7942b21e80f55c0e86b374753a548");
+  ASSERT_EQ(name.get(0), name2.get(1));
+
+  // Check that it will accept a hex value in upper case too.
+  name2 = Name
+    ("/hello/params-sha256="
      "28BAD4B5275BD392DBB670C75CF0B66F13F7942B21E80F55C0E86B374753A548");
   ASSERT_EQ(name.get(0), name2.get(1));
 }

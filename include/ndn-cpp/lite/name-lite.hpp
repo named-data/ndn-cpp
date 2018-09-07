@@ -166,6 +166,13 @@ public:
     isImplicitSha256Digest() const;
 
     /**
+     * Check if this component is a ParametersSha256Digest component.
+     * @return True if this is a ParametersSha256Digest component.
+     */
+    bool
+    isParametersSha256Digest() const;
+
+    /**
      * Interpret the name component as a network-ordered number and return an integer.
      * @return The integer number.
      */
@@ -434,6 +441,33 @@ public:
     setImplicitSha256Digest(const BlobLite& digest)
     {
       return setImplicitSha256Digest(digest.buf(), digest.size());
+    }
+
+    /**
+     * Set this name component to have type ParametersSha256DigestComponent with
+     * the given digest value, so that isParametersSha256Digest() is true.
+     * @param digest The pre-allocated buffer for the SHA-256 digest value.
+     * @param digestLength The length of digest, which must be
+     * ndn_SHA256_DIGEST_SIZE.
+     * @return 0 for success, or an error code if digestLength is not
+     * ndn_SHA256_DIGEST_SIZE.
+     */
+    ndn_Error
+    setParametersSha256Digest(const uint8_t* digest, size_t digestLength);
+
+    /**
+     * Set this name component to have type ParametersSha256DigestComponent with
+     * the given digest value, so that isParametersSha256Digest() is true.
+     * @param digest The pre-allocated buffer for the SHA-256 digest value.
+     * @param digestLength The length of digest, which must be
+     * ndn_SHA256_DIGEST_SIZE.
+     * @return 0 for success, or an error code if digestLength is not
+     * ndn_SHA256_DIGEST_SIZE.
+     */
+    ndn_Error
+    setParametersSha256Digest(const BlobLite& digest)
+    {
+      return setParametersSha256Digest(digest.buf(), digest.size());
     }
 
     /**
@@ -711,6 +745,35 @@ public:
   appendImplicitSha256Digest(const BlobLite& digest)
   {
     return appendImplicitSha256Digest(digest.buf(), digest.size());
+  }
+
+  /**
+   * Append a component of type ParametersSha256DigestComponent to this name with
+   * the given digest value, so that isParametersSha256Digest() is true.
+   * @param sequenceNumber The sequence number.
+   * @param digest The pre-allocated buffer for the SHA-256 digest value.
+   * @param digestLength The length of digest, which must be ndn_SHA256_DIGEST_SIZE.
+   * @return 0 for success, or an error code if digestLength is not
+   * ndn_SHA256_DIGEST_SIZE, or if there is no more room in the components array
+   * (nComponents is already maxComponents).
+   */
+  ndn_Error
+  appendParametersSha256Digest(const uint8_t* digest, size_t digestLength);
+
+  /**
+   * Append a component of type ParametersSha256DigestComponent to this name with
+   * the given digest value, so that isParametersSha256Digest() is true.
+   * @param sequenceNumber The sequence number.
+   * @param digest The pre-allocated buffer for the SHA-256 digest value.
+   * @param digestLength The length of digest, which must be ndn_SHA256_DIGEST_SIZE.
+   * @return 0 for success, or an error code if digestLength is not
+   * ndn_SHA256_DIGEST_SIZE, or if there is no more room in the components array
+   * (nComponents is already maxComponents).
+   */
+  ndn_Error
+  appendParametersSha256Digest(const BlobLite& digest)
+  {
+    return appendParametersSha256Digest(digest.buf(), digest.size());
   }
 
   /**
