@@ -86,6 +86,12 @@ NameLite::Component::isImplicitSha256Digest() const
   return ndn_NameComponent_isImplicitSha256Digest(this) != 0;
 }
 
+bool
+NameLite::Component::isParametersSha256Digest() const
+{
+  return ndn_NameComponent_isParametersSha256Digest(this) != 0;
+}
+
 uint64_t
 NameLite::Component::toNumber() const
 {
@@ -220,6 +226,13 @@ NameLite::Component::setImplicitSha256Digest
   return ndn_NameComponent_setImplicitSha256Digest(this, digest, digestLength);
 }
 
+ndn_Error
+NameLite::Component::setParametersSha256Digest
+  (const uint8_t* digest, size_t digestLength)
+{
+  return ndn_NameComponent_setParametersSha256Digest(this, digest, digestLength);
+}
+
 NameLite::NameLite(ndn_NameComponent* components, size_t maxComponents)
 {
   ndn_Name_initialize(this, components, maxComponents);
@@ -334,6 +347,12 @@ ndn_Error
 NameLite::appendImplicitSha256Digest(const uint8_t* digest, size_t digestLength)
 {
   return ndn_Name_appendImplicitSha256Digest(this, digest, digestLength);
+}
+
+ndn_Error
+NameLite::appendParametersSha256Digest(const uint8_t* digest, size_t digestLength)
+{
+  return ndn_Name_appendParametersSha256Digest(this, digest, digestLength);
 }
 
 ndn_Error

@@ -57,6 +57,7 @@ public:
     /**
      * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
+     * (To create a ParametersSha256Digest component, use fromParametersSha256Digest.)
      * @param value The value byte array, which is copied.
      * @param type (optional) The component type as an int from the
      * ndn_NameComponentType enum. If the name component type is not a
@@ -79,6 +80,7 @@ public:
     /**
      * Create a new Name::Component, copying the given value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
+     * (To create a ParametersSha256Digest component, use fromParametersSha256Digest.)
      * @param value A pointer to the value byte array, which is copied.
      * @param valueLength The length of value.
      * @param type (optional) The component type as an int from the
@@ -150,6 +152,7 @@ public:
     /**
      * Create a new Name::Component, taking another pointer to the Blob value.
      * (To create an ImplicitSha256Digest component, use fromImplicitSha256Digest.)
+     * (To create a ParametersSha256Digest component, use fromParametersSha256Digest.)
      * @param value A blob with a pointer to an immutable array. The pointer is
      * copied.
      * @param type (optional) The component type as an int from the
@@ -317,6 +320,16 @@ public:
     isImplicitSha256Digest() const
     {
       return type_ == ndn_NameComponentType_IMPLICIT_SHA256_DIGEST;
+    }
+
+    /**
+     * Check if this component is a ParametersSha256Digest component.
+     * @return True if this is a ParametersSha256Digest component.
+     */
+    bool
+    isParametersSha256Digest() const
+    {
+      return type_ == ndn_NameComponentType_PARAMETERS_SHA256_DIGEST;
     }
 
     /**
@@ -599,6 +612,45 @@ public:
     }
 
     /**
+     * Create a component of type ParametersSha256DigestComponent, so that
+     * isParametersSha256Digest() is true.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromParametersSha256Digest(const Blob& digest);
+
+    /**
+     * Create a component of type ParametersSha256DigestComponent, so that
+     * isParametersSha256Digest() is true.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromParametersSha256Digest(const uint8_t *digest, size_t digestLength)
+    {
+      return fromParametersSha256Digest(Blob(digest, digestLength));
+    }
+
+    /**
+     * Create a component of type ParametersSha256DigestComponent, so that
+     * isParametersSha256Digest() is true.
+     * @param digest The SHA-256 digest value.
+     * @return The new Component.
+     * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+     * bytes.
+     */
+    static Component
+    fromParametersSha256Digest(const std::vector<uint8_t>& digest)
+    {
+      return fromParametersSha256Digest(Blob(digest));
+    }
+
+    /**
      * @deprecated. Use MetaInfo.getFinalBlockId.
      */
     static const uint8_t*
@@ -788,6 +840,7 @@ public:
   /**
    * Append a new component, copying from value of length valueLength.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * (To append a ParametersSha256Digest component, use appendParametersSha256Digest.)
    * @param value A pointer to the value byte array, which is copied.
    * @param valueLength The length of value.
    * @param type (optional) The component type as an int from the
@@ -815,6 +868,7 @@ public:
   /**
    * Append a new component, copying from value.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * (To append a ParametersSha256Digest component, use appendParametersSha256Digest.)
    * @param value The value byte array, which is copied.
    * @param type (optional) The component type as an int from the
    * ndn_NameComponentType enum. If the name component type is not a
@@ -841,6 +895,7 @@ public:
   /**
    * Append a new component, using the existing Blob value.
    * (To append an ImplicitSha256Digest component, use appendImplicitSha256Digest.)
+   * (To append a ParametersSha256Digest component, use appendParametersSha256Digest.)
    * @param value A blob with a pointer to an immutable array. The pointer is
    * copied.
    * @param type (optional) The component type as an int from the
@@ -1191,6 +1246,48 @@ public:
   appendImplicitSha256Digest(const std::vector<uint8_t>& digest)
   {
     return append(Component::fromImplicitSha256Digest(digest));
+  }
+
+  /**
+   * Append a component of type ParametersSha256DigestComponent, so that
+   * isParametersSha256Digest() is true.
+   * @param digest The SHA-256 digest value.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendParametersSha256Digest(const Blob& digest)
+  {
+    return append(Component::fromParametersSha256Digest(digest));
+  }
+
+  /**
+   * Append a component of type ParametersSha256DigestComponent, so that
+   * isParametersSha256Digest() is true.
+   * @param digest The SHA-256 digest value.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendParametersSha256Digest(const uint8_t *digest, size_t digestLength)
+  {
+    return append(Component::fromParametersSha256Digest(digest, digestLength));
+  }
+
+  /**
+   * Append a component of type ParametersSha256DigestComponent, so that
+   * isParametersSha256Digest() is true.
+   * @param digest The SHA-256 digest value.
+   * @return This name so that you can chain calls to append.
+   * @throws runtime_error If the digest length is not ndn_SHA256_DIGEST_SIZE
+   * bytes.
+   */
+  Name&
+  appendParametersSha256Digest(const std::vector<uint8_t>& digest)
+  {
+    return append(Component::fromParametersSha256Digest(digest));
   }
 
   /**
