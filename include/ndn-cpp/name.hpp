@@ -1310,7 +1310,7 @@ public:
    *
    * Examples:
    *
-   * - The successor of / is /%00
+   * - The successor of / is /sha256digest=0000000000000000000000000000000000000000000000000000000000000000
    * - The successor of /%00%01/%01%02 is /%00%01/%01%03
    * - The successor of /%00%01/%01%FF is /%00%01/%02%00
    * - The successor of /%00%01/%FF%FF is /%00%01/%00%00%00

@@ -543,12 +543,8 @@ Name::equals(const Name& name) const
 Name
 Name::getSuccessor() const
 {
-  if (size() == 0) {
-    // Return "/%00".
-    Name result;
-    result.append((const uint8_t*)"\0", 1);
-    return result;
-  }
+  if (size() == 0)
+    return Name("/sha256digest=0000000000000000000000000000000000000000000000000000000000000000");
   else
     return getPrefix(-1).append(get(-1).getSuccessor());
 }
