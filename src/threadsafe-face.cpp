@@ -226,7 +226,7 @@ ThreadsafeFace::callLater
 {
   ptr_lib::shared_ptr<boost::asio::deadline_timer> timer
     (new boost::asio::deadline_timer
-     (ioService_, boost::posix_time::milliseconds(delayMilliseconds)));
+     (ioService_, boost::posix_time::milliseconds((uint64_t)delayMilliseconds)));
 
   // Pass the timer to waitHandler to keep it alive.
   timer->async_wait(boost::bind(&waitHandler, _1, callback, timer));
