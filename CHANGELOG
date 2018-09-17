@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.14 (2018-09-17)
-------------------------------------------------
+NDN-CPP v0.15 (2018-09-17)
+--------------------------
 
 Changes
 * https://redmine.named-data.net/issues/4591 Accept Interests encoded with
