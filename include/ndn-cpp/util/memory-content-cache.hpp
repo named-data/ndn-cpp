@@ -103,8 +103,7 @@ public:
     bool
     isTimedOut(MillisecondsSince1970 nowMilliseconds) const
     {
-      return timeoutTimeMilliseconds_ >= 0.0 &&
-             nowMilliseconds >= timeoutTimeMilliseconds_;
+      return nowMilliseconds >= timeoutTimeMilliseconds_;
     }
 
   private:
