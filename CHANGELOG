@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.14 (2018-09-07)
+Interim changes since NDN-CPP v0.14 (2018-09-17)
 ------------------------------------------------
 
 Changes
@@ -13,6 +13,8 @@ Bug fixes
   to not overwrite optimization CFLAGS.
 * https://redmine.named-data.net/issues/4686 In decodeLpPacket, fix the check for
   ignoring an unrecognized field type.
+* https://redmine.named-data.net/issues/4736 In MemoryContentCache, use a default
+  InterestLifetime and removed support for infinite lifetime.
 
 NDN-CPP v0.14 (2018-04-17)
 --------------------------
