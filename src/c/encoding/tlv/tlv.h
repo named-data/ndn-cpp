@@ -84,10 +84,17 @@ enum {
   ndn_Tlv_ControlParameters_ControlParameters =   104,
   ndn_Tlv_ControlParameters_FaceId =              105,
   ndn_Tlv_ControlParameters_Uri =                 114,
+  ndn_Tlv_ControlParameters_LocalUri =            129,
   ndn_Tlv_ControlParameters_LocalControlFeature = 110,
   ndn_Tlv_ControlParameters_Origin =              111,
   ndn_Tlv_ControlParameters_Cost =                106,
+  ndn_Tlv_ControlParameters_Capacity =            131,
+  ndn_Tlv_ControlParameters_Count =               132,
+  ndn_Tlv_ControlParameters_BaseCongestionMarkingInterval = 135,
+  ndn_Tlv_ControlParameters_DefaultCongestionThreshold = 136,
+  ndn_Tlv_ControlParameters_Mtu =                 137,
   ndn_Tlv_ControlParameters_Flags =               108,
+  ndn_Tlv_ControlParameters_Mask =                112,
   ndn_Tlv_ControlParameters_Strategy =            107,
   ndn_Tlv_ControlParameters_ExpirationPeriod =    109
 };
