@@ -458,6 +458,56 @@ ndn_TlvDecoder_readBooleanTlv
 }
 
 /**
+ * Decode the type and length from the input starting at the input buffer
+ * position, expecting the type to be expectedType, then skip (and ignore) the
+ * value.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param expectedType The expected type.
+ * @return 0 for success, else an error code, including an error if not the
+ * expected type or if the decoded length exceeds the number of bytes remaining.
+ */
+static __inline ndn_Error
+ndn_TlvDecoder_skipTlv
+  (struct ndn_TlvDecoder *self, unsigned int expectedType)
+{
+  ndn_Error error;
+  size_t length;
+
+  if ((error = ndn_TlvDecoder_readTypeAndLength(self, expectedType, &length)))
+    return error;
+  // readTypeAndLength already checked if the length exceeds the input buffer.
+  self->offset += length;
+
+  return NDN_ERROR_success;
+}
+
+/**
+ * Peek at the next TLV, and if it has the expectedType then call skipTlv to
+ * skip (and ignore) it.
+ * @param self A pointer to the ndn_TlvDecoder struct.
+ * @param expectedType The expected type.
+ * @param endOffset The offset of the end of the parent TLV.
+ * @return 0 for success, else an error code, including if the decoded length
+ * exceeds the number of bytes remaining.
+ */
+static __inline ndn_Error
+ndn_TlvDecoder_skipOptionalTlv
+  (struct ndn_TlvDecoder *self, unsigned int expectedType, size_t endOffset)
+{
+  int gotExpectedType;
+  ndn_Error error;
+
+  if ((error = ndn_TlvDecoder_peekType
+       (self, expectedType, endOffset, &gotExpectedType)))
+    return error;
+
+  if (gotExpectedType)
+    return ndn_TlvDecoder_skipTlv(self, expectedType);
+
+  return NDN_ERROR_success;
+}
+
+/**
  * Set the offset into the input, used for the next read.
  * @param self A pointer to the ndn_TlvDecoder struct.
  * @param offset The new offset.

@@ -118,6 +118,23 @@ public:
   }
 
   void
+  skipTlv(unsigned int expectedType)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_skipTlv(this, expectedType)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+
+  void
+  skipOptionalTlv(unsigned int expectedType, size_t endOffset)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_skipOptionalTlv
+         (this, expectedType, endOffset)))
+      throw runtime_error(ndn_getErrorString(error));
+  }
+
+  void
   seek(size_t offset) { ndn_TlvDecoder_seek(this, offset); }
 };
 
