@@ -166,6 +166,10 @@ ndn_decodeTlvControlParameters
         &controlParameters->uri)))
     return error;
 
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_LocalUri, endOffset)))
+    return error;
+
   // Decode integers.
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
        (decoder, ndn_Tlv_ControlParameters_LocalControlFeature, endOffset,
@@ -178,6 +182,22 @@ ndn_decodeTlvControlParameters
   if ((error = ndn_TlvDecoder_readOptionalNonNegativeIntegerTlv
        (decoder, ndn_Tlv_ControlParameters_Cost, endOffset,
         &controlParameters->cost)))
+    return error;
+
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_Capacity, endOffset)))
+    return error;
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_Count, endOffset)))
+    return error;
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_BaseCongestionMarkingInterval, endOffset)))
+    return error;
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_DefaultCongestionThreshold, endOffset)))
+    return error;
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_Mtu, endOffset)))
     return error;
 
   // Set forwarding flags.
@@ -193,6 +213,10 @@ ndn_decodeTlvControlParameters
   }
   else
     ndn_ForwardingFlags_initialize(&controlParameters->flags);
+
+  if ((error = ndn_TlvDecoder_skipOptionalTlv
+       (decoder, ndn_Tlv_ControlParameters_Mask, endOffset)))
+    return error;
 
   // Decode strategy.
   if ((error = ndn_TlvDecoder_peekType
