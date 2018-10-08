@@ -589,7 +589,7 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  void
+  virtual void
   putData
     (const Data& data,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());

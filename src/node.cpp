@@ -134,6 +134,18 @@ Node::registerPrefix
 }
 
 void
+Node::putData(const Data& data, WireFormat& wireFormat)
+{
+  Blob encoding = data.wireEncode(wireFormat);
+  // Check the encoding size here so that the error message is explicit.
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
+  send(encoding.buf(), encoding.size());
+}
+
+void
 Node::send(const uint8_t *encoding, size_t encodingLength)
 {
   if (encodingLength > getMaxNdnPacketSize())

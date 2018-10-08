@@ -234,6 +234,17 @@ public:
   }
 
   /**
+   * The OnInterestCallback calls this to put a Data packet which satisfies an
+   * Interest.
+   * @param data The Data packet which satisfies the interest.
+   * @param wireFormat A WireFormat object used to encode the Data packet.
+   * @throws runtime_error If the encoded Data packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  virtual void
+  putData(const Data& data, WireFormat& wireFormat);
+
+  /**
    * Send the encoded packet out through the face.
    * @param encoding The array of bytes for the encoded packet to send.
    * @param encodingLength The number of bytes in the encoding array.

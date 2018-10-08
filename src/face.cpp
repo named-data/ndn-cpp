@@ -202,14 +202,7 @@ Face::unsetInterestFilter(uint64_t interestFilterId)
 void
 Face::putData(const Data& data, WireFormat& wireFormat)
 {
-  // We get the encoding now before calling send because it may dispatch to
-  // async I/O to be called later, and the caller may modify data before then.
-  Blob encoding = data.wireEncode(wireFormat);
-  if (encoding.size() > getMaxNdnPacketSize())
-    throw runtime_error
-      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
-
-  send(encoding);
+  node_->putData(data, wireFormat);
 }
 
 void
