@@ -194,6 +194,15 @@ public:
   unsetInterestFilter(uint64_t interestFilterId);
 
   /**
+   * Override to use the ioService given to the constructor to dispatch putData
+   * to be called in a thread-safe manner. See Face.putData for calling details.
+   */
+  virtual void
+  putData
+    (const Data& data,
+     WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
+
+  /**
    * Override to use the ioService given to the constructor to dispatch send to
    * be called in a thread-safe manner. See Face.send for calling details.
    */

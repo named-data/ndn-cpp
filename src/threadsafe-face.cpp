@@ -189,6 +189,13 @@ ThreadsafeFace::unsetInterestFilter(uint64_t interestFilterId)
 }
 
 void
+ThreadsafeFace::putData(const Data& data, WireFormat& wireFormat)
+{
+  ioService_.dispatch
+    (boost::bind(&Node::putData, node_, data, wireFormat));
+}
+
+void
 ThreadsafeFace::send(const uint8_t *encoding, size_t encodingLength)
 {
   ioService_.dispatch
