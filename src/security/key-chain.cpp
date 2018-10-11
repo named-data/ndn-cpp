@@ -212,6 +212,10 @@ KeyChain::construct
   // this problem.
   tpm_ = createTpm(canonicalTpmLocator);
   pib_->setTpmLocator(canonicalTpmLocator);
+
+  // Provide a default NoVerifyPolicyManager, assuming the application will
+  // use a Validator.
+  policyManager_.reset(new NoVerifyPolicyManager());
 }
 
 ptr_lib::shared_ptr<PibIdentity>
