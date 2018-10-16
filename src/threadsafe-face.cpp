@@ -192,7 +192,7 @@ void
 ThreadsafeFace::putData(const Data& data, WireFormat& wireFormat)
 {
   ioService_.dispatch
-    (boost::bind(&Node::putData, node_, data, wireFormat));
+    (boost::bind(&Node::putData, node_, data, &wireFormat));
 }
 
 void

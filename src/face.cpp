@@ -202,7 +202,7 @@ Face::unsetInterestFilter(uint64_t interestFilterId)
 void
 Face::putData(const Data& data, WireFormat& wireFormat)
 {
-  node_->putData(data, wireFormat);
+  node_->putData(data, &wireFormat);
 }
 
 void

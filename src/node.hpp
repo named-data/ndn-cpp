@@ -242,7 +242,7 @@ public:
    * getMaxNdnPacketSize().
    */
   virtual void
-  putData(const Data& data, WireFormat& wireFormat);
+  putData(const Data& data, WireFormat* wireFormat);
 
   /**
    * Send the encoded packet out through the face.

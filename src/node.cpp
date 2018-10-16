@@ -134,9 +134,9 @@ Node::registerPrefix
 }
 
 void
-Node::putData(const Data& data, WireFormat& wireFormat)
+Node::putData(const Data& data, WireFormat* wireFormat)
 {
-  Blob encoding = data.wireEncode(wireFormat);
+  Blob encoding = data.wireEncode(*wireFormat);
   // Check the encoding size here so that the error message is explicit.
   if (encoding.size() > getMaxNdnPacketSize())
     throw runtime_error
