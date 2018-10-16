@@ -191,6 +191,13 @@ ThreadsafeFace::unsetInterestFilter(uint64_t interestFilterId)
 void
 ThreadsafeFace::putData(const Data& data, WireFormat& wireFormat)
 {
+  // Check the encoding size here so that the error message happens before
+  // dispatch. The encoding should be cached in the Data object.
+  Blob encoding = data.wireEncode(wireFormat);
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
   ioService_.dispatch
     (boost::bind(&Node::putData, node_, data, &wireFormat));
 }
