@@ -199,7 +199,7 @@ public:
    * @return The CanBePrefix flag.
    */
   bool
-  getCanBePrefix()
+  getCanBePrefix() const
   {
     // Use the closest v0.2 semantics. CanBePrefix is the opposite of exact
     // match where MaxSuffixComponents is 1 (for the implicit digest).
