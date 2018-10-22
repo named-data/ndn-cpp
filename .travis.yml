@@ -1,8 +1,5 @@
 language: cpp
 sudo: false
-branches:
-  only:
-    - master
 addons:
   apt:
     packages:
@@ -11,9 +8,11 @@ addons:
       - build-essential
       - libssl-dev
       - libsqlite3-dev
+      - zlib1g-dev
+      - protobuf-compiler
 script:
   - ./configure
-  - make doxygen-doc
+  - make
 after_success:
   - ssh-keyscan -H $HOSTNAME 2>&1 | tee -a $HOME/.ssh/known_hosts
   - openssl aes-256-cbc -K $encrypted_31fcab4e3357_key -iv $encrypted_31fcab4e3357_iv -in .travis.d/id-rsa.enc -out .travis.d/id-rsa -d
