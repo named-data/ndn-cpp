@@ -104,7 +104,7 @@ TpmBackEndFile::doCreateKey(const Name& identityName, const KeyParams& params)
     return keyHandle;
   }
   catch (const runtime_error& e) {
-    throw Error(string("Cannot write the key to disk: ") + e.what());
+    throw TpmBackEnd::Error(string("Cannot write the key to disk: ") + e.what());
   }
 }
 
@@ -121,7 +121,43 @@ TpmBackEndFile::doDeleteKey(const Name& keyName)
   }
 
   if (remove(keyPath.c_str()) != 0)
-    throw Error("Cannot delete the key");
+    throw TpmBackEnd::Error("Cannot delete the key");
+}
+
+Blob
+TpmBackEndFile::doExportKey
+  (const Name& keyName, const uint8_t* password, size_t passwordLength)
+{
+  ptr_lib::shared_ptr<TpmPrivateKey> key;
+  try {
+    key = loadKey(keyName);
+  } catch (const std::exception& ex) {
+    throw TpmBackEnd::Error(string("Cannot export private key: ") + ex.what());
+  }
+
+  if (password)
+    throw TpmBackEnd::Error("Private key password-encryption is not implemented");
+  else
+    return key->toPkcs8();
+}
+
+void
+TpmBackEndFile::doImportKey
+  (const Name& keyName, const uint8_t* pkcs8, size_t pkcs8Length,
+   const uint8_t* password, size_t passwordLength)
+{
+  ptr_lib::shared_ptr<TpmPrivateKey> key(new TpmPrivateKey());
+  try {
+    if (password)
+      throw TpmBackEnd::Error("Private key password-encryption is not implemented");
+    else {
+      key->loadPkcs8(pkcs8, pkcs8Length);
+    }
+  } catch (const TpmPrivateKey::Error& ex) {
+    throw TpmBackEnd::Error(string("Cannot import private key: ") + ex.what());
+  }
+
+  saveKey(keyName, key);
 }
 
 ptr_lib::shared_ptr<TpmPrivateKey>
