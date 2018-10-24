@@ -1,3 +1,13 @@
+Interim changes since NDN-CPP v0.15 (2018-10-24)
+------------------------------------------------
+
+Changes
+* In TpmBackEndFile, implemented private key import/export.
+
+Bug fixes
+* https://redmine.named-data.net/issues/4732 In decodeControlParameters, skip
+  unrecognized TLVs.
+
 NDN-CPP v0.15 (2018-09-17)
 --------------------------
 
