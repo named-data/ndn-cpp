@@ -74,6 +74,16 @@ CryptoLite::verifyHmacWithSha256Signature
     (key, keyLength, signature, signatureLength, data, dataLength) != 0;
 }
 
+void
+CryptoLite::computePbkdf2WithHmacSha1
+  (const uint8_t* password, size_t passwordLength, const uint8_t* salt,
+   size_t saltLength, int nIterations, size_t resultLength, uint8_t* result)
+{
+  ndn_computePbkdf2WithHmacSha1
+    (password, passwordLength, salt, saltLength, nIterations, resultLength,
+     result);
+}
+
 #endif
 
 bool

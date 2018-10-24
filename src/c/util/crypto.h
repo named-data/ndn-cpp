@@ -104,6 +104,23 @@ ndn_verifyDigestSha256Signature
    size_t dataLength);
 
 /**
+ * Compute the PBKDF2 with HMAC SHA1 of the password.
+ * @param password The input password, which should have characters in the range
+ * of 1 to 127.
+ * @param passwordLength The length of password.
+ * @param salt The 8-byte salt.
+ * @param saltLength The length of salt, which should be 8.
+ * @param nIterations  The number of iterations of the hashing algorithm.
+ * @param resultLength The number of bytes of the result array.
+ * @param result A pointer to a buffer of size resultLength to receive the
+ * result.
+ */
+void
+ndn_computePbkdf2WithHmacSha1
+  (const uint8_t *password, size_t passwordLength, const uint8_t *salt,
+   size_t saltLength, int nIterations, size_t resultLength, uint8_t *result);
+
+/**
  * Get the number of ndn_EcKeyInfo struct entries in the array.
  * @return The number of entries.
  */

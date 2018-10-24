@@ -93,6 +93,16 @@ ndn_verifyDigestSha256Signature
     (signature, dataDigest, ndn_SHA256_DIGEST_SIZE) == 0;
 }
 
+void
+ndn_computePbkdf2WithHmacSha1
+  (const uint8_t *password, size_t passwordLength, const uint8_t *salt,
+   size_t saltLength, int nIterations, size_t resultLength, uint8_t *result)
+{
+  PKCS5_PBKDF2_HMAC_SHA1
+    ((const char *)password, passwordLength, (const unsigned char *)salt,
+     saltLength, nIterations, resultLength, (unsigned char *)result);
+}
+
 size_t
 ndn_getEcKeyInfoCount() { return sizeof(EC_KEY_INFO) / sizeof(EC_KEY_INFO[0]); }
 
