@@ -128,6 +128,11 @@ enum {
   ndn_Tlv_Encrypt_InitialVector =       133
 };
 
+enum {
+  ndn_Tlv_SafeBag_SafeBag = 128,
+  ndn_Tlv_SafeBag_EncryptedKeyBag = 129
+};
+
 // For RepetitiveInterval.
 enum {
   ndn_Tlv_Encrypt_StartDate =          134,

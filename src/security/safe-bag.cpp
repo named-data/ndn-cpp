@@ -23,13 +23,60 @@
 #include <ndn-cpp/security/certificate/public-key.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
+#include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/security/tpm/tpm.hpp>
 #include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
+#include "../encoding/tlv-decoder.hpp"
+#include "../encoding/tlv-encoder.hpp"
 #include <ndn-cpp/security/safe-bag.hpp>
 
 using namespace std;
 
 namespace ndn {
+
+void
+SafeBag::wireDecode(const uint8_t* input, size_t inputLength)
+{
+  // Decode directly as TLV. We don't support the WireFormat abstraction
+  // because this isn't meant to go directly on the wire.
+  TlvDecoder decoder(input, inputLength);
+  size_t endOffset = decoder.readNestedTlvsStart(ndn_Tlv_SafeBag_SafeBag);
+
+  // Get the bytes of the certificate and decode.
+  size_t certificateBeginOffset = decoder.offset;
+  size_t certificateEndOffset = decoder.readNestedTlvsStart(ndn_Tlv_Data);
+  decoder.seek(certificateEndOffset);
+  certificate_ = ptr_lib::make_shared<Data>();
+  certificate_->wireDecode
+    (decoder.getSlice(certificateBeginOffset, certificateEndOffset),
+     *TlvWireFormat::get());
+  
+  privateKeyBag_ = Blob(decoder.readBlobTlv(ndn_Tlv_SafeBag_EncryptedKeyBag));
+
+  decoder.finishNestedTlvs(endOffset);
+}
+
+Blob
+SafeBag::wireEncode()
+{
+  // Encode directly as TLV. We don't support the WireFormat abstraction
+  // because this isn't meant to go directly on the wire.
+  TlvEncoder encoder(256);
+
+  encoder.writeNestedTlv(ndn_Tlv_SafeBag_SafeBag, encodeValue, this);
+
+  return encoder.finish();
+}
+
+void
+SafeBag::encodeValue(const void *context, TlvEncoder &encoder)
+{
+  const SafeBag& safeBag =  *(const SafeBag *)context;
+
+  // Add the entire Data packet encoding as is.
+  encoder.writeArray(safeBag.certificate_->wireEncode(*TlvWireFormat::get()));
+  encoder.writeBlobTlv(ndn_Tlv_SafeBag_EncryptedKeyBag, safeBag.privateKeyBag_);
+}
 
 ptr_lib::shared_ptr<CertificateV2>
 SafeBag::makeSelfSignedCertificate

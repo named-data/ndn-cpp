@@ -28,6 +28,8 @@
 
 namespace ndn {
 
+class TlvEncoder;
+
 /**
  * A SafeBag represents a container for sensitive related information such as a
  * certificate and private key.
@@ -63,7 +65,7 @@ public:
    * PKCS #8 EncryptedPrivateKeyInfo. If the password is omitted or null,
    * privateKeyBag is an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength (optional) The length of the password. If password is
-   * omitted ornull, this is ignored.
+   * omitted or null, this is ignored.
    * @param digestAlgorithm (optional) The digest algorithm for signing the
    * self-signed certificate. If omitted, use DIGEST_ALGORITHM_SHA256 .
    * @param wireFormat (optional) A WireFormat object used to encode the
@@ -83,6 +85,25 @@ public:
   }
 
   /**
+   * Create a SafeBag by decoding the input as an NDN-TLV SafeBag.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  SafeBag(const uint8_t* input, size_t inputLength)
+  {
+    wireDecode(input, inputLength);
+  }
+
+  /**
+   * Create a SafeBag by decoding the input as an NDN-TLV SafeBag.
+   * @param input The input buffer to decode.
+   */
+  SafeBag(const Blob& input)
+  {
+    wireDecode(input);
+  }
+
+  /**
    * Get the certificate data packet.
    * @return The certificate as a Data packet. If you need to process it as a
    * certificate object then you must create a new CertificateV2(data).
@@ -97,12 +118,40 @@ public:
    */
   const Blob& getPrivateKeyBag() const { return privateKeyBag_; }
 
+  /**
+   * Decode the input as an NDN-TLV SafeBag and update this object.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  void
+  wireDecode(const uint8_t* input, size_t inputLength);
+
+  /**
+   * Decode the input as an NDN-TLV SafeBag and update this object.
+   * @param input The input buffer to decode.
+   */
+  void
+  wireDecode(const Blob& input)
+  {
+    wireDecode(input.buf(), input.size());
+  }
+
+  /**
+   * Encode this as an NDN-TLV SafeBag.
+   * @return The encoding as a Blob.
+   */
+  Blob
+  wireEncode();
+
 private:
   static ptr_lib::shared_ptr<CertificateV2>
   makeSelfSignedCertificate
     (const Name& keyName, Blob privateKeyBag, Blob publicKeyEncoding,
      const uint8_t* password, size_t passwordLength,
      DigestAlgorithm digestAlgorithm, WireFormat& wireFormat);
+
+  static void
+  encodeValue(const void *context, TlvEncoder &encoder);
 
   ptr_lib::shared_ptr<Data> certificate_;
   Blob privateKeyBag_;
