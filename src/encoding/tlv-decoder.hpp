@@ -136,6 +136,17 @@ public:
 
   void
   seek(size_t offset) { ndn_TlvDecoder_seek(this, offset); }
+
+  struct ndn_Blob
+  getSlice(size_t beginOffset, size_t endOffset)
+  {
+    struct ndn_Blob slice;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_getSlice(this, beginOffset, endOffset, &slice)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    return slice;
+  }
 };
 
 }
