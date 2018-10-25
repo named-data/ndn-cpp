@@ -68,14 +68,13 @@ Blob
 TpmBackEndMemory::doExportKey
   (const Name& keyName, const uint8_t* password, size_t passwordLength)
 {
-  if (password)
-    throw Error("Private key password-encryption is not implemented");
-  else {
-    if (!hasKey(keyName))
-      throw Error("exportKey: The key does not exist");
+  if (!hasKey(keyName))
+    throw Error("exportKey: The key does not exist");
 
+  if (password)
+    return keys_[keyName]->toEncryptedPkcs8(password, passwordLength);
+  else
     return keys_[keyName]->toPkcs8();
-  }
 }
 
 void
@@ -84,13 +83,14 @@ TpmBackEndMemory::doImportKey
    const uint8_t* password, size_t passwordLength)
 {
   try {
+    ptr_lib::shared_ptr<TpmPrivateKey> key(new TpmPrivateKey());
     if (password)
-      throw Error("Private key password-encryption is not implemented");
-    else {
-      ptr_lib::shared_ptr<TpmPrivateKey> key(new TpmPrivateKey());
+      key->loadEncryptedPkcs8(pkcs8, pkcs8Length, password, passwordLength);
+    else
       key->loadPkcs8(pkcs8, pkcs8Length);
-      keys_[keyName] = key;
-    }
+
+    // This copies the Name.
+    keys_[keyName] = key;
   } catch (const TpmPrivateKey::Error& ex) {
     throw Error(string("Cannot import private key: ") + ex.what());
   }

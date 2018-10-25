@@ -136,7 +136,7 @@ TpmBackEndFile::doExportKey
   }
 
   if (password)
-    throw TpmBackEnd::Error("Private key password-encryption is not implemented");
+    return key->toEncryptedPkcs8(password, passwordLength);
   else
     return key->toPkcs8();
 }
@@ -149,7 +149,7 @@ TpmBackEndFile::doImportKey
   ptr_lib::shared_ptr<TpmPrivateKey> key(new TpmPrivateKey());
   try {
     if (password)
-      throw TpmBackEnd::Error("Private key password-encryption is not implemented");
+      key->loadEncryptedPkcs8(pkcs8, pkcs8Length, password, passwordLength);
     else {
       key->loadPkcs8(pkcs8, pkcs8Length);
     }
