@@ -88,6 +88,22 @@ public:
   loadPkcs8(const uint8_t* encoding, size_t encodingLength);
 
   /**
+   * Load the encrypted private key from a buffer with the PKCS #8 encoding of
+   * the EncryptedPrivateKeyInfo.
+   * This replaces any existing private key in this object.
+   * @param encoding The byte array with the private key encoding.
+   * @param encodingLength The length of the encoding.
+   * @param password The password for decrypting the private key, which should
+   * have characters in the range of 1 to 127.
+   * @param passwordLength The length of the password.
+   * @throws TpmPrivateKey::Error for errors decoding or decrypting the key.
+   */
+  void
+  loadEncryptedPkcs8
+    (const uint8_t* encoding, size_t encodingLength, const uint8_t* password,
+     size_t passwordLength);
+
+  /**
    * Get the encoded public key for this private key.
    * @return The public key encoding Blob.
    * @throws TpmPrivateKey::Error if no private key is loaded, or error
@@ -146,6 +162,22 @@ public:
    */
   Blob
   toPkcs8(bool includeParameters = true);
+
+  /**
+   * Get the encoded encrypted private key in PKCS #8.
+   * @param password The password for encrypting the private key, which should
+   * have characters in the range of 1 to 127.
+   * @param passwordLength The length of the password.
+   * @param includeParameters (optional) If true and this is an EC key, then
+   * include the EC parameters in the encoding. If omitted, use true. Using
+   * false is deprecated.
+   * @return The encoding Blob of the EncryptedPrivateKeyInfo.
+   * @throws TpmPrivateKey::Error if no private key is loaded, or error encoding.
+   */
+  Blob
+  toEncryptedPkcs8
+    (const uint8_t* password, size_t passwordLength,
+     bool includeParameters = true);
 
   /**
    * Generate a key pair according to keyParams and return a new TpmPrivateKey

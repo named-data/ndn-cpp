@@ -23,6 +23,8 @@
 #include "../../encoding/der/der-node.hpp"
 #include "../../encoding/der/der-exception.hpp"
 #include "../../c/util/crypto.h"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
+#include <ndn-cpp/lite/encrypt/algo/des-algorithm-lite.hpp>
 #include <ndn-cpp/security/tpm/tpm-private-key.hpp>
 
 using namespace std;
@@ -33,6 +35,9 @@ typedef DerNode::DerSequence DerSequence;
 
 static const char *RSA_ENCRYPTION_OID = "1.2.840.113549.1.1.1";
 static const char *EC_ENCRYPTION_OID = "1.2.840.10045.2.1";
+static const char *PBES2_OID = "1.2.840.113549.1.5.13";
+static const char *PBKDF2_OID = "1.2.840.113549.1.5.12";
+static const char *DES_EDE3_CBC_OID = "1.2.840.113549.3.7";
 
 void
 TpmPrivateKey::loadPkcs1
@@ -146,6 +151,135 @@ TpmPrivateKey::loadPkcs8(const uint8_t* encoding, size_t encodingLength)
   else
 #endif
     throw Error("loadPkcs8: Unrecognized private key OID");
+}
+
+void
+TpmPrivateKey::loadEncryptedPkcs8
+  (const uint8_t* encoding, size_t encodingLength, const uint8_t* password,
+   size_t passwordLength)
+{
+#if NDN_CPP_HAVE_LIBCRYPTO
+  // Decode the PKCS #8 EncryptedPrivateKeyInfo.
+  // See https://tools.ietf.org/html/rfc5208.
+  string oidString;
+  ptr_lib::shared_ptr<DerNode> parameters;
+  Blob encryptedKey;
+  try {
+    ptr_lib::shared_ptr<DerNode> parsedNode = DerNode::parse
+      (encoding, encodingLength);
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& encryptedPkcs8Children =
+      parsedNode->getChildren();
+    const std::vector<ptr_lib::shared_ptr<DerNode> >& algorithmIdChildren =
+      DerNode::getSequence(encryptedPkcs8Children, 0).getChildren();
+    oidString =
+      dynamic_cast<DerNode::DerOid&>(*algorithmIdChildren[0]).toVal().toRawStr();
+    parameters = algorithmIdChildren[1];
+
+    encryptedKey = dynamic_cast<DerNode::DerOctetString*>
+      (encryptedPkcs8Children[1].get())->toVal();
+  } catch (const std::exception& ex) {
+    throw Error(string
+      ("Cannot decode the PKCS #8 EncryptedPrivateKeyInfo: ") + ex.what());
+  }
+
+  // Use the password to get the unencrypted pkcs8Encoding.
+  vector<uint8_t> pkcs8Encoding(encryptedKey.size());
+  size_t pkcs8EncodingLength;
+
+  if (oidString == PBES2_OID) {
+    // Decode the PBES2 parameters. See https://www.ietf.org/rfc/rfc2898.txt .
+    string keyDerivationOidString;
+    ptr_lib::shared_ptr<DerNode> keyDerivationParameters;
+    string encryptionSchemeOidString;
+    ptr_lib::shared_ptr<DerNode> encryptionSchemeParameters;
+    try {
+      const std::vector<ptr_lib::shared_ptr<DerNode> >& parametersChildren =
+        parameters->getChildren();
+
+      const std::vector<ptr_lib::shared_ptr<DerNode> >& keyDerivationAlgorithmIdChildren =
+        DerNode::getSequence(parametersChildren, 0).getChildren();
+      keyDerivationOidString = dynamic_cast<DerNode::DerOid&>
+        (*keyDerivationAlgorithmIdChildren[0]).toVal().toRawStr();
+      keyDerivationParameters = keyDerivationAlgorithmIdChildren[1];
+
+      const std::vector<ptr_lib::shared_ptr<DerNode> >& encryptionSchemeAlgorithmIdChildren =
+        DerNode::getSequence(parametersChildren, 1).getChildren();
+      encryptionSchemeOidString = dynamic_cast<DerNode::DerOid&>
+        (*encryptionSchemeAlgorithmIdChildren[0]).toVal().toRawStr();
+      encryptionSchemeParameters = encryptionSchemeAlgorithmIdChildren[1];
+    } catch (const std::exception& ex) {
+      throw Error(string
+        ("Cannot decode the PBES2 parameters: ") + ex.what());
+    }
+
+    // Get the derived key from the password.
+    vector<uint8_t> derivedKey;
+    if (keyDerivationOidString == PBKDF2_OID) {
+      // Decode the PBKDF2 parameters.
+      Blob salt;
+      int nIterations;
+      try {
+        const std::vector<ptr_lib::shared_ptr<DerNode> >& pbkdf2ParametersChildren =
+          dynamic_cast<DerNode::DerSequence&>(*keyDerivationParameters).getChildren();
+        salt = dynamic_cast<DerNode::DerOctetString*>
+          (pbkdf2ParametersChildren[0].get())->toVal();
+        nIterations = dynamic_cast<DerNode::DerInteger*>
+          (pbkdf2ParametersChildren[1].get())->toIntegerVal();
+      } catch (const std::exception& ex) {
+        throw Error(string
+          ("Cannot decode the PBES2 parameters: ") + ex.what());
+      }
+
+      // Check the encryption scheme here to get the needed result length.
+      int resultLength;
+      if (encryptionSchemeOidString == DES_EDE3_CBC_OID)
+        resultLength = ndn_DES_EDE3_KEY_LENGTH;
+      else
+        throw Error("Unrecognized PBES2 encryption scheme OID: " +
+          encryptionSchemeOidString);
+
+      derivedKey.resize(resultLength);
+      CryptoLite::computePbkdf2WithHmacSha1
+        (password, passwordLength, salt.buf(), salt.size(), nIterations,
+         resultLength, &derivedKey.front());
+    }
+    else
+      throw Error
+        ("Unrecognized PBES2 key derivation OID: " + keyDerivationOidString);
+
+    // Use the derived key to get the unencrypted pkcs8Encoding.
+    if (encryptionSchemeOidString == DES_EDE3_CBC_OID) {
+      // Decode the DES-EDE3-CBC parameters.
+      Blob initialVector;
+      try {
+        initialVector = dynamic_cast<DerNode::DerOctetString*>
+          (encryptionSchemeParameters.get())->toVal();
+      } catch (const std::exception& ex) {
+        throw Error(string
+          ("Cannot decode the DES-EDE3-CBC parameters: ") + ex.what());
+      }
+
+      ndn_Error error;
+      if ((error = DesAlgorithmLite::decryptEdeCbcPkcs5Padding
+           (&derivedKey.front(), derivedKey.size(), initialVector.buf(),
+            initialVector.size(),
+            encryptedKey.buf(), encryptedKey.size(), &pkcs8Encoding.front(),
+            pkcs8EncodingLength)))
+        throw Error(string("Error decrypting PKCS #8 key with DES-EDE3-CBC: ") +
+                    ndn_getErrorString(error));
+    }
+    else
+      throw Error("Unrecognized PBES2 encryption scheme OID: " +
+        encryptionSchemeOidString);
+  }
+  else
+    throw Error("Unrecognized PKCS #8 EncryptedPrivateKeyInfo OID: " + oidString);
+
+  loadPkcs8(&pkcs8Encoding.front(), pkcs8Encoding.size());
+#else
+  throw Error
+    ("loadEncryptedPkcs8: Password-based decrypting the private key is not supported");
+#endif
 }
 
 Blob
@@ -312,6 +446,83 @@ TpmPrivateKey::toPkcs8(bool includeParameters)
   else
 #endif
     throw Error("toPkcs8: The private key is not loaded");
+}
+
+Blob
+TpmPrivateKey::toEncryptedPkcs8
+  (const uint8_t* password, size_t passwordLength, bool includeParameters)
+{
+#if NDN_CPP_HAVE_LIBCRYPTO
+  if (keyType_ < 0)
+    throw Error("toEncryptedPkcs8: The private key is not loaded");
+
+  // Create the derivedKey from the password.
+  const int nIterations = 2048;
+  uint8_t salt[8];
+  CryptoLite::generateRandomBytes(salt, sizeof(salt));
+  uint8_t derivedKey[ndn_DES_EDE3_KEY_LENGTH];
+  CryptoLite::computePbkdf2WithHmacSha1
+    (password, passwordLength, salt, sizeof(salt), nIterations,
+     ndn_DES_EDE3_KEY_LENGTH, derivedKey);
+
+  Blob pkcs8Encoding = toPkcs8(includeParameters);
+
+  // Use the derived key to get the encrypted pkcs8Encoding.
+  ptr_lib::shared_ptr<vector<uint8_t> > encryptedEncoding
+    (new vector<uint8_t>(pkcs8Encoding.size() + ndn_DES_BLOCK_LENGTH));
+  uint8_t initialVector[ndn_DES_BLOCK_LENGTH];
+  CryptoLite::generateRandomBytes(initialVector, sizeof(initialVector));
+
+  ndn_Error error;
+  size_t encryptedEncodingLength;
+  if ((error = DesAlgorithmLite::encryptEdeCbcPkcs5Padding
+       (derivedKey, sizeof(derivedKey), initialVector, sizeof(initialVector),
+        pkcs8Encoding.buf(), pkcs8Encoding.size(), &encryptedEncoding->front(),
+        encryptedEncodingLength)))
+    throw Error(string("Error encrypting PKCS #8 key with DES-EDE3-CBC: ") +
+                ndn_getErrorString(error));
+
+  // Encode the PBES2 parameters. See https://www.ietf.org/rfc/rfc2898.txt .
+  ptr_lib::shared_ptr<DerSequence> keyDerivationParameters(new DerSequence());
+  keyDerivationParameters->addChild(ptr_lib::make_shared<DerNode::DerOctetString>
+    (salt, sizeof(salt)));
+  keyDerivationParameters->addChild(ptr_lib::make_shared<DerNode::DerInteger>
+    (nIterations));
+  ptr_lib::shared_ptr<DerSequence> keyDerivationAlgorithmIdentifier
+    (new DerSequence());
+  keyDerivationAlgorithmIdentifier->addChild
+    (ptr_lib::make_shared<DerNode::DerOid>(PBKDF2_OID));
+  keyDerivationAlgorithmIdentifier->addChild(keyDerivationParameters);
+
+  ptr_lib::shared_ptr<DerSequence> encryptionSchemeAlgorithmIdentifier
+    (new DerSequence());
+  encryptionSchemeAlgorithmIdentifier->addChild
+    (ptr_lib::make_shared<DerNode::DerOid>(DES_EDE3_CBC_OID));
+  encryptionSchemeAlgorithmIdentifier->addChild
+    (ptr_lib::make_shared<DerNode::DerOctetString>
+     (initialVector, sizeof(initialVector)));
+
+  ptr_lib::shared_ptr<DerSequence> encryptedKeyParameters(new DerSequence());
+  encryptedKeyParameters->addChild(keyDerivationAlgorithmIdentifier);
+  encryptedKeyParameters->addChild(encryptionSchemeAlgorithmIdentifier);
+  ptr_lib::shared_ptr<DerSequence> encryptedKeyAlgorithmIdentifier
+    (new DerSequence());
+  encryptedKeyAlgorithmIdentifier->addChild
+    (ptr_lib::make_shared<DerNode::DerOid>(PBES2_OID));
+  encryptedKeyAlgorithmIdentifier->addChild(encryptedKeyParameters);
+
+  // Encode the PKCS #8 EncryptedPrivateKeyInfo.
+  // See https://tools.ietf.org/html/rfc5208.
+  ptr_lib::shared_ptr<DerSequence> encryptedKey(new DerSequence());
+  encryptedKey->addChild(encryptedKeyAlgorithmIdentifier);
+  encryptedKey->addChild(ptr_lib::make_shared<DerNode::DerOctetString>
+    (&encryptedEncoding->front(), encryptedEncodingLength));
+
+  return encryptedKey->encode();
+#else
+  throw Error
+    ("toEncryptedPkcs8: Password-based encrypting the private key is not supported");
+#endif
 }
 
 ptr_lib::shared_ptr<TpmPrivateKey>
