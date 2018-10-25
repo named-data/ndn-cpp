@@ -106,7 +106,7 @@ public:
    * @param plainDataLength The length of plainData.
    * @param encryptedData A pointer to the decrypted output buffer. The caller
    * must provide a large enough buffer, which should be at least
-   * encryptedDataLength + ndn_DES_EDE3_KEY_LENGTH bytes.
+   * encryptedDataLength + ndn_DES_BLOCK_LENGTH bytes.
    * @param encryptedDataLength This sets encryptedDataLength to the number of
    * bytes placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
@@ -131,7 +131,7 @@ public:
    * @param plainData The input byte array to encrypt.
    * @param encryptedData A pointer to the decrypted output buffer. The caller
    * must provide a large enough buffer, which should be at least
-   * encryptedDataLength + ndn_DES_EDE3_KEY_LENGTH bytes.
+   * encryptedDataLength + ndn_DES_BLOCK_LENGTH bytes.
    * @param encryptedDataLength This sets encryptedDataLength to the number of
    * bytes placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
