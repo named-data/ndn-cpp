@@ -78,6 +78,18 @@ static const size_t ndn_SHA256_DIGEST_SIZE = 32;
  */
 static const size_t ndn_AES_128_BLOCK_SIZE = 16;
 
+/**
+ * The key size in bytes for the DES EDE3 algorithm. We define this separately
+ * so that we don't have to include the openssl header everywhere.
+ */
+static const size_t ndn_DES_EDE3_KEY_LENGTH = 24;
+
+/**
+ * The block size in bytes for the DES algorithm. We define this separately
+ * so that we don't have to include the openssl header everywhere.
+ */
+static const size_t ndn_DES_BLOCK_LENGTH = 8;
+
 #ifdef __cplusplus
 }
 #endif
