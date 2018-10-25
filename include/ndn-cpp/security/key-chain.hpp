@@ -409,7 +409,26 @@ public:
 
   // Import and export
 
-  // TODO: exportSafeBag
+  /**
+   * Export a certificate and its corresponding private key in a SafeBag.
+   * @param certificate The certificate to export. This gets the key from the
+   * TPM using certificate.getKeyName().
+   * @param password (optional) The password for encrypting the private key,
+   * which should have characters in the range of 1 to 127. If the password is
+   * supplied, use it to put a PKCS #8 EncryptedPrivateKeyInfo in the SafeBag.
+   * If the password is null, put an unencrypted PKCS #8 PrivateKeyInfo in the
+   * SafeBag.
+   * @param passwordLength (optional) The length of the password. If password is
+   * null, this is ignored.
+   * @return A SafeBag carrying the certificate and private key.
+   * @throws KeyChain::Error certificate.getKeyName() key does not exist, if the
+   * password is null and the TPM does not support exporting an unencrypted
+   * private key, or for other errors exporting the private key.
+   */
+  ptr_lib::shared_ptr<SafeBag>
+  exportSafeBag
+    (const CertificateV2& certificate, const uint8_t* password = 0,
+     size_t passwordLength = 0);
 
   /**
    * Import a certificate and its corresponding private key encapsulated in a
@@ -424,7 +443,7 @@ public:
    * password is omitted or null, import an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength (optional) The length of the password. If password is
    * omitted or null, this is ignored.
-   * @throws KeyChain.Error if the private key cannot be imported, or if a
+   * @throws KeyChain::Error if the private key cannot be imported, or if a
    * public key or private key of the same name already exists, or if a
    * certificate of the same name already exists.
    */

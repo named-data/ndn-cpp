@@ -419,6 +419,24 @@ KeyChain::selfSign(ptr_lib::shared_ptr<PibKey>& key, WireFormat& wireFormat)
   return certificate;
 }
 
+ptr_lib::shared_ptr<SafeBag>
+KeyChain::exportSafeBag
+  (const CertificateV2& certificate, const uint8_t* password,
+   size_t passwordLength)
+{
+  const Name& keyName = certificate.getKeyName();
+
+  Blob encryptedKey;
+  try {
+    encryptedKey = tpm_->exportPrivateKey(keyName, password, passwordLength);
+  } catch (const std::exception& ex) {
+    throw KeyChain::Error("Failed to export private key `" +
+      keyName.toUri() + "`: " + ex.what());
+  }
+
+  return ptr_lib::make_shared<SafeBag>(certificate, encryptedKey);
+}
+
 void
 KeyChain::importSafeBag
   (const SafeBag& safeBag, const uint8_t* password, size_t passwordLength)
