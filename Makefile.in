@@ -230,6 +230,7 @@ am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/encrypt/algo/aes-algorithm_c.lo \
+	src/c/encrypt/algo/des-algorithm_c.lo \
 	src/c/lp/congestion-mark_c.lo src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
 	src/c/security/ec-public-key.lo \
@@ -273,6 +274,7 @@ am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
 	src/c/encoding/tlv/tlv-signature-info.lo \
 	src/c/encoding/tlv/tlv-structure-decoder.lo \
 	src/c/encrypt/algo/aes-algorithm_c.lo \
+	src/c/encrypt/algo/des-algorithm_c.lo \
 	src/c/lp/congestion-mark_c.lo src/c/lp/incoming-face-id_c.lo \
 	src/c/security/ec-private-key.lo \
 	src/c/security/ec-public-key.lo \
@@ -327,6 +329,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/lite/encoding/tlv-0_2-wire-format-lite.lo \
 	src/lite/encrypt/encrypted-content-lite.lo \
 	src/lite/encrypt/algo/aes-algorithm-lite.lo \
+	src/lite/encrypt/algo/des-algorithm-lite.lo \
 	src/lite/encrypt/algo/encrypt-params-lite.lo \
 	src/lite/lp/congestion-mark-lite.lo \
 	src/lite/lp/incoming-face-id-lite.lo \
@@ -897,6 +900,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo \
 	src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo \
 	src/c/encrypt/algo/$(DEPDIR)/aes-algorithm_c.Plo \
+	src/c/encrypt/algo/$(DEPDIR)/des-algorithm_c.Plo \
 	src/c/lp/$(DEPDIR)/congestion-mark_c.Plo \
 	src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo \
 	src/c/security/$(DEPDIR)/ec-private-key.Plo \
@@ -959,6 +963,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/lite/encoding/$(DEPDIR)/tlv-0_2-wire-format-lite.Plo \
 	src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo \
 	src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo \
+	src/lite/encrypt/algo/$(DEPDIR)/des-algorithm-lite.Plo \
 	src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo \
 	src/lite/lp/$(DEPDIR)/congestion-mark-lite.Plo \
 	src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo \
@@ -1878,6 +1883,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/des-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/lp/congestion-mark-lite.hpp \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
@@ -2023,6 +2029,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/aes-algorithm_c.c src/c/encrypt/algo/aes-algorithm.h \
+  src/c/encrypt/algo/des-algorithm_c.c src/c/encrypt/algo/des-algorithm.h \
   src/c/encrypt/algo/encrypt-params.h \
   src/c/lp/congestion-mark_c.c src/c/lp/congestion-mark.h \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
@@ -2118,6 +2125,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/aes-algorithm-lite.cpp \
+  src/lite/encrypt/algo/des-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/lp/congestion-mark-lite.cpp \
   src/lite/lp/incoming-face-id-lite.cpp \
@@ -2627,6 +2635,9 @@ src/c/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
 src/c/encrypt/algo/aes-algorithm_c.lo:  \
 	src/c/encrypt/algo/$(am__dirstamp) \
 	src/c/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/c/encrypt/algo/des-algorithm_c.lo:  \
+	src/c/encrypt/algo/$(am__dirstamp) \
+	src/c/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/c/lp/$(am__dirstamp):
 	@$(MKDIR_P) src/c/lp
 	@: > src/c/lp/$(am__dirstamp)
@@ -2892,6 +2903,9 @@ src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/lite/encrypt/algo/$(DEPDIR)
 	@: > src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/lite/encrypt/algo/aes-algorithm-lite.lo:  \
+	src/lite/encrypt/algo/$(am__dirstamp) \
+	src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
+src/lite/encrypt/algo/des-algorithm-lite.lo:  \
 	src/lite/encrypt/algo/$(am__dirstamp) \
 	src/lite/encrypt/algo/$(DEPDIR)/$(am__dirstamp)
 src/lite/encrypt/algo/encrypt-params-lite.lo:  \
@@ -4159,6 +4173,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/encrypt/algo/$(DEPDIR)/aes-algorithm_c.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/c/encrypt/algo/$(DEPDIR)/des-algorithm_c.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/congestion-mark_c.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/c/security/$(DEPDIR)/ec-private-key.Plo@am__quote@ # am--include-marker
@@ -4221,6 +4236,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encoding/$(DEPDIR)/tlv-0_2-wire-format-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/des-algorithm-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/congestion-mark-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo@am__quote@ # am--include-marker
@@ -6927,6 +6943,7 @@ distclean: distclean-recursive
 	-rm -f src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo
 	-rm -f src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo
 	-rm -f src/c/encrypt/algo/$(DEPDIR)/aes-algorithm_c.Plo
+	-rm -f src/c/encrypt/algo/$(DEPDIR)/des-algorithm_c.Plo
 	-rm -f src/c/lp/$(DEPDIR)/congestion-mark_c.Plo
 	-rm -f src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo
 	-rm -f src/c/security/$(DEPDIR)/ec-private-key.Plo
@@ -6989,6 +7006,7 @@ distclean: distclean-recursive
 	-rm -f src/lite/encoding/$(DEPDIR)/tlv-0_2-wire-format-lite.Plo
 	-rm -f src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo
 	-rm -f src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo
+	-rm -f src/lite/encrypt/algo/$(DEPDIR)/des-algorithm-lite.Plo
 	-rm -f src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo
 	-rm -f src/lite/lp/$(DEPDIR)/congestion-mark-lite.Plo
 	-rm -f src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo
@@ -7328,6 +7346,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/c/encoding/tlv/$(DEPDIR)/tlv-signature-info.Plo
 	-rm -f src/c/encoding/tlv/$(DEPDIR)/tlv-structure-decoder.Plo
 	-rm -f src/c/encrypt/algo/$(DEPDIR)/aes-algorithm_c.Plo
+	-rm -f src/c/encrypt/algo/$(DEPDIR)/des-algorithm_c.Plo
 	-rm -f src/c/lp/$(DEPDIR)/congestion-mark_c.Plo
 	-rm -f src/c/lp/$(DEPDIR)/incoming-face-id_c.Plo
 	-rm -f src/c/security/$(DEPDIR)/ec-private-key.Plo
@@ -7390,6 +7409,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/lite/encoding/$(DEPDIR)/tlv-0_2-wire-format-lite.Plo
 	-rm -f src/lite/encrypt/$(DEPDIR)/encrypted-content-lite.Plo
 	-rm -f src/lite/encrypt/algo/$(DEPDIR)/aes-algorithm-lite.Plo
+	-rm -f src/lite/encrypt/algo/$(DEPDIR)/des-algorithm-lite.Plo
 	-rm -f src/lite/encrypt/algo/$(DEPDIR)/encrypt-params-lite.Plo
 	-rm -f src/lite/lp/$(DEPDIR)/congestion-mark-lite.Plo
 	-rm -f src/lite/lp/$(DEPDIR)/incoming-face-id-lite.Plo

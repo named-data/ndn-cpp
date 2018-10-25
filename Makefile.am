@@ -42,7 +42,6 @@ CLEANFILES = \
   src/sync/sync-state.pb.cc \
   tools/usersync/content-meta-info.pb.cc
 
-
 check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
   bin/unit-tests/test-consumer bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \
@@ -179,6 +178,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
+  include/ndn-cpp/lite/encrypt/algo/des-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/encrypt-params-lite.hpp \
   include/ndn-cpp/lite/lp/congestion-mark-lite.hpp \
   include/ndn-cpp/lite/lp/incoming-face-id-lite.hpp \
@@ -322,6 +322,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/tlv/tlv.h \
   src/c/encrypt/encrypted-content.h \
   src/c/encrypt/algo/aes-algorithm_c.c src/c/encrypt/algo/aes-algorithm.h \
+  src/c/encrypt/algo/des-algorithm_c.c src/c/encrypt/algo/des-algorithm.h \
   src/c/encrypt/algo/encrypt-params.h \
   src/c/lp/congestion-mark_c.c src/c/lp/congestion-mark.h \
   src/c/lp/incoming-face-id_c.c src/c/lp/incoming-face-id.h \
@@ -416,6 +417,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/aes-algorithm-lite.cpp \
+  src/lite/encrypt/algo/des-algorithm-lite.cpp \
   src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/lite/lp/congestion-mark-lite.cpp \
   src/lite/lp/incoming-face-id-lite.cpp \
