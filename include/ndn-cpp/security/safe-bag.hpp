@@ -58,9 +58,10 @@ public:
    * PKCS #8 PrivateKeyInfo.
    * @param publicKeyEncoding The encoded public key for the certificate.
    * @param password (optional) The password for decrypting the private key in
-   * order to sign the self-signed certificate. If the password is supplied, use
-   * it to decrypt the PKCS #8 EncryptedPrivateKeyInfo. If the password is
-   * omitted or null, privateKeyBag is an unencrypted PKCS #8 PrivateKeyInfo.
+   * order to sign the self-signed certificate, which should have characters in
+   * the range of 1 to 127. If the password is supplied, use it to decrypt the
+   * PKCS #8 EncryptedPrivateKeyInfo. If the password is omitted or null,
+   * privateKeyBag is an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength (optional) The length of the password. If password is
    * omitted ornull, this is ignored.
    * @param digestAlgorithm (optional) The digest algorithm for signing the
