@@ -73,11 +73,33 @@ public:
   }
 
   void
+  writeArray(const uint8_t *array, size_t arrayLength)
+  {
+    ndn_Error error;
+    if ((error = ndn_TlvEncoder_writeArray(this, array, arrayLength)))
+      throw std::runtime_error(ndn_getErrorString(error));
+  }
+
+  void
+  writeArray(const Blob& array)
+  {
+    writeArray(array.buf(), array.size());
+  }
+
+  void
   writeBlobTlv(unsigned int type, struct ndn_Blob *value)
   {
     ndn_Error error;
     if ((error = ndn_TlvEncoder_writeBlobTlv(this, type, value)))
       throw std::runtime_error(ndn_getErrorString(error));
+  }
+
+  void
+  writeBlobTlv(unsigned int type, const Blob& value)
+  {
+    struct ndn_Blob blobStruct;
+    value.get(blobStruct);
+    writeBlobTlv(type, &blobStruct);
   }
 
   /**
