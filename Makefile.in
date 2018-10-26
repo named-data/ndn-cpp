@@ -318,6 +318,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/impl/interest-filter-table.lo \
 	src/impl/pending-interest-table.lo \
 	src/impl/registered-prefix-table.lo \
+	src/in-memory-storage/in-memory-storage-retaining.lo \
 	src/lite/control-parameters-lite.lo \
 	src/lite/control-response-lite.lo src/lite/data-lite.lo \
 	src/lite/delegation-set-lite.lo src/lite/exclude-lite.lo \
@@ -947,6 +948,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/impl/$(DEPDIR)/interest-filter-table.Plo \
 	src/impl/$(DEPDIR)/pending-interest-table.Plo \
 	src/impl/$(DEPDIR)/registered-prefix-table.Plo \
+	src/in-memory-storage/$(DEPDIR)/in-memory-storage-retaining.Plo \
 	src/lite/$(DEPDIR)/control-parameters-lite.Plo \
 	src/lite/$(DEPDIR)/control-response-lite.Plo \
 	src/lite/$(DEPDIR)/data-lite.Plo \
@@ -1865,6 +1867,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
   include/ndn-cpp/encrypt/algo/encryptor.hpp \
   include/ndn-cpp/encrypt/algo/rsa-algorithm.hpp \
+  include/ndn-cpp/in-memory-storage/in-memory-storage-retaining.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/control-response-lite.hpp \
@@ -2109,6 +2112,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
   src/impl/registered-prefix-table.cpp src/impl/registered-prefix-table.hpp \
+  src/in-memory-storage/in-memory-storage-retaining.cpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/control-response-lite.cpp \
   src/lite/data-lite.cpp \
@@ -2845,6 +2849,15 @@ src/impl/pending-interest-table.lo: src/impl/$(am__dirstamp) \
 	src/impl/$(DEPDIR)/$(am__dirstamp)
 src/impl/registered-prefix-table.lo: src/impl/$(am__dirstamp) \
 	src/impl/$(DEPDIR)/$(am__dirstamp)
+src/in-memory-storage/$(am__dirstamp):
+	@$(MKDIR_P) src/in-memory-storage
+	@: > src/in-memory-storage/$(am__dirstamp)
+src/in-memory-storage/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/in-memory-storage/$(DEPDIR)
+	@: > src/in-memory-storage/$(DEPDIR)/$(am__dirstamp)
+src/in-memory-storage/in-memory-storage-retaining.lo:  \
+	src/in-memory-storage/$(am__dirstamp) \
+	src/in-memory-storage/$(DEPDIR)/$(am__dirstamp)
 src/lite/$(am__dirstamp):
 	@$(MKDIR_P) src/lite
 	@: > src/lite/$(am__dirstamp)
@@ -4003,6 +4016,8 @@ mostlyclean-compile:
 	-rm -f src/encrypt/algo/*.lo
 	-rm -f src/impl/*.$(OBJEXT)
 	-rm -f src/impl/*.lo
+	-rm -f src/in-memory-storage/*.$(OBJEXT)
+	-rm -f src/in-memory-storage/*.lo
 	-rm -f src/lite/*.$(OBJEXT)
 	-rm -f src/lite/*.lo
 	-rm -f src/lite/encoding/*.$(OBJEXT)
@@ -4220,6 +4235,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/interest-filter-table.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/pending-interest-table.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/impl/$(DEPDIR)/registered-prefix-table.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/in-memory-storage/$(DEPDIR)/in-memory-storage-retaining.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/control-parameters-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/control-response-lite.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/lite/$(DEPDIR)/data-lite.Plo@am__quote@ # am--include-marker
@@ -5883,6 +5899,7 @@ clean-libtool:
 	-rm -rf src/encrypt/.libs src/encrypt/_libs
 	-rm -rf src/encrypt/algo/.libs src/encrypt/algo/_libs
 	-rm -rf src/impl/.libs src/impl/_libs
+	-rm -rf src/in-memory-storage/.libs src/in-memory-storage/_libs
 	-rm -rf src/lite/.libs src/lite/_libs
 	-rm -rf src/lite/encoding/.libs src/lite/encoding/_libs
 	-rm -rf src/lite/encrypt/.libs src/lite/encrypt/_libs
@@ -6765,6 +6782,8 @@ distclean-generic:
 	-rm -f src/encrypt/algo/$(am__dirstamp)
 	-rm -f src/impl/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/impl/$(am__dirstamp)
+	-rm -f src/in-memory-storage/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/in-memory-storage/$(am__dirstamp)
 	-rm -f src/lite/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/lite/$(am__dirstamp)
 	-rm -f src/lite/encoding/$(DEPDIR)/$(am__dirstamp)
@@ -6990,6 +7009,7 @@ distclean: distclean-recursive
 	-rm -f src/impl/$(DEPDIR)/interest-filter-table.Plo
 	-rm -f src/impl/$(DEPDIR)/pending-interest-table.Plo
 	-rm -f src/impl/$(DEPDIR)/registered-prefix-table.Plo
+	-rm -f src/in-memory-storage/$(DEPDIR)/in-memory-storage-retaining.Plo
 	-rm -f src/lite/$(DEPDIR)/control-parameters-lite.Plo
 	-rm -f src/lite/$(DEPDIR)/control-response-lite.Plo
 	-rm -f src/lite/$(DEPDIR)/data-lite.Plo
@@ -7393,6 +7413,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/impl/$(DEPDIR)/interest-filter-table.Plo
 	-rm -f src/impl/$(DEPDIR)/pending-interest-table.Plo
 	-rm -f src/impl/$(DEPDIR)/registered-prefix-table.Plo
+	-rm -f src/in-memory-storage/$(DEPDIR)/in-memory-storage-retaining.Plo
 	-rm -f src/lite/$(DEPDIR)/control-parameters-lite.Plo
 	-rm -f src/lite/$(DEPDIR)/control-response-lite.Plo
 	-rm -f src/lite/$(DEPDIR)/data-lite.Plo

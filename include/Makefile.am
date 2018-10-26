@@ -23,6 +23,7 @@ ndn_cpp_cpp_headers = \
   $(wildcard ndn-cpp/encoding/*.*) \
   $(wildcard ndn-cpp/encrypt/*.*) \
   $(wildcard ndn-cpp/encrypt/algo/*.*) \
+  $(wildcard ndn-cpp/in-memory-storage/*.*) \
   $(wildcard ndn-cpp/lite/*.*) \
   $(wildcard ndn-cpp/lite/encoding/*.*) \
   $(wildcard ndn-cpp/lite/encrypt/*.*) \

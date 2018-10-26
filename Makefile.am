@@ -160,6 +160,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/algo/encrypt-params.hpp \
   include/ndn-cpp/encrypt/algo/encryptor.hpp \
   include/ndn-cpp/encrypt/algo/rsa-algorithm.hpp \
+  include/ndn-cpp/in-memory-storage/in-memory-storage-retaining.hpp \
   include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/control-response-lite.hpp \
@@ -401,6 +402,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/impl/interest-filter-table.cpp src/impl/interest-filter-table.hpp \
   src/impl/pending-interest-table.cpp src/impl/pending-interest-table.hpp \
   src/impl/registered-prefix-table.cpp src/impl/registered-prefix-table.hpp \
+  src/in-memory-storage/in-memory-storage-retaining.cpp \
   src/lite/control-parameters-lite.cpp \
   src/lite/control-response-lite.cpp \
   src/lite/data-lite.cpp \
