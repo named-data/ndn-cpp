@@ -45,6 +45,7 @@ EncryptedContent::get(EncryptedContentLite& encryptedContentLite) const
   keyLocator_.get(encryptedContentLite.getKeyLocator());
   encryptedContentLite.setInitialVector(initialVector_);
   encryptedContentLite.setPayload(payload_);
+  encryptedContentLite.setPayloadKey(payloadKey_);
 }
 
 void
@@ -54,6 +55,7 @@ EncryptedContent::set(const EncryptedContentLite& encryptedContentLite)
   keyLocator_.set(encryptedContentLite.getKeyLocator());
   setInitialVector(Blob(encryptedContentLite.getInitialVector()));
   setPayload(Blob(encryptedContentLite.getPayload()));
+  setPayloadKey(Blob(encryptedContentLite.getPayloadKey()));
 }
 
 }
