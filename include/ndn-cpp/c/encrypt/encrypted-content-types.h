@@ -39,6 +39,7 @@ struct ndn_EncryptedContent {
   struct ndn_KeyLocator keyLocator;
   struct ndn_Blob initialVector;
   struct ndn_Blob payload;
+  struct ndn_Blob payloadKey;
 };
 
 #ifdef __cplusplus

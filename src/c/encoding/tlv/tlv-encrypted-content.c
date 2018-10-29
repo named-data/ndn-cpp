@@ -76,6 +76,9 @@ ndn_decodeTlvEncryptedContent
        (decoder, ndn_Tlv_Encrypt_EncryptedContent, &endOffset)))
     return error;
 
+  // EncryptedContent v1 doesn't have a payloadKey.
+  ndn_Blob_initialize(&encryptedContent->payloadKey, 0, 0);
+
   if ((error = ndn_decodeTlvKeyLocator
        (ndn_Tlv_KeyLocator, &encryptedContent->keyLocator, decoder)))
     return error;

@@ -79,6 +79,13 @@ public:
   getPayload() const { return BlobLite::downCast(payload); }
 
   /**
+   * Get the encrypted payload key.
+   * @return The encrypted payload key. If not specified, isNull() is true.
+   */
+  const BlobLite&
+  getPayloadKey() const { return BlobLite::downCast(payloadKey); }
+
+  /**
    * Set the algorithm type.
    * @param algorithmType The algorithm type. If not specified, set to -1.
    * @return This EncryptedContentLite so that you can chain calls to update
@@ -116,6 +123,20 @@ public:
   setPayload(const BlobLite& payload)
   {
     BlobLite::downCast(this->payload) = payload;
+    return *this;
+  }
+
+  /**
+   * Set the encrypted payload key.
+   * @param payload The encrypted payload key. If not specified, set to the
+   * default BlobLite() where isNull() is true.
+   * @return This EncryptedContentLite so that you can chain calls to update
+   * values.
+   */
+  EncryptedContentLite&
+  setPayloadKey(const BlobLite& payloadKey)
+  {
+    BlobLite::downCast(this->payloadKey) = payloadKey;
     return *this;
   }
 

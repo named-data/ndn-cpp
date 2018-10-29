@@ -20,11 +20,23 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include "../c/encrypt/encrypted-content.h"
 #include <ndn-cpp/lite/encrypt/encrypted-content-lite.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
 
+using namespace std;
+
 namespace ndn {
+
+const Name&
+EncryptedContent::getKeyLocatorName() const
+{
+  if (keyLocator_.getType() != ndn_KeyLocatorType_KEYNAME)
+    throw runtime_error("getKeyLocatorName: The KeyLocator type must be KEYNAME");
+
+  return keyLocator_.getKeyName();
+}
 
 void
 EncryptedContent::get(EncryptedContentLite& encryptedContentLite) const

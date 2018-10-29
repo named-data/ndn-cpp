@@ -62,6 +62,21 @@ public:
   getKeyLocator() { return keyLocator_; }
 
   /**
+   * Check that the key locator type is KEYNAME and return the key Name.
+   * @return The key Name.
+   * @throws runtime_error if the key locator type is not KEYNAME.
+   */
+  const Name&
+  getKeyLocatorName() const;
+
+  /**
+   * Check if the initial vector is specified.
+   * @return True if the initial vector is specified.
+   */
+  bool
+  hasInitialVector() const { return !initialVector_.isNull(); }
+
+  /**
    * Get the initial vector.
    * @return The initial vector. If not specified, isNull() is true.
    */
@@ -74,6 +89,13 @@ public:
    */
   const Blob&
   getPayload() const { return payload_; }
+
+  /**
+   * Get the encrypted payload key.
+   * @return The encrypted payload key. If not specified, isNull() is true.
+   */
+  const Blob&
+  getPayloadKey() const { return payloadKey_; }
 
   /**
    * Set the algorithm type.
@@ -100,6 +122,19 @@ public:
   setKeyLocator(const KeyLocator& keyLocator)
   {
     keyLocator_ = keyLocator;
+    return *this;
+  }
+
+  /**
+   * Set the key locator type to KEYNAME and set the key Name.
+   * @param keyName The key locator Name, which is copied.
+   * @return This EncryptedContent so that you can chain calls to update values.
+   */
+  EncryptedContent&
+  setKeyLocatorName(const Name& keyName)
+  {
+    keyLocator_.setType(ndn_KeyLocatorType_KEYNAME);
+    keyLocator_.setKeyName(keyName);
     return *this;
   }
 
@@ -132,7 +167,21 @@ public:
   }
 
   /**
-   * Encode this EncryptedContent for a particular wire format.
+   * Set the encrypted payload key.
+   * @param payloadKey The encrypted payload key. If not specified, set to the
+   * default Blob() where isNull() is true.
+   * @return This EncryptedContent so that you can chain calls to update
+   * values.
+   */
+  EncryptedContent&
+  setPayloadKey(const Blob& payloadKey)
+  {
+    payloadKey_ = payloadKey;
+    return *this;
+  }
+
+  /**
+   * Encode this to an EncryptedContent v1 wire encoding.
    * @param wireFormat (optional) A WireFormat object used to encode this
    * EncryptedContent. If omitted, use WireFormat::getDefaultWireFormat().
    * @return The encoded byte array.
@@ -144,8 +193,8 @@ public:
   }
 
   /**
-   * Decode the input using a particular wire format and update this
-   * EncryptedContent.
+   * Decode the input as an EncryptedContent v1 using a particular wire format
+   * and update this EncryptedContent.
    * @param input The input byte array to be decoded.
    * @param inputLength The length of input.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
@@ -160,8 +209,8 @@ public:
   }
 
   /**
-   * Decode the input using a particular wire format and update this
-   * EncryptedContent.
+   * Decode the input as an EncryptedContent v1 using a particular wire format
+   * and update this EncryptedContent.
    * @param input The input byte array to be decoded.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
@@ -175,8 +224,8 @@ public:
   }
 
   /**
-   * Decode the input using a particular wire format and update this
-   * EncryptedContent.
+   * Decode the input as an EncryptedContent v1 using a particular wire format
+   * and update this EncryptedContent.
    * @param input The input byte array to be decoded as an immutable Blob.
    * @param wireFormat (optional) A WireFormat object used to decode the input.
    * If omitted, use WireFormat::getDefaultWireFormat().
@@ -213,6 +262,7 @@ private:
   KeyLocator keyLocator_;
   Blob initialVector_;
   Blob payload_;
+  Blob payloadKey_;
 };
 
 }
