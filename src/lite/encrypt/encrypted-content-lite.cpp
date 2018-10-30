@@ -31,7 +31,7 @@ EncryptedContentLite::EncryptedContentLite
 }
 
 void
-EncryptedContentLite::clear() { ndn_EncryptedContentLite_clear(this); }
+EncryptedContentLite::clear() { ndn_EncryptedContent_clear(this); }
 
 ndn_Error
 EncryptedContentLite::set(const EncryptedContentLite& other)
