@@ -628,7 +628,7 @@ public:
    * @throws This may throw an exception for reading data or in the callback for processing the data.  If you
    * call this from an main event loop, you may want to catch and log/disregard all exceptions.
    */
-  void
+  virtual void
   processEvents();
 
   /**
