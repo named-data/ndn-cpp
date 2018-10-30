@@ -160,4 +160,18 @@ WireFormat::decodeEncryptedContent
   throw logic_error("unimplemented");
 }
 
+Blob
+WireFormat::encodeEncryptedContentV2(const EncryptedContent& encryptedContent)
+{
+  throw logic_error("unimplemented");
+}
+
+void
+WireFormat::decodeEncryptedContentV2
+  (EncryptedContent& encryptedContent, const uint8_t *input,
+   size_t inputLength)
+{
+  throw logic_error("unimplemented");
+}
+
 }

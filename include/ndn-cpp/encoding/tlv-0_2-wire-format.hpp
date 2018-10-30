@@ -222,7 +222,7 @@ public:
     (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
 
   /**
-   * Encode encryptedContent as NDN-TLV and return the encoding.
+   * Encode the EncryptedContent v1 in NDN-TLV and return the encoding.
    * @param encryptedContent The EncryptedContent object to encode.
    * @return A Blob containing the encoding.
    */
@@ -230,7 +230,7 @@ public:
   encodeEncryptedContent(const EncryptedContent& encryptedContent);
 
   /**
-   * Decode input as an NDN-TLV EncryptedContent and set the fields of the
+   * Decode input as an EncryptedContent v1 in NDN-TLV and set the fields of the
    * encryptedContent object.
    * @param encryptedContent The EncryptedContent object whose fields are
    * updated.
@@ -239,6 +239,30 @@ public:
    */
   virtual void
   decodeEncryptedContent
+    (EncryptedContent& encryptedContent, const uint8_t *input,
+     size_t inputLength);
+
+  /**
+   * Encode the EncryptedContent v2 (used in Name-based Access Control v2) in
+   * NDN-TLV and return the encoding.
+   * See https://github.com/named-data/name-based-access-control/blob/new/docs/spec.rst .
+   * @param encryptedContent The EncryptedContent object to encode.
+   * @return A Blob containing the encoding.
+   */
+  virtual Blob
+  encodeEncryptedContentV2(const EncryptedContent& encryptedContent);
+
+  /**
+   * Decode input as an an EncryptedContent v2 (used in Name-based Access
+   * Control v2) in NDN-TLV and set the fields of the encryptedContent object.
+   * See https://github.com/named-data/name-based-access-control/blob/new/docs/spec.rst .
+   * @param encryptedContent The EncryptedContent object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   */
+  virtual void
+  decodeEncryptedContentV2
     (EncryptedContent& encryptedContent, const uint8_t *input,
      size_t inputLength);
 

@@ -195,4 +195,22 @@ Tlv0_2WireFormatLite::decodeEncryptedContent
     (&encryptedContent, input, inputLength);
 }
 
+ndn_Error
+Tlv0_2WireFormatLite::encodeEncryptedContentV2
+  (const EncryptedContentLite& encryptedContent,
+   DynamicUInt8ArrayLite& output, size_t* encodingLength)
+{
+  return ndn_Tlv0_2WireFormat_encodeEncryptedContentV2
+    (&encryptedContent, &output, encodingLength);
+}
+
+ndn_Error
+Tlv0_2WireFormatLite::decodeEncryptedContentV2
+  (EncryptedContentLite& encryptedContent, const uint8_t* input,
+   size_t inputLength)
+{
+  return ndn_Tlv0_2WireFormat_decodeEncryptedContentV2
+    (&encryptedContent, input, inputLength);
+}
+
 }

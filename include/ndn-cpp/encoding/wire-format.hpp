@@ -303,8 +303,8 @@ public:
     (DelegationSet& delegationSet, const uint8_t *input, size_t inputLength);
 
   /**
-   * Encode encryptedContent and return the encoding. Your derived class should
-   * override.
+   * Encode the EncryptedContent v1 and return the encoding. Your derived class
+   * should override.
    * @param encryptedContent The EncryptedContent object to encode.
    * @return A Blob containing the encoding.
    * @throws logic_error for unimplemented if the derived class does not override.
@@ -313,7 +313,7 @@ public:
   encodeEncryptedContent(const EncryptedContent& encryptedContent);
 
   /**
-   * Decode input as an EncryptedContent and set the fields of the
+   * Decode input as an EncryptedContent v1 and set the fields of the
    * encryptedContent object. Your derived class should override.
    * @param encryptedContent The EncryptedContent object whose fields are
    * updated.
@@ -323,6 +323,33 @@ public:
    */
   virtual void
   decodeEncryptedContent
+    (EncryptedContent& encryptedContent, const uint8_t *input,
+     size_t inputLength);
+
+  /**
+   * Encode the EncryptedContent v2 (used in Name-based Access Control v2) and
+   * return the encoding. Your derived class should override.
+   * See https://github.com/named-data/name-based-access-control/blob/new/docs/spec.rst .
+   * @param encryptedContent The EncryptedContent object to encode.
+   * @return A Blob containing the encoding.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual Blob
+  encodeEncryptedContentV2(const EncryptedContent& encryptedContent);
+
+  /**
+   * Decode input as an EncryptedContent v2 (used in Name-based Access Control
+   * v2) and set the fields of the encryptedContent object. Your derived class
+   * should override.
+   * See https://github.com/named-data/name-based-access-control/blob/new/docs/spec.rst .
+   * @param encryptedContent The EncryptedContent object whose fields are
+   * updated.
+   * @param input A pointer to the input buffer to decode.
+   * @param inputLength The number of bytes in input.
+   * @throws logic_error for unimplemented if the derived class does not override.
+   */
+  virtual void
+  decodeEncryptedContentV2
     (EncryptedContent& encryptedContent, const uint8_t *input,
      size_t inputLength);
 
