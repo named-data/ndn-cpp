@@ -49,6 +49,19 @@ static __inline void ndn_EncryptedContent_initialize
 }
 
 /**
+ * Set the fields of the ndn_EncryptedContent struct to the values from
+ * ndn_EncryptedContent_initialize.
+ * @param self A pointer to the ndn_EncryptedContent struct.
+ */
+static __inline void ndn_EncryptedContent_clear
+  (struct ndn_EncryptedContent *self)
+{
+  ndn_EncryptedContent_initialize
+    (self, self->keyLocator.keyName.components,
+     self->keyLocator.keyName.maxComponents);
+}
+
+/**
  * Set this ndn_EncryptedContent struct to have the values from the other
  * encryptedContent.
  * @param self A pointer to the ndn_EncryptedContent struct.

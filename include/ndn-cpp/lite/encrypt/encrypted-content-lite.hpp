@@ -141,6 +141,12 @@ public:
   }
 
   /**
+   * Set the fields the values for none as in the constructor.
+   */
+  void
+  clear();
+
+  /**
    * Set this encryptedContent to have the values from the other encryptedContent.
    * @param other The other EncryptedContentLite to get values from.
    * @return 0 for success, or an error code if there is not enough room in this

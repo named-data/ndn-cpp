@@ -30,6 +30,9 @@ EncryptedContentLite::EncryptedContentLite
   ndn_EncryptedContent_initialize(this, keyNameComponents, maxKeyNameComponents);
 }
 
+void
+EncryptedContentLite::clear() { ndn_EncryptedContentLite_clear(this); }
+
 ndn_Error
 EncryptedContentLite::set(const EncryptedContentLite& other)
 {
