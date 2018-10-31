@@ -34,9 +34,9 @@ ndn_AesAlgorithm_decrypt128Cbc
   EVP_CIPHER_CTX *ctx;
   int outLength1, outLength2;
 
-  if (keyLength != ndn_AES_BLOCK_SIZE)
+  if (keyLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_key_size;
-  if (initialVectorLength != ndn_AES_BLOCK_SIZE)
+  if (initialVectorLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_initial_vector_size;
 
   ctx = EVP_CIPHER_CTX_new();
@@ -67,7 +67,7 @@ ndn_AesAlgorithm_decrypt128Ecb
   EVP_CIPHER_CTX *ctx;
   int outLength1, outLength2;
 
-  if (keyLength != ndn_AES_BLOCK_SIZE)
+  if (keyLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_key_size;
 
   ctx = EVP_CIPHER_CTX_new();
@@ -97,9 +97,9 @@ ndn_AesAlgorithm_encrypt128Cbc
   EVP_CIPHER_CTX *ctx;
   int outLength1, outLength2;
 
-  if (keyLength != ndn_AES_BLOCK_SIZE)
+  if (keyLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_key_size;
-  if (initialVectorLength != ndn_AES_BLOCK_SIZE)
+  if (initialVectorLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_initial_vector_size;
 
   ctx = EVP_CIPHER_CTX_new();
@@ -130,7 +130,7 @@ ndn_AesAlgorithm_encrypt128Ecb
   EVP_CIPHER_CTX *ctx;
   int outLength1, outLength2;
 
-  if (keyLength != ndn_AES_BLOCK_SIZE)
+  if (keyLength != ndn_AES_BLOCK_LENGTH)
     return NDN_ERROR_Incorrect_key_size;
 
   ctx = EVP_CIPHER_CTX_new();
