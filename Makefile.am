@@ -48,6 +48,7 @@ check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certifica
   bin/unit-tests/test-control-response \
   bin/unit-tests/test-data-methods bin/unit-tests/test-der-encode-decode \
   bin/unit-tests/test-encrypted-content bin/unit-tests/test-encryptor \
+  bin/unit-tests/test-encryptor-v2 \
   bin/unit-tests/test-face-methods bin/unit-tests/test-group-manager-db \
   bin/unit-tests/test-group-manager bin/unit-tests/test-identity-methods \
   bin/unit-tests/test-interest-methods \
@@ -146,6 +147,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypt-key.hpp \
   include/ndn-cpp/encrypt/encrypted-content.hpp \
+  include/ndn-cpp/encrypt/encryptor-v2.hpp \
   include/ndn-cpp/encrypt/interval.hpp \
   include/ndn-cpp/encrypt/group-manager.hpp \
   include/ndn-cpp/encrypt/group-manager-db.hpp \
@@ -384,6 +386,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encrypt/consumer.cpp \
   src/encrypt/consumer-db.cpp \
   src/encrypt/encrypted-content.cpp \
+  src/encrypt/encryptor-v2.cpp \
   src/encrypt/group-manager.cpp \
   src/encrypt/group-manager-db.cpp \
   src/encrypt/interval.cpp \
@@ -655,6 +658,14 @@ bin_unit_tests_test_encrypted_content_LDADD = libndn-cpp.la
 bin_unit_tests_test_encryptor_SOURCES = tests/unit-tests/test-encryptor.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_encryptor_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_encryptor_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_encryptor_v2_SOURCES = tests/unit-tests/test-encryptor-v2.cpp \
+  tests/unit-tests/encrypt-static-data.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/in-memory-storage-face.cpp \
+  contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_encryptor_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_encryptor_v2_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_face_methods_SOURCES = tests/unit-tests/test-face-methods.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_face_methods_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
