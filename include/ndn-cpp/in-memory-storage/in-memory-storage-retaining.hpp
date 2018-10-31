@@ -26,6 +26,9 @@
 #include "../interest.hpp"
 #include "../data.hpp"
 
+// Give friend access to the tests.
+class TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
+
 namespace ndn {
 
 /**
@@ -72,6 +75,9 @@ public:
   getCache_() { return cache_; }
 
 private:
+  // Give friend access to the tests.
+  friend TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
+
   std::map<Name, ptr_lib::shared_ptr<Data> > cache_;
 };
 
