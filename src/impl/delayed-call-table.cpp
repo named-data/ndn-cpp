@@ -40,7 +40,8 @@ DelayedCallTable::callLater
 void
 DelayedCallTable::callTimedOut()
 {
-  MillisecondsSince1970 now = ndn_getNowMilliseconds();
+    // nowOffsetMilliseconds_ is only used for testing.
+  MillisecondsSince1970 now = ndn_getNowMilliseconds() + nowOffsetMilliseconds_;
   // table_ is sorted on _callTime, so we only need to process the timed-out
   // entries at the front, then quit.
   while (table_.size() > 0 && table_.front()->getCallTime() <= now) {
