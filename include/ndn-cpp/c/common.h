@@ -73,10 +73,10 @@ static const size_t MAX_NDN_PACKET_SIZE = 8800;
 static const size_t ndn_SHA256_DIGEST_SIZE = 32;
 
 /**
- * The block size in bytes for the AES 128 algorithm. We define this separately
+ * The block size in bytes for the AES algorithm. We define this separately
  * so that we don't have to include the openssl header everywhere.
  */
-static const size_t ndn_AES_128_BLOCK_SIZE = 16;
+static const size_t ndn_AES_BLOCK_SIZE = 16;
 
 /**
  * The key size in bytes for the DES EDE3 algorithm. We define this separately

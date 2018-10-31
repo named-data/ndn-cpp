@@ -100,6 +100,6 @@ AesAlgorithm::encrypt
   return Blob(encryptedData, false);
 }
 
-size_t AesAlgorithm::BLOCK_SIZE = ndn_AES_128_BLOCK_SIZE;
+size_t AesAlgorithm::BLOCK_SIZE = ndn_AES_BLOCK_SIZE;
 
 }
