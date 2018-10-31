@@ -85,6 +85,12 @@ static const size_t ndn_AES_BLOCK_LENGTH = 16;
 static const size_t ndn_AES_128_KEY_LENGTH = 16;
 
 /**
+ * The key size in bytes for the AES 256 algorithm. We define this separately
+ * so that we don't have to include the openssl header everywhere.
+ */
+static const size_t ndn_AES_256_KEY_LENGTH = 32;
+
+/**
  * The key size in bytes for the DES EDE3 algorithm. We define this separately
  * so that we don't have to include the openssl header everywhere.
  */
