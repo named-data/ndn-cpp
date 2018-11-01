@@ -460,6 +460,23 @@ private:
   void
   onConnected();
 
+  /**
+   * Call the OnInterest callback for all entries in the interestFilterTable_
+   * that match the interest.
+   * @param interest The Interest to match.
+   */
+  void
+  dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest);
+
+  /**
+   * Extract entries from the pendingInterestTable_ which match data, and call
+   * each OnData callback.
+   * @param data The Data packet to match.
+   * @return True if the data matched an entry in the pendingInterestTable_.
+   */
+  bool
+  satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data);
+
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   PendingInterestTable pendingInterestTable_;

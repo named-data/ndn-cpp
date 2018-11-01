@@ -163,6 +163,43 @@ Node::getNextEntryId()
 }
 
 void
+Node::dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest)
+{
+  // Call all interest filter callbacks which match.
+  vector<ptr_lib::shared_ptr<InterestFilterTable::Entry> > matchedFilters;
+  interestFilterTable_.getMatchedFilters(*interest, matchedFilters);
+
+  for (size_t i = 0; i < matchedFilters.size(); ++i) {
+    InterestFilterTable::Entry &entry = *matchedFilters[i];
+    try {
+      entry.getOnInterest()
+        (entry.getPrefix(), interest, entry.getFace(),
+         entry.getInterestFilterId(), entry.getFilter());
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node: Error in onInterest: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node: Error in onInterest.");
+    }
+  }
+}
+
+bool
+Node::satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data)
+{
+  vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
+  pendingInterestTable_.extractEntriesForExpressedInterest(*data, pitEntries);
+  for (size_t i = 0; i < pitEntries.size(); ++i) {
+    try {
+      pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node: Error in onData: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node: Error in onData.");
+    }
+  }
+}
+
+void
 Node::RegisterResponse::operator()(const ptr_lib::shared_ptr<const Interest>& interest, const ptr_lib::shared_ptr<Data>& responseData)
 {
   // Decode responseData->getContent() and check for a success code.
@@ -383,37 +420,10 @@ Node::onReceivedElement(const uint8_t *element, size_t elementLength)
   }
 
   // Now process as Interest or Data.
-  if (interest) {
-    // Call all interest filter callbacks which match.
-    vector<ptr_lib::shared_ptr<InterestFilterTable::Entry> > matchedFilters;
-    interestFilterTable_.getMatchedFilters(*interest, matchedFilters);
-
-    for (size_t i = 0; i < matchedFilters.size(); ++i) {
-      InterestFilterTable::Entry &entry = *matchedFilters[i];
-      try {
-        entry.getOnInterest()
-          (entry.getPrefix(), interest, entry.getFace(),
-           entry.getInterestFilterId(), entry.getFilter());
-      } catch (const std::exception& ex) {
-        _LOG_ERROR("Node::onReceivedElement: Error in onInterest: " << ex.what());
-      } catch (...) {
-        _LOG_ERROR("Node::onReceivedElement: Error in onInterest.");
-      }
-    }
-  }
-  else if (data) {
-    vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
-    pendingInterestTable_.extractEntriesForExpressedInterest(*data, pitEntries);
-    for (size_t i = 0; i < pitEntries.size(); ++i) {
-      try {
-        pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
-      } catch (const std::exception& ex) {
-        _LOG_ERROR("Node::onReceivedElement: Error in onData: " << ex.what());
-      } catch (...) {
-        _LOG_ERROR("Node::onReceivedElement: Error in onData.");
-      }
-    }
-  }
+  if (interest)
+    dispatchInterest(interest);
+  else if (data)
+    satisfyPendingInterests(data);
 }
 
 void
