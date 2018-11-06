@@ -186,9 +186,12 @@ Node::dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest)
 bool
 Node::satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data)
 {
+  bool hasMatch = false;
+
   vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
   pendingInterestTable_.extractEntriesForExpressedInterest(*data, pitEntries);
   for (size_t i = 0; i < pitEntries.size(); ++i) {
+    hasMatch = true;
     try {
       pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
     } catch (const std::exception& ex) {
@@ -197,6 +200,8 @@ Node::satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data)
       _LOG_ERROR("Node: Error in onData.");
     }
   }
+
+  return hasMatch;
 }
 
 void
