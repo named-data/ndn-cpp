@@ -1,7 +1,9 @@
-Interim changes since NDN-CPP v0.15 (2018-10-25)
+Interim changes since NDN-CPP v0.15 (2018-11-07)
 ------------------------------------------------
 
 Changes
+* https://redmine.named-data.net/issues/4655 Added name-based access control v2,
+  EncryptorV2, DecryptorV2 and AccessControlV2, with integration tests.
 * In TpmBackEndFile, implemented private key import/export.
 * In KeyChain, implemented exportSafeBag with a password-encrypted private key.
 
