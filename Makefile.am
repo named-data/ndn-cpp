@@ -42,7 +42,8 @@ CLEANFILES = \
   src/sync/sync-state.pb.cc \
   tools/usersync/content-meta-info.pb.cc
 
-check_PROGRAMS = bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
+check_PROGRAMS = bin/unit-tests/test-access-manager-v2 \
+  bin/unit-tests/test-aes-algorithm bin/unit-tests/test-certificate \
   bin/unit-tests/test-consumer bin/unit-tests/test-consumer-db \
   bin/unit-tests/test-control-parameters-encode-decode \
   bin/unit-tests/test-control-response \
@@ -143,6 +144,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_2-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/access-manager-v2.hpp \
   include/ndn-cpp/encrypt/consumer.hpp \
   include/ndn-cpp/encrypt/consumer-db.hpp \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
@@ -385,6 +387,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/access-manager-v2.cpp \
   src/encrypt/consumer.cpp \
   src/encrypt/consumer-db.cpp \
   src/encrypt/decryptor-v2.cpp \
@@ -621,6 +624,14 @@ bin_test_register_route_SOURCES = \
 bin_test_register_route_LDADD = libndn-cpp.la
 
 # Unit tests
+
+bin_unit_tests_test_access_manager_v2_SOURCES = tests/unit-tests/test-access-manager-v2.cpp \
+  tests/unit-tests/encrypt-static-data.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/in-memory-storage-face.cpp \
+  contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_access_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_access_manager_v2_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

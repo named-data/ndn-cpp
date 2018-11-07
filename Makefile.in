@@ -93,7 +93,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = bin/unit-tests/test-aes-algorithm$(EXEEXT) \
+check_PROGRAMS = bin/unit-tests/test-access-manager-v2$(EXEEXT) \
+	bin/unit-tests/test-aes-algorithm$(EXEEXT) \
 	bin/unit-tests/test-certificate$(EXEEXT) \
 	bin/unit-tests/test-consumer$(EXEEXT) \
 	bin/unit-tests/test-consumer-db$(EXEEXT) \
@@ -304,13 +305,13 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/encoding/tlv-0_2-wire-format.lo \
 	src/encoding/tlv-wire-format.lo src/encoding/wire-format.lo \
 	src/encoding/der/der-exception.lo src/encoding/der/der-node.lo \
-	src/encrypt/consumer.lo src/encrypt/consumer-db.lo \
-	src/encrypt/decryptor-v2.lo src/encrypt/encrypted-content.lo \
-	src/encrypt/encryptor-v2.lo src/encrypt/group-manager.lo \
-	src/encrypt/group-manager-db.lo src/encrypt/interval.lo \
-	src/encrypt/producer.lo src/encrypt/producer-db.lo \
-	src/encrypt/repetitive-interval.lo src/encrypt/schedule.lo \
-	src/encrypt/sqlite3-consumer-db.lo \
+	src/encrypt/access-manager-v2.lo src/encrypt/consumer.lo \
+	src/encrypt/consumer-db.lo src/encrypt/decryptor-v2.lo \
+	src/encrypt/encrypted-content.lo src/encrypt/encryptor-v2.lo \
+	src/encrypt/group-manager.lo src/encrypt/group-manager-db.lo \
+	src/encrypt/interval.lo src/encrypt/producer.lo \
+	src/encrypt/producer-db.lo src/encrypt/repetitive-interval.lo \
+	src/encrypt/schedule.lo src/encrypt/sqlite3-consumer-db.lo \
 	src/encrypt/sqlite3-group-manager-db.lo \
 	src/encrypt/sqlite3-producer-db.lo \
 	src/encrypt/algo/aes-algorithm.lo \
@@ -540,6 +541,14 @@ am_bin_test_sign_verify_data_hmac_OBJECTS =  \
 bin_test_sign_verify_data_hmac_OBJECTS =  \
 	$(am_bin_test_sign_verify_data_hmac_OBJECTS)
 bin_test_sign_verify_data_hmac_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_access_manager_v2_OBJECTS = tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.$(OBJEXT) \
+	tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.$(OBJEXT)
+bin_unit_tests_test_access_manager_v2_OBJECTS =  \
+	$(am_bin_unit_tests_test_access_manager_v2_OBJECTS)
+bin_unit_tests_test_access_manager_v2_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_aes_algorithm_OBJECTS = tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.$(OBJEXT)
 bin_unit_tests_test_aes_algorithm_OBJECTS =  \
@@ -811,6 +820,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer-gtest-all.Po \
@@ -948,6 +958,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/encoding/$(DEPDIR)/wire-format.Plo \
 	src/encoding/der/$(DEPDIR)/der-exception.Plo \
 	src/encoding/der/$(DEPDIR)/der-node.Plo \
+	src/encrypt/$(DEPDIR)/access-manager-v2.Plo \
 	src/encrypt/$(DEPDIR)/consumer-db.Plo \
 	src/encrypt/$(DEPDIR)/consumer.Plo \
 	src/encrypt/$(DEPDIR)/decryptor-v2.Plo \
@@ -1102,6 +1113,10 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/util/regex/$(DEPDIR)/ndn-regex-pseudo-matcher.Plo \
 	src/util/regex/$(DEPDIR)/ndn-regex-repeat-matcher.Plo \
 	src/util/regex/$(DEPDIR)/ndn-regex-top-matcher.Plo \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po \
@@ -1229,6 +1244,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_publish_async_nfd_lite_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
+	$(bin_unit_tests_test_access_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
 	$(bin_unit_tests_test_certificate_SOURCES) \
 	$(bin_unit_tests_test_consumer_SOURCES) \
@@ -1297,6 +1313,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_publish_async_nfd_lite_SOURCES) \
 	$(bin_test_register_route_SOURCES) \
 	$(bin_test_sign_verify_data_hmac_SOURCES) \
+	$(bin_unit_tests_test_access_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_aes_algorithm_SOURCES) \
 	$(bin_unit_tests_test_certificate_SOURCES) \
 	$(bin_unit_tests_test_consumer_SOURCES) \
@@ -1883,6 +1900,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_2-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
+  include/ndn-cpp/encrypt/access-manager-v2.hpp \
   include/ndn-cpp/encrypt/consumer.hpp \
   include/ndn-cpp/encrypt/consumer-db.hpp \
   include/ndn-cpp/encrypt/decrypt-key.hpp \
@@ -2128,6 +2146,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/wire-format.cpp \
   src/encoding/der/der-exception.cpp src/encoding/der/der-exception.hpp \
   src/encoding/der/der-node.cpp src/encoding/der/der-node.hpp \
+  src/encrypt/access-manager-v2.cpp \
   src/encrypt/consumer.cpp \
   src/encrypt/consumer-db.cpp \
   src/encrypt/decryptor-v2.cpp \
@@ -2347,6 +2366,14 @@ bin_test_register_route_SOURCES = \
 bin_test_register_route_LDADD = libndn-cpp.la
 
 # Unit tests
+bin_unit_tests_test_access_manager_v2_SOURCES = tests/unit-tests/test-access-manager-v2.cpp \
+  tests/unit-tests/encrypt-static-data.cpp \
+  tests/unit-tests/identity-management-fixture.cpp \
+  tests/unit-tests/in-memory-storage-face.cpp \
+  contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_access_manager_v2_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_access_manager_v2_LDADD = libndn-cpp.la
 bin_unit_tests_test_aes_algorithm_SOURCES = tests/unit-tests/test-aes-algorithm.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_aes_algorithm_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_aes_algorithm_LDADD = libndn-cpp.la
@@ -2850,6 +2877,8 @@ src/encrypt/$(am__dirstamp):
 src/encrypt/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/encrypt/$(DEPDIR)
 	@: > src/encrypt/$(DEPDIR)/$(am__dirstamp)
+src/encrypt/access-manager-v2.lo: src/encrypt/$(am__dirstamp) \
+	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/consumer.lo: src/encrypt/$(am__dirstamp) \
 	src/encrypt/$(DEPDIR)/$(am__dirstamp)
 src/encrypt/consumer-db.lo: src/encrypt/$(am__dirstamp) \
@@ -3556,7 +3585,16 @@ tests/unit-tests/$(am__dirstamp):
 tests/unit-tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tests/unit-tests/$(DEPDIR)
 	@: > tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
-tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.$(OBJEXT):  \
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
 contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
@@ -3565,12 +3603,22 @@ contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp):
 contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)
 	@: > contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
-contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.$(OBJEXT):  \
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.$(OBJEXT):  \
 	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 bin/unit-tests/$(am__dirstamp):
 	@$(MKDIR_P) bin/unit-tests
 	@: > bin/unit-tests/$(am__dirstamp)
+
+bin/unit-tests/test-access-manager-v2$(EXEEXT): $(bin_unit_tests_test_access_manager_v2_OBJECTS) $(bin_unit_tests_test_access_manager_v2_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_access_manager_v2_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-access-manager-v2$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_access_manager_v2_OBJECTS) $(bin_unit_tests_test_access_manager_v2_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_aes_algorithm-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 
 bin/unit-tests/test-aes-algorithm$(EXEEXT): $(bin_unit_tests_test_aes_algorithm_OBJECTS) $(bin_unit_tests_test_aes_algorithm_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_aes_algorithm_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-aes-algorithm$(EXEEXT)
@@ -4167,6 +4215,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/apache/$(DEPDIR)/apr_base64.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer-gtest-all.Po@am__quote@ # am--include-marker
@@ -4313,6 +4362,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/$(DEPDIR)/wire-format.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-exception.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/encoding/der/$(DEPDIR)/der-node.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/access-manager-v2.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/consumer-db.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/consumer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/encrypt/$(DEPDIR)/decryptor-v2.Plo@am__quote@ # am--include-marker
@@ -4467,6 +4517,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-pseudo-matcher.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-repeat-matcher.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/util/regex/$(DEPDIR)/ndn-regex-top-matcher.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po@am__quote@ # am--include-marker
@@ -4589,6 +4643,76 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.o: tests/unit-tests/test-access-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.o `test -f 'tests/unit-tests/test-access-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-access-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-access-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.o `test -f 'tests/unit-tests/test-access-manager-v2.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-access-manager-v2.cpp
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.obj: tests/unit-tests/test-access-manager-v2.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.obj `if test -f 'tests/unit-tests/test-access-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-access-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-access-manager-v2.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-access-manager-v2.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.obj `if test -f 'tests/unit-tests/test-access-manager-v2.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-access-manager-v2.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-access-manager-v2.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.o: tests/unit-tests/encrypt-static-data.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.o `test -f 'tests/unit-tests/encrypt-static-data.cpp' || echo '$(srcdir)/'`tests/unit-tests/encrypt-static-data.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/encrypt-static-data.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.o `test -f 'tests/unit-tests/encrypt-static-data.cpp' || echo '$(srcdir)/'`tests/unit-tests/encrypt-static-data.cpp
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.obj: tests/unit-tests/encrypt-static-data.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.obj `if test -f 'tests/unit-tests/encrypt-static-data.cpp'; then $(CYGPATH_W) 'tests/unit-tests/encrypt-static-data.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/encrypt-static-data.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/encrypt-static-data.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-encrypt-static-data.obj `if test -f 'tests/unit-tests/encrypt-static-data.cpp'; then $(CYGPATH_W) 'tests/unit-tests/encrypt-static-data.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/encrypt-static-data.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.o: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.o `test -f 'tests/unit-tests/identity-management-fixture.cpp' || echo '$(srcdir)/'`tests/unit-tests/identity-management-fixture.cpp
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.obj: tests/unit-tests/identity-management-fixture.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/identity-management-fixture.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-identity-management-fixture.obj `if test -f 'tests/unit-tests/identity-management-fixture.cpp'; then $(CYGPATH_W) 'tests/unit-tests/identity-management-fixture.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/identity-management-fixture.cpp'; fi`
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.o: tests/unit-tests/in-memory-storage-face.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.o `test -f 'tests/unit-tests/in-memory-storage-face.cpp' || echo '$(srcdir)/'`tests/unit-tests/in-memory-storage-face.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/in-memory-storage-face.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.o `test -f 'tests/unit-tests/in-memory-storage-face.cpp' || echo '$(srcdir)/'`tests/unit-tests/in-memory-storage-face.cpp
+
+tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.obj: tests/unit-tests/in-memory-storage-face.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Tpo -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.obj `if test -f 'tests/unit-tests/in-memory-storage-face.cpp'; then $(CYGPATH_W) 'tests/unit-tests/in-memory-storage-face.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/in-memory-storage-face.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/in-memory-storage-face.cpp' object='tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.obj `if test -f 'tests/unit-tests/in-memory-storage-face.cpp'; then $(CYGPATH_W) 'tests/unit-tests/in-memory-storage-face.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/in-memory-storage-face.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_access_manager_v2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_access_manager_v2-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o: tests/unit-tests/test-aes-algorithm.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_aes_algorithm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Tpo -c -o tests/unit-tests/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.o `test -f 'tests/unit-tests/test-aes-algorithm.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-aes-algorithm.cpp
@@ -6444,6 +6568,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+bin/unit-tests/test-access-manager-v2.log: bin/unit-tests/test-access-manager-v2$(EXEEXT)
+	@p='bin/unit-tests/test-access-manager-v2$(EXEEXT)'; \
+	b='bin/unit-tests/test-access-manager-v2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-aes-algorithm.log: bin/unit-tests/test-aes-algorithm$(EXEEXT)
 	@p='bin/unit-tests/test-aes-algorithm$(EXEEXT)'; \
 	b='bin/unit-tests/test-aes-algorithm'; \
@@ -7107,6 +7238,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f contrib/apache/$(DEPDIR)/apr_base64.Plo
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer-gtest-all.Po
@@ -7253,6 +7385,7 @@ distclean: distclean-recursive
 	-rm -f src/encoding/$(DEPDIR)/wire-format.Plo
 	-rm -f src/encoding/der/$(DEPDIR)/der-exception.Plo
 	-rm -f src/encoding/der/$(DEPDIR)/der-node.Plo
+	-rm -f src/encrypt/$(DEPDIR)/access-manager-v2.Plo
 	-rm -f src/encrypt/$(DEPDIR)/consumer-db.Plo
 	-rm -f src/encrypt/$(DEPDIR)/consumer.Plo
 	-rm -f src/encrypt/$(DEPDIR)/decryptor-v2.Plo
@@ -7407,6 +7540,10 @@ distclean: distclean-recursive
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-pseudo-matcher.Plo
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-repeat-matcher.Plo
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-top-matcher.Plo
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po
@@ -7523,6 +7660,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f contrib/apache/$(DEPDIR)/apr_base64.Plo
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_certificate-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_consumer-gtest-all.Po
@@ -7669,6 +7807,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/encoding/$(DEPDIR)/wire-format.Plo
 	-rm -f src/encoding/der/$(DEPDIR)/der-exception.Plo
 	-rm -f src/encoding/der/$(DEPDIR)/der-node.Plo
+	-rm -f src/encrypt/$(DEPDIR)/access-manager-v2.Plo
 	-rm -f src/encrypt/$(DEPDIR)/consumer-db.Plo
 	-rm -f src/encrypt/$(DEPDIR)/consumer.Plo
 	-rm -f src/encrypt/$(DEPDIR)/decryptor-v2.Plo
@@ -7823,6 +7962,10 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-pseudo-matcher.Plo
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-repeat-matcher.Plo
 	-rm -f src/util/regex/$(DEPDIR)/ndn-regex-top-matcher.Plo
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-encrypt-static-data.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-identity-management-fixture.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-in-memory-storage-face.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_access_manager_v2-test-access-manager-v2.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_aes_algorithm-test-aes-algorithm.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_certificate-test-certificate.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_consumer-test-consumer.Po
