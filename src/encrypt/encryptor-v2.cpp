@@ -48,7 +48,7 @@ EncryptorV2::Impl::Impl
   regenerateCk();
 
   // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // exist after we call registerPrefix and return.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks(EncryptorV2::Impl* parent)
@@ -164,7 +164,7 @@ EncryptorV2::Impl::retryFetchingKek()
   isKekRetrievalInProgress_ = true;
 
   // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // exist after we call fetchKekAndPublishCkData and return.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks(EncryptorV2::Impl* parent)
