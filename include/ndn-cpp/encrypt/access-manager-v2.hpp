@@ -66,8 +66,9 @@ public:
   AccessManagerV2
     (const ptr_lib::shared_ptr<PibIdentity>& identity, const Name& dataset,
      KeyChain* keyChain, Face* face)
-  : impl_(new Impl(identity, dataset, keyChain, face))
+  : impl_(new Impl(identity, keyChain, face))
   {
+    impl_->initialize(dataset);
   }
 
   void
@@ -104,9 +105,23 @@ private:
    */
   class Impl : public ptr_lib::enable_shared_from_this<Impl> {
   public:
+    /**
+     * Create a new Impl, which should belong to a shared_ptr. Then you must
+     * call initialize().  See the AccessManagerV2 constructor for parameter
+     * documentation.
+     */
     Impl
-      (const ptr_lib::shared_ptr<PibIdentity>& identity, const Name& dataset,
-       KeyChain* keyChain, Face* face);
+      (const ptr_lib::shared_ptr<PibIdentity>& identity, KeyChain* keyChain,
+       Face* face)
+      : identity_(identity), keyChain_(keyChain), face_(face)
+      {}
+
+    /**
+     * Complete the work of the constructor. This is needed because we can't
+     * call shared_from_this() in the constructor.
+     */
+    void
+    initialize(const Name& dataset);
 
     void
     shutdown();

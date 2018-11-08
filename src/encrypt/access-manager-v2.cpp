@@ -33,15 +33,13 @@ INIT_LOGGER("ndn.AccessManagerV2");
 
 namespace ndn {
 
-AccessManagerV2::Impl::Impl
-  (const ptr_lib::shared_ptr<PibIdentity>& identity, const Name& dataset,
-   KeyChain* keyChain, Face* face)
-: identity_(identity), keyChain_(keyChain), face_(face)
+void
+AccessManagerV2::Impl::initialize(const Name& dataset)
 {
   // The NAC identity is: <identity>/NAC/<dataset>
   // Generate the NAC key.
   ptr_lib::shared_ptr<PibIdentity> nacIdentity = keyChain_->createIdentityV2
-    (Name(identity->getName())
+    (Name(identity_->getName())
      .append(EncryptorV2::getNAME_COMPONENT_NAC()).append(dataset),
      RsaKeyParams());
   nacKey_ = nacIdentity->getDefaultKey();
@@ -64,9 +62,9 @@ AccessManagerV2::Impl::Impl
 
   // Prepare the callbacks. We make a shared_ptr object since it needs to
   // exist after we call registerPrefix and return.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
-    Callbacks(AccessManagerV2::Impl* parent)
+    Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
     {}
 
@@ -98,10 +96,12 @@ AccessManagerV2::Impl::Impl
       _LOG_ERROR("AccessManagerV2: Failed to register prefix: " << prefix);
     }
 
-    AccessManagerV2::Impl* parent_;
+     ptr_lib::shared_ptr<Impl> parent_;
   };
 
-  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>(this);
+  // Use shared_from_this() to keep a pointer to this Impl.
+  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
+    (shared_from_this());
   kekRegisteredPrefixId_ = face_->registerPrefix
     (kekPrefix,
      bind(&Callbacks::serveFromStorage, callbacks, _1, _2, _3, _4, _5),
