@@ -60,9 +60,8 @@ AccessManagerV2::Impl::initialize(const Name& dataset)
   // A KEK looks like a certificate, but doesn't have a ValidityPeriod.
   storage_.insert(kekData);
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call registerPrefix and return.
-  class Callbacks {
+  // Prepare the callbacks.
+  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
@@ -99,7 +98,8 @@ AccessManagerV2::Impl::initialize(const Name& dataset)
      ptr_lib::shared_ptr<Impl> parent_;
   };
 
-  // Use shared_from_this() to keep a pointer to this Impl.
+  // We make a shared_ptr object since it needs to exist after we return, and
+  // pass shared_from_this() to keep a pointer to this Impl.
   ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
     (shared_from_this());
   kekRegisteredPrefixId_ = face_->registerPrefix

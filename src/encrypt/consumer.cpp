@@ -55,12 +55,12 @@ Consumer::Impl::consume
 {
   ptr_lib::shared_ptr<const Interest> interest(new Interest(contentName));
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (Consumer::Impl* parent, const OnConsumeComplete& onConsumeComplete,
+      (const ptr_lib::shared_ptr<Impl>& parent,
+       const OnConsumeComplete& onConsumeComplete,
        const EncryptError::OnError& onError)
     : parent_(parent), onConsumeComplete_(onConsumeComplete), onError_(onError)
     {}
@@ -89,14 +89,16 @@ Consumer::Impl::consume
       }
     }
 
-    Consumer::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
     OnConsumeComplete onConsumeComplete_;
     EncryptError::OnError onError_;
     ptr_lib::shared_ptr<Data> contentData_;
   };
 
+  // We make a shared_ptr object since it needs to exist after we return, and
+  // pass shared_from_this() to keep a pointer to this Impl.
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-    (this, onConsumeComplete, onError));
+    (shared_from_this(), onConsumeComplete, onError));
   // Copy the Link object since the passed link may become invalid.
   sendInterest
     (interest, 1, ptr_lib::make_shared<Link>(link),
@@ -241,12 +243,11 @@ Consumer::Impl::decryptContent
     interestName.append(Encryptor::getNAME_COMPONENT_FOR()).append(groupName_);
     ptr_lib::shared_ptr<const Interest> interest(new Interest(interestName));
 
-    // Prepare the callbacks. We make a shared_ptr object since it needs to
-    // exist after we call expressInterest and return.
+    // Prepare the callbacks.
     class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
     public:
       Callbacks
-        (Consumer::Impl* parent,
+        (const ptr_lib::shared_ptr<Impl>& parent,
          const ptr_lib::shared_ptr<EncryptedContent>& dataEncryptedContent,
          const Name& cKeyName, const OnPlainText& onPlainText,
          const EncryptError::OnError& onError)
@@ -271,15 +272,17 @@ Consumer::Impl::decryptContent
           (*dataEncryptedContent_, cKeyBits, onPlainText_, onError_);
       }
 
-      Consumer::Impl* parent_;
+      ptr_lib::shared_ptr<Impl> parent_;
       ptr_lib::shared_ptr<EncryptedContent> dataEncryptedContent_;
       Name cKeyName_;
       OnPlainText onPlainText_;
       EncryptError::OnError onError_;
     };
 
+    // We make a shared_ptr object since it needs to exist after we return, and
+    // pass shared_from_this() to keep a pointer to this Impl.
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-      (this, dataEncryptedContent, cKeyName, onPlainText, onError));
+      (shared_from_this(), dataEncryptedContent, cKeyName, onPlainText, onError));
     sendInterest
       (interest, 1, cKeyLink_, bind(&Callbacks::onCKeyVerified, callbacks, _1),
        onError);
@@ -323,12 +326,11 @@ Consumer::Impl::decryptCKey
     interestName.append(Encryptor::getNAME_COMPONENT_FOR()).append(consumerName_);
     ptr_lib::shared_ptr<const Interest> interest(new Interest(interestName));
 
-    // Prepare the callbacks. We make a shared_ptr object since it needs to
-    // exist after we call expressInterest and return.
+    // Prepare the callbacks.
     class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
     public:
       Callbacks
-        (Consumer::Impl* parent,
+        (const ptr_lib::shared_ptr<Impl>& parent,
          const ptr_lib::shared_ptr<EncryptedContent>& cKeyEncryptedContent,
          const Name& dKeyName, const OnPlainText& onPlainText,
          const EncryptError::OnError& onError)
@@ -353,15 +355,17 @@ Consumer::Impl::decryptCKey
           (*cKeyEncryptedContent_, dKeyBits, onPlainText_, onError_);
       }
 
-      Consumer::Impl* parent_;
+      ptr_lib::shared_ptr<Impl> parent_;
       ptr_lib::shared_ptr<EncryptedContent> cKeyEncryptedContent_;
       Name dKeyName_;
       OnPlainText onPlainText_;
       EncryptError::OnError onError_;
     };
 
+    // We make a shared_ptr object since it needs to exist after we return, and
+    // pass shared_from_this() to keep a pointer to this Impl.
     ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-      (this, cKeyEncryptedContent, dKeyName, onPlainText, onError));
+      (shared_from_this(), cKeyEncryptedContent, dKeyName, onPlainText, onError));
     sendInterest
       (interest, 1, dKeyLink_, bind(&Callbacks::onDKeyVerified, callbacks, _1),
        onError);
@@ -451,12 +455,11 @@ Consumer::Impl::sendInterest
    const ptr_lib::shared_ptr<Link>& link, const OnVerified& onVerified,
    const EncryptError::OnError& onError)
 {
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (Consumer::Impl* parent, int nRetrials,
+      (const ptr_lib::shared_ptr<Impl>& parent, int nRetrials,
        const ptr_lib::shared_ptr<Link>& link, const OnVerified& onVerified,
        const EncryptError::OnError& onError)
     : parent_(parent), nRetrials_(nRetrials), link_(link),
@@ -515,7 +518,7 @@ Consumer::Impl::sendInterest
         onNetworkNack(interest, ptr_lib::make_shared<NetworkNack>());
     }
 
-    Consumer::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
     int nRetrials_;
     const ptr_lib::shared_ptr<Link> link_;
     const OnVerified onVerified_;
@@ -536,8 +539,10 @@ Consumer::Impl::sendInterest
     request = interestWithLink.get();
   }
 
+  // We make a shared_ptr object since it needs to exist after we return, and
+  // pass shared_from_this() to keep a pointer to this Impl.
   ptr_lib::shared_ptr<Callbacks> callbacks(new Callbacks
-    (this, nRetrials, link, onVerified, onError));
+    (shared_from_this(), nRetrials, link, onVerified, onError));
   try {
     face_->expressInterest
       (*request, bind(&Callbacks::onData, callbacks, _1, _2),

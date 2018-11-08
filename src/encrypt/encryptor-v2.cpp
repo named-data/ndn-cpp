@@ -36,22 +36,15 @@ INIT_LOGGER("ndn.EncryptorV2");
 
 namespace ndn {
 
-EncryptorV2::Impl::Impl
-  (const Name& accessPrefix, const Name& ckPrefix,
-   const SigningInfo& ckDataSigningInfo, const EncryptError::OnError& onError,
-   Validator* validator, KeyChain* keyChain, Face* face)
-: accessPrefix_(accessPrefix), ckPrefix_(ckPrefix),
-  ckDataSigningInfo_(ckDataSigningInfo), isKekRetrievalInProgress_(false),
-  onError_(onError), keyChain_(keyChain), face_(face),
-  kekPendingInterestId_(0)
+void
+EncryptorV2::Impl::initialize()
 {
   regenerateCk();
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call registerPrefix and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
-    Callbacks(EncryptorV2::Impl* parent)
+    Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
     {}
 
@@ -83,12 +76,15 @@ EncryptorV2::Impl::Impl
       _LOG_ERROR("Failed to register prefix: " << prefix);
     }
 
-    EncryptorV2::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
   };
 
-  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>(this);
+  // We make a shared_ptr object since it needs to exist after we return, and
+  // pass shared_from_this() to keep a pointer to this Impl.
+  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
+    (shared_from_this());
   ckRegisteredPrefixId_ = face_->registerPrefix
-    (Name(ckPrefix).append(getNAME_COMPONENT_CK()),
+    (Name(ckPrefix_).append(getNAME_COMPONENT_CK()),
      bind(&Callbacks::onInterest, callbacks, _1, _2, _3, _4, _5),
      bind(&Callbacks::onRegisterFailed, callbacks, _1));
 }
@@ -163,11 +159,10 @@ EncryptorV2::Impl::retryFetchingKek()
   _LOG_TRACE("Retrying fetching of the KEK");
   isKekRetrievalInProgress_ = true;
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call fetchKekAndPublishCkData and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
-    Callbacks(EncryptorV2::Impl* parent)
+    Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
     {}
 
@@ -186,10 +181,13 @@ EncryptorV2::Impl::retryFetchingKek()
       parent_->onError_(errorCode, message);
     }
 
-    EncryptorV2::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
   };
 
-  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>(this);
+  // We make a shared_ptr object since it needs to exist after we return, and
+  // pass shared_from_this() to keep a pointer to this Impl.
+  ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
+    (shared_from_this());
   fetchKekAndPublishCkData
     (bind(&Callbacks::onReady, callbacks),
      bind(&Callbacks::onError, callbacks, _1, _2),
@@ -210,12 +208,11 @@ EncryptorV2::Impl::fetchKekAndPublishCkData
     return;
   }
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (EncryptorV2::Impl* parent, const Face::Callback& onReady,
+      (const ptr_lib::shared_ptr<Impl>& parent, const Face::Callback& onReady,
        const EncryptError::OnError& onError, int nTriesLeft)
     : parent_(parent), onReady_(onReady), onError_(onError),
       nTriesLeft_(nTriesLeft)
@@ -274,15 +271,17 @@ EncryptorV2::Impl::fetchKekAndPublishCkData
       }
     }
 
-    EncryptorV2::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
     Face::Callback onReady_;
     EncryptError::OnError onError_;
     int nTriesLeft_;
   };
 
   try {
+    // We make a shared_ptr object since it needs to exist after we return, and
+    // pass shared_from_this() to keep a pointer to this Impl.
     ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
-      (this, onReady, onError, nTriesLeft);
+      (shared_from_this(), onReady, onError, nTriesLeft);
     kekPendingInterestId_ = face_->expressInterest
       (Interest(Name(accessPrefix_).append(getNAME_COMPONENT_KEK()))
                .setMustBeFresh(true)

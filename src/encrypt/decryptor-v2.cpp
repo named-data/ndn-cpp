@@ -132,12 +132,11 @@ DecryptorV2::Impl::fetchCk
 
   _LOG_TRACE("Fetching CK " << ckName);
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (DecryptorV2::Impl* parent, const Name& ckName,
+      (const ptr_lib::shared_ptr<Impl>& parent, const Name& ckName,
        const ptr_lib::shared_ptr<ContentKey>& contentKey,
        const EncryptError::OnError& onError, int nTriesLeft)
     : parent_(parent), ckName_(ckName), contentKey_(contentKey),
@@ -215,7 +214,7 @@ DecryptorV2::Impl::fetchCk
       onError_(EncryptError::ErrorCode::CkRetrievalFailure, message.str());
     }
 
-    DecryptorV2::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
     Name ckName_;
     ptr_lib::shared_ptr<ContentKey> contentKey_;
     EncryptError::OnError onError_;
@@ -223,8 +222,10 @@ DecryptorV2::Impl::fetchCk
   };
 
   try {
+    // We make a shared_ptr object since it needs to exist after we return, and
+    // pass shared_from_this() to keep a pointer to this Impl.
     ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
-      (this, ckName, contentKey, onError, nTriesLeft);
+      (shared_from_this(), ckName, contentKey, onError, nTriesLeft);
     contentKey->pendingInterest = face_->expressInterest
       (Interest(ckName).setMustBeFresh(false).setCanBePrefix(true),
        bind(&Callbacks::onData, callbacks, _1, _2),
@@ -255,12 +256,11 @@ DecryptorV2::Impl::fetchKdk
 
   _LOG_TRACE("Fetching KDK " << kdkName);
 
-  // Prepare the callbacks. We make a shared_ptr object since it needs to
-  // exist after we call expressInterest and return.
+  // Prepare the callbacks.
   class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
   public:
     Callbacks
-      (DecryptorV2::Impl* parent,
+      (const ptr_lib::shared_ptr<Impl>& parent,
        const ptr_lib::shared_ptr<ContentKey>& contentKey, const Name& kdkPrefix,
        const ptr_lib::shared_ptr<Data>& ckData,
        const EncryptError::OnError& onError, int nTriesLeft)
@@ -310,7 +310,7 @@ DecryptorV2::Impl::fetchKdk
       onError_(EncryptError::ErrorCode::KdkRetrievalFailure, message.str());
     }
 
-    DecryptorV2::Impl* parent_;
+    ptr_lib::shared_ptr<Impl> parent_;
     ptr_lib::shared_ptr<ContentKey> contentKey_;
     Name kdkPrefix_;
     ptr_lib::shared_ptr<Data> ckData_;
@@ -319,8 +319,10 @@ DecryptorV2::Impl::fetchKdk
   };
 
   try {
+    // We make a shared_ptr object since it needs to exist after we return, and
+    // pass shared_from_this() to keep a pointer to this Impl.
     ptr_lib::shared_ptr<Callbacks> callbacks = ptr_lib::make_shared<Callbacks>
-      (this, contentKey, kdkPrefix, ckData, onError, nTriesLeft);
+      (shared_from_this(), contentKey, kdkPrefix, ckData, onError, nTriesLeft);
     contentKey->pendingInterest = face_->expressInterest
       (Interest(kdkName).setMustBeFresh(true).setCanBePrefix(false),
        bind(&Callbacks::onData, callbacks, _1, _2),

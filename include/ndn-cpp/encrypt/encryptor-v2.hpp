@@ -73,6 +73,7 @@ public:
           (accessPrefix, ckPrefix, ckDataSigningInfo, onError, validator, 
            keyChain, face))
   {
+    impl_->initialize();
   }
 
   void
@@ -187,13 +188,26 @@ private:
   class Impl : public ptr_lib::enable_shared_from_this<Impl> {
   public:
     /**
-     * Create a new Impl, which should belong to a shared_ptr. See the
-     * EncryptorV2 constructor for parameter documentation.
+     * Create a new Impl, which should belong to a shared_ptr. Then you must 
+     * call initialize(). See the EncryptorV2 constructor for parameter
+     * documentation.
      */
     Impl
       (const Name& accessPrefix, const Name& ckPrefix,
        const SigningInfo& ckDataSigningInfo, const EncryptError::OnError& onError,
-       Validator* validator, KeyChain* keyChain, Face* face);
+       Validator* validator, KeyChain* keyChain, Face* face)
+    : accessPrefix_(accessPrefix), ckPrefix_(ckPrefix),
+      ckDataSigningInfo_(ckDataSigningInfo), isKekRetrievalInProgress_(false),
+      onError_(onError), keyChain_(keyChain), face_(face),
+      kekPendingInterestId_(0)
+    {}
+
+    /**
+     * Complete the work of the constructor. This is needed because we can't
+     * call shared_from_this() in the constructor.
+     */
+    void
+    initialize();
 
     void
     shutdown();
