@@ -56,6 +56,17 @@ public:
   Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::shared_ptr<const Transport::ConnectionInfo>& connectionInfo);
 
   /**
+   * Enable or disable Interest loopback.
+   * @param interestLoopbackEnabled If True, enable Interest loopback,
+   * otherwise disable it.
+   */
+  void
+  setInterestLoopbackEnabled(bool interestLoopbackEnabled)
+  {
+    interestLoopbackEnabled_ = interestLoopbackEnabled;
+  }
+
+  /**
    * Send the Interest through the transport, read the entire response and call
    * onData, onTimeout or onNetworkNack as described below.
    * @param pendingInterestId The getNextEntryId() for the pending interest ID
@@ -389,7 +400,8 @@ private:
 
   /**
    * Do the work of expressInterest once we know we are connected. Add the
-   * entry to the PIT, encode and send the interest.
+   * entry to the PIT, encode and send the interest. If Interest loopback is
+   * enabled, then also call dispatchInterest.
    * @param pendingInterestId The getNextEntryId() for the pending interest ID
    * which Face got so it could return it to the caller.
    * @param interestCopy The Interest to send, which has already been copied and put
@@ -466,16 +478,25 @@ private:
    * @param interest The Interest to match.
    */
   void
-  dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest);
+  dispatchInterest(const ptr_lib::shared_ptr<const Interest>& interest);
 
   /**
    * Extract entries from the pendingInterestTable_ which match data, and call
    * each OnData callback.
    * @param data The Data packet to match.
+   */
+  void
+  satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data);
+
+  /**
+   * Extract entries from the pendingInterestTable_ which match data, and call
+   * each OnData callback.
+   * @param data The Data packet to match. If this needs to call OnData, this
+   * makes a copy.
    * @return True if the data matched an entry in the pendingInterestTable_.
    */
   bool
-  satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data);
+  satisfyPendingInterests(const Data& data);
 
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
@@ -487,6 +508,7 @@ private:
   CommandInterestGenerator commandInterestGenerator_;
   Name timeoutPrefix_;
   ConnectStatus connectStatus_;
+  bool interestLoopbackEnabled_;
   Blob nonceTemplate_;
 #ifdef NDN_CPP_HAVE_BOOST_ASIO
   // ThreadsafeFace accesses lastEntryId_ outside of a thread safe dispatch, so

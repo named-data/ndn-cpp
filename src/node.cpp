@@ -42,7 +42,7 @@ Node::Node(const ptr_lib::shared_ptr<Transport>& transport, const ptr_lib::share
 : transport_(transport), connectionInfo_(connectionInfo),
   timeoutPrefix_(Name("/local/timeout")),
   lastEntryId_(0), connectStatus_(ConnectStatus_UNCONNECTED),
-  registeredPrefixTable_(interestFilterTable_),
+  interestLoopbackEnabled_(false), registeredPrefixTable_(interestFilterTable_),
   nonceTemplate_((const uint8_t*)"\0\0\0\0", 4)
 {
 }
@@ -136,6 +136,21 @@ Node::registerPrefix
 void
 Node::putData(const Data& data, WireFormat* wireFormat)
 {
+  if (interestLoopbackEnabled_) {
+    bool hasApplicationMatch = satisfyPendingInterests(data);
+    if (hasApplicationMatch)
+      // satisfyPendingInterests called the OnData callback for one of
+      // the pending Interests from the application, so we don't need
+      // to send the Data packet to the forwarder. There is a
+      // possibility that we also received an overlapping  matching
+      // Interest from the forwarder within the Interest lifetime which
+      // we won't satisfy by sending the Data to the forwarder. To fix
+      // this case we could just send the Data to the forwarder anyway,
+      // or we can make the pending Interest table more complicated by
+      // also tracking the Interests that we receive from the forwarder.
+      return;
+  }
+
   Blob encoding = data.wireEncode(*wireFormat);
   // Check the encoding size here so that the error message is explicit.
   if (encoding.size() > getMaxNdnPacketSize())
@@ -163,7 +178,7 @@ Node::getNextEntryId()
 }
 
 void
-Node::dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest)
+Node::dispatchInterest(const ptr_lib::shared_ptr<const Interest>& interest)
 {
   // Call all interest filter callbacks which match.
   vector<ptr_lib::shared_ptr<InterestFilterTable::Entry> > matchedFilters;
@@ -183,17 +198,36 @@ Node::dispatchInterest(const ptr_lib::shared_ptr<Interest>& interest)
   }
 }
 
-bool
+void
 Node::satisfyPendingInterests(const ptr_lib::shared_ptr<Data>& data)
 {
-  bool hasMatch = false;
-
   vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
   pendingInterestTable_.extractEntriesForExpressedInterest(*data, pitEntries);
   for (size_t i = 0; i < pitEntries.size(); ++i) {
-    hasMatch = true;
     try {
       pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), data);
+    } catch (const std::exception& ex) {
+      _LOG_ERROR("Node: Error in onData: " << ex.what());
+    } catch (...) {
+      _LOG_ERROR("Node: Error in onData.");
+    }
+  }
+}
+
+bool
+Node::satisfyPendingInterests(const Data& data)
+{
+  bool hasMatch = false;
+  ptr_lib::shared_ptr<Data> dataCopy;
+
+  vector<ptr_lib::shared_ptr<PendingInterestTable::Entry> > pitEntries;
+  pendingInterestTable_.extractEntriesForExpressedInterest(data, pitEntries);
+  for (size_t i = 0; i < pitEntries.size(); ++i) {
+    hasMatch = true;
+    if (!dataCopy)
+      dataCopy = ptr_lib::make_shared<Data>(data);
+    try {
+      pitEntries[i]->getOnData()(pitEntries[i]->getInterest(), dataCopy);
     } catch (const std::exception& ex) {
       _LOG_ERROR("Node: Error in onData: " << ex.what());
     } catch (...) {
@@ -470,6 +504,9 @@ Node::expressInterestHelper
       throw runtime_error
         ("The encoded interest size exceeds the maximum limit getMaxNdnPacketSize()");
     transport_->send(*encoding);
+
+    if (interestLoopbackEnabled_)
+        dispatchInterest(interestCopy);
   }
 }
 

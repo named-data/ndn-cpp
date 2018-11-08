@@ -96,6 +96,12 @@ Face::~Face()
   delete node_;
 }
 
+void
+Face::setInterestLoopbackEnabled(bool interestLoopbackEnabled)
+{
+  node_->setInterestLoopbackEnabled(interestLoopbackEnabled);
+}
+
 uint64_t
 Face::expressInterest
   (const Interest& interest, const OnData& onData, const OnTimeout& onTimeout,
