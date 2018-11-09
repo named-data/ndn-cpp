@@ -61,7 +61,7 @@ AccessManagerV2::Impl::initialize(const Name& dataset)
   storage_.insert(kekData);
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)

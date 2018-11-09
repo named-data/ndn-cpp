@@ -133,7 +133,7 @@ DecryptorV2::Impl::fetchCk
   _LOG_TRACE("Fetching CK " << ckName);
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks
       (const ptr_lib::shared_ptr<Impl>& parent, const Name& ckName,
@@ -257,7 +257,7 @@ DecryptorV2::Impl::fetchKdk
   _LOG_TRACE("Fetching KDK " << kdkName);
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks
       (const ptr_lib::shared_ptr<Impl>& parent,

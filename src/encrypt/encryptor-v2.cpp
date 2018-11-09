@@ -42,7 +42,7 @@ EncryptorV2::Impl::initialize()
   regenerateCk();
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
@@ -160,7 +160,7 @@ EncryptorV2::Impl::retryFetchingKek()
   isKekRetrievalInProgress_ = true;
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks(const ptr_lib::shared_ptr<Impl>& parent)
     : parent_(parent)
@@ -209,7 +209,7 @@ EncryptorV2::Impl::fetchKekAndPublishCkData
   }
 
   // Prepare the callbacks.
-  class Callbacks : public ptr_lib::enable_shared_from_this<Callbacks> {
+  class Callbacks {
   public:
     Callbacks
       (const ptr_lib::shared_ptr<Impl>& parent, const Face::Callback& onReady,
