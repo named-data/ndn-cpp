@@ -351,8 +351,7 @@ DerNode::DerOid::toVal()
   for (size_t i = 1; i < components.size(); ++i)
     result << "." << components[i];
 
-  string resultString = result.str();
-  return Blob((const uint8_t*)&resultString[0], resultString.size());
+  return Blob::fromRawStr(result.str());
 }
 
 void
