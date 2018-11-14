@@ -128,6 +128,18 @@ public:
   }
 
   /**
+   * Create a new Blob with an immutable copy of the given raw string. This is a
+   * static method instead of a constructor so that the method name makes it
+   * clear that it does not do any character encoding such as UTF-8.
+   * @param value The ASCII string to copy.
+   */
+  static Blob
+  fromRawStr(const std::string& value)
+  {
+    return Blob((const uint8_t*)value.c_str(), value.size());
+  }
+
+  /**
    * Create a new Blob to point to an existing byte array.
    * @deprecated Use the constructor with an explicit copy parameter.
    */
