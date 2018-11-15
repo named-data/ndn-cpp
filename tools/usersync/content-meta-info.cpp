@@ -32,6 +32,16 @@
 using namespace std;
 using namespace ndn;
 
+extern "C" {
+
+const char*
+ndntools_getGeneralizedContentMetaComponent()
+{
+  return "_meta";
+}
+
+}
+
 namespace ndntools {
 
 void

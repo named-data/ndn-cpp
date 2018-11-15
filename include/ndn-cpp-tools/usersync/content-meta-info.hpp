@@ -24,6 +24,17 @@
 
 #include <ndn-cpp/util/blob.hpp>
 
+extern "C" {
+
+/**
+ * Get the C string of the "_meta" name component. (Honestly, this is only here
+ * so that autotools AC_CHECK_LIB has something to check for.)
+ */
+const char*
+ndntools_getGeneralizedContentMetaComponent();
+
+}
+
 namespace ndntools {
 
 /**
