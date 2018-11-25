@@ -55,10 +55,11 @@ public:
   buf() const { return value; }
 
   /**
-   * Return size given to the constructor.
+   * Get the number of bytes in the buffer.
+ * @return The number of bytes in the buffer, or 0 if the buffer pointer is null.
    */
   size_t
-  size() const { return length; }
+  size() const;
 
   /**
    * Check if the array pointer is null.

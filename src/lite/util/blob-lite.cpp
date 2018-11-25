@@ -34,6 +34,12 @@ BlobLite::BlobLite(const uint8_t* buf, size_t size)
   ndn_Blob_initialize(this, buf, size);
 }
 
+size_t
+BlobLite::size() const
+{
+  return ndn_Blob_size(this);
+}
+
 bool
 BlobLite::equals(const BlobLite& other) const
 {

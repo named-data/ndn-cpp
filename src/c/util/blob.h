@@ -51,6 +51,17 @@ ndn_Blob_setFromBlob(struct ndn_Blob *self, const struct ndn_Blob *other)
 }
 
 /**
+ * Get the number of bytes in the buffer.
+ * @param self A pointer to this ndn_Blob struct.
+ * @return The number of bytes in the buffer, or 0 if the buffer pointer is null.
+ */
+static __inline size_t
+ndn_Blob_size(const struct ndn_Blob *self)
+{ 
+  return !self->value ? 0 : self->length;
+}
+
+/**
  * Check if the buffer pointer is null.
  * @param self A pointer to this ndn_Blob struct.
  * @return Nonzero if the buffer pointer is null, otherwise 0.
