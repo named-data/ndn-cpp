@@ -46,6 +46,12 @@ InterestLite::getMustBeFresh() const
   return ndn_Interest_getMustBeFresh(this) != 0;
 }
 
+bool
+InterestLite::hasParameters() const
+{
+  return ndn_Interest_hasParameters(this) != 0;
+}
+
 InterestLite&
 InterestLite::setCanBePrefix(bool canBePrefix)
 {

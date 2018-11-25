@@ -97,7 +97,7 @@ public:
 
   /**
    * Return true if the content must be fresh. The default is true.
-   * @return true if must be fresh, otherwise false.
+   * @return True if must be fresh, otherwise false.
    */
   bool
   getMustBeFresh() const;
@@ -118,6 +118,16 @@ public:
   {
     return BlobLite::downCast(forwardingHintWireEncoding);
   }
+
+  /**
+   * Check if the Interest parameters are specified.
+   * @return True if the Interest parameters are specified, false if not.
+   */
+  bool
+  hasParameters() const;
+
+  const BlobLite&
+  getParameters() const { return BlobLite::downCast(parameters); }
 
   const BlobLite&
   getLinkWireEncoding() const { return BlobLite::downCast(linkWireEncoding); }
@@ -230,6 +240,19 @@ public:
   {
     BlobLite::downCast(this->forwardingHintWireEncoding) =
       forwardingHintWireEncoding;
+    return *this;
+  }
+
+  /**
+   * Set the Interest parameters.
+   * @param parameters The Interest parameters value. This does not copy the
+   * bytes of the parameters.
+   * @return This InterestLite so that you can chain calls to update values.
+   */
+  InterestLite&
+  setParameters(const BlobLite& parameters)
+  {
+    BlobLite::downCast(this->parameters) = parameters;
     return *this;
   }
 
