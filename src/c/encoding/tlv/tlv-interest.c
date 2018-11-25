@@ -412,6 +412,9 @@ ndn_decodeTlvInterestV02
   if (interest->selectedDelegationIndex >= 0 && !interest->linkWireEncoding.value)
     return NDN_ERROR_Interest_has_a_selected_delegation_but_no_link_object;
 
+  // Format v0.2 doesn't have Interest parameters.
+  ndn_Blob_initialize(&interest->parameters, 0, 0);
+
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
     return error;
 
@@ -471,12 +474,12 @@ ndn_decodeTlvInterestV03
   ndn_Blob_initialize(&interest->linkWireEncoding, 0, 0);
   interest->selectedDelegationIndex = -1;
 
-  // Ignore the HopLimit and Parameters.
+  // Ignore the HopLimit.
   if ((error = ndn_TlvDecoder_readOptionalBlobTlv
        (decoder, ndn_Tlv_HopLimit, endOffset, &dummyBlob)))
     return error;
   if ((error = ndn_TlvDecoder_readOptionalBlobTlv
-       (decoder, ndn_Tlv_Parameters, endOffset, &dummyBlob)))
+       (decoder, ndn_Tlv_Parameters, endOffset, &interest->parameters)))
     return error;
 
   if ((error = ndn_TlvDecoder_finishNestedTlvs(decoder, endOffset)))
