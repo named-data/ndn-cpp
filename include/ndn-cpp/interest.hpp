@@ -72,7 +72,7 @@ public:
     mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0),
-    forwardingHint_(interest.forwardingHint_),
+    forwardingHint_(interest.forwardingHint_), parameters_(interest.parameters_),
     linkWireEncoding_(interest.linkWireEncoding_),
     linkWireEncodingFormat_(interest.linkWireEncodingFormat_),
     selectedDelegationIndex_(interest.selectedDelegationIndex_),
@@ -259,6 +259,20 @@ public:
 
   const DelegationSet&
   getForwardingHint() const { return forwardingHint_.get(); }
+
+  /**
+   * Check if the Interest parameters are specified.
+   * @return True if the Interest parameters are specified, false if not.
+   */
+  bool
+  hasParameters() const { return parameters_.size() > 0; }
+
+  /**
+   * Get the Interest parameters.
+   * @return The parameters as a Blob, which isNull() if unspecified.
+   */
+  const Blob&
+  getParameters() const { return parameters_; }
 
   /**
    * Check if this interest has a link object (or a link wire encoding which
@@ -478,6 +492,19 @@ public:
   }
 
   /**
+   * Set the Interest parameters to the given value.
+   * @param parameters The Interest parameters Blob.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  setChildSelector(const Blob& parameters)
+  {
+    parameters_ = parameters;
+    ++changeCount_;
+    return *this;
+  }
+
+  /**
    * Set the link wire encoding bytes, without decoding them. If there is
    * a link object, set it to 0. If you later call getLink(), it will
    * decode the wireEncoding to create the link object.
@@ -662,6 +689,7 @@ private:
   Blob nonce_;
   uint64_t getNonceChangeCount_;
   ChangeCounter<DelegationSet> forwardingHint_;
+  Blob parameters_;
   Blob linkWireEncoding_;
   WireFormat* linkWireEncodingFormat_;
   SharedPointerChangeCounter<Link> link_;
