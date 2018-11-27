@@ -497,7 +497,7 @@ public:
    * @return This Interest so that you can chain calls to update values.
    */
   Interest&
-  setChildSelector(const Blob& parameters)
+  setParameters(const Blob& parameters)
   {
     parameters_ = parameters;
     ++changeCount_;
