@@ -108,13 +108,14 @@ struct InterestValueContext {
 };
 
 /**
- * This private function is called by ndn_TlvEncoder_writeNestedTlv to write the TLVs in the body of the Interest value.
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write
+ * the TLVs in the body of the Interest value in NDN-TLV format v0.2.
  * @param context This is the InterestValueContext struct pointer which was passed to writeTlv.
  * @param encoder the ndn_TlvEncoder which is calling this.
  * @return 0 for success, else an error code.
  */
 static ndn_Error
-encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
+encodeInterestValueV02(const void *context, struct ndn_TlvEncoder *encoder)
 {
   const struct InterestValueContext *interestValueContext =
     (const struct InterestValueContext *)context;
@@ -184,6 +185,83 @@ encodeInterestValue(const void *context, struct ndn_TlvEncoder *encoder)
   return NDN_ERROR_success;
 }
 
+/**
+ * This private function is called by ndn_TlvEncoder_writeNestedTlv to write
+ * the TLVs in the body of the Interest value in NDN-TLV format v0.3.
+ * @param context This is the InterestValueContext struct pointer which was passed to writeTlv.
+ * @param encoder the ndn_TlvEncoder which is calling this.
+ * @return 0 for success, else an error code.
+ */
+static ndn_Error
+encodeInterestValueV03(const void *context, struct ndn_TlvEncoder *encoder)
+{
+  const struct InterestValueContext *interestValueContext =
+    (const struct InterestValueContext *)context;
+  const struct ndn_Interest *interest = interestValueContext->interest;
+  ndn_Error error;
+  uint8_t nonceBuffer[4];
+  struct ndn_Blob nonceBlob;
+
+  // TODO: Throw error if the interest speficies V02 fields.
+
+  if ((error = ndn_encodeTlvName
+       (&interest->name, interestValueContext->signedPortionBeginOffset,
+        interestValueContext->signedPortionEndOffset, encoder)))
+    return error;
+
+  if (ndn_Interest_getCanBePrefix(interest)) {
+    if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_CanBePrefix, 0)))
+      return error;
+  }
+  // else CanBePrefix == false, so nothing to encode.
+  if (interest->mustBeFresh) {
+    if ((error = ndn_TlvEncoder_writeTypeAndLength(encoder, ndn_Tlv_MustBeFresh, 0)))
+      return error;
+  }
+  // else MustBeFresh == false, so nothing to encode.
+
+  if (interest->forwardingHintWireEncoding.value &&
+      interest->forwardingHintWireEncoding.length > 0) {
+    // Add the encoded sequence of delegations as is.
+    if ((error = ndn_TlvEncoder_writeBlobTlv
+         (encoder, ndn_Tlv_ForwardingHint, &interest->forwardingHintWireEncoding)))
+      return error;
+  }
+
+  // Encode the Nonce as 4 bytes.
+  nonceBlob.length = sizeof(nonceBuffer);
+  if (interest->nonce.length == 0) {
+    // Generate a random nonce.
+    if ((error = ndn_generateRandomBytes(nonceBuffer, sizeof(nonceBuffer))))
+      return error;
+    nonceBlob.value = nonceBuffer;
+  }
+  else if (interest->nonce.length < 4) {
+    // TLV encoding requires 4 bytes, so pad out to 4 using random bytes.
+    ndn_memcpy(nonceBuffer, interest->nonce.value, interest->nonce.length);
+    if ((error = ndn_generateRandomBytes
+         (nonceBuffer + interest->nonce.length,
+          sizeof(nonceBuffer) - interest->nonce.length)))
+      return error;
+    nonceBlob.value = nonceBuffer;
+  }
+  else
+    // TLV encoding requires 4 bytes, so truncate to 4.
+    nonceBlob.value = interest->nonce.value;
+  if ((error = ndn_TlvEncoder_writeBlobTlv(encoder, ndn_Tlv_Nonce, &nonceBlob)))
+    return error;
+
+  if ((error = ndn_TlvEncoder_writeOptionalNonNegativeIntegerTlvFromDouble
+      (encoder, ndn_Tlv_InterestLifetime, interest->interestLifetimeMilliseconds)))
+    return error;
+  // TODO: HopLimit.
+  if ((error = ndn_TlvEncoder_writeOptionalBlobTlv
+       (encoder, ndn_Tlv_Parameters, &interest->parameters)))
+    return error;
+
+  return NDN_ERROR_success;
+}
+
 ndn_Error
 ndn_encodeTlvInterest
   (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
@@ -195,8 +273,15 @@ ndn_encodeTlvInterest
   interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
 
+  if (ndn_Interest_hasParameters(interest))
+    // The application has specified a format v0.3 field. As we transition to
+    // format v0.3, encode as format v0.3 even though the application default is
+    // Tlv0_2WireFormat.
+    return ndn_TlvEncoder_writeNestedTlv
+      (encoder, ndn_Tlv_Interest, encodeInterestValueV03, &interestValueContext, 0);
+
   return ndn_TlvEncoder_writeNestedTlv
-    (encoder, ndn_Tlv_Interest, encodeInterestValue, &interestValueContext, 0);
+    (encoder, ndn_Tlv_Interest, encodeInterestValueV02, &interestValueContext, 0);
 }
 
 static ndn_Error
