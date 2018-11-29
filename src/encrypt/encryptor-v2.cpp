@@ -57,7 +57,7 @@ EncryptorV2::Impl::initialize()
     {
       ptr_lib::shared_ptr<Data> data = parent_->storage_.find(*interest);
       if (data) {
-        _LOG_TRACE("Serving " << data.getName() << " from InMemoryStorage");
+        _LOG_TRACE("Serving " << data->getName() << " from InMemoryStorage");
         try {
           face.putData(*data);
         } catch (const std::exception& ex) {
@@ -65,7 +65,7 @@ EncryptorV2::Impl::initialize()
         }
       }
       else {
-        _LOG_TRACE("Didn't find CK data for " << interest.getName());
+        _LOG_TRACE("Didn't find CK data for " << interest->getName());
         // TODO: Send NACK?
       }
     }

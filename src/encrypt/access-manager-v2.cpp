@@ -76,7 +76,7 @@ AccessManagerV2::Impl::initialize(const Name& dataset)
     {
       ptr_lib::shared_ptr<Data> data = parent_->storage_.find(*interest);
       if (data) {
-        _LOG_TRACE("Serving " << data.getName() << " from InMemoryStorage");
+        _LOG_TRACE("Serving " << data->getName() << " from InMemoryStorage");
         try {
           face.putData(*data);
         } catch (const std::exception& ex) {
@@ -84,7 +84,7 @@ AccessManagerV2::Impl::initialize(const Name& dataset)
         }
       }
       else {
-        _LOG_TRACE("Didn't find data for " << interest.getName());
+        _LOG_TRACE("Didn't find data for " << interest->getName());
         // TODO: Send NACK?
       }
     }
