@@ -678,11 +678,11 @@ public:
     equals(const Component& other) const
     {
       if (type_ == ndn_NameComponentType_OTHER_CODE)
-        return  *value_ == *other.value_ &&
+        return  value_.equals(other.value_) &&
           other.type_ == ndn_NameComponentType_OTHER_CODE &&
           otherTypeCode_ == other.otherTypeCode_;
       else
-        return *value_ == *other.value_ && type_ == other.type_;
+        return value_.equals(other.value_) && type_ == other.type_;
     }
 
     /**
