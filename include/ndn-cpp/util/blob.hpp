@@ -228,6 +228,10 @@ public:
       return other.isNull();
     else if (other.isNull())
       return false;
+    else if (static_cast<const ptr_lib::shared_ptr<const std::vector<uint8_t> >&>(*this).get() ==
+             static_cast<const ptr_lib::shared_ptr<const std::vector<uint8_t> >&>(other).get())
+      // The other is the same byte array object.
+      return true;
     else
       // Use the vector equals operator.
       return (**this) == (*other);
