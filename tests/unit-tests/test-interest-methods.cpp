@@ -565,6 +565,41 @@ TEST_F(TestInterestMethods, InterestFilterMatching)
   ASSERT_EQ(true,  InterestFilter("/a", "<b><>+").doesMatch(Name("/a/b/c")));
 }
 
+TEST_F(TestInterestMethods, SetParameters)
+{
+  Interest interest;
+  ASSERT_TRUE(!interest.hasParameters());
+  uint8_t parameters[] = { 0x23, 0x00 };
+  interest.setParameters(Blob(parameters, sizeof(parameters)));
+  ASSERT_TRUE(interest.hasParameters());
+  ASSERT_TRUE(interest.getParameters().equals(Blob(parameters, sizeof(parameters))));
+
+  interest.setParameters(Blob());
+  ASSERT_TRUE(!interest.hasParameters());
+}
+
+TEST_F(TestInterestMethods, AppendParametersDigest)
+{
+  Name name("/local/ndn/prefix");
+  Interest interest(name);
+
+  ASSERT_TRUE(!interest.hasParameters());
+  // No parameters yet, so it should do nothing.
+  interest.appendParametersDigestToName();
+  ASSERT_EQ("/local/ndn/prefix", interest.getName().toUri());
+
+  uint8_t parameters[] = { 0x23, 0x01, 0xC0 };
+  interest.setParameters(Blob(parameters, sizeof(parameters)));
+  ASSERT_TRUE(interest.hasParameters());
+  interest.appendParametersDigestToName();
+  ASSERT_EQ(name.size() + 1, interest.getName().size());
+  ASSERT_TRUE(interest.getName().getPrefix(-1).equals(name));
+  ASSERT_EQ(ndn_SHA256_DIGEST_SIZE, interest.getName().get(-1).getValue().size());
+
+  ASSERT_EQ(interest.getName().toUri(), string("/local/ndn/prefix/") +
+    "params-sha256=a16cc669b4c9ef6801e1569488513f9523ffb28a39e53aa6e11add8d00a413fc");
+}
+
 int
 main(int argc, char **argv)
 {
