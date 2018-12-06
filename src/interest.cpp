@@ -315,6 +315,19 @@ Interest::matchesData(const Data& data, WireFormat& wireFormat) const
   return true;
 }
 
+Interest&
+Interest::appendParametersDigestToName()
+{
+  if (!hasParameters())
+    return *this;
+
+  uint8_t digest[ndn_SHA256_DIGEST_SIZE];
+  CryptoLite::digestSha256(parameters_, digest);
+  getName().appendParametersSha256Digest(Blob(digest, sizeof(digest)));
+
+  return *this;
+}
+
 Link*
 Interest::getLink()
 {

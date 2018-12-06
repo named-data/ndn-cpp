@@ -505,6 +505,16 @@ public:
   }
 
   /**
+   * Append the digest of the Interest parameters to the Name as a
+   * ParametersSha256DigestComponent. However, if the Interest parameters is
+   * unspecified, do nothing. This does not check if the Name already has a
+   * parameters digest component, so calling again will append another component.
+   * @return This Interest so that you can chain calls to update values.
+   */
+  Interest&
+  appendParametersDigestToName();
+
+  /**
    * Set the link wire encoding bytes, without decoding them. If there is
    * a link object, set it to 0. If you later call getLink(), it will
    * decode the wireEncoding to create the link object.
