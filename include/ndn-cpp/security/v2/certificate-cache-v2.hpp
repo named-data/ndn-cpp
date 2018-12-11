@@ -111,7 +111,6 @@ public:
     nowOffsetMilliseconds_ = nowOffsetMilliseconds;
   }
 
-private:
   /**
    * CertificateCacheV2::Entry is the value of the certificatesByName_ map.
    */
@@ -138,6 +137,18 @@ private:
     MillisecondsSince1970 removalTime_;
   };
 
+  /**
+   * Get the list of cached certificates, which you should not modify.
+   * @return A map where the key is the certificate Name and the value is
+   * the CertificateCacheV2::Entry which has the certificate_.
+   */
+  const std::map<Name, Entry>&
+  getCertificatesByName() const
+  {
+    return certificatesByName_;
+  }
+
+private:
   /**
    * Remove all outdated certificate entries.
    */
