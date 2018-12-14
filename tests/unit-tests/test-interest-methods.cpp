@@ -567,12 +567,17 @@ TEST_F(TestInterestMethods, InterestFilterMatching)
 
 TEST_F(TestInterestMethods, SetParameters)
 {
-  Interest interest;
+  Interest interest("/ndn");
   ASSERT_TRUE(!interest.hasParameters());
   uint8_t parameters[] = { 0x23, 0x00 };
   interest.setParameters(Blob(parameters, sizeof(parameters)));
   ASSERT_TRUE(interest.hasParameters());
   ASSERT_TRUE(interest.getParameters().equals(Blob(parameters, sizeof(parameters))));
+
+  Interest decodedInterest;
+  decodedInterest.wireDecode(interest.wireEncode());
+  ASSERT_TRUE(decodedInterest.getParameters().equals
+              (Blob(parameters, sizeof(parameters))));
 
   interest.setParameters(Blob());
   ASSERT_TRUE(!interest.hasParameters());
