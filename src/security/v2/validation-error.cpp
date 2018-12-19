@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <sstream>
 #include <ndn-cpp/security/v2/validation-error.hpp>
 
 using namespace std;
@@ -62,6 +63,14 @@ operator<<(ostream& os, const ValidationError& error)
     os << " (" << error.getInfo() << ")";
 
   return os;
+}
+
+std::string
+ValidationError::toString() const
+{
+  ostringstream result;
+  result << *this;
+  return result.str();
 }
 
 }

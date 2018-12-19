@@ -73,6 +73,13 @@ public:
   const std::string&
   getInfo() const { return info_; }
 
+  /**
+   * Get a string representation of this ValidationError.
+   * @return The string representation.
+   */
+  std::string
+  toString() const;
+
 private:
   int code_;
   std::string info_;
