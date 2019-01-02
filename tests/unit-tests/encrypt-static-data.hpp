@@ -26,7 +26,7 @@
 #include <ndn-cpp/util/blob.hpp>
 
 /**
- * EncryptStaticData has static data blocs used by TestEncryptorV2, etc.
+ * EncryptStaticData has static data blocks used by TestEncryptorV2, etc.
  */
 class EncryptStaticData {
 public:
