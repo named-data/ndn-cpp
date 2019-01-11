@@ -204,6 +204,8 @@ MemoryContentCache::Impl::onInterest
    uint64_t interestFilterId,
    const ptr_lib::shared_ptr<const InterestFilter>& filter)
 {
+  _LOG_TRACE("MemoryContentCache:  Received Interest " << interest->toUri());
+
   MillisecondsSince1970 nowMilliseconds = ndn_getNowMilliseconds();
   doCleanup(nowMilliseconds);
 
@@ -227,6 +229,7 @@ MemoryContentCache::Impl::onInterest
         !(interest->getMustBeFresh() && !isFresh)) {
       if (interest->getChildSelector() < 0) {
         // No child selector, so send the first match that we have found.
+        _LOG_TRACE("MemoryContentCache:         Reply Data " << content->getName());
         face.send(*content->getDataEncoding());
         return;
       }
@@ -263,10 +266,13 @@ MemoryContentCache::Impl::onInterest
     }
   }
 
-  if (selectedEncoding)
+  if (selectedEncoding) {
     // We found the leftmost or rightmost child.
+    _LOG_TRACE("MemoryContentCache: Reply Data to Interest " << interest->toUri());
     face.send(*selectedEncoding);
+  }
   else {
+    _LOG_TRACE("MemoryContentCache: onDataNotFound for " << interest->toUri());
     // Call the onDataNotFound callback (if defined).
     map<string, OnInterestCallback>::iterator onDataNotFound =
       onDataNotFoundForPrefix_.find(prefix->toUri());
