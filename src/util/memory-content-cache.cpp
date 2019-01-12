@@ -135,6 +135,7 @@ MemoryContentCache::Impl::add(const Data& data)
       try {
         // Send to the same transport from the original call to onInterest.
         // wireEncode returns the cached encoding if available.
+        _LOG_TRACE("MemoryContentCache:  Reply w/ add Data " << data.getName());
         pendingInterestTable_[i]->getFace().send(*data.wireEncode());
       } catch (std::exception& e) {
         _LOG_DEBUG("Error in send: " << e.what());
