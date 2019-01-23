@@ -194,8 +194,7 @@ private:
    * return an unencrypted PKCS #8 PrivateKeyInfo.
    * @param passwordLength The length of the password. If password is null, this
    * is ignored.
-   * @return The private key encoded in PKCS #8 format, or an isNull Blob if
-   * the key does not exist.
+   * @return The private key encoded in PKCS #8 format.
    * @throws TpmBackEnd::Error if the key does not exist or if the key cannot be
    * exported, e.g., insufficient privileges.
    */
