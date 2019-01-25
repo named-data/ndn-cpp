@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
  * Copyright (C) 2016-2019 Regents of the University of California.
- * @author: From https://github.com/named-data/ndn-cxx/blob/master/src/util/config-file.cpp
+ * @author: From https://github.com/named-data/ndn-cxx/blob/master/ndn-cxx/util/config-file.cpp
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
