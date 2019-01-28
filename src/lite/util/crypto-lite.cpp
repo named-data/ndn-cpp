@@ -20,6 +20,7 @@
  */
 
 #include "../../c/util/crypto.h"
+#include "../../../contrib/murmur-hash/murmur-hash.h"
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 
 #ifdef ARDUINO
@@ -93,6 +94,19 @@ CryptoLite::verifyDigestSha256Signature
 {
   return ndn_verifyDigestSha256Signature
     (signature, signatureLength, data, dataLength) != 0;
+}
+
+uint32_t
+CryptoLite::murmurHash3
+  (uint32_t nHashSeed, const uint8_t* dataToHash, size_t dataToHashLength)
+{
+  return ndn_murmurHash3(nHashSeed, dataToHash, dataToHashLength);
+}
+
+uint32_t
+CryptoLite::murmurHash3(uint32_t nHashSeed, uint32_t value)
+{
+  return ndn_murmurHash3(nHashSeed, (const uint8_t*)&value, sizeof(uint32_t));
 }
 
 }

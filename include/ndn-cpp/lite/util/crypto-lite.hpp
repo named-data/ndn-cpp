@@ -193,6 +193,26 @@ public:
       (password.buf(), password.size(), salt.buf(), salt.size(), nIterations,
        resultLength, result);
   }
+
+  /**
+   * Compute the MurmurHash3 of the data.
+   * @param nHashSeed The hash seed.
+   * @param dataToHash A pointer to the input byte array to hash.
+   * @param dataToHashLength The length of the data to hash.
+   * @return The hash value.
+   */
+  static uint32_t
+  murmurHash3
+    (uint32_t nHashSeed, const uint8_t* dataToHash, size_t dataToHashLength);
+
+  /**
+   * Compute the MurmurHash3 of the integer value.
+   * @param nHashSeed The hash seed.
+   * @param value The integer value, interpreted as a 4-byte array.
+   * @return The hash value.
+   */
+  static uint32_t
+  murmurHash3(uint32_t nHashSeed, uint32_t value);
 };
 
 }
