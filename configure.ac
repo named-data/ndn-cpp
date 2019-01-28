@@ -325,6 +325,8 @@ if test "$HAVE_PROTOBUF" == "1" ; then
   AS_IF([test "${PROTOC}" == "no"], [AC_MSG_ERROR([ProtoBuf compiler "protoc" not found.])])
 fi
 
+AX_CHECK_ZLIB([], [])
+
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)

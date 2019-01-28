@@ -51,6 +51,9 @@
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #undef HAVE_LIBSQLITE3
 
+/* Define to 1 if you have `z' library (-lz) */
+#undef HAVE_LIBZ
+
 /* 1 if have log4cxx. */
 #undef HAVE_LOG4CXX
 
