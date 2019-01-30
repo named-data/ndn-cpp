@@ -1128,6 +1128,29 @@ public:
   }
 
   /**
+   * Append a component whose value is the nonNegativeInteger encoding of the
+   * number.
+   * @param number The number to be encoded.
+   * @param type (optional) The component type as an int from the
+   * ndn_NameComponentType enum. If the name component type is not a
+   * recognized ndn_NameComponentType enum value, then set this to
+   * ndn_NameComponentType_OTHER_CODE and use the otherTypeCode parameter.
+   * If omitted, use ndn_NameComponentType_GENERIC.
+   * @param otherTypeCode (optional) If type is
+   * ndn_NameComponentType_OTHER_CODE, then this is the packet's unrecognized
+   * content type code, which must be non-negative.
+   * @return This name so that you can chain calls to append.
+   */
+  Name&
+  appendNumber
+    (uint64_t number,
+     ndn_NameComponentType type = ndn_NameComponentType_GENERIC,
+     int otherTypeCode = -1)
+  {
+    return append(Component::fromNumber(number, type, otherTypeCode));
+  }
+
+  /**
    * Append a component with the encoded segment number according to NDN
    * naming conventions for "Segment number" (marker 0x00).
    * http://named-data.net/doc/tech-memos/naming-conventions.pdf
