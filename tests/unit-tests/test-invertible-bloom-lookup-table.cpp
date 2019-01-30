@@ -63,6 +63,8 @@ TEST_F(TestInvertibleBloomLookupTable, NameAppendAndExtract)
 
   Name ibltName("sync");
   ibltName.append(iblt.encode());
+  ASSERT_EQ("/sync/x%DAcd%60%60%D8U%B5%FC%5B%B2%EF%E2l%06%0A%00%23%1D%CD%01%00e%29%0D%B1",
+            ibltName.toUri());
 
   InvertibleBloomLookupTable received(size);
   received.initialize(ibltName.get(-1).getValue());
