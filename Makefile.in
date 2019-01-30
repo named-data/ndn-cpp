@@ -113,6 +113,7 @@ check_PROGRAMS = bin/unit-tests/test-access-manager-v2$(EXEEXT) \
 	bin/unit-tests/test-interest-methods$(EXEEXT) \
 	bin/unit-tests/test-interval$(EXEEXT) \
 	bin/unit-tests/test-key-chain$(EXEEXT) \
+	bin/unit-tests/test-invertible-bloom-lookup-table$(EXEEXT) \
 	bin/unit-tests/test-link$(EXEEXT) \
 	bin/unit-tests/test-name-conventions$(EXEEXT) \
 	bin/unit-tests/test-name-methods$(EXEEXT) \
@@ -216,6 +217,7 @@ libndn_c_la_LIBADD =
 am__objects_1 =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libndn_c_la_OBJECTS = $(am__objects_1) contrib/apache/apr_base64.lo \
+	contrib/murmur-hash/murmur-hash.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
 	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
@@ -260,6 +262,7 @@ am_libndn_cpp_tools_la_OBJECTS = $(am__objects_1) $(am__objects_1) \
 libndn_cpp_tools_la_OBJECTS = $(am_libndn_cpp_tools_la_OBJECTS)
 libndn_cpp_la_LIBADD =
 am__objects_2 = $(am__objects_1) contrib/apache/apr_base64.lo \
+	contrib/murmur-hash/murmur-hash.lo \
 	src/c/control-parameters_c.lo src/c/errors.lo \
 	src/c/forwarding-flags.lo src/c/interest_c.lo src/c/name_c.lo \
 	src/c/network-nack_c.lo src/c/encoding/element-reader.lo \
@@ -415,7 +418,9 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/validator-config/config-name-relation.lo \
 	src/security/v2/validator-config/config-rule.lo \
 	src/sync/sync-state.pb.lo src/sync/chrono-sync2013.lo \
-	src/sync/digest-tree.lo src/transport/async-tcp-transport.lo \
+	src/sync/digest-tree.lo \
+	src/sync/detail/invertible-bloom-lookup-table.lo \
+	src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
 	src/transport/udp-transport.lo src/transport/unix-transport.lo \
@@ -646,6 +651,11 @@ am_bin_unit_tests_test_interval_OBJECTS = tests/unit-tests/bin_unit_tests_test_i
 bin_unit_tests_test_interval_OBJECTS =  \
 	$(am_bin_unit_tests_test_interval_OBJECTS)
 bin_unit_tests_test_interval_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_invertible_bloom_lookup_table_OBJECTS = tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.$(OBJEXT)
+bin_unit_tests_test_invertible_bloom_lookup_table_OBJECTS = $(am_bin_unit_tests_test_invertible_bloom_lookup_table_OBJECTS)
+bin_unit_tests_test_invertible_bloom_lookup_table_DEPENDENCIES =  \
+	libndn-cpp.la
 am_bin_unit_tests_test_key_chain_OBJECTS = tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT) \
 	tests/unit-tests/bin_unit_tests_test_key_chain-identity-management-fixture.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_key_chain-gtest-all.$(OBJEXT)
@@ -840,6 +850,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po \
@@ -867,6 +878,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator_null-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po \
+	contrib/murmur-hash/$(DEPDIR)/murmur-hash.Plo \
 	examples/$(DEPDIR)/channel-status.pb.Po \
 	examples/$(DEPDIR)/chatbuf.pb.Po \
 	examples/$(DEPDIR)/control-parameters.pb.Po \
@@ -1090,6 +1102,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/sync/$(DEPDIR)/chrono-sync2013.Plo \
 	src/sync/$(DEPDIR)/digest-tree.Plo \
 	src/sync/$(DEPDIR)/sync-state.pb.Plo \
+	src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo \
 	src/transport/$(DEPDIR)/async-tcp-transport.Plo \
 	src/transport/$(DEPDIR)/async-unix-transport.Plo \
 	src/transport/$(DEPDIR)/tcp-transport.Plo \
@@ -1142,6 +1155,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po \
@@ -1264,6 +1278,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_invertible_bloom_lookup_table_SOURCES) \
 	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
@@ -1333,6 +1348,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_identity_methods_SOURCES) \
 	$(bin_unit_tests_test_interest_methods_SOURCES) \
 	$(bin_unit_tests_test_interval_SOURCES) \
+	$(bin_unit_tests_test_invertible_bloom_lookup_table_SOURCES) \
 	$(bin_unit_tests_test_key_chain_SOURCES) \
 	$(bin_unit_tests_test_link_SOURCES) \
 	$(bin_unit_tests_test_name_conventions_SOURCES) \
@@ -2059,6 +2075,7 @@ ndn_cpp_tools_cpp_headers = \
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   contrib/apache/apr_base64.c contrib/apache/apr_base64.h \
+  contrib/murmur-hash/murmur-hash.c contrib/murmur-hash/murmur-hash.h \
   src/c/control-parameters_c.c src/c/control-parameters.h \
   src/c/control-response.h \
   src/c/data.h \
@@ -2278,6 +2295,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -2444,6 +2462,12 @@ bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp \
 
 bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
+bin_unit_tests_test_invertible_bloom_lookup_table_SOURCES = \
+  tests/unit-tests/test-invertible-bloom-lookup-table.cpp \
+  contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_invertible_bloom_lookup_table_LDADD = libndn-cpp.la
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_link_LDADD = libndn-cpp.la
@@ -2645,6 +2669,15 @@ contrib/apache/$(DEPDIR)/$(am__dirstamp):
 	@: > contrib/apache/$(DEPDIR)/$(am__dirstamp)
 contrib/apache/apr_base64.lo: contrib/apache/$(am__dirstamp) \
 	contrib/apache/$(DEPDIR)/$(am__dirstamp)
+contrib/murmur-hash/$(am__dirstamp):
+	@$(MKDIR_P) contrib/murmur-hash
+	@: > contrib/murmur-hash/$(am__dirstamp)
+contrib/murmur-hash/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) contrib/murmur-hash/$(DEPDIR)
+	@: > contrib/murmur-hash/$(DEPDIR)/$(am__dirstamp)
+contrib/murmur-hash/murmur-hash.lo:  \
+	contrib/murmur-hash/$(am__dirstamp) \
+	contrib/murmur-hash/$(DEPDIR)/$(am__dirstamp)
 src/c/$(am__dirstamp):
 	@$(MKDIR_P) src/c
 	@: > src/c/$(am__dirstamp)
@@ -3333,6 +3366,15 @@ src/sync/chrono-sync2013.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/digest-tree.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
+src/sync/detail/$(am__dirstamp):
+	@$(MKDIR_P) src/sync/detail
+	@: > src/sync/detail/$(am__dirstamp)
+src/sync/detail/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/sync/detail/$(DEPDIR)
+	@: > src/sync/detail/$(DEPDIR)/$(am__dirstamp)
+src/sync/detail/invertible-bloom-lookup-table.lo:  \
+	src/sync/detail/$(am__dirstamp) \
+	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/transport
 	@: > src/transport/$(am__dirstamp)
@@ -3812,6 +3854,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.$(OBJ
 bin/unit-tests/test-interval$(EXEEXT): $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_interval_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-interval$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_interval_OBJECTS) $(bin_unit_tests_test_interval_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-invertible-bloom-lookup-table$(EXEEXT): $(bin_unit_tests_test_invertible_bloom_lookup_table_OBJECTS) $(bin_unit_tests_test_invertible_bloom_lookup_table_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_invertible_bloom_lookup_table_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-invertible-bloom-lookup-table$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_invertible_bloom_lookup_table_OBJECTS) $(bin_unit_tests_test_invertible_bloom_lookup_table_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -4131,6 +4183,8 @@ mostlyclean-compile:
 	-rm -f contrib/apache/*.$(OBJEXT)
 	-rm -f contrib/apache/*.lo
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/*.$(OBJEXT)
+	-rm -f contrib/murmur-hash/*.$(OBJEXT)
+	-rm -f contrib/murmur-hash/*.lo
 	-rm -f examples/*.$(OBJEXT)
 	-rm -f examples/arduino/*.$(OBJEXT)
 	-rm -f examples/repo-ng/*.$(OBJEXT)
@@ -4202,6 +4256,8 @@ mostlyclean-compile:
 	-rm -f src/security/v2/validator-config/*.lo
 	-rm -f src/sync/*.$(OBJEXT)
 	-rm -f src/sync/*.lo
+	-rm -f src/sync/detail/*.$(OBJEXT)
+	-rm -f src/sync/detail/*.lo
 	-rm -f src/transport/*.$(OBJEXT)
 	-rm -f src/transport/*.lo
 	-rm -f src/util/*.$(OBJEXT)
@@ -4235,6 +4291,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po@am__quote@ # am--include-marker
@@ -4262,6 +4319,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator_null-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/murmur-hash/$(DEPDIR)/murmur-hash.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/channel-status.pb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/chatbuf.pb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/control-parameters.pb.Po@am__quote@ # am--include-marker
@@ -4494,6 +4552,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-tcp-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-unix-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/tcp-transport.Plo@am__quote@ # am--include-marker
@@ -4546,6 +4605,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po@am__quote@ # am--include-marker
@@ -5302,6 +5362,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj: 
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_interval_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_interval-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
+tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.o: tests/unit-tests/test-invertible-bloom-lookup-table.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Tpo -c -o tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.o `test -f 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-invertible-bloom-lookup-table.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-invertible-bloom-lookup-table.cpp' object='tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.o `test -f 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-invertible-bloom-lookup-table.cpp
+
+tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.obj: tests/unit-tests/test-invertible-bloom-lookup-table.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Tpo -c -o tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.obj `if test -f 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-invertible-bloom-lookup-table.cpp' object='tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.obj `if test -f 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-invertible-bloom-lookup-table.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
 tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o: tests/unit-tests/test-key-chain.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_key_chain_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Tpo -c -o tests/unit-tests/bin_unit_tests_test_key_chain-test-key-chain.o `test -f 'tests/unit-tests/test-key-chain.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-key-chain.cpp
@@ -6259,6 +6347,7 @@ clean-libtool:
 	-rm -rf bin/.libs bin/_libs
 	-rm -rf bin/unit-tests/.libs bin/unit-tests/_libs
 	-rm -rf contrib/apache/.libs contrib/apache/_libs
+	-rm -rf contrib/murmur-hash/.libs contrib/murmur-hash/_libs
 	-rm -rf src/.libs src/_libs
 	-rm -rf src/c/.libs src/c/_libs
 	-rm -rf src/c/encoding/.libs src/c/encoding/_libs
@@ -6293,6 +6382,7 @@ clean-libtool:
 	-rm -rf src/security/v2/.libs src/security/v2/_libs
 	-rm -rf src/security/v2/validator-config/.libs src/security/v2/validator-config/_libs
 	-rm -rf src/sync/.libs src/sync/_libs
+	-rm -rf src/sync/detail/.libs src/sync/detail/_libs
 	-rm -rf src/transport/.libs src/transport/_libs
 	-rm -rf src/util/.libs src/util/_libs
 	-rm -rf src/util/regex/.libs src/util/regex/_libs
@@ -6705,6 +6795,13 @@ bin/unit-tests/test-interval.log: bin/unit-tests/test-interval$(EXEEXT)
 bin/unit-tests/test-key-chain.log: bin/unit-tests/test-key-chain$(EXEEXT)
 	@p='bin/unit-tests/test-key-chain$(EXEEXT)'; \
 	b='bin/unit-tests/test-key-chain'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-invertible-bloom-lookup-table.log: bin/unit-tests/test-invertible-bloom-lookup-table$(EXEEXT)
+	@p='bin/unit-tests/test-invertible-bloom-lookup-table$(EXEEXT)'; \
+	b='bin/unit-tests/test-invertible-bloom-lookup-table'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -7143,6 +7240,8 @@ distclean-generic:
 	-rm -f contrib/apache/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp)
+	-rm -f contrib/murmur-hash/$(DEPDIR)/$(am__dirstamp)
+	-rm -f contrib/murmur-hash/$(am__dirstamp)
 	-rm -f examples/$(DEPDIR)/$(am__dirstamp)
 	-rm -f examples/$(am__dirstamp)
 	-rm -f examples/arduino/$(DEPDIR)/$(am__dirstamp)
@@ -7217,6 +7316,8 @@ distclean-generic:
 	-rm -f src/security/v2/validator-config/$(am__dirstamp)
 	-rm -f src/sync/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/sync/$(am__dirstamp)
+	-rm -f src/sync/detail/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/sync/detail/$(am__dirstamp)
 	-rm -f src/transport/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/transport/$(am__dirstamp)
 	-rm -f src/util/$(DEPDIR)/$(am__dirstamp)
@@ -7258,6 +7359,7 @@ distclean: distclean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po
@@ -7285,6 +7387,7 @@ distclean: distclean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator_null-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po
+	-rm -f contrib/murmur-hash/$(DEPDIR)/murmur-hash.Plo
 	-rm -f examples/$(DEPDIR)/channel-status.pb.Po
 	-rm -f examples/$(DEPDIR)/chatbuf.pb.Po
 	-rm -f examples/$(DEPDIR)/control-parameters.pb.Po
@@ -7517,6 +7620,7 @@ distclean: distclean-recursive
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
@@ -7569,6 +7673,7 @@ distclean: distclean-recursive
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po
@@ -7680,6 +7785,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_identity_methods-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interest_methods-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_interval-gtest-all.Po
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_key_chain-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_link-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_name_conventions-gtest-all.Po
@@ -7707,6 +7813,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_validator_null-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_verification_rules-gtest-all.Po
+	-rm -f contrib/murmur-hash/$(DEPDIR)/murmur-hash.Plo
 	-rm -f examples/$(DEPDIR)/channel-status.pb.Po
 	-rm -f examples/$(DEPDIR)/chatbuf.pb.Po
 	-rm -f examples/$(DEPDIR)/control-parameters.pb.Po
@@ -7939,6 +8046,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
@@ -7991,6 +8099,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_identity_methods-test-identity-methods.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interest_methods-test-interest-methods.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_interval-test-interval.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_invertible_bloom_lookup_table-test-invertible-bloom-lookup-table.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-identity-management-fixture.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_key_chain-test-key-chain.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_link-test-link.Po

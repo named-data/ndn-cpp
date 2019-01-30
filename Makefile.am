@@ -55,6 +55,7 @@ check_PROGRAMS = bin/unit-tests/test-access-manager-v2 \
   bin/unit-tests/test-group-manager bin/unit-tests/test-identity-methods \
   bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-interval bin/unit-tests/test-key-chain \
+  bin/unit-tests/test-invertible-bloom-lookup-table \
   bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
   bin/unit-tests/test-pib-identity-container \
@@ -300,6 +301,7 @@ ndn_cpp_tools_cpp_headers = \
 # Just the C code.
 libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   contrib/apache/apr_base64.c contrib/apache/apr_base64.h \
+  contrib/murmur-hash/murmur-hash.c contrib/murmur-hash/murmur-hash.h \
   src/c/control-parameters_c.c src/c/control-parameters.h \
   src/c/control-response.h \
   src/c/data.h \
@@ -518,6 +520,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -717,6 +720,12 @@ bin_unit_tests_test_key_chain_SOURCES = tests/unit-tests/test-key-chain.cpp \
   tests/unit-tests/identity-management-fixture.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_key_chain_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_key_chain_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_invertible_bloom_lookup_table_SOURCES = \
+  tests/unit-tests/test-invertible-bloom-lookup-table.cpp \
+  contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_invertible_bloom_lookup_table_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
