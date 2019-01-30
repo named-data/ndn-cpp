@@ -61,10 +61,16 @@ TEST_F(TestInvertibleBloomLookupTable, NameAppendAndExtract)
   uint32_t newHash = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
   iblt.insert(newHash);
 
+  uint8_t expectedEncoding[] = {
+    0x78, 0xda, 0x63, 0x64, 0x60, 0x60, 0xd8, 0x55, 0xb5, 0xfc,
+    0x5b, 0xb2, 0xef, 0xe2, 0x6c, 0x06, 0x0a, 0x00, 0x23, 0x1d,
+    0xcd, 0x01, 0x00, 0x65, 0x29, 0x0d, 0xb1
+  };
+
   Name ibltName("sync");
-  ibltName.append(iblt.encode());
-  ASSERT_EQ("/sync/x%DAcd%60%60%D8U%B5%FC%5B%B2%EF%E2l%06%0A%00%23%1D%CD%01%00e%29%0D%B1",
-            ibltName.toUri());
+  Blob encodedIBLT = iblt.encode();
+  ASSERT_TRUE(encodedIBLT.equals(Blob(expectedEncoding, sizeof(expectedEncoding))));
+  ibltName.append(encodedIBLT);
 
   InvertibleBloomLookupTable received(size);
   received.initialize(ibltName.get(-1).getValue());
