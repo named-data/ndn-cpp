@@ -30,7 +30,7 @@ namespace ndn {
 class TlvEncoder;
 
 /**
- * The PSyncState represents a sequence of prefix Names as the state of PSync.
+ * The PSyncState class represents a sequence of prefix Names as the state of PSync.
  * It has methods to encode and decode for the wire.
  */
 class PSyncState {
