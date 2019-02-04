@@ -62,8 +62,8 @@ check_PROGRAMS = bin/unit-tests/test-access-manager-v2 \
   bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
   bin/unit-tests/test-pib-key-container bin/unit-tests/test-pib-key-impl \
   bin/unit-tests/test-policy-manager bin/unit-tests/test-policy-manager-v2 \
-  bin/unit-tests/test-producer \
-  bin/unit-tests/test-producer-db bin/unit-tests/test-regex \
+  bin/unit-tests/test-producer bin/unit-tests/test-producer-db \
+  bin/unit-tests/test-psync-state bin/unit-tests/test-regex \
   bin/unit-tests/test-registration-callbacks \
   bin/unit-tests/test-repetitive-interval \
   bin/unit-tests/test-rsa-algorithm bin/unit-tests/test-schedule \
@@ -521,6 +521,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
+  src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -788,6 +789,10 @@ bin_unit_tests_test_producer_db_LDADD = libndn-cpp.la
 bin_unit_tests_test_regex_SOURCES = tests/unit-tests/test-regex.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_regex_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_regex_LDADD = libndn-cpp.la
+
+bin_unit_tests_test_psync_state_SOURCES = tests/unit-tests/test-psync-state.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_psync_state_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_psync_state_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src

@@ -127,6 +127,7 @@ check_PROGRAMS = bin/unit-tests/test-access-manager-v2$(EXEEXT) \
 	bin/unit-tests/test-policy-manager-v2$(EXEEXT) \
 	bin/unit-tests/test-producer$(EXEEXT) \
 	bin/unit-tests/test-producer-db$(EXEEXT) \
+	bin/unit-tests/test-psync-state$(EXEEXT) \
 	bin/unit-tests/test-regex$(EXEEXT) \
 	bin/unit-tests/test-registration-callbacks$(EXEEXT) \
 	bin/unit-tests/test-repetitive-interval$(EXEEXT) \
@@ -420,6 +421,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/sync/sync-state.pb.lo src/sync/chrono-sync2013.lo \
 	src/sync/digest-tree.lo \
 	src/sync/detail/invertible-bloom-lookup-table.lo \
+	src/sync/detail/psync-state.lo \
 	src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
@@ -736,6 +738,11 @@ am_bin_unit_tests_test_producer_db_OBJECTS = tests/unit-tests/bin_unit_tests_tes
 bin_unit_tests_test_producer_db_OBJECTS =  \
 	$(am_bin_unit_tests_test_producer_db_OBJECTS)
 bin_unit_tests_test_producer_db_DEPENDENCIES = libndn-cpp.la
+am_bin_unit_tests_test_psync_state_OBJECTS = tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.$(OBJEXT) \
+	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.$(OBJEXT)
+bin_unit_tests_test_psync_state_OBJECTS =  \
+	$(am_bin_unit_tests_test_psync_state_OBJECTS)
+bin_unit_tests_test_psync_state_DEPENDENCIES = libndn-cpp.la
 am_bin_unit_tests_test_regex_OBJECTS = tests/unit-tests/bin_unit_tests_test_regex-test-regex.$(OBJEXT) \
 	contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_regex-gtest-all.$(OBJEXT)
 bin_unit_tests_test_regex_OBJECTS =  \
@@ -865,6 +872,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po \
 	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po \
@@ -1103,6 +1111,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/sync/$(DEPDIR)/digest-tree.Plo \
 	src/sync/$(DEPDIR)/sync-state.pb.Plo \
 	src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo \
+	src/sync/detail/$(DEPDIR)/psync-state.Plo \
 	src/transport/$(DEPDIR)/async-tcp-transport.Plo \
 	src/transport/$(DEPDIR)/async-unix-transport.Plo \
 	src/transport/$(DEPDIR)/tcp-transport.Plo \
@@ -1177,6 +1186,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po \
+	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po \
 	tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po \
@@ -1293,6 +1303,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
+	$(bin_unit_tests_test_psync_state_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
@@ -1363,6 +1374,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_unit_tests_test_policy_manager_v2_SOURCES) \
 	$(bin_unit_tests_test_producer_SOURCES) \
 	$(bin_unit_tests_test_producer_db_SOURCES) \
+	$(bin_unit_tests_test_psync_state_SOURCES) \
 	$(bin_unit_tests_test_regex_SOURCES) \
 	$(bin_unit_tests_test_registration_callbacks_SOURCES) \
 	$(bin_unit_tests_test_repetitive_interval_SOURCES) \
@@ -2296,6 +2308,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
+  src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -2522,6 +2535,9 @@ bin_unit_tests_test_producer_db_LDADD = libndn-cpp.la
 bin_unit_tests_test_regex_SOURCES = tests/unit-tests/test-regex.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_regex_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_regex_LDADD = libndn-cpp.la
+bin_unit_tests_test_psync_state_SOURCES = tests/unit-tests/test-psync-state.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+bin_unit_tests_test_psync_state_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
+bin_unit_tests_test_psync_state_LDADD = libndn-cpp.la
 bin_unit_tests_test_registration_callbacks_SOURCES = tests/unit-tests/test-registration-callbacks.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_registration_callbacks_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_registration_callbacks_LDADD = libndn-cpp.la
@@ -3375,6 +3391,8 @@ src/sync/detail/$(DEPDIR)/$(am__dirstamp):
 src/sync/detail/invertible-bloom-lookup-table.lo:  \
 	src/sync/detail/$(am__dirstamp) \
 	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
+src/sync/detail/psync-state.lo: src/sync/detail/$(am__dirstamp) \
+	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/transport
 	@: > src/transport/$(am__dirstamp)
@@ -4025,6 +4043,16 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.$(
 bin/unit-tests/test-producer-db$(EXEEXT): $(bin_unit_tests_test_producer_db_OBJECTS) $(bin_unit_tests_test_producer_db_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_producer_db_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
 	@rm -f bin/unit-tests/test-producer-db$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_producer_db_OBJECTS) $(bin_unit_tests_test_producer_db_LDADD) $(LIBS)
+tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.$(OBJEXT):  \
+	tests/unit-tests/$(am__dirstamp) \
+	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.$(OBJEXT):  \
+	contrib/gtest-1.7.0/fused-src/gtest/$(am__dirstamp) \
+	contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/$(am__dirstamp)
+
+bin/unit-tests/test-psync-state$(EXEEXT): $(bin_unit_tests_test_psync_state_OBJECTS) $(bin_unit_tests_test_psync_state_DEPENDENCIES) $(EXTRA_bin_unit_tests_test_psync_state_DEPENDENCIES) bin/unit-tests/$(am__dirstamp)
+	@rm -f bin/unit-tests/test-psync-state$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_unit_tests_test_psync_state_OBJECTS) $(bin_unit_tests_test_psync_state_LDADD) $(LIBS)
 tests/unit-tests/bin_unit_tests_test_regex-test-regex.$(OBJEXT):  \
 	tests/unit-tests/$(am__dirstamp) \
 	tests/unit-tests/$(DEPDIR)/$(am__dirstamp)
@@ -4306,6 +4334,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po@am__quote@ # am--include-marker
@@ -4553,6 +4582,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-state.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-tcp-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-unix-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/tcp-transport.Plo@am__quote@ # am--include-marker
@@ -4627,6 +4657,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po@am__quote@ # am--include-marker
@@ -5881,6 +5912,34 @@ contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.ob
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_producer_db_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_producer_db-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
 
+tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.o: tests/unit-tests/test-psync-state.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Tpo -c -o tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.o `test -f 'tests/unit-tests/test-psync-state.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-psync-state.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-psync-state.cpp' object='tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.o `test -f 'tests/unit-tests/test-psync-state.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-psync-state.cpp
+
+tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.obj: tests/unit-tests/test-psync-state.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.obj -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Tpo -c -o tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.obj `if test -f 'tests/unit-tests/test-psync-state.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-psync-state.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-psync-state.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tests/unit-tests/test-psync-state.cpp' object='tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tests/unit-tests/bin_unit_tests_test_psync_state-test-psync-state.obj `if test -f 'tests/unit-tests/test-psync-state.cpp'; then $(CYGPATH_W) 'tests/unit-tests/test-psync-state.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/unit-tests/test-psync-state.cpp'; fi`
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.o: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.o -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.o `test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' || echo '$(srcdir)/'`contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+
+contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.obj: contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.obj -MD -MP -MF contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Tpo -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Tpo contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc' object='contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_psync_state_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o contrib/gtest-1.7.0/fused-src/gtest/bin_unit_tests_test_psync_state-gtest-all.obj `if test -f 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; then $(CYGPATH_W) 'contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc'; fi`
+
 tests/unit-tests/bin_unit_tests_test_regex-test-regex.o: tests/unit-tests/test-regex.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bin_unit_tests_test_regex_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tests/unit-tests/bin_unit_tests_test_regex-test-regex.o -MD -MP -MF tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo -c -o tests/unit-tests/bin_unit_tests_test_regex-test-regex.o `test -f 'tests/unit-tests/test-regex.cpp' || echo '$(srcdir)/'`tests/unit-tests/test-regex.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Tpo tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po
@@ -6897,6 +6956,13 @@ bin/unit-tests/test-producer-db.log: bin/unit-tests/test-producer-db$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bin/unit-tests/test-psync-state.log: bin/unit-tests/test-psync-state$(EXEEXT)
+	@p='bin/unit-tests/test-psync-state$(EXEEXT)'; \
+	b='bin/unit-tests/test-psync-state'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 bin/unit-tests/test-regex.log: bin/unit-tests/test-regex$(EXEEXT)
 	@p='bin/unit-tests/test-regex$(EXEEXT)'; \
 	b='bin/unit-tests/test-regex'; \
@@ -7374,6 +7440,7 @@ distclean: distclean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po
@@ -7621,6 +7688,7 @@ distclean: distclean-recursive
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
@@ -7695,6 +7763,7 @@ distclean: distclean-recursive
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po
@@ -7800,6 +7869,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_producer_db-gtest-all.Po
+	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_psync_state-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_regex-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-gtest-all.Po
 	-rm -f contrib/gtest-1.7.0/fused-src/gtest/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-gtest-all.Po
@@ -8047,6 +8117,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
@@ -8121,6 +8192,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_policy_manager_v2-test-policy-manager-v2.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer-test-producer.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_producer_db-test-producer-db.Po
+	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_psync_state-test-psync-state.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_regex-test-regex.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_registration_callbacks-test-registration-callbacks.Po
 	-rm -f tests/unit-tests/$(DEPDIR)/bin_unit_tests_test_repetitive_interval-test-repetitive-interval.Po
