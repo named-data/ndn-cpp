@@ -238,6 +238,13 @@ public:
   }
 
   /**
+   * Compute the hash code.
+   * @return The hash code of the byte array, or 0 if isNull();
+   */
+  size_t
+  hash() const { return isNull() ? 0 : BlobLite::hash(buf(), size()); }
+
+  /**
    * Set the blobStruct to point to this Blob's byte array, without copying any memory.
    * WARNING: The resulting pointer in blobStruct is invalid after a further use of this object which could reallocate memory.
    * @param blobStruct The C ndn_Blob struct to receive the pointer.
