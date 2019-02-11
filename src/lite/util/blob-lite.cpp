@@ -46,5 +46,15 @@ BlobLite::equals(const BlobLite& other) const
   return ndn_Blob_equals(this, &other) != 0;
 }
 
+size_t
+BlobLite::hash(const uint8_t* buf, size_t size)
+{
+  // Imitate Java's ByteBuffer.hashCode().)
+  size_t result = 1;
+  for (size_t i = 0; i < size; ++i)
+    result = 31 * result + (size_t)buf[i];
+
+  return result;
+}
 
 }

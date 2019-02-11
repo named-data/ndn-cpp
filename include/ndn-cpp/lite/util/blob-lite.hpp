@@ -79,6 +79,22 @@ public:
   equals(const BlobLite& other) const;
 
   /**
+   * Compute the hash code.
+   * @return The hash code of the byte array, or 0 if isNull();
+   */
+  size_t
+  hash() const { return isNull() ? 0 : hash(buf(), size()); }
+
+  /**
+   * Compute the hash code of the byte array.
+   * @param buf A pointer to the byte array.
+   * @param size The number of bytes in buf.
+   * @return The hash code.
+   */
+  static size_t
+  hash(const uint8_t* buf, size_t size);
+
+  /**
    * Downcast the reference to the ndn_Blob struct to a BlobLite.
    * @param blob A reference to the ndn_Blob struct.
    * @return The same reference as BlobLite.
