@@ -695,6 +695,31 @@ Name::compare
     return 0;
 }
 
+size_t
+Name::hash() const
+{
+  if (hashCodeChangeCount_ != getChangeCount()) {
+    // The values have changed, so the previous hash code is invalidated.
+    // This method can be called on a const object, but we want to be able to
+    // update the default cached hashCode_.
+    const_cast<Name*>(this)->hashCode_ = 0;
+    const_cast<Name*>(this)->hashCodeChangeCount_ = getChangeCount();
+  }
+
+  // Note: In the unlikely event that the hash of a non-empty name is 0, then
+  // this will re-compute the hash each time. This is OK because we don't want
+  // to take the space to keep a flag like haveHashCode_ .
+  if (hashCode_ == 0) {
+    int hashCode = 0;
+    for (size_t i = 0; i < components_.size(); ++i)
+      hashCode = 37 * hashCode + components_[i].hash();
+
+    const_cast<Name*>(this)->hashCode_ = hashCode;
+  }
+
+  return hashCode_;
+}
+
 void
 Name::checkAppendOtherTypeCode(int otherTypeCode)
 {

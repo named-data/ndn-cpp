@@ -686,6 +686,18 @@ public:
     }
 
     /**
+     * Get the hash code of this component, including the type code.
+     * @return The hash code.
+     */
+    size_t
+    hash() const
+    {
+      return 37 *
+        (type_ == ndn_NameComponentType_OTHER_CODE ? otherTypeCode_ : type_) +
+        value_.hash();
+    }
+
+    /**
      * Check if this is the same component as other.
      * @param other The other Component to compare with.
      * @return true if the components are equal, otherwise false.
@@ -773,7 +785,7 @@ public:
    * Create a new Name with no components.
    */
   Name()
-  : changeCount_(0)
+  : changeCount_(0), hashCode_(0), hashCodeChangeCount_(0)
   {
   }
 
@@ -782,7 +794,7 @@ public:
    * @param components A vector of Component
    */
   Name(const std::vector<Component>& components)
-  : components_(components), changeCount_(0)
+  : components_(components), changeCount_(0), hashCode_(0), hashCodeChangeCount_(0)
   {
   }
 
@@ -791,7 +803,7 @@ public:
    * @param uri The URI string.
    */
   Name(const char* uri)
-  : changeCount_(0)
+  : changeCount_(0), hashCode_(0), hashCodeChangeCount_(0)
   {
     set(uri);
   }
@@ -801,7 +813,7 @@ public:
    * @param uri The URI string.
    */
   Name(const std::string& uri)
-  : changeCount_(0)
+  : changeCount_(0), hashCode_(0), hashCodeChangeCount_(0)
   {
     set(uri.c_str());
   }
@@ -1546,7 +1558,6 @@ public:
     (int iStartComponent, size_t nComponents, const Name& other,
      int iOtherStartComponent, size_t nOtherComponents) const;
 
-
   /**
    * Compare a subset of this name to a subset of the other name, equivalent to
    * this->getSubName(iStartComponent, nComponents).compare
@@ -1573,6 +1584,13 @@ public:
       (iStartComponent, nComponents, other, iOtherStartComponent,
        other.components_.size());
   }
+
+  /**
+   * Get the hash code of this Name.
+   * @return The hash code.
+   */
+  size_t
+  hash() const;
 
   const Component&
   operator [] (int i) const
@@ -1698,6 +1716,8 @@ private:
 
   std::vector<Component> components_;
   uint64_t changeCount_;
+  size_t hashCode_;
+  uint64_t hashCodeChangeCount_;
 };
 
 inline std::ostream&
