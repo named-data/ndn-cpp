@@ -104,6 +104,13 @@ public:
     wireDecode(input.buf(), input.size());
   }
 
+  /**
+   * Get the string representation of this SigningInfo.
+   * @return The string representation.
+   */
+  std::string
+  toString() const;
+
   enum {
     Tlv_PSyncContent = 128
   };

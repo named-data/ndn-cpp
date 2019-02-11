@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <sstream>
 #include "../../encoding/tlv-encoder.hpp"
 #include "../../encoding/tlv-decoder.hpp"
 #include "../../c/encoding/tlv/tlv-name.h"
@@ -91,6 +92,24 @@ PSyncState::wireDecode(const uint8_t *input, size_t inputLength)
   }
 
   decoder.finishNestedTlvs(endOffset);
+}
+
+string
+PSyncState::toString() const
+{
+  ostringstream result;
+
+  result << "[";
+
+  for (size_t i = 0; i < content_.size(); ++i) {
+    result << content_[i];
+    if (i < content_.size() - 1)
+      result << ", ";
+  }
+
+  result << "]";
+
+  return result.str();
 }
 
 }
