@@ -56,6 +56,18 @@ CryptoLite::generateRandomBytes(uint8_t *buffer, size_t bufferLength)
   return ndn_generateRandomBytes(buffer, bufferLength);
 }
 
+ndn_Error
+CryptoLite::generateRandomFloat(float& value)
+{
+  ndn_Error error;
+  uint32_t random;
+  if ((error = generateRandomBytes((uint8_t*)&random, sizeof(random))))
+    return error;
+
+  value = ((float)random) / 0xffffffff;
+  return NDN_ERROR_success;
+}
+
 #if NDN_CPP_HAVE_LIBCRYPTO
 
 void

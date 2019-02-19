@@ -65,6 +65,15 @@ public:
   generateRandomBytes(uint8_t* buffer, size_t bufferLength);
 
   /**
+   * Generate a random value from 0.0 to 1.0.
+   * @param value Set value to the random value.
+   * @return 0 for success, else NDN_ERROR_Error_in_generate_operation for an
+   * error including if the random number generator is not seeded.
+   */
+  static ndn_Error
+  generateRandomFloat(float& value);
+
+  /**
    * Compute the HMAC with sha-256 of data, as defined in
    * http://tools.ietf.org/html/rfc2104#section-2 .
    * @param key A pointer to buffer with the key.
