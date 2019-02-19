@@ -63,6 +63,13 @@ public:
   find(const Interest& interest);
 
   /**
+   * Remove matching entries by prefix.
+   * @param prefix The prefix Name of the entries to remove.
+   */
+  void
+  remove(const Name& prefix);
+
+  /**
    * Get the number of packets stored in the in-memory storage.
    * @return The number of packets.
    */

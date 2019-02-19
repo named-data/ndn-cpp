@@ -39,4 +39,13 @@ InMemoryStorageRetaining::find(const Interest& interest)
   return ptr_lib::shared_ptr<Data>();
 }
 
+void
+InMemoryStorageRetaining::remove(const Name& prefix)
+{
+  // The Name keys are in order.
+  map<Name, ptr_lib::shared_ptr<Data> >::const_iterator it = cache_.lower_bound(prefix);
+  while (it != cache_.end() && prefix.isPrefixOf(it->first))
+    cache_.erase(it++);
+}
+
 }
