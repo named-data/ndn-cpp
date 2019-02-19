@@ -272,7 +272,6 @@ private:
     std::map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> > pendingEntries_;
     Milliseconds syncInterestLifetime_;
     OnUpdate onUpdate_;
-    std::uniform_int_distribution<> jitter_;
     Name outstandingInterestName_;
     uint64_t registeredPrefix_;
   };

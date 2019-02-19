@@ -45,9 +45,6 @@ FullPSync2017::Impl::Impl
   syncInterestLifetime_(syncInterestLifetime),
   onUpdate_(onUpdate)
 {
-  int jitter = syncInterestLifetime_ * 0.20;
-  // Debug: uniform_int_distribution requires C++11.
-  jitter_ = std::uniform_int_distribution<>(-jitter, jitter);
 }
 
 void
