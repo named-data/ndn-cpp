@@ -63,10 +63,10 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
 
     Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
     map<Name, uint32_t>::iterator hashEntry =
-      prefixToHash_.find(prefixWithSequenceNo);
-    if (hashEntry != prefixToHash_.end()) {
+      prefixWithSequenceNoToHash_.find(prefixWithSequenceNo);
+    if (hashEntry != prefixWithSequenceNoToHash_.end()) {
       uint32_t hash = hashEntry->second;
-      prefixToHash_.erase(hashEntry);
+      prefixWithSequenceNoToHash_.erase(hashEntry);
       hashToPrefix_.erase(hash);
       iblt_->erase(hash);
     }
@@ -117,10 +117,10 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
   if (oldSequenceNo != 0) {
     Name prefixWithOldSequenceNo = Name(prefix).appendNumber(oldSequenceNo);
     map<Name, uint32_t>::iterator hashEntry =
-      prefixToHash_.find(prefixWithOldSequenceNo);
-    if (hashEntry != prefixToHash_.end()) {
+      prefixWithSequenceNoToHash_.find(prefixWithOldSequenceNo);
+    if (hashEntry != prefixWithSequenceNoToHash_.end()) {
       uint32_t hash = hashEntry->second;
-      prefixToHash_.erase(hashEntry);
+      prefixWithSequenceNoToHash_.erase(hashEntry);
 
       hashToPrefix_.erase(hash);
       iblt_->erase(hash);
@@ -133,7 +133,7 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
   string uri = prefixWithSequenceNo.toUri();
   uint32_t newHash = CryptoLite::murmurHash3
     (InvertibleBloomLookupTable::N_HASHCHECK, uri.data(), uri.size());
-  prefixToHash_[prefixWithSequenceNo] = newHash;
+  prefixWithSequenceNoToHash_[prefixWithSequenceNo] = newHash;
   hashToPrefix_[newHash] = prefix;
   iblt_->insert(newHash);
 }

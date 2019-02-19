@@ -97,7 +97,8 @@ protected:
    * Whoever calls this needs to make sure that prefix is in prefixes_.
    * We remove an already-existing prefix/sequence number from iblt_ (unless
    * sequenceNo is zero because we don't insert a zero sequence number into the
-   * IBLT.) Then we update prefix_, prefixTohash_, hashToprefix_, and iblt_ .
+   * IBLT.) Then we update prefix_, prefixWithSequenceNoToHash_, hashToprefix_,
+   * and iblt_ .
    * @param prefix The prefix of the sequence number to update.
    * @param sequenceNumber The new sequence number.
    */
@@ -129,12 +130,12 @@ protected:
 
   // The key is the prefix Name. The value is the sequence number for the prefix.
   std::map<Name, int> prefixes_;
-  // prefixToHash_ and hashToPrefix_ are just for looking up the hash more
-  // quickly (instead of calculating it again). These are only used in
+  // prefixWithSequenceNoToHash_ and hashToPrefix_ are just for looking up the
+  // hash more quickly (instead of calculating it again). These are only used in
   // updateSequenceNo().
   // The key is the prefix/sequenceNo. The value is the hash.
-  std::map<Name, uint32_t> prefixToHash_;
-  // The key is the hash. The value is the prefix/sequenceNo.
+  std::map<Name, uint32_t> prefixWithSequenceNoToHash_;
+  // The key is the hash. The value is the prefix (without the sequenceNo).
   std::map<uint32_t, Name> hashToPrefix_;
 
   Face& face_;
