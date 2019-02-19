@@ -19,6 +19,14 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+/**
+ * This generates new names with the given prefix and publishes them using Full
+ * PSync. The also receives and displays new names from the other users. This
+ * requires a running local NFD. This is compatible with the PSync full-sync
+ * example program:
+ * https://github.com/named-data/PSync/blob/master/examples/full-sync.cpp
+ */
+
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
