@@ -148,6 +148,7 @@ noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
+	bin/test-full-psync$(EXEEXT) \
 	bin/test-generalized-content$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) \
 	bin/test-get-async-threadsafe$(EXEEXT) \
@@ -419,8 +420,10 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/validator-config/config-name-relation.lo \
 	src/security/v2/validator-config/config-rule.lo \
 	src/sync/sync-state.pb.lo src/sync/chrono-sync2013.lo \
-	src/sync/digest-tree.lo \
+	src/sync/digest-tree.lo src/sync/psync-full-producer.lo \
+	src/sync/psync-producer-base.lo \
 	src/sync/detail/invertible-bloom-lookup-table.lo \
+	src/sync/detail/psync-segment-publisher.lo \
 	src/sync/detail/psync-state.lo \
 	src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
@@ -493,6 +496,9 @@ am_bin_test_encode_decode_interest_OBJECTS =  \
 bin_test_encode_decode_interest_OBJECTS =  \
 	$(am_bin_test_encode_decode_interest_OBJECTS)
 bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
+am_bin_test_full_psync_OBJECTS = examples/test-full-psync.$(OBJEXT)
+bin_test_full_psync_OBJECTS = $(am_bin_test_full_psync_OBJECTS)
+bin_test_full_psync_DEPENDENCIES = libndn-cpp.la
 am_bin_test_generalized_content_OBJECTS =  \
 	examples/test-generalized-content.$(OBJEXT)
 bin_test_generalized_content_OBJECTS =  \
@@ -902,6 +908,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	examples/$(DEPDIR)/test-encode-decode-data.Po \
 	examples/$(DEPDIR)/test-encode-decode-fib-entry.Po \
 	examples/$(DEPDIR)/test-encode-decode-interest.Po \
+	examples/$(DEPDIR)/test-full-psync.Po \
 	examples/$(DEPDIR)/test-generalized-content.Po \
 	examples/$(DEPDIR)/test-get-async-threadsafe.Po \
 	examples/$(DEPDIR)/test-get-async.Po \
@@ -1109,8 +1116,11 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo \
 	src/sync/$(DEPDIR)/chrono-sync2013.Plo \
 	src/sync/$(DEPDIR)/digest-tree.Plo \
+	src/sync/$(DEPDIR)/psync-full-producer.Plo \
+	src/sync/$(DEPDIR)/psync-producer-base.Plo \
 	src/sync/$(DEPDIR)/sync-state.pb.Plo \
 	src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo \
+	src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo \
 	src/sync/detail/$(DEPDIR)/psync-state.Plo \
 	src/transport/$(DEPDIR)/async-tcp-transport.Plo \
 	src/transport/$(DEPDIR)/async-unix-transport.Plo \
@@ -1259,6 +1269,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
+	$(bin_test_full_psync_SOURCES) \
 	$(bin_test_generalized_content_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
@@ -1330,6 +1341,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
+	$(bin_test_full_psync_SOURCES) \
 	$(bin_test_generalized_content_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
@@ -2060,6 +2072,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validator-config/config-name-relation.hpp \
   include/ndn-cpp/security/v2/validator-config/config-rule.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
+  include/ndn-cpp/sync/psync-full-producer.hpp \
+  include/ndn-cpp/sync/psync-missing-data-info.hpp \
+  include/ndn-cpp/sync/psync-producer-base.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
@@ -2307,7 +2322,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/psync-full-producer.cpp \
+  src/sync/psync-producer-base.cpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
+  src/sync/detail/psync-segment-publisher.cpp src/sync/detail/psync-segment-publisher.hpp \
   src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
@@ -2359,6 +2377,8 @@ bin_test_encode_decode_fib_entry_SOURCES = examples/fib-entry.pb.cc examples/tes
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
+bin_test_full_psync_SOURCES = examples/test-full-psync.cpp
+bin_test_full_psync_LDADD = libndn-cpp.la
 bin_test_generalized_content_SOURCES = examples/test-generalized-content.cpp
 bin_test_generalized_content_LDADD = libndn-cpp.la libndn-cpp-tools.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
@@ -3382,6 +3402,10 @@ src/sync/chrono-sync2013.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/digest-tree.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
+src/sync/psync-full-producer.lo: src/sync/$(am__dirstamp) \
+	src/sync/$(DEPDIR)/$(am__dirstamp)
+src/sync/psync-producer-base.lo: src/sync/$(am__dirstamp) \
+	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/detail/$(am__dirstamp):
 	@$(MKDIR_P) src/sync/detail
 	@: > src/sync/detail/$(am__dirstamp)
@@ -3389,6 +3413,9 @@ src/sync/detail/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/sync/detail/$(DEPDIR)
 	@: > src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/sync/detail/invertible-bloom-lookup-table.lo:  \
+	src/sync/detail/$(am__dirstamp) \
+	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
+src/sync/detail/psync-segment-publisher.lo:  \
 	src/sync/detail/$(am__dirstamp) \
 	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/sync/detail/psync-state.lo: src/sync/detail/$(am__dirstamp) \
@@ -3564,6 +3591,12 @@ examples/test-encode-decode-interest.$(OBJEXT):  \
 bin/test-encode-decode-interest$(EXEEXT): $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_interest_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-interest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_LDADD) $(LIBS)
+examples/test-full-psync.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
+
+bin/test-full-psync$(EXEEXT): $(bin_test_full_psync_OBJECTS) $(bin_test_full_psync_DEPENDENCIES) $(EXTRA_bin_test_full_psync_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-full-psync$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_full_psync_OBJECTS) $(bin_test_full_psync_LDADD) $(LIBS)
 examples/test-generalized-content.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -4364,6 +4397,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-full-psync.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-generalized-content.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async-threadsafe.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@ # am--include-marker
@@ -4580,8 +4614,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/psync-full-producer.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/psync-producer-base.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-state.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-tcp-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-unix-transport.Plo@am__quote@ # am--include-marker
@@ -7470,6 +7507,7 @@ distclean: distclean-recursive
 	-rm -f examples/$(DEPDIR)/test-encode-decode-data.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-fib-entry.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-interest.Po
+	-rm -f examples/$(DEPDIR)/test-full-psync.Po
 	-rm -f examples/$(DEPDIR)/test-generalized-content.Po
 	-rm -f examples/$(DEPDIR)/test-get-async-threadsafe.Po
 	-rm -f examples/$(DEPDIR)/test-get-async.Po
@@ -7686,8 +7724,11 @@ distclean: distclean-recursive
 	-rm -f src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
+	-rm -f src/sync/$(DEPDIR)/psync-full-producer.Plo
+	-rm -f src/sync/$(DEPDIR)/psync-producer-base.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
@@ -7899,6 +7940,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f examples/$(DEPDIR)/test-encode-decode-data.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-fib-entry.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-interest.Po
+	-rm -f examples/$(DEPDIR)/test-full-psync.Po
 	-rm -f examples/$(DEPDIR)/test-generalized-content.Po
 	-rm -f examples/$(DEPDIR)/test-get-async-threadsafe.Po
 	-rm -f examples/$(DEPDIR)/test-get-async.Po
@@ -8115,8 +8157,11 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
+	-rm -f src/sync/$(DEPDIR)/psync-full-producer.Plo
+	-rm -f src/sync/$(DEPDIR)/psync-producer-base.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo

@@ -76,6 +76,7 @@ noinst_PROGRAMS = bin/test-channel-discovery bin/test-chrono-chat \
   bin/test-echo-consumer bin/test-echo-consumer-lite \
   bin/test-encode-decode-benchmark bin/test-encode-decode-data \
   bin/test-encode-decode-fib-entry bin/test-encode-decode-interest \
+  bin/test-full-psync \
   bin/test-generalized-content bin/test-get-async bin/test-get-async-threadsafe \
   bin/test-list-channels bin/test-list-faces bin/test-list-rib \
   bin/test-prefix-discovery \
@@ -276,6 +277,9 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validator-config/config-name-relation.hpp \
   include/ndn-cpp/security/v2/validator-config/config-rule.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
+  include/ndn-cpp/sync/psync-full-producer.hpp \
+  include/ndn-cpp/sync/psync-missing-data-info.hpp \
+  include/ndn-cpp/sync/psync-producer-base.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
   include/ndn-cpp/transport/async-unix-transport.hpp \
   include/ndn-cpp/transport/tcp-transport.hpp \
@@ -520,7 +524,10 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/psync-full-producer.cpp \
+  src/sync/psync-producer-base.cpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
+  src/sync/detail/psync-segment-publisher.cpp src/sync/detail/psync-segment-publisher.hpp \
   src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
@@ -578,6 +585,9 @@ bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
+
+bin_test_full_psync_SOURCES = examples/test-full-psync.cpp
+bin_test_full_psync_LDADD = libndn-cpp.la
 
 bin_test_generalized_content_SOURCES = examples/test-generalized-content.cpp
 bin_test_generalized_content_LDADD = libndn-cpp.la libndn-cpp-tools.la
