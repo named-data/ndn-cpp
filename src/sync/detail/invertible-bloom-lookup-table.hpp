@@ -59,7 +59,7 @@ namespace ndn {
 
 /**
  * InvertibleBloomLookupTable implements an Invertible Bloom Lookup Table (IBLT)
- * (Invertible Bloom Filter). This is used by PSyncFullProducer.
+ * (Invertible Bloom Filter). This is used by FullPSync2017.
  */
 class InvertibleBloomLookupTable {
 public:

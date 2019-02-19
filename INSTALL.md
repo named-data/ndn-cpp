@@ -16,7 +16,7 @@ Prerequisites
 * Optional: log4cxx (for debugging and log output)
 * Optional: Doxygen (to make documentation)
 * Optional: Boost (min version 1.48) with asio (for ThreadsafeFace and async I/O)
-* Optional: zlib (for PSyncFullProducer)
+* Optional: zlib (for FullPSync2017)
 
 Following are the detailed steps for each platform to install the prerequisites.
 

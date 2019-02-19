@@ -32,7 +32,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
-#include <ndn-cpp/sync/psync-full-producer.hpp>
+#include <ndn-cpp/sync/full-psync2017.hpp>
 
 using namespace std;
 using namespace ndn;
@@ -271,7 +271,7 @@ private:
   }
 
   Face& face_;
-  PSyncFullProducer fullProducer_;
+  FullPSync2017 fullProducer_;
   int nUserPrefixes_;
   int maxPublishedSequenceNo_;
   Milliseconds delayRangeMaxMs_;

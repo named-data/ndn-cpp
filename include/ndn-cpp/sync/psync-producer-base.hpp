@@ -34,7 +34,7 @@ class PSyncSegmentPublisher;
 
 /**
  * PSyncProducerBase is a base class for PsyncPartialProducer::Impl and
- * PsyncFullProducer::Impl.
+ * FullPSync2017::Impl.
  */
 class PSyncProducerBase : public ptr_lib::enable_shared_from_this<PSyncProducerBase> {
 public:

@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_PSYNC_FULL_PRODUCER_HPP
-#define NDN_PSYNC_FULL_PRODUCER_HPP
+#ifndef NDN_FULL_PSYNC_2017_PRODUCER_HPP
+#define NDN_FULL_PSYNC_2017_PRODUCER_HPP
 
 #include "../util/segment-fetcher.hpp"
 #include "psync-missing-data-info.hpp"
@@ -30,20 +30,26 @@
 namespace ndn {
 
 /**
- * PSyncFullProducer implements the full sync logic of PSync to synchronize with
+ * FullPSync2017 implements the full sync logic of PSync to synchronize with
  * other nodes, where all nodes want to sync all the names prefixes.
  * The application should call publishName whenever it wants to let consumers
  * know that new data is available for the user prefix. Multiple user prefixes
  * can be added by using addUserNode. Currently, fetching and publishing the
- * data needs to be handled by the application.
+ * data needs to be handled by the application. FullPSync2017 implements the
+ * protocol described in section "G. Full-Data Synchronization" of the 2017
+ * paper "Scalable Name-based Data Synchronization forNamed Data Networking".
+ * https://named-data.net/wp-content/uploads/2017/05/scalable_name-based_data_synchronization.pdf
+ * (Note: In the PSync library, this class is called FullProducer. But because
+ * the class actually handles both producing and consuming, we omit "producer"
+ * in the name to avoid confusion.)
  */
-class PSyncFullProducer {
+class FullPSync2017 {
   typedef func_lib::function<void
     (const ptr_lib::shared_ptr<std::vector<ptr_lib::shared_ptr<PSyncMissingDataInfo>>>& updates)> OnUpdate;
 
 public:
   /**
-   * Create a PSyncProducerBase.
+   * Create a FullPSync2017.
    * @param expectedNEntries The expected number of entries in the IBLT.
    * @param face The application's Face.
    * @param syncPrefix The prefix Name of the sync group, which is copied.
@@ -64,7 +70,7 @@ public:
    * @param signingInfo (optional) The SigningInfo for signing Data packets,
    * which is copied. If omitted, use the default SigningInfo().
    */
-  PSyncFullProducer
+  FullPSync2017
     (size_t expectedNEntries, Face& face, const Name& syncPrefix,
      const Name& userPrefix, const OnUpdate& onUpdate, KeyChain& keyChain,
      Milliseconds syncInterestLifetime = DEFAULT_SYNC_INTEREST_LIFETIME,
@@ -132,15 +138,15 @@ public:
 
 private:
   /**
-   * PSyncFullProducer::Impl does the work of PSyncFullProducer. It is a
-   * separate class so that PSyncFullProducer can create an instance in a
+   * FullPSync2017::Impl does the work of FullPSync2017. It is a
+   * separate class so that FullPSync2017 can create an instance in a
    * shared_ptr to use in callbacks.
    */
   class Impl : public PSyncProducerBase {
   public:
     /**
      * Create a new Impl, which should belong to a shared_ptr. Then you must
-     * call initialize(). See the PSyncFullProducer constructor for parameter
+     * call initialize(). See the FullPSync2017 constructor for parameter
      * documentation.
      */
     Impl
