@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.15 (2018-11-07)
+Interim changes since NDN-CPP v0.15 (2019-02-19)
 ------------------------------------------------
 
 Changes
@@ -6,6 +6,8 @@ Changes
   EncryptorV2, DecryptorV2 and AccessControlV2, with integration tests.
 * In TpmBackEndFile, implemented private key import/export.
 * In KeyChain, implemented exportSafeBag with a password-encrypted private key.
+* sync: Added PSyncFullProducer, implementing the Full PSync protocol.
+* examples: Added test-full-psync.
 
 Bug fixes
 * https://redmine.named-data.net/issues/4732 In decodeControlParameters, skip
