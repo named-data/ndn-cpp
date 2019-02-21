@@ -80,7 +80,7 @@ Interest::get(InterestLite& interestLite, WireFormat& wireFormat) const
   interestLite.setMustBeFresh(mustBeFresh_);
   interestLite.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
   interestLite.setNonce(nonce_);
-  interestLite.setParameters(parameters_);
+  interestLite.setParameters(applicationParameters_);
   if (getForwardingHint().size() > 0)
     // InterestLite only stores the encoded delegation set. The DelegationSet
     // will cache the wire encoding long enough to encode the Interest.
@@ -110,7 +110,7 @@ Interest::set(const InterestLite& interestLite, WireFormat& wireFormat)
   setChildSelector(interestLite.getChildSelector());
   mustBeFresh_ = (interestLite.getMustBeFresh());
   setInterestLifetimeMilliseconds(interestLite.getInterestLifetimeMilliseconds());
-  parameters_ = Blob(interestLite.getParameters());
+  applicationParameters_ = Blob(interestLite.getParameters());
   if (interestLite.getForwardingHintWireEncoding().buf()) {
     // InterestLite only stores the encoded delegation set.
     try {
@@ -322,7 +322,7 @@ Interest::appendParametersDigestToName()
     return *this;
 
   uint8_t digest[ndn_SHA256_DIGEST_SIZE];
-  CryptoLite::digestSha256(parameters_, digest);
+  CryptoLite::digestSha256(applicationParameters_, digest);
   getName().appendParametersSha256Digest(Blob(digest, sizeof(digest)));
 
   return *this;

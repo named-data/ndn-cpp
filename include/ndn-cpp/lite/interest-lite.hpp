@@ -127,7 +127,7 @@ public:
   hasParameters() const;
 
   const BlobLite&
-  getParameters() const { return BlobLite::downCast(parameters); }
+  getParameters() const { return BlobLite::downCast(applicationParameters); }
 
   const BlobLite&
   getLinkWireEncoding() const { return BlobLite::downCast(linkWireEncoding); }
@@ -252,7 +252,7 @@ public:
   InterestLite&
   setParameters(const BlobLite& parameters)
   {
-    BlobLite::downCast(this->parameters) = parameters;
+    BlobLite::downCast(this->applicationParameters) = parameters;
     return *this;
   }
 

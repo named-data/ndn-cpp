@@ -72,7 +72,8 @@ public:
     mustBeFresh_(interest.mustBeFresh_),
     interestLifetimeMilliseconds_(interest.interestLifetimeMilliseconds_),
     nonce_(interest.nonce_), getNonceChangeCount_(0),
-    forwardingHint_(interest.forwardingHint_), parameters_(interest.parameters_),
+    forwardingHint_(interest.forwardingHint_), 
+    applicationParameters_(interest.applicationParameters_),
     linkWireEncoding_(interest.linkWireEncoding_),
     linkWireEncodingFormat_(interest.linkWireEncodingFormat_),
     selectedDelegationIndex_(interest.selectedDelegationIndex_),
@@ -265,14 +266,14 @@ public:
    * @return True if the Interest parameters are specified, false if not.
    */
   bool
-  hasParameters() const { return parameters_.size() > 0; }
+  hasParameters() const { return applicationParameters_.size() > 0; }
 
   /**
    * Get the Interest parameters.
    * @return The parameters as a Blob, which isNull() if unspecified.
    */
   const Blob&
-  getParameters() const { return parameters_; }
+  getParameters() const { return applicationParameters_; }
 
   /**
    * Check if this interest has a link object (or a link wire encoding which
@@ -499,7 +500,7 @@ public:
   Interest&
   setParameters(const Blob& parameters)
   {
-    parameters_ = parameters;
+    applicationParameters_ = parameters;
     ++changeCount_;
     return *this;
   }
@@ -699,7 +700,7 @@ private:
   Blob nonce_;
   uint64_t getNonceChangeCount_;
   ChangeCounter<DelegationSet> forwardingHint_;
-  Blob parameters_;
+  Blob applicationParameters_;
   Blob linkWireEncoding_;
   WireFormat* linkWireEncodingFormat_;
   SharedPointerChangeCounter<Link> link_;

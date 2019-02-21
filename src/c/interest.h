@@ -135,7 +135,7 @@ static __inline void ndn_Interest_initialize
   ndn_Blob_initialize(&self->nonce, 0, 0);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
   ndn_Blob_initialize(&self->forwardingHintWireEncoding, 0, 0);
-  ndn_Blob_initialize(&self->parameters, 0, 0);
+  ndn_Blob_initialize(&self->applicationParameters, 0, 0);
   ndn_Blob_initialize(&self->linkWireEncoding, 0, 0);
   self->selectedDelegationIndex = -1;
 }
@@ -169,7 +169,7 @@ static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
  */
 static __inline int ndn_Interest_hasParameters(const struct ndn_Interest *self)
 {
-  return ndn_Blob_size(&self->parameters) > 0;
+  return ndn_Blob_size(&self->applicationParameters) > 0;
 }
 
 /**
@@ -229,7 +229,7 @@ ndn_Interest_setFromInterest
        (&self->keyLocator, &other->keyLocator)))
     return error;
   ndn_Blob_setFromBlob(&self->forwardingHintWireEncoding, &other->forwardingHintWireEncoding);
-  ndn_Blob_setFromBlob(&self->parameters, &other->parameters);
+  ndn_Blob_setFromBlob(&self->applicationParameters, &other->applicationParameters);
   ndn_Blob_setFromBlob(&self->linkWireEncoding, &other->linkWireEncoding);
   self->selectedDelegationIndex = other->selectedDelegationIndex;
 
