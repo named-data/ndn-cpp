@@ -262,18 +262,30 @@ public:
   getForwardingHint() const { return forwardingHint_.get(); }
 
   /**
-   * Check if the Interest parameters are specified.
-   * @return True if the Interest parameters are specified, false if not.
+   * Check if the application parameters are specified.
+   * @return True if the application parameters are specified, false if not.
    */
   bool
-  hasParameters() const { return applicationParameters_.size() > 0; }
+  hasApplicationParameters() const { return applicationParameters_.size() > 0; }
 
   /**
-   * Get the Interest parameters.
-   * @return The parameters as a Blob, which isNull() if unspecified.
+   * @deprecated Use hasApplicationParameters.
+   */
+  bool
+  DEPRECATED_IN_NDN_CPP hasParameters() const { return hasApplicationParameters(); }
+
+  /**
+   * Get the application parameters.
+   * @return The application parameters as a Blob, which isNull() if unspecified.
    */
   const Blob&
-  getParameters() const { return applicationParameters_; }
+  getApplicationParameters() const { return applicationParameters_; }
+
+  /**
+   * @deprecated Use getApplicationParameters.
+   */
+  const Blob&
+  DEPRECATED_IN_NDN_CPP getParameters() const { return getApplicationParameters(); }
 
   /**
    * Check if this interest has a link object (or a link wire encoding which
@@ -493,21 +505,30 @@ public:
   }
 
   /**
-   * Set the Interest parameters to the given value.
-   * @param parameters The Interest parameters Blob.
+   * Set the application parameters to the given value.
+   * @param applicationParameters The application parameters Blob.
    * @return This Interest so that you can chain calls to update values.
    */
   Interest&
-  setParameters(const Blob& parameters)
+  setApplicationParameters(const Blob& applicationParameters)
   {
-    applicationParameters_ = parameters;
+    applicationParameters_ = applicationParameters;
     ++changeCount_;
     return *this;
   }
 
   /**
-   * Append the digest of the Interest parameters to the Name as a
-   * ParametersSha256DigestComponent. However, if the Interest parameters is
+   * @deprecated Use setApplicationParameters.
+   */
+  Interest&
+  DEPRECATED_IN_NDN_CPP setParameters(const Blob& applicationParameters)
+  {
+    return setApplicationParameters(applicationParameters);
+  }
+
+  /**
+   * Append the digest of the application parameters to the Name as a
+   * ParametersSha256DigestComponent. However, if the application parameters is
    * unspecified, do nothing. This does not check if the Name already has a
    * parameters digest component, so calling again will append another component.
    * @return This Interest so that you can chain calls to update values.

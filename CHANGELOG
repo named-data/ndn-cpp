@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.15 (2019-02-19)
+Interim changes since NDN-CPP v0.15 (2019-02-22)
 ------------------------------------------------
 
 Changes
@@ -12,6 +12,10 @@ Changes
 Bug fixes
 * https://redmine.named-data.net/issues/4732 In decodeControlParameters, skip
   unrecognized TLVs.
+
+Deprecated
+* In Interest, deprecated getParameters, setParameters and hasParameters. Use
+  getApplicationParameters, setApplicationParameters and hasApplicationParameters.
 
 NDN-CPP v0.15 (2018-09-17)
 --------------------------

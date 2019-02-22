@@ -318,7 +318,7 @@ Interest::matchesData(const Data& data, WireFormat& wireFormat) const
 Interest&
 Interest::appendParametersDigestToName()
 {
-  if (!hasParameters())
+  if (!hasApplicationParameters())
     return *this;
 
   uint8_t digest[ndn_SHA256_DIGEST_SIZE];
