@@ -47,9 +47,9 @@ InterestLite::getMustBeFresh() const
 }
 
 bool
-InterestLite::hasParameters() const
+InterestLite::hasApplicationParameters() const
 {
-  return ndn_Interest_hasParameters(this) != 0;
+  return ndn_Interest_hasApplicationParameters(this) != 0;
 }
 
 InterestLite&

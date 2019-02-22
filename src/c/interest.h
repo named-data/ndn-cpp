@@ -163,11 +163,12 @@ static __inline int ndn_Interest_getMustBeFresh(const struct ndn_Interest *self)
 }
 
 /**
- * Check if the Interest parameters are specified.
+ * Check if the application parameters are specified.
  * @param self A pointer to the ndn_Interest struct.
- * @return Nonzero if the Interest parameters are specified, 0 if not.
+ * @return Nonzero if the application parameters are specified, 0 if not.
  */
-static __inline int ndn_Interest_hasParameters(const struct ndn_Interest *self)
+static __inline int ndn_Interest_hasApplicationParameters
+  (const struct ndn_Interest *self)
 {
   return ndn_Blob_size(&self->applicationParameters) > 0;
 }

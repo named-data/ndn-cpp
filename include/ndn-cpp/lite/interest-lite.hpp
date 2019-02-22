@@ -120,14 +120,17 @@ public:
   }
 
   /**
-   * Check if the Interest parameters are specified.
-   * @return True if the Interest parameters are specified, false if not.
+   * Check if the application parameters are specified.
+   * @return True if the application parameters are specified, false if not.
    */
   bool
-  hasParameters() const;
+  hasApplicationParameters() const;
 
   const BlobLite&
-  getParameters() const { return BlobLite::downCast(applicationParameters); }
+  getApplicationParameters() const
+  {
+    return BlobLite::downCast(applicationParameters);
+  }
 
   const BlobLite&
   getLinkWireEncoding() const { return BlobLite::downCast(linkWireEncoding); }
@@ -244,15 +247,15 @@ public:
   }
 
   /**
-   * Set the Interest parameters.
-   * @param parameters The Interest parameters value. This does not copy the
-   * bytes of the parameters.
+   * Set the application parameters.
+   * @param parameters The application parameters value. This does not copy the
+   * bytes of the application parameters.
    * @return This InterestLite so that you can chain calls to update values.
    */
   InterestLite&
-  setParameters(const BlobLite& parameters)
+  setApplicationParameters(const BlobLite& applicationParameters)
   {
-    BlobLite::downCast(this->applicationParameters) = parameters;
+    BlobLite::downCast(this->applicationParameters) = applicationParameters;
     return *this;
   }
 

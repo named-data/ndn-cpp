@@ -273,7 +273,7 @@ ndn_encodeTlvInterest
   interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
 
-  if (ndn_Interest_hasParameters(interest))
+  if (ndn_Interest_hasApplicationParameters(interest))
     // The application has specified a format v0.3 field. As we transition to
     // format v0.3, encode as format v0.3 even though the application default is
     // Tlv0_2WireFormat.
