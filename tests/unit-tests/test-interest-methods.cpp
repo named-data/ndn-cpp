@@ -565,22 +565,24 @@ TEST_F(TestInterestMethods, InterestFilterMatching)
   ASSERT_EQ(true,  InterestFilter("/a", "<b><>+").doesMatch(Name("/a/b/c")));
 }
 
-TEST_F(TestInterestMethods, SetParameters)
+TEST_F(TestInterestMethods, SetApplicationParameters)
 {
   Interest interest("/ndn");
-  ASSERT_TRUE(!interest.hasParameters());
-  uint8_t parameters[] = { 0x23, 0x00 };
-  interest.setParameters(Blob(parameters, sizeof(parameters)));
-  ASSERT_TRUE(interest.hasParameters());
-  ASSERT_TRUE(interest.getParameters().equals(Blob(parameters, sizeof(parameters))));
+  ASSERT_TRUE(!interest.hasApplicationParameters());
+  uint8_t applicationParameters[] = { 0x23, 0x00 };
+  interest.setApplicationParameters
+    (Blob(applicationParameters, sizeof(applicationParameters)));
+  ASSERT_TRUE(interest.hasApplicationParameters());
+  ASSERT_TRUE(interest.getApplicationParameters().equals
+              (Blob(applicationParameters, sizeof(applicationParameters))));
 
   Interest decodedInterest;
   decodedInterest.wireDecode(interest.wireEncode());
-  ASSERT_TRUE(decodedInterest.getParameters().equals
-              (Blob(parameters, sizeof(parameters))));
+  ASSERT_TRUE(decodedInterest.getApplicationParameters().equals
+              (Blob(applicationParameters, sizeof(applicationParameters))));
 
-  interest.setParameters(Blob());
-  ASSERT_TRUE(!interest.hasParameters());
+  interest.setApplicationParameters(Blob());
+  ASSERT_TRUE(!interest.hasApplicationParameters());
 }
 
 TEST_F(TestInterestMethods, AppendParametersDigest)
@@ -588,14 +590,15 @@ TEST_F(TestInterestMethods, AppendParametersDigest)
   Name name("/local/ndn/prefix");
   Interest interest(name);
 
-  ASSERT_TRUE(!interest.hasParameters());
-  // No parameters yet, so it should do nothing.
+  ASSERT_TRUE(!interest.hasApplicationParameters());
+  // No application parameters yet, so it should do nothing.
   interest.appendParametersDigestToName();
   ASSERT_EQ("/local/ndn/prefix", interest.getName().toUri());
 
-  uint8_t parameters[] = { 0x23, 0x01, 0xC0 };
-  interest.setParameters(Blob(parameters, sizeof(parameters)));
-  ASSERT_TRUE(interest.hasParameters());
+  uint8_t applicationParameters[] = { 0x23, 0x01, 0xC0 };
+  interest.setApplicationParameters
+    (Blob(applicationParameters, sizeof(applicationParameters)));
+  ASSERT_TRUE(interest.hasApplicationParameters());
   interest.appendParametersDigestToName();
   ASSERT_EQ(name.size() + 1, interest.getName().size());
   ASSERT_TRUE(interest.getName().getPrefix(-1).equals(name));
