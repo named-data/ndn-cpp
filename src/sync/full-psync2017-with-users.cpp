@@ -203,7 +203,7 @@ FullPSync2017WithUsers::Impl::onSyncInterest
        ++hash) {
     Name prefix = hashToPrefix_[*hash];
     // Don't sync sequence number zero.
-    if (prefixes_[prefix] != 0 && !isFutureHash(prefix.toUri(), negative))
+    if (prefixes_[prefix] != 0 && !isFutureHash(prefix, negative))
       state.addContent(Name(prefix).appendNumber(prefixes_[prefix]));
   }
 
