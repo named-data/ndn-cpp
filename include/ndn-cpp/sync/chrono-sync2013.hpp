@@ -20,8 +20,8 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#ifndef NDN_CHRONO_SYNC_HPP
-#define NDN_CHRONO_SYNC_HPP
+#ifndef NDN_CHRONO_SYNC2013_HPP
+#define NDN_CHRONO_SYNC2013_HPP
 
 #include <vector>
 #include "../face.hpp"
