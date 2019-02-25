@@ -25,16 +25,16 @@
 #include "./detail/psync-segment-publisher.hpp"
 #include "./detail/invertible-bloom-lookup-table.hpp"
 #include "./detail/psync-state.hpp"
-#include <ndn-cpp/sync/full-psync2017.hpp>
+#include <ndn-cpp/sync/full-psync2017-with-users.hpp>
 
 using namespace std;
 using namespace ndn::func_lib;
 
-INIT_LOGGER("ndn.FullPSync2017");
+INIT_LOGGER("ndn.FullPSync2017WithUsers");
 
 namespace ndn {
 
-FullPSync2017::Impl::Impl
+FullPSync2017WithUsers::Impl::Impl
   (size_t expectedNEntries, Face& face, const Name& syncPrefix,
    const Name& userPrefix, const OnUpdate& onUpdate, KeyChain& keyChain,
    Milliseconds syncInterestLifetime, Milliseconds syncReplyFreshnessPeriod,
@@ -48,21 +48,21 @@ FullPSync2017::Impl::Impl
 }
 
 void
-FullPSync2017::Impl::initialize()
+FullPSync2017WithUsers::Impl::initialize()
 {
   registeredPrefix_ = face_.registerPrefix
           (syncPrefix_,
-          bind(&FullPSync2017::Impl::onSyncInterest,
-          static_pointer_cast<FullPSync2017::Impl>(shared_from_this()),
+          bind(&FullPSync2017WithUsers::Impl::onSyncInterest,
+          static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this()),
           _1, _2, _3, _4, _5),
-          bind(&FullPSync2017::Impl::onRegisterFailed, shared_from_this(), _1));
+          bind(&FullPSync2017WithUsers::Impl::onRegisterFailed, shared_from_this(), _1));
 
   // TODO: Should we do this after the registerPrefix onSuccess callback?
   sendSyncInterest();
 }
 
 void
-FullPSync2017::Impl::publishName(const Name& prefix, int sequenceNo)
+FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
 {
   if (prefixes_.find(prefix) == prefixes_.end()) {
     _LOG_ERROR("Prefix not added: " << prefix);
@@ -77,7 +77,7 @@ FullPSync2017::Impl::publishName(const Name& prefix, int sequenceNo)
 }
 
 void
-FullPSync2017::Impl::sendSyncInterest()
+FullPSync2017WithUsers::Impl::sendSyncInterest()
 {
 #if 0 // Debug: Implement stopping an ongoing fetch.
   // If we send two sync interest one after the other
@@ -104,8 +104,8 @@ FullPSync2017::Impl::sendSyncInterest()
 
   face_.callLater
     (syncInterestLifetime_ / 2 + jitter, 
-     bind(&FullPSync2017::Impl::sendSyncInterest,
-          static_pointer_cast<FullPSync2017::Impl>(shared_from_this())));
+     bind(&FullPSync2017WithUsers::Impl::sendSyncInterest,
+          static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this())));
 
   ptr_lib::shared_ptr<Interest> syncInterest
     (ptr_lib::make_shared<Interest>(syncInterestName));
@@ -114,16 +114,16 @@ FullPSync2017::Impl::sendSyncInterest()
 
   SegmentFetcher::fetch
     (face_, *syncInterest, 0,
-     bind(&FullPSync2017::Impl::onSyncData,
-          static_pointer_cast<FullPSync2017::Impl>(shared_from_this()), _1, syncInterest),
-     &FullPSync2017::Impl::onError);
+     bind(&FullPSync2017WithUsers::Impl::onSyncData,
+          static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this()), _1, syncInterest),
+     &FullPSync2017WithUsers::Impl::onError);
 
   _LOG_DEBUG("sendFullSyncInterest, nonce: " << syncInterest->getNonce() <<
              ", hash: " << syncInterestName.hash());
 }
 
 void
-FullPSync2017::Impl::onError
+FullPSync2017WithUsers::Impl::onError
   (SegmentFetcher::ErrorCode errorCode, const std::string& message)
 {
   _LOG_ERROR("Cannot fetch sync data, error: " << errorCode <<
@@ -131,7 +131,7 @@ FullPSync2017::Impl::onError
 }
 
 void
-FullPSync2017::Impl::onSyncInterest
+FullPSync2017WithUsers::Impl::onSyncInterest
   (const ptr_lib::shared_ptr<const Name>& prefixName,
    const ptr_lib::shared_ptr<const Interest>& interest, Face& face,
    uint64_t interestFilterId,
@@ -217,13 +217,13 @@ FullPSync2017::Impl::onSyncInterest
   pendingEntries_[interestName] = entry;
   face_.callLater
     (interest->getInterestLifetimeMilliseconds(),
-     bind(&FullPSync2017::Impl::delayedRemovePendingEntry,
-          static_pointer_cast<FullPSync2017::Impl>(shared_from_this()),
+     bind(&FullPSync2017WithUsers::Impl::delayedRemovePendingEntry,
+          static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this()),
           interest->getName(), entry, interest->getNonce()));
 }
 
 void
-FullPSync2017::Impl::sendSyncData(const Name& name, Blob content)
+FullPSync2017WithUsers::Impl::sendSyncData(const Name& name, Blob content)
 {
   _LOG_DEBUG("Checking if the Data will satisfy our own pending interest");
 
@@ -263,7 +263,7 @@ FullPSync2017::Impl::sendSyncData(const Name& name, Blob content)
 }
 
 void
-FullPSync2017::Impl::satisfyPendingInterests()
+FullPSync2017WithUsers::Impl::satisfyPendingInterests()
 {
   _LOG_DEBUG("Satisfying full sync Interest: " << pendingEntries_.size());
 
@@ -311,7 +311,7 @@ FullPSync2017::Impl::satisfyPendingInterests()
 }
 
 void
-FullPSync2017::Impl::deletePendingInterests(const Name& interestName)
+FullPSync2017WithUsers::Impl::deletePendingInterests(const Name& interestName)
 {
   for (map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> >::iterator it =
          pendingEntries_.begin();
@@ -328,7 +328,7 @@ FullPSync2017::Impl::deletePendingInterests(const Name& interestName)
 }
 
 void
-FullPSync2017::Impl::onSyncData
+FullPSync2017WithUsers::Impl::onSyncData
   (Blob encodedContent, ptr_lib::shared_ptr<Interest>& interest)
 {
   deletePendingInterests(interest->getName());
@@ -379,7 +379,7 @@ FullPSync2017::Impl::onSyncData
 }
 
 bool
-FullPSync2017::Impl::isFutureHash
+FullPSync2017WithUsers::Impl::isFutureHash
   (const Name& prefix, const set<uint32_t>& negative)
 {
   string uri = Name(prefix).appendNumber(prefixes_[prefix] + 1).toUri();
@@ -397,7 +397,7 @@ FullPSync2017::Impl::isFutureHash
 }
 
 void
-FullPSync2017::Impl::delayedRemovePendingEntry
+FullPSync2017WithUsers::Impl::delayedRemovePendingEntry
   (const Name& name, const ptr_lib::shared_ptr<PendingEntryInfoFull>& entry,
    const Blob& nonce)
 {

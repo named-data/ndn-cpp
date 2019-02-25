@@ -420,7 +420,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/security/v2/validator-config/config-name-relation.lo \
 	src/security/v2/validator-config/config-rule.lo \
 	src/sync/sync-state.pb.lo src/sync/chrono-sync2013.lo \
-	src/sync/digest-tree.lo src/sync/full-psync2017.lo \
+	src/sync/digest-tree.lo src/sync/full-psync2017-with-users.lo \
 	src/sync/psync-producer-base.lo \
 	src/sync/detail/invertible-bloom-lookup-table.lo \
 	src/sync/detail/psync-segment-publisher.lo \
@@ -1116,7 +1116,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo \
 	src/sync/$(DEPDIR)/chrono-sync2013.Plo \
 	src/sync/$(DEPDIR)/digest-tree.Plo \
-	src/sync/$(DEPDIR)/full-psync2017.Plo \
+	src/sync/$(DEPDIR)/full-psync2017-with-users.Plo \
 	src/sync/$(DEPDIR)/psync-producer-base.Plo \
 	src/sync/$(DEPDIR)/sync-state.pb.Plo \
 	src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo \
@@ -2072,7 +2072,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validator-config/config-name-relation.hpp \
   include/ndn-cpp/security/v2/validator-config/config-rule.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
-  include/ndn-cpp/sync/full-psync2017.hpp \
+  include/ndn-cpp/sync/full-psync2017-with-users.hpp \
   include/ndn-cpp/sync/psync-missing-data-info.hpp \
   include/ndn-cpp/sync/psync-producer-base.hpp \
   include/ndn-cpp/transport/async-tcp-transport.hpp \
@@ -2322,7 +2322,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
-  src/sync/full-psync2017.cpp \
+  src/sync/full-psync2017-with-users.cpp \
   src/sync/psync-producer-base.cpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
   src/sync/detail/psync-segment-publisher.cpp src/sync/detail/psync-segment-publisher.hpp \
@@ -3402,7 +3402,7 @@ src/sync/chrono-sync2013.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/digest-tree.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
-src/sync/full-psync2017.lo: src/sync/$(am__dirstamp) \
+src/sync/full-psync2017-with-users.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
 src/sync/psync-producer-base.lo: src/sync/$(am__dirstamp) \
 	src/sync/$(DEPDIR)/$(am__dirstamp)
@@ -4614,7 +4614,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/chrono-sync2013.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/digest-tree.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/full-psync2017.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/full-psync2017-with-users.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/psync-producer-base.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/$(DEPDIR)/sync-state.pb.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo@am__quote@ # am--include-marker
@@ -7724,7 +7724,7 @@ distclean: distclean-recursive
 	-rm -f src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
-	-rm -f src/sync/$(DEPDIR)/full-psync2017.Plo
+	-rm -f src/sync/$(DEPDIR)/full-psync2017-with-users.Plo
 	-rm -f src/sync/$(DEPDIR)/psync-producer-base.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
@@ -8157,7 +8157,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/security/v2/validator-config/$(DEPDIR)/config-rule.Plo
 	-rm -f src/sync/$(DEPDIR)/chrono-sync2013.Plo
 	-rm -f src/sync/$(DEPDIR)/digest-tree.Plo
-	-rm -f src/sync/$(DEPDIR)/full-psync2017.Plo
+	-rm -f src/sync/$(DEPDIR)/full-psync2017-with-users.Plo
 	-rm -f src/sync/$(DEPDIR)/psync-producer-base.Plo
 	-rm -f src/sync/$(DEPDIR)/sync-state.pb.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
