@@ -31,13 +31,14 @@ namespace ndn {
 
 /**
  * FullPSync2017WithUsers uses FullPSync2017 to implement the full sync logic of
- * PSync to synchronize with other nodes, where all nodes want to sync all the
- * names prefixes which are based on a user prefix plus a sequence number.
- * The application should call publishName whenever it wants to let consumers
- * know that new data is available for the user prefix. Multiple user prefixes
- * can be added by using addUserNode. Currently, fetching and publishing the
- * data needs to be handled by the application. See FullPSync2017 for details on
- * the protocol.
+ * PSync to synchronize with other nodes, where all nodes want to sync the
+ * sequence number of all users based on their user prefix. The application
+ * should call publishName whenever it wants to let consumers know that new data
+ * with a new sequence number is available for the user prefix. Multiple user
+ * prefixes can be added by using addUserNode. Currently, fetching and
+ * publishing the data (named by the user prefix plus the sequence number) needs
+ * to be handled by the application. See FullPSync2017 for details on the
+ * Full PSync protocol.
  * (Note: In the PSync library, this class is called FullProducer. But because
  * the class actually handles both producing and consuming, we omit "producer"
  * in the name to avoid confusion.)
@@ -83,9 +84,9 @@ public:
   }
 
   /**
-   * Return the current sequence number of the given prefix.
-   * @param prefix The prefix for the sequence number.
-   * @return The sequence number for the prefix, or -1 if not found.
+   * Return the current sequence number of the given user prefix.
+   * @param prefix The user prefix for the sequence number.
+   * @return The sequence number for the user prefix, or -1 if not found.
    */
   int
   getSequenceNo(const Name& prefix) const
@@ -117,12 +118,12 @@ public:
   removeUserNode(const Name& prefix) { impl_->removeUserNode(prefix); }
 
   /**
-   * Publish the prefix Name to inform the others. addUserNode needs to be
-   * called before this to add the prefix, if it was not already added via the
-   * constructor.
+   * Publish the sequence number for the prefix Name to inform the others.
+   * (addUserNode needs to be called before this to add the prefix, if it was
+   * not already added via the constructor.)
    * @param prefix the prefix Name to be updated.
-   * @param sequenceNo (optional) The sequence number of the prefix to be set in
-   * the IBLT. However, if sequenceNo is omitted or -1, then the existing
+   * @param sequenceNo (optional) The sequence number of the user prefix to be
+   * set in the IBLT. However, if sequenceNo is omitted or -1, then the existing
    * sequence number is incremented by 1.
    */
   void
