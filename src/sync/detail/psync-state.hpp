@@ -30,7 +30,7 @@ namespace ndn {
 class TlvEncoder;
 
 /**
- * The PSyncState class represents a sequence of prefix Names as the state of PSync.
+ * The PSyncState class represents a sequence of Names as the state of PSync.
  * It has methods to encode and decode for the wire.
  */
 class PSyncState {
@@ -60,15 +60,15 @@ public:
   }
 
   /**
-   * Append the prefix to the content.
-   * @param prefix The prefix Name.
+   * Append the name to the content.
+   * @param name The Name to add.
    */
   void
-  addContent(const Name& prefix) { content_.push_back(prefix); }
+  addContent(const Name& name) { content_.push_back(name); }
 
   /**
-   * Get the sequence of prefix Names in the content.
-   * @return The vector of prefix Names.
+   * Get the sequence of Names in the content.
+   * @return The vector of Names.
    */
   const std::vector<Name>&
   getContent() const { return content_; }

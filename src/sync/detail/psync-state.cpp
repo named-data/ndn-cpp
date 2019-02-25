@@ -79,7 +79,6 @@ PSyncState::wireDecode(const uint8_t *input, size_t inputLength)
     NameLite nameLite
       (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]));
 
-    size_t encodingLength;
     ndn_Error error;
     size_t dummyBeginOffset, dummyEndOffset;
     if ((error = ndn_decodeTlvName
