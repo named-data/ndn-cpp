@@ -6,7 +6,7 @@ Changes
   EncryptorV2, DecryptorV2 and AccessControlV2, with integration tests.
 * In TpmBackEndFile, implemented private key import/export.
 * In KeyChain, implemented exportSafeBag with a password-encrypted private key.
-* sync: Added FullPSync2017, implementing the Full PSync protocol.
+* sync: Added FullPSync2017WithUsers, implementing the Full PSync protocol.
 * examples: Added test-full-psync.
 
 Bug fixes
