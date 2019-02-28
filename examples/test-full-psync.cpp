@@ -215,7 +215,7 @@ public:
      const string& userPrefixUri, int nUserPrefixes, int maxPublishedSequenceNo)
   : face_(face),
     fullProducer_
-      (80, face_, syncPrefix, Name(userPrefixUri),
+      (80, face_, syncPrefix, Name(),
        bind(&Producer::processSyncUpdate, this, _1), keyChain, 1600, 1600),
     nUserPrefixes_(nUserPrefixes),
     maxPublishedSequenceNo_(maxPublishedSequenceNo),
