@@ -89,7 +89,8 @@ PSyncProducerBase::PSyncProducerBase
   signingInfo_(signingInfo),
   segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
 {
-  addUserNode(userPrefix);
+  if (userPrefix.size() > 0)
+    addUserNode(userPrefix);
 }
 
 void

@@ -54,7 +54,8 @@ public:
    * @param face The application's Face.
    * @param syncPrefix The prefix Name of the sync group, which is copied.
    * @param userPrefix The prefix Name of the first user in the group, which is
-   * copied.
+   * copied. However, if this Name is empty, it is not added and you must call
+   * addUserNode.
    * @param onUpdate When there is new data, this calls onUdate(updates) where
    * updates is a list of PSyncMissingDataInfo.
    * NOTE: The library will log any exceptions thrown by this callback, but for
