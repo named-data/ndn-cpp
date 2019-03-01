@@ -51,11 +51,11 @@ void
 FullPSync2017WithUsers::Impl::initialize()
 {
   registeredPrefix_ = face_.registerPrefix
-          (syncPrefix_,
-          bind(&FullPSync2017WithUsers::Impl::onSyncInterest,
-          static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this()),
-          _1, _2, _3, _4, _5),
-          bind(&FullPSync2017WithUsers::Impl::onRegisterFailed, shared_from_this(), _1));
+    (syncPrefix_,
+     bind(&FullPSync2017WithUsers::Impl::onSyncInterest,
+     static_pointer_cast<FullPSync2017WithUsers::Impl>(shared_from_this()),
+     _1, _2, _3, _4, _5),
+     bind(&FullPSync2017WithUsers::Impl::onRegisterFailed, shared_from_this(), _1));
 
   // TODO: Should we do this after the registerPrefix onSuccess callback?
   sendSyncInterest();
