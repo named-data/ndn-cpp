@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.15 (2019-02-22)
-------------------------------------------------
+NDN-CPP v0.16 (2019-03-06)
+--------------------------
 
 Changes
 * https://redmine.named-data.net/issues/4655 Added name-based access control v2,
