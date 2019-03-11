@@ -65,8 +65,7 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
 }
 
 PSyncProducerBase::PSyncProducerBase
-  (size_t expectedNEntries, Face& face,
-   const Name& syncPrefix, const Name& userPrefix, KeyChain& keyChain, 
+  (size_t expectedNEntries, Face& face, const Name& syncPrefix, KeyChain& keyChain, 
    Milliseconds syncReplyFreshnessPeriod, Milliseconds helloReplyFreshnessPeriod,
    const SigningInfo& signingInfo)
 : iblt_(new InvertibleBloomLookupTable(expectedNEntries)),
@@ -80,8 +79,6 @@ PSyncProducerBase::PSyncProducerBase
   signingInfo_(signingInfo),
   segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
 {
-  if (userPrefix.size() > 0)
-    addUserNode(userPrefix);
 }
 
 void

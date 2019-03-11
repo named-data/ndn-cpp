@@ -75,9 +75,6 @@ protected:
    * @param expectedNEntries The expected number of entries in the IBLT.
    * @param face The application's Face.
    * @param syncPrefix The prefix Name of the sync group, which is copied.
-   * @param userPrefix The prefix Name of the first user in the group, which is
-   * copied. However, if this Name is empty, it is not added and you must call
-   * addUserNode.
    * @param keyChain The KeyChain for signing Data packets.
    * @param syncReplyFreshnessPeriod The freshness period of the sync
    * Data packet, in milliseconds.
@@ -88,8 +85,7 @@ protected:
    */
   PSyncProducerBase
     (size_t expectedNEntries, Face& face, const Name& syncPrefix,
-     const Name& userPrefix, KeyChain& keyChain,
-     Milliseconds syncReplyFreshnessPeriod,
+     KeyChain& keyChain, Milliseconds syncReplyFreshnessPeriod,
      Milliseconds helloReplyFreshnessPeriod,
      const SigningInfo& signingInfo = SigningInfo());
 

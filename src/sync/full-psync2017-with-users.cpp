@@ -40,11 +40,13 @@ FullPSync2017WithUsers::Impl::Impl
    Milliseconds syncInterestLifetime, Milliseconds syncReplyFreshnessPeriod,
    const SigningInfo& signingInfo)
 : PSyncProducerBase
-  (expectedNEntries, face, syncPrefix, userPrefix, keyChain,
-   syncReplyFreshnessPeriod, DEFAULT_HELLO_REPLY_FRESHNESS_PERIOD, signingInfo),
+  (expectedNEntries, face, syncPrefix, keyChain, syncReplyFreshnessPeriod,
+   DEFAULT_HELLO_REPLY_FRESHNESS_PERIOD, signingInfo),
   syncInterestLifetime_(syncInterestLifetime),
   onUpdate_(onUpdate)
 {
+  if (userPrefix.size() > 0)
+    addUserNode(userPrefix);
 }
 
 void
