@@ -60,16 +60,7 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
   if (entry != prefixes_.end()) {
     int sequenceNo = entry->second;
     prefixes_.erase(entry);
-
-    Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
-    map<Name, uint32_t>::iterator hashEntry =
-      nameToHash_.find(prefixWithSequenceNo);
-    if (hashEntry != nameToHash_.end()) {
-      uint32_t hash = hashEntry->second;
-      nameToHash_.erase(hashEntry);
-      hashToName_.erase(hash);
-      iblt_->erase(hash);
-    }
+    removeFromIblt(Name(prefix).appendNumber(sequenceNo));
   }
 }
 
@@ -115,28 +106,36 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
   // Delete the old sequence number from the IBLT. If oldSequenceNo is zero, we
   // don't need to delete it, because we don't insert a prefix with sequence
   // number zero in the IBLT.
-  if (oldSequenceNo != 0) {
-    Name prefixWithOldSequenceNo = Name(prefix).appendNumber(oldSequenceNo);
-    map<Name, uint32_t>::iterator hashEntry =
-      nameToHash_.find(prefixWithOldSequenceNo);
-    if (hashEntry != nameToHash_.end()) {
-      uint32_t hash = hashEntry->second;
-      nameToHash_.erase(hashEntry);
-
-      hashToName_.erase(hash);
-      iblt_->erase(hash);
-    }
-  }
+  if (oldSequenceNo != 0)
+    removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
 
   // Insert the new sequence number.
   entry->second = sequenceNo;
   Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
-  string uri = prefixWithSequenceNo.toUri();
+  insertIntoIblt(prefixWithSequenceNo);
+}
+
+void
+PSyncProducerBase::insertIntoIblt(const Name& name)
+{
+  string uri = name.toUri();
   uint32_t newHash = CryptoLite::murmurHash3
     (InvertibleBloomLookupTable::N_HASHCHECK, uri.data(), uri.size());
-  nameToHash_[prefixWithSequenceNo] = newHash;
-  hashToName_[newHash] = prefixWithSequenceNo;
+  nameToHash_[name] = newHash;
+  hashToName_[newHash] = name;
   iblt_->insert(newHash);
+}
+
+void
+PSyncProducerBase::removeFromIblt(const Name& name)
+{
+  map<Name, uint32_t>::iterator hashEntry = nameToHash_.find(name);
+  if (hashEntry != nameToHash_.end()) {
+    uint32_t hash = hashEntry->second;
+    nameToHash_.erase(hashEntry);
+    hashToName_.erase(hash);
+    iblt_->erase(hash);
+  }
 }
 
 void

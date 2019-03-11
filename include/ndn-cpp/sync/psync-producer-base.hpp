@@ -107,6 +107,23 @@ protected:
   updateSequenceNo(const Name& prefix, int sequenceNo);
 
   /**
+   * Insert the URI of the name into the iblt_, and update nameToHash_ and
+   * hashToName_.
+   * @param name The Name to insert.
+   */
+  void
+  insertIntoIblt(const Name& name);
+
+  /**
+   * If the Name is in nameToHash_, then remove the hash from the iblt_,
+   * nameToHash_ and hashToName_. However, if the Name is not in nameToHash_
+   * then do nothing.
+   * @param name The Name to remove.
+   */
+  void
+  removeFromIblt(const Name& name);
+
+  /**
    * This is called when registerPrefix fails to log an error message.
    */
   void
