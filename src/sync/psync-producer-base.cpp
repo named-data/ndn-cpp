@@ -140,22 +140,6 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
 }
 
 void
-PSyncProducerBase::sendApplicationNack(const Name& name)
-{
-  _LOG_DEBUG("Sending application Nack");
-
-  Data data(name);
-  data.getName().append(iblt_->encode());
-  data.getName().appendSegment(0);
-
-  data.getMetaInfo().setFreshnessPeriod(syncReplyFreshnessPeriod_);
-  data.getMetaInfo().setType(ndn_ContentType_NACK);
-  data.getMetaInfo().setFinalBlockId(data.getName()[-1]);
-  keyChain_.sign(data, signingInfo_);
-  face_.putData(data);
-}
-
-void
 PSyncProducerBase::onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix)
 {
   _LOG_ERROR("PSyncProduerBase: Failed to register prefix: " << prefix);

@@ -107,17 +107,6 @@ protected:
   updateSequenceNo(const Name& prefix, int sequenceNo);
 
   /**
-   * Send a Data packet with content type NACK to the Face. The Data packet is
-   * signed with the keyChain and signingInfo given to the constructor. The
-   * producer sends a Nack to the consumer if the consumer has a very old IBLT
-   * whose differences with the latest IBLT can't be decoded successfully.
-   * @param name The base Name for the application Nack Data packet, which is
-   * copied. The Data Name will include the encoded IBLT and segment number 0.
-   */
-  void
-  sendApplicationNack(const Name& name);
-
-  /**
    * This is called when registerPrefix fails to log an error message.
    */
   void
