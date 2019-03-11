@@ -134,7 +134,6 @@ public:
   }
 
   static const int DEFAULT_SYNC_REPLY_FRESHNESS_PERIOD = 1000;
-  static const int DEFAULT_HELLO_REPLY_FRESHNESS_PERIOD = 1000;
   static const int DEFAULT_SYNC_INTEREST_LIFETIME = 1000;
 
 private:

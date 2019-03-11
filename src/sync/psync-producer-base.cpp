@@ -66,8 +66,7 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
 
 PSyncProducerBase::PSyncProducerBase
   (size_t expectedNEntries, Face& face, const Name& syncPrefix, KeyChain& keyChain, 
-   Milliseconds syncReplyFreshnessPeriod, Milliseconds helloReplyFreshnessPeriod,
-   const SigningInfo& signingInfo)
+   Milliseconds syncReplyFreshnessPeriod, const SigningInfo& signingInfo)
 : iblt_(new InvertibleBloomLookupTable(expectedNEntries)),
   expectedNEntries_(expectedNEntries),
   threshold_(expectedNEntries / 2),
@@ -75,7 +74,6 @@ PSyncProducerBase::PSyncProducerBase
   syncPrefix_(syncPrefix),
   keyChain_(keyChain),
   syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod),
-  helloReplyFreshnessPeriod_(helloReplyFreshnessPeriod),
   signingInfo_(signingInfo),
   segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
 {

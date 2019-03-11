@@ -41,7 +41,7 @@ FullPSync2017WithUsers::Impl::Impl
    const SigningInfo& signingInfo)
 : PSyncProducerBase
   (expectedNEntries, face, syncPrefix, keyChain, syncReplyFreshnessPeriod,
-   DEFAULT_HELLO_REPLY_FRESHNESS_PERIOD, signingInfo),
+   signingInfo),
   syncInterestLifetime_(syncInterestLifetime),
   onUpdate_(onUpdate)
 {

@@ -78,15 +78,12 @@ protected:
    * @param keyChain The KeyChain for signing Data packets.
    * @param syncReplyFreshnessPeriod The freshness period of the sync
    * Data packet, in milliseconds.
-   * @param helloReplyFreshness The freshness period of the hello Data packet,
-   * in milliseconds.
    * @param signingInfo (optional) The SigningInfo for signing Data packets,
    * which is copied. If omitted, use the default SigningInfo().
    */
   PSyncProducerBase
     (size_t expectedNEntries, Face& face, const Name& syncPrefix,
      KeyChain& keyChain, Milliseconds syncReplyFreshnessPeriod,
-     Milliseconds helloReplyFreshnessPeriod,
      const SigningInfo& signingInfo = SigningInfo());
 
   /**
@@ -147,7 +144,6 @@ protected:
   Name syncPrefix_;
 
   Milliseconds syncReplyFreshnessPeriod_;
-  Milliseconds helloReplyFreshnessPeriod_;
 
   ptr_lib::shared_ptr<PSyncSegmentPublisher> segmentPublisher_;
 };
