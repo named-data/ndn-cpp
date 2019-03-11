@@ -67,7 +67,7 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
     if (hashEntry != nameToHash_.end()) {
       uint32_t hash = hashEntry->second;
       nameToHash_.erase(hashEntry);
-      hashToPrefix_.erase(hash);
+      hashToName_.erase(hash);
       iblt_->erase(hash);
     }
   }
@@ -123,7 +123,7 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
       uint32_t hash = hashEntry->second;
       nameToHash_.erase(hashEntry);
 
-      hashToPrefix_.erase(hash);
+      hashToName_.erase(hash);
       iblt_->erase(hash);
     }
   }
@@ -135,7 +135,7 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
   uint32_t newHash = CryptoLite::murmurHash3
     (InvertibleBloomLookupTable::N_HASHCHECK, uri.data(), uri.size());
   nameToHash_[prefixWithSequenceNo] = newHash;
-  hashToPrefix_[newHash] = prefix;
+  hashToName_[newHash] = prefixWithSequenceNo;
   iblt_->insert(newHash);
 }
 

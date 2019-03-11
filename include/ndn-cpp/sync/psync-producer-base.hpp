@@ -131,12 +131,12 @@ protected:
 
   // The key is the prefix Name. The value is the sequence number for the prefix.
   std::map<Name, int> prefixes_;
-  // nameToHash_ and hashToPrefix_ are just for looking up the hash more quickly
+  // nameToHash_ and hashToName_ are just for looking up the hash more quickly
   // (instead of calculating it again).
   // The key is the Name. The value is the hash.
   std::map<Name, uint32_t> nameToHash_;
-  // The key is the hash. The value is the prefix (without the sequenceNo).
-  std::map<uint32_t, Name> hashToPrefix_;
+  // The key is the hash. The value is the Name.
+  std::map<uint32_t, Name> hashToName_;
 
   Face& face_;
   KeyChain keyChain_;

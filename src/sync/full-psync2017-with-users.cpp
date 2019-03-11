@@ -201,7 +201,9 @@ FullPSync2017WithUsers::Impl::onSyncInterest
   PSyncState state;
   for (set<uint32_t>::iterator hash = positive.begin(); hash != positive.end();
        ++hash) {
-    Name prefix = hashToPrefix_[*hash];
+    Name name = hashToName_[*hash];
+    Name prefix = name.getPrefix(-1);
+
     // Don't sync sequence number zero.
     if (prefixes_[prefix] != 0 && !isFutureHash(prefix, negative))
       state.addContent(Name(prefix).appendNumber(prefixes_[prefix]));
@@ -292,7 +294,8 @@ FullPSync2017WithUsers::Impl::satisfyPendingInterests()
     PSyncState state;
     for (set<uint32_t>::iterator hash = positive.begin(); hash != positive.end();
          ++hash) {
-      Name prefix = hashToPrefix_[*hash];
+      Name name = hashToName_[*hash];
+      Name prefix = name.getPrefix(-1);
 
       if (prefixes_[prefix] != 0)
         state.addContent(Name(prefix).appendNumber(prefixes_[prefix]));
