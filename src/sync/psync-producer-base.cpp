@@ -23,7 +23,6 @@
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "./detail/invertible-bloom-lookup-table.hpp"
-#include "./detail/psync-segment-publisher.hpp"
 #include <ndn-cpp/sync/psync-producer-base.hpp>
 
 using namespace std;
@@ -65,17 +64,13 @@ PSyncProducerBase::removeUserNode(const Name& prefix)
 }
 
 PSyncProducerBase::PSyncProducerBase
-  (size_t expectedNEntries, Face& face, const Name& syncPrefix, KeyChain& keyChain, 
-   Milliseconds syncReplyFreshnessPeriod, const SigningInfo& signingInfo)
+  (size_t expectedNEntries, const Name& syncPrefix,
+   Milliseconds syncReplyFreshnessPeriod)
 : iblt_(new InvertibleBloomLookupTable(expectedNEntries)),
   expectedNEntries_(expectedNEntries),
   threshold_(expectedNEntries / 2),
-  face_(face),
   syncPrefix_(syncPrefix),
-  keyChain_(keyChain),
-  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod),
-  signingInfo_(signingInfo),
-  segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
+  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod)
 {
 }
 

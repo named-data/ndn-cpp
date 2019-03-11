@@ -25,6 +25,7 @@
 #include "./detail/psync-segment-publisher.hpp"
 #include "./detail/invertible-bloom-lookup-table.hpp"
 #include "./detail/psync-state.hpp"
+#include "./detail/psync-segment-publisher.hpp"
 #include <ndn-cpp/sync/full-psync2017-with-users.hpp>
 
 using namespace std;
@@ -39,11 +40,10 @@ FullPSync2017WithUsers::Impl::Impl
    const Name& userPrefix, const OnUpdate& onUpdate, KeyChain& keyChain,
    Milliseconds syncInterestLifetime, Milliseconds syncReplyFreshnessPeriod,
    const SigningInfo& signingInfo)
-: PSyncProducerBase
-  (expectedNEntries, face, syncPrefix, keyChain, syncReplyFreshnessPeriod,
-   signingInfo),
-  syncInterestLifetime_(syncInterestLifetime),
-  onUpdate_(onUpdate)
+: PSyncProducerBase(expectedNEntries, syncPrefix, syncReplyFreshnessPeriod),
+  face_(face), keyChain_(keyChain), syncInterestLifetime_(syncInterestLifetime),
+  onUpdate_(onUpdate),
+  segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
 {
   if (userPrefix.size() > 0)
     addUserNode(userPrefix);

@@ -24,13 +24,11 @@
 #define NDN_PSYNC_PRODUCER_BASE_HPP
 
 #include <map>
-#include "../face.hpp"
-#include "../security/key-chain.hpp"
+#include "../name.hpp"
 
 namespace ndn {
 
 class InvertibleBloomLookupTable;
-class PSyncSegmentPublisher;
 
 /**
  * PSyncProducerBase is a base class for PsyncPartialProducer::Impl and
@@ -73,18 +71,13 @@ protected:
   /**
    * Create a PSyncProducerBase.
    * @param expectedNEntries The expected number of entries in the IBLT.
-   * @param face The application's Face.
    * @param syncPrefix The prefix Name of the sync group, which is copied.
-   * @param keyChain The KeyChain for signing Data packets.
    * @param syncReplyFreshnessPeriod The freshness period of the sync
    * Data packet, in milliseconds.
-   * @param signingInfo (optional) The SigningInfo for signing Data packets,
-   * which is copied. If omitted, use the default SigningInfo().
    */
   PSyncProducerBase
-    (size_t expectedNEntries, Face& face, const Name& syncPrefix,
-     KeyChain& keyChain, Milliseconds syncReplyFreshnessPeriod,
-     const SigningInfo& signingInfo = SigningInfo());
+    (size_t expectedNEntries, const Name& syncPrefix,
+     Milliseconds syncReplyFreshnessPeriod);
 
   /**
    * Update prefixes_ and iblt_ with the given prefix and sequence number.
@@ -137,15 +130,9 @@ protected:
   // The key is the hash. The value is the Name.
   std::map<uint32_t, Name> hashToName_;
 
-  Face& face_;
-  KeyChain keyChain_;
-  SigningInfo signingInfo_;
-
   Name syncPrefix_;
 
   Milliseconds syncReplyFreshnessPeriod_;
-
-  ptr_lib::shared_ptr<PSyncSegmentPublisher> segmentPublisher_;
 };
 
 }

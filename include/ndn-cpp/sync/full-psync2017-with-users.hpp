@@ -23,11 +23,15 @@
 #ifndef NDN_FULL_PSYNC2017_WITH_USERS_HPP
 #define NDN_FULL_PSYNC2017_WITH_USERS_HPP
 
+#include "../face.hpp"
 #include "../util/segment-fetcher.hpp"
+#include "../security/key-chain.hpp"
 #include "psync-missing-data-info.hpp"
 #include "psync-producer-base.hpp"
 
 namespace ndn {
+
+  class PSyncSegmentPublisher;
 
 /**
  * FullPSync2017WithUsers uses FullPSync2017 to implement the full sync logic of
@@ -269,6 +273,9 @@ private:
       (const Name& name, const ptr_lib::shared_ptr<PendingEntryInfoFull>& entry,
        const Blob& nonce);
 
+    Face& face_;
+    KeyChain& keyChain_;
+    ptr_lib::shared_ptr<PSyncSegmentPublisher> segmentPublisher_;
     std::map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> > pendingEntries_;
     Milliseconds syncInterestLifetime_;
     OnUpdate onUpdate_;
