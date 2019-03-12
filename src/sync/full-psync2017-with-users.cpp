@@ -88,6 +88,14 @@ FullPSync2017WithUsers::Impl::removeUserNode(const Name& prefix)
 }
 
 void
+FullPSync2017WithUsers::Impl::publishName(const Name& name)
+{
+  _LOG_TRACE("Publish: " << name);
+  insertIntoIblt(name);
+  satisfyPendingInterests();
+}
+
+void
 FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
 {
   if (!prefixes_->isUserNode(prefix)) {
@@ -98,11 +106,9 @@ FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
   int newSequenceNo = sequenceNo >= 0 ? sequenceNo : prefixes_->prefixes_[prefix] + 1;
 
   _LOG_TRACE("Publish: " << prefix << "/" << newSequenceNo);
-  if (updateSequenceNo(prefix, newSequenceNo)) {
+  if (updateSequenceNo(prefix, newSequenceNo))
     // Insert the new sequence number.
-    insertIntoIblt(Name(prefix).appendNumber(newSequenceNo));
-    satisfyPendingInterests();
-  }
+    publishName(Name(prefix).appendNumber(newSequenceNo));
 }
 
 void

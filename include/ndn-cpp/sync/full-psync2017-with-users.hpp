@@ -176,6 +176,13 @@ private:
     void
     removeUserNode(const Name& prefix);
 
+    /**
+     * Publish the Name to inform the others.
+     * @param name The Name to publish.
+     */
+    void
+    publishName(const Name& name);
+
     void
     publishName(const Name& prefix, int sequenceNo);
 
