@@ -362,36 +362,30 @@ FullPSync2017WithUsers::Impl::onSyncData
   deletePendingInterests(interest->getName());
 
   PSyncState state(encodedContent);
-  ptr_lib::shared_ptr<vector<ptr_lib::shared_ptr<PSyncMissingDataInfo>>> updates
-    (ptr_lib::make_shared<vector<ptr_lib::shared_ptr<PSyncMissingDataInfo>>>());
+  ptr_lib::shared_ptr<vector<Name>> names
+    (ptr_lib::make_shared<vector<Name>>());
 
   _LOG_DEBUG("Sync Data Received: " << state.toString());
 
   const std::vector<Name>& content = state.getContent();
   for (vector<Name>::const_iterator contentName = content.begin();
        contentName != content.end(); ++contentName) {
-    Name prefix = contentName->getPrefix(-1);
-    int sequenceNo = contentName->get(-1).toNumber();
-
-    bool havePrefix = prefixes_->isUserNode(prefix);
-    if (!havePrefix || prefixes_->prefixes_[prefix] < sequenceNo) {
-      if (!havePrefix)
-        prefixes_->prefixes_[prefix] = 0;
-
-      updates->push_back(ptr_lib::make_shared<PSyncMissingDataInfo>
-        (prefix, prefixes_->prefixes_[prefix] + 1, sequenceNo));
-      updateSequenceNo(prefix, sequenceNo);
-      // We should not call satisfyPendingSyncInterests here because we just
-      // got data and deleted pending interests by calling deletePendingInterests.
-      // But we might have interests which don't match this interest that might
-      // not have been deleted from the pending sync interests.
+    _LOG_DEBUG("Checking whether to add " << *contentName);
+    if (canAddReceivedName(*contentName)) {
+      _LOG_DEBUG("Adding name " << *contentName);
+      names->push_back(*contentName);
+      insertIntoIblt(*contentName);
     }
+    // We should not call satisfyPendingSyncInterests here because we just
+    // got data and deleted pending interests by calling deletePendingInterests.
+    // But we might have interests which don't match this interest that might
+    // not have been deleted from the pending sync interests.
   }
 
   // We just got the data, so send a new sync Interest.
-  if (updates->size() > 0) {
+  if (names->size() > 0) {
     try {
-      onUpdate_(updates);
+      onNamesUpdate(names);
     } catch (const std::exception& ex) {
       _LOG_ERROR("Error in onUpdate: " << ex.what());
     } catch (...) {
@@ -403,6 +397,57 @@ FullPSync2017WithUsers::Impl::onSyncData
   } else {
     _LOG_TRACE("No new update, interest nonce: " << interest->getNonce().toHex() <<
             " , hash: " << interest->getName().hash());
+  }
+}
+
+bool
+FullPSync2017WithUsers::Impl::canAddReceivedName(const Name& name)
+{
+  Name prefix = name.getPrefix(-1);
+  int sequenceNo = name.get(-1).toNumber();
+
+  bool havePrefix = prefixes_->isUserNode(prefix);
+  if (!havePrefix || prefixes_->prefixes_[prefix] < sequenceNo) {
+    if (havePrefix) {
+      int oldSequenceNo = prefixes_->prefixes_[prefix];
+      if (oldSequenceNo != 0)
+        // Remove the old sequence number form the IBLT before the caller adds
+        // the new one.
+        removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
+    }
+
+    return true;
+  }
+  else
+    return false;
+}
+
+void
+FullPSync2017WithUsers::Impl::onNamesUpdate
+  (const ptr_lib::shared_ptr<std::vector<Name>>& names)
+{
+  ptr_lib::shared_ptr<vector<ptr_lib::shared_ptr<PSyncMissingDataInfo>>> updates
+    (ptr_lib::make_shared<vector<ptr_lib::shared_ptr<PSyncMissingDataInfo>>>());
+
+  for (vector<Name>::const_iterator name = names->begin();
+       name != names->end(); ++name) {
+    Name prefix = name->getPrefix(-1);
+    int sequenceNo = name->get(-1).toNumber();
+
+    updates->push_back(ptr_lib::make_shared<PSyncMissingDataInfo>
+      (prefix, prefixes_->prefixes_[prefix] + 1, sequenceNo));
+
+    // canAddReceivedName already made sure that the new sequenceNo is greater
+    // than the old one, and removed the old one from the IBLT.
+    prefixes_->prefixes_[prefix] = sequenceNo;
+  }
+
+  try {
+    onUpdate_(updates);
+  } catch (const std::exception& ex) {
+    _LOG_ERROR("Error in onUpdate: " << ex.what());
+  } catch (...) {
+    _LOG_ERROR("Error in onUpdate.");
   }
 }
 

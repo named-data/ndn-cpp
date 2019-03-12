@@ -248,6 +248,23 @@ private:
     onSyncData(Blob encodedContent, ptr_lib::shared_ptr<Interest>& interest);
 
     /**
+     * This is called when new names are received to check if the name can be
+     * added to the IBLT.
+     * @param name The Name to check.
+     * @return True if the received name can be added.
+     */
+    bool
+    canAddReceivedName(const Name& name);
+
+    /**
+     * This is called when new names are received. Update prefixes_, create the
+     * list of PSyncMissingDataInfo and call the onUpdate_ callback.
+     * @param names The new received names.
+     */
+    void
+    onNamesUpdate(const ptr_lib::shared_ptr<std::vector<Name>>& names);
+
+    /**
      * Satisfy pending sync Interests. For a pending sync interests SI, if the
      * IBLT of the sync Interest has any difference from our own IBLT, then
      * send Data back. If we can't decode the difference from the stored IBLT,
