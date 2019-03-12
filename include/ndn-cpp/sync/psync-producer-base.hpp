@@ -29,6 +29,7 @@
 namespace ndn {
 
 class InvertibleBloomLookupTable;
+class PSyncUserPrefixes;
 
 /**
  * PSyncProducerBase is a base class for PsyncPartialProducer::Impl and
@@ -121,8 +122,7 @@ protected:
   // threshold, and whether we need to update the other IBLT.
   size_t threshold_;
 
-  // The key is the prefix Name. The value is the sequence number for the prefix.
-  std::map<Name, int> prefixes_;
+  ptr_lib::shared_ptr<PSyncUserPrefixes> prefixes_;
   // nameToHash_ and hashToName_ are just for looking up the hash more quickly
   // (instead of calculating it again).
   // The key is the Name. The value is the hash.

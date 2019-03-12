@@ -23,6 +23,7 @@
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "./detail/invertible-bloom-lookup-table.hpp"
+#include "./detail/psync-user-prefixes.hpp"
 #include <ndn-cpp/sync/psync-producer-base.hpp>
 
 using namespace std;
@@ -31,34 +32,24 @@ INIT_LOGGER("ndn.PSyncProducerBase");
 
 namespace ndn {
 
-  int
+int
 PSyncProducerBase::getSequenceNo(const Name& prefix) const
 {
-  map<Name, int>::const_iterator entry = prefixes_.find(prefix);
-  if (entry == prefixes_.end())
-    return -1;
-
-  return entry->second;
+  return prefixes_->getSequenceNo(prefix);
 }
 
 bool
 PSyncProducerBase::addUserNode(const Name& prefix)
 {
-  if (prefixes_.find(prefix) == prefixes_.end()) {
-    prefixes_[prefix] = 0;
-    return true;
-  }
-  else
-    return false;
+  return prefixes_->addUserNode(prefix);
 }
 
 void
 PSyncProducerBase::removeUserNode(const Name& prefix)
 {
-  map<Name, int>::iterator entry = prefixes_.find(prefix);
-  if (entry != prefixes_.end()) {
-    int sequenceNo = entry->second;
-    prefixes_.erase(entry);
+  if (prefixes_->isUserNode(prefix)) {
+    int sequenceNo = prefixes_->prefixes_[prefix];
+    prefixes_->removeUserNode(prefix);
     removeFromIblt(Name(prefix).appendNumber(sequenceNo));
   }
 }
@@ -70,29 +61,18 @@ PSyncProducerBase::PSyncProducerBase
   expectedNEntries_(expectedNEntries),
   threshold_(expectedNEntries / 2),
   syncPrefix_(syncPrefix),
-  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod)
+  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod),
+  prefixes_(new PSyncUserPrefixes())
 {
 }
 
 void
 PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
 {
-  _LOG_DEBUG("updateSequenceNo: " << prefix << " " << sequenceNo);
-
   int oldSequenceNo;
-  map<Name, int>::iterator entry = prefixes_.find(prefix);
-  if (entry != prefixes_.end())
-    oldSequenceNo = entry->second;
-  else {
-    _LOG_TRACE("The prefix was not found in prefixes_");
-    return;
-  }
-
-  if (oldSequenceNo >= sequenceNo) {
-    _LOG_TRACE("The update has a lower/equal seq no for then prefix. Doing nothing!");
-    return;
-  }
-
+  if (!prefixes_->updateSequenceNo(prefix, sequenceNo, oldSequenceNo))
+    return;  
+  
   // Delete the old sequence number from the IBLT. If oldSequenceNo is zero, we
   // don't need to delete it, because we don't insert a prefix with sequence
   // number zero in the IBLT.
@@ -100,7 +80,6 @@ PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
     removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
 
   // Insert the new sequence number.
-  entry->second = sequenceNo;
   Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
   insertIntoIblt(prefixWithSequenceNo);
 }

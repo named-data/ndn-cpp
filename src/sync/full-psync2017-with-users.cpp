@@ -26,6 +26,7 @@
 #include "./detail/invertible-bloom-lookup-table.hpp"
 #include "./detail/psync-state.hpp"
 #include "./detail/psync-segment-publisher.hpp"
+#include "./detail/psync-user-prefixes.hpp"
 #include <ndn-cpp/sync/full-psync2017-with-users.hpp>
 
 using namespace std;
@@ -66,12 +67,12 @@ FullPSync2017WithUsers::Impl::initialize()
 void
 FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
 {
-  if (prefixes_.find(prefix) == prefixes_.end()) {
+  if (!prefixes_->isUserNode(prefix)) {
     _LOG_ERROR("Prefix not added: " << prefix);
     return;
   }
 
-  int newSequenceNo = sequenceNo >= 0 ? sequenceNo : prefixes_[prefix] + 1;
+  int newSequenceNo = sequenceNo >= 0 ? sequenceNo : prefixes_->prefixes_[prefix] + 1;
 
   _LOG_TRACE("Publish: " << prefix << "/" << newSequenceNo);
   updateSequenceNo(prefix, newSequenceNo);
@@ -185,8 +186,8 @@ FullPSync2017WithUsers::Impl::onSyncInterest
     if (positive.size() + negative.size() >= threshold_ ||
         (positive.size() == 0 && negative.size() == 0)) {
       PSyncState state1;
-      for (map<Name, int>::iterator content = prefixes_.begin();
-              content != prefixes_.end(); ++content) {
+      for (map<Name, int>::iterator content = prefixes_->prefixes_.begin();
+              content != prefixes_->prefixes_.end(); ++content) {
         if (content->second != 0)
           state1.addContent(Name(content->first).appendNumber(content->second));
       }
@@ -207,8 +208,8 @@ FullPSync2017WithUsers::Impl::onSyncInterest
     Name prefix = name.getPrefix(-1);
 
     // Don't sync sequence number zero.
-    if (prefixes_[prefix] != 0 && !isFutureHash(prefix, negative))
-      state.addContent(Name(prefix).appendNumber(prefixes_[prefix]));
+    if (prefixes_->prefixes_[prefix] != 0 && !isFutureHash(prefix, negative))
+      state.addContent(Name(prefix).appendNumber(prefixes_->prefixes_[prefix]));
   }
 
   if (state.getContent().size() > 0) {
@@ -297,10 +298,9 @@ FullPSync2017WithUsers::Impl::satisfyPendingInterests()
     for (set<uint32_t>::iterator hash = positive.begin(); hash != positive.end();
          ++hash) {
       Name name = hashToName_[*hash];
-      Name prefix = name.getPrefix(-1);
 
-      if (prefixes_[prefix] != 0)
-        state.addContent(Name(prefix).appendNumber(prefixes_[prefix]));
+      if (nameToHash_.find(name) != nameToHash_.end())
+        state.addContent(name);
     }
 
     if (state.getContent().size() > 0) {
@@ -350,13 +350,13 @@ FullPSync2017WithUsers::Impl::onSyncData
     Name prefix = contentName->getPrefix(-1);
     int sequenceNo = contentName->get(-1).toNumber();
 
-    bool havePrefix = (prefixes_.find(prefix) != prefixes_.end());
-    if (!havePrefix || prefixes_[prefix] < sequenceNo) {
+    bool havePrefix = prefixes_->isUserNode(prefix);
+    if (!havePrefix || prefixes_->prefixes_[prefix] < sequenceNo) {
       if (!havePrefix)
-        prefixes_[prefix] = 0;
+        prefixes_->prefixes_[prefix] = 0;
 
       updates->push_back(ptr_lib::make_shared<PSyncMissingDataInfo>
-        (prefix, prefixes_[prefix] + 1, sequenceNo));
+        (prefix, prefixes_->prefixes_[prefix] + 1, sequenceNo));
       updateSequenceNo(prefix, sequenceNo);
       // We should not call satisfyPendingSyncInterests here because we just
       // got data and deleted pending interests by calling deletePendingInterests.
@@ -387,7 +387,7 @@ bool
 FullPSync2017WithUsers::Impl::isFutureHash
   (const Name& prefix, const set<uint32_t>& negative)
 {
-  string uri = Name(prefix).appendNumber(prefixes_[prefix] + 1).toUri();
+  string uri = Name(prefix).appendNumber(prefixes_->prefixes_[prefix] + 1).toUri();
   uint32_t nextHash = CryptoLite::murmurHash3
     (InvertibleBloomLookupTable::N_HASHCHECK, uri.data(), uri.size());
 
