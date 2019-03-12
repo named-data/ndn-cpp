@@ -226,11 +226,11 @@ FullPSync2017WithUsers::Impl::onSyncInterest
   for (set<uint32_t>::iterator hash = positive.begin(); hash != positive.end();
        ++hash) {
     Name name = hashToName_[*hash];
-    Name prefix = name.getPrefix(-1);
 
-    // Don't sync sequence number zero.
-    if (prefixes_->prefixes_[prefix] != 0 && isNotFutureHash(prefix, negative))
-      state.addContent(Name(prefix).appendNumber(prefixes_->prefixes_[prefix]));
+    if (nameToHash_.find(name) != nameToHash_.end()) {
+      if (isNotFutureHash(name, negative))
+        state.addContent(name);
+    }
   }
 
   if (state.getContent().size() > 0) {
@@ -451,8 +451,10 @@ FullPSync2017WithUsers::Impl::onNamesUpdate
 
 bool
 FullPSync2017WithUsers::Impl::isNotFutureHash
-  (const Name& prefix, const set<uint32_t>& negative)
+  (const Name& name, const set<uint32_t>& negative)
 {
+  Name prefix = name.getPrefix(-1);
+
   string uri = Name(prefix).appendNumber(prefixes_->prefixes_[prefix] + 1).toUri();
   uint32_t nextHash = CryptoLite::murmurHash3
     (InvertibleBloomLookupTable::N_HASHCHECK, uri.data(), uri.size());

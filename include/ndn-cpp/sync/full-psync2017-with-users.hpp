@@ -280,13 +280,14 @@ private:
     deletePendingInterests(const Name& interestName);
 
     /**
-     * Check if hash(prefix + 1) is in the negative set. (Sometimes the Interest
-     * from the other side gets to us before the Data.)
+     * Get the prefix from the name and check if hash(prefix + 1) is in the
+     * negative set. (Sometimes the Interest from the other side gets to us
+     * before the Data.)
      * @return True if hash(prefix + 1) is NOT in the negative set (meaning that
      * it is not a future hash), or false if it IS in the negative set.
      */
     bool
-    isNotFutureHash(const Name& prefix, const std::set<uint32_t>& negative);
+    isNotFutureHash(const Name& name, const std::set<uint32_t>& negative);
 
     /**
      * Update prefixes_ and iblt_ with the given prefix and sequence number.
