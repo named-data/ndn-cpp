@@ -529,6 +529,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
   src/sync/detail/psync-segment-publisher.cpp src/sync/detail/psync-segment-publisher.hpp \
   src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
+  src/sync/detail/psync-user-prefixes.cpp src/sync/detail/psync-user-prefixes.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \

@@ -425,6 +425,7 @@ am_libndn_cpp_la_OBJECTS = $(am__objects_2) $(am__objects_1) \
 	src/sync/detail/invertible-bloom-lookup-table.lo \
 	src/sync/detail/psync-segment-publisher.lo \
 	src/sync/detail/psync-state.lo \
+	src/sync/detail/psync-user-prefixes.lo \
 	src/transport/async-tcp-transport.lo \
 	src/transport/async-unix-transport.lo \
 	src/transport/tcp-transport.lo src/transport/transport.lo \
@@ -1122,6 +1123,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo \
 	src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo \
 	src/sync/detail/$(DEPDIR)/psync-state.Plo \
+	src/sync/detail/$(DEPDIR)/psync-user-prefixes.Plo \
 	src/transport/$(DEPDIR)/async-tcp-transport.Plo \
 	src/transport/$(DEPDIR)/async-unix-transport.Plo \
 	src/transport/$(DEPDIR)/tcp-transport.Plo \
@@ -2327,6 +2329,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
   src/sync/detail/psync-segment-publisher.cpp src/sync/detail/psync-segment-publisher.hpp \
   src/sync/detail/psync-state.cpp src/sync/detail/psync-state.hpp \
+  src/sync/detail/psync-user-prefixes.cpp src/sync/detail/psync-user-prefixes.hpp \
   src/transport/async-tcp-transport.cpp \
   src/transport/async-unix-transport.cpp \
   src/transport/tcp-transport.cpp \
@@ -3419,6 +3422,9 @@ src/sync/detail/psync-segment-publisher.lo:  \
 	src/sync/detail/$(am__dirstamp) \
 	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/sync/detail/psync-state.lo: src/sync/detail/$(am__dirstamp) \
+	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
+src/sync/detail/psync-user-prefixes.lo:  \
+	src/sync/detail/$(am__dirstamp) \
 	src/sync/detail/$(DEPDIR)/$(am__dirstamp)
 src/transport/$(am__dirstamp):
 	@$(MKDIR_P) src/transport
@@ -4620,6 +4626,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-state.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/sync/detail/$(DEPDIR)/psync-user-prefixes.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-tcp-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/async-unix-transport.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/transport/$(DEPDIR)/tcp-transport.Plo@am__quote@ # am--include-marker
@@ -7730,6 +7737,7 @@ distclean: distclean-recursive
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-user-prefixes.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
@@ -8163,6 +8171,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f src/sync/detail/$(DEPDIR)/invertible-bloom-lookup-table.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-segment-publisher.Plo
 	-rm -f src/sync/detail/$(DEPDIR)/psync-state.Plo
+	-rm -f src/sync/detail/$(DEPDIR)/psync-user-prefixes.Plo
 	-rm -f src/transport/$(DEPDIR)/async-tcp-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/async-unix-transport.Plo
 	-rm -f src/transport/$(DEPDIR)/tcp-transport.Plo
