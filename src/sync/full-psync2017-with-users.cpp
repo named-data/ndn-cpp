@@ -209,11 +209,9 @@ FullPSync2017WithUsers::Impl::onSyncInterest
     if (positive.size() + negative.size() >= threshold_ ||
         (positive.size() == 0 && negative.size() == 0)) {
       PSyncState state1;
-      for (map<Name, int>::iterator content = prefixes_->prefixes_.begin();
-              content != prefixes_->prefixes_.end(); ++content) {
-        if (content->second != 0)
-          state1.addContent(Name(content->first).appendNumber(content->second));
-      }
+      for (map<Name, uint32_t>::iterator entry = nameToHash_.begin();
+           entry != nameToHash_.end(); ++entry)
+        state1.addContent(entry->first);
 
       if (state1.getContent().size() > 0)
         segmentPublisher_->publish
