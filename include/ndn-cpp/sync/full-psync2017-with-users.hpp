@@ -294,12 +294,13 @@ private:
      * Whoever calls this needs to make sure that prefix is in prefixes_.
      * We remove an already-existing prefix/sequence number from iblt_ (unless
      * sequenceNo is zero because we don't insert a zero sequence number into the
-     * IBLT.) Then we update prefix_, prefixWithSequenceNoToHash_, hashToprefix_,
-     * and iblt_ .
+     * IBLT.) Then we update prefixes_. If this returns true, the caller should
+     * update  nameToHash_, hashToName_ and iblt_ .
      * @param prefix The prefix of the sequence number to update.
      * @param sequenceNumber The new sequence number.
+     * @return True if the prefixes_ were updated, false if not.
      */
-    void
+    bool
     updateSequenceNo(const Name& prefix, int sequenceNo);
 
     /**

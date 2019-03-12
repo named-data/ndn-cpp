@@ -98,8 +98,11 @@ FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
   int newSequenceNo = sequenceNo >= 0 ? sequenceNo : prefixes_->prefixes_[prefix] + 1;
 
   _LOG_TRACE("Publish: " << prefix << "/" << newSequenceNo);
-  updateSequenceNo(prefix, newSequenceNo);
-  satisfyPendingInterests();
+  if (updateSequenceNo(prefix, newSequenceNo)) {
+    // Insert the new sequence number.
+    insertIntoIblt(Name(prefix).appendNumber(newSequenceNo));
+    satisfyPendingInterests();
+  }
 }
 
 void
@@ -469,12 +472,12 @@ FullPSync2017WithUsers::Impl::isNotFutureHash
   return true;
 }
 
-void
+bool
 FullPSync2017WithUsers::Impl::updateSequenceNo(const Name& prefix, int sequenceNo)
 {
   int oldSequenceNo;
   if (!prefixes_->updateSequenceNo(prefix, sequenceNo, oldSequenceNo))
-    return;
+    return false;
 
   // Delete the old sequence number from the IBLT. If oldSequenceNo is zero, we
   // don't need to delete it, because we don't insert a prefix with sequence
@@ -482,9 +485,7 @@ FullPSync2017WithUsers::Impl::updateSequenceNo(const Name& prefix, int sequenceN
   if (oldSequenceNo != 0)
     removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
 
-  // Insert the new sequence number.
-  Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
-  insertIntoIblt(prefixWithSequenceNo);
+  return true;
 }
 
 void
