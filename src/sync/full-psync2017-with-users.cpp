@@ -208,7 +208,7 @@ FullPSync2017WithUsers::Impl::onSyncInterest
     Name prefix = name.getPrefix(-1);
 
     // Don't sync sequence number zero.
-    if (prefixes_->prefixes_[prefix] != 0 && !isFutureHash(prefix, negative))
+    if (prefixes_->prefixes_[prefix] != 0 && isNotFutureHash(prefix, negative))
       state.addContent(Name(prefix).appendNumber(prefixes_->prefixes_[prefix]));
   }
 
@@ -384,7 +384,7 @@ FullPSync2017WithUsers::Impl::onSyncData
 }
 
 bool
-FullPSync2017WithUsers::Impl::isFutureHash
+FullPSync2017WithUsers::Impl::isNotFutureHash
   (const Name& prefix, const set<uint32_t>& negative)
 {
   string uri = Name(prefix).appendNumber(prefixes_->prefixes_[prefix] + 1).toUri();
@@ -395,10 +395,10 @@ FullPSync2017WithUsers::Impl::isFutureHash
        negativeHash != negative.end();
        ++negativeHash) {
     if (*negativeHash == nextHash)
-      return true;
+      return false;
   }
 
-  return false;
+  return true;
 }
 
 void

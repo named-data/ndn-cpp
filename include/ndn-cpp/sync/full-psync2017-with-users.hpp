@@ -255,9 +255,11 @@ private:
     /**
      * Check if hash(prefix + 1) is in the negative set. (Sometimes the Interest
      * from the other side gets to us before the Data.)
+     * @return True if hash(prefix + 1) is NOT in the negative set (meaning that
+     * it is not a future hash), or false if it IS in the negative set.
      */
     bool
-    isFutureHash(const Name& prefix, const std::set<uint32_t>& negative);
+    isNotFutureHash(const Name& prefix, const std::set<uint32_t>& negative);
 
     /**
      * Remove the entry from pendingEntries_ which has the name. However, if
