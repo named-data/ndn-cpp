@@ -44,7 +44,8 @@ FullPSync2017WithUsers::Impl::Impl
 : PSyncProducerBase(expectedNEntries, syncPrefix, syncReplyFreshnessPeriod),
   face_(face), keyChain_(keyChain), syncInterestLifetime_(syncInterestLifetime),
   onUpdate_(onUpdate),
-  segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
+  segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_)),
+  prefixes_(new PSyncUserPrefixes())
 {
   if (userPrefix.size() > 0)
     addUserNode(userPrefix);
@@ -62,6 +63,28 @@ FullPSync2017WithUsers::Impl::initialize()
 
   // TODO: Should we do this after the registerPrefix onSuccess callback?
   sendSyncInterest();
+}
+
+int
+FullPSync2017WithUsers::Impl::getSequenceNo(const Name& prefix) const
+{
+  return prefixes_->getSequenceNo(prefix);
+}
+
+bool
+FullPSync2017WithUsers::Impl::addUserNode(const Name& prefix)
+{
+  return prefixes_->addUserNode(prefix);
+}
+
+void
+FullPSync2017WithUsers::Impl::removeUserNode(const Name& prefix)
+{
+  if (prefixes_->isUserNode(prefix)) {
+    int sequenceNo = prefixes_->prefixes_[prefix];
+    prefixes_->removeUserNode(prefix);
+    removeFromIblt(Name(prefix).appendNumber(sequenceNo));
+  }
 }
 
 void
@@ -399,6 +422,24 @@ FullPSync2017WithUsers::Impl::isNotFutureHash
   }
 
   return true;
+}
+
+void
+FullPSync2017WithUsers::Impl::updateSequenceNo(const Name& prefix, int sequenceNo)
+{
+  int oldSequenceNo;
+  if (!prefixes_->updateSequenceNo(prefix, sequenceNo, oldSequenceNo))
+    return;
+
+  // Delete the old sequence number from the IBLT. If oldSequenceNo is zero, we
+  // don't need to delete it, because we don't insert a prefix with sequence
+  // number zero in the IBLT.
+  if (oldSequenceNo != 0)
+    removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
+
+  // Insert the new sequence number.
+  Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
+  insertIntoIblt(prefixWithSequenceNo);
 }
 
 void

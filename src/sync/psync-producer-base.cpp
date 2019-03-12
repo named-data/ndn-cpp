@@ -23,7 +23,6 @@
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "./detail/invertible-bloom-lookup-table.hpp"
-#include "./detail/psync-user-prefixes.hpp"
 #include <ndn-cpp/sync/psync-producer-base.hpp>
 
 using namespace std;
@@ -32,28 +31,6 @@ INIT_LOGGER("ndn.PSyncProducerBase");
 
 namespace ndn {
 
-int
-PSyncProducerBase::getSequenceNo(const Name& prefix) const
-{
-  return prefixes_->getSequenceNo(prefix);
-}
-
-bool
-PSyncProducerBase::addUserNode(const Name& prefix)
-{
-  return prefixes_->addUserNode(prefix);
-}
-
-void
-PSyncProducerBase::removeUserNode(const Name& prefix)
-{
-  if (prefixes_->isUserNode(prefix)) {
-    int sequenceNo = prefixes_->prefixes_[prefix];
-    prefixes_->removeUserNode(prefix);
-    removeFromIblt(Name(prefix).appendNumber(sequenceNo));
-  }
-}
-
 PSyncProducerBase::PSyncProducerBase
   (size_t expectedNEntries, const Name& syncPrefix,
    Milliseconds syncReplyFreshnessPeriod)
@@ -61,27 +38,8 @@ PSyncProducerBase::PSyncProducerBase
   expectedNEntries_(expectedNEntries),
   threshold_(expectedNEntries / 2),
   syncPrefix_(syncPrefix),
-  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod),
-  prefixes_(new PSyncUserPrefixes())
+  syncReplyFreshnessPeriod_(syncReplyFreshnessPeriod)
 {
-}
-
-void
-PSyncProducerBase::updateSequenceNo(const Name& prefix, int sequenceNo)
-{
-  int oldSequenceNo;
-  if (!prefixes_->updateSequenceNo(prefix, sequenceNo, oldSequenceNo))
-    return;  
-  
-  // Delete the old sequence number from the IBLT. If oldSequenceNo is zero, we
-  // don't need to delete it, because we don't insert a prefix with sequence
-  // number zero in the IBLT.
-  if (oldSequenceNo != 0)
-    removeFromIblt(Name(prefix).appendNumber(oldSequenceNo));
-
-  // Insert the new sequence number.
-  Name prefixWithSequenceNo = Name(prefix).appendNumber(sequenceNo);
-  insertIntoIblt(prefixWithSequenceNo);
 }
 
 void

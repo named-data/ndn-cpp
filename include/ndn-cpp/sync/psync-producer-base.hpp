@@ -29,45 +29,12 @@
 namespace ndn {
 
 class InvertibleBloomLookupTable;
-class PSyncUserPrefixes;
 
 /**
  * PSyncProducerBase is a base class for PsyncPartialProducer::Impl and
  * FullPSync2017::Impl.
  */
 class PSyncProducerBase : public ptr_lib::enable_shared_from_this<PSyncProducerBase> {
-public:
-  /**
-   * Return the current sequence number of the given prefix.
-   * @param prefix The prefix for the sequence number.
-   * @return The sequence number for the prefix, or -1 if not found.
-   */
-  int
-  getSequenceNo(const Name& prefix) const;
-
-  /**
-   * Add a user node for synchronization based on the prefix Name, and
-   * initialize the sequence number to zero. However, if the prefix Name already
-   * exists, then do nothing and return false. This does not add sequence number
-   * zero to the IBLT because, if a large number of user nodes are added, then
-   * decoding the difference between our own IBLT and the other IBLT will not be
-   * possible.
-   * @param prefix The prefix Name of the user node to be added.
-   * @return True if the user node with the prefix Name was added, false if the
-   * prefix Name already exists.
-   */
-  bool
-  addUserNode(const Name& prefix);
-
-  /**
-   * Remove the user node from the synchronization. This erases the prefix from
-   * the IBLT and other tables.
-   * @param prefix The prefix Name of the user node to be removed. If there is
-   * no user node with this prefix, do nothing.
-   */
-  void
-  removeUserNode(const Name& prefix);
-
 protected:
   /**
    * Create a PSyncProducerBase.
@@ -79,19 +46,6 @@ protected:
   PSyncProducerBase
     (size_t expectedNEntries, const Name& syncPrefix,
      Milliseconds syncReplyFreshnessPeriod);
-
-  /**
-   * Update prefixes_ and iblt_ with the given prefix and sequence number.
-   * Whoever calls this needs to make sure that prefix is in prefixes_.
-   * We remove an already-existing prefix/sequence number from iblt_ (unless
-   * sequenceNo is zero because we don't insert a zero sequence number into the
-   * IBLT.) Then we update prefix_, prefixWithSequenceNoToHash_, hashToprefix_,
-   * and iblt_ .
-   * @param prefix The prefix of the sequence number to update.
-   * @param sequenceNumber The new sequence number.
-   */
-  void
-  updateSequenceNo(const Name& prefix, int sequenceNo);
 
   /**
    * Insert the URI of the name into the iblt_, and update nameToHash_ and
@@ -122,7 +76,6 @@ protected:
   // threshold, and whether we need to update the other IBLT.
   size_t threshold_;
 
-  ptr_lib::shared_ptr<PSyncUserPrefixes> prefixes_;
   // nameToHash_ and hashToName_ are just for looking up the hash more quickly
   // (instead of calculating it again).
   // The key is the Name. The value is the hash.

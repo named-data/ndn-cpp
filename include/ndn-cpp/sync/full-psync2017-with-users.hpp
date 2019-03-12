@@ -31,7 +31,8 @@
 
 namespace ndn {
 
-  class PSyncSegmentPublisher;
+class PSyncSegmentPublisher;
+class PSyncUserPrefixes;
 
 /**
  * FullPSync2017WithUsers uses FullPSync2017 to implement the full sync logic of
@@ -166,6 +167,15 @@ private:
     void
     initialize();
 
+    int
+    getSequenceNo(const Name& prefix) const;
+
+    bool
+    addUserNode(const Name& prefix);
+
+    void
+    removeUserNode(const Name& prefix);
+
     void
     publishName(const Name& prefix, int sequenceNo);
 
@@ -262,6 +272,19 @@ private:
     isNotFutureHash(const Name& prefix, const std::set<uint32_t>& negative);
 
     /**
+     * Update prefixes_ and iblt_ with the given prefix and sequence number.
+     * Whoever calls this needs to make sure that prefix is in prefixes_.
+     * We remove an already-existing prefix/sequence number from iblt_ (unless
+     * sequenceNo is zero because we don't insert a zero sequence number into the
+     * IBLT.) Then we update prefix_, prefixWithSequenceNoToHash_, hashToprefix_,
+     * and iblt_ .
+     * @param prefix The prefix of the sequence number to update.
+     * @param sequenceNumber The new sequence number.
+     */
+    void
+    updateSequenceNo(const Name& prefix, int sequenceNo);
+
+    /**
      * Remove the entry from pendingEntries_ which has the name. However, if
      * entry->isRemoved_ is true, do nothing. Therefore, if an entry is
      * directly removed from pendingEntries_, it should set isRemoved_.
@@ -283,6 +306,7 @@ private:
     OnUpdate onUpdate_;
     Name outstandingInterestName_;
     uint64_t registeredPrefix_;
+    ptr_lib::shared_ptr<PSyncUserPrefixes> prefixes_;
   };
 
   ptr_lib::shared_ptr<Impl> impl_;
