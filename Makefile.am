@@ -277,6 +277,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/security/v2/validator-config/config-name-relation.hpp \
   include/ndn-cpp/security/v2/validator-config/config-rule.hpp \
   include/ndn-cpp/sync/chrono-sync2013.hpp \
+  include/ndn-cpp/sync/full-psync2017.hpp \
   include/ndn-cpp/sync/full-psync2017-with-users.hpp \
   include/ndn-cpp/sync/psync-missing-data-info.hpp \
   include/ndn-cpp/sync/psync-producer-base.hpp \
@@ -524,6 +525,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/sync/sync-state.pb.cc \
   src/sync/chrono-sync2013.cpp \
   src/sync/digest-tree.cpp src/sync/digest-tree.hpp \
+  src/sync/full-psync2017.cpp \
   src/sync/full-psync2017-with-users.cpp \
   src/sync/psync-producer-base.cpp \
   src/sync/detail/invertible-bloom-lookup-table.cpp src/sync/detail/invertible-bloom-lookup-table.hpp \
