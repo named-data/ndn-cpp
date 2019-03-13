@@ -161,7 +161,7 @@ void
 FullPSync2017WithUsers::Impl::onError
   (SegmentFetcher::ErrorCode errorCode, const std::string& message)
 {
-  _LOG_ERROR("Cannot fetch sync data, error: " << errorCode <<
+  _LOG_DEBUG("Cannot fetch sync data, error: " << errorCode <<
              " message: " << message);
 }
 
