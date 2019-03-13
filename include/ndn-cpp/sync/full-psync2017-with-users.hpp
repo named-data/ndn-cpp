@@ -38,7 +38,9 @@ class PSyncUserPrefixes;
  * prefixes can be added by using addUserNode. Currently, fetching and
  * publishing the data (named by the user prefix plus the sequence number) needs
  * to be handled by the application. See FullPSync2017 for details on the
- * Full PSync protocol.
+ * Full PSync protocol. The Full PSync
+ * protocol is described in Section G "Full-Data Synchronization" of:
+ * https://named-data.net/wp-content/uploads/2017/05/scalable_name-based_data_synchronization.pdf
  * (Note: In the PSync library, this class is called FullProducer. But because
  * the class actually handles both producing and consuming, we omit "producer"
  * in the name to avoid confusion.)

@@ -38,7 +38,9 @@ class PSyncSegmentPublisher;
  * other nodes, where all nodes want to sync all the names. The application
  * should call publishName whenever it wants to let consumers know that new name
  * is available. Currently, fetching and publishing the data given by the
- * announced name needs to be handled by the application.
+ * announced name needs to be handled by the application. The Full PSync
+ * protocol is described in Section G "Full-Data Synchronization" of:
+ * https://named-data.net/wp-content/uploads/2017/05/scalable_name-based_data_synchronization.pdf
  * (Note: In the PSync library, this class is called FullProducerArbitrary. But
  * because the class actually handles both producing and consuming, we omit
  * "producer" in the name to avoid confusion.)
