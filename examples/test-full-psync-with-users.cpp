@@ -20,10 +20,10 @@
  */
 
 /**
- * This generates new names with the given prefix and publishes them using Full
- * PSync. The also receives and displays new names from the other users. This
- * requires a running local NFD. This is compatible with the PSync full-sync
- * example program:
+ * This generates new user prefixes with the given prefix and publishes new
+ * sequence numbers for them using FullPSync2017WithUsers. The also receives and
+ * displays new sequence numbers from the other users. This requires a running
+ * local NFD. This is compatible with the PSync full-sync example program:
  * https://github.com/named-data/PSync/blob/master/examples/full-sync.cpp
  */
 
@@ -214,7 +214,7 @@ public:
     (Face& face, KeyChain& keyChain, const Name& syncPrefix,
      const string& userPrefixUri, int nUserPrefixes, int maxPublishedSequenceNo)
   : face_(face),
-    fullProducer_
+    fullPSync_
       (80, face_, syncPrefix, Name(),
        bind(&Producer::processSyncUpdate, this, _1), keyChain, 1600, 1600),
     nUserPrefixes_(nUserPrefixes),
@@ -227,7 +227,7 @@ public:
       prefixUri << userPrefixUri << "-" << i;
       Name prefix(prefixUri.str());
 
-      fullProducer_.addUserNode(Name(prefix));
+      fullPSync_.addUserNode(Name(prefix));
 
       // random1 is from 0.0 to 1.0.
       float random1;
@@ -242,9 +242,9 @@ private:
   void
   doUpdate(const Name& prefix)
   {
-    fullProducer_.publishName(prefix);
+    fullPSync_.publishName(prefix);
 
-    int sequenceNo = fullProducer_.getSequenceNo(prefix);
+    int sequenceNo = fullPSync_.getSequenceNo(prefix);
     cout << "Publish: " << prefix << "/" << sequenceNo << endl;
 
     if (sequenceNo < maxPublishedSequenceNo_) {
@@ -271,7 +271,7 @@ private:
   }
 
   Face& face_;
-  FullPSync2017WithUsers fullProducer_;
+  FullPSync2017WithUsers fullPSync_;
   int nUserPrefixes_;
   int maxPublishedSequenceNo_;
   Milliseconds delayRangeMaxMs_;
