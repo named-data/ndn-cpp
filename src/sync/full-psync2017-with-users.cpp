@@ -107,7 +107,7 @@ FullPSync2017WithUsers::Impl::canAddReceivedName(const Name& name)
     if (havePrefix) {
       int oldSequenceNo = prefixes_->prefixes_[prefix];
       if (oldSequenceNo != 0)
-        // Remove the old sequence number form the IBLT before the caller adds
+        // Remove the old sequence number from the IBLT before the caller adds
         // the new one.
         fullPSync_->removeName(Name(prefix).appendNumber(oldSequenceNo));
     }
