@@ -185,7 +185,7 @@ This makes the following example programs:
 * bin/test-encode-decode-data: Encode and decode a data packet, including signing the data packet.
 * bin/test-encode-decode-fib-entry: Encode and decode a sample Protobuf message using ProtobufTlv.
 * bin/test-chrono-chat: A command-line chat application using the ChronoSync2013 API, compatible with ChronoChat-js.
-* bin/test-full-psync: Generate and publish new names, and receive updates from another Full PSync user.
+* bin/test-full-psync-with-users: Generate and publish new names, and receive updates for new sequence numbers from another Full PSync user.
 
 Running make doxygen-doc puts code documentation in doc/html.
 

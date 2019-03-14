@@ -148,7 +148,7 @@ noinst_PROGRAMS = bin/test-channel-discovery$(EXEEXT) \
 	bin/test-encode-decode-data$(EXEEXT) \
 	bin/test-encode-decode-fib-entry$(EXEEXT) \
 	bin/test-encode-decode-interest$(EXEEXT) \
-	bin/test-full-psync$(EXEEXT) \
+	bin/test-full-psync-with-users$(EXEEXT) \
 	bin/test-generalized-content$(EXEEXT) \
 	bin/test-get-async$(EXEEXT) \
 	bin/test-get-async-threadsafe$(EXEEXT) \
@@ -498,9 +498,11 @@ am_bin_test_encode_decode_interest_OBJECTS =  \
 bin_test_encode_decode_interest_OBJECTS =  \
 	$(am_bin_test_encode_decode_interest_OBJECTS)
 bin_test_encode_decode_interest_DEPENDENCIES = libndn-cpp.la
-am_bin_test_full_psync_OBJECTS = examples/test-full-psync.$(OBJEXT)
-bin_test_full_psync_OBJECTS = $(am_bin_test_full_psync_OBJECTS)
-bin_test_full_psync_DEPENDENCIES = libndn-cpp.la
+am_bin_test_full_psync_with_users_OBJECTS =  \
+	examples/test-full-psync-with-users.$(OBJEXT)
+bin_test_full_psync_with_users_OBJECTS =  \
+	$(am_bin_test_full_psync_with_users_OBJECTS)
+bin_test_full_psync_with_users_DEPENDENCIES = libndn-cpp.la
 am_bin_test_generalized_content_OBJECTS =  \
 	examples/test-generalized-content.$(OBJEXT)
 bin_test_generalized_content_OBJECTS =  \
@@ -910,7 +912,7 @@ am__depfiles_remade = contrib/apache/$(DEPDIR)/apr_base64.Plo \
 	examples/$(DEPDIR)/test-encode-decode-data.Po \
 	examples/$(DEPDIR)/test-encode-decode-fib-entry.Po \
 	examples/$(DEPDIR)/test-encode-decode-interest.Po \
-	examples/$(DEPDIR)/test-full-psync.Po \
+	examples/$(DEPDIR)/test-full-psync-with-users.Po \
 	examples/$(DEPDIR)/test-generalized-content.Po \
 	examples/$(DEPDIR)/test-get-async-threadsafe.Po \
 	examples/$(DEPDIR)/test-get-async.Po \
@@ -1273,7 +1275,7 @@ SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_full_psync_SOURCES) \
+	$(bin_test_full_psync_with_users_SOURCES) \
 	$(bin_test_generalized_content_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
@@ -1345,7 +1347,7 @@ DIST_SOURCES = $(libndn_c_la_SOURCES) $(libndn_cpp_tools_la_SOURCES) \
 	$(bin_test_encode_decode_data_SOURCES) \
 	$(bin_test_encode_decode_fib_entry_SOURCES) \
 	$(bin_test_encode_decode_interest_SOURCES) \
-	$(bin_test_full_psync_SOURCES) \
+	$(bin_test_full_psync_with_users_SOURCES) \
 	$(bin_test_generalized_content_SOURCES) \
 	$(bin_test_get_async_SOURCES) \
 	$(bin_test_get_async_threadsafe_SOURCES) \
@@ -2384,8 +2386,8 @@ bin_test_encode_decode_fib_entry_SOURCES = examples/fib-entry.pb.cc examples/tes
 bin_test_encode_decode_fib_entry_LDADD = libndn-cpp.la
 bin_test_encode_decode_interest_SOURCES = examples/test-encode-decode-interest.cpp
 bin_test_encode_decode_interest_LDADD = libndn-cpp.la
-bin_test_full_psync_SOURCES = examples/test-full-psync.cpp
-bin_test_full_psync_LDADD = libndn-cpp.la
+bin_test_full_psync_with_users_SOURCES = examples/test-full-psync-with-users.cpp
+bin_test_full_psync_with_users_LDADD = libndn-cpp.la
 bin_test_generalized_content_SOURCES = examples/test-generalized-content.cpp
 bin_test_generalized_content_LDADD = libndn-cpp.la libndn-cpp-tools.la
 bin_test_get_async_SOURCES = examples/test-get-async.cpp
@@ -3603,12 +3605,12 @@ examples/test-encode-decode-interest.$(OBJEXT):  \
 bin/test-encode-decode-interest$(EXEEXT): $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_DEPENDENCIES) $(EXTRA_bin_test_encode_decode_interest_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/test-encode-decode-interest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_encode_decode_interest_OBJECTS) $(bin_test_encode_decode_interest_LDADD) $(LIBS)
-examples/test-full-psync.$(OBJEXT): examples/$(am__dirstamp) \
-	examples/$(DEPDIR)/$(am__dirstamp)
+examples/test-full-psync-with-users.$(OBJEXT):  \
+	examples/$(am__dirstamp) examples/$(DEPDIR)/$(am__dirstamp)
 
-bin/test-full-psync$(EXEEXT): $(bin_test_full_psync_OBJECTS) $(bin_test_full_psync_DEPENDENCIES) $(EXTRA_bin_test_full_psync_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/test-full-psync$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_full_psync_OBJECTS) $(bin_test_full_psync_LDADD) $(LIBS)
+bin/test-full-psync-with-users$(EXEEXT): $(bin_test_full_psync_with_users_OBJECTS) $(bin_test_full_psync_with_users_DEPENDENCIES) $(EXTRA_bin_test_full_psync_with_users_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/test-full-psync-with-users$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_test_full_psync_with_users_OBJECTS) $(bin_test_full_psync_with_users_LDADD) $(LIBS)
 examples/test-generalized-content.$(OBJEXT): examples/$(am__dirstamp) \
 	examples/$(DEPDIR)/$(am__dirstamp)
 
@@ -4409,7 +4411,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-data.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-fib-entry.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-encode-decode-interest.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-full-psync.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-full-psync-with-users.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-generalized-content.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async-threadsafe.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/test-get-async.Po@am__quote@ # am--include-marker
@@ -7521,7 +7523,7 @@ distclean: distclean-recursive
 	-rm -f examples/$(DEPDIR)/test-encode-decode-data.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-fib-entry.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-interest.Po
-	-rm -f examples/$(DEPDIR)/test-full-psync.Po
+	-rm -f examples/$(DEPDIR)/test-full-psync-with-users.Po
 	-rm -f examples/$(DEPDIR)/test-generalized-content.Po
 	-rm -f examples/$(DEPDIR)/test-get-async-threadsafe.Po
 	-rm -f examples/$(DEPDIR)/test-get-async.Po
@@ -7956,7 +7958,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f examples/$(DEPDIR)/test-encode-decode-data.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-fib-entry.Po
 	-rm -f examples/$(DEPDIR)/test-encode-decode-interest.Po
-	-rm -f examples/$(DEPDIR)/test-full-psync.Po
+	-rm -f examples/$(DEPDIR)/test-full-psync-with-users.Po
 	-rm -f examples/$(DEPDIR)/test-generalized-content.Po
 	-rm -f examples/$(DEPDIR)/test-get-async-threadsafe.Po
 	-rm -f examples/$(DEPDIR)/test-get-async.Po
