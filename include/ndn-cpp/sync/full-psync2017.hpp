@@ -26,7 +26,6 @@
 #include "../face.hpp"
 #include "../util/segment-fetcher.hpp"
 #include "../security/key-chain.hpp"
-#include "psync-missing-data-info.hpp"
 #include "psync-producer-base.hpp"
 
 namespace ndn {

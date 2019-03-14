@@ -24,6 +24,7 @@
 #define NDN_FULL_PSYNC2017_WITH_USERS_HPP
 
 #include "full-psync2017.hpp"
+#include "psync-missing-data-info.hpp"
 
 namespace ndn {
 
