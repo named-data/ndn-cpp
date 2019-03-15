@@ -90,7 +90,7 @@ FullPSync2017WithUsers::Impl::publishName(const Name& prefix, int sequenceNo)
 
   int newSequenceNo = sequenceNo >= 0 ? sequenceNo : prefixes_->prefixes_[prefix] + 1;
 
-  _LOG_TRACE("Publish: " << prefix << "/" << newSequenceNo);
+  _LOG_INFO("Publish: " << prefix << "/" << newSequenceNo);
   if (updateSequenceNo(prefix, newSequenceNo))
     // Insert the new sequence number.
     fullPSync_->publishName(Name(prefix).appendNumber(newSequenceNo));

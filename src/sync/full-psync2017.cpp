@@ -66,7 +66,7 @@ FullPSync2017::Impl::initialize()
 void
 FullPSync2017::Impl::publishName(const Name& name)
 {
-  _LOG_TRACE("Publish: " << name);
+  _LOG_INFO("Publish: " << name);
   insertIntoIblt(name);
   satisfyPendingInterests();
 }
