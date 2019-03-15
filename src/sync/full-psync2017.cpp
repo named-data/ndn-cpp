@@ -337,16 +337,18 @@ FullPSync2017::Impl::onSyncData
   const std::vector<Name>& content = state.getContent();
   for (vector<Name>::const_iterator contentName = content.begin();
        contentName != content.end(); ++contentName) {
-    _LOG_DEBUG("Checking whether to add " << *contentName);
-    if (!canAddReceivedName_ || canAddReceivedName_(*contentName)) {
-      _LOG_DEBUG("Adding name " << *contentName);
-      names->push_back(*contentName);
-      insertIntoIblt(*contentName);
+    if (nameToHash_.find(*contentName) == nameToHash_.end()) {
+      _LOG_DEBUG("Checking whether to add " << *contentName);
+      if (!canAddReceivedName_ || canAddReceivedName_(*contentName)) {
+        _LOG_DEBUG("Adding name " << *contentName);
+        names->push_back(*contentName);
+        insertIntoIblt(*contentName);
+      }
+      // We should not call satisfyPendingSyncInterests here because we just
+      // got data and deleted pending interests by calling deletePendingInterests.
+      // But we might have interests which don't match this interest that might
+      // not have been deleted from the pending sync interests.
     }
-    // We should not call satisfyPendingSyncInterests here because we just
-    // got data and deleted pending interests by calling deletePendingInterests.
-    // But we might have interests which don't match this interest that might
-    // not have been deleted from the pending sync interests.
   }
 
   // We just got the data, so send a new sync Interest.
