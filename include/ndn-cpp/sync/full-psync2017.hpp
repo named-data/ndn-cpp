@@ -104,7 +104,8 @@ public:
   }
 
   /**
-   * Publish the Name to inform the others.
+   * Publish the Name to inform the others. However, if the Name has already
+   * been published, do nothing.
    * @param name The Name to publish.
    */
   void
