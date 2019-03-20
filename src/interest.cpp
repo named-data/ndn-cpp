@@ -39,6 +39,7 @@ Interest& Interest::operator=(const Interest& interest)
   setName(interest.name_.get());
   setMinSuffixComponents(interest.minSuffixComponents_);
   setMaxSuffixComponents(interest.maxSuffixComponents_);
+  didSetCanBePrefix_ = interest.didSetCanBePrefix_;
   setKeyLocator(interest.keyLocator_.get());
   setExclude(interest.exclude_.get());
   setChildSelector(interest.childSelector_);
@@ -103,6 +104,7 @@ Interest::set(const InterestLite& interestLite, WireFormat& wireFormat)
   name_.get().set(interestLite.getName());
   setMinSuffixComponents(interestLite.getMinSuffixComponents());
   setMaxSuffixComponents(interestLite.getMaxSuffixComponents());
+  didSetCanBePrefix_ = true;
 
   keyLocator_.get().set(interestLite.getKeyLocator());
 
@@ -387,6 +389,9 @@ Interest::refreshNonce()
   ++changeCount_;
   getNonceChangeCount_ = getChangeCount();
 }
+
+bool Interest::defaultCanBePrefix_ = true;
+bool Interest::didSetDefaultCanBePrefix_ = false;
 
 }
 
