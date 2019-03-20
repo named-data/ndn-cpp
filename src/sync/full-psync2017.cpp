@@ -66,9 +66,10 @@ FullPSync2017::Impl::initialize()
 void
 FullPSync2017::Impl::publishName(const Name& name)
 {
-  if (nameToHash_.find(name) != nameToHash_.end())
-    // Already published.
+  if (nameToHash_.find(name) != nameToHash_.end()) {
+    _LOG_DEBUG("Already published, ignoring: " << name);
     return;
+  }
 
   _LOG_INFO("Publish: " << name);
   insertIntoIblt(name);
