@@ -345,6 +345,7 @@ Node::nfdRegisterPrefix
   controlParameters.setForwardingFlags(flags);
 
   ptr_lib::shared_ptr<Interest> commandInterest(new Interest());
+  commandInterest->setCanBePrefix(true);
   if (isLocal()) {
     commandInterest->setName(Name("/localhost/nfd/rib/register"));
     // The interest is answered by the local host, so set a short timeout.
