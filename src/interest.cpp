@@ -390,7 +390,6 @@ Interest::refreshNonce()
   getNonceChangeCount_ = getChangeCount();
 }
 
-bool Interest::defaultCanBePrefix_ = true;
 bool Interest::didSetDefaultCanBePrefix_ = false;
 
 }

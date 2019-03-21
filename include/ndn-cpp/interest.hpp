@@ -104,7 +104,7 @@ public:
    * @return The default value of the CanBePrefix flag.
    */
   static bool
-  getDefaultCanBePrefix() { return defaultCanBePrefix_; }
+  getDefaultCanBePrefix() { return InterestLite::getDefaultCanBePrefix(); }
 
   /**
    * Set the default value of the CanBePrefix flag used in the Interest
@@ -119,7 +119,7 @@ public:
   static void
   setDefaultCanBePrefix(bool defaultCanBePrefix)
   {
-    defaultCanBePrefix_ = defaultCanBePrefix;
+    InterestLite::setDefaultCanBePrefix(defaultCanBePrefix);
     didSetDefaultCanBePrefix_ = true;
   }
 
@@ -725,7 +725,7 @@ private:
   construct()
   {
     minSuffixComponents_ = -1;
-    maxSuffixComponents_ = (defaultCanBePrefix_ ? -1 : 1);
+    maxSuffixComponents_ = (getDefaultCanBePrefix() ? -1 : 1);
     // didSetCanBePrefix_ is true if the app already called setDefaultCanBePrefix().
     didSetCanBePrefix_ = didSetDefaultCanBePrefix_;
     childSelector_ = -1;
@@ -769,7 +769,6 @@ private:
   uint64_t getDefaultWireEncodingChangeCount_;
   ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;
-  static bool defaultCanBePrefix_;
   static bool didSetDefaultCanBePrefix_;
 };
 
