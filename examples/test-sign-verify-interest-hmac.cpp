@@ -58,6 +58,9 @@ uint8_t TlvInterest[] = {
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     Interest interest;
     interest.wireDecode(TlvInterest, sizeof(TlvInterest));
 

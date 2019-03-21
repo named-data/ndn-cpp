@@ -84,6 +84,9 @@ private:
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     boost::asio::io_service ioService;
     ThreadsafeFace face(ioService, "memoria.ndn.ucla.edu");
 

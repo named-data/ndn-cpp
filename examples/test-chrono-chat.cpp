@@ -716,6 +716,9 @@ stdinReadLine()
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     cout << "Enter your chat username:" << endl;
     string screenName = stdinReadLine();
 

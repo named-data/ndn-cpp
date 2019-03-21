@@ -49,6 +49,9 @@ onError(SegmentFetcher::ErrorCode errorCode, const string& message, bool* enable
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     // The default Face connects to the local NFD.
     Face face;
 
