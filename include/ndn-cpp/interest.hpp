@@ -67,6 +67,7 @@ public:
   Interest(const Interest& interest)
   : name_(interest.name_), minSuffixComponents_(interest.minSuffixComponents_),
     maxSuffixComponents_(interest.maxSuffixComponents_),
+    didSetCanBePrefix_(interest.didSetCanBePrefix_),
     keyLocator_(interest.keyLocator_), exclude_(interest.exclude_),
     childSelector_(interest.childSelector_),
     mustBeFresh_(interest.mustBeFresh_),
@@ -96,6 +97,31 @@ public:
   }
 
   Interest& operator=(const Interest& interest);
+
+  /**
+   * Get the default value of the CanBePrefix flag used in the Interest
+   * constructor. You can change this with setDefaultCanBePrefix().
+   * @return The default value of the CanBePrefix flag.
+   */
+  static bool
+  getDefaultCanBePrefix() { return defaultCanBePrefix_; }
+
+  /**
+   * Set the default value of the CanBePrefix flag used in the Interest
+   * constructor. The default is currently true, but will be changed at a later
+   * date. The application should call this before creating any Interest
+   * (even to set the default again to true), or the application should
+   * explicitly call setCanBePrefix() after creating the Interest. Otherwise
+   * wireEncode will print a warning message. This is to avoid breaking any code
+   * when the library default for CanBePrefix is changed at a later date.
+   * @param defaultCanBePrefix The default value of the CanBePrefix flag.
+   */
+  static void
+  setDefaultCanBePrefix(bool defaultCanBePrefix)
+  {
+    defaultCanBePrefix_ = defaultCanBePrefix;
+    didSetDefaultCanBePrefix_ = true;
+  }
 
   /**
    * Encode this Interest for a particular wire format. If wireFormat is the
@@ -396,6 +422,7 @@ public:
     // Use the closest v0.2 semantics. CanBePrefix is the opposite of exact
     // match where MaxSuffixComponents is 1 (for the implicit digest).
     maxSuffixComponents_ = (canBePrefix ? -1 : 1);
+    didSetCanBePrefix_ = true;
     ++changeCount_;
     return *this;
   }
@@ -685,12 +712,22 @@ public:
     return changeCount_;
   }
 
+  /**
+   * This internal library method gets didSetCanBePrefix_ which is set true when
+   * the application calls setCanBePrefix(), or if the application had already
+   * called setDefaultCanBePrefix() before creating the Interest.
+   */
+  bool
+  getDidSetCanBePrefix_() const { return didSetCanBePrefix_; }
+
 private:
   void
   construct()
   {
     minSuffixComponents_ = -1;
-    maxSuffixComponents_ = -1;
+    maxSuffixComponents_ = (defaultCanBePrefix_ ? -1 : 1);
+    // didSetCanBePrefix_ is true if the app already called setDefaultCanBePrefix().
+    didSetCanBePrefix_ = didSetDefaultCanBePrefix_;
     childSelector_ = -1;
     mustBeFresh_ = true;
     interestLifetimeMilliseconds_ = -1.0;
@@ -713,6 +750,7 @@ private:
   ChangeCounter<Name> name_;
   int minSuffixComponents_; /**< -1 for none */
   int maxSuffixComponents_; /**< -1 for none */
+  bool didSetCanBePrefix_;
   ChangeCounter<KeyLocator> keyLocator_;
   ChangeCounter<Exclude> exclude_;
   int childSelector_;       /**< -1 for none */
@@ -731,6 +769,8 @@ private:
   uint64_t getDefaultWireEncodingChangeCount_;
   ptr_lib::shared_ptr<LpPacket> lpPacket_;
   uint64_t changeCount_;
+  static bool defaultCanBePrefix_;
+  static bool didSetDefaultCanBePrefix_;
 };
 
 }

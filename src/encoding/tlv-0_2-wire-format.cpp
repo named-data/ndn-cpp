@@ -39,6 +39,8 @@ using namespace std;
 
 namespace ndn {
 
+static bool didCanBePrefixWarning_ = false;
+
 Blob
 Tlv0_2WireFormat::encodeName(const Name& name)
 {
@@ -80,6 +82,12 @@ Tlv0_2WireFormat::encodeInterest
   (const Interest& interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset)
 {
+  if (!interest.getDidSetCanBePrefix_() && !didCanBePrefixWarning_) {
+    printf
+      ("WARNING: The default CanBePrefix will change. See Interest::setDefaultCanBePrefix() for details.\n");
+    didCanBePrefixWarning_ = true;
+  }
+
   struct ndn_NameComponent nameComponents[100];
   struct ndn_ExcludeEntry excludeEntries[100];
   struct ndn_NameComponent keyNameComponents[100];

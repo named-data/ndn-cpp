@@ -42,6 +42,9 @@ onPrefixes(const ptr_lib::shared_ptr<vector<Name> >& prefixes);
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     // The default Face will connect using a Unix socket, or to "localhost".
     Face face;
 

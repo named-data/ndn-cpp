@@ -280,6 +280,9 @@ int main(int argc, char** argv)
 {
   // Note: To turn off logging, in log4cxx.properties change rootLogger to FATAL.
 
+  // Silence the warning from Interest wire encode.
+  Interest::setDefaultCanBePrefix(true);
+
   cout << "Enter your user prefix (e.g. /a)" << endl;
   string userPrefixUri = stdinReadLine();
   if (userPrefixUri == "") {

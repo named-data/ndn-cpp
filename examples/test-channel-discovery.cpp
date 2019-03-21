@@ -134,6 +134,9 @@ stdinReadLine()
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     const char* home = getenv("HOME");
     if (!home || *home == '\0')
       // Don't expect this to happen;

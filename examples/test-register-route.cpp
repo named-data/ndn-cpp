@@ -76,6 +76,9 @@ onTimeout
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     Name prefix("/nfd/edu/ucla/remap/test");
     // Route to aleph.ndn.ucla.edu.  Have to use the canonical name with
     // an IP address and port.

@@ -57,6 +57,9 @@ onError
 int main(int argc, char** argv)
 {
   try {
+    // Silence the warning from Interest wire encode.
+    Interest::setDefaultCanBePrefix(true);
+
     KeyChain keyChain;
     Name certificateName = keyChain.getDefaultCertificateName();
     // The default Face will connect using a Unix socket, or to "localhost".
