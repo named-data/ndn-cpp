@@ -222,7 +222,8 @@ public:
   getMaxSuffixComponents() const { return maxSuffixComponents_; }
 
   /**
-   * Get the CanBePrefix flag. If not specified, the default is true.
+   * Get the CanBePrefix flag. If not specified, the default is true, or the
+   * value from setDefaultCanBePrefix().
    * @return The CanBePrefix flag.
    */
   bool
@@ -412,8 +413,7 @@ public:
 
   /**
    * Set the CanBePrefix flag.
-   * @param canBePrefix True if the Interest name can be a prefix. If you do not
-   * set this flag, the default value is true.
+   * @param canBePrefix True if the Interest name can be a prefix.
    * @return This Interest so that you can chain calls to update values.
    */
   Interest&
