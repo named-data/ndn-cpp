@@ -43,25 +43,39 @@ public:
    * Get the value of the "childInherit" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getChildInherit() const { return flags_.getChildInherit(); }
+  bool
+  getChildInherit() const { return flags_.getChildInherit(); }
 
   /**
    * Get the value of the "capture" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getCapture() const { return flags_.getCapture(); }
+  bool
+  getCapture() const { return flags_.getCapture(); }
 
   /**
    * Set the value of the "childInherit" flag
    * @param childInherit true to set the flag, false to clear it.
+   * @return This ForwardingFlags so that you can chain calls to update values.
    */
-  void setChildInherit(bool childInherit) { flags_.setChildInherit(childInherit); }
+  ForwardingFlags&
+  setChildInherit(bool childInherit)
+  {
+    flags_.setChildInherit(childInherit);
+    return *this;
+  }
 
   /**
    * Set the value of the "capture" flag
    * @param capture true to set the flag, false to clear it.
+   * @return This ForwardingFlags so that you can chain calls to update values.
    */
-  void setCapture(bool capture) { flags_.setCapture(capture); }
+  ForwardingFlags&
+  setCapture(bool capture)
+  {
+    flags_.setCapture(capture);
+    return *this;
+  }
 
   /**
    * Set forwardingFlagsLite to have the values in this meta info object.

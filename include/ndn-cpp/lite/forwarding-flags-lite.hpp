@@ -44,25 +44,39 @@ public:
    * Get the value of the "childInherit" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getChildInherit() const { return childInherit != 0; }
+  bool
+  getChildInherit() const { return childInherit != 0; }
 
   /**
    * Get the value of the "capture" flag.
    * @return true if the flag is set, false if it is cleared.
    */
-  bool getCapture() const { return capture != 0; }
+  bool
+  getCapture() const { return capture != 0; }
 
   /**
    * Set the value of the "childInherit" flag
    * @param childInherit true to set the flag, false to clear it.
+   * @return This ForwardingFlagsLite so that you can chain calls to update values.
    */
-  void setChildInherit(bool childInherit) { this->childInherit = childInherit ? 1 : 0; }
+  ForwardingFlagsLite&
+  setChildInherit(bool childInherit)
+  {
+    this->childInherit = childInherit ? 1 : 0;
+    return *this;
+  }
 
   /**
    * Set the value of the "capture" flag
    * @param capture true to set the flag, false to clear it.
+   * @return This ForwardingFlagsLite so that you can chain calls to update values.
    */
-  void setCapture(bool capture) { this->capture = capture ? 1 : 0; }
+  ForwardingFlagsLite&
+  setCapture(bool capture)
+  {
+    this->capture = capture ? 1 : 0;
+    return *this;
+  }
 
   /**
    * Get an integer with the bits set according to the NFD forwarding flags as
@@ -76,8 +90,9 @@ public:
    * Set the flags according to the NFD forwarding flags as used in the
    * ControlParameters of the command interest.
    * @param nfdForwardingFlags An integer with the bits set.
+   * @return This ForwardingFlagsLite so that you can chain calls to update values.
    */
-  void
+  ForwardingFlagsLite&
   setNfdForwardingFlags(int nfdForwardingFlags);
 
   /**

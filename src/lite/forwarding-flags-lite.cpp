@@ -35,10 +35,11 @@ ForwardingFlagsLite::getNfdForwardingFlags() const
   return ndn_ForwardingFlags_getNfdForwardingFlags(this);
 }
 
-void
+ForwardingFlagsLite&
 ForwardingFlagsLite::setNfdForwardingFlags(int nfdForwardingFlags)
 {
   ndn_ForwardingFlags_setNfdForwardingFlags(this, nfdForwardingFlags);
+  return *this;
 }
 
 }
