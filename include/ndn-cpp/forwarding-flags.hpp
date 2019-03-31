@@ -54,6 +54,13 @@ public:
   getCapture() const { return flags_.getCapture(); }
 
   /**
+   * Get the origin value.
+   * @return The origin value, or -1 if not specified.
+   */
+  int
+  getOrigin() const { return flags_.getOrigin(); }
+
+  /**
    * Set the value of the "childInherit" flag
    * @param childInherit true to set the flag, false to clear it.
    * @return This ForwardingFlags so that you can chain calls to update values.
@@ -74,6 +81,18 @@ public:
   setCapture(bool capture)
   {
     flags_.setCapture(capture);
+    return *this;
+  }
+
+  /**
+   * Set the origin value.
+   * @param origin The new origin value, or -1 for not specified.
+   * @return This ForwardingFlags so that you can chain calls to update values.
+   */
+  ForwardingFlags&
+  setOrigin(int origin)
+  {
+    flags_.setOrigin(origin);
     return *this;
   }
 

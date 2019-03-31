@@ -54,6 +54,9 @@ public:
   bool
   getCapture() const { return capture != 0; }
 
+  int
+  getOrigin() const { return origin; }
+
   /**
    * Set the value of the "childInherit" flag
    * @param childInherit true to set the flag, false to clear it.
@@ -79,6 +82,19 @@ public:
   }
 
   /**
+   * Set the origin value.
+   * @param origin The new origin value, or -1 for not specified.
+   * @return This ForwardingFlagsLite so that you can chain calls to update
+   * values.
+   */
+  ForwardingFlagsLite&
+  setOrigin(int origin)
+  {
+    this->origin = origin;
+    return *this;
+  }
+
+  /**
    * Get an integer with the bits set according to the NFD forwarding flags as
    * used in the ControlParameters of the command interest.
    * @return An integer with the bits set.
@@ -89,6 +105,7 @@ public:
   /**
    * Set the flags according to the NFD forwarding flags as used in the
    * ControlParameters of the command interest.
+   * This ignores the origin value.
    * @param nfdForwardingFlags An integer with the bits set.
    * @return This ForwardingFlagsLite so that you can chain calls to update values.
    */
