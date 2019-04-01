@@ -51,6 +51,7 @@ int ndn_ForwardingFlags_getNfdForwardingFlags(const struct ndn_ForwardingFlags *
 /**
  * Set the flags according to the NFD forwarding flags as used in the
  * ControlParameters of the command interest.
+ * This ignores the origin value.
  * @param self A pointer to the ndn_ForwardingFlags struct.
  * @param nfdForwardingFlags An integer with the bits set.
  */

@@ -25,6 +25,7 @@ void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self)
 {
   self->childInherit = 1;
   self->capture = 0;
+  self->origin = -1;
 }
 
 int

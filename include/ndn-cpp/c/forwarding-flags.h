@@ -38,6 +38,7 @@ extern "C" {
 struct ndn_ForwardingFlags {
   int childInherit;
   int capture;
+  int origin; /**< -1 for none. */
 };
 
 #ifdef __cplusplus
