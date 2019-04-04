@@ -255,7 +255,7 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libndn_cpp_tools_la_LIBADD =
+libndn_cpp_tools_la_DEPENDENCIES = libndn-cpp.la
 am_libndn_cpp_tools_la_OBJECTS = $(am__objects_1) $(am__objects_1) \
 	tools/usersync/content-meta-info.pb.lo \
 	tools/usersync/channel-discovery.lo \
@@ -1873,6 +1873,7 @@ AM_LDFLAGS = ${BOOST_LDFLAGS} ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASI
 # "make install" will also install the include headers.
 SUBDIRS = include
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la libndn-cpp-tools.la
+libndn_cpp_tools_la_LIBADD = libndn-cpp.la
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
 

@@ -16,6 +16,7 @@ AM_LDFLAGS=${BOOST_LDFLAGS} ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_
 SUBDIRS = include
 
 lib_LTLIBRARIES = libndn-c.la libndn-cpp.la libndn-cpp-tools.la
+libndn_cpp_tools_la_LIBADD = libndn-cpp.la
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libndn-cpp.pc
