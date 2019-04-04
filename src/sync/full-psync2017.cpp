@@ -26,6 +26,7 @@
 #include "./detail/invertible-bloom-lookup-table.hpp"
 #include "./detail/psync-state.hpp"
 #include "./detail/psync-segment-publisher.hpp"
+#include "./detail/invertible-bloom-lookup-table.hpp"
 #include <ndn-cpp/sync/full-psync2017.hpp>
 
 using namespace std;
