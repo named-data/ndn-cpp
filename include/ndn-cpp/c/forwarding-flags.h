@@ -26,23 +26,12 @@
 #ifndef NDN_FORWARDING_FLAGS_H
 #define NDN_FORWARDING_FLAGS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "registration-options-types.h"
 
 /**
- * An ndn_ForwardingFlags object holds the flags which specify how the forwarding daemon should forward an interest for
- * a registered prefix.  We use a separate ForwardingFlags object to retain future compatibility if the daemon forwarding
- * bits are changed, amended or deprecated.
+ * struct ndn_ForwardingFlags is deprecated. You should change to
+ * struct ndn_RegistrationOptions. If you don't want to change your code yet, you can
+ * #define ndn_ForwardingFlags ndn_RegistrationOptions
  */
-struct ndn_ForwardingFlags {
-  int childInherit;
-  int capture;
-  int origin; /**< -1 for none. */
-};
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -26,37 +26,54 @@
 #ifndef NDN_FORWARDING_FLAGS_IMPL_H
 #define NDN_FORWARDING_FLAGS_IMPL_H
 
-// Normally, this include would have been called forwarding-flags-types.h .
-#include <ndn-cpp/c/forwarding-flags.h>
+#include <ndn-cpp/c/common.h>
+#include "registration-options.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Initialize an ndn_ForwardingFlags struct with the default with "childInherit"
+ * Initialize an ndn_RegistrationOptions struct with the default with "childInherit"
  * set and all other flags cleared.
- * @param self A pointer to the ndn_ForwardingFlags struct.
+ * @param self A pointer to the ndn_RegistrationOptions struct.
+ * @deprecated Use RegistrationOptions.
  */
-void ndn_ForwardingFlags_initialize(struct ndn_ForwardingFlags *self);
+void
+DEPRECATED_IN_NDN_CPP ndn_ForwardingFlags_initialize
+  (struct ndn_RegistrationOptions *self)
+{
+  ndn_RegistrationOptions_initialize(self);
+}
 
 /**
  * Get an integer with the bits set according to the NFD forwarding flags as
  * used in the ControlParameters of the command interest.
- * @param self A pointer to the ndn_ForwardingFlags struct.
+ * @param self A pointer to the ndn_RegistrationOptions struct.
  * @return An integer with the bits set.
+ * @deprecated Use RegistrationOptions.
  */
-int ndn_ForwardingFlags_getNfdForwardingFlags(const struct ndn_ForwardingFlags *self);
+int
+DEPRECATED_IN_NDN_CPP ndn_ForwardingFlags_getNfdForwardingFlags
+  (const struct ndn_RegistrationOptions *self)
+{
+  return ndn_RegistrationOptions_getNfdForwardingFlags(self);
+}
 
 /**
  * Set the flags according to the NFD forwarding flags as used in the
  * ControlParameters of the command interest.
  * This ignores the origin value.
- * @param self A pointer to the ndn_ForwardingFlags struct.
+ * @param self A pointer to the ndn_RegistrationOptions struct.
  * @param nfdForwardingFlags An integer with the bits set.
+ * @deprecated Use RegistrationOptions.
  */
-void ndn_ForwardingFlags_setNfdForwardingFlags
-  (struct ndn_ForwardingFlags *self, int nfdForwardingFlags);
+void
+DEPRECATED_IN_NDN_CPP ndn_ForwardingFlags_setNfdForwardingFlags
+  (struct ndn_RegistrationOptions *self, int nfdForwardingFlags)
+{
+  ndn_RegistrationOptions_setNfdForwardingFlags(self, nfdForwardingFlags);
+}
 
 #ifdef __cplusplus
 }
