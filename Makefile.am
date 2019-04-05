@@ -100,6 +100,7 @@ ndn_cpp_c_headers = \
   include/ndn-cpp/c/key-types.h \
   include/ndn-cpp/c/name-types.h \
   include/ndn-cpp/c/network-nack-types.h \
+  include/ndn-cpp/c/registration-options-types.h \
   include/ndn-cpp/c/encoding/element-reader-types.h \
   include/ndn-cpp/c/encrypt/encrypted-content-types.h \
   include/ndn-cpp/c/encrypt/algo/encrypt-params-types.h \
@@ -136,6 +137,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/meta-info.hpp \
   include/ndn-cpp/name.hpp \
   include/ndn-cpp/network-nack.hpp \
+  include/ndn-cpp/registration-options.hpp \
   include/ndn-cpp/sha256-with-ecdsa-signature.hpp \
   include/ndn-cpp/sha256-with-rsa-signature.hpp \
   include/ndn-cpp/signature.hpp \
@@ -182,6 +184,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/meta-info-lite.hpp \
   include/ndn-cpp/lite/name-lite.hpp \
   include/ndn-cpp/lite/network-nack-lite.hpp \
+  include/ndn-cpp/lite/registration-options-lite.hpp \
   include/ndn-cpp/lite/signature-lite.hpp \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
@@ -313,11 +316,12 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/data.h \
   src/c/delegation-set.h \
   src/c/errors.c src/c/errors.h \
-  src/c/forwarding-flags.c src/c/forwarding-flags-impl.h \
+  src/c/forwarding-flags-impl.h \
   src/c/interest_c.c src/c/interest.h \
   src/c/key-locator.h \
   src/c/name_c.c src/c/name.h \
   src/c/network-nack_c.c src/c/network-nack.h \
+  src/c/registration-options.c src/c/registration-options.h \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_2-wire-format_c.c src/c/encoding/tlv-0_2-wire-format.h \
@@ -425,12 +429,12 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/data-lite.cpp \
   src/lite/delegation-set-lite.cpp \
   src/lite/exclude-lite.cpp \
-  src/lite/forwarding-flags-lite.cpp \
   src/lite/interest-lite.cpp \
   src/lite/key-locator-lite.cpp \
   src/lite/meta-info-lite.cpp \
   src/lite/name-lite.cpp \
   src/lite/network-nack-lite.cpp \
+  src/lite/registration-options-lite.cpp \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
