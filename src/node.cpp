@@ -123,13 +123,14 @@ Node::registerPrefix
    const ptr_lib::shared_ptr<const Name>& prefixCopy,
    const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed,
-   const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+   const OnRegisterSuccess& onRegisterSuccess, 
+   const RegistrationOptions& registrationOptions,
    WireFormat& wireFormat, KeyChain& commandKeyChain,
    const Name& commandCertificateName, Face* face)
 {
   nfdRegisterPrefix
     (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
-     onRegisterSuccess, flags, commandKeyChain, commandCertificateName,
+     onRegisterSuccess, registrationOptions, commandKeyChain, commandCertificateName,
      wireFormat, face);
 }
 
@@ -328,7 +329,8 @@ void
 Node::nfdRegisterPrefix
   (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
    const OnInterestCallback& onInterest, const OnRegisterFailed& onRegisterFailed,
-   const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+   const OnRegisterSuccess& onRegisterSuccess, 
+   const RegistrationOptions& registrationOptions,
    KeyChain& commandKeyChain, const Name& commandCertificateName,
    WireFormat& wireFormat, Face* face)
 {
@@ -342,9 +344,9 @@ Node::nfdRegisterPrefix
 
   ControlParameters controlParameters;
   controlParameters.setName(*prefix);
-  controlParameters.setForwardingFlags(flags);
-  if (flags.getOrigin() >= 0) {
-    controlParameters.setOrigin(flags.getOrigin());
+  controlParameters.setForwardingFlags(registrationOptions);
+  if (registrationOptions.getOrigin() >= 0) {
+    controlParameters.setOrigin(registrationOptions.getOrigin());
     // Remove the origin value from the flags since it is not used to encode.
     controlParameters.getForwardingFlags().setOrigin(-1);
   }

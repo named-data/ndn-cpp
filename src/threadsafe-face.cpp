@@ -125,7 +125,7 @@ ThreadsafeFace::registerPrefix
   (const Name& prefix, const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed,
    const OnRegisterSuccess& onRegisterSuccess,
-   const ForwardingFlags& flags, WireFormat& wireFormat)
+   const RegistrationOptions& registrationOptions, WireFormat& wireFormat)
 {
   // Node.lastEntryId_ uses atomic_uint64_t, so this call is thread safe.
   uint64_t registeredPrefixId = node_->getNextEntryId();
@@ -135,7 +135,7 @@ ThreadsafeFace::registerPrefix
     (boost::bind
      (&Node::registerPrefix, node_, registeredPrefixId,
       ptr_lib::make_shared<const Name>(prefix), onInterest, onRegisterFailed,
-      onRegisterSuccess, boost::ref(flags), boost::ref(wireFormat), this));
+      onRegisterSuccess, boost::ref(registrationOptions), boost::ref(wireFormat), this));
 
   return registeredPrefixId;
 }

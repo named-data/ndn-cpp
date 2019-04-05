@@ -25,7 +25,7 @@
 #include "interest.hpp"
 #include "data.hpp"
 #include "network-nack.hpp"
-#include "forwarding-flags.hpp"
+#include "registration-options.hpp"
 #include "encoding/wire-format.hpp"
 #include "interest-filter.hpp"
 #include "transport/transport.hpp"
@@ -449,9 +449,9 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param flags (optional) The flags for finer control of which interests are
-   * forward to the application.  If omitted, use the default flags defined by
-   * the default ForwardingFlags constructor.
+   * @param registrationOptions (optional) The registration options for finer
+   * control of how to forward an interest and other options. If omitted, use
+   * the default RegistrationOptions constructor.
    * @param wireFormat (optional) A WireFormat object used to encode the message.
    * If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
@@ -461,7 +461,7 @@ public:
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
      const OnRegisterSuccess& onRegisterSuccess,
-     const ForwardingFlags& flags = ForwardingFlags(),
+     const RegistrationOptions& registrationOptions = RegistrationOptions(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
@@ -484,8 +484,8 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param flags The flags for finer control of which interests are forward to the application.  If omitted, use
-   * the default flags defined by the default ForwardingFlags constructor.
+   * @param registrationOptions The registration options for finer control of
+   * how to forward an interest and other options.
    * @param wireFormat (optional) A WireFormat object used to encode the message.
    * If omitted, use WireFormat getDefaultWireFormat().
    * @return The registered prefix ID which can be used with removeRegisteredPrefix.
@@ -494,11 +494,11 @@ public:
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags,
+     const RegistrationOptions& registrationOptions,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     return registerPrefix
-      (prefix, onInterest, onRegisterFailed, OnRegisterSuccess(), flags,
+      (prefix, onInterest, onRegisterFailed, OnRegisterSuccess(), registrationOptions,
        wireFormat);
   }
 
@@ -531,7 +531,7 @@ public:
   {
     return registerPrefix
       (prefix, onInterest, onRegisterFailed, OnRegisterSuccess(),
-       ForwardingFlags(), *WireFormat::getDefaultWireFormat());
+       RegistrationOptions(), *WireFormat::getDefaultWireFormat());
   }
 
   /**

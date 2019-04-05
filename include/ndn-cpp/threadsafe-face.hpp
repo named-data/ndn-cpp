@@ -132,21 +132,21 @@ public:
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
      const OnRegisterSuccess& onRegisterSuccess,
-     const ForwardingFlags& flags = ForwardingFlags(),
+     const RegistrationOptions& registrationOptions = RegistrationOptions(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   uint64_t
   registerPrefix
     (const Name& prefix, const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
-     const ForwardingFlags& flags,
+     const RegistrationOptions& registrationOptions,
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     // This is needed, otherwise C++ will try to use the signature with
     // const OnRegisterSuccess&. Just call the Face method with the same
     // signature as this.
     return Face::registerPrefix
-      (prefix, onInterest, onRegisterFailed, flags, wireFormat);
+      (prefix, onInterest, onRegisterFailed, registrationOptions, wireFormat);
   }
 
   uint64_t
