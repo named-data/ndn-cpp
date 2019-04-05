@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2015-2019 Regents of the University of California.
+ * Copyright (C) 2019 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,27 +19,28 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-#include "../c/forwarding-flags-impl.h"
-#include <ndn-cpp/lite/forwarding-flags-lite.hpp>
+#include "../c/registration-options.h"
+#include <ndn-cpp/lite/registration-options-lite.hpp>
 
 namespace ndn {
 
-ForwardingFlagsLite::ForwardingFlagsLite()
+RegistrationOptionsLite::RegistrationOptionsLite()
 {
-  ndn_ForwardingFlags_initialize(this);
+  ndn_RegistrationOptions_initialize(this);
 }
 
 int
-ForwardingFlagsLite::getNfdForwardingFlags() const
+RegistrationOptionsLite::getNfdForwardingFlags() const
 {
-  return ndn_ForwardingFlags_getNfdForwardingFlags(this);
+  return ndn_RegistrationOptions_getNfdForwardingFlags(this);
 }
 
-ForwardingFlagsLite&
-ForwardingFlagsLite::setNfdForwardingFlags(int nfdForwardingFlags)
+RegistrationOptionsLite&
+RegistrationOptionsLite::setNfdForwardingFlags(int nfdForwardingFlags)
 {
-  ndn_ForwardingFlags_setNfdForwardingFlags(this, nfdForwardingFlags);
+  ndn_RegistrationOptions_setNfdForwardingFlags(this, nfdForwardingFlags);
   return *this;
 }
+
 
 }

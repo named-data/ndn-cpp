@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013-2019 Regents of the University of California.
+ * Copyright (C) 2019 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,34 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
-/* Note: This file should be named forward-flags-types.h (like data-types.h) but
- * we leave it as forwarding-flags.h for backwards compatibility with the
- * include directory of old installations.
- */
+#include "control-parameters.h"
+#include "registration-options.h"
 
-#ifndef NDN_FORWARDING_FLAGS_H
-#define NDN_FORWARDING_FLAGS_H
+void ndn_RegistrationOptions_initialize(struct ndn_RegistrationOptions *self)
+{
+  self->childInherit = 1;
+  self->capture = 0;
+  self->origin = -1;
+}
 
-#include "registration-options-types.h"
+int
+ndn_RegistrationOptions_getNfdForwardingFlags(const struct ndn_RegistrationOptions *self)
+{
+  int result = 0;
 
-/**
- * struct ndn_ForwardingFlags is deprecated. You should change to
- * struct ndn_RegistrationOptions. If you don't want to change your code yet, you can
- * #define ndn_ForwardingFlags ndn_RegistrationOptions
- */
+  if (self->childInherit)
+    result |= ndn_NfdForwardingFlags_CHILD_INHERIT;
+  if (self->capture)
+    result |= ndn_NfdForwardingFlags_CAPTURE;
 
-#endif
+  return result;
+}
+
+void
+ndn_RegistrationOptions_setNfdForwardingFlags
+  (struct ndn_RegistrationOptions *self, int nfdForwardingFlags)
+{
+  self->childInherit = (nfdForwardingFlags & ndn_NfdForwardingFlags_CHILD_INHERIT) ? 1 : 0;
+  self->capture = (nfdForwardingFlags & ndn_NfdForwardingFlags_CAPTURE) ? 1 : 0;
+}
+

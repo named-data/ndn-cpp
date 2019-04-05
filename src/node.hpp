@@ -30,7 +30,6 @@
 #include <ndn-cpp/common.hpp>
 #include <ndn-cpp/interest.hpp>
 #include <ndn-cpp/data.hpp>
-#include <ndn-cpp/forwarding-flags.hpp>
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/face.hpp>
 #include "util/command-interest-generator.hpp"
@@ -154,7 +153,8 @@ public:
    * onRegisterSuccess(prefix, registeredPrefixId) where  prefix and
    * registeredPrefixId are the values given to registerPrefix. If
    * onRegisterSuccess is an empty OnRegisterSuccess(), this does not use it.
-   * @param flags The flags for finer control of which interests are forwarded to the application.
+   * @param registrationOptions The registration options for finer control of
+   * how to forward an interest and other options.
    * @param wireFormat A WireFormat object used to encode the message.
    * @param commandKeyChain The KeyChain object for signing interests.
    * @param commandCertificateName The certificate name for signing interests.
@@ -167,7 +167,8 @@ public:
      const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
-     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+     const OnRegisterSuccess& onRegisterSuccess, 
+     const RegistrationOptions& registrationOptions,
      WireFormat& wireFormat, KeyChain& commandKeyChain,
      const Name& commandCertificateName, Face* face);
 
@@ -181,12 +182,14 @@ public:
      const ptr_lib::shared_ptr<const Name>& prefixCopy,
      const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
-     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+     const OnRegisterSuccess& onRegisterSuccess, 
+     const RegistrationOptions& registrationOptions,
      WireFormat& wireFormat, Face* face)
   {
     registerPrefix
       (registeredPrefixId, prefixCopy, onInterest, onRegisterFailed,
-       onRegisterSuccess, flags, wireFormat, *face->getCommandKeyChain(),
+       onRegisterSuccess, registrationOptions, wireFormat,
+       *face->getCommandKeyChain(),
        face->getCommandCertificateName(), face);
   }
 
@@ -452,7 +455,7 @@ private:
    * @param onInterest
    * @param onRegisterFailed
    * @param onRegisterSuccess
-   * @param flags
+   * @param registrationOptions
    * @param commandKeyChain
    * @param commandCertificateName
    * @param face
@@ -462,7 +465,8 @@ private:
     (uint64_t registeredPrefixId, const ptr_lib::shared_ptr<const Name>& prefix,
      const OnInterestCallback& onInterest,
      const OnRegisterFailed& onRegisterFailed,
-     const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+     const OnRegisterSuccess& onRegisterSuccess, 
+     const RegistrationOptions& registrationOptions,
      KeyChain& commandKeyChain, const Name& commandCertificateName,
      WireFormat& wireFormat, Face* face);
 

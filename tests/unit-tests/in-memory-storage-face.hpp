@@ -52,7 +52,7 @@ public:
     (const ndn::Name& prefix, const ndn::OnInterestCallback& onInterest,
      const ndn::OnRegisterFailed& onRegisterFailed,
      const ndn::OnRegisterSuccess& onRegisterSuccess,
-     const ndn::ForwardingFlags& flags = ndn::ForwardingFlags(),
+     const ndn::RegistrationOptions& registrationOptions = ndn::RegistrationOptions(),
      ndn::WireFormat& wireFormat = *ndn::WireFormat::getDefaultWireFormat());
 
   virtual void

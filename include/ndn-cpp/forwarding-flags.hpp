@@ -22,103 +22,20 @@
 #ifndef NDN_FORWARDING_FLAGS_HPP
 #define NDN_FORWARDING_FLAGS_HPP
 
-#include "lite/forwarding-flags-lite.hpp"
+#include "registration-options.hpp"
 
 namespace ndn {
 
 /**
- * A ForwardingFlags object holds the flags which specify how the forwarding
- * daemon should forward an interest for a registered prefix.  We use a separate
- * ForwardingFlags object to retain future compatibility if the daemon
- * forwarding bits are changed, amended or deprecated.
+ * @deprecated Use RegistrationOptions.
  */
-class ForwardingFlags {
+class ForwardingFlags : public RegistrationOptions {
 public:
   /**
    * Create a new ForwardingFlags with "childInherit" set and all other flags cleared.
+   * @deprecated Use RegistrationOptions.
    */
-  ForwardingFlags() {}
-
-  /**
-   * Get the value of the "childInherit" flag.
-   * @return true if the flag is set, false if it is cleared.
-   */
-  bool
-  getChildInherit() const { return flags_.getChildInherit(); }
-
-  /**
-   * Get the value of the "capture" flag.
-   * @return true if the flag is set, false if it is cleared.
-   */
-  bool
-  getCapture() const { return flags_.getCapture(); }
-
-  /**
-   * Get the origin value.
-   * @return The origin value, or -1 if not specified.
-   */
-  int
-  getOrigin() const { return flags_.getOrigin(); }
-
-  /**
-   * Set the value of the "childInherit" flag
-   * @param childInherit true to set the flag, false to clear it.
-   * @return This ForwardingFlags so that you can chain calls to update values.
-   */
-  ForwardingFlags&
-  setChildInherit(bool childInherit)
-  {
-    flags_.setChildInherit(childInherit);
-    return *this;
-  }
-
-  /**
-   * Set the value of the "capture" flag
-   * @param capture true to set the flag, false to clear it.
-   * @return This ForwardingFlags so that you can chain calls to update values.
-   */
-  ForwardingFlags&
-  setCapture(bool capture)
-  {
-    flags_.setCapture(capture);
-    return *this;
-  }
-
-  /**
-   * Set the origin value.
-   * @param origin The new origin value, or -1 for not specified.
-   * @return This ForwardingFlags so that you can chain calls to update values.
-   */
-  ForwardingFlags&
-  setOrigin(int origin)
-  {
-    flags_.setOrigin(origin);
-    return *this;
-  }
-
-  /**
-   * Set forwardingFlagsLite to have the values in this meta info object.
-   * @param forwardingFlagsLite The ForwardingFlagsLite object which receives
-   * the values.
-   */
-  void
-  get(ForwardingFlagsLite& forwardingFlagsLite) const
-  {
-    forwardingFlagsLite = flags_;
-  }
-
-  /**
-   * Set the values in this ForwardingFlags by copying from forwardingFlagsLite.
-   * @param forwardingFlagsLite A ForwardingFlagsLite object.
-   */
-  void
-  set(const ForwardingFlagsLite& forwardingFlagsLite)
-  {
-    flags_ = forwardingFlagsLite;
-  }
-
-private:
-  ForwardingFlagsLite flags_;
+  DEPRECATED_IN_NDN_CPP ForwardingFlags() {}
 };
 
 }

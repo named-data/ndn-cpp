@@ -150,7 +150,8 @@ uint64_t
 Face::registerPrefix
   (const Name& prefix, const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed,
-   const OnRegisterSuccess& onRegisterSuccess, const ForwardingFlags& flags,
+   const OnRegisterSuccess& onRegisterSuccess, 
+   const RegistrationOptions& registrationOptions,
    WireFormat& wireFormat)
 {
   uint64_t registeredPrefixId = node_->getNextEntryId();
@@ -158,8 +159,8 @@ Face::registerPrefix
   // This copies the prefix object as required by Node.registerPrefix.
   node_->registerPrefix
     (registeredPrefixId, ptr_lib::make_shared<const Name>(prefix), onInterest,
-     onRegisterFailed, onRegisterSuccess, flags, wireFormat, *commandKeyChain_,
-     commandCertificateName_, this);
+     onRegisterFailed, onRegisterSuccess, registrationOptions, wireFormat,
+     *commandKeyChain_, commandCertificateName_, this);
 
   return registeredPrefixId;
 }

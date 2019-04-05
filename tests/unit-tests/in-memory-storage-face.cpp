@@ -48,7 +48,7 @@ InMemoryStorageFace::registerPrefix
   (const Name& prefix, const OnInterestCallback& onInterest,
    const OnRegisterFailed& onRegisterFailed,
    const OnRegisterSuccess& onRegisterSuccess,
-   const ForwardingFlags& flags, WireFormat& wireFormat)
+   const RegistrationOptions& registrationOptions, WireFormat& wireFormat)
 {
   interestFilterTable_.setInterestFilter
     (0, ptr_lib::make_shared<InterestFilter>(prefix), onInterest, this);
