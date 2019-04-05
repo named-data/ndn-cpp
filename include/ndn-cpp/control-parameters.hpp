@@ -23,7 +23,7 @@
 #define NDN_CONTROL_PARAMETERS_HPP
 
 #include "name.hpp"
-#include "forwarding-flags.hpp"
+#include "registration-options.hpp"
 #include "encoding/wire-format.hpp"
 #include "lite/control-parameters-lite.hpp"
 
@@ -116,10 +116,10 @@ public:
   int
   getCost() const { return cost_; }
 
-  ForwardingFlags&
+  RegistrationOptions&
   getForwardingFlags() { return flags_; }
 
-  const ForwardingFlags&
+  const RegistrationOptions&
   getForwardingFlags() const { return flags_; }
 
   Name&
@@ -215,13 +215,13 @@ public:
   }
 
   /**
-   * Set the ForwardingFlags object to a copy of forwardingFlags. You can use
-   * getForwardingFlags() and change the existing ForwardingFlags object.
-   * @param forwardingFlags The new cost value, or null for not specified.
+   * Set the RegistrationOptions object to a copy of flags. You can use
+   * getForwardingFlags() and change the existing RegistrationOptions object.
+   * @param flags The new cost value, or null for not specified.
    * @return This ControlParameters so that you can chain calls to update values.
    */
   ControlParameters&
-  setForwardingFlags(const ForwardingFlags& flags)
+  setForwardingFlags(const RegistrationOptions& flags)
   {
     flags_ = flags;
     return *this;
@@ -260,7 +260,7 @@ private:
   int localControlFeature_;       /**< -1 for none. */
   int origin_;                    /**< -1 for none. */
   int cost_;                      /**< -1 for none. */
-  ForwardingFlags flags_;
+  RegistrationOptions flags_;
   Name strategy_;                 /**< empty for none. */
   Milliseconds expirationPeriod_; /**< -1 for none. */
 };

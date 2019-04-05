@@ -52,13 +52,13 @@ MemoryContentCache::Impl::registerPrefix
   (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
    const OnRegisterSuccess& onRegisterSuccess,
    const OnInterestCallback& onDataNotFound,
-   const ForwardingFlags& flags, WireFormat& wireFormat)
+   const RegistrationOptions& registrationOptions, WireFormat& wireFormat)
 {
   onDataNotFoundForPrefix_[prefix.toUri()] = onDataNotFound;
   uint64_t registeredPrefixId = face_->registerPrefix
     (prefix,
      bind(&MemoryContentCache::Impl::onInterest, shared_from_this(), _1, _2, _3, _4, _5),
-     onRegisterFailed, onRegisterSuccess, flags, wireFormat);
+     onRegisterFailed, onRegisterSuccess, registrationOptions, wireFormat);
   // Remember the registeredPrefixId so unregisterAll can remove it.
   registeredPrefixIdList_.push_back(registeredPrefixId);
 }

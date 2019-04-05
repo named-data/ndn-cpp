@@ -184,18 +184,18 @@ public:
    * NOTE: The library will log any exceptions thrown by this callback, but for
    * better error handling the callback should catch and properly handle any
    * exceptions.
-   * @param flags (optional) See Face::registerPrefix.
+   * @param registrationOptions (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
   void
   registerPrefix
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
      const OnInterestCallback& onDataNotFound = OnInterestCallback(),
-     const ForwardingFlags& flags = ForwardingFlags(),
+     const RegistrationOptions& registrationOptions = RegistrationOptions(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     registerPrefix
-      (prefix, onRegisterFailed, OnRegisterSuccess(), onDataNotFound, flags,
+      (prefix, onRegisterFailed, OnRegisterSuccess(), onDataNotFound, registrationOptions,
        wireFormat);
   }
 
@@ -224,7 +224,7 @@ public:
    * getStorePendingInterest() for onDataNotFound. If onDataNotFound is an empty
    * OnInterestCallback(), this does not use it. This copies the function object, so you
    * may need to use func_lib::ref() as appropriate.
-   * @param flags (optional) See Face::registerPrefix.
+   * @param registrationOptions (optional) See Face::registerPrefix.
    * @param wireFormat (optional) See Face::registerPrefix.
    */
   void
@@ -232,11 +232,11 @@ public:
     (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
      const OnRegisterSuccess& onRegisterSuccess,
      const OnInterestCallback& onDataNotFound = OnInterestCallback(),
-     const ForwardingFlags& flags = ForwardingFlags(),
+     const RegistrationOptions& registrationOptions = RegistrationOptions(),
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat())
   {
     impl_->registerPrefix
-      (prefix, onRegisterFailed, onRegisterSuccess, onDataNotFound, flags,
+      (prefix, onRegisterFailed, onRegisterSuccess, onDataNotFound, registrationOptions,
        wireFormat);
   }
 
@@ -462,7 +462,7 @@ private:
       (const Name& prefix, const OnRegisterFailed& onRegisterFailed,
        const OnRegisterSuccess& onRegisterSuccess,
        const OnInterestCallback& onDataNotFound,
-       const ForwardingFlags& flags, WireFormat& wireFormat);
+       const RegistrationOptions& registrationOptions, WireFormat& wireFormat);
 
     void
     setInterestFilter
