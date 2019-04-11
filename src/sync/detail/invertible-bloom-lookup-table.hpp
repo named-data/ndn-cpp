@@ -89,10 +89,8 @@ public:
    * This is called on a difference of two IBLTs: ownIBLT - receivedIBLT.
    * Entries listed in positive are in ownIBLT but not in receivedIBLT.
    * Entries listed in negative are in receivedIBLT but not in ownIBLT.
-   * @param positive Add positive entries to this set. This does not first clear
-   * the set.
-   * @param negative Add negative entries to this set. This does not first clear
-   * the set.
+   * @param positive Add positive entries to this set. This first clears the set.
+   * @param negative Add negative entries to this set. This first clears the set.
    * @return True if decoding is completed successfully.
    */
   bool

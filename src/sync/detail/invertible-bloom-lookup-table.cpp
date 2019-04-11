@@ -93,6 +93,9 @@ bool
 InvertibleBloomLookupTable::listEntries
   (set<uint32_t>& positive, set<uint32_t>& negative) const
 {
+  positive.clear();
+  negative.clear();
+
   // Make a deep copy.
   InvertibleBloomLookupTable peeled(*this);
 
