@@ -49,7 +49,7 @@ TEST_F(TestInvertibleBloomLookupTable, Equal)
   Name ibfName1("/sync"), ibfName2("/sync");
   ibfName1.append(iblt1.encode());
   ibfName2.append(iblt2.encode());
-  ASSERT_TRUE(iblt1.equals(iblt2));
+  ASSERT_TRUE(ibfName1.equals(ibfName2));
 }
 
 TEST_F(TestInvertibleBloomLookupTable, NameAppendAndExtract)
