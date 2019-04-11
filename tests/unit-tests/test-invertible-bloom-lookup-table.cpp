@@ -68,9 +68,9 @@ TEST_F(TestInvertibleBloomLookupTable, NameAppendAndExtract)
   };
 
   Name ibltName("sync");
-  Blob encodedIBLT = iblt.encode();
-  ASSERT_TRUE(encodedIBLT.equals(Blob(expectedEncoding, sizeof(expectedEncoding))));
-  ibltName.append(encodedIBLT);
+  Blob encodedIblt = iblt.encode();
+  ASSERT_TRUE(encodedIblt.equals(Blob(expectedEncoding, sizeof(expectedEncoding))));
+  ibltName.append(encodedIblt);
 
   InvertibleBloomLookupTable received(size);
   received.initialize(ibltName.get(-1).getValue());
