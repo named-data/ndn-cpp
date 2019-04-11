@@ -70,8 +70,8 @@ public:
   InvertibleBloomLookupTable(size_t expectedNEntries);
 
   /**
-   * Populate the hash table using the encoded vector representation of the IBLT.
-   * @param encoding the encoded representation of the IBLT.
+   * Populate the hash table using the encoded array representation of the IBLT.
+   * @param encoding The encoded representation of the IBLT.
    * @throws runtime_error if the size of the decoded values is not compatible
    * with this IBLT.
    */
@@ -108,10 +108,10 @@ public:
 
   /**
    * Encode this IBLT to a Blob. This encodes this hash table from a uint32_t
-   * vector to a uint8_t vector. We create a uin8_t vector 12 times the size of
-   * the uint32_t vector. We put the first count in the first 4 cells, keySum in
+   * array to a uint8_t array. We create a uin8_t array 12 times the size of
+   * the uint32_t array. We put the first count in the first 4 cells, keySum in
    * the next 4, and keyCheck in the next 4. We repeat for all the other cells
-   * of the hash table. Then we append this uint8_t vector to the name.
+   * of the hash table. Then we append this uint8_t array to the name.
    * @return The encoded Blob.
    */
   Blob
@@ -162,10 +162,10 @@ private:
   update(int plusOrMinus, uint32_t key);
 
   /**
-   * Decode the IBLT from the Blob. This converts the Blob into a uint8_t vector
-   * which is then decoded to a uint32_t vector.
+   * Decode the IBLT from the Blob. This converts the Blob into a uint8_t array
+   * which is then decoded to a uint32_t array.
    * @param encoding The encoded IBLT.
-   * @return A uint32_t vector representing the hash table of the IBLT.
+   * @return A uint32_t array representing the hash table of the IBLT.
    */
   static std::vector<uint32_t>
   decode(const Blob& encoding);
