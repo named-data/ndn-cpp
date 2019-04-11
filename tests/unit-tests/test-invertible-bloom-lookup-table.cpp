@@ -115,19 +115,19 @@ TEST_F(TestInvertibleBloomLookupTable, HigherSequence)
   // sequence number. This is relevant to the full sync case.
   size_t size = 10;
 
-  InvertibleBloomLookupTable ownIBLT(size);
-  InvertibleBloomLookupTable receivedIBLT(size);
+  InvertibleBloomLookupTable ownIblt(size);
+  InvertibleBloomLookupTable receivedIblt(size);
 
   string prefix = Name("/test/memphis").appendNumber(3).toUri();
   uint32_t hash1 = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
-  ownIBLT.insert(hash1);
+  ownIblt.insert(hash1);
 
   string prefix2 = Name("/test/memphis").appendNumber(4).toUri();
   uint32_t hash2 = CryptoLite::murmurHash3(11, prefix2.data(), prefix2.size());
-  receivedIBLT.insert(hash2);
+  receivedIblt.insert(hash2);
 
   ptr_lib::shared_ptr<InvertibleBloomLookupTable> diff =
-    ownIBLT.difference(receivedIBLT);
+    ownIblt.difference(receivedIblt);
   set<uint32_t> positive;
   set<uint32_t> negative;
 
@@ -143,12 +143,12 @@ TEST_F(TestInvertibleBloomLookupTable, Difference)
 {
   size_t size = 10;
 
-  InvertibleBloomLookupTable ownIBLT(size);
+  InvertibleBloomLookupTable ownIblt(size);
 
-  InvertibleBloomLookupTable receivedIBLT(ownIBLT);
+  InvertibleBloomLookupTable receivedIblt(ownIblt);
 
   ptr_lib::shared_ptr<InvertibleBloomLookupTable> diff =
-    ownIBLT.difference(receivedIBLT);
+    ownIblt.difference(receivedIblt);
 
   // Non-empty positive means we have some elements that the other doesn't.
   set<uint32_t> positive;
@@ -160,46 +160,46 @@ TEST_F(TestInvertibleBloomLookupTable, Difference)
 
   string prefix = Name("/test/memphis").appendNumber(1).toUri();
   uint32_t newHash = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
-  ownIBLT.insert(newHash);
+  ownIblt.insert(newHash);
 
-  diff = ownIBLT.difference(receivedIBLT);
+  diff = ownIblt.difference(receivedIblt);
   ASSERT_TRUE(diff->listEntries(positive, negative));
   ASSERT_EQ(1, positive.size());
   ASSERT_EQ(0, negative.size());
 
   prefix = Name("/test/csu").appendNumber(1).toUri();
   newHash = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
-  receivedIBLT.insert(newHash);
+  receivedIblt.insert(newHash);
 
-  diff = ownIBLT.difference(receivedIBLT);
+  diff = ownIblt.difference(receivedIblt);
   ASSERT_TRUE(diff->listEntries(positive, negative));
   ASSERT_EQ(1, positive.size());
   ASSERT_EQ(1, negative.size());
 }
 
-TEST_F(TestInvertibleBloomLookupTable, DifferenceBwOversizedIBLTs)
+TEST_F(TestInvertibleBloomLookupTable, DifferenceBwOversizedIblts)
 {
   // Insert 50 elements into an IBLT of size 10. Then check that we can still
   // list the difference even though we can't list the IBLT itself.
 
   size_t size = 10;
 
-  InvertibleBloomLookupTable ownIBLT(size);
+  InvertibleBloomLookupTable ownIblt(size);
 
   for (int i = 0; i < 50; ++i) {
     string prefix = Name("/test/memphis" + std::to_string(i)).appendNumber(1).toUri();
     uint32_t newHash = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
-    ownIBLT.insert(newHash);
+    ownIblt.insert(newHash);
   }
 
-  InvertibleBloomLookupTable receivedIBLT(ownIBLT);
+  InvertibleBloomLookupTable receivedIblt(ownIblt);
 
   string prefix = Name("/test/ucla").appendNumber(1).toUri();
   uint32_t newHash = CryptoLite::murmurHash3(11, prefix.data(), prefix.size());
-  ownIBLT.insert(newHash);
+  ownIblt.insert(newHash);
 
   ptr_lib::shared_ptr<InvertibleBloomLookupTable> diff =
-    ownIBLT.difference(receivedIBLT);
+    ownIblt.difference(receivedIblt);
 
   set<uint32_t> positive;
   set<uint32_t> negative;
@@ -208,8 +208,8 @@ TEST_F(TestInvertibleBloomLookupTable, DifferenceBwOversizedIBLTs)
   ASSERT_EQ(newHash, *positive.begin());
   ASSERT_EQ(0, negative.size());
 
-  ASSERT_TRUE(!ownIBLT.listEntries(positive, negative));
-  ASSERT_TRUE(!receivedIBLT.listEntries(positive, negative));
+  ASSERT_TRUE(!ownIblt.listEntries(positive, negative));
+  ASSERT_TRUE(!receivedIblt.listEntries(positive, negative));
 }
 
 int
