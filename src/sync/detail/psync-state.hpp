@@ -61,14 +61,14 @@ public:
 
   /**
    * Append the name to the content.
-   * @param name The Name to add.
+   * @param name The Name to add, which is copied.
    */
   void
   addContent(const Name& name) { content_.push_back(name); }
 
   /**
    * Get the sequence of Names in the content.
-   * @return The vector of Names.
+   * @return The array of Names.
    */
   const std::vector<Name>&
   getContent() const { return content_; }
@@ -105,7 +105,7 @@ public:
   }
 
   /**
-   * Get the string representation of this SigningInfo.
+   * Get the string representation of this PSyncState.
    * @return The string representation.
    */
   std::string
