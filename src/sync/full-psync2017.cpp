@@ -58,7 +58,7 @@ FullPSync2017::Impl::initialize()
      bind(&FullPSync2017::Impl::onSyncInterest,
      static_pointer_cast<FullPSync2017::Impl>(shared_from_this()),
      _1, _2, _3, _4, _5),
-     bind(&FullPSync2017::Impl::onRegisterFailed, shared_from_this(), _1));
+     &PSyncProducerBase::onRegisterFailed);
 
   // TODO: Should we do this after the registerPrefix onSuccess callback?
   sendSyncInterest();

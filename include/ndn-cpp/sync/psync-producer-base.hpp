@@ -67,7 +67,7 @@ protected:
   /**
    * This is called when registerPrefix fails to log an error message.
    */
-  void
+  static void
   onRegisterFailed(const ptr_lib::shared_ptr<const Name>& prefix);
 
   ptr_lib::shared_ptr<InvertibleBloomLookupTable> iblt_;
