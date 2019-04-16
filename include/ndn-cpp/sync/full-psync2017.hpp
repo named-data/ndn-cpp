@@ -216,11 +216,11 @@ private:
      * Process the sync data after the content is assembled by the
      * SegmentFetcher. Call deletePendingInterests to delete any pending sync
      * Interest with the Interest name, which would have been satisfied by the
-     * forwarder once it got the data. For each prefix/sequenceNo in the data
-     * content,  check that we don't already have the prefix/sequenceNo, and
-     * call updateSeq(prefix, sequenceNo). Call onUpdate_ to notify the
-     * application about the updates. Call sendSyncInterest because the last one
-     * was satisfied by the incoming data.
+     * forwarder once it got the data. For each name in the data content, check
+     * that we don't already have the name, and call _canAddReceivedName (which
+     * may process the name as a prefix/sequenceNo). Call onUpdate_ to notify 
+     * the application about the updates. Call sendSyncInterest because the last
+     * one was satisfied by the incoming data.
      * @param encodedContent The encoded sync data content that was assembled by
      * the SegmentFetcher.
      * @param interest The Interest for which we got the data.
@@ -229,9 +229,9 @@ private:
     onSyncData(Blob encodedContent, ptr_lib::shared_ptr<Interest>& interest);
 
     /**
-     * Satisfy pending sync Interests. For a pending sync interests SI, if the
+     * Satisfy pending sync Interests. For a pending sync interests, if the
      * IBLT of the sync Interest has any difference from our own IBLT, then
-     * send Data back. If we can't decode the difference from the stored IBLT,
+     * send a Data back. If we can't decode the difference from the stored IBLT,
      * then delete it.
      */
     void
