@@ -29,19 +29,19 @@
 namespace ndn {
 
 /**
- * UserPrefixes holds the prefixes_ map from prefix to sequence number, used by
- * PSyncPartialProducer and FullPSync2017WithUsers.
+ * PSyncUserPrefixes holds the prefixes_ map from prefix to sequence number,
+ * used by PSyncPartialProducer and FullPSync2017WithUsers.
  */
 class PSyncUserPrefixes {
 public:
   /**
-   * @brief Check if the prefix is in prefixes_.
+   * Check if the prefix is in prefixes_.
    *
    * @param prefix The prefix to check.
    * @return True if the prefix is in prefixes_.
    */
   bool
-  isUserNode(const ndn::Name& prefix) const
+  isUserNode(const Name& prefix) const
   {
     return prefixes_.find(prefix) != prefixes_.end();
   }
@@ -52,7 +52,7 @@ public:
    * @return The sequence number for the prefix, or -1 if not found.
    */
   int
-  getSequenceNo(const ndn::Name& prefix) const
+  getSequenceNo(const Name& prefix) const
   {
     std::map<Name, int>::const_iterator entry = prefixes_.find(prefix);
     if (entry == prefixes_.end())
@@ -73,7 +73,7 @@ public:
    * prefix Name already exists.
    */
   bool
-  addUserNode(const ndn::Name& prefix);
+  addUserNode(const Name& prefix);
 
   /**
    * Remove the user node from synchronization. If the prefix is not in
@@ -90,7 +90,7 @@ public:
    * update the IBLT. This logs a message for the update.
    * Whoever calls this needs to make sure that isUserNode(prefix) is true.
    * @param prefix The prefix of the update.
-   * @param sequenceNo the sequence number of the update.
+   * @param sequenceNo The sequence number of the update.
    * @param oldSequenceNo This sets oldSequenceNo to the old sequence number for
    * the prefix. If this method returns true and oldSequenceNo is not zero, the
    * caller can remove the old prefix from the IBLT.
