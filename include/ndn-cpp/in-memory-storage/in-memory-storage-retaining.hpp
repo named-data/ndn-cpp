@@ -54,13 +54,26 @@ public:
   }
 
   /**
+   * Find the best match Data for a Name.
+   * @param name The Name of the Data packet to find.
+   * @return The best match if any, otherwise null. You should not modify the
+   * returned object. If you need to modify it then you must make a copy.
+   */
+  ptr_lib::shared_ptr<Data>
+  find(const Name& name);
+
+  /**
    * Find the best match Data for an Interest.
    * @param interest The Interest with the Name of the Data packet to find.
    * @return The best match if any, otherwise null. You should not modify the
    * returned object. If you need to modify it then you must make a copy.
    */
   ptr_lib::shared_ptr<Data>
-  find(const Interest& interest);
+  find(const Interest& interest)
+  {
+    // Debug: Check selectors, especially CanBePrefix.
+    return find(interest.getName());
+  }
 
   /**
    * Remove matching entries by prefix.

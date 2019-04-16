@@ -27,12 +27,11 @@ using namespace std;
 namespace ndn {
 
 ptr_lib::shared_ptr<Data>
-InMemoryStorageRetaining::find(const Interest& interest)
+InMemoryStorageRetaining::find(const Name& name)
 {
   for (map<Name, ptr_lib::shared_ptr<Data> >::iterator i = cache_.begin();
        i != cache_.end(); ++i) {
-    // Debug: Check selectors, especially CanBePrefix.
-    if (interest.getName().isPrefixOf(i->first))
+    if (name.isPrefixOf(i->first))
       return i->second;
   }
 
