@@ -642,7 +642,7 @@ private:
     Milliseconds minimumCacheLifetime_;
   };
 
-  ndn::ptr_lib::shared_ptr<Impl> impl_;
+  ptr_lib::shared_ptr<Impl> impl_;
 };
 
 }
