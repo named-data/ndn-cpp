@@ -35,7 +35,7 @@ class PSyncSegmentPublisher;
 /**
  * FullPSync2017 implements the full sync logic of PSync to synchronize with
  * other nodes, where all nodes want to sync all the names. The application
- * should call publishName whenever it wants to let consumers know that new name
+ * should call publishName whenever it wants to let consumers know that a new name
  * is available. Currently, fetching and publishing the data given by the
  * announced name needs to be handled by the application. The Full PSync
  * protocol is described in Section G "Full-Data Synchronization" of:
@@ -259,6 +259,7 @@ private:
 
     Face& face_;
     KeyChain& keyChain_;
+    SigningInfo signingInfo_;
     ptr_lib::shared_ptr<PSyncSegmentPublisher> segmentPublisher_;
     std::map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> > pendingEntries_;
     Milliseconds syncInterestLifetime_;

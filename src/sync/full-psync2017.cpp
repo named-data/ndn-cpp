@@ -44,8 +44,8 @@ FullPSync2017::Impl::Impl
    const CanAddReceivedName& canAddReceivedName)
 : PSyncProducerBase(expectedNEntries, syncPrefix, syncReplyFreshnessPeriod),
   face_(face), keyChain_(keyChain), syncInterestLifetime_(syncInterestLifetime),
-  onNamesUpdate_(onNamesUpdate), canAddToSyncData_(canAddToSyncData),
-  canAddReceivedName_(canAddReceivedName),
+  signingInfo_(signingInfo), onNamesUpdate_(onNamesUpdate),
+  canAddToSyncData_(canAddToSyncData), canAddReceivedName_(canAddReceivedName),
   segmentPublisher_(new PSyncSegmentPublisher(face_, keyChain_))
 {
 }
@@ -191,7 +191,7 @@ FullPSync2017::Impl::onSyncInterest
       if (state1.getContent().size() > 0)
         segmentPublisher_->publish
           (interest->getName(), interest->getName(), state1.wireEncode(),
-           syncReplyFreshnessPeriod_);
+           syncReplyFreshnessPeriod_, signingInfo_);
 
       return;
     }
@@ -252,14 +252,16 @@ FullPSync2017::Impl::sendSyncData(const Name& name, Blob content)
     _LOG_DEBUG("Sending sync Data");
 
     // Send Data after removing the pending sync interest on the Face.
-    segmentPublisher_->publish(name, dataName, content, syncReplyFreshnessPeriod_);
+    segmentPublisher_->publish
+      (name, dataName, content, syncReplyFreshnessPeriod_, signingInfo_);
 
     _LOG_TRACE("sendSyncData: Renewing sync interest");
     sendSyncInterest();
   }
   else {
     _LOG_DEBUG("Sending Sync Data for not our own Interest");
-    segmentPublisher_->publish(name, dataName, content, syncReplyFreshnessPeriod_);
+    segmentPublisher_->publish
+      (name, dataName, content, syncReplyFreshnessPeriod_, signingInfo_);
   }
 }
 
