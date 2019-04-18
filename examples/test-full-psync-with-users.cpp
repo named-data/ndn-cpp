@@ -227,7 +227,7 @@ public:
       prefixUri << userPrefixUri << "-" << i;
       Name prefix(prefixUri.str());
 
-      fullPSync_.addUserNode(Name(prefix));
+      fullPSync_.addUserNode(prefix);
 
       // random1 is from 0.0 to 1.0.
       float random1;
