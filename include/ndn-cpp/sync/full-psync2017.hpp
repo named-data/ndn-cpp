@@ -57,9 +57,6 @@ public:
    * @param expectedNEntries The expected number of entries in the IBLT.
    * @param face The application's Face.
    * @param syncPrefix The prefix Name of the sync group, which is copied.
-   * @param userPrefix The prefix Name of the first user in the group, which is
-   * copied. However, if this Name is empty, it is not added and you must call
-   * addUserNode.
    * @param onNamesUpdate When there are new names, this calls
    * onNamesUpdate(names) where names is a list of Names. However, see the
    * canAddReceivedName callback which can control which names are added.
@@ -75,13 +72,14 @@ public:
    * DEFAULT_SYNC_REPLY_FRESHNESS_PERIOD.
    * @param signingInfo (optional) The SigningInfo for signing Data packets,
    * which is copied. If omitted, use the default SigningInfo().
-   * @param canAddToSyncData When a new IBLT is received in a sync Interest,
-   * this calls canAddToSyncData(name, negative) where Name is the candidate
-   * Name to add to the response Data packet of Names, and negative is the set
-   * of names that the other's user's Name set, but not in our own Name set. If
-   * the callback returns false, then this does not report the Name to the other
-   * user. However, if canAddToSyncData is omitted, then each name is reported.
-   * @param canAddReceivedName When new names are received, this calls
+   * @param canAddToSyncData (optional) When a new IBLT is received in a sync
+   * Interest, this calls canAddToSyncData(name, negative) where Name is the
+   * candidate Name to add to the response Data packet of Names, and negative is
+   * the set of names that the other's user's Name set, but not in our own Name
+   * set. If the callback returns false, then this does not report the Name to
+   * the other user. However, if canAddToSyncData is omitted or null, then each
+   * name is reported.
+   * @param canAddReceivedName (optional) When new names are received, this calls
    * canAddReceivedName(name) for each name. If the callback returns false,
    * then this does not add to the IBLT or report to the application with
    * onNamesUpdate. However, if canAddReceivedName is omitted or null, then each
@@ -124,8 +122,8 @@ public:
     impl_->removeName(name);
   }
 
-  static const int DEFAULT_SYNC_REPLY_FRESHNESS_PERIOD = 1000;
   static const int DEFAULT_SYNC_INTEREST_LIFETIME = 1000;
+  static const int DEFAULT_SYNC_REPLY_FRESHNESS_PERIOD = 1000;
 
 private:
   /**
