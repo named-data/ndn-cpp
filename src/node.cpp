@@ -24,8 +24,8 @@
 #include <ndn-cpp/control-response.hpp>
 #include <ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp>
 #include <ndn-cpp/lite/lp/lp-packet-lite.hpp>
-#include <ndn-cpp/network-nack.hpp>
 #include "c/util/time.h"
+#include "encoding/tlv-encoder.hpp"
 #include "encoding/tlv-decoder.hpp"
 #include <ndn-cpp/util/logging.hpp>
 #include "lp/lp-packet.hpp"
@@ -157,6 +157,18 @@ Node::putData(const Data& data, WireFormat* wireFormat)
   if (encoding.size() > getMaxNdnPacketSize())
     throw runtime_error
       ("The encoded Data packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
+  send(encoding.buf(), encoding.size());
+}
+
+void
+Node::putNack(const Interest& interest, const NetworkNack& networkNack)
+{
+  // TODO: Generalize this and move to WireFormat.encodeLpPacket.
+  Blob encoding = encodeLpNack(interest, networkNack);
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Nack packet size exceeds the maximum limit getMaxNdnPacketSize()");
 
   send(encoding.buf(), encoding.size());
 }
@@ -524,6 +536,64 @@ Node::processInterestTimeout
 {
   if (pendingInterestTable_.removeEntry(pendingInterest))
     pendingInterest->callTimeout();
+}
+
+class EncodeLpContext {
+public:
+  EncodeLpContext(const Interest& interest, const NetworkNack& networkNack)
+  : interest_(interest), networkNack_(networkNack)
+  {}
+
+  const Interest& interest_;
+  const NetworkNack& networkNack_;
+};
+
+static void
+encodeLpNackValue(const void *context, TlvEncoder &encoder)
+{
+  const NetworkNack& networkNack =  *(const NetworkNack *)context;
+
+  int reason;
+  if (networkNack.getReason() == ndn_NetworkNackReason_NONE ||
+      networkNack.getReason() == ndn_NetworkNackReason_CONGESTION ||
+      networkNack.getReason() == ndn_NetworkNackReason_DUPLICATE ||
+      networkNack.getReason() == ndn_NetworkNackReason_NO_ROUTE)
+    // The Reason enum is set up with the correct integer for each NDN-TLV Reason.
+    reason = (int)networkNack.getReason();
+  else if (networkNack.getReason() == ndn_NetworkNackReason_OTHER_CODE)
+    reason = networkNack.getOtherReasonCode();
+  else
+    // We don't expect this to happen.
+    reason = ndn_NetworkNackReason_NONE;
+
+  encoder.writeNonNegativeIntegerTlv(ndn_Tlv_LpPacket_NackReason, reason);
+}
+
+static void
+encodeLpValue(const void *context, TlvEncoder &encoder)
+{
+  const EncodeLpContext& lpContext =  *(const EncodeLpContext *)context;
+
+  // Encode the reason.
+  encoder.writeNestedTlv
+    (ndn_Tlv_LpPacket_Nack, encodeLpNackValue, &lpContext.networkNack_);
+
+  // Encode the fragment with the Interest.
+  encoder.writeBlobTlv
+    (ndn_Tlv_LpPacket_Fragment,
+     lpContext.interest_.wireEncode(*TlvWireFormat::get()));
+}
+
+Blob
+Node::encodeLpNack(const Interest& interest, const NetworkNack& networkNack)
+{
+  TlvEncoder encoder(256);
+  EncodeLpContext lpContext(interest, networkNack);
+
+  encoder.writeNestedTlv
+    (ndn_Tlv_LpPacket_LpPacket, encodeLpValue, &lpContext);
+
+  return encoder.finish();
 }
 
 }

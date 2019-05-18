@@ -203,6 +203,20 @@ ThreadsafeFace::putData(const Data& data, WireFormat& wireFormat)
 }
 
 void
+ThreadsafeFace::putNack(const Interest& interest, const NetworkNack& networkNack)
+{
+  // Check the encoding size here so that the error message happens before
+  // dispatch. The encoding should be cached in the Data object.
+  Blob encoding = Node::encodeLpNack(interest, networkNack);
+  if (encoding.size() > getMaxNdnPacketSize())
+    throw runtime_error
+      ("The encoded Nack packet size exceeds the maximum limit getMaxNdnPacketSize()");
+
+  ioService_.dispatch
+    (boost::bind(&Node::putNack, node_, interest, networkNack));
+}
+
+void
 ThreadsafeFace::send(const uint8_t *encoding, size_t encodingLength)
 {
   ioService_.dispatch

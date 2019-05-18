@@ -203,6 +203,13 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
+   * Override to use the ioService given to the constructor to dispatch putNack
+   * to be called in a thread-safe manner. See Face.putNack for calling details.
+   */
+  virtual void
+  putNack(const Interest& interest, const NetworkNack& networkNack);
+
+  /**
    * Override to use the ioService given to the constructor to dispatch send to
    * be called in a thread-safe manner. See Face.send for calling details.
    */

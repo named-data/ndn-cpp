@@ -255,8 +255,19 @@ public:
    * @throws runtime_error If the encoded Data packet size exceeds
    * getMaxNdnPacketSize().
    */
-  virtual void
+  void
   putData(const Data& data, WireFormat* wireFormat);
+
+  /**
+   * The OnInterest callback can call this to put a Nack for the received Interest.
+   * @param interest The Interest to put in the Nack packet.
+   * @param networkNack The NetworkNack with the reason code. For example,
+   * NetworkNack().setReason(ndn_NetworkNackReason_NO_ROUTE).
+   * @throws runtime_error If the encoded Nack packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  void
+  putNack(const Interest& interest, const NetworkNack& networkNack);
 
   /**
    * Send the encoded packet out through the face.
@@ -335,6 +346,17 @@ public:
    */
   uint64_t
   getNextEntryId();
+
+  /**
+   * Encode the interest into an NDN-TLV LpPacket as a NACK with the reason code
+   * in the networkNack object.
+   * TODO: Generalize this and move to WireFormat.encodeLpPacket.
+   * @param interest The Interest to put in the LpPacket fragment.
+   * @param networkNack The NetworkNack with the reason code.
+   * @return A Blob containing the encoding.
+   */
+  static Blob
+  encodeLpNack(const Interest& interest, const NetworkNack& networkNack);
 
 private:
   enum ConnectStatus {

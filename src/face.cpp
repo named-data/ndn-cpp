@@ -213,6 +213,12 @@ Face::putData(const Data& data, WireFormat& wireFormat)
 }
 
 void
+Face::putNack(const Interest& interest, const NetworkNack& networkNack)
+{
+  node_->putNack(interest, networkNack);
+}
+
+void
 Face::send(const uint8_t *encoding, size_t encodingLength)
 {
   node_->send(encoding, encodingLength);

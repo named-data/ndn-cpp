@@ -609,6 +609,17 @@ public:
      WireFormat& wireFormat = *WireFormat::getDefaultWireFormat());
 
   /**
+   * The OnInterest callback can call this to put a Nack for the received Interest.
+   * @param interest The Interest to put in the Nack packet.
+   * @param networkNack The NetworkNack with the reason code. For example,
+   * NetworkNack().setReason(ndn_NetworkNackReason_NO_ROUTE).
+   * @throws runtime_error If the encoded Nack packet size exceeds
+   * getMaxNdnPacketSize().
+   */
+  virtual void
+  putNack(const Interest& interest, const NetworkNack& networkNack);
+
+  /**
    * Send the encoded packet out through the face.
    * @param encoding The blob with the the encoded packet to send.
    * @throws runtime_error If the encoded Data packet size exceeds
