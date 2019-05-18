@@ -23,6 +23,7 @@
 #ifndef NDN_NETWORK_NACK_HPP
 #define NDN_NETWORK_NACK_HPP
 
+#include <stdexcept>
 #include "common.hpp"
 #include "lite/network-nack-lite.hpp"
 #include "lp-packet-header-field.hpp"
@@ -63,6 +64,37 @@ public:
    */
   int
   getOtherReasonCode() const { return otherReasonCode_; }
+
+  /**
+   * Set the network Nack reason.
+   * @param reason The network Nack reason enum value. If the packet's reason
+   * code is not a recognized Reason enum value, use 
+   * ndn_NetworkNackReason_OTHER_CODE and call setOtherReasonCode().
+   * @return This NetworkNack so that you can chain calls to update values.
+   */
+  NetworkNack&
+  setReason(ndn_NetworkNackReason reason)
+  {
+    reason_ = reason;
+    return *this;
+  }
+
+  /**
+   * Set the packet's reason code to use when the reason enum is
+   * ndn_NetworkNackReason_OTHER_CODE. If the packet's reason code is a
+   * recognized enum value, just call setReason().
+   * @param otherReasonCode The packet's unrecognized reason code, which must be
+   * non-negative.
+   * @return This NetworkNack so that you can chain calls to update values.
+   */
+  NetworkNack&
+  setOtherReasonCode(int otherReasonCode)
+  {
+    if (otherReasonCode < 0)
+      throw std::runtime_error("NetworkNack other reason code must be non-negative");
+    otherReasonCode_ = otherReasonCode;
+    return *this;
+  }
 
   /**
    * Get the first header field in lpPacket which is a NetworkNack. This is
