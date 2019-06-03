@@ -12,11 +12,13 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES := \
   src/openssl/crypto/cryptlib.c \
   src/openssl/crypto/ex_data.c \
+  src/openssl/crypto/getenv.c \
   src/openssl/crypto/mem.c \
   src/openssl/crypto/mem_clr.c \
   src/openssl/crypto/mem_dbg.c \
   src/openssl/crypto/o_init.c \
   src/openssl/crypto/o_time.c \
+  src/openssl/crypto/uid.c \
   src/openssl/crypto/aes/aes_cbc.c \
   src/openssl/crypto/aes/aes_core.c \
   src/openssl/crypto/aes/aes_ecb.c \
@@ -403,6 +405,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := openssl sqlite3
 LOCAL_SRC_FILES := \
   src/ndn-cpp/contrib/apache/apr_base64.c \
+  src/ndn-cpp/contrib/murmur-hash/murmur-hash.c \
   src/ndn-cpp/src/c/control-parameters_c.c \
   src/ndn-cpp/src/c/errors.c \
   src/ndn-cpp/src/c/interest_c.c \
