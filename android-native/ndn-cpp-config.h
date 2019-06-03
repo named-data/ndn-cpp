@@ -82,6 +82,11 @@
 #define NDN_CPP_HAVE_LIBSQLITE3 0
 #endif
 
+/* Define to 1 if you have `z' library (-lz) */
+#ifndef NDN_CPP_HAVE_LIBZ
+#define NDN_CPP_HAVE_LIBZ 0
+#endif
+
 /* 1 if have log4cxx. */
 #ifndef NDN_CPP_HAVE_LOG4CXX
 #define NDN_CPP_HAVE_LOG4CXX 0
@@ -212,7 +217,7 @@
 
 /* Define to the full name and version of this package. */
 #ifndef NDN_CPP_PACKAGE_STRING
-#define NDN_CPP_PACKAGE_STRING "ndn-cpp 0.12"
+#define NDN_CPP_PACKAGE_STRING "ndn-cpp 0.16"
 #endif
 
 /* Define to the one symbol short name of this package. */
@@ -227,7 +232,7 @@
 
 /* Define to the version of this package. */
 #ifndef NDN_CPP_PACKAGE_VERSION
-#define NDN_CPP_PACKAGE_VERSION "0.12"
+#define NDN_CPP_PACKAGE_VERSION "0.16"
 #endif
 
 /* Define to 1 if you have the ANSI C header files. */
