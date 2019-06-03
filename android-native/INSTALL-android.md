@@ -12,18 +12,25 @@ Prerequisites
 * Required: perl (for configuring the OpenSSL build)
 * Optional: SQLite3 (compiled from the source in contrib/sqlite3)
 
-## macOS 10.12
+## macOS 10.12 and 10.13
 
 Required: Install Android Studio from https://developer.android.com/studio/index.html .
 (Tested with Android Studio 2.3.3 .)
 
-Required: In the Android Studio SDK Manager, install LLDB, CMake and NDK following the instructions at
+Required: In the Android Studio SDK Manager, install LLDB and CMake following the instructions at
 https://developer.android.com/ndk/guides/index.html
 
-Set the environment variables ANDROID_SDK_ROOT and ANDROID_NDK_ROOT to the installed location, for example:
+Set the environment variable ANDROID_SDK_ROOT to the installed location, for example:
 
     export ANDROID_SDK_ROOT=~/Library/Android/sdk
-    export ANDROID_NDK_ROOT=~/Library/Android/sdk/ndk-bundle
+
+The NDK installed by the SDK Manager is incomplete, so we have to install it separately.
+Download and unzip the source for Mac from https://developer.android.com/ndk/downloads/index.html .
+(Tested with android-ndk-r10e .)
+
+Set the environment variable ANDROID_NDK_ROOT to the installed location, for example:
+
+    export ANDROID_NDK_ROOT=~/android-ndk-r10e
 
 Add the folders with ndk-build and adb to the PATH, for example:
 
@@ -31,7 +38,7 @@ Add the folders with ndk-build and adb to the PATH, for example:
 
 Required: Download the latest OpenSSL 1.0.x from https://www.openssl.org/source . Extract the files, for example:
 
-    tar xvfz openssl-1.0.2l.tar.gz
+    tar xvfz openssl-1.0.2s.tar.gz
 
 Prepare OpenSSL
 ===============
@@ -43,8 +50,10 @@ a terminal, enter:
 
     . <NDN-CPP-root>/android-native/setenv-android.sh
 
+If it says "Error: FIPS_SIG does not specify incore module", you can ignore it.
+
 (This runs the script from https://wiki.openssl.org/images/7/70/Setenv-android.sh which is configured for
-android-ndk-r9 and arm . You may need to edit it to change _ANDROID_NDK, _ANDROID_ARCH, _ANDROID_EABI
+android-ndk-r10 and arm . You may need to edit it to change _ANDROID_NDK, _ANDROID_ARCH, _ANDROID_EABI
 and _ANDROID_API . For details, see https://wiki.openssl.org/index.php/Android#Adjust_the_Cross-Compile_Script .)
 
 In a terminal, change directory to the extracted openssl distribution and enter:
@@ -85,6 +94,8 @@ Copy the project mk files:
 
     cp app/src/ndn-cpp/android-native/Android.mk app
     cp app/src/ndn-cpp/android-native/Application.mk app
+
+The APP_PLATFORM in Application.mk should match _ANDROID_API in setenv-android.sh .
 
 (This uses SQLite by default. To omit SQLite, edit ndn-cpp-config.h to remove the line
 `#define NDN_CPP_HAVE_SQLITE3` and edit Android.mk to remove sqlite3 from the line
