@@ -405,10 +405,10 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/contrib/apache/apr_base64.c \
   src/ndn-cpp/src/c/control-parameters_c.c \
   src/ndn-cpp/src/c/errors.c \
-  src/ndn-cpp/src/c/forwarding-flags.c \
   src/ndn-cpp/src/c/interest_c.c \
   src/ndn-cpp/src/c/name_c.c \
   src/ndn-cpp/src/c/network-nack_c.c \
+  src/ndn-cpp/src/c/registration-options.c \
   src/ndn-cpp/src/c/encoding/element-reader.c \
   src/ndn-cpp/src/c/encoding/tlv-0_2-wire-format_c.c \
   src/ndn-cpp/src/c/encoding/tlv/tlv-control-parameters.c \
@@ -425,6 +425,7 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/c/encoding/tlv/tlv-signature-info.c \
   src/ndn-cpp/src/c/encoding/tlv/tlv-structure-decoder.c \
   src/ndn-cpp/src/c/encrypt/algo/aes-algorithm_c.c \
+  src/ndn-cpp/src/c/encrypt/algo/des-algorithm_c.c \
   src/ndn-cpp/src/c/lp/congestion-mark_c.c \
   src/ndn-cpp/src/c/lp/incoming-face-id_c.c \
   src/ndn-cpp/src/c/security/ec-private-key.c \
@@ -471,9 +472,12 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/encoding/wire-format.cpp \
   src/ndn-cpp/src/encoding/der/der-exception.cpp \
   src/ndn-cpp/src/encoding/der/der-node.cpp \
+  src/ndn-cpp/src/encrypt/access-manager-v2.cpp \
   src/ndn-cpp/src/encrypt/consumer.cpp \
   src/ndn-cpp/src/encrypt/consumer-db.cpp \
+  src/ndn-cpp/src/encrypt/decryptor-v2.cpp \
   src/ndn-cpp/src/encrypt/encrypted-content.cpp \
+  src/ndn-cpp/src/encrypt/encryptor-v2.cpp \
   src/ndn-cpp/src/encrypt/group-manager.cpp \
   src/ndn-cpp/src/encrypt/group-manager-db.cpp \
   src/ndn-cpp/src/encrypt/interval.cpp \
@@ -492,22 +496,24 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/impl/interest-filter-table.cpp \
   src/ndn-cpp/src/impl/pending-interest-table.cpp \
   src/ndn-cpp/src/impl/registered-prefix-table.cpp \
+  src/ndn-cpp/src/in-memory-storage/in-memory-storage-retaining.cpp \
   src/ndn-cpp/src/lite/control-parameters-lite.cpp \
   src/ndn-cpp/src/lite/control-response-lite.cpp \
   src/ndn-cpp/src/lite/data-lite.cpp \
   src/ndn-cpp/src/lite/delegation-set-lite.cpp \
   src/ndn-cpp/src/lite/exclude-lite.cpp \
-  src/ndn-cpp/src/lite/forwarding-flags-lite.cpp \
   src/ndn-cpp/src/lite/interest-lite.cpp \
   src/ndn-cpp/src/lite/key-locator-lite.cpp \
   src/ndn-cpp/src/lite/meta-info-lite.cpp \
   src/ndn-cpp/src/lite/name-lite.cpp \
   src/ndn-cpp/src/lite/network-nack-lite.cpp \
+  src/ndn-cpp/src/lite/registration-options-lite.cpp \
   src/ndn-cpp/src/lite/signature-lite.cpp \
   src/ndn-cpp/src/lite/encoding/element-listener-lite.cpp \
   src/ndn-cpp/src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
   src/ndn-cpp/src/lite/encrypt/encrypted-content-lite.cpp \
   src/ndn-cpp/src/lite/encrypt/algo/aes-algorithm-lite.cpp \
+  src/ndn-cpp/src/lite/encrypt/algo/des-algorithm-lite.cpp \
   src/ndn-cpp/src/lite/encrypt/algo/encrypt-params-lite.cpp \
   src/ndn-cpp/src/lite/lp/congestion-mark-lite.cpp \
   src/ndn-cpp/src/lite/lp/incoming-face-id-lite.cpp \
@@ -526,6 +532,7 @@ LOCAL_SRC_FILES := \
   src/ndn-cpp/src/lp/congestion-mark.cpp \
   src/ndn-cpp/src/lp/incoming-face-id.cpp \
   src/ndn-cpp/src/lp/lp-packet.cpp \
+  src/ndn-cpp/src/security/command-interest-preparer.cpp \
   src/ndn-cpp/src/security/command-interest-signer.cpp \
   src/ndn-cpp/src/security/key-chain.cpp \
   src/ndn-cpp/src/security/key-params.cpp \
