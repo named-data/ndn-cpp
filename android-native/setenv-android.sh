@@ -15,8 +15,8 @@
 # try to pick it up with the value of _ANDROID_NDK_ROOT below. If
 # ANDROID_NDK_ROOT is set, then the value is ignored.
 # _ANDROID_NDK="android-ndk-r8e"
-_ANDROID_NDK="android-ndk-r9"
-# _ANDROID_NDK="android-ndk-r10"
+# _ANDROID_NDK="android-ndk-r9"
+_ANDROID_NDK="android-ndk-r10e"
 
 # Set _ANDROID_EABI to the EABI you want to use. You can find the
 # list in $ANDROID_NDK_ROOT/toolchains. This value is always used.
@@ -36,7 +36,7 @@ _ANDROID_ARCH=arch-arm
 # Android 5.0, there will likely be another platform added (android-22?).
 # This value is always used.
 # _ANDROID_API="android-14"
-_ANDROID_API="android-18"
+_ANDROID_API="android-21"
 # _ANDROID_API="android-19"
 
 #####################################################################
