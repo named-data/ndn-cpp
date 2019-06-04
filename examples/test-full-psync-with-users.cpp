@@ -27,6 +27,10 @@
  * https://github.com/named-data/PSync/blob/master/examples/full-sync.cpp
  */
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_LIBZ 1.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_LIBZ
+
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -323,3 +327,17 @@ int main(int argc, char** argv)
 
   return 0;
 }
+
+#else // NDN_CPP_HAVE_LIBZ
+
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char** argv)
+{
+  cout <<
+    "This program uses zlib but it is not installed. Install it and ./configure again." << endl;
+}
+
+#endif // NDN_CPP_HAVE_LIBZ

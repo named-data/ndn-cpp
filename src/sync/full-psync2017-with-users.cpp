@@ -20,6 +20,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_LIBZ 1.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_LIBZ
+
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include "./detail/psync-segment-publisher.hpp"
@@ -184,3 +188,5 @@ FullPSync2017WithUsers::Impl::updateSequenceNo(const Name& prefix, int sequenceN
 }
 
 }
+
+#endif // NDN_CPP_HAVE_LIBZ
