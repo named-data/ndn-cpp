@@ -55,7 +55,8 @@ public:
    * Create a SigningInfo with the optional signerType and signerName and other
    * default values. The digest algorithm is set to DIGEST_ALGORITHM_SHA256.
    * @param signerType (optional) The type of signer. If omitted, use
-   * SIGNER_TYPE_NULL.
+   * SIGNER_TYPE_NULL (which will cause KeyChain::sign to use the default
+   * identity).
    * @param signerName (optional) The name of signer. The interpretation of
    * the signerName differs based on the signerType. This copies the Name. If
    * omitted, use an empty Name.
