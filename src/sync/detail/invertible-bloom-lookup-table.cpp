@@ -157,26 +157,28 @@ InvertibleBloomLookupTable::encode() const
   vector<uint8_t> table(tableSize);
 
   for (size_t i = 0; i < nEntries; i++) {
+    const HashTableEntry& entry = hashTable_[i];
+
     // table[i*12],   table[i*12+1], table[i*12+2], table[i*12+3] --> hashTable[i].count_
 
-    table[(i * unitSize)]   = 0xFF & hashTable_[i].count_;
-    table[(i * unitSize) + 1] = 0xFF & (hashTable_[i].count_ >> 8);
-    table[(i * unitSize) + 2] = 0xFF & (hashTable_[i].count_ >> 16);
-    table[(i * unitSize) + 3] = 0xFF & (hashTable_[i].count_ >> 24);
+    table[(i * unitSize)]   = 0xFF & entry.count_;
+    table[(i * unitSize) + 1] = 0xFF & (entry.count_ >> 8);
+    table[(i * unitSize) + 2] = 0xFF & (entry.count_ >> 16);
+    table[(i * unitSize) + 3] = 0xFF & (entry.count_ >> 24);
 
     // table[i*12+4], table[i*12+5], table[i*12+6], table[i*12+7] --> hashTable[i].keySum_
 
-    table[(i * unitSize) + 4] = 0xFF & hashTable_[i].keySum_;
-    table[(i * unitSize) + 5] = 0xFF & (hashTable_[i].keySum_ >> 8);
-    table[(i * unitSize) + 6] = 0xFF & (hashTable_[i].keySum_ >> 16);
-    table[(i * unitSize) + 7] = 0xFF & (hashTable_[i].keySum_ >> 24);
+    table[(i * unitSize) + 4] = 0xFF & entry.keySum_;
+    table[(i * unitSize) + 5] = 0xFF & (entry.keySum_ >> 8);
+    table[(i * unitSize) + 6] = 0xFF & (entry.keySum_ >> 16);
+    table[(i * unitSize) + 7] = 0xFF & (entry.keySum_ >> 24);
 
     // table[i*12+8], table[i*12+9], table[i*12+10], table[i*12+11] --> hashTable[i].keyCheck_
 
-    table[(i * unitSize) + 8] = 0xFF & hashTable_[i].keyCheck_;
-    table[(i * unitSize) + 9] = 0xFF & (hashTable_[i].keyCheck_ >> 8);
-    table[(i * unitSize) + 10] = 0xFF & (hashTable_[i].keyCheck_ >> 16);
-    table[(i * unitSize) + 11] = 0xFF & (hashTable_[i].keyCheck_ >> 24);
+    table[(i * unitSize) + 8] = 0xFF & entry.keyCheck_;
+    table[(i * unitSize) + 9] = 0xFF & (entry.keyCheck_ >> 8);
+    table[(i * unitSize) + 10] = 0xFF & (entry.keyCheck_ >> 16);
+    table[(i * unitSize) + 11] = 0xFF & (entry.keyCheck_ >> 24);
   }
 
   return zlibCompress(table.data(), table.size());
