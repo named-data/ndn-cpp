@@ -33,6 +33,8 @@ namespace ndn {
 Blob
 PSyncState::wireEncode() const
 {
+  // Encode directly as TLV. We don't support the WireFormat abstraction
+  // because this isn't meant to go directly on the wire.
   TlvEncoder encoder(256);
 
   encoder.writeNestedTlv(Tlv_PSyncContent, encodeContent, this);
@@ -43,8 +45,6 @@ PSyncState::wireEncode() const
 void
 PSyncState::encodeContent(const void *context, TlvEncoder &encoder)
 {
-  // Encode directly as TLV. We don't support the WireFormat abstraction
-  // because this isn't meant to go directly on the wire.
   const PSyncState& pSyncState =  *(const PSyncState *)context;
 
   for (size_t i = 0; i < pSyncState.content_.size(); ++i) {
