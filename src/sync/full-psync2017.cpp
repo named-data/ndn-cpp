@@ -179,10 +179,10 @@ FullPSync2017::Impl::onSyncInterest
 
   if (!difference->listEntries(positive, negative)) {
     _LOG_TRACE("Cannot decode differences, positive: " << positive.size() <<
-            " negative: " << negative.size() << " m_threshold: " <<
+            " negative: " << negative.size() << " threshold: " <<
             threshold_);
 
-    // Send all data if greater then the threshold, or if there are neither
+    // Send all data if greater than the threshold, or if there are neither
     // positive nor negative differences. Otherwise, continue below and send
     // the positive as usual.
     if (positive.size() + negative.size() >= threshold_ ||
