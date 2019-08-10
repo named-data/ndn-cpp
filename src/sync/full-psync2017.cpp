@@ -123,7 +123,7 @@ FullPSync2017::Impl::sendSyncInterest()
           static_pointer_cast<FullPSync2017::Impl>(shared_from_this()), _1, syncInterest),
      &FullPSync2017::Impl::onError);
 
-  _LOG_DEBUG("sendFullSyncInterest, nonce: " << syncInterest->getNonce() <<
+  _LOG_DEBUG("sendFullSyncInterest, nonce: " << syncInterest->getNonce().toHex() <<
              ", hash: " << syncInterestName.hash());
 }
 
@@ -159,7 +159,7 @@ FullPSync2017::Impl::onSyncInterest
 
   Name::Component ibltName = interestName.get(-1);
 
-  _LOG_DEBUG("Full Sync Interest received, nonce: " << interest->getNonce() <<
+  _LOG_DEBUG("Full Sync Interest received, nonce: " << interest->getNonce().toHex() <<
              ", hash:" << interestName.hash());
 
   ptr_lib::shared_ptr<InvertibleBloomLookupTable> iblt
