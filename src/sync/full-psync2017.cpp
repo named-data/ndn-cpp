@@ -115,6 +115,7 @@ FullPSync2017::Impl::sendSyncInterest()
   ptr_lib::shared_ptr<Interest> syncInterest
     (ptr_lib::make_shared<Interest>(syncInterestName));
   syncInterest->setInterestLifetimeMilliseconds(syncInterestLifetime_);
+  syncInterest->setNonce(Blob((const uint8_t*)"0000", 4));
   syncInterest->refreshNonce();
 
   SegmentFetcher::fetch
