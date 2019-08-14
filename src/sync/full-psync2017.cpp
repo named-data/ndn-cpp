@@ -321,18 +321,15 @@ FullPSync2017::Impl::satisfyPendingInterests()
 void
 FullPSync2017::Impl::deletePendingInterests(const Name& interestName)
 {
-  for (map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> >::iterator it =
-         pendingEntries_.begin();
-       it != pendingEntries_.end();) {
-    if (it->first.equals(interestName)) {
-      _LOG_TRACE("Delete pending interest: " << interestName);
-      // Prevent delayedRemovePendingEntry from removing a new entry with the same Name.
-      it->second->isRemoved_ = true;
-      pendingEntries_.erase(it++);
-    }
-    else
-      ++it;
-  }
+  map<Name, ptr_lib::shared_ptr<PendingEntryInfoFull> >::iterator entry =
+    pendingEntries_.find(interestName);
+  if (entry == pendingEntries_.end())
+    return;
+
+  _LOG_TRACE("Delete pending interest: " << interestName);
+  // Prevent delayedRemovePendingEntry from removing a new entry with the same Name.
+  entry->second->isRemoved_ = true;
+  pendingEntries_.erase(entry);
 }
 
 void
