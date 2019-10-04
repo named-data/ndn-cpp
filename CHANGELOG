@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.16 (2019-07-09)
-------------------------------------------------
+NDN-CPP v0.17 (2019-10-04)
+--------------------------
 
 Changes
 * https://redmine.named-data.net/issues/4807 Print a warning if the application
