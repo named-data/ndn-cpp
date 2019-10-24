@@ -78,6 +78,9 @@
 /* 1 if have Google Protobuf. */
 #undef HAVE_PROTOBUF
 
+/* Define if you have POSIX threads libraries and header files. */
+#undef HAVE_PTHREAD
+
 /* Define to 1 if you have the `round' function. */
 #undef HAVE_ROUND
 
@@ -146,6 +149,10 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define to the necessary symbol if this constant uses a non-standard name on
+   your system. */
+#undef PTHREAD_CREATE_JOINABLE
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
