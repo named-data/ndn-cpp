@@ -20,6 +20,7 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+#include <stdexcept>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/encrypt/algo/encrypt-params.hpp>
 
