@@ -339,6 +339,9 @@ fi
 
 AX_CHECK_ZLIB([], [AC_DEFINE([HAVE_LIBZ], 0, [Define to 1 if you have `z' library (-lz)])])
 
+# This defines PTHREAD_CFLAGS and PTHREAD_LIBS.
+ACX_PTHREAD
+
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)

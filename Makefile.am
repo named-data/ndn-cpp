@@ -9,8 +9,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 ## to provide a way for the user to supply additional arguments.
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 
-AM_CPPFLAGS=${BOOST_CPPFLAGS}
-AM_LDFLAGS=${BOOST_LDFLAGS} ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_LIB}
+AM_CPPFLAGS=${BOOST_CPPFLAGS} ${PTHREAD_CFLAGS}
+AM_LDFLAGS=${BOOST_LDFLAGS} ${BOOST_SYSTEM_LIB} ${BOOST_REGEX_LIB} ${BOOST_ASIO_LIB} ${PTHREAD_LIBS}
 
 # "make install" will also install the include headers.
 SUBDIRS = include
