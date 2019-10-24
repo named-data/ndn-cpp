@@ -9,6 +9,9 @@
 /* define if the Boost::ASIO library is available */
 #undef HAVE_BOOST_ASIO
 
+/* 1 if have boost/atomic.hpp. */
+#undef HAVE_BOOST_ATOMIC
+
 /* 1 if have the `boost::function' class. */
 #undef HAVE_BOOST_FUNCTION
 

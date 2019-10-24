@@ -24,7 +24,7 @@
 
 #include <map>
 #include <ndn-cpp/ndn-cpp-config.h>
-#ifdef NDN_CPP_HAVE_BOOST_ASIO
+#ifdef NDN_CPP_HAVE_BOOST_ATOMIC
 #include <boost/atomic.hpp>
 #endif
 #include <ndn-cpp/common.hpp>
@@ -536,7 +536,7 @@ private:
   ConnectStatus connectStatus_;
   bool interestLoopbackEnabled_;
   Blob nonceTemplate_;
-#ifdef NDN_CPP_HAVE_BOOST_ASIO
+#ifdef NDN_CPP_HAVE_BOOST_ATOMIC
   // ThreadsafeFace accesses lastEntryId_ outside of a thread safe dispatch, so
   // use atomic_uint64_t to be thread safe.
   boost::atomic_uint64_t lastEntryId_;

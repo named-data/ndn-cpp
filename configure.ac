@@ -66,7 +66,7 @@ AX_CXX_COMPILE_STDCXX_11(, optional)
 AC_C_INLINE
 
 # Use the minimum boost version from NFD.
-AX_BOOST_BASE([1.48])
+AX_BOOST_BASE([1.41])
 
 AX_BOOST_ASIO
 
@@ -194,6 +194,18 @@ if test "$HAVE_STD_REGEX" == "0" ; then
     # Only check for Boost regex if we don't have std regex so that we only link to its library if necessary.
     AX_BOOST_REGEX
 fi
+
+AC_MSG_CHECKING([for boost/atomic.hpp])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <boost/atomic.hpp>]]
+    [[boost::atomic_uint64_t have_boost_atomic;]])
+], [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE_UNQUOTED([HAVE_BOOST_ATOMIC], 1, [1 if have boost/atomic.hpp.])
+], [
+    AC_MSG_RESULT([no])
+    AC_DEFINE_UNQUOTED([HAVE_BOOST_ATOMIC], 0, [1 if have boost/atomic.hpp.])
+])
 
 AC_MSG_CHECKING([for gmtime support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
