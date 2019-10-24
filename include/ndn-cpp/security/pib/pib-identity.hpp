@@ -79,7 +79,7 @@ private:
   friend class PibIdentityContainer;
   friend class KeyChain;
   // Give friend access to the tests.
-  friend TestKeyChain_Management_Test;
+  friend class ::TestKeyChain_Management_Test;
 
   /**
    * Create a PibIdentity which uses the impl backend implementation. This

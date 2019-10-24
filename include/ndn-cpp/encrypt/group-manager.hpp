@@ -177,9 +177,9 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestGroupManager_CreateDKeyData_Test;
-  friend TestGroupManager_CreateEKeyData_Test;
-  friend TestGroupManager_CalculateInterval_Test;
+  friend class ::TestGroupManager_CreateDKeyData_Test;
+  friend class ::TestGroupManager_CreateEKeyData_Test;
+  friend class ::TestGroupManager_CalculateInterval_Test;
 
   /**
    * Calculate an Interval that covers the timeSlot.

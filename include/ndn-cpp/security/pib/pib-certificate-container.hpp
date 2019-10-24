@@ -93,9 +93,9 @@ public:
 private:
   friend class PibKeyImpl;
   // Give friend access to the tests.
-  friend TestPibCertificateContainer_Basic_Test;
-  friend TestPibCertificateContainer_Errors_Test;
-  friend TestKeyChain_Management_Test;
+  friend class ::TestPibCertificateContainer_Basic_Test;
+  friend class ::TestPibCertificateContainer_Errors_Test;
+  friend class ::TestKeyChain_Management_Test;
 
   /**
    * Create a PibCertificateContainer for a key with keyName. This constructor

@@ -159,7 +159,7 @@ public:
 private:
   friend class PibKey;
   // Give friend access to the tests.
-  friend TestPibKeyImpl_CertificateOperation_Test;
+  friend class ::TestPibKeyImpl_CertificateOperation_Test;
 
   // Disable the copy constructor and assignment operator.
   PibKeyImpl(const PibKeyImpl& other);

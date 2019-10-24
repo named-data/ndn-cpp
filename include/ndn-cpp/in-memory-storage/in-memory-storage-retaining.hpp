@@ -98,8 +98,8 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
-  friend TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
+  friend class ::TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
+  friend class ::TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
 
   std::map<Name, ptr_lib::shared_ptr<Data> > cache_;
 };

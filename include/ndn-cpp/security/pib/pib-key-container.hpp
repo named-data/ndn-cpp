@@ -99,8 +99,8 @@ public:
 private:
   friend class PibIdentityImpl;
   // Give friend access to the tests.
-  friend TestPibKeyContainer_Basic_Test;
-  friend TestPibKeyContainer_Errors_Test;
+  friend class ::TestPibKeyContainer_Basic_Test;
+  friend class ::TestPibKeyContainer_Errors_Test;
 
   /**
    * Create a PibKeyContainer for an identity with identityName. This

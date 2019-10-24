@@ -190,7 +190,7 @@ private:
 
 protected:
   // Give friend access to the tests.
-  friend TestValidator_ConstructorSetValidator_Test;
+  friend class ::TestValidator_ConstructorSetValidator_Test;
 
   Validator* validator_;
   ptr_lib::shared_ptr<ValidationPolicy> innerPolicy_;

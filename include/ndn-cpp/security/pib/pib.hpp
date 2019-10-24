@@ -122,7 +122,7 @@ public:
 private:
   friend class KeyChain;
   // Give friend access to the tests.
-  friend TestKeyChain_Management_Test;
+  friend class ::TestKeyChain_Management_Test;
 
   /*
    * Create a Pib instance. This constructor should only be called by KeyChain.

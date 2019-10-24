@@ -142,8 +142,8 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestEncryptorV2_EncryptAndPublishCk_Test;
-  friend TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
+  friend class ::TestEncryptorV2_EncryptAndPublishCk_Test;
+  friend class ::TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
 
   /**
    * Values holds values used by the static member values_.
@@ -227,8 +227,8 @@ private:
 
   private:
     // Give friend access to the tests.
-    friend TestEncryptorV2_EncryptAndPublishCk_Test;
-    friend TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
+    friend class ::TestEncryptorV2_EncryptAndPublishCk_Test;
+    friend class ::TestEncryptorV2_EnumerateDataFromInMemoryStorage_Test;
 
     void
     retryFetchingKek();

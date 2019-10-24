@@ -96,7 +96,7 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
+  friend class ::TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
 
   /**
    * AccessManagerV2::Impl does the work of AccessManagerV2. It is a separate
@@ -134,7 +134,7 @@ private:
 
   private:
     // Give friend access to the tests.
-    friend TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
+    friend class ::TestAccessManagerV2_EnumerateDataFromInMemoryStorage_Test;
 
     ptr_lib::shared_ptr<PibIdentity> identity_;
     ptr_lib::shared_ptr<PibKey> nacKey_;

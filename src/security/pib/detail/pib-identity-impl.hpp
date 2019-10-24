@@ -127,7 +127,7 @@ public:
 private:
   friend class PibIdentity;
   // Give friend access to the tests.
-  friend TestPibIdentityImpl_KeyOperation_Test;
+  friend class ::TestPibIdentityImpl_KeyOperation_Test;
 
   // Disable the copy constructor and assignment operator.
   PibIdentityImpl(const PibIdentityImpl& other);

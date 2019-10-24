@@ -258,10 +258,10 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestVerificationRules_NameRelation_Test;
-  friend TestVerificationRules_SimpleRegex_Test;
-  friend TestVerificationRules_Hierarchical_Test;
-  friend TestVerificationRules_HyperRelation_Test;
+  friend class ::TestVerificationRules_NameRelation_Test;
+  friend class ::TestVerificationRules_SimpleRegex_Test;
+  friend class ::TestVerificationRules_Hierarchical_Test;
+  friend class ::TestVerificationRules_HyperRelation_Test;
 
   /**
    * TrustAnchorRefreshManager manages the trust-anchor certificates, including

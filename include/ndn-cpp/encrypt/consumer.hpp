@@ -148,7 +148,7 @@ public:
 
 private:
   // Give friend access to the tests.
-  friend TestConsumer_DecryptContent_Test;
+  friend class ::TestConsumer_DecryptContent_Test;
 
   /**
    * Consumer::Impl does the work of Consumer. It is a separate class so that
@@ -183,7 +183,7 @@ private:
 
   private:
     // Give friend access to the tests.
-    friend TestConsumer_DecryptContent_Test;
+    friend class ::TestConsumer_DecryptContent_Test;
 
     /**
      * Decode encryptedBlob as an EncryptedContent and decrypt using keyBits.
