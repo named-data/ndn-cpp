@@ -31,13 +31,13 @@ ndn_murmurHash3
 
   for (int i = -nblocks; i < 0; i++) {
     // Note that this indexes backwards from the end of the array.
-    uint32_t k1 = blocks[i];
+    uint32_t k2 = blocks[i];
 
-    k1 *= c1;
-    k1 = ROTL32(k1,15);
-    k1 *= c2;
+    k2 *= c1;
+    k2 = ROTL32(k2,15);
+    k2 *= c2;
 
-    h1 ^= k1;
+    h1 ^= k2;
     h1 = ROTL32(h1,13);
     h1 = h1*5+0xe6546b64;
   }
