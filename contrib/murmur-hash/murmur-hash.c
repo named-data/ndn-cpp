@@ -25,11 +25,15 @@ ndn_murmurHash3
 
   const size_t nblocks = dataToHashLength / 4;
 
+  const uint8_t* tail = dataToHash + nblocks * 4;
+  uint32_t k1 = 0;
+
   //----------
   // body
   const uint32_t* blocks = (const uint32_t*)(dataToHash + nblocks * 4);
 
-  for (int i = -nblocks; i < 0; i++) {
+  int i;
+  for (i = -nblocks; i < 0; i++) {
     // Note that this indexes backwards from the end of the array.
     uint32_t k2 = blocks[i];
 
@@ -44,10 +48,6 @@ ndn_murmurHash3
 
   //----------
   // tail
-  const uint8_t* tail = dataToHash + nblocks * 4;
-
-  uint32_t k1 = 0;
-
   switch (dataToHashLength & 3) {
     case 3:
       k1 ^= tail[2] << 16;
