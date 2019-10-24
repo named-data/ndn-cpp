@@ -23,6 +23,7 @@
 #ifndef NDN_PIB_IMPL_HPP
 #define NDN_PIB_IMPL_HPP
 
+#include <stdexcept>
 #include <set>
 #include "pib.hpp"
 #include "../v2/certificate-v2.hpp"

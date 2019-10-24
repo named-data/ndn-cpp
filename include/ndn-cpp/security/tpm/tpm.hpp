@@ -23,6 +23,7 @@
 #ifndef NDN_TPM_HPP
 #define NDN_TPM_HPP
 
+#include <stdexcept>
 #include <map>
 #include "../../name.hpp"
 #include "../key-params.hpp"

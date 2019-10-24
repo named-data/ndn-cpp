@@ -23,6 +23,7 @@
 #ifndef NDN_CERTIFICATE_V2_HPP
 #define NDN_CERTIFICATE_V2_HPP
 
+#include <stdexcept>
 #include <ndn-cpp/security/validity-period.hpp>
 #include <ndn-cpp/data.hpp>
 

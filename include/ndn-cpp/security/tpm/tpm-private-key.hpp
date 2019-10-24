@@ -23,6 +23,7 @@
 #ifndef NDN_TPM_PRIVATE_KEY_HPP
 #define NDN_TPM_PRIVATE_KEY_HPP
 
+#include <stdexcept>
 #include "../../lite/security/ec-private-key-lite.hpp"
 #include "../../lite/security/rsa-private-key-lite.hpp"
 #include "../../util/blob.hpp"

@@ -23,6 +23,7 @@
 #ifndef NDN_TRUST_ANCHOR_CONTAINER_HPP
 #define NDN_TRUST_ANCHOR_CONTAINER_HPP
 
+#include <stdexcept>
 #include <map>
 #include "trust-anchor-group.hpp"
 
