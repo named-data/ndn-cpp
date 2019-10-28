@@ -19,6 +19,10 @@
  * A copy of the GNU Lesser General Public License is in the file COPYING.
  */
 
+// Only compile if ndn-cpp-config.h defines NDN_CPP_HAVE_PROTOBUF = 1.
+#include <ndn-cpp/ndn-cpp-config.h>
+#if NDN_CPP_HAVE_PROTOBUF
+
 #include <algorithm>
 #include <stdexcept>
 #include <sstream>
@@ -382,3 +386,5 @@ ChannelDiscovery::Impl::writeBase64Blob(const Blob& blob, const string& filePath
 }
 
 }
+
+#endif // NDN_CPP_HAVE_PROTOBUF
