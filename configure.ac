@@ -66,7 +66,7 @@ AX_CXX_COMPILE_STDCXX_11(, optional)
 AC_C_INLINE
 
 # Use the minimum boost version from NFD.
-AX_BOOST_BASE([1.41])
+AX_BOOST_BASE([1.48])
 
 AX_BOOST_ASIO
 
