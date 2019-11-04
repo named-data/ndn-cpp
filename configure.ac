@@ -63,6 +63,7 @@ AC_CHECK_HEADERS([sys/time.h], :, AC_MSG_ERROR([*** sys/time.h not found. Check 
 AC_CHECK_FUNCS([gettimeofday], :, AC_MSG_ERROR([*** gettimeofday not found. processEvents requires it. Check 'config.log' for more details.]))
 AC_CHECK_FUNCS([round])
 AX_CXX_COMPILE_STDCXX_11(, optional)
+AX_CXX_COMPILE_STDCXX_17(, optional)
 AC_C_INLINE
 
 # Use the minimum boost version from NFD.
