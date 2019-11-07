@@ -81,6 +81,13 @@ public:
   ThreadsafeFace(boost::asio::io_service& ioService);
 
   /**
+   * Get the asio io_service that was given to the constructor.
+   * @return THe asio io_service.
+   */
+  boost::asio::io_service&
+  getIoService() { return ioService_; }
+
+  /**
    * Override to use the ioService given to the constructor to dispatch
    * expressInterest to be called in a thread-safe manner. See
    * Face.expressInterest for calling details.
