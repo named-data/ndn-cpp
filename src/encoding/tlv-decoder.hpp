@@ -42,6 +42,17 @@ public:
     ndn_TlvDecoder_initialize(this, input, inputLength);
   }
 
+  uint64_t
+  readVarNumber()
+  {
+    uint64_t value;
+    ndn_Error error;
+    if ((error = ndn_TlvDecoder_readVarNumber(this, &value)))
+      throw runtime_error(ndn_getErrorString(error));
+
+    return value;
+  }
+
   size_t
   readNestedTlvsStart(unsigned int expectedType)
   {
