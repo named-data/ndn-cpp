@@ -41,7 +41,7 @@ public:
    * Create a DelegationSet with an empty list of delegations.
    */
   DelegationSet()
-  : changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+  : getDefaultWireEncodingChangeCount_(0), changeCount_(0)
   {
   }
 

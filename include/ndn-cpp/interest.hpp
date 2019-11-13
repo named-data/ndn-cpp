@@ -48,7 +48,7 @@ public:
    * @param interestLifetimeMilliseconds The interest lifetime in milliseconds, or -1 for none.
    */
   Interest(const Name& name, Milliseconds interestLifetimeMilliseconds)
-  : name_(name), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+  : name_(name), getNonceChangeCount_(0), getDefaultWireEncodingChangeCount_(0), changeCount_(0)
   {
     construct();
     interestLifetimeMilliseconds_ = interestLifetimeMilliseconds;
@@ -59,7 +59,7 @@ public:
    * @param name The name for the interest.
    */
   Interest(const Name& name)
-  : name_(name), getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+  : name_(name), getNonceChangeCount_(0), getDefaultWireEncodingChangeCount_(0), changeCount_(0)
   {
     construct();
   }
@@ -91,7 +91,7 @@ public:
    * Create a new Interest with an empty name and "none" for all values.
    */
   Interest()
-  : getNonceChangeCount_(0), changeCount_(0), getDefaultWireEncodingChangeCount_(0)
+  : getNonceChangeCount_(0), getDefaultWireEncodingChangeCount_(0), changeCount_(0)
   {
     construct();
   }
