@@ -75,7 +75,7 @@ public:
   static void
   decode(google::protobuf::Message& message, const std::vector<uint8_t>& input)
   {
-    decode(message, &input[0], input.size());
+    decode(message, input.data(), input.size());
   }
 
   /**
@@ -89,6 +89,141 @@ public:
   decode(google::protobuf::Message& message, const Blob& input)
   {
     decode(message, input.buf(), input.size());
+  }
+
+  /**
+   * Find the field in the message with the given field name, and return a TLV
+   * encoding where the type is the field number and the value is the field
+   * byte array. In this way, you can have a Protobuf message where one of the
+   * fields is a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param fieldName The name of the field in the message.
+   * @return The TLV encoding.
+   * @throws runtime_error if the message does not have a non-repeated field
+   * with the given fieldName.
+   */
+  static Blob
+  getTlv(const google::protobuf::Message& message, const std::string& fieldName);
+
+  /**
+   * Find the repeated field in the message with the given field name, and
+   * return a TLV encoding where the type is the field number and the value is
+   * the field byte array at the given index. In this way, you can have a
+   * Protobuf message where one of the fields is a repetition of a pre-encoded
+   * TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param fieldName The name of the repeated field in the message.
+   * @param index The index of the repeated field to get.
+   * @return The TLV encoding.
+   * @throws runtime_error if the message does not have a repeated field with
+   * the given fieldName.
+   */
+  static Blob
+  getTlv
+    (const google::protobuf::Message& message, const std::string& fieldName,
+     int index);
+
+  /**
+   * Find the repeated field in the message with the same field number as the
+   * type in the TLV encoding, and add the TLV value to the field. In this way,
+   * you can have a Protobuf message where one of the fields is a repetition of
+   * a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @param encodingLength The length  of the TLV encoding.
+   * @throws runtime_error if the message does not have a repeated field with
+   * the same field number as the type in the TLV encoding.
+   */
+  static void
+  addTlv
+    (google::protobuf::Message& message, const uint8_t *encoding,
+     size_t encodingLength);
+
+  /**
+   * Find the repeated field in the message with the same field number as the
+   * type in the TLV encoding, and add the TLV value to the field. In this way,
+   * you can have a Protobuf message where one of the fields is a repetition of
+   * a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @throws runtime_error if the message does not have a repeated field with
+   * the same field number as the type in the TLV encoding.
+   */
+  static void
+  addTlv
+    (google::protobuf::Message& message, const std::vector<uint8_t>& encoding)
+  {
+    addTlv(message, encoding.data(), encoding.size());
+  }
+
+  /**
+   * Find the repeated field in the message with the same field number as the
+   * type in the TLV encoding, and add the TLV value to the field. In this way,
+   * you can have a Protobuf message where one of the fields is a repetition of
+   * a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @throws runtime_error if the message does not have a repeated field with
+   * the same field number as the type in the TLV encoding.
+   */
+  static void
+  addTlv(google::protobuf::Message& message, const Blob& encoding)
+  {
+    addTlv(message, encoding.buf(), encoding.size());
+  }
+
+  /**
+   * Find the field in the message with the same field number as the type in the
+   * TLV encoding, and set the field to the TLV value. In this way, you can have
+   * a Protobuf message where one of the fields is a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @param encodingLength The length  of the TLV encoding.
+   * @throws runtime_error if the message does not have a non-repeated field
+   * with the same field number as the type in the TLV encoding.
+   */
+  static void
+  setTlv
+    (google::protobuf::Message& message, const uint8_t *encoding,
+     size_t encodingLength);
+
+  /**
+   * Find the field in the message with the same field number as the type in the
+   * TLV encoding, and set the field to the TLV value. In this way, you can have
+   * a Protobuf message where one of the fields is a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @throws runtime_error if the message does not have a non-repeated field
+   * with the same field number as the type in the TLV encoding.
+   */
+  static void
+  setTlv
+    (google::protobuf::Message& message, const std::vector<uint8_t>& encoding)
+  {
+    setTlv(message, encoding.data(), encoding.size());
+  }
+
+  /**
+   * Find the field in the message with the same field number as the type in the
+   * TLV encoding, and set the field to the TLV value. In this way, you can have
+   * a Protobuf message where one of the fields is a pre-encoded TLV.
+   * @param message The Protobuf Message object. This does not search nested
+   * message objects.
+   * @param encoding The TLV encoding.
+   * @throws runtime_error if the message does not have a non-repeated field
+   * with the same field number as the type in the TLV encoding.
+   */
+  static void
+  setTlv(google::protobuf::Message& message, const Blob& encoding)
+  {
+    setTlv(message, encoding.buf(), encoding.size());
   }
 
   /**

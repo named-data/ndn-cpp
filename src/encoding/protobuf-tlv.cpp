@@ -210,6 +210,122 @@ ProtobufTlv::decode(Message& message, const uint8_t *input, size_t inputLength)
   decodeMessageValue(message, decoder, inputLength);
 }
 
+Blob
+ProtobufTlv::getTlv
+  (const google::protobuf::Message& message, const std::string& fieldName)
+{
+  const Descriptor& descriptor = *message.GetDescriptor();
+  const FieldDescriptor* field = descriptor.FindFieldByName(fieldName);
+  if (!field)
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Can't find the field with the name " + fieldName);
+  if (field->is_repeated())
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() +
+       " is repeated, so use getTlv() with an index number");
+  if (!(field->type() == FieldDescriptor::TYPE_BYTES ||
+        field->type() == FieldDescriptor::TYPE_STRING))
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() + " is not of type bytes");
+
+  // Create the TLV from the bytes array.
+  const Reflection& reflection = *message.GetReflection();
+  TlvEncoder encoder(256);
+  encoder.writeRawStringTlv
+    (field->number(), reflection.GetString(message, field));
+  return encoder.finish();
+}
+
+Blob
+ProtobufTlv::getTlv
+  (const google::protobuf::Message& message, const std::string& fieldName,
+   int index)
+{
+  const Descriptor& descriptor = *message.GetDescriptor();
+  const FieldDescriptor* field = descriptor.FindFieldByName(fieldName);
+  if (!field)
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Can't find the field with the name " + fieldName);
+  if (!field->is_repeated())
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() +
+       " is not repeated, so use getTlv() without an index number");
+  if (!(field->type() == FieldDescriptor::TYPE_BYTES ||
+        field->type() == FieldDescriptor::TYPE_STRING))
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() + " is not of type bytes");
+
+  // Create the TLV from the bytes array.
+  const Reflection& reflection = *message.GetReflection();
+  TlvEncoder encoder(256);
+  encoder.writeRawStringTlv
+    (field->number(), reflection.GetRepeatedString(message, field, index));
+  return encoder.finish();
+}
+
+void
+ProtobufTlv::addTlv
+  (Message& message, const uint8_t *encoding, size_t encodingLength)
+{
+  // Get the TLV type and rewind.
+  TlvDecoder decoder(encoding, encodingLength);
+  size_t saveOffset = decoder.offset;
+  uint64_t tlvType = decoder.readVarNumber();
+  decoder.offset = saveOffset;
+
+  // Get the entire value.
+  struct ndn_Blob value = decoder.readBlobTlv(tlvType);
+
+  const Descriptor& descriptor = *message.GetDescriptor();
+  const FieldDescriptor* field = descriptor.FindFieldByNumber((int)tlvType);
+  if (!field)
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Can't find the field with the TLV type");
+  if (!field->is_repeated())
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() +
+       " is not repeated, so use setTlv()");
+  if (!(field->type() == FieldDescriptor::TYPE_BYTES ||
+        field->type() == FieldDescriptor::TYPE_STRING))
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() + " is not of type bytes");
+
+  const Reflection& reflection = *message.GetReflection();
+  reflection.AddString
+    (&message, field, string((const char*)value.value, value.length));
+}
+
+void
+ProtobufTlv::setTlv
+  (Message& message, const uint8_t *encoding, size_t encodingLength)
+{
+  // Get the TLV type and rewind.
+  TlvDecoder decoder(encoding, encodingLength);
+  size_t saveOffset = decoder.offset;
+  uint64_t tlvType = decoder.readVarNumber();
+  decoder.offset = saveOffset;
+
+  // Get the entire value.
+  struct ndn_Blob value = decoder.readBlobTlv(tlvType);
+
+  const Descriptor& descriptor = *message.GetDescriptor();
+  const FieldDescriptor* field = descriptor.FindFieldByNumber((int)tlvType);
+  if (!field)
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Can't find the field with the TLV type");
+  if (field->is_repeated())
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() +
+       " is repeated, so use addTlv()");
+  if (!(field->type() == FieldDescriptor::TYPE_BYTES ||
+        field->type() == FieldDescriptor::TYPE_STRING))
+    throw runtime_error
+      ("ProtobufTlv::setTlv: Field " + field->name() + " is not of type bytes");
+
+  const Reflection& reflection = *message.GetReflection();
+  reflection.SetString
+    (&message, field, string((const char*)value.value, value.length));
+}
 
 Name
 ProtobufTlv::toName(const google::protobuf::Message& nameMessage)
