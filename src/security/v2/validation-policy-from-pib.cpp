@@ -22,8 +22,7 @@
 #include <stdexcept>
 #include <ndn-cpp/security/v2/validator.hpp>
 #include <ndn-cpp/security/v2/validation-policy-from-pib.hpp>
-
-#include "ndn-cpp/security/v2/certificate-storage.hpp"
+#include <ndn-cpp/security/v2/certificate-storage.hpp>
 
 using namespace std;
 

@@ -29,7 +29,7 @@
 #include "c/data.h"
 #include "lp/incoming-face-id.hpp"
 #include "lp/congestion-mark.hpp"
-#include "ndn-cpp/lite/util/crypto-lite.hpp"
+#include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/data.hpp>
 
 using namespace std;
