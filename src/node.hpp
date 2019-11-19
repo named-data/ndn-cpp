@@ -524,6 +524,10 @@ private:
   bool
   satisfyPendingInterests(const Data& data);
 
+  // Disable the copy constructor and assignment operator.
+  Node(const Node& other);
+  Node& operator=(const Node& other);
+
   ptr_lib::shared_ptr<Transport> transport_;
   ptr_lib::shared_ptr<const Transport::ConnectionInfo> connectionInfo_;
   PendingInterestTable pendingInterestTable_;

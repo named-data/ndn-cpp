@@ -732,6 +732,10 @@ protected:
   Name commandCertificateName_;
 
 private:
+  // Disable the copy constructor and assignment operator.
+  Face(const Face& other);
+  Face& operator=(const Face& other);
+
   static ptr_lib::shared_ptr<Transport>
   getDefaultTransport();
 
