@@ -163,9 +163,14 @@ KeyChain::KeyChain()
 }
 
 void
-KeyChain::construct
-  (const string& pibLocator, const string& tpmLocator, bool allowReset)
+KeyChain::construct(string pibLocator, string tpmLocator, bool allowReset)
 {
+  ConfigFile config;
+  if (pibLocator == "")
+    pibLocator = getDefaultPibLocator(config);
+  if (tpmLocator == "")
+    tpmLocator = getDefaultTpmLocator(config);
+
   // PIB locator.
   string pibScheme, pibLocation;
   parseAndCheckPibLocator(pibLocator, pibScheme, pibLocation);
@@ -186,7 +191,6 @@ KeyChain::construct
   parseAndCheckTpmLocator(tpmLocator, tpmScheme, tpmLocation);
   string canonicalTpmLocator = tpmScheme + ":" + tpmLocation;
 
-  ConfigFile config;
   if (canonicalPibLocator == getDefaultPibLocator(config)) {
     // The default PIB must use the default TPM.
     if (oldTpmLocator != "" && oldTpmLocator != getDefaultTpmLocator(config)) {
@@ -877,6 +881,10 @@ KeyChain::getDefaultPibLocator(ConfigFile& config)
   else
      *defaultPibLocator_ = config.get("pib", getDefaultPibScheme() + ":");
 
+  string pibScheme, pibLocation;
+  parseAndCheckPibLocator(*defaultPibLocator_, pibScheme, pibLocation);
+  *defaultPibLocator_ = pibScheme + ":" + pibLocation;
+
   return *defaultPibLocator_;
 }
 
@@ -895,6 +903,10 @@ KeyChain::getDefaultTpmLocator(ConfigFile& config)
     *defaultTpmLocator_ = clientTpm;
   else
      *defaultTpmLocator_ = config.get("tpm", getDefaultTpmScheme() + ":");
+
+  string tpmScheme, tpmLocation;
+  parseAndCheckTpmLocator(*defaultTpmLocator_, tpmScheme, tpmLocation);
+  *defaultTpmLocator_ = tpmScheme + ":" + tpmLocation;
 
   return *defaultTpmLocator_;
 }
