@@ -1129,8 +1129,7 @@ private:
    */
   void
   construct
-    (const std::string& pibLocator, const std::string& tpmLocator,
-     bool allowReset);
+    (std::string pibLocator, std::string tpmLocator, bool allowReset);
 
   /**
    * Get the PIB factories map. On the first call, this initializes the map with
