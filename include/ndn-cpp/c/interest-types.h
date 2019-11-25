@@ -65,7 +65,7 @@ struct ndn_Interest {
   struct ndn_KeyLocator keyLocator;
   struct ndn_Exclude exclude;
   int childSelector;        /**< -1 for none */
-  int mustBeFresh;          /**< bool. Default true. */
+  int mustBeFresh;          /**< bool. Default false. */
   ndn_Milliseconds interestLifetimeMilliseconds; /**< -1.0 for none */
   struct ndn_Blob nonce;    /**< The blob whose value is a pointer to a pre-allocated buffer.  0 for none */
   struct ndn_Blob forwardingHintWireEncoding; /**< The blob whose value is a pointer to a pre-allocated buffer

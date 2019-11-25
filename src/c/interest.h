@@ -131,7 +131,7 @@ static __inline void ndn_Interest_initialize
   self->maxSuffixComponents = (ndn_Interest_defaultCanBePrefix_ ? -1 : 1);
   ndn_Exclude_initialize(&self->exclude, excludeEntries, maxExcludeEntries);
   self->childSelector = -1;
-  self->mustBeFresh = 1;
+  self->mustBeFresh = 0;
   self->interestLifetimeMilliseconds = -1.0;
   ndn_Blob_initialize(&self->nonce, 0, 0);
   ndn_KeyLocator_initialize(&self->keyLocator, keyNameComponents, maxKeyNameComponents);
@@ -192,7 +192,7 @@ ndn_Interest_setCanBePrefix(struct ndn_Interest *self, int canBePrefix)
  * Set the MustBeFresh flag.
  * @param self A pointer to the ndn_Interest struct.
  * @param mustBeFresh 1 if the content must be fresh, otherwise 0. If
- * you do not set this flag, the default value is 1.
+ * you do not set this flag, the default value is 0.
  */
 static __inline void
 ndn_Interest_setMustBeFresh(struct ndn_Interest *self, int mustBeFresh)

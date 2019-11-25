@@ -113,7 +113,7 @@ public:
   getChildSelector() const { return childSelector; }
 
   /**
-   * Return true if the content must be fresh. The default is true.
+   * Return true if the content must be fresh. The default is false.
    * @return True if must be fresh, otherwise false.
    */
   bool
@@ -217,7 +217,7 @@ public:
   /**
    * Set the MustBeFresh flag.
    * @param mustBeFresh True if the content must be fresh, otherwise false. If
-   * you do not set this flag, the default value is true.
+   * you do not set this flag, the default value is false.
    * @return This InterestLite so that you can chain calls to update values.
    */
   InterestLite&

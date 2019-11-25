@@ -1,3 +1,10 @@
+Interim changes since NDN-CPP v0.17 (2019-11-25)
+------------------------------------------------
+
+Changes
+* https://redmine.named-data.net/issues/5052 In Interest, changed the
+  MustBeFresh default value to false.
+
 NDN-CPP v0.17 (2019-10-04)
 --------------------------
 
