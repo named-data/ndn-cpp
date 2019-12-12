@@ -57,7 +57,7 @@ check_PROGRAMS = bin/unit-tests/test-access-manager-v2 \
   bin/unit-tests/test-interest-methods \
   bin/unit-tests/test-interval bin/unit-tests/test-key-chain \
   bin/unit-tests/test-invertible-bloom-lookup-table \
-  bin/unit-tests/test-link bin/unit-tests/test-name-conventions \
+  bin/unit-tests/test-name-conventions \
   bin/unit-tests/test-name-methods bin/unit-tests/test-pib-certificate-container \
   bin/unit-tests/test-pib-identity-container \
   bin/unit-tests/test-pib-identity-impl bin/unit-tests/test-pib-impl \
@@ -748,10 +748,6 @@ bin_unit_tests_test_invertible_bloom_lookup_table_SOURCES = \
   contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_invertible_bloom_lookup_table_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
 bin_unit_tests_test_invertible_bloom_lookup_table_LDADD = libndn-cpp.la
-
-bin_unit_tests_test_link_SOURCES = tests/unit-tests/test-link.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
-bin_unit_tests_test_link_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
-bin_unit_tests_test_link_LDADD = libndn-cpp.la
 
 bin_unit_tests_test_name_conventions_SOURCES = tests/unit-tests/test-name-conventions.cpp contrib/gtest-1.7.0/fused-src/gtest/gtest-all.cc
 bin_unit_tests_test_name_conventions_CPPFLAGS = -I./contrib/gtest-1.7.0/fused-src
