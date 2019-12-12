@@ -40,16 +40,13 @@ namespace ndn {
 string
 Face::getUnixSocketFilePathForLocalhost()
 {
-  string filePath = "/var/run/nfd.sock";
-  if (::access(filePath.c_str(), R_OK) == 0)
-    return filePath;
-  else {
-    filePath = "/tmp/.ndnd.sock";
-    if (::access(filePath.c_str(), R_OK) == 0)
-      return filePath;
-    else
-      return "";
+  const char* paths[] = { "/var/run/nfd.sock", "/tmp/.ndnd.sock" };
+  for (int i = 0; i < sizeof(paths)/sizeof(paths[0]); ++i) {
+    if (::access(paths[i], R_OK) == 0)
+      return paths[i];
   }
+
+  return "";
 }
 
 ptr_lib::shared_ptr<Transport>
