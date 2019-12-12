@@ -40,7 +40,8 @@ namespace ndn {
 string
 Face::getUnixSocketFilePathForLocalhost()
 {
-  const char* paths[] = { "/var/run/nfd.sock", "/tmp/.ndnd.sock" };
+  const char* paths[] =
+    { "/var/run/nfd.sock", "/var/tmp/nfd.sock", "/tmp/.ndnd.sock" };
   for (int i = 0; i < sizeof(paths)/sizeof(paths[0]); ++i) {
     if (::access(paths[i], R_OK) == 0)
       return paths[i];
