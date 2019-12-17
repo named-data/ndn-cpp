@@ -54,9 +54,11 @@ Node::expressInterest
    const OnTimeout& onTimeout, const OnNetworkNack& onNetworkNack,
    WireFormat& wireFormat, Face* face)
 {
-  // Set the nonce in our copy of the Interest so it is saved in the PIT.
-  const_cast<Interest*>(interestCopy.get())->setNonce(nonceTemplate_);
-  const_cast<Interest*>(interestCopy.get())->refreshNonce();
+  if (interestCopy->getNonce().size() == 0) {
+    // Set the nonce in our copy of the Interest so it is saved in the PIT.
+    const_cast<Interest*>(interestCopy.get())->setNonce(nonceTemplate_);
+    const_cast<Interest*>(interestCopy.get())->refreshNonce();
+  }
 
   if (connectStatus_ == ConnectStatus_CONNECT_COMPLETE) {
     // We are connected. Simply send the interest.
