@@ -1,4 +1,4 @@
-Interim changes since NDN-CPP v0.17 (2019-12-17)
+Interim changes since NDN-CPP v0.17 (2020-01-02)
 ------------------------------------------------
 
 Changes
@@ -8,6 +8,7 @@ Changes
 
 Bug fixes
 * In expressInterest, use the nonce in the Interest if provided.
+* In ThreadsafeFace, use a copy of registrationOptions when dispatching.
 
 NDN-CPP v0.17 (2019-10-04)
 --------------------------
