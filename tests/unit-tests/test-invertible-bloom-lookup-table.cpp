@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 Regents of the University of California.
+ * Copyright (C) 2019-2020 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From PSync unit tests:
  * https://github.com/named-data/PSync/blob/master/tests/test-iblt.cpp

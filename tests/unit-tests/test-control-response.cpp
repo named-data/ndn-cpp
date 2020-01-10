@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-2019 Regents of the University of California.
+ * Copyright (C) 2014-2020 Regents of the University of California.
  * @author Andrew Brown <andrew.brown@intel.com>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * From jNDN TestControlResponse.
