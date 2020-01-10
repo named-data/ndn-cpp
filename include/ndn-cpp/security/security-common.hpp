@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013-2019 Regents of the University of California.
+ * Copyright (C) 2013-2020 Regents of the University of California.
  * @author: Yingdi Yu <yingdi@cs.ucla.edu>
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *

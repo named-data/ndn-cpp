@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2018-2019 Regents of the University of California.
+ * Copyright (C) 2018-2020 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  * @author: From the NAC library https://github.com/named-data/name-based-access-control/blob/new/src/decryptor.cpp
  *
