@@ -70,8 +70,12 @@ Interest::getIncomingFaceId() const
 }
 
 void
-Interest::get(InterestLite& interestLite, WireFormat& wireFormat) const
+Interest::get
+  (InterestLite& interestLite, WireFormat& wireFormat, Blob& blob1, Blob& blob2) const
 {
+  blob1 = Blob();
+  blob2 = Blob();
+
   name_.get().get(interestLite.getName());
   interestLite.setMinSuffixComponents(minSuffixComponents_);
   interestLite.setMaxSuffixComponents(maxSuffixComponents_);
@@ -82,18 +86,21 @@ Interest::get(InterestLite& interestLite, WireFormat& wireFormat) const
   interestLite.setInterestLifetimeMilliseconds(interestLifetimeMilliseconds_);
   interestLite.setNonce(nonce_);
   interestLite.setApplicationParameters(applicationParameters_);
-  if (getForwardingHint().size() > 0)
+  if (getForwardingHint().size() > 0) {
     // InterestLite only stores the encoded delegation set. The DelegationSet
     // will cache the wire encoding long enough to encode the Interest.
-    interestLite.setForwardingHintWireEncoding
-      (getForwardingHint().wireEncode(wireFormat));
+    blob1 = getForwardingHint().wireEncode(wireFormat);
+    interestLite.setForwardingHintWireEncoding(blob1);
+  }
   else
     interestLite.setForwardingHintWireEncoding(Blob());
   try {
-    interestLite.setLinkWireEncoding(getLinkWireEncoding(wireFormat));
+    blob2 = getLinkWireEncoding(wireFormat);
+    interestLite.setLinkWireEncoding(blob2);
   } catch (...) {
     // Can't encode the link object.
     interestLite.setLinkWireEncoding(Blob());
+    blob2 = Blob();
   }
   interestLite.setSelectedDelegationIndex(selectedDelegationIndex_);
 }

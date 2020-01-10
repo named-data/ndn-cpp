@@ -95,7 +95,8 @@ Tlv0_2WireFormat::encodeInterest
     (nameComponents, sizeof(nameComponents) / sizeof(nameComponents[0]),
      excludeEntries, sizeof(excludeEntries) / sizeof(excludeEntries[0]),
      keyNameComponents, sizeof(keyNameComponents) / sizeof(keyNameComponents[0]));
-  interest.get(interestLite, *this);
+  Blob blob1, blob2;
+  interest.get(interestLite, *this, blob1, blob2);
 
   DynamicUInt8Vector output(256);
   ndn_Error error;

@@ -196,9 +196,13 @@ public:
    * already allocated.
    * @param wireFormat The desired wire format for encoding the link object (if
    * necessary).
+   * @param blob1 A reference to a default Blob() which is replaced by a temporary
+   * buffer which must remain valid, e.g., while encoding the interestLite.
+   * @param blob2 A reference to a default Blob() which is replaced by a temporary
+   * buffer which must remain valid, e.g., while encoding the interestLite.
    */
   void
-  get(InterestLite& interestLite, WireFormat& wireFormat) const;
+  get(InterestLite& interestLite, WireFormat& wireFormat, Blob& blob1, Blob& blob2) const;
 
   /**
    * Clear this interest, and set the values by copying from interestLite.
