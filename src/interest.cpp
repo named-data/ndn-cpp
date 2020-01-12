@@ -73,9 +73,6 @@ void
 Interest::get
   (InterestLite& interestLite, WireFormat& wireFormat, Blob& blob1, Blob& blob2) const
 {
-  blob1 = Blob();
-  blob2 = Blob();
-
   name_.get().get(interestLite.getName());
   interestLite.setMinSuffixComponents(minSuffixComponents_);
   interestLite.setMaxSuffixComponents(maxSuffixComponents_);
@@ -100,7 +97,6 @@ Interest::get
   } catch (...) {
     // Can't encode the link object.
     interestLite.setLinkWireEncoding(Blob());
-    blob2 = Blob();
   }
   interestLite.setSelectedDelegationIndex(selectedDelegationIndex_);
 }
