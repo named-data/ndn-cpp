@@ -538,10 +538,13 @@ public:
   /**
    * Convert to the ISO string representation of the time.
    * @param time Milliseconds since 1/1/1970.
+   * @param includeFraction (optional) If true, include the six-digit fractions
+   * of a second. If false or omitted, round to the second and don't include the
+   * fraction.
    * @return The ISO string.
    */
   static std::string
-  toIsoString(const MillisecondsSince1970& time);
+  toIsoString(const MillisecondsSince1970& time, bool includeFraction = false);
 
   /**
    * Convert from the ISO string representation to the internal time format.

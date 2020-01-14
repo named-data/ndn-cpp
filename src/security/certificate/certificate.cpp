@@ -187,8 +187,8 @@ Certificate::printCertificate(ostream& os) const
   os << "Certificate name:" << endl;
   os << "  " << getName() << endl;
   os << "Validity:" << endl;
-  os << "  NotBefore: " << DerGeneralizedTime::toIsoString(getNotBefore()) << endl;
-  os << "  NotAfter: "  << DerGeneralizedTime::toIsoString(getNotAfter())  << endl;
+  os << "  NotBefore: " << DerGeneralizedTime::toIsoString(getNotBefore(), true) << endl;
+  os << "  NotAfter: "  << DerGeneralizedTime::toIsoString(getNotAfter(), true)  << endl;
 
   os << "Subject Description:" << endl;
   vector<CertificateSubjectDescription>::const_iterator it = subjectDescriptionList_.begin();

@@ -439,7 +439,7 @@ DerNode::DerGeneralizedTime::toMillisecondsSince1970()
 string
 DerNode::DerGeneralizedTime::toDerTimeString(MillisecondsSince1970 msSince1970)
 {
-  string pTimeStr = toIsoString(msSince1970);
+  string pTimeStr = toIsoString(msSince1970, true);
   // The ISO string has the 'T' in the middle. Convert to UTC with 'Z' at the end.
   size_t index = pTimeStr.find_first_of('T');
   return pTimeStr.substr(0, index) +
@@ -447,11 +447,12 @@ DerNode::DerGeneralizedTime::toDerTimeString(MillisecondsSince1970 msSince1970)
 }
 
 string
-DerNode::DerGeneralizedTime::toIsoString(const MillisecondsSince1970& time)
+DerNode::DerGeneralizedTime::toIsoString
+  (const MillisecondsSince1970& time, bool includeFraction)
 {
   char isoString[25];
   ndn_Error error;
-  if ((error = ndn_toIsoString(time, 1, isoString)))
+  if ((error = ndn_toIsoString(time, includeFraction ? 1 : 0, isoString)))
     throw runtime_error(ndn_getErrorString(error));
 
   return isoString;
