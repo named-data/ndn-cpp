@@ -21,7 +21,7 @@
  */
 
 #include <ndn-cpp/security/validity-period.hpp>
-#include <ndn-cpp/encrypt/schedule.hpp>
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../encoding/base64.hpp"
@@ -85,9 +85,9 @@ CertificateV2::printCertificate(ostream& output) const
   output << "Certificate name:\n";
   output << "  " << getName() << "\n";
   output << "Validity:\n";
-  output << "  NotBefore: " << Schedule::toIsoString
+  output << "  NotBefore: " << DerNode::DerGeneralizedTime::toIsoString
     (getValidityPeriod().getNotBefore()) << "\n";
-  output << "  NotAfter: "  << Schedule::toIsoString
+  output << "  NotAfter: "  << DerNode::DerGeneralizedTime::toIsoString
     (getValidityPeriod().getNotAfter()) << "\n";
 
   /* TODO: Print the extension.

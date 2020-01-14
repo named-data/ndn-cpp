@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <ndn-cpp/util/logging.hpp>
-#include <ndn-cpp/encrypt/schedule.hpp>
+#include "../../encoding/der/der-node.hpp"
 #include <ndn-cpp/security/v2/certificate-cache-v2.hpp>
 
 using namespace std;
@@ -47,7 +47,7 @@ CertificateCacheV2::insert(const CertificateV2& certificate)
   MillisecondsSince1970 now = ndn_getNowMilliseconds() + nowOffsetMilliseconds_;
   if (notAfterTime < now) {
     _LOG_DEBUG("Not adding " << certificate.getName().toUri() <<
-      ": already expired at " << Schedule::toIsoString(notAfterTime));
+      ": already expired at " << DerNode::DerGeneralizedTime::toIsoString(notAfterTime));
     return;
   }
 

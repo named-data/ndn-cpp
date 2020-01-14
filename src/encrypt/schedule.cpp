@@ -21,11 +21,11 @@
  */
 
 #include <stdexcept>
-#include "../c/util/time.h"
 #include "../c/encoding/tlv/tlv-encoder.h"
 #include "../c/encoding/tlv/tlv-decoder.h"
 #include "../c/util/blob.h"
 #include "../util/dynamic-uint8-vector.hpp"
+#include "../encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/schedule.hpp>
 
 using namespace std;
@@ -128,28 +128,6 @@ Schedule::wireDecode(const uint8_t *input, size_t inputLength)
     throw runtime_error(ndn_getErrorString(error));
 }
 
-MillisecondsSince1970
-Schedule::fromIsoString(const string& dateString)
-{
-  ndn_MillisecondsSince1970 result;
-  ndn_Error error;
-  if ((error = ndn_fromIsoString(dateString.c_str(), &result)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return result;
-}
-
-string
-Schedule::toIsoString(MillisecondsSince1970 msSince1970)
-{
-  char isoString[25];
-  ndn_Error error;
-  if ((error = ndn_toIsoString(msSince1970, 0, isoString)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return isoString;
-}
-
 void
 Schedule::sortedSetAdd
   (vector<ptr_lib::shared_ptr<RepetitiveInterval> >& list,
@@ -187,7 +165,7 @@ Schedule::encodeRepetitiveIntervalValue
     *(const RepetitiveInterval*)context;
   ndn_Error error;
 
-  string startDateString = toIsoString(repetitiveInterval.getStartDate());
+  string startDateString = DerNode::DerGeneralizedTime::toIsoString(repetitiveInterval.getStartDate());
   ndn_Blob startDateBlob;
   ndn_Blob_initialize
     (&startDateBlob, (const uint8_t*)startDateString.c_str(), startDateString.size());
@@ -195,7 +173,8 @@ Schedule::encodeRepetitiveIntervalValue
        (encoder, ndn_Tlv_Encrypt_StartDate, &startDateBlob)))
     return error;
 
-  string endDateString = toIsoString(repetitiveInterval.getEndDate());
+  string endDateString = DerNode::DerGeneralizedTime::toIsoString
+    (repetitiveInterval.getEndDate());
   ndn_Blob endDateBlob;
   ndn_Blob_initialize
     (&endDateBlob, (const uint8_t*)endDateString.c_str(), endDateString.size());
@@ -316,8 +295,8 @@ Schedule::decodeRepetitiveInterval(ndn_TlvDecoder *decoder)
   // Use Blob to make a string.
   // The RepeatUnit enum has the same values as the encoding.
   return ptr_lib::make_shared<RepetitiveInterval>
-    (fromIsoString(Blob(startDate).toRawStr()),
-     fromIsoString(Blob(endDate).toRawStr()), intervalStartHour,
+    (DerNode::DerGeneralizedTime::fromIsoString(Blob(startDate).toRawStr()),
+     DerNode::DerGeneralizedTime::fromIsoString(Blob(endDate).toRawStr()), intervalStartHour,
      intervalEndHour, nRepeats, (RepetitiveInterval::RepeatUnit)repeatUnit);
 }
 

@@ -24,6 +24,7 @@
 #include <ndn-cpp/encrypt/algo/encryptor.hpp>
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
 #include <ndn-cpp/encrypt/schedule.hpp>
+#include "../encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/producer.hpp>
 
 using namespace std;
@@ -81,7 +82,7 @@ Producer::Impl::createContentKey
   // Create the content key name.
   Name contentKeyName(namespace_);
   contentKeyName.append(Encryptor::getNAME_COMPONENT_C_KEY());
-  contentKeyName.append(Schedule::toIsoString(hourSlot));
+  contentKeyName.append(DerNode::DerGeneralizedTime::toIsoString(hourSlot));
 
   Blob contentKeyBits;
 
@@ -102,7 +103,7 @@ Producer::Impl::createContentKey
 
   // Check if the current E-KEYs can cover the content key.
   Exclude timeRange;
-  excludeAfter(timeRange, Name::Component(Schedule::toIsoString(timeSlot)));
+  excludeAfter(timeRange, Name::Component(DerNode::DerGeneralizedTime::toIsoString(timeSlot)));
   for (map<Name, ptr_lib::shared_ptr<KeyInfo> >::iterator i = eKeyInfo_.begin();
        i != eKeyInfo_.end(); ++i) {
     // For each current E-KEY.
@@ -118,8 +119,8 @@ Producer::Impl::createContentKey
       // The current E-KEY can cover the content key.
       // Encrypt the content key directly.
       Name eKeyName(i->first);
-      eKeyName.append(Schedule::toIsoString(keyInfo.beginTimeSlot));
-      eKeyName.append(Schedule::toIsoString(keyInfo.endTimeSlot));
+      eKeyName.append(DerNode::DerGeneralizedTime::toIsoString(keyInfo.beginTimeSlot));
+      eKeyName.append(DerNode::DerGeneralizedTime::toIsoString(keyInfo.endTimeSlot));
       encryptContentKey
         (keyInfo.keyBits, eKeyName, timeSlot, onEncryptedKeys, onError);
     }
@@ -139,7 +140,7 @@ Producer::Impl::produce
 
   // Produce data.
   Name dataName(namespace_);
-  dataName.append(Schedule::toIsoString(timeSlot));
+  dataName.append(DerNode::DerGeneralizedTime::toIsoString(timeSlot));
 
   data.setName(dataName);
   EncryptParams params(ndn_EncryptAlgorithmType_AesCbc, 16);
@@ -249,9 +250,9 @@ Producer::Impl::handleCoveringKey
   const Name& interestName = interest->getName();
   const Name& keyName = data->getName();
 
-  MillisecondsSince1970 begin = Schedule::fromIsoString
+  MillisecondsSince1970 begin = DerNode::DerGeneralizedTime::fromIsoString
     (keyName.get(START_TIME_STAMP_INDEX).getValue().toRawStr());
-  MillisecondsSince1970 end = Schedule::fromIsoString
+  MillisecondsSince1970 end = DerNode::DerGeneralizedTime::fromIsoString
     (keyName.get(END_TIME_STAMP_INDEX).getValue().toRawStr());
 
   if (timeSlot >= end) {
@@ -290,7 +291,7 @@ Producer::Impl::encryptContentKey
 
   Name keyName(namespace_);
   keyName.append(Encryptor::getNAME_COMPONENT_C_KEY());
-  keyName.append(Schedule::toIsoString(getRoundedTimeSlot(timeSlot)));
+  keyName.append(DerNode::DerGeneralizedTime::toIsoString(getRoundedTimeSlot(timeSlot)));
 
   Blob contentKey = database_->getContentKey(timeSlot);
 

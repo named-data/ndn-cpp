@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/v2/certificate-v2.hpp>
-#include <ndn-cpp/encrypt/schedule.hpp>
+#include "../../src/encoding/der/der-node.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -31,13 +31,13 @@ using namespace ndn;
 static MillisecondsSince1970
 fromIsoString(const string& dateString)
 {
-  return Schedule::fromIsoString(dateString);
+  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
 }
 
 string
 toIsoString(MillisecondsSince1970 msSince1970)
 {
-  return Schedule::toIsoString(msSince1970);
+  return DerNode::DerGeneralizedTime::toIsoString(msSince1970);
 }
 
 static const uint8_t PUBLIC_KEY[] = {

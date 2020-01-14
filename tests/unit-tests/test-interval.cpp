@@ -22,8 +22,7 @@
 
 #include "gtest/gtest.h"
 #include <ndn-cpp/encrypt/interval.hpp>
-// Use Schedule::fromIsoString.
-#include <ndn-cpp/encrypt/schedule.hpp>
+#include "../../src/encoding/der/der-node.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -31,13 +30,13 @@ using namespace ndn;
 static MillisecondsSince1970
 fromIsoString(const string& dateString)
 { 
-  return Schedule::fromIsoString(dateString);
+  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
 }
 
 string
 toIsoString(MillisecondsSince1970 msSince1970)
 {
-  return Schedule::toIsoString(msSince1970);
+  return DerNode::DerGeneralizedTime::toIsoString(msSince1970);
 }
 
 class TestInterval : public ::testing::Test {

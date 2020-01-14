@@ -25,6 +25,7 @@
 #include <ndn-cpp/encrypt/algo/encryptor.hpp>
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 #include <ndn-cpp/encrypt/group-manager.hpp>
+#include "../encoding/der/der-node.hpp"
 
 using namespace std;
 
@@ -56,8 +57,8 @@ GroupManager::getGroupKey
   if (finalInterval.isValid() == false)
     return;
 
-  string startTimeStamp = Schedule::toIsoString(finalInterval.getStartTime());
-  string endTimeStamp = Schedule::toIsoString(finalInterval.getEndTime());
+  string startTimeStamp = DerNode::DerGeneralizedTime::toIsoString(finalInterval.getStartTime());
+  string endTimeStamp = DerNode::DerGeneralizedTime::toIsoString(finalInterval.getEndTime());
 
   // Generate the private and public keys.
   Blob privateKeyBlob;

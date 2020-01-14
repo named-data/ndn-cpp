@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 #include <ndn-cpp/encrypt/sqlite3-group-manager-db.hpp>
+#include "../../src/encoding/der/der-node.hpp"
 
 using namespace std;
 using namespace ndn;
@@ -60,7 +61,7 @@ getPolicyConfigDirectory()
 static MillisecondsSince1970
 fromIsoString(const string& dateString)
 {
-  return Schedule::fromIsoString(dateString);
+  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
 }
 
 static uint8_t SCHEDULE[] = {
