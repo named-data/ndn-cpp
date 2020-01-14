@@ -141,12 +141,6 @@ public:
     wireDecode(input.buf(), input.size());
   }
 
-  static MillisecondsSince1970
-  fromIsoString(const std::string& dateString);
-
-  static std::string
-  toIsoString(MillisecondsSince1970 msSince1970);
-
 private:
   /**
    * Insert element into the list, sorted using element.compare(). If it is a
