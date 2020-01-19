@@ -56,7 +56,7 @@ public:
    * @param nowOffsetMilliseconds The offset in milliseconds.
    */
   void
-  setNowOffsetMilliseconds_(Milliseconds nowOffsetMilliseconds)
+  setNowOffsetMilliseconds_(ndn_Milliseconds nowOffsetMilliseconds)
   {
     nowOffsetMilliseconds_ = nowOffsetMilliseconds;
   }
@@ -70,13 +70,13 @@ private:
      * @param delayMilliseconds The delay in milliseconds.
      * @param callback This calls callback() after the delay.
      */
-    Entry(Milliseconds delayMilliseconds, const Face::Callback& callback);
+    Entry(ndn_Milliseconds delayMilliseconds, const Face::Callback& callback);
 
     /**
      * Get the time at which the callback should be called.
      * @return The call time in milliseconds, similar to ndn_getNowMilliseconds.
      */
-    MillisecondsSince1970
+    ndn_MillisecondsSince1970
     getCallTime() const { return callTime_; }
 
     /**
@@ -102,13 +102,13 @@ private:
 
   private:
     const Face::Callback callback_;
-    MillisecondsSince1970 callTime_;
+    ndn_MillisecondsSince1970 callTime_;
   };
 
   // Use a deque so we can efficiently remove from the front.
   std::deque<ptr_lib::shared_ptr<Entry> > table_;
   Entry::Compare entryCompare_;
-  Milliseconds nowOffsetMilliseconds_;
+  ndn_Milliseconds nowOffsetMilliseconds_;
 };
 
 }
