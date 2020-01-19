@@ -22,7 +22,6 @@
 #ifndef NDN_META_INFO_LITE_HPP
 #define NDN_META_INFO_LITE_HPP
 
-#include "common-lite.hpp"
 #include "name-lite.hpp"
 #include "../c/data-types.h"
 
@@ -56,7 +55,7 @@ public:
   int
   getOtherTypeCode() const { return otherTypeCode; }
 
-  Milliseconds
+  ndn_Milliseconds
   getFreshnessPeriod() const { return freshnessPeriod; }
 
   const NameLite::Component
@@ -82,7 +81,7 @@ public:
   setOtherTypeCode(int otherTypeCode) { this->otherTypeCode = otherTypeCode; }
 
   void
-  setFreshnessPeriod(Milliseconds freshnessPeriod)
+  setFreshnessPeriod(ndn_Milliseconds freshnessPeriod)
   {
     this->freshnessPeriod = freshnessPeriod;
   }

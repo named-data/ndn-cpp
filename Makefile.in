@@ -1979,7 +1979,6 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encrypt/algo/encryptor.hpp \
   include/ndn-cpp/encrypt/algo/rsa-algorithm.hpp \
   include/ndn-cpp/in-memory-storage/in-memory-storage-retaining.hpp \
-  include/ndn-cpp/lite/common-lite.hpp \
   include/ndn-cpp/lite/control-parameters-lite.hpp \
   include/ndn-cpp/lite/control-response-lite.hpp \
   include/ndn-cpp/lite/data-lite.hpp \

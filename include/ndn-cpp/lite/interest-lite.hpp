@@ -22,7 +22,6 @@
 #ifndef NDN_INTEREST_LITE_HPP
 #define NDN_INTEREST_LITE_HPP
 
-#include "common-lite.hpp"
 #include "exclude-lite.hpp"
 #include "key-locator-lite.hpp"
 #include "../c/interest-types.h"
@@ -119,7 +118,7 @@ public:
   bool
   getMustBeFresh() const;
 
-  Milliseconds
+  ndn_Milliseconds
   getInterestLifetimeMilliseconds() const { return interestLifetimeMilliseconds; }
 
   const BlobLite&
@@ -230,7 +229,7 @@ public:
    * @return This InterestLite so that you can chain calls to update values.
    */
   InterestLite&
-  setInterestLifetimeMilliseconds(Milliseconds interestLifetimeMilliseconds)
+  setInterestLifetimeMilliseconds(ndn_Milliseconds interestLifetimeMilliseconds)
   {
     this->interestLifetimeMilliseconds = interestLifetimeMilliseconds;
     return *this;

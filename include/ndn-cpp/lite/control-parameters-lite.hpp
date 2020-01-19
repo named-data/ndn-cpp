@@ -22,7 +22,6 @@
 #ifndef NDN_CONTROL_PARAMETERS_LITE_HPP
 #define NDN_CONTROL_PARAMETERS_LITE_HPP
 
-#include "common-lite.hpp"
 #include "name-lite.hpp"
 #include "registration-options-lite.hpp"
 #include "../c/control-parameters-types.h"
@@ -101,7 +100,7 @@ public:
   const NameLite&
   getStrategy() const { return NameLite::downCast(strategy); }
 
-  Milliseconds
+  ndn_Milliseconds
   getExpirationPeriod() const { return expirationPeriod; }
 
   /**
@@ -227,7 +226,7 @@ public:
    * values.
    */
   ControlParametersLite&
-  setExpirationPeriod(Milliseconds expirationPeriod)
+  setExpirationPeriod(ndn_Milliseconds expirationPeriod)
   {
     this->expirationPeriod = expirationPeriod;
     return *this;
