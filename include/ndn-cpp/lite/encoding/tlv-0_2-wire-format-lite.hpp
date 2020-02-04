@@ -22,21 +22,14 @@
 #ifndef NDN_TLV_0_2_WIRE_FORMAT_LITE_HPP
 #define NDN_TLV_0_2_WIRE_FORMAT_LITE_HPP
 
-#include "../interest-lite.hpp"
-#include "../data-lite.hpp"
-#include "../signature-lite.hpp"
-#include "../control-parameters-lite.hpp"
-#include "../control-response-lite.hpp"
-#include "../lp/lp-packet-lite.hpp"
-#include "../delegation-set-lite.hpp"
-#include "../encrypt/encrypted-content-lite.hpp"
-#include "../util/dynamic-uint8-array-lite.hpp"
+#include "tlv-0_3-wire-format-lite.hpp"
 
 namespace ndn {
 
 /**
  * A Tlv0_2WireFormatLite implements implement encoding and decoding using
- * NDN-TLV version 0.2.
+ * NDN-TLV version 0.2. These methods call the ones for version version 0.3
+ * except where the format is different for version 0.2.
  */
 class Tlv0_2WireFormatLite {
 public:
@@ -61,7 +54,12 @@ public:
   encodeName
     (const NameLite& name, size_t* signedPortionBeginOffset,
      size_t* signedPortionEndOffset, DynamicUInt8ArrayLite& output,
-     size_t* encodingLength);
+     size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeName
+      (name, signedPortionBeginOffset, signedPortionEndOffset, output,
+       encodingLength);
+  }
 
   /**
    * Decode input as a name in NDN-TLV and set the fields of the name
@@ -82,7 +80,11 @@ public:
   static ndn_Error
   decodeName
     (NameLite& name, const uint8_t* input, size_t inputLength,
-     size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset);
+     size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset)
+  {
+    return Tlv0_3WireFormatLite::decodeName
+      (name, input, inputLength, signedPortionBeginOffset, signedPortionEndOffset);
+  }
 
   /**
    * Encode interest as NDN-TLV.
@@ -147,7 +149,12 @@ public:
   encodeData
     (const DataLite& data, size_t* signedPortionBeginOffset,
      size_t* signedPortionEndOffset, DynamicUInt8ArrayLite& output,
-     size_t* encodingLength);
+     size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeData
+      (data, signedPortionBeginOffset, signedPortionEndOffset, output,
+       encodingLength);
+  }
 
   /**
    * Decode input as a data packet in NDN-TLV and set the fields in the data object.
@@ -165,7 +172,11 @@ public:
   static ndn_Error
   decodeData
     (DataLite& data, const uint8_t* input, size_t inputLength,
-     size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset);
+     size_t* signedPortionBeginOffset, size_t* signedPortionEndOffset)
+  {
+    return Tlv0_3WireFormatLite::decodeData
+      (data, input, inputLength, signedPortionBeginOffset, signedPortionEndOffset);
+  }
 
   /**
    * Encode controlParameters as an NDN-TLV ControlParameters.
@@ -179,7 +190,11 @@ public:
   static ndn_Error
   encodeControlParameters
     (const ControlParametersLite& controlParameters,
-     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+     DynamicUInt8ArrayLite& output, size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeControlParameters
+      (controlParameters, output, encodingLength);
+  }
 
   /**
    * Decode input as a TLV ControlParameters and set the fields in the
@@ -193,7 +208,11 @@ public:
   static ndn_Error
   decodeControlParameters
     (ControlParametersLite& controlParameters, const uint8_t* input,
-     size_t inputLength);
+     size_t inputLength)
+  {
+    return Tlv0_3WireFormatLite::decodeControlParameters
+      (controlParameters, input, inputLength);
+  }
 
   /**
    * Encode controlResponse as an NDN-TLV ControlResponse.
@@ -207,7 +226,11 @@ public:
   static ndn_Error
   encodeControlResponse
     (const ControlResponseLite& controlResponse,
-     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+     DynamicUInt8ArrayLite& output, size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeControlResponse
+      (controlResponse, output, encodingLength);
+  }
 
   /**
    * Decode input as a TLV ControlResponse and set the fields in the
@@ -221,7 +244,11 @@ public:
   static ndn_Error
   decodeControlResponse
     (ControlResponseLite& controlResponse, const uint8_t* input,
-     size_t inputLength);
+     size_t inputLength)
+  {
+    return Tlv0_3WireFormatLite::decodeControlResponse
+      (controlResponse, input, inputLength);
+  }
 
   /**
    * Encode signature as an NDN-TLV SignatureInfo.
@@ -235,7 +262,11 @@ public:
   static ndn_Error
   encodeSignatureInfo
     (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
-     size_t* encodingLength);
+     size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeSignatureInfo
+      (signature, output, encodingLength);
+  }
 
   /**
    * Encode the signatureValue in the Signature object as an NDN-TLV
@@ -250,7 +281,11 @@ public:
   static ndn_Error
   encodeSignatureValue
     (const SignatureLite& signature, DynamicUInt8ArrayLite& output,
-     size_t* encodingLength);
+     size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeSignatureValue
+      (signature, output, encodingLength);
+  }
 
   /**
    * Decode signatureInfo as an NDN-TLV signature info and signatureValue as the
@@ -266,7 +301,12 @@ public:
   decodeSignatureInfoAndValue
     (SignatureLite& signature, const uint8_t *signatureInfo,
      size_t signatureInfoLength, const uint8_t *signatureValue,
-     size_t signatureValueLength);
+     size_t signatureValueLength)
+  {
+    return Tlv0_3WireFormatLite::decodeSignatureInfoAndValue
+      (signature, signatureInfo, signatureInfoLength, signatureValue,
+       signatureValueLength);
+  }
 
   /**
    * Decode input as a TLV LpPacket and set the fields in the lpPacket object.
@@ -277,7 +317,11 @@ public:
    */
   static ndn_Error
   decodeLpPacket
-    (LpPacketLite& lpPacket, const uint8_t* input, size_t inputLength);
+    (LpPacketLite& lpPacket, const uint8_t* input, size_t inputLength)
+  {
+    return Tlv0_3WireFormatLite::decodeLpPacket
+      (lpPacket, input, inputLength);
+  }
 
   /**
    * Encode delegation as an NDN-TLV Delegation.
@@ -294,7 +338,11 @@ public:
   static ndn_Error
   encodeDelegationSet_Delegation
     (const DelegationSetLite::Delegation& delegation,
-     DynamicUInt8ArrayLite& output, size_t offset, size_t* encodingLength);
+     DynamicUInt8ArrayLite& output, size_t offset, size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeDelegationSet_Delegation
+      (delegation, output, offset, encodingLength);
+  }
 
   /**
    * Decode input as an NDN-TLV Delegation and set the fields in the delegation
@@ -310,7 +358,11 @@ public:
   static ndn_Error
   decodeDelegationSet_Delegation
     (DelegationSetLite::Delegation& delegation, const uint8_t* input,
-     size_t inputLength, size_t *encodingLength);
+     size_t inputLength, size_t *encodingLength)
+  {
+    return Tlv0_3WireFormatLite::decodeDelegationSet_Delegation
+      (delegation, input, inputLength, encodingLength);
+  }
 
   /**
    * Encode the EncryptedContent v1 in NDN-TLV.
@@ -324,7 +376,11 @@ public:
   static ndn_Error
   encodeEncryptedContent
     (const EncryptedContentLite& encryptedContent,
-     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+     DynamicUInt8ArrayLite& output, size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeEncryptedContent
+      (encryptedContent, output, encodingLength);
+  }
 
   /**
    * Decode input as an EncryptedContent v1 in NDN-TLV and set the fields of the
@@ -338,7 +394,11 @@ public:
   static ndn_Error
   decodeEncryptedContent
     (EncryptedContentLite& encryptedContent, const uint8_t* input,
-     size_t inputLength);
+     size_t inputLength)
+  {
+    return Tlv0_3WireFormatLite::decodeEncryptedContent
+      (encryptedContent, input, inputLength);
+  }
 
   /**
    * Encode the EncryptedContent v2 (used in Name-based Access Control v2) in
@@ -354,7 +414,11 @@ public:
   static ndn_Error
   encodeEncryptedContentV2
     (const EncryptedContentLite& encryptedContent,
-     DynamicUInt8ArrayLite& output, size_t* encodingLength);
+     DynamicUInt8ArrayLite& output, size_t* encodingLength)
+  {
+    return Tlv0_3WireFormatLite::encodeEncryptedContentV2
+      (encryptedContent, output, encodingLength);
+  }
 
   /**
    * Decode input as an an EncryptedContent v2 (used in Name-based Access
@@ -369,7 +433,11 @@ public:
   static ndn_Error
   decodeEncryptedContentV2
     (EncryptedContentLite& encryptedContent, const uint8_t* input,
-     size_t inputLength);
+     size_t inputLength)
+  {
+    return Tlv0_3WireFormatLite::decodeEncryptedContentV2
+      (encryptedContent, input, inputLength);
+  }
 };
 
 }
