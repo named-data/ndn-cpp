@@ -407,20 +407,20 @@ ndn_decodeTlvInterest
 
   saveOffset = decoder->offset;
 
-  errorV03 = ndn_decodeTlvInterestV02
+  errorV03 = ndn_decodeTlvInterestV03
     (interest, signedPortionBeginOffset, signedPortionEndOffset, decoder);
   if (errorV03 == NDN_ERROR_success)
     return NDN_ERROR_success;
 
-  // Failed to decode as format v0.2. Restore offset and try to decode as v0.3.
+  // Failed to decode as format v0.3. Restore offset and try to decode as v0.2.
   ndn_TlvDecoder_seek(decoder, saveOffset);
-  if (ndn_decodeTlvInterestV03
+  if (ndn_decodeTlvInterestV02
       (interest, signedPortionBeginOffset, signedPortionEndOffset, decoder)
       == NDN_ERROR_success)
     return NDN_ERROR_success;
 
-  // Ignore the exception decoding as format v0.3 and throw the exception
-  // from trying to decode as format as format v0.2.
+  // Ignore the exception decoding as format v0.2 and throw the exception
+  // from trying to decode as format as format v0.3.
   return errorV03;
 }
 
