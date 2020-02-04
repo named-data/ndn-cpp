@@ -29,6 +29,7 @@
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
+#include <ndn-ind/encoding/tlv-0_2-wire-format.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
@@ -313,7 +314,7 @@ TEST_F(TestInterestDump, CreateFresh)
   ASSERT_TRUE(interestDumpsEqual(initialDump, freshDump)) << "Fresh interest does not match original";
 
   Interest reDecodedFreshInterest;
-  reDecodedFreshInterest.wireDecode(freshInterest.wireEncode());
+  reDecodedFreshInterest.wireDecode(freshInterest.wireEncode(*Tlv0_2WireFormat::get()));
   vector<string> reDecodedFreshDump = dumpInterest(reDecodedFreshInterest);
 
   ASSERT_TRUE(interestDumpsEqual(freshDump, reDecodedFreshDump)) << "Redecoded fresh interest does not match original";
