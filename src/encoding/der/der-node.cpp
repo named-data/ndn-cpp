@@ -22,7 +22,6 @@
  */
 
 #include <sstream>
-#include "../../c/util/time.h"
 #include "der-exception.hpp"
 #include "der-node.hpp"
 
@@ -444,29 +443,6 @@ DerNode::DerGeneralizedTime::toDerTimeString(MillisecondsSince1970 msSince1970)
   size_t index = pTimeStr.find_first_of('T');
   return pTimeStr.substr(0, index) +
     pTimeStr.substr(index + 1, pTimeStr.size() - (index + 1)) + 'Z';
-}
-
-string
-DerNode::DerGeneralizedTime::toIsoString
-  (const MillisecondsSince1970& time, bool includeFraction)
-{
-  char isoString[25];
-  ndn_Error error;
-  if ((error = ndn_toIsoString(time, includeFraction ? 1 : 0, isoString)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return isoString;
-}
-
-MillisecondsSince1970
-DerNode::DerGeneralizedTime::fromIsoString(const string& isoString)
-{
-  MillisecondsSince1970 milliseconds;
-  ndn_Error error;
-  if ((error = ndn_fromIsoString(isoString.c_str(), &milliseconds)))
-    throw runtime_error(ndn_getErrorString(error));
-
-  return milliseconds;
 }
 
 }

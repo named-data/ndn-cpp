@@ -22,6 +22,7 @@
 #include <sstream>
 #include <cctype>
 #include <algorithm>
+#include "c/util/time.h"
 #include <ndn-cpp/common.hpp>
 
 using namespace std;
@@ -102,6 +103,29 @@ equalsIgnoreCase(const string& s1, const string& s2)
 {
   return(s1.size() == s2.size() &&
          equal(s1.begin(), s1.end(), s2.begin(), charCompareCaseIgnore));
+}
+
+string
+toIsoString
+  (const MillisecondsSince1970& time, bool includeFraction)
+{
+  char isoString[25];
+  ndn_Error error;
+  if ((error = ndn_toIsoString(time, includeFraction ? 1 : 0, isoString)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return isoString;
+}
+
+MillisecondsSince1970
+fromIsoString(const string& isoString)
+{
+  MillisecondsSince1970 milliseconds;
+  ndn_Error error;
+  if ((error = ndn_fromIsoString(isoString.c_str(), &milliseconds)))
+    throw runtime_error(ndn_getErrorString(error));
+
+  return milliseconds;
 }
 
 }

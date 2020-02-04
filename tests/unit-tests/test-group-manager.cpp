@@ -30,7 +30,6 @@
 #include <ndn-cpp/security/key-chain.hpp>
 #include <ndn-cpp/encoding/tlv-wire-format.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
-#include "../../src/encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 #include <ndn-cpp/encrypt/sqlite3-group-manager-db.hpp>
@@ -64,18 +63,6 @@ getPolicyConfigDirectory()
   }
 
   return policyConfigDirectory;
-}
-
-static MillisecondsSince1970
-fromIsoString(const string& dateString)
-{
-  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
-}
-
-string
-toIsoString(MillisecondsSince1970 msSince1970)
-{
-  return DerNode::DerGeneralizedTime::toIsoString(msSince1970);
 }
 
 static uint8_t SIG_INFO[] = {

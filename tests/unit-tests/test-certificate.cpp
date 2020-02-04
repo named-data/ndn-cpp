@@ -23,22 +23,9 @@
 #include "gtest/gtest.h"
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include <ndn-cpp/security/v2/certificate-v2.hpp>
-#include "../../src/encoding/der/der-node.hpp"
 
 using namespace std;
 using namespace ndn;
-
-static MillisecondsSince1970
-fromIsoString(const string& dateString)
-{
-  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
-}
-
-string
-toIsoString(MillisecondsSince1970 msSince1970)
-{
-  return DerNode::DerGeneralizedTime::toIsoString(msSince1970);
-}
 
 static const uint8_t PUBLIC_KEY[] = {
 0x30, 0x81, 0x9d, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,

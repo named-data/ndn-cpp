@@ -25,7 +25,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <ndn-cpp/encrypt/algo/aes-algorithm.hpp>
-#include "../../src/encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/sqlite3-producer-db.hpp>
 
 using namespace std;
@@ -56,12 +55,6 @@ getPolicyConfigDirectory()
   }
 
   return policyConfigDirectory;
-}
-
-static MillisecondsSince1970
-fromIsoString(const string& dateString)
-{
-  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
 }
 
 class TestProducerDb : public ::testing::Test {

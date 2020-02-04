@@ -25,7 +25,6 @@
 #include "../c/encoding/tlv/tlv-decoder.h"
 #include "../c/util/blob.h"
 #include "../util/dynamic-uint8-vector.hpp"
-#include "../encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/schedule.hpp>
 
 using namespace std;
@@ -165,7 +164,7 @@ Schedule::encodeRepetitiveIntervalValue
     *(const RepetitiveInterval*)context;
   ndn_Error error;
 
-  string startDateString = DerNode::DerGeneralizedTime::toIsoString(repetitiveInterval.getStartDate());
+  string startDateString = toIsoString(repetitiveInterval.getStartDate());
   ndn_Blob startDateBlob;
   ndn_Blob_initialize
     (&startDateBlob, (const uint8_t*)startDateString.c_str(), startDateString.size());
@@ -173,7 +172,7 @@ Schedule::encodeRepetitiveIntervalValue
        (encoder, ndn_Tlv_Encrypt_StartDate, &startDateBlob)))
     return error;
 
-  string endDateString = DerNode::DerGeneralizedTime::toIsoString
+  string endDateString = toIsoString
     (repetitiveInterval.getEndDate());
   ndn_Blob endDateBlob;
   ndn_Blob_initialize
@@ -295,8 +294,8 @@ Schedule::decodeRepetitiveInterval(ndn_TlvDecoder *decoder)
   // Use Blob to make a string.
   // The RepeatUnit enum has the same values as the encoding.
   return ptr_lib::make_shared<RepetitiveInterval>
-    (DerNode::DerGeneralizedTime::fromIsoString(Blob(startDate).toRawStr()),
-     DerNode::DerGeneralizedTime::fromIsoString(Blob(endDate).toRawStr()), intervalStartHour,
+    (fromIsoString(Blob(startDate).toRawStr()),
+     fromIsoString(Blob(endDate).toRawStr()), intervalStartHour,
      intervalEndHour, nRepeats, (RepetitiveInterval::RepeatUnit)repeatUnit);
 }
 

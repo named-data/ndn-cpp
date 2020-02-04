@@ -32,7 +32,6 @@
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 #include <ndn-cpp/encrypt/algo/encryptor.hpp>
 #include <ndn-cpp/encrypt/encrypted-content.hpp>
-#include "../../src/encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/sqlite3-producer-db.hpp>
 #include <ndn-cpp/encrypt/producer.hpp>
 
@@ -65,12 +64,6 @@ getPolicyConfigDirectory()
   }
 
   return policyConfigDirectory;
-}
-
-static MillisecondsSince1970
-fromIsoString(const string& dateString)
-{
-  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
 }
 
 static uint8_t DATA_CONTENT[] = {

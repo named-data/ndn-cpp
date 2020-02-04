@@ -21,23 +21,10 @@
  */
 
 #include "gtest/gtest.h"
-#include "../../src/encoding/der/der-node.hpp"
 #include <ndn-cpp/encrypt/schedule.hpp>
 
 using namespace std;
 using namespace ndn;
-
-static MillisecondsSince1970
-fromIsoString(const string& dateString)
-{ 
-  return DerNode::DerGeneralizedTime::fromIsoString(dateString);
-}
-
-string
-toIsoString(MillisecondsSince1970 msSince1970)
-{
-  return DerNode::DerGeneralizedTime::toIsoString(msSince1970);
-}
 
 class TestSchedule : public ::testing::Test {
 };
