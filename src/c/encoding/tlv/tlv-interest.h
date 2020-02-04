@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * Encode the Interest packet as NDN-TLV.
+ * Encode the Interest packet strictly as NDN-TLV format v0.2.
  * @param interest A pointer to the Interest object to encode.
  * @param signedPortionBeginOffset Return the offset in the encoding of the 
  * beginning of the signed portion. If you are not encoding in order to sign,
@@ -42,7 +42,24 @@ extern "C" {
  * @return 0 for success, else an error code.
  */
 ndn_Error
-ndn_encodeTlvInterest
+ndn_encodeTlvInterestV0_2
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
+
+/**
+ * Encode the Interest packet strictly as NDN-TLV format v0.3.
+ * @param interest A pointer to the Interest object to encode.
+ * @param signedPortionBeginOffset Return the offset in the encoding of the
+ * beginning of the signed portion. If you are not encoding in order to sign,
+ * you can ignore this returned value.
+ * @param signedPortionEndOffset Return the offset in the encoding of the end of
+ * the signed portion. If you are not encoding in order to sign, you can ignore
+ * this returned value.
+ * @param encoder Pointer to the ndn_TlvEncoder struct which receives the encoding.
+ * @return 0 for success, else an error code.
+ */
+ndn_Error
+ndn_encodeTlvInterestV0_3
   (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder);
 

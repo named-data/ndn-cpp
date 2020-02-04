@@ -263,7 +263,7 @@ encodeInterestValueV03(const void *context, struct ndn_TlvEncoder *encoder)
 }
 
 ndn_Error
-ndn_encodeTlvInterest
+ndn_encodeTlvInterestV0_2
   (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
@@ -273,15 +273,23 @@ ndn_encodeTlvInterest
   interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
 
-  if (ndn_Interest_hasApplicationParameters(interest))
-    // The application has specified a format v0.3 field. As we transition to
-    // format v0.3, encode as format v0.3 even though the application default is
-    // Tlv0_2WireFormat.
-    return ndn_TlvEncoder_writeNestedTlv
-      (encoder, ndn_Tlv_Interest, encodeInterestValueV03, &interestValueContext, 0);
-
   return ndn_TlvEncoder_writeNestedTlv
     (encoder, ndn_Tlv_Interest, encodeInterestValueV02, &interestValueContext, 0);
+}
+
+ndn_Error
+ndn_encodeTlvInterestV0_3
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
+{
+  // Create the context to pass to encodeInterestValue.
+  struct InterestValueContext interestValueContext;
+  interestValueContext.interest = interest;
+  interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
+  interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
+
+  return ndn_TlvEncoder_writeNestedTlv
+    (encoder, ndn_Tlv_Interest, encodeInterestValueV03, &interestValueContext, 0);
 }
 
 static ndn_Error

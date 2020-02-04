@@ -65,8 +65,17 @@ ndn_Tlv0_2WireFormat_encodeInterest
   ndn_Error error;
   struct ndn_TlvEncoder encoder;
   ndn_TlvEncoder_initialize(&encoder, output);
-  error = ndn_encodeTlvInterest
-    (interest, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
+
+  if (ndn_Interest_hasApplicationParameters(interest))
+    // The application has specified a format v0.3 field. As we transition to
+    // format v0.3, encode as format v0.3 even if the application default is
+    // Tlv0_2WireFormat.
+    error = ndn_encodeTlvInterestV0_3
+      (interest, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
+  else
+    error = ndn_encodeTlvInterestV0_2
+      (interest, signedPortionBeginOffset, signedPortionEndOffset, &encoder);
+
   *encodingLength = encoder.offset;
 
   return error;
