@@ -147,6 +147,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/encoding/tlv-0_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-0_1_1-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-0_2-wire-format.hpp \
+  include/ndn-cpp/encoding/tlv-0_3-wire-format.hpp \
   include/ndn-cpp/encoding/tlv-wire-format.hpp \
   include/ndn-cpp/encoding/wire-format.hpp \
   include/ndn-cpp/encrypt/access-manager-v2.hpp \
@@ -188,6 +189,7 @@ ndn_cpp_cpp_headers = \
   include/ndn-cpp/lite/encoding/element-listener-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_1_1-wire-format-lite.hpp \
   include/ndn-cpp/lite/encoding/tlv-0_2-wire-format-lite.hpp \
+  include/ndn-cpp/lite/encoding/tlv-0_3-wire-format-lite.hpp \
   include/ndn-cpp/lite/encrypt/encrypted-content-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/aes-algorithm-lite.hpp \
   include/ndn-cpp/lite/encrypt/algo/des-algorithm-lite.hpp \
@@ -324,6 +326,7 @@ libndn_c_la_SOURCES = ${ndn_cpp_c_headers} \
   src/c/encoding/element-listener.h \
   src/c/encoding/element-reader.c src/c/encoding/element-reader.h \
   src/c/encoding/tlv-0_2-wire-format_c.c src/c/encoding/tlv-0_2-wire-format.h \
+  src/c/encoding/tlv-0_3-wire-format_c.c src/c/encoding/tlv-0_3-wire-format.h \
   src/c/encoding/tlv/tlv-control-parameters.c src/c/encoding/tlv/tlv-control-parameters.h \
   src/c/encoding/tlv/tlv-control-response.c src/c/encoding/tlv/tlv-control-response.h \
   src/c/encoding/tlv/tlv-data.c src/c/encoding/tlv/tlv-data.h \
@@ -392,6 +395,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/encoding/tlv-0_1-wire-format.cpp \
   src/encoding/tlv-0_1_1-wire-format.cpp \
   src/encoding/tlv-0_2-wire-format.cpp \
+  src/encoding/tlv-0_3-wire-format.cpp \
   src/encoding/tlv-decoder.hpp \
   src/encoding/tlv-encoder.hpp \
   src/encoding/tlv-wire-format.cpp \
@@ -437,6 +441,7 @@ libndn_cpp_la_SOURCES = ${libndn_c_la_SOURCES} ${ndn_cpp_cpp_headers} \
   src/lite/signature-lite.cpp \
   src/lite/encoding/element-listener-lite.cpp \
   src/lite/encoding/tlv-0_2-wire-format-lite.cpp \
+  src/lite/encoding/tlv-0_3-wire-format-lite.cpp \
   src/lite/encrypt/encrypted-content-lite.cpp \
   src/lite/encrypt/algo/aes-algorithm-lite.cpp \
   src/lite/encrypt/algo/des-algorithm-lite.cpp \

@@ -263,7 +263,7 @@ encodeInterestValueV03(const void *context, struct ndn_TlvEncoder *encoder)
 }
 
 ndn_Error
-ndn_encodeTlvInterest
+ndn_encodeTlvInterestV0_2
   (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
    size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
 {
@@ -273,15 +273,23 @@ ndn_encodeTlvInterest
   interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
   interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
 
-  if (ndn_Interest_hasApplicationParameters(interest))
-    // The application has specified a format v0.3 field. As we transition to
-    // format v0.3, encode as format v0.3 even though the application default is
-    // Tlv0_2WireFormat.
-    return ndn_TlvEncoder_writeNestedTlv
-      (encoder, ndn_Tlv_Interest, encodeInterestValueV03, &interestValueContext, 0);
-
   return ndn_TlvEncoder_writeNestedTlv
     (encoder, ndn_Tlv_Interest, encodeInterestValueV02, &interestValueContext, 0);
+}
+
+ndn_Error
+ndn_encodeTlvInterestV0_3
+  (const struct ndn_Interest *interest, size_t *signedPortionBeginOffset,
+   size_t *signedPortionEndOffset, struct ndn_TlvEncoder *encoder)
+{
+  // Create the context to pass to encodeInterestValue.
+  struct InterestValueContext interestValueContext;
+  interestValueContext.interest = interest;
+  interestValueContext.signedPortionBeginOffset = signedPortionBeginOffset;
+  interestValueContext.signedPortionEndOffset = signedPortionEndOffset;
+
+  return ndn_TlvEncoder_writeNestedTlv
+    (encoder, ndn_Tlv_Interest, encodeInterestValueV03, &interestValueContext, 0);
 }
 
 static ndn_Error
@@ -407,20 +415,20 @@ ndn_decodeTlvInterest
 
   saveOffset = decoder->offset;
 
-  errorV03 = ndn_decodeTlvInterestV02
+  errorV03 = ndn_decodeTlvInterestV03
     (interest, signedPortionBeginOffset, signedPortionEndOffset, decoder);
   if (errorV03 == NDN_ERROR_success)
     return NDN_ERROR_success;
 
-  // Failed to decode as format v0.2. Restore offset and try to decode as v0.3.
+  // Failed to decode as format v0.3. Restore offset and try to decode as v0.2.
   ndn_TlvDecoder_seek(decoder, saveOffset);
-  if (ndn_decodeTlvInterestV03
+  if (ndn_decodeTlvInterestV02
       (interest, signedPortionBeginOffset, signedPortionEndOffset, decoder)
       == NDN_ERROR_success)
     return NDN_ERROR_success;
 
-  // Ignore the exception decoding as format v0.3 and throw the exception
-  // from trying to decode as format as format v0.2.
+  // Ignore the exception decoding as format v0.2 and throw the exception
+  // from trying to decode as format as format v0.3.
   return errorV03;
 }
 

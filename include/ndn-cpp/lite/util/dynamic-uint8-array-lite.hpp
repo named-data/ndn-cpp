@@ -153,6 +153,7 @@ private:
   friend class ArduinoYunTcpTransportLite;
   friend class Esp8266TcpTransportLite;
   friend class Tlv0_2WireFormatLite;
+  friend class Tlv0_3WireFormatLite;
 };
 
 }

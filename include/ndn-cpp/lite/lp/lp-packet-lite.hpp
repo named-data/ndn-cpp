@@ -161,7 +161,7 @@ public:
 
 private:
   // Declare friends who can downcast to the private base.
-  friend class Tlv0_2WireFormatLite;
+  friend class Tlv0_3WireFormatLite;
   friend class IncomingFaceIdLite;
   friend class NetworkNackLite;
   friend class CongestionMarkLite;

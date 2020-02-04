@@ -1,9 +1,10 @@
-Interim changes since NDN-CPP v0.17 (2020-01-02)
+Interim changes since NDN-CPP v0.17 (2020-02-04)
 ------------------------------------------------
 
 Changes
 * https://redmine.named-data.net/issues/5052 In Interest, changed the
   MustBeFresh default value to false.
+* Added Tlv0_3WireFormat.
 * In Face, also check for a Unix socket at /var/tmp/nfd.sock .
 
 Bug fixes
