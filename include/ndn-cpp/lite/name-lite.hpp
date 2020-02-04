@@ -806,7 +806,7 @@ public:
 
 private:
   // Declare friends who can downcast to the private base.
-  friend class Tlv0_2WireFormatLite;
+  friend class Tlv0_3WireFormatLite;
 
   /**
    * Don't allow the copy constructor. Instead use set(const NameLite&) which
