@@ -306,22 +306,6 @@ TEST_F(TestInterestDump, Redecode)
   ASSERT_EQ(initialDump, redecodedDump) << "Re-decoded interest does not match original";
 }
 
-TEST_F(TestInterestDump, RedecodeImplicitDigestExclude)
-{
-  // Check that we encode and decode correctly with an implicit digest exclude.
-  Interest interest(Name("/A"));
-  interest.getExclude().appendComponent(Name("/sha256digest="
-    "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f").get(0));
-  vector<string> dump = dumpInterest(interest);
-
-  Blob encoding = interest.wireEncode();
-  Interest reDecodedInterest;
-  reDecodedInterest.wireDecode(encoding);
-  vector<string> redecodedDump = dumpInterest(reDecodedInterest);
-  ASSERT_TRUE(interestDumpsEqual(dump, redecodedDump)) <<
-    "Re-decoded interest does not match original";
-}
-
 TEST_F(TestInterestDump, CreateFresh)
 {
   Interest freshInterest = createFreshInterest();
@@ -392,7 +376,7 @@ TEST_F(TestInterestMethods, SetRemovesNonce)
   ASSERT_FALSE(referenceInterest.getNonce().isNull());
   Interest interest(referenceInterest);
   // Change a child object.
-  interest.getExclude().clear();
+  interest.setInterestLifetimeMilliseconds(1);
   ASSERT_TRUE(interest.getNonce().isNull()) << "Interest should not have a nonce after changing fields";
 }
 
@@ -407,25 +391,6 @@ TEST_F(TestInterestMethods, RefreshNonce)
             "The refreshed nonce should be the same size";
   ASSERT_FALSE(interest.getNonce().equals(oldNonce)) <<
                "The refreshed nonce should be different";
-}
-
-TEST_F(TestInterestMethods, ExcludeMatches)
-{
-  Exclude exclude;
-  exclude.appendComponent(Name("%00%02").get(0));
-  exclude.appendAny();
-  exclude.appendComponent(Name("%00%20").get(0));
-
-  Name::Component component;
-  component = Name("%00%01").get(0);
-  ASSERT_FALSE(exclude.matches(component)) <<
-    component.toEscapedString() << " should not match " << exclude.toUri();
-  component = Name("%00%0F").get(0);
-  ASSERT_TRUE(exclude.matches(component)) <<
-    component.toEscapedString() << " should match " << exclude.toUri();
-  component = Name("%00%21").get(0);
-  ASSERT_FALSE(exclude.matches(component)) <<
-    component.toEscapedString() << " should not match " << exclude.toUri();
 }
 
 TEST_F(TestInterestMethods, VerifyDigestSha256)
