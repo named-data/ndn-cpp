@@ -23,7 +23,7 @@
 #ifndef NDN_PIB_KEY_HPP
 #define NDN_PIB_KEY_HPP
 
-#include <ndn-cpp/security/security-common.hpp>
+#include "../security-common.hpp"
 #include "pib-certificate-container.hpp"
 
 // Give friend access to the tests.

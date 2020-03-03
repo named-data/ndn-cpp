@@ -24,8 +24,8 @@
 #define NDN_SCHEDULE_HPP
 
 #include <vector>
-#include <ndn-cpp/c/errors.h>
-#include <ndn-cpp/util/blob.hpp>
+#include "../c/errors.h"
+#include "../util/blob.hpp"
 #include "repetitive-interval.hpp"
 
 struct ndn_TlvEncoder;

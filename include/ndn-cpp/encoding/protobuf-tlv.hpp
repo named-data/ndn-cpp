@@ -22,8 +22,8 @@
 #ifndef NDN_PROTOBUF_TLV_HPP
 #define NDN_PROTOBUF_TLV_HPP
 
-#include <ndn-cpp/util/blob.hpp>
-#include <ndn-cpp/name.hpp>
+#include "../util/blob.hpp"
+#include "../name.hpp"
 
 namespace google { namespace protobuf { class Message; } }
 

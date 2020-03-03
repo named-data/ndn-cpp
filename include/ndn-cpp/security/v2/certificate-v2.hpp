@@ -24,8 +24,8 @@
 #define NDN_CERTIFICATE_V2_HPP
 
 #include <stdexcept>
-#include <ndn-cpp/security/validity-period.hpp>
-#include <ndn-cpp/data.hpp>
+#include "../validity-period.hpp"
+#include "../../data.hpp"
 
 namespace ndn {
 
