@@ -97,7 +97,7 @@ Optional: To install Boost with asio, in a terminal, enter:
 
     sudo apt-get install libboost-all-dev
 
-## Ubuntu 16.04, 16.10, 17.04 and 18.04
+## Ubuntu 16.04, 16.10, 17.04, 18.04 and 20.04
 In a terminal, enter:
 
     sudo apt install build-essential libssl-dev
