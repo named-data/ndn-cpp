@@ -29,7 +29,7 @@
 #include <ndn-cpp/interest-filter.hpp>
 #include <ndn-cpp/digest-sha256-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include <ndn-ind/encoding/tlv-0_2-wire-format.hpp>
+#include <ndn-cpp/encoding/tlv-0_2-wire-format.hpp>
 #include <ndn-cpp/interest.hpp>
 
 using namespace std;
