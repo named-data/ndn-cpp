@@ -23,7 +23,7 @@
 #include <ndn-cpp/security/validity-period.hpp>
 #include <ndn-cpp/sha256-with-ecdsa-signature.hpp>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
-#include "../../encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include <ndn-cpp/security/v2/certificate-v2.hpp>
 #include <ndn-cpp/key-locator.hpp>
 

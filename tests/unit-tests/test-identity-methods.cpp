@@ -32,7 +32,7 @@
 #include <ndn-cpp/security/policy/self-verify-policy-manager.hpp>
 #include <ndn-cpp/security/identity/basic-identity-storage.hpp>
 #include <ndn-cpp/security/identity/file-private-key-storage.hpp>
-#include "../../src/encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 
 using namespace std;
 using namespace ndn;

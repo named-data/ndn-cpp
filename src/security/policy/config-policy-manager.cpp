@@ -36,7 +36,7 @@
 #include <ndn-cpp/security/certificate/identity-certificate.hpp>
 #include "../../util/boost-info-parser.hpp"
 #include "../../c/util/time.h"
-#include "../../encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include <ndn-cpp/util/logging.hpp>
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
 

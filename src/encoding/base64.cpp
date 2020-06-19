@@ -24,7 +24,7 @@
 #include <vector>
 #include <sstream>
 #include "../../contrib/apache/apr_base64.h"
-#include "base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 
 using namespace std;
 

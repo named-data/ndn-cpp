@@ -30,7 +30,7 @@
 #include <ndn-cpp/security/security-exception.hpp>
 #include <ndn-cpp/security/pib/pib-memory.hpp>
 #include <ndn-cpp/security/tpm/tpm-back-end-memory.hpp>
-#include "../../src/encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include <ndn-cpp/security/policy/config-policy-manager.hpp>
 
 using namespace std;

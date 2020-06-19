@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 #include <ndn-cpp/encrypt/algo/rsa-algorithm.hpp>
 // Use the internal fromBase64.
-#include "../../src/encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 
 using namespace std;
 using namespace ndn;

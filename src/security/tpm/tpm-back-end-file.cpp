@@ -24,7 +24,7 @@
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
-#include "../../encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include <ndn-cpp/lite/util/crypto-lite.hpp>
 #include <ndn-cpp/security/tpm/tpm-private-key.hpp>
 #include <ndn-cpp/security/tpm/tpm-key-handle-memory.hpp>

@@ -26,7 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <ndn-cpp/util/logging.hpp>
-#include "../../encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include <ndn-cpp/security/v2/trust-anchor-group.hpp>
 
 INIT_LOGGER("ndn.TrustAnchorGroup");

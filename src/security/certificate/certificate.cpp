@@ -24,7 +24,7 @@
 #include <float.h>
 #include <ndn-cpp/sha256-with-rsa-signature.hpp>
 #include "../../encoding/der/der-node.hpp"
-#include "../../encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include "../../c/util/time.h"
 #include <ndn-cpp/security/certificate/certificate.hpp>
 

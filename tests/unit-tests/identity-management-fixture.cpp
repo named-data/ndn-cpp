@@ -22,7 +22,7 @@
  */
 
 #include <fstream>
-#include "../../src/encoding/base64.hpp"
+#include <ndn-cpp/encoding/base64.hpp>
 #include "identity-management-fixture.hpp"
 
 using namespace std;
