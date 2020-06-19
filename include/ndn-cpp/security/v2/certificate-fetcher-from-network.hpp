@@ -74,6 +74,8 @@ private:
     : parent_(parent), face_(face)
     {}
 
+    virtual ~Impl() {}
+
     /**
      * Implement doFetch to use face_.expressInterest to fetch a certificate.
      * @param certificateRequest The the request with the Interest for fetching
