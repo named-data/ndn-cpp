@@ -104,7 +104,7 @@ ndn_AesAlgorithm_decrypt128Ecb
    size_t encryptedDataLength, uint8_t *plainData, size_t *plainDataLength);
 
 /**
- * Use the key to encrypt encryptedData using AES 128 in CBC mode.
+ * Use the key to encrypt plainData using AES 128 in CBC mode.
  * @param key A pointer to the key byte array.
  * @param keyLength The length of key. It is an error if this is not
  * ndn_AES_128_KEY_LENGTH. This value is proved as a safety check that the
@@ -115,9 +115,9 @@ ndn_AesAlgorithm_decrypt128Ecb
  * that the correct algorithm is being used.
  * @param plainData A pointer to the input byte array to encrypt.
  * @param plainDataLength The length of plainData.
- * @param encryptedData A pointer to the decrypted output buffer. The caller
+ * @param encryptedData A pointer to the encrypted output buffer. The caller
  * must provide a large enough buffer, which should be at least
- * encryptedDataLength + ndn_AES_BLOCK_LENGTH bytes.
+ * plainDataLength + ndn_AES_BLOCK_LENGTH bytes.
  * @param encryptedDataLength This sets encryptedDataLength to the number of
  * bytes placed in the encryptedData buffer.
  * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
@@ -131,7 +131,7 @@ ndn_AesAlgorithm_encrypt128Cbc
    size_t plainDataLength, uint8_t *encryptedData, size_t *encryptedDataLength);
 
 /**
- * Use the key to encrypt encryptedData using AES 256 in CBC mode.
+ * Use the key to encrypt plainData using AES 256 in CBC mode.
  * @param key A pointer to the key byte array.
  * @param keyLength The length of key. It is an error if this is not
  * ndn_AES_256_KEY_LENGTH. This value is proved as a safety check that the
@@ -142,9 +142,9 @@ ndn_AesAlgorithm_encrypt128Cbc
  * that the correct algorithm is being used.
  * @param plainData A pointer to the input byte array to encrypt.
  * @param plainDataLength The length of plainData.
- * @param encryptedData A pointer to the decrypted output buffer. The caller
+ * @param encryptedData A pointer to the encrypted output buffer. The caller
  * must provide a large enough buffer, which should be at least
- * encryptedDataLength + ndn_AES_BLOCK_LENGTH bytes.
+ * plainDataLength + ndn_AES_BLOCK_LENGTH bytes.
  * @param encryptedDataLength This sets encryptedDataLength to the number of
  * bytes placed in the encryptedData buffer.
  * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
@@ -158,16 +158,16 @@ ndn_AesAlgorithm_encrypt256Cbc
    size_t plainDataLength, uint8_t *encryptedData, size_t *encryptedDataLength);
 
 /**
- * Use the key to encrypt encryptedData using AES 128 in ECB mode.
+ * Use the key to encrypt plainData using AES 128 in ECB mode.
  * @param key A pointer to the key byte array.
  * @param keyLength The length of key. It is an error if this is not
  * ndn_AES_128_KEY_LENGTH. This value is proved as a safety check that the
  * correct algorithm is being used.
  * @param plainData A pointer to the input byte array to encrypt.
  * @param plainDataLength The length of plainData.
- * @param encryptedData A pointer to the decrypted output buffer. The caller
+ * @param encryptedData A pointer to the encrypted output buffer. The caller
  * must provide a large enough buffer, which should be at least
- * encryptedDataLength + ndn_AES_BLOCK_LENGTH bytes.
+ * plainDataLength + ndn_AES_BLOCK_LENGTH bytes.
  * @param encryptedDataLength This sets encryptedDataLength to the number of
  * bytes placed in the encryptedData buffer.
  * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect

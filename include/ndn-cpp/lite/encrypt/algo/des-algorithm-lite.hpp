@@ -74,12 +74,12 @@ public:
    * @param encryptedData The input byte array to decrypt.
    * @param plainData A pointer to the decrypted output buffer. The caller
    * must provide a large enough buffer, which should be at least
-   * encryptedDataLength bytes.
+   * encryptedData.size() bytes.
    * @param plainDataLength This sets plainDataLength to the number of bytes
    * placed in the plainData buffer.
    * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
-   * keyLength or NDN_ERROR_Incorrect_initial_vector_size for incorrect
-   * initialVectorLength.
+   * key.size() or NDN_ERROR_Incorrect_initial_vector_size for incorrect
+   * initialVector.size().
    */
   static ndn_Error
   decryptEdeCbcPkcs5Padding
@@ -92,7 +92,7 @@ public:
   }
 
   /**
-   * Use the key to encrypt encryptedData using DES EDE in CBC mode with PKCS #5
+   * Use the key to encrypt plainData using DES EDE in CBC mode with PKCS #5
    * padding.
    * @param key A pointer to the key byte array.
    * @param keyLength The length of key. It is an error if this is not
@@ -104,9 +104,9 @@ public:
    * that the correct algorithm is being used.
    * @param plainData A pointer to the input byte array to encrypt.
    * @param plainDataLength The length of plainData.
-   * @param encryptedData A pointer to the decrypted output buffer. The caller
+   * @param encryptedData A pointer to the encrypted output buffer. The caller
    * must provide a large enough buffer, which should be at least
-   * encryptedDataLength + ndn_DES_BLOCK_LENGTH bytes.
+   * plainDataLength + ndn_DES_BLOCK_LENGTH bytes.
    * @param encryptedDataLength This sets encryptedDataLength to the number of
    * bytes placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
@@ -120,7 +120,7 @@ public:
      size_t plainDataLength, uint8_t* encryptedData, size_t& encryptedDataLength);
 
   /**
-   * Use the key to encrypt encryptedData using DES EDE in CBC mode with PKCS #5
+   * Use the key to encrypt plainData using DES EDE in CBC mode with PKCS #5
    * padding.
    * @param key The key byte array. It is an error if its size is not
    * ndn_DES_EDE3_KEY_LENGTH. This value is proved as a safety check that the
@@ -129,14 +129,14 @@ public:
    * size is not ndn_DES_BLOCK_LENGTH. This value is proved as a safety check
    * that the correct algorithm is being used.
    * @param plainData The input byte array to encrypt.
-   * @param encryptedData A pointer to the decrypted output buffer. The caller
+   * @param encryptedData A pointer to the encrypted output buffer. The caller
    * must provide a large enough buffer, which should be at least
-   * encryptedDataLength + ndn_DES_BLOCK_LENGTH bytes.
+   * plainData.size() + ndn_DES_BLOCK_LENGTH bytes.
    * @param encryptedDataLength This sets encryptedDataLength to the number of
    * bytes placed in the encryptedData buffer.
    * @return 0 for success, else NDN_ERROR_Incorrect_key_size for incorrect
-   * keyLength or NDN_ERROR_Incorrect_initial_vector_size for incorrect
-   * initialVectorLength.
+   * keyL.size() or NDN_ERROR_Incorrect_initial_vector_size for incorrect
+   * initialVector.size().
    */
   static ndn_Error
   encryptEdeCbcPkcs5Padding
