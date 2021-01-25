@@ -1,5 +1,5 @@
-Interim changes since NDN-CPP v0.17 (2020-02-04)
-------------------------------------------------
+NDN-CPP v0.18 (2021-01-25)
+--------------------------
 
 Changes
 * https://redmine.named-data.net/issues/5052 In Interest, changed the
