@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil -*- */
 /**
- * Copyright (C) 2014-2020 Regents of the University of California.
+ * Copyright (C) 2014-2021 Regents of the University of California.
  * @author: Jeff Thompson <jefft0@remap.ucla.edu>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #ifndef NDN_TLV_WIRE_FORMAT_HPP
 #define NDN_TLV_WIRE_FORMAT_HPP
 
-#include "tlv-0_2-wire-format.hpp"
+#include "tlv-0_3-wire-format.hpp"
 
 namespace ndn {
 
@@ -30,7 +30,7 @@ namespace ndn {
  * A TlvWireFormat extends WireFormat to override its virtual methods to implement encoding and decoding
  * using the preferred implementation of NDN-TLV.
  */
-class TlvWireFormat : public Tlv0_2WireFormat {
+class TlvWireFormat : public Tlv0_3WireFormat {
 public:
   /**
    * Get a singleton instance of a TlvWireFormat.  Assuming that the default wire format was set with
